@@ -37,21 +37,32 @@
     "tacticalIdentity": { "$ref": "#/$defs/TacticalIdentityBlock" },
     "events": { "$ref": "#/$defs/EventTables" },
     "goalkeeping": {
+      "title": "Goalkeeping",
+      "description": "Per-goalkeeper records, or null when the report does not carry the goalkeeping pages at all. An empty array means the pages were present and listed no goalkeeper; null means there was nothing to read. The App renders those two states differently, so they must never be collapsed.",
+      "anyOf": [{ "$ref": "#/$defs/GoalkeepingBlock" }, { "type": "null" }]
+    },
+    "setPlays": { "$ref": "#/$defs/SetPlaysBlock" },
+    "players": {
+      "title": "Players",
+      "description": "Per-player Domain G records, or null when the report does not carry the per-player pages at all. Empty array and null are distinct states (see goalkeeping).",
+      "anyOf": [{ "$ref": "#/$defs/PlayerRecords" }, { "type": "null" }]
+    }
+  },
+
+  "$defs": {
+    "GoalkeepingBlock": {
       "title": "GoalkeepingBlock",
       "description": "One entry per goalkeeper who appeared, both teams, ordered home team first.",
       "type": "array",
       "items": { "$ref": "#/$defs/GoalkeeperRecord" }
     },
-    "setPlays": { "$ref": "#/$defs/SetPlaysBlock" },
-    "players": {
+    "PlayerRecords": {
       "title": "PlayerRecords",
       "description": "One entry per player with minutes, both teams, ordered home team first then by shirt number.",
       "type": "array",
       "items": { "$ref": "#/$defs/PlayerRecord" }
-    }
-  },
+    },
 
-  "$defs": {
     "TeamRef": {
       "title": "TeamRef",
       "description": "Identity of one of the two teams in this match.",
@@ -80,14 +91,6 @@
         "minute": { "$ref": "common.schema.json#/$defs/Minute" },
         "stoppageMinute": { "$ref": "common.schema.json#/$defs/StoppageMinute" }
       }
-    },
-
-    "Formation": {
-      "title": "Formation",
-      "description": "Formation as the lineup page prints it, locale-neutral (AD-7). Thirteen distinct values were observed across the 104-report corpus, from 3-4-1-2 to 5-4-1.",
-      "type": "string",
-      "pattern": "^[1-9](-[1-9]){1,3}$",
-      "examples": ["4-3-3", "4-1-2-3", "5-3-2"]
     },
 
     "CardRecord": {
@@ -154,7 +157,7 @@
       "additionalProperties": false,
       "required": ["formation", "starters", "substitutes"],
       "properties": {
-        "formation": { "$ref": "#/$defs/Formation" },
+        "formation": { "$ref": "common.schema.json#/$defs/Formation" },
         "starters": {
           "title": "Starters",
           "type": "array",
@@ -760,9 +763,9 @@
       ],
       "properties": {
         "shots": {
-          "title": "ShotEvents",
-          "type": "array",
-          "items": { "$ref": "#/$defs/ShotEvent" }
+          "title": "Shots",
+          "description": "Shot events, or null when the report does not carry the shots page. Empty array and null are distinct states.",
+          "anyOf": [{ "$ref": "#/$defs/ShotEvents" }, { "type": "null" }]
         },
         "shootoutAttempts": {
           "title": "ShootoutAttempts",
@@ -776,31 +779,65 @@
           ]
         },
         "crosses": {
-          "title": "CrossEvents",
-          "type": "array",
-          "items": { "$ref": "#/$defs/CrossEvent" }
+          "title": "Crosses",
+          "description": "Cross events, or null when the report does not carry the crosses page.",
+          "anyOf": [{ "$ref": "#/$defs/CrossEvents" }, { "type": "null" }]
         },
         "passNetworkNodes": {
-          "title": "PassNetworkNodes",
-          "type": "array",
-          "items": { "$ref": "#/$defs/PassNetworkNode" }
+          "title": "PassNetworkNodeTable",
+          "description": "Pass-network nodes, or null when the report does not carry the pass-network page.",
+          "anyOf": [{ "$ref": "#/$defs/PassNetworkNodes" }, { "type": "null" }]
         },
         "passNetworkEdges": {
-          "title": "PassNetworkEdges",
-          "type": "array",
-          "items": { "$ref": "#/$defs/PassNetworkEdge" }
+          "title": "PassNetworkEdgeTable",
+          "description": "Pass-network edges, or null when the report does not carry the pass-network page.",
+          "anyOf": [{ "$ref": "#/$defs/PassNetworkEdges" }, { "type": "null" }]
         },
         "receiving": {
-          "title": "ReceivingEvents",
-          "type": "array",
-          "items": { "$ref": "#/$defs/ReceivingEvent" }
+          "title": "Receiving",
+          "description": "Offer- and movement-to-receive events, or null when the report does not carry those pages.",
+          "anyOf": [{ "$ref": "#/$defs/ReceivingEvents" }, { "type": "null" }]
         },
         "defensiveActions": {
-          "title": "DefensiveActionEvents",
-          "type": "array",
-          "items": { "$ref": "#/$defs/DefensiveActionEvent" }
+          "title": "DefensiveActions",
+          "description": "Defensive-action events, or null when the report does not carry the defensive-actions page.",
+          "anyOf": [
+            { "$ref": "#/$defs/DefensiveActionEvents" },
+            { "type": "null" }
+          ]
         }
       }
+    },
+
+    "ShotEvents": {
+      "title": "ShotEvents",
+      "type": "array",
+      "items": { "$ref": "#/$defs/ShotEvent" }
+    },
+    "CrossEvents": {
+      "title": "CrossEvents",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CrossEvent" }
+    },
+    "PassNetworkNodes": {
+      "title": "PassNetworkNodes",
+      "type": "array",
+      "items": { "$ref": "#/$defs/PassNetworkNode" }
+    },
+    "PassNetworkEdges": {
+      "title": "PassNetworkEdges",
+      "type": "array",
+      "items": { "$ref": "#/$defs/PassNetworkEdge" }
+    },
+    "ReceivingEvents": {
+      "title": "ReceivingEvents",
+      "type": "array",
+      "items": { "$ref": "#/$defs/ReceivingEvent" }
+    },
+    "DefensiveActionEvents": {
+      "title": "DefensiveActionEvents",
+      "type": "array",
+      "items": { "$ref": "#/$defs/DefensiveActionEvent" }
     },
 
     "CompletionCounts": {
@@ -894,6 +931,7 @@
     },
     "GoalPrevention": {
       "title": "GoalPrevention",
+      "description": "Domain E goal prevention for one goalkeeper. NOTE the two breakdowns have DIFFERENT denominators, which is a property of the source page, not an error: byInterventionType sums to attemptsFaced (every attempt faced is categorised, including no-save-attempt), while byBodyType sums to totalInterventions (only attempts the keeper actually intervened on have a body part). Verified across all six fixture goalkeepers. An App rendering the two panels side by side must label them with their own totals rather than implying a shared one.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -1036,6 +1074,18 @@
         "total": { "$ref": "common.schema.json#/$defs/Count" }
       }
     },
+    "TeamCornerSideCounts": {
+      "title": "TeamCornerSideCounts",
+      "description": "All of a team's corners split by the side they were taken from, precomputed. AD-5 forbids the App summing, so the team-level side split is its own field rather than three numbers the browser adds up out of cornersByDeliveryType. Equals those per-delivery-type side counts summed, and total equals totalCorners.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left", "right", "total"],
+      "properties": {
+        "left": { "$ref": "common.schema.json#/$defs/Count" },
+        "right": { "$ref": "common.schema.json#/$defs/Count" },
+        "total": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
     "TeamSetPlays": {
       "title": "TeamSetPlays",
       "description": "Domain F, one team.",
@@ -1048,6 +1098,7 @@
         "totalCorners",
         "totalThrowIns",
         "freeKicks",
+        "cornersBySide",
         "cornersByDeliveryType",
         "cornersByDeliveryStyle"
       ],
@@ -1057,8 +1108,10 @@
         "totalPenalties": { "$ref": "common.schema.json#/$defs/Count" },
         "totalCorners": { "$ref": "common.schema.json#/$defs/Count" },
         "totalThrowIns": { "$ref": "common.schema.json#/$defs/Count" },
+        "cornersBySide": { "$ref": "#/$defs/TeamCornerSideCounts" },
         "freeKicks": {
           "title": "FreeKickCounts",
+          "description": "Free kicks by type. These are NESTED, not siblings: directOnTarget and directOffTarget are subdivisions of direct, so direct == directOnTarget + directOffTarget (holds across all six fixture team-innings) and direct + indirect == totalFreeKicks. Summing all four fields double-counts the direct ones — a stacked chart must use either {direct, indirect} or {directOnTarget, directOffTarget, indirect}.",
           "type": "object",
           "additionalProperties": false,
           "required": ["direct", "directOnTarget", "directOffTarget", "indirect"],

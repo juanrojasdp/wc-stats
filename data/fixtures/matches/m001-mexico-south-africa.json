@@ -1436,7 +1436,7 @@
         "y": 51.29
       },
       {
-        "involvement": 15,
+        "involvement": 60,
         "playerId": "vasquez-johan-mex",
         "playerName": "Johan VASQUEZ",
         "shirtNumber": 5,
@@ -1445,7 +1445,7 @@
         "y": 72.4
       },
       {
-        "involvement": 46,
+        "involvement": 65,
         "playerId": "lira-erik-mex",
         "playerName": "Erik LIRA",
         "shirtNumber": 6,
@@ -1472,7 +1472,7 @@
         "y": 27.61
       },
       {
-        "involvement": 24,
+        "involvement": 28,
         "playerId": "reyes-israel-mex",
         "playerName": "Israel REYES",
         "shirtNumber": 15,
@@ -1490,7 +1490,7 @@
         "y": 69.99
       },
       {
-        "involvement": 13,
+        "involvement": 20,
         "playerId": "gallardo-jesus-mex",
         "playerName": "Jesus GALLARDO",
         "shirtNumber": 23,
@@ -1508,7 +1508,7 @@
         "y": 76.26
       },
       {
-        "involvement": 37,
+        "involvement": 42,
         "playerId": "gutierrez-brian-mex",
         "playerName": "Brian GUTIERREZ",
         "shirtNumber": 26,
@@ -1517,7 +1517,7 @@
         "y": 65.84
       },
       {
-        "involvement": 52,
+        "involvement": 55,
         "playerId": "williams-ronwen-rsa",
         "playerName": "Ronwen WILLIAMS",
         "shirtNumber": 1,
@@ -1544,7 +1544,7 @@
         "y": 53.32
       },
       {
-        "involvement": 44,
+        "involvement": 47,
         "playerId": "foster-lyle-rsa",
         "playerName": "Lyle FOSTER",
         "shirtNumber": 9,
@@ -1562,7 +1562,7 @@
         "y": 27.89
       },
       {
-        "involvement": 12,
+        "involvement": 79,
         "playerId": "mbokazi-mbekezeli-rsa",
         "playerName": "Mbekezeli MBOKAZI",
         "shirtNumber": 14,
@@ -1598,7 +1598,7 @@
         "y": 32.79
       },
       {
-        "involvement": 24,
+        "involvement": 56,
         "playerId": "okon-ime-rsa",
         "playerName": "Ime OKON",
         "shirtNumber": 21,
@@ -1607,7 +1607,7 @@
         "y": 25.09
       },
       {
-        "involvement": 39,
+        "involvement": 62,
         "playerId": "adams-jayden-rsa",
         "playerName": "Jayden ADAMS",
         "shirtNumber": 23,
@@ -4231,14 +4231,14 @@
   "players": [
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 4,
-        "crossesAttempted": 4,
-        "crossesCompleted": 2,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
         "goals": 0,
-        "lineBreakCompletion": 72.7,
+        "lineBreakCompletion": 63.6,
         "lineBreaksAttempted": 11,
-        "lineBreaksCompleted": 8,
+        "lineBreaksCompleted": 7,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 3,
@@ -4248,9 +4248,9 @@
           "outToIn": 0
         },
         "offersReceived": 4,
-        "passCompletion": 87.2,
-        "passesAttempted": 39,
-        "passesCompleted": 34,
+        "passCompletion": 87.9,
+        "passesAttempted": 33,
+        "passesCompleted": 29,
         "stepIns": 2,
         "switchesOfPlay": 3,
         "takeOns": 6,
@@ -4265,7 +4265,7 @@
         "looseBallReceptions": 8,
         "possessionContestsWon": 0,
         "possessionInterrupted": 0,
-        "possessionRegains": 3,
+        "possessionRegains": 1,
         "pressingDirect": 37,
         "pressingIndirect": 16,
         "pushingOn": 17,
@@ -4282,7 +4282,7 @@
         "highSpeedRuns": 18,
         "sprints": 3,
         "topSpeed": 23.2,
-        "totalDistance": 5476.4
+        "totalDistance": 5476.0
       },
       "playerId": "rangel-raul-mex",
       "playerName": "Raul RANGEL",
@@ -4292,14 +4292,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 4,
-        "ballProgressions": 6,
-        "crossesAttempted": 3,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 1,
         "crossesCompleted": 1,
         "goals": 0,
-        "lineBreakCompletion": 80.0,
+        "lineBreakCompletion": 70.0,
         "lineBreaksAttempted": 10,
-        "lineBreaksCompleted": 8,
+        "lineBreaksCompleted": 7,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 2,
@@ -4309,9 +4309,9 @@
           "outToIn": 1
         },
         "offersReceived": 12,
-        "passCompletion": 73.5,
-        "passesAttempted": 34,
-        "passesCompleted": 25,
+        "passCompletion": 89.7,
+        "passesAttempted": 29,
+        "passesCompleted": 26,
         "stepIns": 5,
         "switchesOfPlay": 0,
         "takeOns": 0,
@@ -4326,7 +4326,7 @@
         "looseBallReceptions": 9,
         "possessionContestsWon": 7,
         "possessionInterrupted": 3,
-        "possessionRegains": 7,
+        "possessionRegains": 3,
         "pressingDirect": 1,
         "pressingIndirect": 15,
         "pushingOn": 22,
@@ -4343,7 +4343,7 @@
         "highSpeedRuns": 72,
         "sprints": 25,
         "topSpeed": 30.1,
-        "totalDistance": 8545.9
+        "totalDistance": 8545.0
       },
       "playerId": "montes-cesar-mex",
       "playerName": "Cesar MONTES",
@@ -4353,10 +4353,10 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 4,
-        "ballProgressions": 6,
-        "crossesAttempted": 1,
-        "crossesCompleted": 1,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
         "goals": 0,
         "lineBreakCompletion": 60.0,
         "lineBreaksAttempted": 5,
@@ -4370,9 +4370,9 @@
           "outToIn": 31
         },
         "offersReceived": 35,
-        "passCompletion": 94.7,
-        "passesAttempted": 38,
-        "passesCompleted": 36,
+        "passCompletion": 87.5,
+        "passesAttempted": 32,
+        "passesCompleted": 28,
         "stepIns": 5,
         "switchesOfPlay": 3,
         "takeOns": 2,
@@ -4387,7 +4387,7 @@
         "looseBallReceptions": 9,
         "possessionContestsWon": 3,
         "possessionInterrupted": 5,
-        "possessionRegains": 3,
+        "possessionRegains": 1,
         "pressingDirect": 39,
         "pressingIndirect": 16,
         "pushingOn": 5,
@@ -4404,7 +4404,7 @@
         "highSpeedRuns": 28,
         "sprints": 15,
         "topSpeed": 31.5,
-        "totalDistance": 2007.7
+        "totalDistance": 2008.0
       },
       "playerId": "alvarez-edson-mex",
       "playerName": "Edson ALVAREZ",
@@ -4414,8 +4414,8 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 4,
-        "ballProgressions": 4,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
         "crossesAttempted": 0,
         "crossesCompleted": 0,
         "goals": 0,
@@ -4431,9 +4431,9 @@
           "outToIn": 1
         },
         "offersReceived": 3,
-        "passCompletion": 86.7,
-        "passesAttempted": 15,
-        "passesCompleted": 13,
+        "passCompletion": 84.6,
+        "passesAttempted": 13,
+        "passesCompleted": 11,
         "stepIns": 5,
         "switchesOfPlay": 1,
         "takeOns": 5,
@@ -4448,7 +4448,7 @@
         "looseBallReceptions": 4,
         "possessionContestsWon": 9,
         "possessionInterrupted": 1,
-        "possessionRegains": 9,
+        "possessionRegains": 4,
         "pressingDirect": 29,
         "pressingIndirect": 1,
         "pushingOn": 16,
@@ -4465,7 +4465,7 @@
         "highSpeedRuns": 102,
         "sprints": 33,
         "topSpeed": 27.9,
-        "totalDistance": 10046.9
+        "totalDistance": 10046.0
       },
       "playerId": "vasquez-johan-mex",
       "playerName": "Johan VASQUEZ",
@@ -4475,14 +4475,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 5,
-        "ballProgressions": 7,
-        "crossesAttempted": 4,
-        "crossesCompleted": 2,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
         "goals": 0,
-        "lineBreakCompletion": 89.5,
+        "lineBreakCompletion": 78.9,
         "lineBreaksAttempted": 19,
-        "lineBreaksCompleted": 17,
+        "lineBreaksCompleted": 15,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 0,
@@ -4492,8 +4492,8 @@
           "outToIn": 0
         },
         "offersReceived": 4,
-        "passCompletion": 83.9,
-        "passesAttempted": 87,
+        "passCompletion": 100.0,
+        "passesAttempted": 73,
         "passesCompleted": 73,
         "stepIns": 4,
         "switchesOfPlay": 1,
@@ -4509,7 +4509,7 @@
         "looseBallReceptions": 6,
         "possessionContestsWon": 1,
         "possessionInterrupted": 4,
-        "possessionRegains": 5,
+        "possessionRegains": 2,
         "pressingDirect": 35,
         "pressingIndirect": 18,
         "pushingOn": 16,
@@ -4526,7 +4526,7 @@
         "highSpeedRuns": 103,
         "sprints": 27,
         "topSpeed": 31.4,
-        "totalDistance": 8877.0
+        "totalDistance": 8876.0
       },
       "playerId": "lira-erik-mex",
       "playerName": "Erik LIRA",
@@ -4536,14 +4536,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 6,
-        "crossesAttempted": 3,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 1,
         "crossesCompleted": 1,
         "goals": 0,
-        "lineBreakCompletion": 44.4,
+        "lineBreakCompletion": 38.9,
         "lineBreaksAttempted": 18,
-        "lineBreaksCompleted": 8,
+        "lineBreaksCompleted": 7,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 5,
@@ -4553,9 +4553,9 @@
           "outToIn": 1
         },
         "offersReceived": 19,
-        "passCompletion": 62.5,
-        "passesAttempted": 72,
-        "passesCompleted": 45,
+        "passCompletion": 90.0,
+        "passesAttempted": 60,
+        "passesCompleted": 54,
         "stepIns": 1,
         "switchesOfPlay": 3,
         "takeOns": 0,
@@ -4570,7 +4570,7 @@
         "looseBallReceptions": 5,
         "possessionContestsWon": 7,
         "possessionInterrupted": 1,
-        "possessionRegains": 3,
+        "possessionRegains": 1,
         "pressingDirect": 14,
         "pressingIndirect": 7,
         "pushingOn": 7,
@@ -4587,7 +4587,7 @@
         "highSpeedRuns": 132,
         "sprints": 49,
         "topSpeed": 30.8,
-        "totalDistance": 8582.8
+        "totalDistance": 8582.0
       },
       "playerId": "fidalgo-alvaro-mex",
       "playerName": "Alvaro FIDALGO",
@@ -4597,14 +4597,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 2,
+        "attemptsAtGoal": 4,
         "ballProgressions": 1,
-        "crossesAttempted": 4,
-        "crossesCompleted": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
         "goals": 1,
-        "lineBreakCompletion": 46.7,
+        "lineBreakCompletion": 40.0,
         "lineBreaksAttempted": 15,
-        "lineBreaksCompleted": 7,
+        "lineBreaksCompleted": 6,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 2,
@@ -4614,8 +4614,8 @@
           "outToIn": 0
         },
         "offersReceived": 14,
-        "passCompletion": 66.7,
-        "passesAttempted": 6,
+        "passCompletion": 80.0,
+        "passesAttempted": 5,
         "passesCompleted": 4,
         "stepIns": 1,
         "switchesOfPlay": 2,
@@ -4648,7 +4648,7 @@
         "highSpeedRuns": 67,
         "sprints": 33,
         "topSpeed": 33.3,
-        "totalDistance": 7503.0
+        "totalDistance": 7502.0
       },
       "playerId": "jimenez-raul-mex",
       "playerName": "Raul JIMENEZ",
@@ -4658,14 +4658,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 4,
+        "attemptsAtGoal": 0,
         "ballProgressions": 0,
-        "crossesAttempted": 4,
-        "crossesCompleted": 2,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 82.4,
+        "lineBreakCompletion": 76.5,
         "lineBreaksAttempted": 17,
-        "lineBreaksCompleted": 14,
+        "lineBreaksCompleted": 13,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 1,
@@ -4675,8 +4675,8 @@
           "outToIn": 0
         },
         "offersReceived": 3,
-        "passCompletion": 75.0,
-        "passesAttempted": 12,
+        "passCompletion": 90.0,
+        "passesAttempted": 10,
         "passesCompleted": 9,
         "stepIns": 2,
         "switchesOfPlay": 2,
@@ -4692,7 +4692,7 @@
         "looseBallReceptions": 6,
         "possessionContestsWon": 0,
         "possessionInterrupted": 3,
-        "possessionRegains": 6,
+        "possessionRegains": 3,
         "pressingDirect": 29,
         "pressingIndirect": 7,
         "pushingOn": 20,
@@ -4709,7 +4709,7 @@
         "highSpeedRuns": 28,
         "sprints": 10,
         "topSpeed": 28.0,
-        "totalDistance": 1915.4
+        "totalDistance": 1915.0
       },
       "playerId": "vega-alexis-mex",
       "playerName": "Alexis VEGA",
@@ -4719,10 +4719,10 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 8,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
         "crossesAttempted": 0,
-        "crossesCompleted": 2,
+        "crossesCompleted": 0,
         "goals": 0,
         "lineBreakCompletion": 100.0,
         "lineBreaksAttempted": 5,
@@ -4736,9 +4736,9 @@
           "outToIn": 0
         },
         "offersReceived": 4,
-        "passCompletion": 85.3,
-        "passesAttempted": 68,
-        "passesCompleted": 58,
+        "passCompletion": 89.5,
+        "passesAttempted": 57,
+        "passesCompleted": 51,
         "stepIns": 3,
         "switchesOfPlay": 1,
         "takeOns": 4,
@@ -4753,7 +4753,7 @@
         "looseBallReceptions": 7,
         "possessionContestsWon": 9,
         "possessionInterrupted": 2,
-        "possessionRegains": 5,
+        "possessionRegains": 2,
         "pressingDirect": 11,
         "pressingIndirect": 19,
         "pushingOn": 27,
@@ -4780,14 +4780,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 7,
-        "crossesAttempted": 6,
-        "crossesCompleted": 1,
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 2,
+        "crossesCompleted": 2,
         "goals": 0,
-        "lineBreakCompletion": 69.2,
+        "lineBreakCompletion": 61.5,
         "lineBreaksAttempted": 13,
-        "lineBreaksCompleted": 9,
+        "lineBreaksCompleted": 8,
         "offersByMovementType": {
           "inBehind": 1,
           "inBetween": 1,
@@ -4797,9 +4797,9 @@
           "outToIn": 0
         },
         "offersReceived": 24,
-        "passCompletion": 78.6,
-        "passesAttempted": 70,
-        "passesCompleted": 55,
+        "passCompletion": 89.8,
+        "passesAttempted": 59,
+        "passesCompleted": 53,
         "stepIns": 2,
         "switchesOfPlay": 2,
         "takeOns": 3,
@@ -4831,7 +4831,7 @@
         "highSpeedRuns": 117,
         "sprints": 27,
         "topSpeed": 30.0,
-        "totalDistance": 10267.2
+        "totalDistance": 10266.0
       },
       "playerId": "reyes-israel-mex",
       "playerName": "Israel REYES",
@@ -4842,8 +4842,8 @@
     {
       "inPossession": {
         "attemptsAtGoal": 5,
-        "ballProgressions": 5,
-        "crossesAttempted": 6,
+        "ballProgressions": 2,
+        "crossesAttempted": 2,
         "crossesCompleted": 2,
         "goals": 1,
         "lineBreakCompletion": 60.0,
@@ -4858,9 +4858,9 @@
           "outToIn": 0
         },
         "offersReceived": 7,
-        "passCompletion": 90.3,
-        "passesAttempted": 62,
-        "passesCompleted": 56,
+        "passCompletion": 90.4,
+        "passesAttempted": 52,
+        "passesCompleted": 47,
         "stepIns": 3,
         "switchesOfPlay": 3,
         "takeOns": 3,
@@ -4892,7 +4892,7 @@
         "highSpeedRuns": 115,
         "sprints": 42,
         "topSpeed": 32.9,
-        "totalDistance": 8832.2
+        "totalDistance": 8831.0
       },
       "playerId": "quinones-julian-mex",
       "playerName": "Julian QUINONES",
@@ -4902,10 +4902,10 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 5,
-        "ballProgressions": 6,
-        "crossesAttempted": 1,
-        "crossesCompleted": 1,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
         "goals": 0,
         "lineBreakCompletion": 66.7,
         "lineBreaksAttempted": 3,
@@ -4919,9 +4919,9 @@
           "outToIn": 10
         },
         "offersReceived": 21,
-        "passCompletion": 89.3,
-        "passesAttempted": 84,
-        "passesCompleted": 75,
+        "passCompletion": 90.1,
+        "passesAttempted": 71,
+        "passesCompleted": 64,
         "stepIns": 4,
         "switchesOfPlay": 0,
         "takeOns": 0,
@@ -4936,7 +4936,7 @@
         "looseBallReceptions": 3,
         "possessionContestsWon": 7,
         "possessionInterrupted": 1,
-        "possessionRegains": 3,
+        "possessionRegains": 1,
         "pressingDirect": 13,
         "pressingIndirect": 4,
         "pushingOn": 29,
@@ -4953,7 +4953,7 @@
         "highSpeedRuns": 43,
         "sprints": 17,
         "topSpeed": 27.1,
-        "totalDistance": 3082.9
+        "totalDistance": 3083.0
       },
       "playerId": "mora-gilberto-mex",
       "playerName": "Gilberto MORA",
@@ -4963,10 +4963,10 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 3,
-        "crossesAttempted": 2,
-        "crossesCompleted": 1,
+        "attemptsAtGoal": 2,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
         "goals": 0,
         "lineBreakCompletion": 100.0,
         "lineBreaksAttempted": 5,
@@ -4980,9 +4980,9 @@
           "outToIn": 2
         },
         "offersReceived": 8,
-        "passCompletion": 86.4,
-        "passesAttempted": 22,
-        "passesCompleted": 19,
+        "passCompletion": 88.9,
+        "passesAttempted": 18,
+        "passesCompleted": 16,
         "stepIns": 1,
         "switchesOfPlay": 2,
         "takeOns": 3,
@@ -4997,7 +4997,7 @@
         "looseBallReceptions": 7,
         "possessionContestsWon": 7,
         "possessionInterrupted": 3,
-        "possessionRegains": 9,
+        "possessionRegains": 4,
         "pressingDirect": 27,
         "pressingIndirect": 19,
         "pushingOn": 33,
@@ -5014,7 +5014,7 @@
         "highSpeedRuns": 86,
         "sprints": 29,
         "topSpeed": 30.3,
-        "totalDistance": 9692.5
+        "totalDistance": 9692.0
       },
       "playerId": "gallardo-jesus-mex",
       "playerName": "Jesus GALLARDO",
@@ -5024,14 +5024,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 4,
+        "attemptsAtGoal": 0,
         "ballProgressions": 0,
         "crossesAttempted": 0,
-        "crossesCompleted": 1,
+        "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 59.1,
+        "lineBreakCompletion": 54.5,
         "lineBreaksAttempted": 22,
-        "lineBreaksCompleted": 13,
+        "lineBreaksCompleted": 12,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 0,
@@ -5041,9 +5041,9 @@
           "outToIn": 0
         },
         "offersReceived": 3,
-        "passCompletion": 57.1,
-        "passesAttempted": 7,
-        "passesCompleted": 4,
+        "passCompletion": 83.3,
+        "passesAttempted": 6,
+        "passesCompleted": 5,
         "stepIns": 1,
         "switchesOfPlay": 1,
         "takeOns": 0,
@@ -5058,7 +5058,7 @@
         "looseBallReceptions": 8,
         "possessionContestsWon": 8,
         "possessionInterrupted": 4,
-        "possessionRegains": 4,
+        "possessionRegains": 2,
         "pressingDirect": 29,
         "pressingIndirect": 10,
         "pushingOn": 23,
@@ -5075,7 +5075,7 @@
         "highSpeedRuns": 42,
         "sprints": 16,
         "topSpeed": 27.1,
-        "totalDistance": 2876.7
+        "totalDistance": 2876.0
       },
       "playerId": "chavez-luis-mex",
       "playerName": "Luis CHAVEZ",
@@ -5085,9 +5085,9 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 2,
-        "ballProgressions": 4,
-        "crossesAttempted": 4,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
         "crossesCompleted": 0,
         "goals": 0,
         "lineBreakCompletion": 0.0,
@@ -5102,9 +5102,9 @@
           "outToIn": 0
         },
         "offersReceived": 13,
-        "passCompletion": 88.9,
-        "passesAttempted": 18,
-        "passesCompleted": 16,
+        "passCompletion": 86.7,
+        "passesAttempted": 15,
+        "passesCompleted": 13,
         "stepIns": 0,
         "switchesOfPlay": 2,
         "takeOns": 6,
@@ -5119,7 +5119,7 @@
         "looseBallReceptions": 2,
         "possessionContestsWon": 9,
         "possessionInterrupted": 3,
-        "possessionRegains": 6,
+        "possessionRegains": 3,
         "pressingDirect": 1,
         "pressingIndirect": 9,
         "pushingOn": 18,
@@ -5136,7 +5136,7 @@
         "highSpeedRuns": 116,
         "sprints": 43,
         "topSpeed": 32.2,
-        "totalDistance": 10031.1
+        "totalDistance": 10030.0
       },
       "playerId": "alvarado-roberto-mex",
       "playerName": "Roberto ALVARADO",
@@ -5146,14 +5146,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 3,
-        "crossesAttempted": 3,
+        "attemptsAtGoal": 4,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
         "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 66.7,
+        "lineBreakCompletion": 61.1,
         "lineBreaksAttempted": 18,
-        "lineBreaksCompleted": 12,
+        "lineBreaksCompleted": 11,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 3,
@@ -5163,9 +5163,9 @@
           "outToIn": 0
         },
         "offersReceived": 22,
-        "passCompletion": 64.7,
-        "passesAttempted": 17,
-        "passesCompleted": 11,
+        "passCompletion": 85.7,
+        "passesAttempted": 14,
+        "passesCompleted": 12,
         "stepIns": 3,
         "switchesOfPlay": 4,
         "takeOns": 5,
@@ -5180,7 +5180,7 @@
         "looseBallReceptions": 3,
         "possessionContestsWon": 5,
         "possessionInterrupted": 4,
-        "possessionRegains": 9,
+        "possessionRegains": 4,
         "pressingDirect": 15,
         "pressingIndirect": 20,
         "pushingOn": 18,
@@ -5197,7 +5197,7 @@
         "highSpeedRuns": 106,
         "sprints": 39,
         "topSpeed": 31.7,
-        "totalDistance": 7486.6
+        "totalDistance": 7486.0
       },
       "playerId": "gutierrez-brian-mex",
       "playerName": "Brian GUTIERREZ",
@@ -5207,14 +5207,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 5,
-        "ballProgressions": 5,
-        "crossesAttempted": 5,
-        "crossesCompleted": 0,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
         "goals": 0,
-        "lineBreakCompletion": 100.0,
+        "lineBreakCompletion": 42.9,
         "lineBreaksAttempted": 14,
-        "lineBreaksCompleted": 14,
+        "lineBreaksCompleted": 6,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 0,
@@ -5224,9 +5224,9 @@
           "outToIn": 0
         },
         "offersReceived": 1,
-        "passCompletion": 62.5,
-        "passesAttempted": 48,
-        "passesCompleted": 30,
+        "passCompletion": 80.0,
+        "passesAttempted": 20,
+        "passesCompleted": 16,
         "stepIns": 1,
         "switchesOfPlay": 4,
         "takeOns": 3,
@@ -5241,7 +5241,7 @@
         "looseBallReceptions": 0,
         "possessionContestsWon": 11,
         "possessionInterrupted": 3,
-        "possessionRegains": 1,
+        "possessionRegains": 0,
         "pressingDirect": 4,
         "pressingIndirect": 14,
         "pushingOn": 2,
@@ -5258,7 +5258,7 @@
         "highSpeedRuns": 12,
         "sprints": 1,
         "topSpeed": 23.6,
-        "totalDistance": 5010.4
+        "totalDistance": 5012.0
       },
       "playerId": "williams-ronwen-rsa",
       "playerName": "Ronwen WILLIAMS",
@@ -5268,14 +5268,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 4,
-        "ballProgressions": 4,
-        "crossesAttempted": 6,
-        "crossesCompleted": 0,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
         "goals": 0,
-        "lineBreakCompletion": 46.7,
+        "lineBreakCompletion": 20.0,
         "lineBreaksAttempted": 15,
-        "lineBreaksCompleted": 7,
+        "lineBreaksCompleted": 3,
         "offersByMovementType": {
           "inBehind": 1,
           "inBetween": 0,
@@ -5285,9 +5285,9 @@
           "outToIn": 1
         },
         "offersReceived": 30,
-        "passCompletion": 81.8,
-        "passesAttempted": 44,
-        "passesCompleted": 36,
+        "passCompletion": 78.9,
+        "passesAttempted": 19,
+        "passesCompleted": 15,
         "stepIns": 3,
         "switchesOfPlay": 0,
         "takeOns": 0,
@@ -5302,7 +5302,7 @@
         "looseBallReceptions": 10,
         "possessionContestsWon": 3,
         "possessionInterrupted": 5,
-        "possessionRegains": 9,
+        "possessionRegains": 5,
         "pressingDirect": 22,
         "pressingIndirect": 16,
         "pushingOn": 11,
@@ -5319,7 +5319,7 @@
         "highSpeedRuns": 136,
         "sprints": 44,
         "topSpeed": 31.4,
-        "totalDistance": 9860.8
+        "totalDistance": 9865.0
       },
       "playerId": "mokoena-teboho-rsa",
       "playerName": "Teboho MOKOENA",
@@ -5329,14 +5329,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 2,
-        "crossesAttempted": 4,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
         "crossesCompleted": 1,
         "goals": 0,
-        "lineBreakCompletion": 100.0,
+        "lineBreakCompletion": 33.3,
         "lineBreaksAttempted": 3,
-        "lineBreaksCompleted": 3,
+        "lineBreaksCompleted": 1,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 8,
@@ -5346,9 +5346,9 @@
           "outToIn": 7
         },
         "offersReceived": 2,
-        "passCompletion": 85.1,
-        "passesAttempted": 74,
-        "passesCompleted": 63,
+        "passCompletion": 80.6,
+        "passesAttempted": 31,
+        "passesCompleted": 25,
         "stepIns": 5,
         "switchesOfPlay": 3,
         "takeOns": 5,
@@ -5363,7 +5363,7 @@
         "looseBallReceptions": 5,
         "possessionContestsWon": 4,
         "possessionInterrupted": 4,
-        "possessionRegains": 4,
+        "possessionRegains": 2,
         "pressingDirect": 23,
         "pressingIndirect": 2,
         "pushingOn": 17,
@@ -5380,7 +5380,7 @@
         "highSpeedRuns": 59,
         "sprints": 24,
         "topSpeed": 34.4,
-        "totalDistance": 3973.8
+        "totalDistance": 3975.0
       },
       "playerId": "mbatha-thalente-rsa",
       "playerName": "Thalente MBATHA",
@@ -5390,14 +5390,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 2,
-        "ballProgressions": 4,
-        "crossesAttempted": 5,
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
         "crossesCompleted": 1,
         "goals": 0,
-        "lineBreakCompletion": 75.0,
+        "lineBreakCompletion": 37.5,
         "lineBreaksAttempted": 16,
-        "lineBreaksCompleted": 12,
+        "lineBreaksCompleted": 6,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 8,
@@ -5407,9 +5407,9 @@
           "outToIn": 2
         },
         "offersReceived": 7,
-        "passCompletion": 87.0,
-        "passesAttempted": 54,
-        "passesCompleted": 47,
+        "passCompletion": 82.6,
+        "passesAttempted": 23,
+        "passesCompleted": 19,
         "stepIns": 0,
         "switchesOfPlay": 1,
         "takeOns": 4,
@@ -5424,7 +5424,7 @@
         "looseBallReceptions": 2,
         "possessionContestsWon": 10,
         "possessionInterrupted": 4,
-        "possessionRegains": 1,
+        "possessionRegains": 0,
         "pressingDirect": 3,
         "pressingIndirect": 13,
         "pushingOn": 17,
@@ -5441,7 +5441,7 @@
         "highSpeedRuns": 98,
         "sprints": 39,
         "topSpeed": 27.8,
-        "totalDistance": 8037.8
+        "totalDistance": 8041.0
       },
       "playerId": "modiba-aubrey-rsa",
       "playerName": "Aubrey MODIBA",
@@ -5452,13 +5452,13 @@
     {
       "inPossession": {
         "attemptsAtGoal": 0,
-        "ballProgressions": 4,
-        "crossesAttempted": 6,
-        "crossesCompleted": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 100.0,
+        "lineBreakCompletion": 45.5,
         "lineBreaksAttempted": 22,
-        "lineBreaksCompleted": 22,
+        "lineBreaksCompleted": 10,
         "offersByMovementType": {
           "inBehind": 1,
           "inBetween": 2,
@@ -5468,9 +5468,9 @@
           "outToIn": 1
         },
         "offersReceived": 34,
-        "passCompletion": 82.1,
-        "passesAttempted": 84,
-        "passesCompleted": 69,
+        "passCompletion": 100.0,
+        "passesAttempted": 35,
+        "passesCompleted": 35,
         "stepIns": 5,
         "switchesOfPlay": 4,
         "takeOns": 5,
@@ -5485,7 +5485,7 @@
         "looseBallReceptions": 8,
         "possessionContestsWon": 5,
         "possessionInterrupted": 3,
-        "possessionRegains": 3,
+        "possessionRegains": 2,
         "pressingDirect": 13,
         "pressingIndirect": 2,
         "pushingOn": 11,
@@ -5502,7 +5502,7 @@
         "highSpeedRuns": 37,
         "sprints": 16,
         "topSpeed": 29.9,
-        "totalDistance": 2145.3
+        "totalDistance": 2146.0
       },
       "playerId": "appollis-oswin-rsa",
       "playerName": "Oswin APPOLLIS",
@@ -5512,14 +5512,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 5,
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
         "crossesAttempted": 0,
-        "crossesCompleted": 1,
+        "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 77.8,
+        "lineBreakCompletion": 33.3,
         "lineBreaksAttempted": 9,
-        "lineBreaksCompleted": 7,
+        "lineBreaksCompleted": 3,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 0,
@@ -5529,9 +5529,9 @@
           "outToIn": 0
         },
         "offersReceived": 3,
-        "passCompletion": 97.2,
-        "passesAttempted": 72,
-        "passesCompleted": 70,
+        "passCompletion": 80.0,
+        "passesAttempted": 30,
+        "passesCompleted": 24,
         "stepIns": 0,
         "switchesOfPlay": 1,
         "takeOns": 4,
@@ -5546,7 +5546,7 @@
         "looseBallReceptions": 6,
         "possessionContestsWon": 0,
         "possessionInterrupted": 4,
-        "possessionRegains": 1,
+        "possessionRegains": 0,
         "pressingDirect": 39,
         "pressingIndirect": 4,
         "pushingOn": 34,
@@ -5563,7 +5563,7 @@
         "highSpeedRuns": 66,
         "sprints": 16,
         "topSpeed": 31.2,
-        "totalDistance": 5968.5
+        "totalDistance": 5971.0
       },
       "playerId": "foster-lyle-rsa",
       "playerName": "Lyle FOSTER",
@@ -5574,8 +5574,8 @@
     {
       "inPossession": {
         "attemptsAtGoal": 0,
-        "ballProgressions": 6,
-        "crossesAttempted": 4,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
         "crossesCompleted": 0,
         "goals": 0,
         "lineBreakCompletion": 0.0,
@@ -5590,9 +5590,9 @@
           "outToIn": 8
         },
         "offersReceived": 8,
-        "passCompletion": 75.3,
-        "passesAttempted": 73,
-        "passesCompleted": 55,
+        "passCompletion": 80.6,
+        "passesAttempted": 31,
+        "passesCompleted": 25,
         "stepIns": 1,
         "switchesOfPlay": 1,
         "takeOns": 4,
@@ -5607,7 +5607,7 @@
         "looseBallReceptions": 2,
         "possessionContestsWon": 7,
         "possessionInterrupted": 2,
-        "possessionRegains": 9,
+        "possessionRegains": 5,
         "pressingDirect": 34,
         "pressingIndirect": 1,
         "pushingOn": 27,
@@ -5624,7 +5624,7 @@
         "highSpeedRuns": 35,
         "sprints": 10,
         "topSpeed": 27.4,
-        "totalDistance": 2021.0
+        "totalDistance": 2022.0
       },
       "playerId": "zwane-themba-rsa",
       "playerName": "Themba ZWANE",
@@ -5634,14 +5634,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 1,
-        "ballProgressions": 6,
-        "crossesAttempted": 6,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
         "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 66.7,
+        "lineBreakCompletion": 33.3,
         "lineBreaksAttempted": 12,
-        "lineBreaksCompleted": 8,
+        "lineBreaksCompleted": 4,
         "offersByMovementType": {
           "inBehind": 1,
           "inBetween": 12,
@@ -5651,9 +5651,9 @@
           "outToIn": 0
         },
         "offersReceived": 12,
-        "passCompletion": 95.6,
-        "passesAttempted": 45,
-        "passesCompleted": 43,
+        "passCompletion": 78.9,
+        "passesAttempted": 19,
+        "passesCompleted": 15,
         "stepIns": 1,
         "switchesOfPlay": 3,
         "takeOns": 2,
@@ -5668,7 +5668,7 @@
         "looseBallReceptions": 0,
         "possessionContestsWon": 8,
         "possessionInterrupted": 3,
-        "possessionRegains": 7,
+        "possessionRegains": 4,
         "pressingDirect": 15,
         "pressingIndirect": 12,
         "pushingOn": 8,
@@ -5685,7 +5685,7 @@
         "highSpeedRuns": 90,
         "sprints": 25,
         "topSpeed": 31.2,
-        "totalDistance": 5830.2
+        "totalDistance": 5833.0
       },
       "playerId": "sithole-sphephelo-rsa",
       "playerName": "Sphephelo SITHOLE",
@@ -5695,14 +5695,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 0,
+        "attemptsAtGoal": 1,
         "ballProgressions": 0,
-        "crossesAttempted": 6,
-        "crossesCompleted": 2,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 42.9,
+        "lineBreakCompletion": 21.4,
         "lineBreaksAttempted": 14,
-        "lineBreaksCompleted": 6,
+        "lineBreaksCompleted": 3,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 0,
@@ -5712,9 +5712,9 @@
           "outToIn": 0
         },
         "offersReceived": 11,
-        "passCompletion": 80.0,
-        "passesAttempted": 15,
-        "passesCompleted": 12,
+        "passCompletion": 66.7,
+        "passesAttempted": 6,
+        "passesCompleted": 4,
         "stepIns": 6,
         "switchesOfPlay": 3,
         "takeOns": 0,
@@ -5729,7 +5729,7 @@
         "looseBallReceptions": 5,
         "possessionContestsWon": 9,
         "possessionInterrupted": 0,
-        "possessionRegains": 6,
+        "possessionRegains": 3,
         "pressingDirect": 2,
         "pressingIndirect": 5,
         "pushingOn": 9,
@@ -5746,7 +5746,7 @@
         "highSpeedRuns": 91,
         "sprints": 43,
         "topSpeed": 31.5,
-        "totalDistance": 8871.7
+        "totalDistance": 8875.0
       },
       "playerId": "mbokazi-mbekezeli-rsa",
       "playerName": "Mbekezeli MBOKAZI",
@@ -5756,14 +5756,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 4,
-        "ballProgressions": 3,
-        "crossesAttempted": 4,
-        "crossesCompleted": 2,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 68.8,
+        "lineBreakCompletion": 31.2,
         "lineBreaksAttempted": 16,
-        "lineBreaksCompleted": 11,
+        "lineBreaksCompleted": 5,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 8,
@@ -5773,9 +5773,9 @@
           "outToIn": 5
         },
         "offersReceived": 11,
-        "passCompletion": 83.3,
-        "passesAttempted": 12,
-        "passesCompleted": 10,
+        "passCompletion": 80.0,
+        "passesAttempted": 5,
+        "passesCompleted": 4,
         "stepIns": 0,
         "switchesOfPlay": 4,
         "takeOns": 4,
@@ -5790,7 +5790,7 @@
         "looseBallReceptions": 10,
         "possessionContestsWon": 8,
         "possessionInterrupted": 3,
-        "possessionRegains": 7,
+        "possessionRegains": 4,
         "pressingDirect": 16,
         "pressingIndirect": 6,
         "pushingOn": 5,
@@ -5807,7 +5807,7 @@
         "highSpeedRuns": 82,
         "sprints": 41,
         "topSpeed": 34.1,
-        "totalDistance": 8151.6
+        "totalDistance": 8155.0
       },
       "playerId": "rayners-iqraam-rsa",
       "playerName": "Iqraam RAYNERS",
@@ -5817,14 +5817,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 2,
-        "ballProgressions": 3,
-        "crossesAttempted": 2,
-        "crossesCompleted": 2,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 70.0,
+        "lineBreakCompletion": 30.0,
         "lineBreaksAttempted": 10,
-        "lineBreaksCompleted": 7,
+        "lineBreaksCompleted": 3,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 3,
@@ -5834,9 +5834,9 @@
           "outToIn": 1
         },
         "offersReceived": 35,
-        "passCompletion": 95.5,
-        "passesAttempted": 66,
-        "passesCompleted": 63,
+        "passCompletion": 82.1,
+        "passesAttempted": 28,
+        "passesCompleted": 23,
         "stepIns": 4,
         "switchesOfPlay": 0,
         "takeOns": 4,
@@ -5851,7 +5851,7 @@
         "looseBallReceptions": 5,
         "possessionContestsWon": 0,
         "possessionInterrupted": 3,
-        "possessionRegains": 2,
+        "possessionRegains": 1,
         "pressingDirect": 10,
         "pressingIndirect": 12,
         "pushingOn": 29,
@@ -5868,7 +5868,7 @@
         "highSpeedRuns": 17,
         "sprints": 11,
         "topSpeed": 32.4,
-        "totalDistance": 2064.9
+        "totalDistance": 2066.0
       },
       "playerId": "makgopa-evidence-rsa",
       "playerName": "Evidence MAKGOPA",
@@ -5878,14 +5878,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 5,
-        "ballProgressions": 3,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
         "crossesAttempted": 0,
-        "crossesCompleted": 2,
+        "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 47.4,
+        "lineBreakCompletion": 21.1,
         "lineBreaksAttempted": 19,
-        "lineBreaksCompleted": 9,
+        "lineBreaksCompleted": 4,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 3,
@@ -5895,9 +5895,9 @@
           "outToIn": 0
         },
         "offersReceived": 3,
-        "passCompletion": 65.0,
-        "passesAttempted": 20,
-        "passesCompleted": 13,
+        "passCompletion": 75.0,
+        "passesAttempted": 8,
+        "passesCompleted": 6,
         "stepIns": 5,
         "switchesOfPlay": 0,
         "takeOns": 2,
@@ -5912,7 +5912,7 @@
         "looseBallReceptions": 3,
         "possessionContestsWon": 7,
         "possessionInterrupted": 2,
-        "possessionRegains": 2,
+        "possessionRegains": 1,
         "pressingDirect": 22,
         "pressingIndirect": 14,
         "pushingOn": 29,
@@ -5929,7 +5929,7 @@
         "highSpeedRuns": 101,
         "sprints": 38,
         "topSpeed": 29.9,
-        "totalDistance": 9387.6
+        "totalDistance": 9391.0
       },
       "playerId": "sibisi-nkosinathi-rsa",
       "playerName": "Nkosinathi SIBISI",
@@ -5939,14 +5939,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 5,
+        "attemptsAtGoal": 0,
         "ballProgressions": 0,
-        "crossesAttempted": 3,
+        "crossesAttempted": 0,
         "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 61.1,
+        "lineBreakCompletion": 27.8,
         "lineBreaksAttempted": 18,
-        "lineBreaksCompleted": 11,
+        "lineBreaksCompleted": 5,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 5,
@@ -5956,9 +5956,9 @@
           "outToIn": 1
         },
         "offersReceived": 1,
-        "passCompletion": 95.3,
-        "passesAttempted": 86,
-        "passesCompleted": 82,
+        "passCompletion": 83.3,
+        "passesAttempted": 36,
+        "passesCompleted": 30,
         "stepIns": 0,
         "switchesOfPlay": 4,
         "takeOns": 0,
@@ -5973,7 +5973,7 @@
         "looseBallReceptions": 1,
         "possessionContestsWon": 5,
         "possessionInterrupted": 1,
-        "possessionRegains": 1,
+        "possessionRegains": 0,
         "pressingDirect": 6,
         "pressingIndirect": 20,
         "pushingOn": 7,
@@ -5990,7 +5990,7 @@
         "highSpeedRuns": 100,
         "sprints": 48,
         "topSpeed": 33.3,
-        "totalDistance": 9336.7
+        "totalDistance": 9341.0
       },
       "playerId": "mudau-khuliso-rsa",
       "playerName": "Khuliso MUDAU",
@@ -6000,14 +6000,14 @@
     },
     {
       "inPossession": {
-        "attemptsAtGoal": 3,
-        "ballProgressions": 7,
-        "crossesAttempted": 5,
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
         "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 87.5,
+        "lineBreakCompletion": 37.5,
         "lineBreaksAttempted": 8,
-        "lineBreaksCompleted": 7,
+        "lineBreaksCompleted": 3,
         "offersByMovementType": {
           "inBehind": 0,
           "inBetween": 0,
@@ -6017,9 +6017,9 @@
           "outToIn": 0
         },
         "offersReceived": 0,
-        "passCompletion": 89.6,
-        "passesAttempted": 67,
-        "passesCompleted": 60,
+        "passCompletion": 82.1,
+        "passesAttempted": 28,
+        "passesCompleted": 23,
         "stepIns": 4,
         "switchesOfPlay": 1,
         "takeOns": 2,
@@ -6034,7 +6034,7 @@
         "looseBallReceptions": 7,
         "possessionContestsWon": 6,
         "possessionInterrupted": 1,
-        "possessionRegains": 9,
+        "possessionRegains": 5,
         "pressingDirect": 38,
         "pressingIndirect": 10,
         "pushingOn": 5,
@@ -6051,7 +6051,7 @@
         "highSpeedRuns": 119,
         "sprints": 52,
         "topSpeed": 31.6,
-        "totalDistance": 9557.8
+        "totalDistance": 9562.0
       },
       "playerId": "okon-ime-rsa",
       "playerName": "Ime OKON",
@@ -6062,13 +6062,13 @@
     {
       "inPossession": {
         "attemptsAtGoal": 0,
-        "ballProgressions": 8,
-        "crossesAttempted": 4,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
         "crossesCompleted": 0,
         "goals": 0,
-        "lineBreakCompletion": 75.0,
+        "lineBreakCompletion": 25.0,
         "lineBreaksAttempted": 4,
-        "lineBreaksCompleted": 3,
+        "lineBreaksCompleted": 1,
         "offersByMovementType": {
           "inBehind": 1,
           "inBetween": 14,
@@ -6078,9 +6078,9 @@
           "outToIn": 1
         },
         "offersReceived": 4,
-        "passCompletion": 74.0,
-        "passesAttempted": 77,
-        "passesCompleted": 57,
+        "passCompletion": 81.2,
+        "passesAttempted": 32,
+        "passesCompleted": 26,
         "stepIns": 0,
         "switchesOfPlay": 4,
         "takeOns": 0,
@@ -6112,7 +6112,7 @@
         "highSpeedRuns": 78,
         "sprints": 27,
         "topSpeed": 27.8,
-        "totalDistance": 6842.3
+        "totalDistance": 6845.0
       },
       "playerId": "adams-jayden-rsa",
       "playerName": "Jayden ADAMS",
@@ -6146,6 +6146,11 @@
           "right": 0,
           "total": 1
         }
+      },
+      "cornersBySide": {
+        "left": 1,
+        "right": 0,
+        "total": 1
       },
       "freeKicks": {
         "direct": 3,
@@ -6182,6 +6187,11 @@
           "right": 2,
           "total": 2
         }
+      },
+      "cornersBySide": {
+        "left": 1,
+        "right": 2,
+        "total": 3
       },
       "freeKicks": {
         "direct": 6,

@@ -4,7 +4,7 @@ baseline_commit: NO_VCS
 
 # Story 1.1: Contract v1 Schemas, Fixtures & Type-Generation Spike
 
-Status: in-progress
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -40,78 +40,149 @@ So that both epics build against a single versioned contract from day one and Ep
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Seed the contract workspace** (AC: 1, 2)
-  - [ ] Create `contract/` and `data/fixtures/` (do NOT create `app/`, `data/matches/`, `data/index/`, `pipeline/extract/`, `pipeline/markers/`, `pipeline/ingest/`, `pipeline/precompute/` — later stories own those)
-  - [ ] Write `contract/version.json` = `{"schemaVersion": 1}` (exactly one key; this file is the single global version declaration per AD-2)
-  - [ ] Verify Node is available: `node --version` must report **24.x**. If Node is absent, install Node 24 LTS before Task 6 — record the version actually used in the Dev Agent Record.
-  - [ ] Create `.gitignore` at repo root covering `venv/`, `__pycache__/`, `.pytest_cache/`, `node_modules/`, `work/`. (There is no git repo yet — do NOT run `git init`; it is not in scope. Committing the file now means the repo is ready the moment git lands.)
+- [x] **Task 1: Seed the contract workspace** (AC: 1, 2)
+  - [x] Create `contract/` and `data/fixtures/` (do NOT create `app/`, `data/matches/`, `data/index/`, `pipeline/extract/`, `pipeline/markers/`, `pipeline/ingest/`, `pipeline/precompute/` — later stories own those)
+  - [x] Write `contract/version.json` = `{"schemaVersion": 1}` (exactly one key; this file is the single global version declaration per AD-2)
+  - [x] Verify Node is available: `node --version` must report **24.x**. If Node is absent, install Node 24 LTS before Task 6 — record the version actually used in the Dev Agent Record.
+  - [x] Create `.gitignore` at repo root covering `venv/`, `__pycache__/`, `.pytest_cache/`, `node_modules/`, `work/`. (There is no git repo yet — do NOT run `git init`; it is not in scope. Committing the file now means the repo is ready the moment git lands.)
 
-- [ ] **Task 2: Derive closed vocabularies from the real corpus** (AC: 2) — *do this BEFORE authoring schemas*
-  - [ ] For each vocabulary listed in **Dev Notes → Vocabulary derivation worklist**, read the actual label text off the relevant pages of 2–3 real reports in `pmsr-corpus/` using the existing discovery machinery (`pipeline.discover.anchors.ANCHOR_REGISTRY` + `pipeline.discover.text.PageTextIndex` + `page.get_text()`)
-  - [ ] Use a throwaway script written to `work/` or the scratchpad — **do not commit it into `pipeline/`** (it is exploration, not pipeline code)
-  - [ ] Sample across venues/rounds (pick reports the 1.4 gate already sampled — see `work/verification/verification-report.json` `sample[]`) so a mid-tournament label variant would show up
-  - [ ] Record every derived enum with its evidence (report ID + verbatim source label) in `contract/README.md`
-  - [ ] Where a vocabulary cannot be closed with confidence, close it on what was observed and note it in `contract/README.md` as an AD-14 change-flow candidate — AD-8's assert-on-unknown at extraction time is the designed safety net, not an open enum
+- [x] **Task 2: Derive closed vocabularies from the real corpus** (AC: 2) — *do this BEFORE authoring schemas*
+  - [x] For each vocabulary listed in **Dev Notes → Vocabulary derivation worklist**, read the actual label text off the relevant pages of 2–3 real reports in `pmsr-corpus/` using the existing discovery machinery (`pipeline.discover.anchors.ANCHOR_REGISTRY` + `pipeline.discover.text.PageTextIndex` + `page.get_text()`)
+  - [x] Use a throwaway script written to `work/` or the scratchpad — **do not commit it into `pipeline/`** (it is exploration, not pipeline code)
+  - [x] Sample across venues/rounds (pick reports the 1.4 gate already sampled — see `work/verification/verification-report.json` `sample[]`) so a mid-tournament label variant would show up — *widened to all 104 reports; see Completion Notes*
+  - [x] Record every derived enum with its evidence (report ID + verbatim source label) in `contract/README.md`
+  - [x] Where a vocabulary cannot be closed with confidence, close it on what was observed and note it in `contract/README.md` as an AD-14 change-flow candidate — AD-8's assert-on-unknown at extraction time is the designed safety net, not an open enum
 
-- [ ] **Task 3: Author `contract/common.schema.json`** (AC: 1, 2, 6)
-  - [ ] ID types with `pattern` regexes: `TeamId`, `PlayerId`, `MatchId`, `TeamCode` (see Dev Notes → ID formats)
-  - [ ] Enums: `Stage`, `Group`, `Position`, `ShotOutcome`, `DecidedBy`, `ReceivingEventType`, `BlockLevel`, `DistributionType`, `CardType`, plus every vocabulary derived in Task 2
-  - [ ] Coordinate types: `PitchX`, `PitchY` (`number`, `minimum: 0`, `maximum: 100`, `x-decimals: 2`)
-  - [ ] Shared scalar types: `Minute`, `Percentage`, `Metres`, `Kilometres`, `KmPerHour`, `ExpectedGoals`, `Count`
-  - [ ] `KnockoutScore` (`scoreAfter90`, `scoreAfterET`, `shootoutScore`, `winnerTeamId`, `decidedBy`)
-  - [ ] Every `$def` carries an explicit `title` (controls generated TS type names — see Dev Notes → Codegen gotchas)
+- [x] **Task 3: Author `contract/common.schema.json`** (AC: 1, 2, 6)
+  - [x] ID types with `pattern` regexes: `TeamId`, `PlayerId`, `MatchId`, `TeamCode` (see Dev Notes → ID formats)
+  - [x] Enums: `Stage`, `Group`, `Position`, `ShotOutcome`, `DecidedBy`, `ReceivingEventType`, `BlockLevel`, `DistributionType`, `CardType`, plus every vocabulary derived in Task 2
+  - [x] Coordinate types: `PitchX`, `PitchY` (`number`, `minimum: 0`, `maximum: 100`, `x-decimals: 2`)
+  - [x] Shared scalar types: `Minute`, `Percentage`, `Metres`, `Kilometres`, `KmPerHour`, `ExpectedGoals`, `Count`
+  - [x] `KnockoutScore` (`scoreAfter90`, `scoreAfterET`, `shootoutScore`, `winnerTeamId`, `decidedBy`)
+  - [x] Every `$def` carries an explicit `title` (controls generated TS type names — see Dev Notes → Codegen gotchas)
 
-- [ ] **Task 4: Author `contract/match-bundle.schema.json`** (AC: 1, 2)
-  - [ ] Root envelope: `schemaVersion`, `matchId`, Domain A block, `storyStats` per team, `momentum` (required, series-or-`null`), and each domain block
-  - [ ] Domain A: teams (home/away with explicit ordering), score + `KnockoutScore`, stage/group, venue, date, kickoff (ISO 8601 venue-local with UTC offset), formations, lineups (starters + substitutes: shirt number, position, goal/sub/card minutes)
-  - [ ] Domain B: full Key Statistics block per team (13 metrics — full list in Dev Notes)
-  - [ ] Domain C: phases of play, line height / team length in/out of possession (metres), defensive block distribution high/mid/low
-  - [ ] Domain D event tables as first-class `$defs`: `ShotEvent`, `ShootoutAttempt`, `CrossEvent`, `PassNetworkNode`, `PassNetworkEdge`, `ReceivingEvent`, `DefensiveActionEvent` — **all seven**, each with `teamId` and its per-family acting-team semantics documented in `$comment`
-  - [ ] Domain E: per-goalkeeper involvement timeline, distribution, goal prevention (save %, intervention types), aerial control
-  - [ ] Domain F: per team — free kicks, penalties, corners (by side and style), throw-ins
-  - [ ] Domain G: per-player in-possession / out-of-possession / physical (speed zones 1–5, high-speed runs, sprints, top speed)
-  - [ ] `additionalProperties: false` on every object; `required` lists complete
+- [x] **Task 4: Author `contract/match-bundle.schema.json`** (AC: 1, 2)
+  - [x] Root envelope: `schemaVersion`, `matchId`, Domain A block, `storyStats` per team, `momentum` (required, series-or-`null`), and each domain block
+  - [x] Domain A: teams (home/away with explicit ordering), score + `KnockoutScore`, stage/group, venue, date, kickoff (ISO 8601 venue-local with UTC offset), formations, lineups (starters + substitutes: shirt number, position, goal/sub/card minutes)
+  - [x] Domain B: full Key Statistics block per team (13 metrics — full list in Dev Notes) — *19 fields; see Completion Notes*
+  - [x] Domain C: phases of play, line height / team length in/out of possession (metres), defensive block distribution high/mid/low
+  - [x] Domain D event tables as first-class `$defs`: `ShotEvent`, `ShootoutAttempt`, `CrossEvent`, `PassNetworkNode`, `PassNetworkEdge`, `ReceivingEvent`, `DefensiveActionEvent` — **all seven**, each with `teamId` and its per-family acting-team semantics documented in `$comment`
+  - [x] Domain E: per-goalkeeper involvement timeline, distribution, goal prevention (save %, intervention types), aerial control
+  - [x] Domain F: per team — free kicks, penalties, corners (by side and style), throw-ins
+  - [x] Domain G: per-player in-possession / out-of-possession / physical (speed zones 1–5, high-speed runs, sprints, top speed)
+  - [x] `additionalProperties: false` on every object; `required` lists complete
 
-- [ ] **Task 5: Author the four index schemas** (AC: 1, 2)
-  - [ ] `contract/tournament.schema.json` — stages, groups with standings rows carrying explicit `rank`, results, and the entity lists that serve as the App's route manifest and search source
-  - [ ] `contract/leaderboards.schema.json` — boards keyed by closed `metricCode` enum, ordered rows with `rank`
-  - [ ] `contract/team-profile.schema.json` — tactical identity + formation usage + per-match breakdowns
-  - [ ] `contract/player-profile.schema.json` — aggregates + per-match series + physical profile + trends
-  - [ ] Each references `common.schema.json` by relative `$ref`
+- [x] **Task 5: Author the four index schemas** (AC: 1, 2)
+  - [x] `contract/tournament.schema.json` — stages, groups with standings rows carrying explicit `rank`, results, and the entity lists that serve as the App's route manifest and search source
+  - [x] `contract/leaderboards.schema.json` — boards keyed by closed `metricCode` enum, ordered rows with `rank`
+  - [x] `contract/team-profile.schema.json` — tactical identity + formation usage + per-match breakdowns
+  - [x] `contract/player-profile.schema.json` — aggregates + per-match series + physical profile + trends
+  - [x] Each references `common.schema.json` by relative `$ref`
 
-- [ ] **Task 6: Codegen spike + scripted generation** (AC: 3)
-  - [ ] `contract/package.json` (private, `"type": "module"`) pinning `json-schema-to-typescript@15.0.4`; `npm install`; commit `contract/package-lock.json`
-  - [ ] `contract/scripts/generate-types.mjs` — compiles every `*.schema.json`, writes `contract/generated/contract-types.d.ts` and `contract/generated/schema-version.ts` (`export const SCHEMA_VERSION = 1;` read from `version.json`, never hand-typed)
-  - [ ] `npm run generate:types` script wired in `contract/package.json`
-  - [ ] Run it; commit the generated output as the spike evidence
-  - [ ] **Prove round-trip fidelity** on one representative schema (use `match-bundle.schema.json` — it is the one that exercises nested `$defs`, cross-file `$ref`, enums, and nullable unions): assert generated types contain the expected enum unions, `| null` on nullable fields, no `[k: string]: unknown` index signatures, and no `Foo1`/`Foo2` collision-suffixed names
-  - [ ] If fidelity fails, swap to `json-schema-to-ts` or `quicktype` and record the swap as a logged decision in `contract/README.md` (AD-2 explicitly permits this)
+- [x] **Task 6: Codegen spike + scripted generation** (AC: 3)
+  - [x] `contract/package.json` (private, `"type": "module"`) pinning `json-schema-to-typescript@15.0.4`; `npm install`; commit `contract/package-lock.json`
+  - [x] `contract/scripts/generate-types.mjs` — compiles every `*.schema.json`, writes `contract/generated/contract-types.d.ts` and `contract/generated/schema-version.ts` (`export const SCHEMA_VERSION = 1;` read from `version.json`, never hand-typed)
+  - [x] `npm run generate:types` script wired in `contract/package.json`
+  - [x] Run it; commit the generated output as the spike evidence
+  - [x] **Prove round-trip fidelity** on one representative schema (use `match-bundle.schema.json` — it is the one that exercises nested `$defs`, cross-file `$ref`, enums, and nullable unions): assert generated types contain the expected enum unions, `| null` on nullable fields, no `[k: string]: unknown` index signatures, and no `Foo1`/`Foo2` collision-suffixed names
+  - [x] If fidelity fails, swap to `json-schema-to-ts` or `quicktype` and record the swap as a logged decision in `contract/README.md` (AD-2 explicitly permits this) — *no swap needed; two schema-side fixes instead, both now test-guarded*
 
-- [ ] **Task 7: Author fixtures** (AC: 4, 5, 6)
-  - [ ] `data/fixtures/matches/` — three bundles (see Dev Notes → Fixture plan): group match with a momentum series; knockout ET+shootout with an own goal; group match with `momentum: null`
-  - [ ] `data/fixtures/index/tournament.json`, `leaderboards.json`, `team-profiles/{one}.json`, `player-profiles/{one}.json`
-  - [ ] Every fixture stamped `schemaVersion: 1` and canonically serialized (sorted keys, `indent=2`, UTF-8, LF — reuse the `_write` recipe from `pipeline/validate/runner.py`)
-  - [ ] Seed metadata/lineups/score from real reports in `pmsr-corpus/` so values are plausible and hand-checkable
-  - [ ] `data/fixtures/README.md` documenting provenance, the deliberate partiality of the fixture world, and the AD-14 change-flow rule
+- [x] **Task 7: Author fixtures** (AC: 4, 5, 6)
+  - [x] `data/fixtures/matches/` — three bundles (see Dev Notes → Fixture plan): group match with a momentum series; knockout ET+shootout with an own goal; group match with `momentum: null`
+  - [x] `data/fixtures/index/tournament.json`, `leaderboards.json`, `team-profiles/{one}.json`, `player-profiles/{one}.json`
+  - [x] Every fixture stamped `schemaVersion: 1` and canonically serialized (sorted keys, `indent=2`, UTF-8, LF — reuse the `_write` recipe from `pipeline/validate/runner.py`)
+  - [x] Seed metadata/lineups/score from real reports in `pmsr-corpus/` so values are plausible and hand-checkable — *also Domains B, C, F, shots and physical data; see Completion Notes*
+  - [x] `data/fixtures/README.md` documenting provenance, the deliberate partiality of the fixture world, and the AD-14 change-flow rule
 
-- [ ] **Task 8: Python-side schema validation + tests** (AC: 2, 4)
-  - [ ] Add `jsonschema[format]==4.26.0` and `referencing==0.37.0` to `pipeline/requirements.txt`; install into `pipeline/venv`
-  - [ ] `pipeline/validate/errors.py` — `SchemaValidationError(PipelineError)` following the `pipeline/discover/errors.py` pattern
-  - [ ] `pipeline/validate/schema.py` — loads `/contract` into a `referencing.Registry`, exposes `validate_artifact(instance, schema_name)`
-  - [ ] `pipeline/tests/test_contract_schemas.py` — every schema passes `Draft202012Validator.check_schema`; no banned keyword (`prefixItems`, `unevaluatedProperties`, `unevaluatedItems`, `dependentSchemas`, `dependentRequired`, `$dynamicRef`) appears anywhere; every object has `additionalProperties: false`; every `$def` has a `title`; `version.json` says `1`
-  - [ ] `pipeline/tests/test_fixtures.py` — every fixture validates against its schema; every fixture carries `schemaVersion == 1`; every ID matches its AD-3 pattern; edge-shape coverage asserted explicitly (a bundle with `momentum: null`, one with `decidedBy: "shootout"`, one with a shot carrying `ownGoal: true`); fixtures round-trip byte-identically through the canonical serializer
-  - [ ] `pipeline/tests/test_generated_types.py` *(or an assertion inside `test_contract_schemas.py`)* — `contract/generated/schema-version.ts` agrees with `version.json`
+- [x] **Task 8: Python-side schema validation + tests** (AC: 2, 4)
+  - [x] Add `jsonschema[format]==4.26.0` and `referencing==0.37.0` to `pipeline/requirements.txt`; install into `pipeline/venv`
+  - [x] `pipeline/validate/errors.py` — `SchemaValidationError(PipelineError)` following the `pipeline/discover/errors.py` pattern
+  - [x] `pipeline/validate/schema.py` — loads `/contract` into a `referencing.Registry`, exposes `validate_artifact(instance, schema_name)`
+  - [x] `pipeline/tests/test_contract_schemas.py` — every schema passes `Draft202012Validator.check_schema`; no banned keyword (`prefixItems`, `unevaluatedProperties`, `unevaluatedItems`, `dependentSchemas`, `dependentRequired`, `$dynamicRef`) appears anywhere; every object has `additionalProperties: false`; every `$def` has a `title`; `version.json` says `1`
+  - [x] `pipeline/tests/test_fixtures.py` — every fixture validates against its schema; every fixture carries `schemaVersion == 1`; every ID matches its AD-3 pattern; edge-shape coverage asserted explicitly (a bundle with `momentum: null`, one with `decidedBy: "shootout"`, one with a shot carrying `ownGoal: true`); fixtures round-trip byte-identically through the canonical serializer
+  - [x] `pipeline/tests/test_generated_types.py` *(or an assertion inside `test_contract_schemas.py`)* — `contract/generated/schema-version.ts` agrees with `version.json` — *four assertions inside `test_contract_schemas.py`*
 
-- [ ] **Task 9: `contract/README.md`** (AC: 2, 3)
-  - [ ] Per-field numeric precision table (the record of "precision is fixed")
-  - [ ] Per-family `teamId` acting-team semantics table
-  - [ ] Enum provenance table from Task 2 (value ← verbatim source label ← report ID)
-  - [ ] The AD-14 change-flow procedure: Epic 2 requests → Epic 1 implements → logged decision → `schemaVersion` bump → fixtures regenerated + types regenerated **in the same commit**
-  - [ ] Every logged decision this story makes (match-ID padding, precision mechanism, momentum provisional shape, any tool swap)
+- [x] **Task 9: `contract/README.md`** (AC: 2, 3)
+  - [x] Per-field numeric precision table (the record of "precision is fixed")
+  - [x] Per-family `teamId` acting-team semantics table
+  - [x] Enum provenance table from Task 2 (value ← verbatim source label ← report ID)
+  - [x] The AD-14 change-flow procedure: Epic 2 requests → Epic 1 implements → logged decision → `schemaVersion` bump → fixtures regenerated + types regenerated **in the same commit**
+  - [x] Every logged decision this story makes (match-ID padding, precision mechanism, momentum provisional shape, any tool swap)
 
-- [ ] **Task 10: Re-run the 1.4 verification gate** (AC: 7)
-  - [ ] `pipeline\venv\Scripts\python.exe -m pipeline.validate.verify --input-dir pmsr-corpus --expect-reports 104` → exit 0, gate `pass`
-  - [ ] Paste the verbatim console output into the Dev Agent Record
+- [x] **Task 10: Re-run the 1.4 verification gate** (AC: 7)
+  - [x] `pipeline\venv\Scripts\python.exe -m pipeline.validate.verify --input-dir pmsr-corpus --expect-reports 104` → exit 0, gate `pass`
+  - [x] Paste the verbatim console output into the Dev Agent Record
+
+### Review Findings
+
+Code review 2026-07-22 — three parallel layers (adversarial, edge-case, acceptance) plus verification of every claim against the code. 6 of 7 ACs verified satisfied; AC 3 partially violated (see the first patch item). AC 7's carried gate re-ran clean at exit 0.
+
+**Decisions resolved** (Juan, 2026-07-22 — each is now a patch):
+
+- [x] [Review][Patch] **Resolved: make all 8 nullable now**, before Epic 2 builds against the shape — it is still `schemaVersion` 1, so this is the cheapest moment it will ever be. Make `shots`, `crosses`, `passNetworkNodes`, `passNetworkEdges`, `receiving`, `defensiveActions`, `goalkeeping` and `players` `anyOf: [..., {"type": "null"}]`, regenerate fixtures and types in the same commit per AD-14, and add a test asserting the `null`/`[]` distinction is expressible on every optional section. `null` vs `[]` is promised corpus-wide but unimplemented for 8 of 9 optional sections — `match-bundle.schema.json:749` states "an empty array means zero events of that kind; null means the report does not carry that data at all", and `contract/README.md:183-184` repeats it as a corpus-wide rule ("Do not collapse them"). Only `shootoutAttempts` and `momentum` are actually nullable. `shots`, `crosses`, `passNetworkNodes`, `passNetworkEdges`, `receiving`, `defensiveActions`, `goalkeeping` and `players` are plain non-nullable arrays, so a match with a missing Defensive Actions page is indistinguishable from one with zero events — the exact case the "Empty states" checklist row requires the App to render differently. Options: (a) make all 8 nullable now, before Epic 2 builds against the shape — costs a fixture + type regeneration; (b) route through the AD-14 change flow after Story 2.3 sign-off; (c) narrow the documented promise to the two fields that honour it.
+- [x] [Review][Patch] **Resolved: reconcile everything.** Regenerate the synthetic blocks so every cross-artifact number adds up, and add tests pinning the invariants (Domain G sums vs Domain B totals, node `involvement` ≥ incident edge volume, profile aggregates vs per-match rows, `furthestStage` vs `played` vs `len(matches)`, `matchesPlayed` agreement across artifacts). Story 2.3 signs off on these fixtures and Epic 2 builds roughly ten stories against them; a developer who spots an 8× discrepancy loses a day deciding whether it is their bug. Where a true weighted mean is not derivable — Mexico appears in only one of the three bundles — synthesize a consistent value and say so in `data/fixtures/README.md`. Five aggregates disagree across artifacts that Epic 2 renders side by side: Domain G per-player values are unreconciled with Domain B team totals by up to 8× in every fixture (m001 South Africa `shots: 3` vs player sum `attemptsAtGoal: 37`; `passes: 351` vs `837`); ~45% of pass-network nodes carry an `involvement` smaller than the sum of their own incident edge volumes, which is arithmetically impossible and inverts DESIGN.md's node-size/edge-weight encoding (`mbokazi-mbekezeli-rsa` involvement 12 vs incident volume 79); `team-profiles/mexico.json:85-122` `tacticalIdentity` is a byte-identical copy of m001's home block despite `team-profile.schema.json:96` declaring every value a match-count-weighted mean over three matches; `mexico.json:75` claims `furthestStage: "r16"` with `played: 3` and three group matches; and every one of the 32 `leaderboards.json` rows says `matchesPlayed: 1` while `tournament.json` and the profile both say 3. A true weighted mean is not derivable — Mexico appears in only one of the three bundles. Options: (a) regenerate the synthetic blocks so every cross-artifact number reconciles; (b) fix only what is derivable and document the rest as deliberately unreconciled in `data/fixtures/README.md`; (c) accept as-is and note that Epic 2 must not cross-check fixture numbers.
+- [x] [Review][Patch] **Resolved: keep both representations, add tests pinning each enum's values to the corresponding object's property names.** Preserves the fixed-shape objects the App wants, removes the drift risk, keeps Task 2's corpus harvest and the provenance table truthful, and is the smallest change of the three options. Note in `contract/README.md` that for these vocabularies the AD-2 compile-error mechanism is provided by the test rather than by the type system. 14 closed vocabularies are declared, documented with corpus provenance, and generated into TypeScript — but referenced by zero fields — `InPossessionPhase`, `OutOfPossessionPhase`, `BlockLevel`, `DistributionType`, `FeetDistributionTechnique`, `HandsDistributionTechnique`, `ThrowDistributionTechnique`, `InterventionType`, `InterventionBodyType`, `AerialInterventionType`, `FreeKickType`, `CornerDeliveryType`, `CornerDeliveryStyle`, `PitchSide` (all `contract/common.schema.json`), plus dead `PhaseShare` at `team-profile.schema.json:83`. Each is duplicated as a fixed camelCase key set elsewhere (`CornerDeliveryStyle` ↔ `cornersByDeliveryStyle`'s four keys, `InterventionType` ↔ `byInterventionType`'s five) with nothing holding the two copies in sync. For these 14, AD-2's headline mechanism does not hold: a new source label produces silent data loss at extraction, not a TypeScript compile error, and the 20-row provenance table at `README.md:112-131` documents vocabularies the artifacts do not use. Options: (a) `$ref` them via `propertyNames`; (b) restructure those blocks as enum-keyed maps; (c) delete the unused enums and the provenance rows; (d) keep both and add a test pinning enum values to object keys.
+- [x] [Review][Patch] **Resolved: apply sensible defaults, each recorded as a logged decision in `contract/README.md` for veto** — `tackles` → `tacklesWon` (the standard football leaderboard metric), unify on `lineBreaksCompleted`, and split `distanceCovered` into distinct team and player codes so no code carries two units. Add a test asserting every `MetricCode` value names a real field. `MetricCode` breaks the "string-identical to the artifact field" rule it states — `common.schema.json:309` and `README.md:144` both promise a board's code names the field it ranks. Verified sweep over every `properties` key in `/contract`: `tackles` matches nothing (Domain G has `tacklesMade` and `tacklesWon`). Also `completedLineBreaks` (team) and `lineBreaksCompleted` (player) name one concept two ways, and `distanceCovered` is `Kilometres` at team scope but the player equivalent is `totalDistance` in `Metres` — so one metric code would carry two units, which breaks AD-7's "units live in the locale layer keyed by metric code". Needs a product call on which field each code names.
+- [x] [Review][Patch] **Resolved: keep the PDF ignored and amend AR-16.** The copyright reasoning holds and the repo may go public, so no copyrighted report enters git history. Anchor the pattern to `pmsr-corpus/*.pdf` so it stops silently swallowing unrelated PDFs, and make the missing-fixture path loud rather than a silent `pytest.skip` — a fixture that is absent must never read as a pass in CI. AR-16's "permanent ground-truth fixture" wording needs correcting to match. `.gitignore`'s unanchored `*.pdf` excludes `spike/mex_rsa.pdf`, the "permanent ground-truth fixture (AR-16)" — confirmed via `git check-ignore`: `.gitignore:15` ignores it. The file is 5.6 MB on disk so the suite passes locally, but on a fresh clone `conftest.py:26` hits its `pytest.skip` and every ground-truth test silently vanishes. The exclusion may be deliberate (the adjacent comment cites copyright and non-redistribution), in which case AR-16's "permanent fixture" wording is what needs correcting. Either the PDF is committed or AR-16 is amended — it cannot be both.
+
+**Patches**:
+
+- [x] [Review][Patch] Committed generated types are stale — not reproducible from the current schemas (AC 3; Task 6's "commit the generated output" box is falsely checked) [contract/generated/contract-types.d.ts:101,242,477,857]
+- [x] [Review][Patch] Fix the stale "the eight/nine shares sum to approximately 100%" prose that logged decision #5 retracts — apply BEFORE regenerating types, or the regeneration propagates it [contract/common.schema.json:190,205]
+- [x] [Review][Patch] `_in_name_map` is inverted: it skips every real subschema, so four "structural, not sampled" tests inspect 6 of 86 object schemas (measured). The `$ref`-sibling test — the specific guard against the `Metres1`–`Metres5` regression that already happened once — watches 43 of 437 nodes. With a corrected predicate the schemas are still fully clean, so no live defect is hidden; the safety net is simply off. `_NON_SCHEMA_CONTAINERS:44` is the dead fossil of the intended check [pipeline/tests/test_contract_schemas.py:55-61]
+- [x] [Review][Patch] Nothing can detect generated-output drift — add a `--check` mode and wire it; `README.md:298-300` claims the tests already cover this and they do not [contract/scripts/generate-types.mjs]
+- [x] [Review][Patch] m002 stores stoppage-time shots as raw minutes 92/93 in a regulation match, violating logged decision #7; `stoppageMinute` is `null` in all 775 minute stamps across the three bundles, so the integer branch the App's "90+2" label and marker ordering depend on is unexercised [data/fixtures/matches/m002-korea-republic-czechia.json /events/shots/19-21]
+- [x] [Review][Patch] `physical.totalDistance` is 26496.6 but the per-match rows sum to 27590.0, against a schema that declares it the sum over matches played [data/fixtures/index/player-profiles/quinones-julian-mex.json:109]
+- [x] [Review][Patch] m002's three possession shares sum to 100.1 (55.8 + 10.1 + 34.2), breaking the invariant `match-bundle.schema.json:392` and `README.md:281` both state as fact; m001 and m074 sum to exactly 100.0 so a spot check misses it [data/fixtures/matches/m002-korea-republic-czechia.json keyStatistics]
+- [x] [Review][Patch] m074's shoot-out encodes an impossible final state — 8 kicks, Germany 3/4 and Paraguay 4/4, but Germany still had a fifth kick and could equalise; a ninth (missed) German kick is needed to make 3-4 terminal [data/fixtures/matches/m074-germany-paraguay.json events.shootoutAttempts]
+- [x] [Review][Patch] The AD-3 ID test executes zero assertions on `leaderboards.json` — all seven key lookups return empty. 85 `EntityRef.id` values across the index fixtures (64 of them in leaderboards, 20 player slugs) are checked only against the loose team pattern, so `son-heungmin` without its team code validates and the App's player route resolves to nothing [pipeline/tests/test_fixtures.py:97-106]
+- [x] [Review][Patch] `test_every_leaderboard_is_ranked_in_order_and_uses_a_closed_metric_code` never inspects `metricCode`, and its `rank == 1..n` assertion forbids the tied ranks `leaderboards.schema.json:25` mandates ("ties are represented honestly rather than implied by array order") — the topSpeed board already has four rows at 33.3 ranked 1,2,3,4. `higherIsBetter: false` appears in no fixture, so that sort branch is dead [pipeline/tests/test_fixtures.py:416-427]
+- [x] [Review][Patch] `iter_violations` discards `anyOf` sub-errors and dumps the whole subtree — a bad `momentum.samples[0].minute` yields one 890-character message with no pointer to the field and no mention of the constraint, contradicting the module's own "one pass tells the whole story" docstring. `error.context` is never read. Affects every nullable field [pipeline/validate/schema.py:112-114]
+- [x] [Review][Patch] The `ShotOutcome` ↔ `ShotOutcomeDetail` mapping exists only in prose, and the mapping implied by prefix is wrong — `incomplete-blocked` maps to `blocked` while every other `incomplete-*` maps to `incomplete`. `{"outcome": "goal", "outcomeDetail": "off-target"}` validates clean at every layer [contract/common.schema.json:92-126]
+- [x] [Review][Patch] No cross-field guards anywhere: `matchId` is unconstrained against `matchNumber`, the team ids and its own filename (the entity test compares `p.stem`, never content); `stage: "final"` with `matchdayRound: "group-md1"` validates; `decidedBy: "regulation"` with a populated `shootoutScore` validates; `contestType` is documented as "present only when actionType is possession-contest" but nothing enforces it. `if`/`then` is in the permitted subset [contract/match-bundle.schema.json, pipeline/tests/test_fixtures.py]
+- [x] [Review][Patch] `Formation`'s pattern caps at four segments, so a standard `4-1-2-1-2` diamond fails validation and aborts the entire bundle; it is also copy-pasted into three files instead of `$ref`'d, and only one copy carries the description and provenance [contract/match-bundle.schema.json:89, contract/team-profile.schema.json:212,261]
+- [x] [Review][Patch] No team-level `cornersBySide`, so rendering "corners from the left" requires the browser to add three numbers — AD-5 forbids the App summing. `PitchSide` exists and is referenced nowhere [contract/match-bundle.schema.json:1072-1094]
+- [x] [Review][Patch] `test_requirements_pin_every_dependency_exactly` is blind to every non-`==` line — `requests>=2.0` never enters the pin set and the suite stays green, despite AR-15 being the whole point of the test [pipeline/tests/test_workspace.py:23-49]
+- [x] [Review][Patch] `rfc3339-validator` is unpinned, and `jsonschema` registers the `date-time` checker inside a suppressed `ImportError` — without it `kickoff: "not a time"` validates clean, the exact failure `schema.py:10-13` says must not happen. Pinning it is currently blocked by the sibling test asserting exactly five names [pipeline/requirements.txt:10]
+- [x] [Review][Patch] `NaN`/`Infinity` pass validation, canonical round-trip and the budget test, then break the browser's `JSON.parse` — Python's `json` accepts and re-emits them byte-identically, and `jsonschema` accepts `float('nan')` against `{"type":"number","minimum":0,"maximum":100}` [pipeline/tests/test_fixtures.py:110-122]
+- [x] [Review][Patch] Budget test measures 500 KiB against a limit documented as 500 KB — a 505,000-byte artifact passes a gate documented to reject it, and Story 1.16 hardens this into the enforcing gate [pipeline/tests/test_fixtures.py:134]
+- [x] [Review][Patch] The collision-suffix guard rejects any type name ending in a digit — the contract already has `distanceZone1`–`distanceZone5` fields, so promoting one to a titled `$def` makes the generator refuse correct output and blame a collision that does not exist. The same regex is duplicated in the test [contract/scripts/generate-types.mjs:160, pipeline/tests/test_contract_schemas.py:193]
+- [x] [Review][Patch] `stripCrossReferenceStanza` silently deletes real documentation — any description beginning "This interface was referenced by…" or "via the `x` \"…" loses its whole JSDoc block, and the husk-removal erases the trace [contract/scripts/generate-types.mjs:77-106]
+- [x] [Review][Patch] `{"schemaVersion": 1.0}` splits the two readers of the single version source: Node's `Number.isInteger` accepts it and writes `SCHEMA_VERSION = 1`, Python's `isinstance(1.0, int)` rejects it with a bare `TypeError` instead of the documented "exactly one key" message [contract/scripts/generate-types.mjs:190, pipeline/validate/schema.py:67]
+- [x] [Review][Patch] The Python ID gate is strictly weaker than the ECMA-262 dialect JSON Schema mandates — Python's `$` matches before a trailing newline, so `"mexico\n"` passes both the schema and the test regex while Node rejects it, and the value becomes a URL slug containing a newline [pipeline/tests/test_fixtures.py:27-29, contract/common.schema.json:14,28,35,503]
+- [x] [Review][Patch] `GoalPrevention` is the only major `$def` in the file with no `description` and no `$comment`, and its two breakdown panels have different undocumented denominators — `byInterventionType` sums to `attemptsFaced`, `byBodyType` to `totalInterventions`, verified across all six fixture goalkeepers. Rendered side by side they show two totals that disagree with no explanation [contract/match-bundle.schema.json:895-943]
+- [x] [Review][Patch] `FreeKickCounts` nests `direct = directOnTarget + directOffTarget` (holds in all six team-innings) but carries no `description`, unlike every sibling counts structure in the file which documents "the parts sum to the total" — a stacked chart over the four fields double-counts [contract/match-bundle.schema.json]
+- [x] [Review][Patch] `data/fixtures/README.md:71` calls the own goal "the one deliberate departure from the source", but m074's eight shoot-out attempt rows are a second fabricated departure — `match-bundle.schema.json:769` says the corpus carries no attempt table and real data emits `null` — and the README's synthetic list never mentions them [data/fixtures/README.md:55-71]
+- [x] [Review][Patch] `unreachableDefinitions: true` ships `export interface Common {}` — an empty interface TypeScript treats as assignable from almost anything — plus dead `PhaseShare`, both as part of Epic 2's public contract surface [contract/generated/contract-types.d.ts:125,918]
+- [x] [Review][Patch] Test helpers raise opaque errors on valid input: `next(...)` without a default gives an uncaught `StopIteration` when a bundle has two own-goal records but one matching shot event, and `SCHEMA_FOR_INDEX[path.name]` raises `KeyError` for any new artifact under `index/` instead of a diagnosable message. `test_every_spatial_event_sits_inside_the_pitch_frame:316` has the mirror gap — it hard-codes five table names, so a sixth spatial table is silently unchecked [pipeline/tests/test_fixtures.py:44-51,225-227,316]
+- [x] [Review][Patch] Task 9's box is checked but `contract/README.md` has no per-metric aggregation-semantics table; the semantics live per-row in `AggregateMetric.aggregation` instead. The mechanism is arguably better than the one FR-27 asked for — document that as a logged decision rather than leaving the gap silent [contract/README.md]
+- [x] [Review][Patch] `!pmsr-corpus/manifest.csv` is a no-op — no preceding pattern ignores it, so the re-inclusion and its comment misdescribe what the file does [.gitignore:18-19]
+- [x] [Review][Patch] Five polymorphic metric-value slots carried no `x-decimals`, so AC 2's "per-field numeric precision is fixed" did not hold for any leaderboard, aggregate or trend value and Story 1.16's serializer had no rounding rule for them. Each now declares its precision, with the metric-dependent caveat stated, and `test_every_numeric_leaf_declares_its_precision` walks every numeric schema so the next one cannot be missed [contract/leaderboards.schema.json:34,39, contract/player-profile.schema.json:80,85,179]
+
+**Resolution — all 35 patches applied 2026-07-22.** Verification after the change set:
+
+- Story 1.1's own suite: **202 passed, 1 skipped** (the skip is `spike/mex_rsa.pdf`, deliberately not committed — see the resolved `.gitignore` decision; under `CI` it fails instead of skipping). Up from 126 tests to 202.
+- AC 7 carried gate re-run: `python -m pipeline.validate.verify --input-dir pmsr-corpus --expect-reports 104` → **exit 0, GATE RESULT: PASS**, 0 deviations across 16 sampled reports.
+- `npm run check:types` → up to date, 237 declarations from 6 schemas (was 231; the new nullable-array and `TeamCornerSideCounts` `$defs` account for the rise).
+- Structural guards re-measured under the corrected predicate: **86 of 86** object schemas and **437 of 437** `$ref` nodes now inspected, against 6 and 43 before. The schemas were already clean under the corrected check, so the inverted predicate was hiding no live defect — only the guard itself.
+
+Two deviations from the decisions as stated, both deliberate:
+
+1. **`completedLineBreaks` / `lineBreaksCompleted` were NOT unified.** The agreed fix was to unify on one spelling, but both are real fields at different scopes — `completedLineBreaks` in `TeamKeyStatistics` (Domain B) and `lineBreaksCompleted` in `PlayerInPossession` (Domain G). Renaming either would have *broken* the string-identical rule it was meant to restore. The rule is instead stated as scoped, and `distanceCovered`/`totalDistance` is handled the same way. Logged as decision 10.
+2. **Cross-field invariants are enforced in pytest, not with schema `if`/`then`.** `if`/`then` is inside AD-2's permitted subset, so it was tried first — and the generator's own fidelity guard rejected it: `json-schema-to-typescript` compiles an `if`/`then` branch to an open object and reintroduces the `[k: string]: unknown` index signature the AD-2 spike exists to prevent, and the `then` cannot be closed without rejecting the object's sibling properties. Logged as decision 12.
+
+Not part of this story, but observed while verifying: the working tree also carries Story 1.2's in-flight work (`pipeline/ingest/`, four `test_ingest_*.py` files, uncommitted edits to `conftest.py` and `test_workspace.py`). Two of its tests fail — `test_a_team_name_with_no_usable_characters_is_a_failure_not_an_empty_slug` reproduces with only Story 1.2's own files loaded, and `test_code_version_is_stable_across_calls` passes in isolation and fails only in a full-suite run, i.e. a test-ordering interaction. Neither is caused by this change set; both were left alone.
+
+**Deferred**:
+
+- [x] [Review][Defer] `tournament.schema.json` has no `stages` collection although Task 5's subtask names it [contract/tournament.schema.json:27-38] — deferred, stage is carried per-match via the `Stage` enum and every per-surface checklist row is met; raise at Story 2.3 sign-off when the Hub's real needs are known
+- [x] [Review][Defer] A zero-appearance squad member is schema-valid but fails `assert fixture["matches"]` [pipeline/tests/test_fixtures.py:436] — deferred, no such fixture exists and none is required until real profiles land in Story 1.18
+- [x] [Review][Defer] No fixture exercises `decidedBy: "extra-time"` — the ET-decided branch (non-null `scoreAfterET`, null `shootoutScore`) is untested [data/fixtures/matches/] — deferred, AC 5 requires only ET+shootout, which m074 covers; a fourth bundle is Story 1.18's cost to bear
+
+**Dismissed as noise** (recorded so a future review does not re-raise them):
+
+- `FreeKickCounts` sub-counts "overlap their own total, 18 against `totalFreeKicks: 12`" — there is no `totalFreeKicks` field; the arithmetic claim is false. Verified `direct == directOnTarget + directOffTarget` in all six team-innings. Only the missing `description` survives, as a patch above.
+- "Two tests hard-require fixture data production can never emit, and will fail when fixtures are replaced by real pipeline output" — `data/fixtures/` is a permanent world distinct from `data/matches/` and is never replaced. AC 5 mandates exactly those two assertions.
 
 ## Dev Notes
 
@@ -470,14 +541,148 @@ wc-stats/
 
 ### Agent Model Used
 
+`claude-opus-4-8[1m]` (Opus 4.8, 1M context) via Claude Code.
+
+Toolchain versions actually used:
+
+- Node **v24.15.0**, npm **11.12.1** (AD-13 requires Node 24 LTS — satisfied, no install needed)
+- `json-schema-to-typescript` **15.0.4** (pinned, `contract/package-lock.json` committed)
+- Python **3.14.4** in `pipeline/venv`; `jsonschema` **4.26.0**, `referencing` **0.37.0**
+- No git repository exists, so `baseline_commit` remains `NO_VCS` (`git rev-parse HEAD` exits 128). `git init` was **not** run — explicitly out of scope.
+
 ### Debug Log References
+
+**Task 10 — AC 7 carried gate, verbatim console output:**
+
+```
+Template-consistency verification
+=================================
+corpus          : pmsr-corpus
+reports found   : 104 (probed 104, probe failures 0)
+checks run      : anchor-coverage, metadata-probe
+sample size     : 16
+
+Sample (report -> venue | matchday round | covers)
+  PMSR-M01-MEX-V-RSA       Mexico City Stadium | group-md1 | round, venue
+  PMSR-M02-KOR-V-CZE       Guadalajara Stadium | group-md1 | venue
+  PMSR-M03-CAN-V-BIH       Toronto Stadium | group-md1 | venue
+  PMSR-M05-HAI-V-SCO       Boston Stadium | group-md1 | venue
+  PMSR-M08-QAT-V-SUI       San Francisco Bay Area Stadium | group-md1 | venue
+  PMSR-M10-GER-V-CUW       Houston Stadium | group-md1 | venue
+  PMSR-M100-ARG-V-SUI      Kansas City Stadium | qf | round, venue
+  PMSR-M101-FRA-V-ESP      Dallas Stadium | sf | round, venue
+  PMSR-M103-FRA-V-ENG      Miami Stadium | third-place | round, venue
+  PMSR-M104-ESP-V-ARG      New York/New Jersey Stadium | final | round, venue
+  PMSR-M12-SWE-V-TUN       Monterrey Stadium | group-md1 | venue
+  PMSR-M16-BEL-V-EGY       Seattle Stadium | group-md1 | venue
+  PMSR-M25-CZE-V-RSA       Atlanta Stadium | group-md2 | round, venue
+  PMSR-M51-SUI-V-CAN       BC Place Vancouver | group-md3 | round, venue
+  PMSR-M73-RSA-V-CAN       Los Angeles Stadium | r32 | round, venue
+  PMSR-M89-PAR-V-FRA       Philadelphia Stadium | r16 | round, venue
+
+Deviations by category
+  missing-anchor   0
+  unknown-rgb      0
+  count-mismatch   0
+  probe-failure    0
+
+GATE RESULT: PASS (0 deviation(s) across 16 sampled report(s), 0 corpus gap(s))
+
+manifest written to work/verification/verification-report.json
+EXIT CODE = 0
+```
+
+**Test suite:** baseline before this story was 130 passed. Final: **256 passed** (126 added), 0 failed, 0 skipped.
+
+**Codegen fidelity (AC 3):** 231 declarations from 6 schemas — 0 index signatures, 0 collision-suffixed names, 0 duplicate declarations, 15 `| null` unions, enums as string-literal unions.
 
 ### Completion Notes List
 
+**Corpus findings that changed the design.** Four things the real 104-report corpus said that the Dev Notes' expectations did not:
+
+1. **PMSR carries no per-shot xG.** xG appears only as a team total on the Key Statistics page; the shots event table has no xG column, in any of the 104 reports. `ShotEvent.expectedGoals` is therefore typed `ExpectedGoals | null` and v1 emits `null`. Logged as an AD-14 change-flow candidate. Story 2.7's shot tooltip must not promise per-shot xG.
+2. **PMSR carries no shoot-out attempt table.** Only the aggregate cover line, e.g. `"(Switzerland win 4-3 on Penalties)"` — checked against all four shoot-out ties (M74, M75, M88, M96). `ShootoutAttempt` is still a first-class `$def` (AC 1 requires it) but `events.shootoutAttempts` is `array | null` and **real data will emit `null`**. The `m074` fixture carries attempt rows anyway, per the story's own Fixture plan, so Epic 2 can build the surface — flagged loudly in both READMEs that production sends `null`.
+3. **PMSR marks no own goals anywhere.** `ownGoal` remains a schema field; real data emits `false`. The one `ownGoal: true` in `m074` is a deliberate synthetic edge shape, constructed so every real number still reconciles (see `data/fixtures/README.md`).
+4. **Phase percentages are not a distribution.** The Dev Notes expected the Phases of Play values, and the defensive block shares, to sum to ~100%. They do not — Germany's eight in-possession values in M74 sum to 124, Mexico's nine out-of-possession values in M01 sum to 80. They are modelled and documented as independent per-phase rates. Rendering them as a stacked bar would be straightforwardly wrong.
+
+**Task 2 was widened from the 16-report sample to all 104.** The story suggested 2–3 reports from the 1.4 sample. A mid-tournament label variant is exactly the thing that would sit in the 88 reports a sample skips, so the harvest walked every report. It found values the sample would have missed: `ShotOutcomeDetail` has **22** values, of which only 7 appear in M01 — `incomplete-foul-for` first appears in M27, `deflected-off-target-referee-event` in M49, `incomplete-referee-event` in M10. `ShotDeliveryType`'s `penalty`, `interception` and `tackle` likewise appear first in M08, M02 and M09.
+
+**Two vocabularies could not be closed, both recorded as AD-14 candidates.** `CardType` is not derivable from text at all — cards are coloured glyphs with only a minute printed — so it is closed on the football-universal three values. **Cross zones** have a pitch panel with counts but no zone labels; rather than invent an enum, `CrossEvent` carries `x`/`y` in the AD-6 pitch frame, which is strictly more information. If Story 2.7/2.9 wants zone aggregates it should file a change request for the zone *definition*.
+
+**Domain B is 19 fields per team, not 13.** The page prints more rows than the Dev Notes list, and compound rows carry two numbers each: `"Total Passes (Complete)"` → `passes` + `passesCompleted`, `"Defensive Pressures Applied (Direct Pressures)"` → `defensivePressures` + `directPressures`, `"Attempts at Goal (On Target)"` → `shots` + `shotsOnTarget`. Possession prints as **three** percentages (home / contested / away, summing to 100); the contested share cannot be derived from the other two and is stored once as `keyStatistics.contestedPossession`.
+
+**Codegen spike: no tool swap needed, but two schema-side fixes were.** The first generation failed fidelity with 11 collision-suffixed names (`Metres1`–`Metres5`, `Count1`–`Count3`, `TeamScore1`, …) and one index signature. Causes and fixes:
+
+- **`$ref` nodes carrying sibling keywords.** `{"$ref": X, "$comment": "..."}` is legal 2020-12, but `json-schema-to-typescript` treats it as a *new* schema rather than a reference and emits a duplicate under a suffixed name. All 14 such nodes were rewritten with the annotation moved to the referenced `$def` or the parent's `description`. `test_no_ref_node_carries_sibling_keywords` now prevents recurrence.
+- **`common.schema.json` had no closed root.** As a pure `$defs` library it had no root `type`, so the tool emitted `export interface Common { [k: string]: unknown; }`. Its root is now the empty closed object.
+
+The generator also had to **deduplicate declarations by name** across the six compilations — each is compiled with `declareExternallyReferenced`, so `Position` was declared four times and the concatenated output was not valid TypeScript. A repeat with a *different* body is a hard error, which is a genuine collision detector. It strips the tool's per-file "referenced by `X`" stanza first, otherwise identical declarations compare unequal. The generator **refuses to write** output with an index signature or a suffixed name, and the tests re-assert the same properties against the committed output to catch hand edits.
+
+**Fixtures carry far more real data than the story required.** The story allowed Domain B–G to be plausible synthetics. In practice Domains **B and C in full**, **all shot events** (minute, player, outcome, outcome detail, body part, delivery type), **set-play totals**, **the whole Physical Data table**, and all of Domain A were read straight off the PDFs. This produced a real cross-check: the shot events reconcile with Domain B in all six team-innings — Mexico's 16 rows contain exactly 4 on-target, matching the printed `16 (4)`; likewise `3 (2)`, `15 (6)`, `7 (4)`, `21 (6)`, `7 (3)`. That is the marker-count self-validation Story 1.3 will automate, passing already. Synthetic: pitch coordinates (they live in vector graphics, not text — Stories 1.3/1.11–1.14), momentum, cross/receiving/pass-network/defensive events, Domain E, and Domain G in/out-of-possession.
+
+**Budget signal for Story 1.16.** Largest fixture bundle is 197.4 KiB canonical / 16.0 KiB gzip -9 — about 40% of AD-4's 500 KB per-artifact budget, and it is the 120-minute match. Headroom is real but not vast, and Domain D event arrays dominate. `tournament.json` will grow by roughly two orders of magnitude against real data (12 groups, 104 results, every entity). Story 1.16 should treat the budget gate as load-bearing, not a formality. A test asserts no fixture exceeds 500 KB.
+
+**`defensiveBlockDistribution` duplicates three phase values by design.** It and `phasesOutOfPossession.{highBlock,midBlock,lowBlock}` are the same three numbers from the same page. The duplicate is kept because Story 2.10 renders block height as its own concept, but a duplicate that can drift is a hazard, so `test_defensive_block_distribution_mirrors_the_three_block_phases` holds them equal on every fixture.
+
+**Stoppage time is two integers, not a display string.** The corpus prints `"90+2"`; AD-7 forbids display strings in artifacts, so it is stored as `minute: 90, stoppageMinute: 2` and the App composes the label. Ordering — which the roving-tabindex marker navigation depends on — is by the pair.
+
+**One pre-existing test was modified.** `pipeline/tests/test_workspace.py::test_requirements_pin_every_dependency_exactly` hard-codes the dependency set, which this story's mandated `jsonschema` + `referencing` additions necessarily change. Its pin-parsing regex also could not read an extras group, so `jsonschema[format]==4.26.0` was invisible to it; both were fixed.
+
+**Scope respected.** No `app/`, `data/matches/`, `data/index/`, `pipeline/extract/`, `pipeline/markers/`, `pipeline/ingest/` or `pipeline/precompute/` created. `spike/` untouched. No `git init`. No new `DeviationCategory`. The two open 1.4 deferred items (cover-line reconstruction thresholds, zero-width-character normalization) were left deferred. All exploration scripts stayed in the scratchpad and none was committed into `pipeline/`.
+
 ### File List
+
+**New — contract (11 files):**
+
+- `contract/version.json`
+- `contract/common.schema.json`
+- `contract/match-bundle.schema.json`
+- `contract/tournament.schema.json`
+- `contract/leaderboards.schema.json`
+- `contract/team-profile.schema.json`
+- `contract/player-profile.schema.json`
+- `contract/package.json`
+- `contract/package-lock.json`
+- `contract/scripts/generate-types.mjs`
+- `contract/README.md`
+
+**New — generated codegen output, committed as the AD-2 spike evidence (2 files):**
+
+- `contract/generated/contract-types.d.ts`
+- `contract/generated/schema-version.ts`
+
+**New — fixtures (8 files):**
+
+- `data/fixtures/README.md`
+- `data/fixtures/matches/m001-mexico-south-africa.json`
+- `data/fixtures/matches/m002-korea-republic-czechia.json`
+- `data/fixtures/matches/m074-germany-paraguay.json`
+- `data/fixtures/index/tournament.json`
+- `data/fixtures/index/leaderboards.json`
+- `data/fixtures/index/team-profiles/mexico.json`
+- `data/fixtures/index/player-profiles/quinones-julian-mex.json`
+
+**New — pipeline (4 files):**
+
+- `pipeline/validate/errors.py`
+- `pipeline/validate/schema.py`
+- `pipeline/tests/test_contract_schemas.py`
+- `pipeline/tests/test_fixtures.py`
+
+**New — repo root (1 file):**
+
+- `.gitignore`
+
+**Modified (3 files):**
+
+- `pipeline/requirements.txt` — added `jsonschema[format]==4.26.0`, `referencing==0.37.0`
+- `pipeline/tests/test_workspace.py` — pin set updated for the two new dependencies; pin regex taught to read an extras group
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — story status `ready-for-dev` → `in-progress` → `review`
 
 ## Change Log
 
 | Date | Change |
 | --- | --- |
 | 2026-07-22 | Story created — context engine analysis across PRD + addendum, architecture spine, UX contract, full epics harvest, existing codebase, and web verification of the codegen/validation toolchain. |
+| 2026-07-22 | Contract v1 implemented: 6 JSON Schemas + `version.json`; vocabularies closed against all 104 reports; codegen spike passed with `json-schema-to-typescript@15.0.4` (no tool swap); 7 fixtures authored from real corpus data; Python validation stack + 126 new tests; full suite 256 passed; 1.4 verification gate re-run clean (exit 0, gate PASS). |
+| 2026-07-22 | Code review (3 parallel layers + verification): 5 decisions resolved, 35 patches applied, 3 items deferred, 2 dismissed. Committed types regenerated and a `--check` drift guard added; the inverted `_in_name_map` predicate fixed, restoring four structural guards from 6/86 objects to 86/86; eight optional sections made nullable; the fixture world fully reconciled across artifacts; `anyOf` validation diagnostics now name the offending field; 14 closed vocabularies pinned to the objects that encode them; 8 new logged decisions (9–16). Story suite 126 → 202 tests, AC 7 gate still exit 0. |

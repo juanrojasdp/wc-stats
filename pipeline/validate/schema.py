@@ -65,7 +65,15 @@ def schema_version() -> int:
         )
     version = contents["schemaVersion"]
     if not isinstance(version, int) or isinstance(version, bool):
-        raise TypeError(f"schemaVersion must be an integer, got {version!r}")
+        # `{"schemaVersion": 1.0}` reaches here as a float. Node's `Number.isInteger(1.0)` is
+        # true, so the generator would happily write `SCHEMA_VERSION = 1` while this side
+        # raised -- the two readers of the single version source disagreeing about what it
+        # says. Both ends now reject the float form, and the message says why.
+        raise TypeError(
+            f"{VERSION_PATH}: schemaVersion must be a plain integer, got {version!r}. "
+            "The float form 1.0 is accepted by the Node generator and rejected here, "
+            "which would split the two readers of the single version source."
+        )
     return version
 
 
@@ -106,12 +114,41 @@ def validator_for(schema_name: str) -> Draft202012Validator:
     )
 
 
+def _leaf_violations(error: object) -> "list[str]":
+    """Flatten one error into `"<pointer>: <message>"` strings, following `anyOf` branches.
+
+    Without this, every nullable field in the contract reports uselessly. `momentum` is
+    `anyOf: [MomentumSeries, null]`, so one bad `samples[0].minute` surfaced as a single error
+    reading "<the entire 19-sample series> is not valid under any of the given schemas" -- no
+    pointer to the offending field, no mention of the constraint it broke. The real diagnosis
+    lives in `error.context`, which the caller never read. This affects every nullable field:
+    shots, goalkeeping, players, scoreAfterET, shootoutScore, expectedGoals, stoppageMinute.
+
+    Among the failed branches keep only those that got FURTHEST into the instance before
+    failing -- the heuristic jsonschema's own `best_match` uses. For `X | null` that reliably
+    picks the X branch over the null branch, which is what the author meant, instead of
+    reporting both "is not of type 'null'" and the real cause with equal weight.
+    """
+    # `absolute_path` walks up through `parent`, so a context sub-error already reports its
+    # full path from the artifact root -- it must not be re-rooted on the outer error's path.
+    path = tuple(error.absolute_path)
+    context = list(getattr(error, "context", None) or [])
+    if not context:
+        return [f"/{'/'.join(str(part) for part in path)}: {error.message}"]
+
+    deepest = max(len(tuple(sub.absolute_path)) for sub in context)
+    violations: list[str] = []
+    for sub in context:
+        if len(tuple(sub.absolute_path)) == deepest:
+            violations.extend(_leaf_violations(sub))
+    return violations
+
+
 def iter_violations(instance: object, schema_name: str) -> "list[str]":
     """Every way `instance` fails `schema_name`, as sorted `"<pointer>: <message>"` strings."""
-    violations = []
+    violations: set[str] = set()
     for error in validator_for(schema_name).iter_errors(instance):
-        pointer = "/" + "/".join(str(part) for part in error.absolute_path)
-        violations.append(f"{pointer}: {error.message}")
+        violations.update(_leaf_violations(error))
     return sorted(violations)
 
 

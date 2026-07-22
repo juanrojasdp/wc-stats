@@ -82,6 +82,13 @@
       "type": "string",
       "enum": ["regulation", "extra-time", "shootout"]
     },
+    "Formation": {
+      "title": "Formation",
+      "description": "Formation as the lineup page prints it, locale-neutral (AD-7). Thirteen distinct values were observed across the 104-report corpus, from 3-4-1-2 to 5-4-1. The pattern allows up to five segments so a printed diamond such as 4-1-2-1-2 validates: a formation string the pattern rejects fails the WHOLE bundle, which is far too blunt a failure for a cosmetic field. This is the single definition — match-bundle and team-profile both $ref it rather than repeating the pattern, so a correction has one place to land.",
+      "type": "string",
+      "pattern": "^[1-9](-[1-9]){1,4}$",
+      "examples": ["4-3-3", "4-1-2-3", "5-3-2", "4-1-2-1-2"]
+    },
     "MatchResult": {
       "title": "MatchResult",
       "description": "Result of a match from one team's point of view, used by standings form sequences.",
@@ -97,7 +104,31 @@
     },
     "ShotOutcomeDetail": {
       "title": "ShotOutcomeDetail",
-      "description": "The compound Outcome label printed in the shots event table, which is finer than the five-value marker colour. Closed against all 104 reports on 2026-07-22; provenance table in contract/README.md.",
+      "description": "The compound Outcome label printed in the shots event table, which is finer than the five-value marker colour. Closed against all 104 reports on 2026-07-22; provenance table in contract/README.md. Every value maps onto exactly one ShotOutcome — the map is declared machine-readably in x-maps-to-outcome below, because the mapping is NOT derivable by prefix: 'incomplete-blocked' maps to 'blocked' while every other 'incomplete-*' maps to 'incomplete'. Nine of the 22 pairings are corpus-observed in the fixtures and test-enforced; the remaining 13 follow the same rule and are marked in contract/README.md as AD-14 change-flow candidates should real data contradict them.",
+      "x-maps-to-outcome": {
+        "deflected-off-target": "off-target",
+        "deflected-off-target-defensive-event": "off-target",
+        "deflected-off-target-referee-event": "off-target",
+        "deflected-off-target-saved": "off-target",
+        "deflected-on-target-defensive-event": "on-target",
+        "deflected-on-target-goal": "goal",
+        "deflected-on-target-goal-prevented": "on-target",
+        "deflected-on-target-saved": "on-target",
+        "incomplete-assist": "incomplete",
+        "incomplete-blocked": "blocked",
+        "incomplete-defensive-event": "incomplete",
+        "incomplete-foul-for": "incomplete",
+        "incomplete-player-on-ball-error": "incomplete",
+        "incomplete-referee-event": "incomplete",
+        "off-target": "off-target",
+        "off-target-defensive-event": "off-target",
+        "off-target-player-on-ball-error": "off-target",
+        "off-target-saved": "off-target",
+        "on-target-defensive-event": "on-target",
+        "on-target-goal": "goal",
+        "on-target-goal-prevented": "on-target",
+        "on-target-saved": "on-target"
+      },
       "type": "string",
       "enum": [
         "deflected-off-target",
@@ -187,7 +218,7 @@
 
     "InPossessionPhase": {
       "title": "InPossessionPhase",
-      "description": "In-possession category of the Phases of Play page. The eight shares sum to approximately 100%.",
+      "description": "In-possession category of the Phases of Play page. These are INDEPENDENT per-phase rates, not a partition: the eight values do not sum to 100 and must never be normalized or treated as slices of a whole. Verified against the corpus — Germany's eight values in PMSR-M74-GER-V-PAR sum to 124. See logged decision 5 in contract/README.md.",
       "type": "string",
       "enum": [
         "build-up-unopposed",
@@ -202,7 +233,7 @@
     },
     "OutOfPossessionPhase": {
       "title": "OutOfPossessionPhase",
-      "description": "Out-of-possession category of the Phases of Play page. The nine shares sum to approximately 100%.",
+      "description": "Out-of-possession category of the Phases of Play page. Independent per-phase rates, not a partition — the nine values do not sum to 100. Verified against the corpus: Mexico's nine values in PMSR-M01-MEX-V-RSA sum to 80. See logged decision 5 in contract/README.md.",
       "type": "string",
       "enum": [
         "high-press",
@@ -306,7 +337,7 @@
 
     "MetricCode": {
       "title": "MetricCode",
-      "description": "Closed leaderboard metric vocabulary. NOT printed in the corpus — derived from the Domain B (team) and Domain G (player) field names, and deliberately kept string-identical to them so a board's code names the artifact field it ranks. Story 2.13 maps each code to a locale label, so an unknown code is a compile error by design (AD-2).",
+      "description": "Closed leaderboard metric vocabulary. NOT printed in the corpus — derived from the Domain B (team) and Domain G (player) field names, and deliberately kept string-identical to them so a board's code names the artifact field it ranks. The rule is SCOPED: a code on a team-scope board names a TeamKeyStatistics field, and a code on a player-scope board names a Domain G field. Two scopes may therefore name the same concept differently — 'completedLineBreaks' (team) and 'lineBreaksCompleted' (player), 'distanceCovered' (team, kilometres) and 'totalDistance' (player, metres) — because the artifact fields themselves differ. No code carries two units. Story 2.13 maps each code to a locale label, so an unknown code is a compile error by design (AD-2). test_every_metric_code_names_a_real_artifact_field holds this contract.",
       "type": "string",
       "enum": [
         "ballProgressions",
@@ -337,9 +368,10 @@
         "sprints",
         "stepIns",
         "switchesOfPlay",
-        "tackles",
+        "tacklesWon",
         "takeOns",
-        "topSpeed"
+        "topSpeed",
+        "totalDistance"
       ]
     },
     "AggregationSemantics": {
@@ -465,7 +497,7 @@
     },
     "KnockoutScore": {
       "title": "KnockoutScore",
-      "description": "How the match stood at each decision point. scoreAfter90 is always present; scoreAfterET and shootoutScore are null when that period was not played, and winnerTeamId is null for a drawn group match. decidedBy drives the App's Hero display.",
+      "description": "How the match stood at each decision point. scoreAfter90 is always present; scoreAfterET and shootoutScore are null when that period was not played, and winnerTeamId is null for a drawn group match. decidedBy drives the App's Hero display, so it must agree with the periods actually played: 'regulation' means both scoreAfterET and shootoutScore are null; 'extra-time' means scoreAfterET is populated and shootoutScore is null; 'shootout' means both are populated and winnerTeamId is non-null. That invariant is enforced by test_knockout_score_agrees_with_decided_by rather than by if/then in the schema — an if/then branch here compiles to an open object in json-schema-to-typescript and reintroduces the index signature the AD-2 spike exists to prevent, and its `then` cannot be closed without rejecting the sibling properties.",
       "type": "object",
       "additionalProperties": false,
       "required": [

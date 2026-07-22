@@ -32,14 +32,15 @@
         "team": { "$ref": "common.schema.json#/$defs/EntityRef" },
         "value": {
           "title": "LeaderboardValue",
-          "description": "The ranked value, in the metric's own unit. Unformatted (AD-7); the App applies the unit and number format from its locale layer, keyed by metricCode.",
-          "type": "number"
+          "description": "The ranked value, in the metric's own unit. Unformatted (AD-7); the App applies the unit and number format from its locale layer, keyed by metricCode. PRECISION IS METRIC-DEPENDENT: this slot is polymorphic, so x-decimals here is the widest precision any board uses. Story 1.16's serializer MUST round to the precision of the source field named by metricCode, not to this default.",
+          "type": "number",
+          "x-decimals": 2
         },
         "matchesPlayed": { "$ref": "common.schema.json#/$defs/Count" },
         "perMatch": {
           "title": "LeaderboardPerMatchValue",
-          "description": "The value normalized per match played. A derived aggregate, so it is a field (AD-5). Null when the metric is not meaningfully rateable — a maximum such as topSpeed, for instance.",
-          "anyOf": [{ "type": "number" }, { "type": "null" }]
+          "description": "The value normalized per match played. A derived aggregate, so it is a field (AD-5). Null when the metric is not meaningfully rateable — a maximum such as topSpeed, for instance. Precision is metric-dependent; see LeaderboardValue.",
+          "anyOf": [{ "type": "number", "x-decimals": 2 }, { "type": "null" }]
         }
       }
     },
