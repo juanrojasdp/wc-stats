@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -21,10 +22,24 @@ def repo_root() -> Path:
 
 @pytest.fixture(scope="session")
 def mex_rsa_pdf(repo_root: Path) -> Path:
-    """The permanent ground-truth fixture (AR-16). Read-only — spike/ is frozen."""
+    """The ground-truth fixture (AR-16). Read-only — spike/ is frozen.
+
+    NOT committed: it is a copyrighted FIFA report, so `.gitignore` excludes it and a fresh
+    clone does not have it. That makes the skip below load-bearing rather than incidental —
+    and a skip is exactly how a missing fixture comes to read as a pass. Under CI the absence
+    is therefore a failure, so nobody can ship a green run in which these tests never
+    executed. Locally it stays a skip, because a contributor without the corpus should still
+    be able to run everything else.
+    """
     path = repo_root / "spike" / "mex_rsa.pdf"
     if not path.exists():
-        pytest.skip("ground-truth fixture spike/mex_rsa.pdf not available")
+        message = (
+            "ground-truth fixture spike/mex_rsa.pdf not available — fetch it with "
+            "download_pmsr_corpus.py (it is copyrighted and deliberately not committed)"
+        )
+        if os.environ.get("CI"):
+            pytest.fail(f"{message}. Failing rather than skipping: CI is set.")
+        pytest.skip(message)
     return path
 
 

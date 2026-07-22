@@ -12,8 +12,13 @@ work/
 # FIFA PMSR source PDFs: copyrighted, ~570MB, and regenerable via
 # download_pmsr_corpus.py. Never redistribute in a public repo (see brief
 # risk note: displaying data with attribution is safer than redistributing).
-*.pdf
+#
+# Anchored to the corpus rather than a repo-wide `*.pdf`. The unanchored form also
+# swallowed spike/mex_rsa.pdf -- the ground-truth fixture pipeline/tests/conftest.py
+# depends on -- so a fresh clone silently skipped those tests instead of running them.
+# The spike report is STILL excluded, deliberately and for the same copyright reason
+# (see the AR-16 note in conftest.py); it is now excluded by a line that says so.
+pmsr-corpus/*.pdf
 pmsr-corpus/*.part
 pmsr-corpus/failures.txt
-# ...but keep the match->teams manifest (facts, not the copyrighted reports).
-!pmsr-corpus/manifest.csv
+spike/*.pdf

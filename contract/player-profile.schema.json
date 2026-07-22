@@ -78,14 +78,15 @@
         "metricCode": { "$ref": "common.schema.json#/$defs/MetricCode" },
         "value": {
           "title": "AggregateMetricValue",
-          "description": "Unformatted; the App applies unit and number format from its locale layer, keyed by metricCode (AD-7).",
-          "type": "number"
+          "description": "Unformatted; the App applies unit and number format from its locale layer, keyed by metricCode (AD-7). PRECISION IS METRIC-DEPENDENT: this slot is polymorphic, so x-decimals here is the widest precision any metric uses. Story 1.16's serializer MUST round to the precision of the source field named by metricCode.",
+          "type": "number",
+          "x-decimals": 2
         },
         "aggregation": { "$ref": "common.schema.json#/$defs/AggregationSemantics" },
         "perNinety": {
           "title": "PerNinety",
-          "description": "The value normalized to 90 minutes played. Null when the metric is a maximum or a percentage, where a per-90 rate is meaningless.",
-          "anyOf": [{ "type": "number" }, { "type": "null" }]
+          "description": "The value normalized to 90 minutes played. Null when the metric is a maximum or a percentage, where a per-90 rate is meaningless. Precision is metric-dependent; see AggregateMetricValue.",
+          "anyOf": [{ "type": "number", "x-decimals": 2 }, { "type": "null" }]
         }
       }
     },
@@ -177,7 +178,9 @@
         "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
         "value": {
           "title": "TrendPointValue",
-          "type": "number"
+          "description": "One point on a cross-match trend line, in the metric's own unit. Precision is metric-dependent; see AggregateMetricValue.",
+          "type": "number",
+          "x-decimals": 2
         }
       }
     },

@@ -26,8 +26,19 @@ generated/                      committed codegen output — the AD-2 spike's ev
 cd contract
 npm install
 npm run generate:types            # -> contract/generated/
+npm run check:types               # fails if the committed output is stale (CI gate)
 node scripts/generate-types.mjs ../app/src/lib/contract   # Story 2.1 re-points it here
 ```
+
+> **`check:types` is the guard on AD-14 step 5.** It regenerates in memory and compares
+> against the committed files, writing nothing. Without it the committed types could — and
+> did — drift behind the schemas with the whole suite green, because every other check
+> asserts *properties of* the generated file (no index signatures, no collision-suffixed
+> names, the version integer) and a stale file satisfies all of them. Comment-only drift
+> counts: the generated file is the only thing Epic 2 reads, so a stale JSDoc block is the
+> contract saying something the schemas no longer say.
+> `pipeline/tests/test_contract_schemas.py::test_the_committed_generated_types_still_match_the_schemas`
+> runs the same check from pytest.
 
 > **Story 2.1: do not write a second generator.** The Structural Seed places generated
 > contract types under `app/src/lib/`. `app/` does not exist yet, so v1 writes them to
@@ -282,6 +293,127 @@ Possession prints as **three** percentages — home / contested / away — which
 The contested share is a match-level value and cannot be derived from the two team values, so
 it is stored once as `keyStatistics.contestedPossession`.
 
+### 9. Optional sections are `null`-able, not merely empty
+
+`null` and `[]` mean different things throughout the contract: an empty array is "the page was
+there and listed nothing", `null` is "the report does not carry that data at all". The App
+renders those as different states (EXPERIENCE.md's empty-state pattern), so collapsing them
+loses information the surface needs.
+
+v1 originally honoured the distinction for `momentum` and `events.shootoutAttempts` only. The
+other eight optional sections — `events.shots`, `events.crosses`, `events.passNetworkNodes`,
+`events.passNetworkEdges`, `events.receiving`, `events.defensiveActions`, `goalkeeping` and
+`players` — were plain non-nullable arrays, so a match whose Defensive Actions page was
+missing was indistinguishable from one with zero defensive actions.
+
+All eight are now `anyOf: [<array>, {"type": "null"}]`. Done inside v1 rather than through the
+change flow because it is still `schemaVersion` 1 and nothing consumes the contract yet: after
+Story 2.1 the same change costs a version bump, regenerated fixtures and App churn.
+
+### 10. `MetricCode` is scoped to the artifact field it ranks
+
+The rule is that a code is string-identical to the field it names. `tackles` broke it — Domain
+G has `tacklesMade` and `tacklesWon` and there was no `tackles` field anywhere, so a `tackles`
+board named no source. It is now **`tacklesWon`**, the conventional leaderboard metric.
+
+`distanceCovered` was overloaded: it is `Kilometres` on a team and the player equivalent is
+`totalDistance` in `Metres`, so one code would have carried two units and broken AD-7's rule
+that units live in the locale layer keyed by metric code. **`totalDistance` is now a separate
+code** for the player scope.
+
+`completedLineBreaks` (team, Domain B) and `lineBreaksCompleted` (player, Domain G) are
+deliberately kept as two codes. They name one concept but two genuinely different artifact
+fields, and renaming either would break the string-identical rule rather than restore it. The
+rule is therefore stated as **scoped**: a team-scope board's code names a Domain B field, a
+player-scope board's names a Domain G field.
+
+`test_every_metric_code_names_a_real_artifact_field` walks all 31 codes against every
+`properties` key in `/contract`.
+
+### 11. Closed vocabularies are pinned to the objects that encode them
+
+Fourteen enums are declared and documented here with corpus provenance but referenced by no
+field, because the artifacts store each as a fixed camelCase object instead — `InterventionType`
+as `byInterventionType`'s five keys, `CornerDeliveryStyle` as `cornersByDeliveryStyle`'s four,
+and so on. The objects are the right shape for the App (fixed interfaces, not maps), so they
+stay.
+
+What was missing is the link. With nothing holding the two copies together, AD-2's mechanism —
+"a value the pipeline meets that is not listed becomes a compile error" — did **not** hold for
+any of these fourteen: a new source label would have had nowhere to go and would have been
+dropped silently at extraction time.
+
+`test_every_closed_vocabulary_matches_the_object_that_encodes_it` now asserts each enum's
+values against the mirroring object's property names. The compile-error guarantee for these
+vocabularies is provided by that test rather than by the type system; everywhere else it is
+the generated union, as AD-2 describes.
+
+### 12. Cross-field invariants are enforced in pytest, not with `if`/`then`
+
+`if`/`then` is inside AD-2's permitted subset and is the obvious way to say "a `regulation`
+tie has no `shootoutScore`". It cannot be used here: `json-schema-to-typescript` compiles an
+`if`/`then` branch to an **open object**, reintroducing the `[k: string]: unknown` index
+signature that the AD-2 codegen spike exists to prevent, and the `then` cannot be closed with
+`additionalProperties: false` without also rejecting the object's sibling properties. This was
+tried during the code review and the generator's own fidelity guard rejected it.
+
+So the schema *documents* each invariant in its `description` and `pipeline/tests/` enforces
+it. pytest is the gate either way. The invariants held this way:
+
+| Invariant | Test |
+| --- | --- |
+| `decidedBy` matches the periods actually played | `test_knockout_score_agrees_with_decided_by` |
+| `matchId` agrees with its filename, `matchNumber` and both team ids | `test_the_match_id_agrees_with_its_filename_and_its_own_metadata` |
+| `stage` and `matchdayRound` describe the same match | `test_the_stage_and_matchday_round_describe_the_same_match` |
+| `outcome` agrees with `outcomeDetail` | `test_shot_outcome_agrees_with_its_finer_outcome_detail` |
+| Domain G player rows sum to the Domain B team totals | `test_domain_g_player_totals_reconcile_with_the_domain_b_team_totals` |
+| Node `involvement` is at least its own incident edge volume | `test_every_pass_network_node_is_at_least_as_involved_as_its_own_edges` |
+| Free-kick nesting and corner partitioning | `test_set_play_counts_are_internally_consistent` |
+
+### 13. `ShotOutcomeDetail` carries its own map onto `ShotOutcome`
+
+The 22 detail values map onto the 5 marker outcomes, and the mapping is **not derivable by
+prefix**: `incomplete-blocked` maps to `blocked` while every other `incomplete-*` maps to
+`incomplete`. A consumer deriving one from the other by string prefix is wrong on the entire
+blocked family, and nothing stopped `{"outcome": "goal", "outcomeDetail": "off-target"}` from
+validating at every layer.
+
+The map is now declared machine-readably as `x-maps-to-outcome` on the `ShotOutcomeDetail`
+`$def` — same custom-keyword convention as `x-decimals`: legal JSON Schema, ignored by
+validators and by the codegen, greppable and testable. Nine of the 22 pairings are observed in
+the corpus-derived fixtures and enforced against them; the remaining 13 follow the same rule
+and are AD-14 change-flow candidates should real data contradict one.
+
+### 14. Corners carry a team-level side split
+
+`cornersByDeliveryType` splits corners by side *within each delivery type*, so rendering
+"corners from the left" meant the browser adding three numbers — which AD-5 forbids outright
+("the App never sums or averages"). `TeamSetPlays.cornersBySide` is now a precomputed field,
+and `PitchSide` finally has a field that encodes it.
+
+### 15. Precision is declared for the polymorphic metric-value slots
+
+Five numeric slots carried no `x-decimals` at all: `LeaderboardValue`, `LeaderboardPerMatchValue`,
+`AggregateMetricValue`, `PerNinety` and `TrendPointValue`. They are the slots whose correct
+precision *varies by `metricCode`*, which is why they were skipped — and it left Story 1.16's
+canonical serializer with no rounding rule for any leaderboard, aggregate or trend value.
+
+Each now declares `x-decimals: 2`, the widest precision any metric uses, with a description
+stating that the serializer **must** round to the precision of the source field named by
+`metricCode` rather than to this default. `test_every_numeric_leaf_declares_its_precision`
+walks every numeric schema in the contract so the next one cannot be forgotten.
+
+### 16. Player-profile aggregation semantics live in the artifact, not in this file
+
+FR-27 asked for the per-metric aggregation semantics (sum vs max vs average) to be documented
+here. They are instead carried **per row**, as `AggregateMetric.aggregation`, typed by the
+closed `AggregationSemantics` enum.
+
+This is the better mechanism and is a deliberate departure: a table in a README cannot be read
+by the App, cannot be validated, and drifts. A field on the row travels with the value, so the
+App never has to guess and never re-aggregates (AD-5), and
+`test_the_player_profile_aggregates_equal_their_own_aggregation` checks the artifact against
+its own declared semantics. Recorded here because the story's Task 9 asked for the table.
 ---
 
 ## The AD-14 change flow
@@ -296,8 +428,15 @@ here:
 5. **Fixtures and generated types are regenerated in the same commit.** Not the next one.
 
 Step 5 is the one that gets skipped under pressure, and skipping it is what makes a contract
-stop being one. `pipeline/tests/test_fixtures.py` and
-`test_generated_schema_version_constant_agrees_with_version_json` fail the build if it is.
+stop being one. `pipeline/tests/test_fixtures.py` covers the fixture half, and
+`test_the_committed_generated_types_still_match_the_schemas` (equivalently
+`npm run check:types`) covers the generated half by regenerating and comparing.
+
+> This claim used to be made and not kept. Only the *version integer* was checked, so the
+> committed types drifted four JSDoc blocks behind the schemas with 256 tests green — and
+> the stale text told App developers the phase percentages were shares summing to ~100%,
+> which is exactly what logged decision 5 exists to forbid. Both halves are now enforced by
+> regeneration rather than by inspection.
 
 Story **2.3** is the formal sign-off gate on v1: it walks a per-surface data-needs checklist
 against these schemas, and every gap it finds becomes a change request.

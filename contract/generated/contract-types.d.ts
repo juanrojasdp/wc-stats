@@ -51,7 +51,7 @@ export interface AggregateMetric {
 }
 
 /**
- * Unformatted; the App applies unit and number format from its locale layer, keyed by metricCode (AD-7).
+ * Unformatted; the App applies unit and number format from its locale layer, keyed by metricCode (AD-7). PRECISION IS METRIC-DEPENDENT: this slot is polymorphic, so x-decimals here is the widest precision any metric uses. Story 1.16's serializer MUST round to the precision of the source field named by metricCode.
  */
 export type AggregateMetricValue = number;
 
@@ -98,7 +98,7 @@ export interface Appearances {
 }
 
 /**
- * Defensive block height. All three shares are stored; the third is never derived by subtraction (AD-5).
+ * Defensive block height. All three values are stored; none is derived from the others (AD-5).
  */
 export type BlockLevel = "high" | "mid" | "low";
 
@@ -209,6 +209,11 @@ export type CrossEvents = CrossEvent[];
 export type CrossPlayerName = string;
 
 /**
+ * Cross events, or null when the report does not carry the crosses page.
+ */
+export type Crosses = CrossEvents | null;
+
+/**
  * How a knockout tie was decided.
  */
 export type DecidedBy = "regulation" | "extra-time" | "shootout";
@@ -239,7 +244,12 @@ export type DefensiveActionPlayerName = string;
 export type DefensiveActionType = "forced-turnover" | "possession-regain" | "block" | "possession-contest";
 
 /**
- * Share of defensive time spent in each block height. All three are stored — they sum to approximately 100%, and deriving the third would make a rounding artefact look like data (AD-5).
+ * Defensive-action events, or null when the report does not carry the defensive-actions page.
+ */
+export type DefensiveActions = DefensiveActionEvents | null;
+
+/**
+ * Percentage of defensive time spent at each block height. Independent rates, not a partition — they do not sum to 100.
  */
 export interface DefensiveBlockDistribution {
   high: Percentage;
@@ -280,13 +290,13 @@ export type EntityRefName = string;
  * Domain D. Every table is a flat array carrying an explicit teamId per row, so one shape serves both the pitch panel and the accessibility data table — there are no 'lite' variants (EXPERIENCE.md). An empty array means zero events of that kind; null means the report does not carry that data at all.
  */
 export interface EventTables {
-  shots: ShotEvents;
+  shots: Shots;
   shootoutAttempts: ShootoutAttempts;
-  crosses: CrossEvents;
-  passNetworkNodes: PassNetworkNodes;
-  passNetworkEdges: PassNetworkEdges;
-  receiving: ReceivingEvents;
-  defensiveActions: DefensiveActionEvents;
+  crosses: Crosses;
+  passNetworkNodes: PassNetworkNodeTable;
+  passNetworkEdges: PassNetworkEdgeTable;
+  receiving: Receiving;
+  defensiveActions: DefensiveActions;
 }
 
 /**
@@ -315,7 +325,7 @@ export interface FeetTechniqueCounts {
 export type FormSequence = MatchResult[];
 
 /**
- * Formation as the lineup page prints it, locale-neutral (AD-7). Thirteen distinct values were observed across the 104-report corpus, from 3-4-1-2 to 5-4-1.
+ * Formation as the lineup page prints it, locale-neutral (AD-7). Thirteen distinct values were observed across the 104-report corpus, from 3-4-1-2 to 5-4-1. The pattern allows up to five segments so a printed diamond such as 4-1-2-1-2 validates: a formation string the pattern rejects fails the WHOLE bundle, which is far too blunt a failure for a cosmetic field. This is the single definition — match-bundle and team-profile both $ref it rather than repeating the pattern, so a correction has one place to land.
  */
 export type Formation = string;
 
@@ -325,11 +335,14 @@ export type Formation = string;
 export type FormationUsage = FormationUsageRow[];
 
 export interface FormationUsageRow {
-  formation: UsedFormation;
+  formation: Formation;
   matches: Count;
   share: Percentage;
 }
 
+/**
+ * Free kicks by type. These are NESTED, not siblings: directOnTarget and directOffTarget are subdivisions of direct, so direct == directOnTarget + directOffTarget (holds across all six fixture team-innings) and direct + indirect == totalFreeKicks. Summing all four fields double-counts the direct ones — a stacked chart must use either {direct, indirect} or {directOnTarget, directOffTarget, indirect}.
+ */
 export interface FreeKickCounts {
   direct: Count;
   directOnTarget: Count;
@@ -354,6 +367,9 @@ export type GoalOwnGoal = boolean;
  */
 export type GoalPenalty = boolean;
 
+/**
+ * Domain E goal prevention for one goalkeeper. NOTE the two breakdowns have DIFFERENT denominators, which is a property of the source page, not an error: byInterventionType sums to attemptsFaced (every attempt faced is categorised, including no-save-attempt), while byBodyType sums to totalInterventions (only attempts the keeper actually intervened on have a body part). Verified across all six fixture goalkeepers. An App rendering the two panels side by side must label them with their own totals rather than implying a shared one.
+ */
 export interface GoalPrevention {
   attemptsFaced: Count;
   savePercentage: Percentage;
@@ -417,6 +433,11 @@ export interface GoalkeeperRecord {
 }
 
 /**
+ * Per-goalkeeper records, or null when the report does not carry the goalkeeping pages at all. An empty array means the pages were present and listed no goalkeeper; null means there was nothing to read. The App renders those two states differently, so they must never be collapsed.
+ */
+export type Goalkeeping = GoalkeepingBlock | null;
+
+/**
  * One entry per goalkeeper who appeared, both teams, ordered home team first.
  */
 export type GoalkeepingBlock = GoalkeeperRecord[];
@@ -461,7 +482,7 @@ export interface HandsTechniqueCounts {
 export type HigherIsBetter = boolean;
 
 /**
- * In-possession category of the Phases of Play page. The eight shares sum to approximately 100%.
+ * In-possession category of the Phases of Play page. These are INDEPENDENT per-phase rates, not a partition: the eight values do not sum to 100 and must never be normalized or treated as slices of a whole. Verified against the corpus — Germany's eight values in PMSR-M74-GER-V-PAR sum to 124. See logged decision 5 in contract/README.md.
  */
 export type InPossessionPhase =
   | "build-up-unopposed"
@@ -474,7 +495,7 @@ export type InPossessionPhase =
   | "set-piece";
 
 /**
- * The eight in-possession shares from the Phases of Play page. All eight are stored; none is derived by subtraction (AD-5).
+ * The eight in-possession percentages from the Phases of Play page. These are INDEPENDENT per-phase rates, not a partition: they do not sum to 100 and must never be normalized or treated as slices of a whole. Verified against the corpus — Germany's eight values in PMSR-M74-GER-V-PAR sum to 124. All eight are stored; none is derived (AD-5).
  */
 export interface InPossessionPhases {
   buildUpUnopposed: Percentage;
@@ -544,7 +565,7 @@ export type KmPerHour = number;
 export type KnockoutResults = MatchResultRow[];
 
 /**
- * How the match stood at each decision point. scoreAfter90 is always present; scoreAfterET and shootoutScore are null when that period was not played, and winnerTeamId is null for a drawn group match. decidedBy drives the App's Hero display.
+ * How the match stood at each decision point. scoreAfter90 is always present; scoreAfterET and shootoutScore are null when that period was not played, and winnerTeamId is null for a drawn group match. decidedBy drives the App's Hero display, so it must agree with the periods actually played: 'regulation' means both scoreAfterET and shootoutScore are null; 'extra-time' means scoreAfterET is populated and shootoutScore is null; 'shootout' means both are populated and winnerTeamId is non-null. That invariant is enforced by test_knockout_score_agrees_with_decided_by rather than by if/then in the schema — an if/then branch here compiles to an open object in json-schema-to-typescript and reintroduces the index signature the AD-2 spike exists to prevent, and its `then` cannot be closed without rejecting the sibling properties.
  */
 export interface KnockoutScore {
   scoreAfter90: TeamScore;
@@ -566,7 +587,7 @@ export interface Leaderboard {
 }
 
 /**
- * The value normalized per match played. A derived aggregate, so it is a field (AD-5). Null when the metric is not meaningfully rateable — a maximum such as topSpeed, for instance.
+ * The value normalized per match played. A derived aggregate, so it is a field (AD-5). Null when the metric is not meaningfully rateable — a maximum such as topSpeed, for instance. Precision is metric-dependent; see LeaderboardValue.
  */
 export type LeaderboardPerMatchValue = number | null;
 
@@ -593,7 +614,7 @@ export type LeaderboardRows = LeaderboardRow[];
 export type LeaderboardScope = "team" | "player";
 
 /**
- * The ranked value, in the metric's own unit. Unformatted (AD-7); the App applies the unit and number format from its locale layer, keyed by metricCode.
+ * The ranked value, in the metric's own unit. Unformatted (AD-7); the App applies the unit and number format from its locale layer, keyed by metricCode. PRECISION IS METRIC-DEPENDENT: this slot is polymorphic, so x-decimals here is the widest precision any board uses. Story 1.16's serializer MUST round to the precision of the source field named by metricCode, not to this default.
  */
 export type LeaderboardValue = number;
 
@@ -656,9 +677,9 @@ export interface MatchBundle {
   keyStatistics: KeyStatisticsBlock;
   tacticalIdentity: TacticalIdentityBlock;
   events: EventTables;
-  goalkeeping: GoalkeepingBlock;
+  goalkeeping: Goalkeeping;
   setPlays: SetPlaysBlock;
-  players: PlayerRecords;
+  players: Players;
 }
 
 /**
@@ -753,7 +774,7 @@ export type MatchdayRound =
 export type Metres = number;
 
 /**
- * Closed leaderboard metric vocabulary. NOT printed in the corpus — derived from the Domain B (team) and Domain G (player) field names, and deliberately kept string-identical to them so a board's code names the artifact field it ranks. Story 2.13 maps each code to a locale label, so an unknown code is a compile error by design (AD-2).
+ * Closed leaderboard metric vocabulary. NOT printed in the corpus — derived from the Domain B (team) and Domain G (player) field names, and deliberately kept string-identical to them so a board's code names the artifact field it ranks. The rule is SCOPED: a code on a team-scope board names a TeamKeyStatistics field, and a code on a player-scope board names a Domain G field. Two scopes may therefore name the same concept differently — 'completedLineBreaks' (team) and 'lineBreaksCompleted' (player), 'distanceCovered' (team, kilometres) and 'totalDistance' (player, metres) — because the artifact fields themselves differ. No code carries two units. Story 2.13 maps each code to a locale label, so an unknown code is a compile error by design (AD-2). test_every_metric_code_names_a_real_artifact_field holds this contract.
  */
 export type MetricCode =
   | "ballProgressions"
@@ -784,9 +805,10 @@ export type MetricCode =
   | "sprints"
   | "stepIns"
   | "switchesOfPlay"
-  | "tackles"
+  | "tacklesWon"
   | "takeOns"
-  | "topSpeed";
+  | "topSpeed"
+  | "totalDistance";
 
 /**
  * Clock minute of an event, capped at the end of the period it fell in. Stoppage time is carried separately in stoppageMinute so no display string is ever stored (AD-7). Extra time runs to 120, confirmed against PMSR-M96-SUI-V-COL.
@@ -840,7 +862,7 @@ export interface OfferMovementCounts {
 export type OfferMovementType = "in-front" | "in-between" | "out-to-in" | "in-to-out" | "in-behind" | "no-movement";
 
 /**
- * Out-of-possession category of the Phases of Play page. The nine shares sum to approximately 100%.
+ * Out-of-possession category of the Phases of Play page. Independent per-phase rates, not a partition — the nine values do not sum to 100. Verified against the corpus: Mexico's nine values in PMSR-M01-MEX-V-RSA sum to 80. See logged decision 5 in contract/README.md.
  */
 export type OutOfPossessionPhase =
   | "high-press"
@@ -854,7 +876,7 @@ export type OutOfPossessionPhase =
   | "counter-press";
 
 /**
- * The nine out-of-possession shares from the Phases of Play page.
+ * The nine out-of-possession percentages from the Phases of Play page. Independent per-phase rates, not a partition — they do not sum to 100.
  */
 export interface OutOfPossessionPhases {
   highPress: Percentage;
@@ -879,6 +901,11 @@ export interface PassNetworkEdge {
 }
 
 /**
+ * Pass-network edges, or null when the report does not carry the pass-network page.
+ */
+export type PassNetworkEdgeTable = PassNetworkEdges | null;
+
+/**
  * Number of completed passes along this edge. Always at least 1 — a zero-volume edge is simply absent.
  */
 export type PassNetworkEdgeVolume = number;
@@ -900,10 +927,15 @@ export interface PassNetworkNode {
 
 export type PassNetworkNodeName = string;
 
+/**
+ * Pass-network nodes, or null when the report does not carry the pass-network page.
+ */
+export type PassNetworkNodeTable = PassNetworkNodes | null;
+
 export type PassNetworkNodes = PassNetworkNode[];
 
 /**
- * The value normalized to 90 minutes played. Null when the metric is a maximum or a percentage, where a per-90 rate is meaningless.
+ * The value normalized to 90 minutes played. Null when the metric is a maximum or a percentage, where a per-90 rate is meaningless. Precision is metric-dependent; see AggregateMetricValue.
  */
 export type PerNinety = number | null;
 
@@ -911,13 +943,6 @@ export type PerNinety = number | null;
  * A percentage on a 0-100 scale, unformatted (AD-7).
  */
 export type Percentage = number;
-
-/**
- * A tournament-wide average share for one phase category.
- */
-export interface PhaseShare {
-  share: Percentage;
-}
 
 /**
  * Tournament physical totals plus the maxima. Distances are the sums over matches played; topSpeed is the maximum, never a mean.
@@ -1108,6 +1133,11 @@ export type PlayerRecords = PlayerRecord[];
 export type PlayerTrends = TrendSeries[];
 
 /**
+ * Per-player Domain G records, or null when the report does not carry the per-player pages at all. Empty array and null are distinct states (see goalkeeping).
+ */
+export type Players = PlayerRecords | null;
+
+/**
  * Playing position as printed in the lineup block (GK / DF / MF / FW), lowercased.
  */
 export type Position = "gk" | "df" | "mf" | "fw";
@@ -1135,6 +1165,11 @@ export type PressingIntensity = number;
  * Explicit pipeline-computed rank, 1-based. Never derived from array position by the App (AD-5).
  */
 export type Rank = number;
+
+/**
+ * Offer- and movement-to-receive events, or null when the report does not carry those pages.
+ */
+export type Receiving = ReceivingEvents | null;
 
 /**
  * One offer to receive or movement to receive. The type discriminator is what lets the two pitch maps share a single event shape — Story 2.9 renders #offers-to-receive and #movement-to-receive from the same array.
@@ -1249,7 +1284,7 @@ export type ShotExpectedGoals = ExpectedGoals | null;
 export type ShotOutcome = "goal" | "on-target" | "off-target" | "blocked" | "incomplete";
 
 /**
- * The compound Outcome label printed in the shots event table, which is finer than the five-value marker colour. Closed against all 104 reports on 2026-07-22; provenance table in contract/README.md.
+ * The compound Outcome label printed in the shots event table, which is finer than the five-value marker colour. Closed against all 104 reports on 2026-07-22; provenance table in contract/README.md. Every value maps onto exactly one ShotOutcome — the map is declared machine-readably in x-maps-to-outcome below, because the mapping is NOT derivable by prefix: 'incomplete-blocked' maps to 'blocked' while every other 'incomplete-*' maps to 'incomplete'. Nine of the 22 pairings are corpus-observed in the fixtures and test-enforced; the remaining 13 follow the same rule and are marked in contract/README.md as AD-14 change-flow candidates should real data contradict them.
  */
 export type ShotOutcomeDetail =
   | "deflected-off-target"
@@ -1278,6 +1313,11 @@ export type ShotOutcomeDetail =
 export type ShotOwnGoal = boolean;
 
 export type ShotPlayerName = string;
+
+/**
+ * Shot events, or null when the report does not carry the shots page. Empty array and null are distinct states.
+ */
+export type Shots = ShotEvents | null;
 
 /**
  * Tournament stage code (AD-3). Knockout codes are exactly pipeline.discover.rounds.KNOCKOUT_ROUNDS. 'third-place' is the corpus's 'Bronze final'.
@@ -1345,6 +1385,15 @@ export interface TacticalIdentityBlock {
  */
 export type TeamCode = string;
 
+/**
+ * All of a team's corners split by the side they were taken from, precomputed. AD-5 forbids the App summing, so the team-level side split is its own field rather than three numbers the browser adds up out of cornersByDeliveryType. Equals those per-delivery-type side counts summed, and total equals totalCorners.
+ */
+export interface TeamCornerSideCounts {
+  left: Count;
+  right: Count;
+  total: Count;
+}
+
 export type TeamEntities = TeamEntity[];
 
 /**
@@ -1402,7 +1451,7 @@ export interface TeamMatchBreakdown {
   result: MatchResult;
   goalsFor: Count;
   goalsAgainst: Count;
-  formation: TeamMatchFormation;
+  formation: Formation;
   possession: Percentage;
   expectedGoals: ExpectedGoals;
   shots: Count;
@@ -1417,8 +1466,6 @@ export interface TeamMatchBreakdown {
 export type TeamMatchBreakdowns = TeamMatchBreakdown[];
 
 export type TeamMatchDate = string;
-
-export type TeamMatchFormation = string;
 
 /**
  * Whether this team was the home / first-listed side, which is what DESIGN.md's accent rule keys on.
@@ -1489,6 +1536,7 @@ export interface TeamSetPlays {
   totalPenalties: Count;
   totalCorners: Count;
   totalThrowIns: Count;
+  cornersBySide: TeamCornerSideCounts;
   freeKicks: FreeKickCounts;
   cornersByDeliveryType: CornerDeliveryTypeCounts;
   cornersByDeliveryStyle: CornerDeliveryStyleCounts;
@@ -1555,6 +1603,9 @@ export interface TrendPoint {
   value: TrendPointValue;
 }
 
+/**
+ * One point on a cross-match trend line, in the metric's own unit. Precision is metric-dependent; see AggregateMetricValue.
+ */
 export type TrendPointValue = number;
 
 /**
@@ -1566,8 +1617,6 @@ export interface TrendSeries {
   metricCode: MetricCode;
   points: TrendPoints;
 }
-
-export type UsedFormation = string;
 
 /**
  * Venue name as the cover prints it. Sixteen distinct venues across the corpus.

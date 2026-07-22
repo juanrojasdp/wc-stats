@@ -80,17 +80,6 @@
       }
     },
 
-    "PhaseShare": {
-      "title": "PhaseShare",
-      "description": "A tournament-wide average share for one phase category.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["share"],
-      "properties": {
-        "share": { "$ref": "common.schema.json#/$defs/Percentage" }
-      }
-    },
-
     "AggregateTacticalIdentity": {
       "title": "AggregateTacticalIdentity",
       "description": "Tournament-wide tactical identity. Every value is a match-count-weighted mean over the team's matches; the semantics are recorded in contract/README.md.",
@@ -206,11 +195,7 @@
       "additionalProperties": false,
       "required": ["formation", "matches", "share"],
       "properties": {
-        "formation": {
-          "title": "UsedFormation",
-          "type": "string",
-          "pattern": "^[1-9](-[1-9]){1,3}$"
-        },
+        "formation": { "$ref": "common.schema.json#/$defs/Formation" },
         "matches": { "$ref": "common.schema.json#/$defs/Count" },
         "share": { "$ref": "common.schema.json#/$defs/Percentage" }
       }
@@ -255,11 +240,7 @@
         "result": { "$ref": "common.schema.json#/$defs/MatchResult" },
         "goalsFor": { "$ref": "common.schema.json#/$defs/Count" },
         "goalsAgainst": { "$ref": "common.schema.json#/$defs/Count" },
-        "formation": {
-          "title": "TeamMatchFormation",
-          "type": "string",
-          "pattern": "^[1-9](-[1-9]){1,3}$"
-        },
+        "formation": { "$ref": "common.schema.json#/$defs/Formation" },
         "possession": { "$ref": "common.schema.json#/$defs/Percentage" },
         "expectedGoals": { "$ref": "common.schema.json#/$defs/ExpectedGoals" },
         "shots": { "$ref": "common.schema.json#/$defs/Count" },

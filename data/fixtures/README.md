@@ -68,11 +68,24 @@ Paraguay `7 (3)`. `pipeline/tests/test_fixtures.py` asserts it.
 - **Substitution minutes and card lists.** Cards are all empty: the lineup page renders them
   as coloured glyphs with no text, so no card is derivable today.
 
-### The one deliberate departure from the source
+### Two deliberate departures from the source
 
-`m074-germany-paraguay` carries an **own goal that the real report does not**. PMSR marks no
-own goal anywhere in the 104-report corpus, so the only way to cover AC 5's `ownGoal: true`
-edge shape was to author one.
+Both are fabrications the corpus does not contain, authored because AC 5 requires the edge
+shapes and PMSR does not supply them. Everything else in the "real" list above is read off
+the reports.
+
+**1. `m074` carries per-attempt shoot-out rows that PMSR does not print.** The corpus gives
+only the aggregate cover line — `"(Paraguay win 4-3 on Penalties)"` — and no per-attempt table
+anywhere in any of the 104 reports. Real pipeline output therefore emits
+`events.shootoutAttempts: null`, and both READMEs say so; the nine rows here exist purely so
+Epic 2 can build the surface against a shape. The sequence is a complete, **terminal**
+shoot-out: nine kicks, strictly alternating, ending when Germany's fifth is missed — which is
+what makes 3-4 a state the tie could actually have stopped in.
+`test_the_shootout_sequence_is_complete_and_alternates` holds it that way.
+
+**2. `m074` carries an own goal that the real report does not.** PMSR marks no own goal
+anywhere in the 104-report corpus, so the only way to cover AC 5's `ownGoal: true` edge shape
+was to author one.
 
 It is done so that every real number still reconciles:
 
@@ -101,6 +114,29 @@ It is done so that every real number still reconciles:
 
 What *is* enforced, and tested, is the other direction: every artifact that exists on disk is
 listed in the entity index, so the route manifest never omits a page that has data behind it.
+
+### …but partial is not the same as inconsistent
+
+Partiality means an artifact may reference something the fixture world does not model. It does
+**not** license two artifacts to state different numbers for the same fact. A code review found
+five places where they did — Domain G player rows disagreeing with the Domain B team totals
+printed beside them by up to 8×, pass-network nodes whose `involvement` was smaller than the
+sum of their own edges, a player profile whose `totalDistance` missed its own per-match rows by
+1.1 km, a team profile claiming `furthestStage: "r16"` with three group matches, and leaderboard
+rows saying `matchesPlayed: 1` where the standings said 3. Epic 2 renders several of these side
+by side, and a developer who spots a discrepancy cannot tell whether it is their bug or ours.
+
+Every cross-artifact number now reconciles, and each invariant has a test in
+`pipeline/tests/test_fixtures.py` so it stays that way. Two consequences worth knowing:
+
+- **Domain G is synthetic but no longer free.** The per-player in/out-of-possession values are
+  still invented, but they are scaled so each team's rows sum to that team's *real* printed
+  Domain B total. Attempts at goal and goals are taken straight from the real shot events
+  rather than scaled at all.
+- **Mexico's `tacticalIdentity` equals `m001`'s.** It is declared a match-count-weighted mean
+  over three matches, and only one of those three has a bundle here, so the two unobserved
+  matches are modelled as identical to the observed one. The mean is therefore correct under a
+  stated assumption rather than a copy passed off as an aggregate.
 
 ---
 

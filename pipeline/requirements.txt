@@ -9,3 +9,8 @@ pytest==8.4.2
 # for cross-file $ref resolution.
 jsonschema[format]==4.26.0
 referencing==0.37.0
+# Pinned EXPLICITLY although jsonschema[format] already pulls it in. jsonschema registers the
+# `date-time` checker inside a suppressed ImportError, so if this package is ever absent the
+# check does not fail -- it silently stops existing, and `kickoff: "not a time"` validates
+# clean. A transitive dependency that a validation guarantee rests on is a direct dependency.
+rfc3339-validator==0.1.4
