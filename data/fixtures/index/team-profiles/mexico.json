@@ -1,0 +1,125 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 3,
+      "share": 100.0
+    }
+  ],
+  "group": "a",
+  "matches": [
+    {
+      "date": "2026-06-11",
+      "distanceCovered": 107.3,
+      "expectedGoals": 1.78,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m001-mexico-south-africa",
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 90.0,
+      "possession": 57.1,
+      "result": "win",
+      "shots": 16,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-18",
+      "distanceCovered": 103.88,
+      "expectedGoals": 1.09,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m028-mexico-korea-republic",
+      "opponent": {
+        "id": "korea-republic",
+        "name": "Korea Republic"
+      },
+      "passCompletion": 88.7,
+      "possession": 64.3,
+      "result": "win",
+      "shots": 18,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-24",
+      "distanceCovered": 103.86,
+      "expectedGoals": 1.95,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 3,
+      "isHome": false,
+      "matchId": "m053-czechia-mexico",
+      "opponent": {
+        "id": "czechia",
+        "name": "Czechia"
+      },
+      "passCompletion": 84.2,
+      "possession": 56.6,
+      "result": "win",
+      "shots": 14,
+      "shotsOnTarget": 8,
+      "stage": "group"
+    }
+  ],
+  "name": "Mexico",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "r16",
+    "goalDifference": 6,
+    "goalsAgainst": 0,
+    "goalsFor": 6,
+    "lost": 0,
+    "played": 3,
+    "points": 9,
+    "won": 3
+  },
+  "schemaVersion": 1,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 7.0,
+      "low": 11.0,
+      "mid": 25.0
+    },
+    "lineHeight": {
+      "inPossession": 44.4,
+      "outOfPossession": 34.5
+    },
+    "phasesInPossession": {
+      "attackingTransition": 10.0,
+      "buildUpOpposed": 13.0,
+      "buildUpUnopposed": 47.0,
+      "counterAttack": 1.0,
+      "finalThird": 11.0,
+      "longBall": 3.0,
+      "progression": 16.0,
+      "setPiece": 5.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 8.0,
+      "defensiveTransition": 12.0,
+      "highBlock": 7.0,
+      "highPress": 9.0,
+      "lowBlock": 11.0,
+      "lowPress": 0.0,
+      "midBlock": 25.0,
+      "midPress": 3.0,
+      "recovery": 5.0
+    },
+    "possession": 59.3,
+    "pressingIntensity": 185.8,
+    "teamLength": {
+      "inPossession": 47.7,
+      "outOfPossession": 33.9
+    }
+  },
+  "teamCode": "mex",
+  "teamId": "mexico"
+}

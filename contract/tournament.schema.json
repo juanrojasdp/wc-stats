@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wc-stats.dev/contract/tournament.schema.json",
+  "title": "Tournament",
+  "description": "The tournament index. Three load-bearing jobs, all served by this one file: (1) results and standings by stage and group; (2) the route manifest generateStaticParams reads at build time (AD-11), where AR-4 asserts one profile artifact per listed entity; (3) the source for the header typeahead and for the <title>/OG metadata composed at build time.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "tournamentName",
+    "groups",
+    "knockoutResults",
+    "entities"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "title": "TournamentSchemaVersion",
+      "type": "integer",
+      "const": 1
+    },
+    "tournamentName": {
+      "title": "TournamentName",
+      "description": "Proper name of the tournament. A proper noun, not a translated label (AD-7).",
+      "type": "string",
+      "minLength": 1
+    },
+    "groups": {
+      "title": "GroupTables",
+      "description": "One entry per group, ordered by group letter.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/GroupTable" }
+    },
+    "knockoutResults": {
+      "title": "KnockoutResults",
+      "description": "Every knockout tie, ordered by stage then match number.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/MatchResultRow" }
+    },
+    "entities": { "$ref": "#/$defs/EntityIndex" }
+  },
+
+  "$defs": {
+    "MatchResultRow": {
+      "title": "MatchResultRow",
+      "description": "One completed match as the Hub and the header search see it. Carries everything the search result and the <title>/OG string need — teams, score and stage — so neither has to fetch the Match Bundle.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matchId",
+        "matchNumber",
+        "stage",
+        "group",
+        "matchdayRound",
+        "date",
+        "kickoff",
+        "venue",
+        "homeTeam",
+        "awayTeam",
+        "score",
+        "knockoutScore"
+      ],
+      "properties": {
+        "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
+        "matchNumber": {
+          "title": "ResultMatchNumber",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 104,
+          "x-decimals": 0
+        },
+        "stage": { "$ref": "common.schema.json#/$defs/Stage" },
+        "group": {
+          "title": "ResultGroup",
+          "anyOf": [{ "$ref": "common.schema.json#/$defs/Group" }, { "type": "null" }]
+        },
+        "matchdayRound": { "$ref": "common.schema.json#/$defs/MatchdayRound" },
+        "date": {
+          "title": "ResultDate",
+          "type": "string",
+          "format": "date"
+        },
+        "kickoff": {
+          "title": "ResultKickoff",
+          "type": "string",
+          "format": "date-time"
+        },
+        "venue": {
+          "title": "ResultVenue",
+          "type": "string",
+          "minLength": 1
+        },
+        "homeTeam": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "awayTeam": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "score": { "$ref": "common.schema.json#/$defs/TeamScore" },
+        "knockoutScore": { "$ref": "common.schema.json#/$defs/KnockoutScore" }
+      }
+    },
+
+    "StandingsRow": {
+      "title": "StandingsRow",
+      "description": "One team's row in a group table. rank is computed by the pipeline implementing the full FIFA tiebreaker cascade and is never derived from array position by the App (AD-4, AD-5). The column set is exactly the one EXPERIENCE.md's i18n table names.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank",
+        "team",
+        "played",
+        "won",
+        "drawn",
+        "lost",
+        "goalsFor",
+        "goalsAgainst",
+        "goalDifference",
+        "points",
+        "form"
+      ],
+      "properties": {
+        "rank": { "$ref": "common.schema.json#/$defs/Rank" },
+        "team": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "played": { "$ref": "common.schema.json#/$defs/Count" },
+        "won": { "$ref": "common.schema.json#/$defs/Count" },
+        "drawn": { "$ref": "common.schema.json#/$defs/Count" },
+        "lost": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalsFor": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalsAgainst": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalDifference": {
+          "title": "GoalDifference",
+          "description": "Signed, so it is a plain integer rather than a Count.",
+          "type": "integer",
+          "x-decimals": 0
+        },
+        "points": { "$ref": "common.schema.json#/$defs/Count" },
+        "form": {
+          "title": "FormSequence",
+          "description": "This team's results in chronological order. The Hub renders result chips straight from it; it is a derived value, so it is a field (AD-5).",
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/MatchResult" }
+        }
+      }
+    },
+
+    "GroupTable": {
+      "title": "GroupTable",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group", "standings", "results"],
+      "properties": {
+        "group": { "$ref": "common.schema.json#/$defs/Group" },
+        "standings": {
+          "title": "Standings",
+          "description": "Rows in rank order.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/StandingsRow" }
+        },
+        "results": {
+          "title": "GroupResults",
+          "type": "array",
+          "items": { "$ref": "#/$defs/MatchResultRow" }
+        }
+      }
+    },
+
+    "TeamRecord": {
+      "title": "TeamRecord",
+      "description": "A team's tournament record. The IA specifies team search results as name plus tournament record, and <title>/OG for a team route as name plus record — so this is a derived aggregate that must be a field (AD-5).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["played", "won", "drawn", "lost", "goalsFor", "goalsAgainst"],
+      "properties": {
+        "played": { "$ref": "common.schema.json#/$defs/Count" },
+        "won": { "$ref": "common.schema.json#/$defs/Count" },
+        "drawn": { "$ref": "common.schema.json#/$defs/Count" },
+        "lost": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalsFor": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalsAgainst": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+
+    "TeamEntity": {
+      "title": "TeamEntity",
+      "description": "One team in the route manifest and the search index.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["teamId", "name", "teamCode", "group", "record"],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "name": {
+          "title": "TeamEntityName",
+          "type": "string",
+          "minLength": 1
+        },
+        "teamCode": { "$ref": "common.schema.json#/$defs/TeamCode" },
+        "group": { "$ref": "common.schema.json#/$defs/Group" },
+        "record": { "$ref": "#/$defs/TeamRecord" }
+      }
+    },
+    "PlayerEntity": {
+      "title": "PlayerEntity",
+      "description": "One player in the route manifest and the search index. The IA specifies player search results as name plus team, so the team reference is carried here rather than fetched.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["playerId", "name", "team", "position"],
+      "properties": {
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "name": {
+          "title": "PlayerEntityName",
+          "type": "string",
+          "minLength": 1
+        },
+        "team": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "position": { "$ref": "common.schema.json#/$defs/Position" }
+      }
+    },
+    "MatchEntity": {
+      "title": "MatchEntity",
+      "description": "One match in the route manifest and the search index. The IA specifies match search results as teams plus score plus stage.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matchId", "stage", "homeTeam", "awayTeam", "score"],
+      "properties": {
+        "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
+        "stage": { "$ref": "common.schema.json#/$defs/Stage" },
+        "homeTeam": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "awayTeam": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "score": { "$ref": "common.schema.json#/$defs/TeamScore" }
+      }
+    },
+
+    "EntityIndex": {
+      "title": "EntityIndex",
+      "description": "The route manifest and the entire header-search corpus. AR-4 asserts a bijection between these lists and the emitted profile artifacts; that assert runs against real /data in Story 1.17, not against fixtures.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matches", "teams", "players"],
+      "properties": {
+        "matches": {
+          "title": "MatchEntities",
+          "type": "array",
+          "items": { "$ref": "#/$defs/MatchEntity" }
+        },
+        "teams": {
+          "title": "TeamEntities",
+          "type": "array",
+          "items": { "$ref": "#/$defs/TeamEntity" }
+        },
+        "players": {
+          "title": "PlayerEntities",
+          "type": "array",
+          "items": { "$ref": "#/$defs/PlayerEntity" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+# Python
+venv/
+__pycache__/
+.pytest_cache/
+
+# Node
+node_modules/
+
+# Pipeline scratch output (regenerable; never the source of truth)
+work/
+
+# FIFA PMSR source PDFs: copyrighted, ~570MB, and regenerable via
+# download_pmsr_corpus.py. Never redistribute in a public repo (see brief
+# risk note: displaying data with attribution is safer than redistributing).
+*.pdf
+pmsr-corpus/*.part
+pmsr-corpus/failures.txt
+# ...but keep the match->teams manifest (facts, not the copyrighted reports).
+!pmsr-corpus/manifest.csv

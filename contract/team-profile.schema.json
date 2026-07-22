@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wc-stats.dev/contract/team-profile.schema.json",
+  "title": "TeamProfile",
+  "description": "One team across the whole tournament: tournament-wide tactical identity, formation usage, and a per-match breakdown row for every match played. Every value here is a cross-match aggregate, which AD-5 requires the pipeline to compute — the App never sums a team's matches.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "teamId",
+    "name",
+    "teamCode",
+    "group",
+    "record",
+    "tacticalIdentity",
+    "formationUsage",
+    "matches"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "title": "TeamProfileSchemaVersion",
+      "type": "integer",
+      "const": 1
+    },
+    "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+    "name": {
+      "title": "TeamProfileName",
+      "type": "string",
+      "minLength": 1
+    },
+    "teamCode": { "$ref": "common.schema.json#/$defs/TeamCode" },
+    "group": { "$ref": "common.schema.json#/$defs/Group" },
+    "record": { "$ref": "#/$defs/TournamentRecord" },
+    "tacticalIdentity": { "$ref": "#/$defs/AggregateTacticalIdentity" },
+    "formationUsage": {
+      "title": "FormationUsage",
+      "description": "Distribution over the formations this team started, ordered by descending match count. A derived distribution, therefore a field (AD-5).",
+      "type": "array",
+      "items": { "$ref": "#/$defs/FormationUsageRow" }
+    },
+    "matches": {
+      "title": "TeamMatchBreakdowns",
+      "description": "One row per match played, chronological. Each carries matchId for the mandatory cross-link back to the match route.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/TeamMatchBreakdown" }
+    }
+  },
+
+  "$defs": {
+    "TournamentRecord": {
+      "title": "TeamTournamentRecord",
+      "description": "A team's record across the tournament. `points` counts group-stage points only; knockout ties award none.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "played",
+        "won",
+        "drawn",
+        "lost",
+        "goalsFor",
+        "goalsAgainst",
+        "goalDifference",
+        "points",
+        "furthestStage"
+      ],
+      "properties": {
+        "played": { "$ref": "common.schema.json#/$defs/Count" },
+        "won": { "$ref": "common.schema.json#/$defs/Count" },
+        "drawn": { "$ref": "common.schema.json#/$defs/Count" },
+        "lost": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalsFor": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalsAgainst": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalDifference": {
+          "title": "TeamProfileGoalDifference",
+          "type": "integer",
+          "x-decimals": 0
+        },
+        "points": { "$ref": "common.schema.json#/$defs/Count" },
+        "furthestStage": { "$ref": "common.schema.json#/$defs/Stage" }
+      }
+    },
+
+    "PhaseShare": {
+      "title": "PhaseShare",
+      "description": "A tournament-wide average share for one phase category.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["share"],
+      "properties": {
+        "share": { "$ref": "common.schema.json#/$defs/Percentage" }
+      }
+    },
+
+    "AggregateTacticalIdentity": {
+      "title": "AggregateTacticalIdentity",
+      "description": "Tournament-wide tactical identity. Every value is a match-count-weighted mean over the team's matches; the semantics are recorded in contract/README.md.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phasesInPossession",
+        "phasesOutOfPossession",
+        "lineHeight",
+        "teamLength",
+        "defensiveBlockDistribution",
+        "possession",
+        "pressingIntensity"
+      ],
+      "properties": {
+        "phasesInPossession": {
+          "title": "AggregateInPossessionPhases",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "buildUpUnopposed",
+            "buildUpOpposed",
+            "progression",
+            "finalThird",
+            "longBall",
+            "attackingTransition",
+            "counterAttack",
+            "setPiece"
+          ],
+          "properties": {
+            "buildUpUnopposed": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "buildUpOpposed": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "progression": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "finalThird": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "longBall": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "attackingTransition": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "counterAttack": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "setPiece": { "$ref": "common.schema.json#/$defs/Percentage" }
+          }
+        },
+        "phasesOutOfPossession": {
+          "title": "AggregateOutOfPossessionPhases",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "highPress",
+            "midPress",
+            "lowPress",
+            "highBlock",
+            "midBlock",
+            "lowBlock",
+            "recovery",
+            "defensiveTransition",
+            "counterPress"
+          ],
+          "properties": {
+            "highPress": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "midPress": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "lowPress": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "highBlock": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "midBlock": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "lowBlock": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "recovery": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "defensiveTransition": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "counterPress": { "$ref": "common.schema.json#/$defs/Percentage" }
+          }
+        },
+        "lineHeight": {
+          "title": "AggregateLineHeight",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["inPossession", "outOfPossession"],
+          "properties": {
+            "inPossession": { "$ref": "common.schema.json#/$defs/Metres" },
+            "outOfPossession": { "$ref": "common.schema.json#/$defs/Metres" }
+          }
+        },
+        "teamLength": {
+          "title": "AggregateTeamLength",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["inPossession", "outOfPossession"],
+          "properties": {
+            "inPossession": { "$ref": "common.schema.json#/$defs/Metres" },
+            "outOfPossession": { "$ref": "common.schema.json#/$defs/Metres" }
+          }
+        },
+        "defensiveBlockDistribution": {
+          "title": "AggregateBlockDistribution",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["high", "mid", "low"],
+          "properties": {
+            "high": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "mid": { "$ref": "common.schema.json#/$defs/Percentage" },
+            "low": { "$ref": "common.schema.json#/$defs/Percentage" }
+          }
+        },
+        "possession": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "pressingIntensity": {
+          "title": "PressingIntensity",
+          "description": "Mean defensive pressures applied per match.",
+          "type": "number",
+          "minimum": 0,
+          "x-decimals": 1
+        }
+      }
+    },
+
+    "FormationUsageRow": {
+      "title": "FormationUsageRow",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["formation", "matches", "share"],
+      "properties": {
+        "formation": {
+          "title": "UsedFormation",
+          "type": "string",
+          "pattern": "^[1-9](-[1-9]){1,3}$"
+        },
+        "matches": { "$ref": "common.schema.json#/$defs/Count" },
+        "share": { "$ref": "common.schema.json#/$defs/Percentage" }
+      }
+    },
+
+    "TeamMatchBreakdown": {
+      "title": "TeamMatchBreakdown",
+      "description": "This team's headline numbers in one match, plus the identity of that match so every row links back.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matchId",
+        "stage",
+        "date",
+        "opponent",
+        "isHome",
+        "result",
+        "goalsFor",
+        "goalsAgainst",
+        "formation",
+        "possession",
+        "expectedGoals",
+        "shots",
+        "shotsOnTarget",
+        "passCompletion",
+        "distanceCovered"
+      ],
+      "properties": {
+        "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
+        "stage": { "$ref": "common.schema.json#/$defs/Stage" },
+        "date": {
+          "title": "TeamMatchDate",
+          "type": "string",
+          "format": "date"
+        },
+        "opponent": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "isHome": {
+          "title": "TeamMatchIsHome",
+          "description": "Whether this team was the home / first-listed side, which is what DESIGN.md's accent rule keys on.",
+          "type": "boolean"
+        },
+        "result": { "$ref": "common.schema.json#/$defs/MatchResult" },
+        "goalsFor": { "$ref": "common.schema.json#/$defs/Count" },
+        "goalsAgainst": { "$ref": "common.schema.json#/$defs/Count" },
+        "formation": {
+          "title": "TeamMatchFormation",
+          "type": "string",
+          "pattern": "^[1-9](-[1-9]){1,3}$"
+        },
+        "possession": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "expectedGoals": { "$ref": "common.schema.json#/$defs/ExpectedGoals" },
+        "shots": { "$ref": "common.schema.json#/$defs/Count" },
+        "shotsOnTarget": { "$ref": "common.schema.json#/$defs/Count" },
+        "passCompletion": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "distanceCovered": { "$ref": "common.schema.json#/$defs/Kilometres" }
+      }
+    }
+  }
+}

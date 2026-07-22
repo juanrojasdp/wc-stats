@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wc-stats — México 2–1 Argentina · Match Dashboard móvil (390 px)</title>
+<style>
+/* ============================================================
+   MOCK: Match Dashboard — móvil 390 px · tema oscuro (canónico) · ES
+   Partido: m73-mexico-argentina · Cuartos de final
+
+   Spine sections governing this screen
+   ------------------------------------
+   DESIGN.md
+   - Colors: Canvas & ink (dark canonical); Brand accents; Data-visualization
+     palette (two-team pair viz-team-a/b, Momentum Timeline spec, shot-goal
+     marker on axis)
+   - Typography: display-score / display-stat / headline / title / body /
+     stat-value / stat-label / label-caps / caption; tabular numerals
+   - Layout & Spacing: gutter-mobile 16, tile-gap 12, section-gap 48,
+     layer-gap 64; 390 px single column, no horizontal scroll in Hero
+   - Components: site-header, header-search (icon state), language-toggle,
+     theme toggle, stage-context chip, stat-tile (▲ leader glyph), layer
+     section shell (EXPERTO pill), Momentum Timeline (surface-raised,
+     midline gutter, goal markers, in-panel attribution), glossary-tooltip
+     trigger, attribution footer
+   EXPERIENCE.md
+   - Component Patterns rows: Site header (sticky, search collapses to icon
+     <md); Layer section shell (<lg: header + one-line summary, Expert
+     collapsed at all widths); Stat tile (head-to-head ▲ + accent, never
+     color-only); Momentum Timeline (tap-to-position scrub, goal markers);
+     Glossary tooltip (dotted cyan trigger, once per section); Language
+     toggle (ES active); Attribution footer
+   - State Patterns: none active — all sections have data (loaded state)
+   - Progressive Disclosure Contract: 15-second hero test (score, scorers,
+     stage, Story Stats in first viewport); Tactical order normative —
+     Key Statistics → Momentum → shot maps → pass networks → Domain D maps
+     → phases → pressing → set plays → goalkeeping; Expert collapsed
+   - Responsive & Platform (<md rows): Key Statistics = single column of
+     paired tiles; Momentum reduced height; Spanish text expansion (labels
+     wrap, ruled abbreviation "VEL. MÁX.")
+   - Key Flows: UJ-1 steps 1–5 (Mariana, ~15 s)
+   - i18n & Terminology: es-CO comma decimals, lowercase months, term table
+     strings (xG, recuperaciones forzadas, arquero/atajada, balón parado,
+     Cuartos de final, alineación/formación), attribution short + full form
+   ============================================================ */
+
+:root{
+  --surface-base:#0E1114; --surface-raised:#171B1F; --surface-overlay:#1F252B;
+  --ink-primary:#F2F5F7; --ink-secondary:#A7B0B8; --ink-muted:#6B757F;
+  --hairline:#2A3138;
+  --lime:#C3F53C; --lime-ink:#131A02; --cyan:#3DDBE8;
+  --team-a:#C3F53C; --team-b:#3DDBE8;
+  --shot-goal:#3FDD85;
+  --font-display:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{color-scheme:dark}
+body{background:#07090B;font-family:var(--font-ui);color:var(--ink-primary);padding:28px 16px 64px}
+.mock-caption{font:400 12px/1.4 var(--font-ui);color:var(--ink-secondary);text-align:center;margin-bottom:20px}
+
+/* phone frame (mock scaffolding, not product) */
+.stage{position:relative;width:418px;margin:0 auto}
+.phone{background:#04060A;border:1px solid var(--hairline);border-radius:54px;padding:13px}
+.screen{position:relative;width:390px;background:var(--surface-base);border-radius:42px;overflow:hidden}
+.fold{position:absolute;left:-6px;right:-6px;top:844px;border-top:2px dashed rgba(234,251,253,.45);pointer-events:none;z-index:9}
+.fold-label{position:absolute;top:849px;left:calc(100% + 12px);width:150px;font:400 11px/1.4 var(--font-ui);color:var(--ink-secondary)}
+
+/* site header */
+.site-header{position:sticky;top:0;display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--surface-base);border-bottom:1px solid var(--hairline);z-index:5}
+.wordmark{font:600 17px/1.35 var(--font-ui);color:var(--ink-primary);margin-right:auto;text-decoration:none}
+.iconbtn{display:grid;place-items:center;width:36px;height:36px;color:var(--ink-secondary);background:none;border:0}
+.lang{display:flex;align-items:center;background:var(--surface-overlay);border-radius:9999px;padding:2px}
+.lang span{font:600 11px/1.3 var(--font-ui);letter-spacing:.08em;padding:4px 10px;border-radius:9999px}
+.lang .on{background:var(--lime);color:var(--lime-ink)}
+.lang .off{color:var(--ink-secondary)}
+
+main{padding:0 16px}
+
+/* ---- HERO LAYER ---- */
+.hero{padding-top:20px}
+.chip-row{display:flex;justify-content:center}
+.chip{font:600 11px/1.3 var(--font-ui);letter-spacing:.08em;color:var(--ink-secondary);background:var(--surface-overlay);border-radius:9999px;padding:5px 12px;text-transform:uppercase}
+.context{font:400 12px/1.4 var(--font-ui);color:var(--ink-secondary);text-align:center;margin-top:8px}
+.score-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:18px}
+.team{display:flex;flex-direction:column;align-items:center;gap:6px}
+.crest{display:grid;place-items:center;width:48px;height:48px;border-radius:9999px;background:var(--surface-overlay);border:1px solid var(--hairline);font:600 11px/1 var(--font-ui);letter-spacing:.08em;color:var(--ink-secondary)}
+.tname{font:600 15px/1.35 var(--font-ui)}
+.score{font:800 44px/1 var(--font-display);letter-spacing:-.01em;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:8px;padding:0 6px}
+.score .dash{color:var(--ink-secondary);font-weight:700}
+.scorers{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+.scorers div{font:400 13px/1.55 var(--font-ui);color:var(--ink-secondary);font-variant-numeric:tabular-nums}
+.scorers .sa{text-align:left}
+.scorers .sb{text-align:right}
+
+/* story stats — paired tiles, leader = team accent + ▲ (never color-only) */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.tile{background:var(--surface-raised);border-radius:8px;padding:10px 12px}
+.tile.wide{grid-column:1/-1}
+.tile .lbl{font:600 11px/1.3 var(--font-ui);letter-spacing:.08em;color:var(--ink-secondary);text-align:center;text-transform:uppercase}
+.tile .lbl .nocaps{text-transform:none}
+.tile .vals{display:flex;justify-content:space-between;margin-top:8px}
+.tile.wide .vals{padding:0 32px}
+.vwrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.v{font:700 26px/1.1 var(--font-display);font-variant-numeric:tabular-nums;color:var(--ink-primary)}
+.v .tri{font-size:13px;vertical-align:4px;margin-right:2px}
+.lead-a{color:var(--team-a)}
+.lead-b{color:var(--team-b)}
+.code{font:600 11px/1.3 var(--font-ui);letter-spacing:.08em;color:var(--ink-secondary)}
+
+/* the Hero's one compact disclosure */
+.disclosure{display:flex;align-items:center;gap:12px;background:var(--surface-raised);border-radius:8px;padding:12px 14px;margin-top:20px}
+.disc-txt{flex:1}
+.disc-txt .t{font:600 15px/1.35 var(--font-ui)}
+.disc-txt .s{font:400 12px/1.4 var(--font-ui);color:var(--ink-secondary);margin-top:2px}
+.chev{color:var(--ink-secondary);font-size:14px}
+
+/* ---- TACTICAL LAYER ---- */
+.layer-tactical{margin-top:64px}
+section.sec{border-top:1px solid var(--hairline);padding-top:20px}
+section.sec + section.sec{margin-top:48px}
+h2{font:700 22px/1.2 var(--font-display)}
+.gloss{text-decoration:underline dotted var(--cyan);text-decoration-thickness:1px;text-underline-offset:3px}
+
+.pairs{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.pair{display:grid;grid-template-columns:76px 1fr 76px;align-items:center;background:var(--surface-raised);border-radius:8px;padding:10px 12px;min-height:44px}
+.pair .lbl{font:600 11px/1.3 var(--font-ui);letter-spacing:.08em;color:var(--ink-secondary);text-align:center;text-transform:uppercase}
+.pair .va{text-align:left}
+.pair .vb{text-align:right}
+
+.card{background:var(--surface-raised);border-radius:8px;padding:12px;margin-top:14px}
+.card svg{display:block;width:100%;height:auto}
+.panel-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px}
+.verdatos{font:500 13px/1.3 var(--font-ui);color:var(--cyan);background:none;border:0;padding:6px 0}
+.attr{font:400 12px/1.4 var(--font-ui);color:var(--ink-secondary)}
+
+/* collapsed section shells: header + one-line summary (<lg) */
+.shells{margin-top:48px}
+.shell{display:flex;align-items:center;gap:12px;border-top:1px solid var(--hairline);padding:20px 0}
+.shell .tx{flex:1}
+.shell .sum{font:400 15px/1.55 var(--font-ui);color:var(--ink-secondary);margin-top:4px;font-variant-numeric:tabular-nums}
+
+/* ---- EXPERT LAYER (collapsed at all widths) ---- */
+.layer-expert{margin-top:64px;border-top:1px solid var(--hairline);padding-top:20px}
+.pill-expert{display:inline-block;font:600 11px/1.3 var(--font-ui);letter-spacing:.08em;color:var(--ink-secondary);background:var(--surface-overlay);border-radius:9999px;padding:4px 12px;margin-bottom:10px}
+.layer-expert .row{display:flex;align-items:center;gap:12px}
+.layer-expert .tx{flex:1}
+.layer-expert .sum{font:400 15px/1.55 var(--font-ui);color:var(--ink-secondary);margin-top:4px}
+
+/* footer */
+footer{margin-top:64px;border-top:1px solid var(--hairline);padding:16px 16px 48px}
+footer p{font:400 12px/1.4 var(--font-ui);color:var(--ink-secondary)}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+</head>
+<body>
+
+<p class="mock-caption">wc-stats · Match Dashboard · móvil 390 px · tema oscuro (canónico) · español (predeterminado)<br>La línea punteada marca el límite del primer viewport — contrato Hero de ~15 segundos</p>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="fold" aria-hidden="true"></div>
+
+      <!-- Site header: wordmark → search (icon <md) → ES|EN → theme -->
+      <header class="site-header">
+        <a class="wordmark" href="#">wc-stats</a>
+        <button class="iconbtn" aria-label="Buscar">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="13.6" y1="13.6" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="lang" role="group" aria-label="Idioma"><span class="on">ES</span><span class="off">EN</span></div>
+        <button class="iconbtn" aria-label="Tema">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M13 2.5a7.8 7.8 0 1 0 4.9 12.9A8.6 8.6 0 0 1 13 2.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </header>
+
+      <main>
+        <!-- ============ HERO LAYER ============ -->
+        <div class="hero">
+          <div class="chip-row"><span class="chip">Cuartos de final</span></div>
+          <p class="context">Estadio Azteca, Ciudad de México · 10 de julio de 2026 · 17:00 hora local</p>
+
+          <div class="score-row">
+            <div class="team"><span class="crest">MEX</span><span class="tname">México</span></div>
+            <div class="score"><span>2</span><span class="dash">–</span><span>1</span></div>
+            <div class="team"><span class="crest">ARG</span><span class="tname">Argentina</span></div>
+          </div>
+
+          <div class="scorers">
+            <div class="sa">S. Giménez 34′<br>J. Ramírez 71′</div>
+            <div class="sb">T. Almada 58′</div>
+          </div>
+
+          <!-- Story Stats: posesión, tiros, xG, distancia, velocidad máxima -->
+          <div class="tiles">
+            <div class="tile">
+              <div class="lbl">Posesión</div>
+              <div class="vals">
+                <div class="vwrap"><span class="v">46%</span><span class="code">MEX</span></div>
+                <div class="vwrap"><span class="v lead-b"><span class="tri">▲</span>54%</span><span class="code">ARG</span></div>
+              </div>
+            </div>
+            <div class="tile">
+              <div class="lbl">Tiros</div>
+              <div class="vals">
+                <div class="vwrap"><span class="v lead-a"><span class="tri">▲</span>14</span><span class="code">MEX</span></div>
+                <div class="vwrap"><span class="v">11</span><span class="code">ARG</span></div>
+              </div>
+            </div>
+            <div class="tile">
+              <div class="lbl"><span class="nocaps gloss">xG</span></div>
+              <div class="vals">
+                <div class="vwrap"><span class="v lead-a"><span class="tri">▲</span>1,84</span><span class="code">MEX</span></div>
+                <div class="vwrap"><span class="v">1,42</span><span class="code">ARG</span></div>
+              </div>
+            </div>
+            <div class="tile">
+              <div class="lbl">Distancia (km)</div>
+              <div class="vals">
+                <div class="vwrap"><span class="v lead-a"><span class="tri">▲</span>112,4</span><span class="code">MEX</span></div>
+                <div class="vwrap"><span class="v">109,8</span><span class="code">ARG</span></div>
+              </div>
+            </div>
+            <div class="tile wide">
+              <div class="lbl">Vel. máx. (km/h)</div>
+              <div class="vals">
+                <div class="vwrap"><span class="v">34,6</span><span class="code">MEX</span></div>
+                <div class="vwrap"><span class="v lead-b"><span class="tri">▲</span>35,2</span><span class="code">ARG</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- the Hero's one compact disclosure -->
+          <div class="disclosure" role="button" aria-expanded="false">
+            <div class="disc-txt">
+              <div class="t">Alineaciones y formaciones</div>
+              <div class="s">MEX 4-3-3 · ARG 4-4-2 · titulares y suplentes</div>
+            </div>
+            <span class="chev" aria-hidden="true">▸</span>
+          </div>
+        </div>
+
+        <!-- ============ TACTICAL LAYER ============ -->
+        <div class="layer-tactical">
+
+          <!-- 1. Key Statistics first (PRD §4.6 normative order) -->
+          <section class="sec" id="key-stats">
+            <h2>Estadísticas clave</h2>
+            <div class="pairs">
+              <div class="pair">
+                <span class="v va">46%</span>
+                <span class="lbl">Posesión</span>
+                <span class="v vb lead-b"><span class="tri">▲</span>54%</span>
+              </div>
+              <div class="pair">
+                <span class="v va lead-a"><span class="tri">▲</span>6</span>
+                <span class="lbl">Tiros al arco</span>
+                <span class="v vb">4</span>
+              </div>
+              <div class="pair">
+                <span class="v va">412</span>
+                <span class="lbl">Pases completados</span>
+                <span class="v vb lead-b"><span class="tri">▲</span>508</span>
+              </div>
+              <div class="pair">
+                <span class="v va">84%</span>
+                <span class="lbl">Precisión de pases</span>
+                <span class="v vb lead-b"><span class="tri">▲</span>89%</span>
+              </div>
+              <div class="pair">
+                <span class="v va lead-a"><span class="tri">▲</span>14</span>
+                <span class="lbl"><span class="gloss">Recuperaciones forzadas</span></span>
+                <span class="v vb">9</span>
+              </div>
+              <div class="pair">
+                <span class="v va lead-a"><span class="tri">▲</span>7</span>
+                <span class="lbl">Tiros de esquina</span>
+                <span class="v vb">3</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. Momentum Timeline, immediately after (UJ-1 single scroll) -->
+          <section class="sec" id="momentum">
+            <h2>Línea de <span class="gloss">momentum</span></h2>
+            <div class="card">
+              <svg viewBox="0 0 326 122" role="figure" aria-label="Línea de momentum: México y Argentina, minuto a minuto, con goles al 34, 58 y 71.">
+                <!-- team areas at 60% opacity; midline on reserved 2px gutter -->
+                <path d="M0,50 L0,46 L27,40 L54,28 L82,18 L102,14 L115,10 L129,20 L149,32 L170,42 L187,46 L204,38 L221,22 L238,12 L255,26 L272,36 L289,38 L306,34 L326,30 L326,50 Z" fill="#C3F53C" fill-opacity="0.6"/>
+                <path d="M0,54 L0,70 L27,74 L54,66 L82,60 L102,58 L115,56 L129,62 L149,68 L170,82 L187,90 L197,94 L211,78 L221,70 L238,60 L255,66 L272,74 L289,78 L306,74 L326,68 L326,54 Z" fill="#3DDBE8" fill-opacity="0.6"/>
+                <!-- direct series labels: hue alone never distinguishes the teams -->
+                <text x="4" y="16" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="600" letter-spacing="1" fill="#C3F53C">MEX</text>
+                <text x="4" y="104" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="600" letter-spacing="1" fill="#3DDBE8">ARG</text>
+                <!-- midline -->
+                <line x1="0" y1="52" x2="326" y2="52" stroke="#F2F5F7" stroke-width="2"/>
+                <!-- goal markers on the axis: shot-goal emerald + ink ring -->
+                <circle cx="115" cy="52" r="5.5" fill="#3FDD85" stroke="#F2F5F7" stroke-width="1.5"/>
+                <circle cx="197" cy="52" r="5.5" fill="#3FDD85" stroke="#F2F5F7" stroke-width="1.5"/>
+                <circle cx="241" cy="52" r="5.5" fill="#3FDD85" stroke="#F2F5F7" stroke-width="1.5"/>
+                <!-- axis labels -->
+                <g font-family="Inter,system-ui,sans-serif" font-size="11" fill="#A7B0B8" font-weight="400">
+                  <text x="0" y="118">0′</text>
+                  <text x="51" y="118" text-anchor="middle">15′</text>
+                  <text x="102" y="118" text-anchor="middle">30′</text>
+                  <text x="153" y="118" text-anchor="middle">45′</text>
+                  <text x="204" y="118" text-anchor="middle">60′</text>
+                  <text x="255" y="118" text-anchor="middle">75′</text>
+                  <text x="306" y="118" text-anchor="middle">90′</text>
+                </g>
+              </svg>
+              <div class="panel-foot">
+                <button class="verdatos">Ver los datos</button>
+                <span class="attr">Datos: FIFA PMSR · wc-stats</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- remaining Tactical sections: collapsed shells (header + one-line summary) -->
+          <div class="shells">
+            <div class="shell" role="button" aria-expanded="false" id="shot-maps">
+              <div class="tx"><h2>Mapa de tiros y xG</h2><p class="sum">MEX 14 tiros · ARG 11 · 3 goles</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+            <div class="shell" role="button" aria-expanded="false" id="pass-networks">
+              <div class="tx"><h2>Red de pases</h2><p class="sum">412 pases completados MEX · 508 ARG</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+            <div class="shell" role="button" aria-expanded="false" id="offers-to-receive">
+              <div class="tx"><h2>Ofrecimientos para recibir</h2><p class="sum">64 MEX · 71 ARG</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+            <div class="shell" role="button" aria-expanded="false" id="movement-to-receive">
+              <div class="tx"><h2>Desmarques</h2><p class="sum">38 MEX · 45 ARG</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+            <div class="shell" role="button" aria-expanded="false" id="defensive-actions">
+              <div class="tx"><h2>Acciones defensivas</h2><p class="sum">142 MEX · 128 ARG</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+            <div class="shell" role="button" aria-expanded="false" id="phases">
+              <div class="tx"><h2>Fases del juego</h2><p class="sum">Salida de balón, progresión y último tercio</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+            <div class="shell" role="button" aria-expanded="false" id="pressing">
+              <div class="tx"><h2>Presión y bloques defensivos</h2><p class="sum">Bloque medio 48% MEX · bloque bajo 44% ARG</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+            <div class="shell" role="button" aria-expanded="false" id="set-plays">
+              <div class="tx"><h2>Balón parado</h2><p class="sum">7 tiros de esquina MEX · 3 ARG · 1 gol</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+            <div class="shell" role="button" aria-expanded="false" id="goalkeeping">
+              <div class="tx"><h2>Arqueros</h2><p class="sum">E. Martínez 4 atajadas · L. Malagón 3</p></div>
+              <span class="chev" aria-hidden="true">▸</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ EXPERT LAYER (collapsed by default) ============ -->
+        <div class="layer-expert" id="expert">
+          <span class="pill-expert">EXPERTO</span>
+          <div class="row" role="button" aria-expanded="false">
+            <div class="tx">
+              <h2>Datos por jugador</h2>
+              <p class="sum">En posesión · Sin posesión · Físico — tablas por jugador y registros completos</p>
+            </div>
+            <span class="chev" aria-hidden="true">▸</span>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <p>Datos: informes oficiales post-partido de la FIFA — Copa Mundial 2026. Sitio independiente, sin afiliación con la FIFA. <a href="#">Acerca del sitio</a></p>
+      </footer>
+    </div>
+  </div>
+  <span class="fold-label">límite del primer viewport · 844 px — score, goleadores y Story Stats visibles sin desplazarse</span>
+</div>
+
+</body>
+</html>

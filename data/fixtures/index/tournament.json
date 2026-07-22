@@ -1,0 +1,276 @@
+{
+  "entities": {
+    "matches": [
+      {
+        "awayTeam": {
+          "id": "south-africa",
+          "name": "South Africa"
+        },
+        "homeTeam": {
+          "id": "mexico",
+          "name": "Mexico"
+        },
+        "matchId": "m001-mexico-south-africa",
+        "score": {
+          "away": 0,
+          "home": 2
+        },
+        "stage": "group"
+      },
+      {
+        "awayTeam": {
+          "id": "czechia",
+          "name": "Czechia"
+        },
+        "homeTeam": {
+          "id": "korea-republic",
+          "name": "Korea Republic"
+        },
+        "matchId": "m002-korea-republic-czechia",
+        "score": {
+          "away": 1,
+          "home": 2
+        },
+        "stage": "group"
+      },
+      {
+        "awayTeam": {
+          "id": "paraguay",
+          "name": "Paraguay"
+        },
+        "homeTeam": {
+          "id": "germany",
+          "name": "Germany"
+        },
+        "matchId": "m074-germany-paraguay",
+        "score": {
+          "away": 1,
+          "home": 1
+        },
+        "stage": "r32"
+      }
+    ],
+    "players": [
+      {
+        "name": "Julian QUINONES",
+        "playerId": "quinones-julian-mex",
+        "position": "fw",
+        "team": {
+          "id": "mexico",
+          "name": "Mexico"
+        }
+      }
+    ],
+    "teams": [
+      {
+        "group": "a",
+        "name": "Mexico",
+        "record": {
+          "drawn": 0,
+          "goalsAgainst": 0,
+          "goalsFor": 6,
+          "lost": 0,
+          "played": 3,
+          "won": 3
+        },
+        "teamCode": "mex",
+        "teamId": "mexico"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "group": "a",
+      "results": [
+        {
+          "awayTeam": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "date": "2026-06-11",
+          "group": "a",
+          "homeTeam": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "kickoff": "2026-06-11T13:00:00-06:00",
+          "knockoutScore": {
+            "decidedBy": "regulation",
+            "scoreAfter90": {
+              "away": 0,
+              "home": 2
+            },
+            "scoreAfterET": null,
+            "shootoutScore": null,
+            "winnerTeamId": "mexico"
+          },
+          "matchId": "m001-mexico-south-africa",
+          "matchNumber": 1,
+          "matchdayRound": "group-md1",
+          "score": {
+            "away": 0,
+            "home": 2
+          },
+          "stage": "group",
+          "venue": "Mexico City Stadium"
+        },
+        {
+          "awayTeam": {
+            "id": "czechia",
+            "name": "Czechia"
+          },
+          "date": "2026-06-11",
+          "group": "a",
+          "homeTeam": {
+            "id": "korea-republic",
+            "name": "Korea Republic"
+          },
+          "kickoff": "2026-06-11T20:00:00-06:00",
+          "knockoutScore": {
+            "decidedBy": "regulation",
+            "scoreAfter90": {
+              "away": 1,
+              "home": 2
+            },
+            "scoreAfterET": null,
+            "shootoutScore": null,
+            "winnerTeamId": "korea-republic"
+          },
+          "matchId": "m002-korea-republic-czechia",
+          "matchNumber": 2,
+          "matchdayRound": "group-md1",
+          "score": {
+            "away": 1,
+            "home": 2
+          },
+          "stage": "group",
+          "venue": "Guadalajara Stadium"
+        }
+      ],
+      "standings": [
+        {
+          "drawn": 0,
+          "form": [
+            "win",
+            "win",
+            "win"
+          ],
+          "goalDifference": 6,
+          "goalsAgainst": 0,
+          "goalsFor": 6,
+          "lost": 0,
+          "played": 3,
+          "points": 9,
+          "rank": 1,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "won": 3
+        },
+        {
+          "drawn": 1,
+          "form": [
+            "loss",
+            "draw",
+            "win"
+          ],
+          "goalDifference": -1,
+          "goalsAgainst": 3,
+          "goalsFor": 2,
+          "lost": 1,
+          "played": 3,
+          "points": 4,
+          "rank": 2,
+          "team": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "won": 1
+        },
+        {
+          "drawn": 0,
+          "form": [
+            "win",
+            "loss",
+            "loss"
+          ],
+          "goalDifference": -1,
+          "goalsAgainst": 3,
+          "goalsFor": 2,
+          "lost": 2,
+          "played": 3,
+          "points": 3,
+          "rank": 3,
+          "team": {
+            "id": "korea-republic",
+            "name": "Korea Republic"
+          },
+          "won": 1
+        },
+        {
+          "drawn": 1,
+          "form": [
+            "loss",
+            "draw",
+            "loss"
+          ],
+          "goalDifference": -4,
+          "goalsAgainst": 6,
+          "goalsFor": 2,
+          "lost": 2,
+          "played": 3,
+          "points": 1,
+          "rank": 4,
+          "team": {
+            "id": "czechia",
+            "name": "Czechia"
+          },
+          "won": 0
+        }
+      ]
+    }
+  ],
+  "knockoutResults": [
+    {
+      "awayTeam": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "date": "2026-06-29",
+      "group": null,
+      "homeTeam": {
+        "id": "germany",
+        "name": "Germany"
+      },
+      "kickoff": "2026-06-29T16:30:00-04:00",
+      "knockoutScore": {
+        "decidedBy": "shootout",
+        "scoreAfter90": {
+          "away": 1,
+          "home": 1
+        },
+        "scoreAfterET": {
+          "away": 1,
+          "home": 1
+        },
+        "shootoutScore": {
+          "away": 4,
+          "home": 3
+        },
+        "winnerTeamId": "paraguay"
+      },
+      "matchId": "m074-germany-paraguay",
+      "matchNumber": 74,
+      "matchdayRound": "r32",
+      "score": {
+        "away": 1,
+        "home": 1
+      },
+      "stage": "r32",
+      "venue": "Boston Stadium"
+    }
+  ],
+  "schemaVersion": 1,
+  "tournamentName": "FIFA World Cup 2026"
+}

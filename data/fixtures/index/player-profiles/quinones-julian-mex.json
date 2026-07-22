@@ -1,0 +1,155 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.37,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 43.54,
+      "value": 119
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 82.4
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.3
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 246,
+    "played": 3,
+    "started": 3,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 5,
+      "ballProgressions": 5,
+      "date": "2026-06-11",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 4,
+      "goals": 1,
+      "matchId": "m001-mexico-south-africa",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 90.3,
+      "passesAttempted": 62,
+      "passesCompleted": 56,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.9,
+      "totalDistance": 8832.2
+    },
+    {
+      "attemptsAtGoal": 5,
+      "ballProgressions": 7,
+      "date": "2026-06-18",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 4,
+      "goals": 0,
+      "matchId": "m028-mexico-korea-republic",
+      "minutesPlayed": 66,
+      "opponent": {
+        "id": "korea-republic",
+        "name": "Korea Republic"
+      },
+      "passCompletion": 82.9,
+      "passesAttempted": 35,
+      "passesCompleted": 29,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.1,
+      "totalDistance": 8627.6
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 4,
+      "date": "2026-06-24",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m053-czechia-mexico",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "czechia",
+        "name": "Czechia"
+      },
+      "passCompletion": 73.9,
+      "passesAttempted": 46,
+      "passesCompleted": 34,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 33.3,
+      "totalDistance": 10130.2
+    }
+  ],
+  "name": "Julian QUINONES",
+  "physical": {
+    "distanceZone1": 9468.3,
+    "distanceZone2": 10947.9,
+    "distanceZone3": 3972.0,
+    "distanceZone4": 1604.4,
+    "distanceZone5": 503.7,
+    "highSpeedRuns": 345,
+    "sprints": 126,
+    "topSpeed": 33.3,
+    "totalDistance": 26496.6
+  },
+  "playerId": "quinones-julian-mex",
+  "position": "fw",
+  "schemaVersion": 1,
+  "shirtNumber": 16,
+  "team": {
+    "id": "mexico",
+    "name": "Mexico"
+  },
+  "trends": [
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 90.3
+        },
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 82.9
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 73.9
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 32.9
+        },
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 29.1
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 33.3
+        }
+      ]
+    }
+  ]
+}

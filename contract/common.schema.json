@@ -1,0 +1,514 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wc-stats.dev/contract/common.schema.json",
+  "title": "Common",
+  "description": "Shared identity types, closed vocabularies, coordinates and scalars for every v1 artifact. Authored in the draft-07-compatible subset of 2020-12 (AD-2): $defs allowed; prefixItems, unevaluatedProperties and dependentSchemas banned. Enums are CLOSED by design — a value the pipeline later encounters that is not listed is a shape change, which surfaces as a TypeScript compile error in the App. That is the intended mechanism (AD-2), not a bug. Numeric precision is declared with the custom keyword x-decimals; see contract/README.md for the precision table and enum provenance. This file describes no artifact of its own — it is a $defs library, so its root is deliberately the empty closed object.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "$defs": {
+    "TeamId": {
+      "title": "TeamId",
+      "description": "Entity id and URL slug of a team (AD-3). Lowercase ASCII kebab, accent-stripped. An id once emitted never changes.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "examples": ["mexico", "south-africa"]
+    },
+    "TeamCode": {
+      "title": "TeamCode",
+      "description": "Three-letter lowercase team code, as printed in the PMSR filenames (PMSR-M01-MEX-V-RSA).",
+      "type": "string",
+      "pattern": "^[a-z]{3}$",
+      "examples": ["mex", "rsa"]
+    },
+    "MatchId": {
+      "title": "MatchId",
+      "description": "Entity id and URL slug of a match (AD-3): m{NNN}-{homeTeamId}-{awayTeamId}. The match number is zero-padded to three digits so lexicographic order equals numeric order — see the logged decision in contract/README.md.",
+      "type": "string",
+      "pattern": "^m[0-9]{3}-[a-z0-9]+(-[a-z0-9]+)*$",
+      "examples": ["m001-mexico-south-africa", "m096-switzerland-colombia"]
+    },
+    "PlayerId": {
+      "title": "PlayerId",
+      "description": "Entity id and URL slug of a player (AD-3): {surname}-{givenName}-{teamCode}, name order as listed in the source lineup.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*-[a-z]{3}$",
+      "examples": ["quinones-julian-mex", "williams-ronwen-rsa"]
+    },
+
+    "Stage": {
+      "title": "Stage",
+      "description": "Tournament stage code (AD-3). Knockout codes are exactly pipeline.discover.rounds.KNOCKOUT_ROUNDS. 'third-place' is the corpus's 'Bronze final'.",
+      "type": "string",
+      "enum": ["group", "r32", "r16", "qf", "sf", "third-place", "final"]
+    },
+    "Group": {
+      "title": "Group",
+      "description": "Group letter, lowercased. The 2026 format runs 12 groups; A-L were all observed across the 104-report corpus.",
+      "type": "string",
+      "enum": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]
+    },
+    "MatchdayRound": {
+      "title": "MatchdayRound",
+      "description": "The stratification round a match belongs to. Group matchdays are derived corpus-wide (pipeline.discover.rounds), not printed.",
+      "type": "string",
+      "enum": [
+        "group-md1",
+        "group-md2",
+        "group-md3",
+        "r32",
+        "r16",
+        "qf",
+        "sf",
+        "third-place",
+        "final"
+      ]
+    },
+    "Position": {
+      "title": "Position",
+      "description": "Playing position as printed in the lineup block (GK / DF / MF / FW), lowercased.",
+      "type": "string",
+      "enum": ["gk", "df", "mf", "fw"]
+    },
+    "CardType": {
+      "title": "CardType",
+      "description": "Disciplinary card. NOT derivable from report text — the lineup block renders cards as coloured glyphs, so this vocabulary is closed on the football-universal set. A fourth value is an AD-14 change request (see contract/README.md).",
+      "type": "string",
+      "enum": ["yellow", "second-yellow", "red"]
+    },
+    "DecidedBy": {
+      "title": "DecidedBy",
+      "description": "How a knockout tie was decided.",
+      "type": "string",
+      "enum": ["regulation", "extra-time", "shootout"]
+    },
+    "MatchResult": {
+      "title": "MatchResult",
+      "description": "Result of a match from one team's point of view, used by standings form sequences.",
+      "type": "string",
+      "enum": ["win", "draw", "loss"]
+    },
+
+    "ShotOutcome": {
+      "title": "ShotOutcome",
+      "description": "The five-value marker outcome that the shots pitch map encodes as an exact fill colour. Ground truth is spike/extract.py's RGB map: (0.00,0.50,0.00)=goal, (0.36,0.61,0.84)=on-target, (0.96,0.74,0.00)=off-target, (0.70,0.53,1.00)=blocked, (0.18,0.30,1.00)=incomplete.",
+      "type": "string",
+      "enum": ["goal", "on-target", "off-target", "blocked", "incomplete"]
+    },
+    "ShotOutcomeDetail": {
+      "title": "ShotOutcomeDetail",
+      "description": "The compound Outcome label printed in the shots event table, which is finer than the five-value marker colour. Closed against all 104 reports on 2026-07-22; provenance table in contract/README.md.",
+      "type": "string",
+      "enum": [
+        "deflected-off-target",
+        "deflected-off-target-defensive-event",
+        "deflected-off-target-referee-event",
+        "deflected-off-target-saved",
+        "deflected-on-target-defensive-event",
+        "deflected-on-target-goal",
+        "deflected-on-target-goal-prevented",
+        "deflected-on-target-saved",
+        "incomplete-assist",
+        "incomplete-blocked",
+        "incomplete-defensive-event",
+        "incomplete-foul-for",
+        "incomplete-player-on-ball-error",
+        "incomplete-referee-event",
+        "off-target",
+        "off-target-defensive-event",
+        "off-target-player-on-ball-error",
+        "off-target-saved",
+        "on-target-defensive-event",
+        "on-target-goal",
+        "on-target-goal-prevented",
+        "on-target-saved"
+      ]
+    },
+    "BodyPart": {
+      "title": "BodyPart",
+      "description": "Body part used for a shot, from the shots event table's Body Part column.",
+      "type": "string",
+      "enum": ["right-foot", "left-foot", "head", "upper-body", "lower-body"]
+    },
+    "ShotDeliveryType": {
+      "title": "ShotDeliveryType",
+      "description": "How the ball arrived for a shot, from the shots event table's Delivery Type column. 'penalty' here is an in-play penalty kick; shoot-out attempts are never shots (see ShootoutAttempt).",
+      "type": "string",
+      "enum": [
+        "pass",
+        "cross",
+        "corner",
+        "free-kick",
+        "penalty",
+        "loose-ball",
+        "ball-progression",
+        "interception",
+        "tackle",
+        "other"
+      ]
+    },
+    "CrossDeliveryType": {
+      "title": "CrossDeliveryType",
+      "description": "Cross delivery type. The corpus prints this vocabulary two ways — 'Inswing'/'Outswing' on the crosses and set-plays pages, 'In Swing'/'Out Swing' on the aerial-control page. Both normalize to the same code (logged decision, contract/README.md).",
+      "type": "string",
+      "enum": ["inswing", "outswing", "driven", "lofted", "cutback", "push-cross"]
+    },
+    "DefensiveActionType": {
+      "title": "DefensiveActionType",
+      "description": "Marker category on the Defensive Actions pitch map, from that page's legend.",
+      "type": "string",
+      "enum": ["forced-turnover", "possession-regain", "block", "possession-contest"]
+    },
+    "PossessionContestType": {
+      "title": "PossessionContestType",
+      "description": "Breakdown categories of the Possession Contests panel on the Defensive Actions page.",
+      "type": "string",
+      "enum": [
+        "pass",
+        "attempt-at-goal",
+        "cross",
+        "clearance",
+        "physical-duel",
+        "aerial-duel"
+      ]
+    },
+    "ReceivingEventType": {
+      "title": "ReceivingEventType",
+      "description": "Discriminator separating the 'Offering to Receive' and 'Movement to Receive' pitch maps, which share one event shape.",
+      "type": "string",
+      "enum": ["offer", "movement"]
+    },
+    "OfferMovementType": {
+      "title": "OfferMovementType",
+      "description": "Offer movement type, from the 'Offer movement types' column group on the In Possession - Offers & Receptions page.",
+      "type": "string",
+      "enum": ["in-front", "in-between", "out-to-in", "in-to-out", "in-behind", "no-movement"]
+    },
+
+    "InPossessionPhase": {
+      "title": "InPossessionPhase",
+      "description": "In-possession category of the Phases of Play page. The eight shares sum to approximately 100%.",
+      "type": "string",
+      "enum": [
+        "build-up-unopposed",
+        "build-up-opposed",
+        "progression",
+        "final-third",
+        "long-ball",
+        "attacking-transition",
+        "counter-attack",
+        "set-piece"
+      ]
+    },
+    "OutOfPossessionPhase": {
+      "title": "OutOfPossessionPhase",
+      "description": "Out-of-possession category of the Phases of Play page. The nine shares sum to approximately 100%.",
+      "type": "string",
+      "enum": [
+        "high-press",
+        "mid-press",
+        "low-press",
+        "high-block",
+        "mid-block",
+        "low-block",
+        "recovery",
+        "defensive-transition",
+        "counter-press"
+      ]
+    },
+    "BlockLevel": {
+      "title": "BlockLevel",
+      "description": "Defensive block height. All three values are stored; none is derived from the others (AD-5).",
+      "type": "string",
+      "enum": ["high", "mid", "low"]
+    },
+
+    "DistributionType": {
+      "title": "DistributionType",
+      "description": "Top-level goalkeeper distribution family: Kick from Feet, Kick from Hands, Throw Distribution.",
+      "type": "string",
+      "enum": ["feet", "hands", "throw"]
+    },
+    "FeetDistributionTechnique": {
+      "title": "FeetDistributionTechnique",
+      "description": "Sub-categories of the Kick from Feet panel.",
+      "type": "string",
+      "enum": [
+        "play-onto",
+        "play-into",
+        "play-around",
+        "play-through",
+        "play-beyond",
+        "other"
+      ]
+    },
+    "HandsDistributionTechnique": {
+      "title": "HandsDistributionTechnique",
+      "description": "Sub-categories of the Kick from Hands panel.",
+      "type": "string",
+      "enum": ["side-kick", "from-hands", "drop-kick"]
+    },
+    "ThrowDistributionTechnique": {
+      "title": "ThrowDistributionTechnique",
+      "description": "Sub-categories of the Throw Distribution panel.",
+      "type": "string",
+      "enum": ["over-arm", "under-arm", "side-arm", "chest"]
+    },
+    "InterventionType": {
+      "title": "InterventionType",
+      "description": "Goalkeeper goal-prevention intervention type, from the Goal Prevention page's Intervention Type panel.",
+      "type": "string",
+      "enum": [
+        "save-and-retain",
+        "save-and-deflect",
+        "deflect-and-retain",
+        "save-attempt",
+        "no-save-attempt"
+      ]
+    },
+    "InterventionBodyType": {
+      "title": "InterventionBodyType",
+      "description": "Body part used for a goalkeeper intervention, from the Goal Prevention page's Intervention Body Type panel.",
+      "type": "string",
+      "enum": ["head", "hands", "upper-body", "lower-body", "feet"]
+    },
+    "AerialInterventionType": {
+      "title": "AerialInterventionType",
+      "description": "Aerial Control intervention category. Each is reported complete and incomplete.",
+      "type": "string",
+      "enum": ["punch", "claim", "tipped-palmed"]
+    },
+
+    "FreeKickType": {
+      "title": "FreeKickType",
+      "description": "Free-kick type from the Set Plays page's Free Kicks table.",
+      "type": "string",
+      "enum": ["direct", "direct-on-target", "direct-off-target", "indirect"]
+    },
+    "CornerDeliveryType": {
+      "title": "CornerDeliveryType",
+      "description": "Corner delivery type from the Set Plays page's Corners - Delivery Type table.",
+      "type": "string",
+      "enum": ["direct-to-area", "short", "edge-of-penalty-area"]
+    },
+    "CornerDeliveryStyle": {
+      "title": "CornerDeliveryStyle",
+      "description": "Corner delivery style from the Set Plays page's Corners - Delivery Style table.",
+      "type": "string",
+      "enum": ["inswing", "outswing", "driven", "lofted"]
+    },
+    "PitchSide": {
+      "title": "PitchSide",
+      "description": "Side of the pitch a corner was taken from ('From Left Side' / 'From Right Side'). Side counts sum to the corner total.",
+      "type": "string",
+      "enum": ["left", "right"]
+    },
+
+    "MetricCode": {
+      "title": "MetricCode",
+      "description": "Closed leaderboard metric vocabulary. NOT printed in the corpus — derived from the Domain B (team) and Domain G (player) field names, and deliberately kept string-identical to them so a board's code names the artifact field it ranks. Story 2.13 maps each code to a locale label, so an unknown code is a compile error by design (AD-2).",
+      "type": "string",
+      "enum": [
+        "ballProgressions",
+        "completedLineBreaks",
+        "crosses",
+        "crossesCompleted",
+        "defensiveLineBreaks",
+        "defensivePressures",
+        "distanceCovered",
+        "duelsWonAerial",
+        "duelsWonPhysical",
+        "expectedGoals",
+        "forcedTurnovers",
+        "goals",
+        "highSpeedRuns",
+        "interceptions",
+        "lineBreaksCompleted",
+        "passCompletion",
+        "passes",
+        "passesCompleted",
+        "possession",
+        "possessionRegains",
+        "receptionsInFinalThird",
+        "secondBalls",
+        "shots",
+        "shotsOnTarget",
+        "sprintDistance",
+        "sprints",
+        "stepIns",
+        "switchesOfPlay",
+        "tackles",
+        "takeOns",
+        "topSpeed"
+      ]
+    },
+    "AggregationSemantics": {
+      "title": "AggregationSemantics",
+      "description": "How a player-profile headline aggregate was computed from its per-match values (FR-27). Declared per metric so the App never has to guess, and never re-aggregates (AD-5).",
+      "type": "string",
+      "enum": ["sum", "max", "average"]
+    },
+    "LeaderboardScope": {
+      "title": "LeaderboardScope",
+      "description": "Whether a leaderboard ranks teams or players.",
+      "type": "string",
+      "enum": ["team", "player"]
+    },
+
+    "PitchX": {
+      "title": "PitchX",
+      "description": "Pitch-frame x coordinate (AD-6): 0-100 over the FULL pitch rectangle, oriented to the acting team's attack direction, x=100 at the opponent's goal line.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "x-decimals": 2
+    },
+    "PitchY": {
+      "title": "PitchY",
+      "description": "Pitch-frame y coordinate (AD-6): 0-100 over the FULL pitch rectangle, y=0 at the attacking team's left touchline.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "x-decimals": 2
+    },
+
+    "Minute": {
+      "title": "Minute",
+      "description": "Clock minute of an event, capped at the end of the period it fell in. Stoppage time is carried separately in stoppageMinute so no display string is ever stored (AD-7). Extra time runs to 120, confirmed against PMSR-M96-SUI-V-COL.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "x-decimals": 0
+    },
+    "StoppageMinute": {
+      "title": "StoppageMinute",
+      "description": "Minutes into stoppage time, or null when the event did not fall in stoppage time. The corpus prints '90+2'; that is minute 90, stoppageMinute 2. The App composes the label in its locale layer (AD-7).",
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30,
+          "x-decimals": 0
+        },
+        { "type": "null" }
+      ]
+    },
+    "ShirtNumber": {
+      "title": "ShirtNumber",
+      "description": "Squad number as printed beside the player's name in the lineup block.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99,
+      "x-decimals": 0
+    },
+    "Count": {
+      "title": "Count",
+      "description": "A non-negative whole-number tally.",
+      "type": "integer",
+      "minimum": 0,
+      "x-decimals": 0
+    },
+    "Rank": {
+      "title": "Rank",
+      "description": "Explicit pipeline-computed rank, 1-based. Never derived from array position by the App (AD-5).",
+      "type": "integer",
+      "minimum": 1,
+      "x-decimals": 0
+    },
+    "Percentage": {
+      "title": "Percentage",
+      "description": "A percentage on a 0-100 scale, unformatted (AD-7).",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "x-decimals": 1
+    },
+    "Metres": {
+      "title": "Metres",
+      "description": "A distance in metres, unformatted (AD-7). The unit is fixed by the type, never carried as text.",
+      "type": "number",
+      "minimum": 0,
+      "x-decimals": 1
+    },
+    "Kilometres": {
+      "title": "Kilometres",
+      "description": "A distance in kilometres, unformatted (AD-7).",
+      "type": "number",
+      "minimum": 0,
+      "x-decimals": 2
+    },
+    "KmPerHour": {
+      "title": "KmPerHour",
+      "description": "A speed in kilometres per hour, unformatted (AD-7).",
+      "type": "number",
+      "minimum": 0,
+      "x-decimals": 1
+    },
+    "ExpectedGoals": {
+      "title": "ExpectedGoals",
+      "description": "An expected-goals value.",
+      "type": "number",
+      "minimum": 0,
+      "x-decimals": 2
+    },
+
+    "TeamScore": {
+      "title": "TeamScore",
+      "description": "A home/away goal pair at one point in a match.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["home", "away"],
+      "properties": {
+        "home": { "$ref": "#/$defs/Count" },
+        "away": { "$ref": "#/$defs/Count" }
+      }
+    },
+    "KnockoutScore": {
+      "title": "KnockoutScore",
+      "description": "How the match stood at each decision point. scoreAfter90 is always present; scoreAfterET and shootoutScore are null when that period was not played, and winnerTeamId is null for a drawn group match. decidedBy drives the App's Hero display.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scoreAfter90",
+        "scoreAfterET",
+        "shootoutScore",
+        "winnerTeamId",
+        "decidedBy"
+      ],
+      "properties": {
+        "scoreAfter90": { "$ref": "#/$defs/TeamScore" },
+        "scoreAfterET": {
+          "anyOf": [{ "$ref": "#/$defs/TeamScore" }, { "type": "null" }]
+        },
+        "shootoutScore": {
+          "anyOf": [{ "$ref": "#/$defs/TeamScore" }, { "type": "null" }]
+        },
+        "winnerTeamId": {
+          "anyOf": [{ "$ref": "#/$defs/TeamId" }, { "type": "null" }]
+        },
+        "decidedBy": { "$ref": "#/$defs/DecidedBy" }
+      }
+    },
+
+    "EntityRef": {
+      "title": "EntityRef",
+      "description": "A minimal cross-link to another artifact: the slug plus the display name the App shows without having to fetch the target.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "title": "EntityRefId",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "name": {
+          "title": "EntityRefName",
+          "description": "Proper name as printed in the source report. A proper noun, not a translated label — locale-neutral by AD-7.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

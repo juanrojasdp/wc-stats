@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wc-stats.dev/contract/player-profile.schema.json",
+  "title": "PlayerProfile",
+  "description": "One player across the whole tournament: headline aggregates with their aggregation semantics declared per metric (FR-27), a per-match series, a physical profile, and cross-match trends. Every value is precomputed — the App never aggregates (AD-5).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "playerId",
+    "name",
+    "team",
+    "position",
+    "shirtNumber",
+    "appearances",
+    "aggregates",
+    "physical",
+    "matches",
+    "trends"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "title": "PlayerProfileSchemaVersion",
+      "type": "integer",
+      "const": 1
+    },
+    "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+    "name": {
+      "title": "PlayerProfileName",
+      "type": "string",
+      "minLength": 1
+    },
+    "team": { "$ref": "common.schema.json#/$defs/EntityRef" },
+    "position": { "$ref": "common.schema.json#/$defs/Position" },
+    "shirtNumber": { "$ref": "common.schema.json#/$defs/ShirtNumber" },
+    "appearances": { "$ref": "#/$defs/Appearances" },
+    "aggregates": {
+      "title": "PlayerAggregates",
+      "description": "Headline numbers. Each carries the aggregation that produced it, so FR-27's 'aggregates equal the correct aggregation' is checkable from the artifact alone rather than from a convention the App has to remember.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/AggregateMetric" }
+    },
+    "physical": { "$ref": "#/$defs/PhysicalProfile" },
+    "matches": {
+      "title": "PlayerMatchRows",
+      "description": "One row per match with minutes, chronological. Each carries matchId so every value links back to the match it came from.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/PlayerMatchRow" }
+    },
+    "trends": {
+      "title": "PlayerTrends",
+      "description": "Cross-match series the profile charts. One entry per charted metric.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/TrendSeries" }
+    }
+  },
+
+  "$defs": {
+    "Appearances": {
+      "title": "Appearances",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["played", "started", "substituteAppearances", "minutesPlayed"],
+      "properties": {
+        "played": { "$ref": "common.schema.json#/$defs/Count" },
+        "started": { "$ref": "common.schema.json#/$defs/Count" },
+        "substituteAppearances": { "$ref": "common.schema.json#/$defs/Count" },
+        "minutesPlayed": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+
+    "AggregateMetric": {
+      "title": "AggregateMetric",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metricCode", "value", "aggregation", "perNinety"],
+      "properties": {
+        "metricCode": { "$ref": "common.schema.json#/$defs/MetricCode" },
+        "value": {
+          "title": "AggregateMetricValue",
+          "description": "Unformatted; the App applies unit and number format from its locale layer, keyed by metricCode (AD-7).",
+          "type": "number"
+        },
+        "aggregation": { "$ref": "common.schema.json#/$defs/AggregationSemantics" },
+        "perNinety": {
+          "title": "PerNinety",
+          "description": "The value normalized to 90 minutes played. Null when the metric is a maximum or a percentage, where a per-90 rate is meaningless.",
+          "anyOf": [{ "type": "number" }, { "type": "null" }]
+        }
+      }
+    },
+
+    "PhysicalProfile": {
+      "title": "PhysicalProfile",
+      "description": "Tournament physical totals plus the maxima. Distances are the sums over matches played; topSpeed is the maximum, never a mean.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalDistance",
+        "distanceZone1",
+        "distanceZone2",
+        "distanceZone3",
+        "distanceZone4",
+        "distanceZone5",
+        "highSpeedRuns",
+        "sprints",
+        "topSpeed"
+      ],
+      "properties": {
+        "totalDistance": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone1": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone2": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone3": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone4": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone5": { "$ref": "common.schema.json#/$defs/Metres" },
+        "highSpeedRuns": { "$ref": "common.schema.json#/$defs/Count" },
+        "sprints": { "$ref": "common.schema.json#/$defs/Count" },
+        "topSpeed": { "$ref": "common.schema.json#/$defs/KmPerHour" }
+      }
+    },
+
+    "PlayerMatchRow": {
+      "title": "PlayerMatchRow",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matchId",
+        "stage",
+        "date",
+        "opponent",
+        "started",
+        "minutesPlayed",
+        "goals",
+        "attemptsAtGoal",
+        "passesAttempted",
+        "passesCompleted",
+        "passCompletion",
+        "ballProgressions",
+        "duelsWonAerial",
+        "duelsWonPhysical",
+        "totalDistance",
+        "topSpeed"
+      ],
+      "properties": {
+        "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
+        "stage": { "$ref": "common.schema.json#/$defs/Stage" },
+        "date": {
+          "title": "PlayerMatchDate",
+          "type": "string",
+          "format": "date"
+        },
+        "opponent": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "started": {
+          "title": "PlayerMatchStarted",
+          "type": "boolean"
+        },
+        "minutesPlayed": { "$ref": "common.schema.json#/$defs/Count" },
+        "goals": { "$ref": "common.schema.json#/$defs/Count" },
+        "attemptsAtGoal": { "$ref": "common.schema.json#/$defs/Count" },
+        "passesAttempted": { "$ref": "common.schema.json#/$defs/Count" },
+        "passesCompleted": { "$ref": "common.schema.json#/$defs/Count" },
+        "passCompletion": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "ballProgressions": { "$ref": "common.schema.json#/$defs/Count" },
+        "duelsWonAerial": { "$ref": "common.schema.json#/$defs/Count" },
+        "duelsWonPhysical": { "$ref": "common.schema.json#/$defs/Count" },
+        "totalDistance": { "$ref": "common.schema.json#/$defs/Metres" },
+        "topSpeed": { "$ref": "common.schema.json#/$defs/KmPerHour" }
+      }
+    },
+
+    "TrendPoint": {
+      "title": "TrendPoint",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matchId", "value"],
+      "properties": {
+        "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
+        "value": {
+          "title": "TrendPointValue",
+          "type": "number"
+        }
+      }
+    },
+    "TrendSeries": {
+      "title": "TrendSeries",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metricCode", "points"],
+      "properties": {
+        "metricCode": { "$ref": "common.schema.json#/$defs/MetricCode" },
+        "points": {
+          "title": "TrendPoints",
+          "description": "Chronological, one point per match played.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/TrendPoint" }
+        }
+      }
+    }
+  }
+}

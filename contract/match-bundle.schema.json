@@ -1,0 +1,1273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wc-stats.dev/contract/match-bundle.schema.json",
+  "title": "MatchBundle",
+  "description": "One match, complete: Domains A-G plus the pre-rendered per-team storyStats the Hero Layer shows. This is the only artifact a match route fetches (AD-4). Every aggregate, distribution, percentage and total is a field — the App never sums or averages (AD-5).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "matchId",
+    "metadata",
+    "storyStats",
+    "momentum",
+    "keyStatistics",
+    "tacticalIdentity",
+    "events",
+    "goalkeeping",
+    "setPlays",
+    "players"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "title": "MatchBundleSchemaVersion",
+      "description": "Stamped from /contract/version.json. One global integer, declared exactly once (AD-2).",
+      "type": "integer",
+      "const": 1
+    },
+    "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
+    "metadata": { "$ref": "#/$defs/MatchMetadata" },
+    "storyStats": { "$ref": "#/$defs/StoryStatsBlock" },
+    "momentum": {
+      "$comment": "PROVISIONAL series shape (OQ-5 / AR-17). The concrete shape lands in Story 1.8 via the AD-14 change flow, with a schemaVersion bump and regenerated fixtures in the same commit. The KEY contract is final in v1: required, never omitted, never [], and null triggers the App's empty state.",
+      "title": "Momentum",
+      "anyOf": [{ "$ref": "#/$defs/MomentumSeries" }, { "type": "null" }]
+    },
+    "keyStatistics": { "$ref": "#/$defs/KeyStatisticsBlock" },
+    "tacticalIdentity": { "$ref": "#/$defs/TacticalIdentityBlock" },
+    "events": { "$ref": "#/$defs/EventTables" },
+    "goalkeeping": {
+      "title": "GoalkeepingBlock",
+      "description": "One entry per goalkeeper who appeared, both teams, ordered home team first.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/GoalkeeperRecord" }
+    },
+    "setPlays": { "$ref": "#/$defs/SetPlaysBlock" },
+    "players": {
+      "title": "PlayerRecords",
+      "description": "One entry per player with minutes, both teams, ordered home team first then by shirt number.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/PlayerRecord" }
+    }
+  },
+
+  "$defs": {
+    "TeamRef": {
+      "title": "TeamRef",
+      "description": "Identity of one of the two teams in this match.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["teamId", "teamCode", "name"],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "teamCode": { "$ref": "common.schema.json#/$defs/TeamCode" },
+        "name": {
+          "title": "TeamName",
+          "description": "Team name exactly as the cover scoreline prints it. A proper noun, not a translated label (AD-7).",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+
+    "MinuteStamp": {
+      "title": "MinuteStamp",
+      "description": "A point on the match clock. Ordering is by (minute, stoppageMinute) — the roving-tabindex keyboard navigation over pitch markers depends on it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minute", "stoppageMinute"],
+      "properties": {
+        "minute": { "$ref": "common.schema.json#/$defs/Minute" },
+        "stoppageMinute": { "$ref": "common.schema.json#/$defs/StoppageMinute" }
+      }
+    },
+
+    "Formation": {
+      "title": "Formation",
+      "description": "Formation as the lineup page prints it, locale-neutral (AD-7). Thirteen distinct values were observed across the 104-report corpus, from 3-4-1-2 to 5-4-1.",
+      "type": "string",
+      "pattern": "^[1-9](-[1-9]){1,3}$",
+      "examples": ["4-3-3", "4-1-2-3", "5-3-2"]
+    },
+
+    "CardRecord": {
+      "title": "CardRecord",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "at"],
+      "properties": {
+        "type": { "$ref": "common.schema.json#/$defs/CardType" },
+        "at": { "$ref": "#/$defs/MinuteStamp" }
+      }
+    },
+
+    "LineupEntry": {
+      "title": "LineupEntry",
+      "description": "One named player in a team sheet. playerId is mandatory on every entry — EXPERIENCE.md links each lineup name to its Player Profile.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "playerId",
+        "name",
+        "shirtNumber",
+        "position",
+        "substitutedOn",
+        "substitutedOff",
+        "goals",
+        "cards"
+      ],
+      "properties": {
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "name": {
+          "title": "LineupEntryName",
+          "description": "Player name as the lineup block prints it (given name plus upper-case surname).",
+          "type": "string",
+          "minLength": 1
+        },
+        "shirtNumber": { "$ref": "common.schema.json#/$defs/ShirtNumber" },
+        "position": { "$ref": "common.schema.json#/$defs/Position" },
+        "substitutedOn": {
+          "title": "SubstitutedOn",
+          "anyOf": [{ "$ref": "#/$defs/MinuteStamp" }, { "type": "null" }]
+        },
+        "substitutedOff": {
+          "title": "SubstitutedOff",
+          "anyOf": [{ "$ref": "#/$defs/MinuteStamp" }, { "type": "null" }]
+        },
+        "goals": {
+          "title": "LineupEntryGoalMinutes",
+          "description": "Minutes at which this player scored. Own goals are NOT listed here; they appear in metadata.goals attributed to the benefiting team.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/MinuteStamp" }
+        },
+        "cards": {
+          "title": "LineupEntryCards",
+          "type": "array",
+          "items": { "$ref": "#/$defs/CardRecord" }
+        }
+      }
+    },
+
+    "Lineup": {
+      "title": "Lineup",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["formation", "starters", "substitutes"],
+      "properties": {
+        "formation": { "$ref": "#/$defs/Formation" },
+        "starters": {
+          "title": "Starters",
+          "type": "array",
+          "items": { "$ref": "#/$defs/LineupEntry" }
+        },
+        "substitutes": {
+          "title": "Substitutes",
+          "type": "array",
+          "items": { "$ref": "#/$defs/LineupEntry" }
+        }
+      }
+    },
+
+    "GoalRecord": {
+      "title": "GoalRecord",
+      "description": "One goal in the match, in chronological order. Own goals are attributed to the BENEFITING team here (teamId) while scorerPlayerId names the player who put it in — and they are excluded from shot maps entirely (AD-6).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "teamId",
+        "scorerPlayerId",
+        "scorerName",
+        "at",
+        "ownGoal",
+        "penalty"
+      ],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "scorerPlayerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "scorerName": {
+          "title": "GoalScorerName",
+          "type": "string",
+          "minLength": 1
+        },
+        "at": { "$ref": "#/$defs/MinuteStamp" },
+        "ownGoal": {
+          "title": "GoalOwnGoal",
+          "$comment": "PMSR prints no own-goal marking anywhere in the 104-report corpus (verified 2026-07-22). v1 therefore always emits false; a source that distinguishes own goals is an AD-14 change request.",
+          "type": "boolean"
+        },
+        "penalty": {
+          "title": "GoalPenalty",
+          "description": "An in-play penalty kick. Shoot-out conversions are never goals — see EventTables.shootoutAttempts.",
+          "type": "boolean"
+        }
+      }
+    },
+
+    "MatchMetadata": {
+      "title": "MatchMetadata",
+      "description": "Domain A. Team ordering is explicit and load-bearing: DESIGN.md's two-team accent rule assigns accent A to the home / first-listed team, so it must be encoded, never inferred from key order. `score` is the final score as the cover prints it — after extra time when extra time was played, otherwise after 90; the per-period breakdown lives in `knockoutScore`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matchNumber",
+        "homeTeam",
+        "awayTeam",
+        "score",
+        "knockoutScore",
+        "stage",
+        "group",
+        "matchdayRound",
+        "venue",
+        "date",
+        "kickoff",
+        "lineups",
+        "goals"
+      ],
+      "properties": {
+        "matchNumber": {
+          "title": "MatchNumber",
+          "description": "Match number within the tournament, 1-104, as printed on the cover stage line.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 104,
+          "x-decimals": 0
+        },
+        "homeTeam": { "$ref": "#/$defs/TeamRef" },
+        "awayTeam": { "$ref": "#/$defs/TeamRef" },
+        "score": { "$ref": "common.schema.json#/$defs/TeamScore" },
+        "knockoutScore": { "$ref": "common.schema.json#/$defs/KnockoutScore" },
+        "stage": { "$ref": "common.schema.json#/$defs/Stage" },
+        "group": {
+          "title": "MatchGroup",
+          "description": "Group letter for a group-stage match, null for every knockout tie.",
+          "anyOf": [{ "$ref": "common.schema.json#/$defs/Group" }, { "type": "null" }]
+        },
+        "matchdayRound": { "$ref": "common.schema.json#/$defs/MatchdayRound" },
+        "venue": {
+          "title": "Venue",
+          "description": "Venue name as the cover prints it. Sixteen distinct venues across the corpus.",
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "title": "MatchDate",
+          "description": "Calendar date of the match, venue-local, ISO 8601 (AD-7).",
+          "type": "string",
+          "format": "date"
+        },
+        "kickoff": {
+          "title": "Kickoff",
+          "description": "Kick-off instant, ISO 8601 venue-local WITH its UTC offset, so the App can render either local or absolute time without a venue timezone table.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "lineups": {
+          "title": "Lineups",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["home", "away"],
+          "properties": {
+            "home": { "$ref": "#/$defs/Lineup" },
+            "away": { "$ref": "#/$defs/Lineup" }
+          }
+        },
+        "goals": {
+          "title": "Goals",
+          "description": "Every goal in the match, chronological. The Momentum Timeline's goal markers come from here, never from the momentum series.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/GoalRecord" }
+        }
+      }
+    },
+
+    "StoryStats": {
+      "title": "StoryStats",
+      "description": "The five Hero Layer tiles for one team (FR-21). Exactly five fields — Story 2.4 renders exactly five tiles. All five are aggregates, so AD-5 requires them precomputed and shipped, never summed in the browser.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["possession", "shots", "expectedGoals", "distanceCovered", "topSpeed"],
+      "properties": {
+        "possession": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "shots": { "$ref": "common.schema.json#/$defs/Count" },
+        "expectedGoals": { "$ref": "common.schema.json#/$defs/ExpectedGoals" },
+        "distanceCovered": { "$ref": "common.schema.json#/$defs/Kilometres" },
+        "topSpeed": { "$ref": "common.schema.json#/$defs/KmPerHour" }
+      }
+    },
+    "StoryStatsBlock": {
+      "title": "StoryStatsBlock",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["home", "away"],
+      "properties": {
+        "home": { "$ref": "#/$defs/StoryStats" },
+        "away": { "$ref": "#/$defs/StoryStats" }
+      }
+    },
+
+    "MomentumSample": {
+      "title": "MomentumSample",
+      "description": "One sampled point on the momentum axis. EXPERIENCE.md's aria-valuetext announces the minute plus both teams' values, which is exactly this shape.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minute", "home", "away"],
+      "properties": {
+        "minute": { "$ref": "common.schema.json#/$defs/Minute" },
+        "home": {
+          "title": "MomentumHomeValue",
+          "type": "number",
+          "x-decimals": 2
+        },
+        "away": {
+          "title": "MomentumAwayValue",
+          "type": "number",
+          "x-decimals": 2
+        }
+      }
+    },
+    "MomentumSeries": {
+      "title": "MomentumSeries",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["samples"],
+      "properties": {
+        "samples": {
+          "title": "MomentumSamples",
+          "type": "array",
+          "items": { "$ref": "#/$defs/MomentumSample" }
+        }
+      }
+    },
+
+    "TeamKeyStatistics": {
+      "title": "TeamKeyStatistics",
+      "description": "Domain B, one team. Nineteen fields, matching the Match Summary - Key Statistics page row for row; compound rows such as 'Total Passes (Complete)' and 'Defensive Pressures Applied (Direct Pressures)' are split into their two numbers rather than stored as a formatted string (AD-7). `sprintDistance` is the page's second distance row, 'Zone 4 - Low Speed Sprinting: 20-25 km/h'.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "possession",
+        "goals",
+        "expectedGoals",
+        "shots",
+        "shotsOnTarget",
+        "passes",
+        "passesCompleted",
+        "passCompletion",
+        "completedLineBreaks",
+        "defensiveLineBreaks",
+        "receptionsInFinalThird",
+        "crosses",
+        "ballProgressions",
+        "defensivePressures",
+        "directPressures",
+        "forcedTurnovers",
+        "secondBalls",
+        "distanceCovered",
+        "sprintDistance"
+      ],
+      "properties": {
+        "possession": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "goals": { "$ref": "common.schema.json#/$defs/Count" },
+        "expectedGoals": { "$ref": "common.schema.json#/$defs/ExpectedGoals" },
+        "shots": { "$ref": "common.schema.json#/$defs/Count" },
+        "shotsOnTarget": { "$ref": "common.schema.json#/$defs/Count" },
+        "passes": { "$ref": "common.schema.json#/$defs/Count" },
+        "passesCompleted": { "$ref": "common.schema.json#/$defs/Count" },
+        "passCompletion": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "completedLineBreaks": { "$ref": "common.schema.json#/$defs/Count" },
+        "defensiveLineBreaks": { "$ref": "common.schema.json#/$defs/Count" },
+        "receptionsInFinalThird": { "$ref": "common.schema.json#/$defs/Count" },
+        "crosses": { "$ref": "common.schema.json#/$defs/Count" },
+        "ballProgressions": { "$ref": "common.schema.json#/$defs/Count" },
+        "defensivePressures": { "$ref": "common.schema.json#/$defs/Count" },
+        "directPressures": { "$ref": "common.schema.json#/$defs/Count" },
+        "forcedTurnovers": { "$ref": "common.schema.json#/$defs/Count" },
+        "secondBalls": { "$ref": "common.schema.json#/$defs/Count" },
+        "distanceCovered": { "$ref": "common.schema.json#/$defs/Kilometres" },
+        "sprintDistance": { "$ref": "common.schema.json#/$defs/Kilometres" }
+      }
+    },
+    "KeyStatisticsBlock": {
+      "title": "KeyStatisticsBlock",
+      "description": "Domain B for both teams. contestedPossession is a match-level third share: the page prints possession as home / contested / away, and the three sum to 100, so the middle value cannot be derived from the two team values and is stored once here.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["home", "away", "contestedPossession"],
+      "properties": {
+        "home": { "$ref": "#/$defs/TeamKeyStatistics" },
+        "away": { "$ref": "#/$defs/TeamKeyStatistics" },
+        "contestedPossession": { "$ref": "common.schema.json#/$defs/Percentage" }
+      }
+    },
+
+    "InPossessionPhases": {
+      "title": "InPossessionPhases",
+      "description": "The eight in-possession percentages from the Phases of Play page. These are INDEPENDENT per-phase rates, not a partition: they do not sum to 100 and must never be normalized or treated as slices of a whole. Verified against the corpus — Germany's eight values in PMSR-M74-GER-V-PAR sum to 124. All eight are stored; none is derived (AD-5).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "buildUpUnopposed",
+        "buildUpOpposed",
+        "progression",
+        "finalThird",
+        "longBall",
+        "attackingTransition",
+        "counterAttack",
+        "setPiece"
+      ],
+      "properties": {
+        "buildUpUnopposed": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "buildUpOpposed": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "progression": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "finalThird": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "longBall": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "attackingTransition": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "counterAttack": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "setPiece": { "$ref": "common.schema.json#/$defs/Percentage" }
+      }
+    },
+    "OutOfPossessionPhases": {
+      "title": "OutOfPossessionPhases",
+      "description": "The nine out-of-possession percentages from the Phases of Play page. Independent per-phase rates, not a partition — they do not sum to 100.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "highPress",
+        "midPress",
+        "lowPress",
+        "highBlock",
+        "midBlock",
+        "lowBlock",
+        "recovery",
+        "defensiveTransition",
+        "counterPress"
+      ],
+      "properties": {
+        "highPress": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "midPress": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "lowPress": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "highBlock": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "midBlock": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "lowBlock": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "recovery": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "defensiveTransition": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "counterPress": { "$ref": "common.schema.json#/$defs/Percentage" }
+      }
+    },
+    "PossessionSplitMetres": {
+      "title": "PossessionSplitMetres",
+      "description": "A distance measured separately in and out of possession.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inPossession", "outOfPossession"],
+      "properties": {
+        "inPossession": { "$ref": "common.schema.json#/$defs/Metres" },
+        "outOfPossession": { "$ref": "common.schema.json#/$defs/Metres" }
+      }
+    },
+    "DefensiveBlockDistribution": {
+      "title": "DefensiveBlockDistribution",
+      "$comment": "These are the SAME three numbers as phasesOutOfPossession.highBlock / .midBlock / .lowBlock — the Phases of Play page is their only source. They are surfaced again here because Story 2.10's #pressing section renders block height as its own concept. The pipeline must emit them equal to the phase values; pipeline/tests/test_fixtures.py asserts that equality so the two copies cannot drift.",
+      "description": "Percentage of defensive time spent at each block height. Independent rates, not a partition — they do not sum to 100.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["high", "mid", "low"],
+      "properties": {
+        "high": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "mid": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "low": { "$ref": "common.schema.json#/$defs/Percentage" }
+      }
+    },
+    "TeamTacticalIdentity": {
+      "title": "TeamTacticalIdentity",
+      "description": "Domain C, one team.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phasesInPossession",
+        "phasesOutOfPossession",
+        "lineHeight",
+        "teamLength",
+        "defensiveBlockDistribution"
+      ],
+      "properties": {
+        "phasesInPossession": { "$ref": "#/$defs/InPossessionPhases" },
+        "phasesOutOfPossession": { "$ref": "#/$defs/OutOfPossessionPhases" },
+        "lineHeight": { "$ref": "#/$defs/PossessionSplitMetres" },
+        "teamLength": { "$ref": "#/$defs/PossessionSplitMetres" },
+        "defensiveBlockDistribution": { "$ref": "#/$defs/DefensiveBlockDistribution" }
+      }
+    },
+    "TacticalIdentityBlock": {
+      "title": "TacticalIdentityBlock",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["home", "away"],
+      "properties": {
+        "home": { "$ref": "#/$defs/TeamTacticalIdentity" },
+        "away": { "$ref": "#/$defs/TeamTacticalIdentity" }
+      }
+    },
+
+    "ShotEvent": {
+      "title": "ShotEvent",
+      "$comment": "teamId is the SHOOTING player's team. Own goals are flagged ownGoal: true, excluded from shot-map rendering, and attributed to the benefiting team in metadata.goals (AD-6).",
+      "description": "One attempt at goal, plotted on the shots pitch map. Shoot-out attempts never appear here — they would break marker-count self-validation and Story 2.7 never plots them.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "teamId",
+        "playerId",
+        "playerName",
+        "at",
+        "x",
+        "y",
+        "outcome",
+        "outcomeDetail",
+        "bodyPart",
+        "deliveryType",
+        "expectedGoals",
+        "ownGoal"
+      ],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "ShotPlayerName",
+          "type": "string",
+          "minLength": 1
+        },
+        "at": { "$ref": "#/$defs/MinuteStamp" },
+        "x": { "$ref": "common.schema.json#/$defs/PitchX" },
+        "y": { "$ref": "common.schema.json#/$defs/PitchY" },
+        "outcome": { "$ref": "common.schema.json#/$defs/ShotOutcome" },
+        "outcomeDetail": { "$ref": "common.schema.json#/$defs/ShotOutcomeDetail" },
+        "bodyPart": { "$ref": "common.schema.json#/$defs/BodyPart" },
+        "deliveryType": { "$ref": "common.schema.json#/$defs/ShotDeliveryType" },
+        "expectedGoals": {
+          "title": "ShotExpectedGoals",
+          "$comment": "PMSR prints xG only as a team total on the Key Statistics page; the shots event table has no xG column (verified across all 104 reports, 2026-07-22). v1 therefore emits null per shot. A per-shot xG source is an AD-14 change request.",
+          "anyOf": [
+            { "$ref": "common.schema.json#/$defs/ExpectedGoals" },
+            { "type": "null" }
+          ]
+        },
+        "ownGoal": {
+          "title": "ShotOwnGoal",
+          "type": "boolean"
+        }
+      }
+    },
+
+    "ShootoutOutcome": {
+      "title": "ShootoutOutcome",
+      "description": "Result of one penalty shoot-out attempt.",
+      "type": "string",
+      "enum": ["scored", "saved", "missed"]
+    },
+    "ShootoutAttempt": {
+      "title": "ShootoutAttempt",
+      "$comment": "teamId is the TAKING player's team. A shoot-out attempt is never a ShotEvent and never a GoalRecord.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["teamId", "playerId", "playerName", "order", "outcome"],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "ShootoutPlayerName",
+          "type": "string",
+          "minLength": 1
+        },
+        "order": {
+          "title": "ShootoutOrder",
+          "description": "1-based position in the shoot-out sequence, across both teams.",
+          "type": "integer",
+          "minimum": 1,
+          "x-decimals": 0
+        },
+        "outcome": { "$ref": "#/$defs/ShootoutOutcome" }
+      }
+    },
+
+    "CrossEvent": {
+      "title": "CrossEvent",
+      "$comment": "teamId is the CROSSING player's team.",
+      "description": "One open-play cross, plotted on the crosses pitch map.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "teamId",
+        "playerId",
+        "playerName",
+        "at",
+        "x",
+        "y",
+        "deliveryType",
+        "completed"
+      ],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "CrossPlayerName",
+          "type": "string",
+          "minLength": 1
+        },
+        "at": { "$ref": "#/$defs/MinuteStamp" },
+        "x": { "$ref": "common.schema.json#/$defs/PitchX" },
+        "y": { "$ref": "common.schema.json#/$defs/PitchY" },
+        "deliveryType": { "$ref": "common.schema.json#/$defs/CrossDeliveryType" },
+        "completed": {
+          "title": "CrossCompleted",
+          "type": "boolean"
+        }
+      }
+    },
+
+    "PassNetworkNode": {
+      "title": "PassNetworkNode",
+      "$comment": "teamId is the PASSING team.",
+      "description": "One player's average position on the pass-network map. x and y are extracted from the page, never derived from the edges (Story 1.14). `involvement` is the total passes this player was involved in, made plus received — a derived aggregate and therefore a field (AD-5), which DESIGN.md encodes as node size.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["teamId", "playerId", "playerName", "shirtNumber", "x", "y", "involvement"],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "PassNetworkNodeName",
+          "type": "string",
+          "minLength": 1
+        },
+        "shirtNumber": { "$ref": "common.schema.json#/$defs/ShirtNumber" },
+        "x": { "$ref": "common.schema.json#/$defs/PitchX" },
+        "y": { "$ref": "common.schema.json#/$defs/PitchY" },
+        "involvement": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "PassNetworkEdge": {
+      "title": "PassNetworkEdge",
+      "$comment": "teamId is the PASSING team.",
+      "description": "A directed passing relationship between two players. DESIGN.md maps volume onto the edge-weight ramp.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["teamId", "fromPlayerId", "toPlayerId", "volume"],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "fromPlayerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "toPlayerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "volume": {
+          "title": "PassNetworkEdgeVolume",
+          "description": "Number of completed passes along this edge. Always at least 1 — a zero-volume edge is simply absent.",
+          "type": "integer",
+          "minimum": 1,
+          "x-decimals": 0
+        }
+      }
+    },
+
+    "ReceivingEvent": {
+      "title": "ReceivingEvent",
+      "$comment": "teamId is the RECEIVING player's team.",
+      "description": "One offer to receive or movement to receive. The type discriminator is what lets the two pitch maps share a single event shape — Story 2.9 renders #offers-to-receive and #movement-to-receive from the same array.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "teamId",
+        "playerId",
+        "playerName",
+        "type",
+        "movementType",
+        "at",
+        "x",
+        "y"
+      ],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "ReceivingPlayerName",
+          "type": "string",
+          "minLength": 1
+        },
+        "type": { "$ref": "common.schema.json#/$defs/ReceivingEventType" },
+        "movementType": {
+          "title": "ReceivingMovementType",
+          "description": "Offer movement category, null when the report does not classify this event.",
+          "anyOf": [
+            { "$ref": "common.schema.json#/$defs/OfferMovementType" },
+            { "type": "null" }
+          ]
+        },
+        "at": { "$ref": "#/$defs/MinuteStamp" },
+        "x": { "$ref": "common.schema.json#/$defs/PitchX" },
+        "y": { "$ref": "common.schema.json#/$defs/PitchY" }
+      }
+    },
+
+    "DefensiveActionEvent": {
+      "title": "DefensiveActionEvent",
+      "$comment": "teamId is the DEFENDING team.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "teamId",
+        "playerId",
+        "playerName",
+        "actionType",
+        "contestType",
+        "at",
+        "x",
+        "y"
+      ],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "DefensiveActionPlayerName",
+          "type": "string",
+          "minLength": 1
+        },
+        "actionType": { "$ref": "common.schema.json#/$defs/DefensiveActionType" },
+        "contestType": {
+          "title": "DefensiveActionContestType",
+          "description": "Sub-category, present only when actionType is possession-contest; null otherwise.",
+          "anyOf": [
+            { "$ref": "common.schema.json#/$defs/PossessionContestType" },
+            { "type": "null" }
+          ]
+        },
+        "at": { "$ref": "#/$defs/MinuteStamp" },
+        "x": { "$ref": "common.schema.json#/$defs/PitchX" },
+        "y": { "$ref": "common.schema.json#/$defs/PitchY" }
+      }
+    },
+
+    "EventTables": {
+      "title": "EventTables",
+      "description": "Domain D. Every table is a flat array carrying an explicit teamId per row, so one shape serves both the pitch panel and the accessibility data table — there are no 'lite' variants (EXPERIENCE.md). An empty array means zero events of that kind; null means the report does not carry that data at all.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shots",
+        "shootoutAttempts",
+        "crosses",
+        "passNetworkNodes",
+        "passNetworkEdges",
+        "receiving",
+        "defensiveActions"
+      ],
+      "properties": {
+        "shots": {
+          "title": "ShotEvents",
+          "type": "array",
+          "items": { "$ref": "#/$defs/ShotEvent" }
+        },
+        "shootoutAttempts": {
+          "title": "ShootoutAttempts",
+          "$comment": "PMSR carries only the aggregate shoot-out line on the cover ('(Switzerland win 4-3 on Penalties)') and no per-attempt table anywhere in the report — verified against all four shoot-out ties in the corpus (M74, M75, M88, M96) on 2026-07-22. v1 therefore emits null, which is distinguishable from an empty array; the aggregate lives in metadata.knockoutScore.shootoutScore. A per-attempt source is an AD-14 change request.",
+          "anyOf": [
+            {
+              "type": "array",
+              "items": { "$ref": "#/$defs/ShootoutAttempt" }
+            },
+            { "type": "null" }
+          ]
+        },
+        "crosses": {
+          "title": "CrossEvents",
+          "type": "array",
+          "items": { "$ref": "#/$defs/CrossEvent" }
+        },
+        "passNetworkNodes": {
+          "title": "PassNetworkNodes",
+          "type": "array",
+          "items": { "$ref": "#/$defs/PassNetworkNode" }
+        },
+        "passNetworkEdges": {
+          "title": "PassNetworkEdges",
+          "type": "array",
+          "items": { "$ref": "#/$defs/PassNetworkEdge" }
+        },
+        "receiving": {
+          "title": "ReceivingEvents",
+          "type": "array",
+          "items": { "$ref": "#/$defs/ReceivingEvent" }
+        },
+        "defensiveActions": {
+          "title": "DefensiveActionEvents",
+          "type": "array",
+          "items": { "$ref": "#/$defs/DefensiveActionEvent" }
+        }
+      }
+    },
+
+    "CompletionCounts": {
+      "title": "CompletionCounts",
+      "description": "A complete/incomplete pair plus its total. The total is stored, not derived, so a report whose printed total disagrees with its parts becomes a visible deviation rather than a silent correction.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["complete", "incomplete", "total"],
+      "properties": {
+        "complete": { "$ref": "common.schema.json#/$defs/Count" },
+        "incomplete": { "$ref": "common.schema.json#/$defs/Count" },
+        "total": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "GoalkeeperInvolvementSample": {
+      "title": "GoalkeeperInvolvementSample",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minute", "involvements"],
+      "properties": {
+        "minute": { "$ref": "common.schema.json#/$defs/Minute" },
+        "involvements": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "GoalkeeperDistribution": {
+      "title": "GoalkeeperDistribution",
+      "description": "Domain E distribution. Category counts and the total are both stored, so their internal consistency is checkable.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "feet",
+        "hands",
+        "throw",
+        "feetTechniques",
+        "handsTechniques",
+        "throwTechniques",
+        "lineBreaks"
+      ],
+      "properties": {
+        "total": { "$ref": "#/$defs/CompletionCounts" },
+        "feet": { "$ref": "#/$defs/CompletionCounts" },
+        "hands": { "$ref": "#/$defs/CompletionCounts" },
+        "throw": { "$ref": "#/$defs/CompletionCounts" },
+        "feetTechniques": {
+          "title": "FeetTechniqueCounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "playOnto",
+            "playInto",
+            "playAround",
+            "playThrough",
+            "playBeyond",
+            "other"
+          ],
+          "properties": {
+            "playOnto": { "$ref": "common.schema.json#/$defs/Count" },
+            "playInto": { "$ref": "common.schema.json#/$defs/Count" },
+            "playAround": { "$ref": "common.schema.json#/$defs/Count" },
+            "playThrough": { "$ref": "common.schema.json#/$defs/Count" },
+            "playBeyond": { "$ref": "common.schema.json#/$defs/Count" },
+            "other": { "$ref": "common.schema.json#/$defs/Count" }
+          }
+        },
+        "handsTechniques": {
+          "title": "HandsTechniqueCounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sideKick", "fromHands", "dropKick"],
+          "properties": {
+            "sideKick": { "$ref": "common.schema.json#/$defs/Count" },
+            "fromHands": { "$ref": "common.schema.json#/$defs/Count" },
+            "dropKick": { "$ref": "common.schema.json#/$defs/Count" }
+          }
+        },
+        "throwTechniques": {
+          "title": "ThrowTechniqueCounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["overArm", "underArm", "sideArm", "chest"],
+          "properties": {
+            "overArm": { "$ref": "common.schema.json#/$defs/Count" },
+            "underArm": { "$ref": "common.schema.json#/$defs/Count" },
+            "sideArm": { "$ref": "common.schema.json#/$defs/Count" },
+            "chest": { "$ref": "common.schema.json#/$defs/Count" }
+          }
+        },
+        "lineBreaks": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "GoalPrevention": {
+      "title": "GoalPrevention",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attemptsFaced",
+        "savePercentage",
+        "totalInterventions",
+        "byInterventionType",
+        "byBodyType"
+      ],
+      "properties": {
+        "attemptsFaced": { "$ref": "common.schema.json#/$defs/Count" },
+        "savePercentage": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "totalInterventions": { "$ref": "common.schema.json#/$defs/Count" },
+        "byInterventionType": {
+          "title": "InterventionTypeCounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "saveAndRetain",
+            "saveAndDeflect",
+            "deflectAndRetain",
+            "saveAttempt",
+            "noSaveAttempt"
+          ],
+          "properties": {
+            "saveAndRetain": { "$ref": "common.schema.json#/$defs/Count" },
+            "saveAndDeflect": { "$ref": "common.schema.json#/$defs/Count" },
+            "deflectAndRetain": { "$ref": "common.schema.json#/$defs/Count" },
+            "saveAttempt": { "$ref": "common.schema.json#/$defs/Count" },
+            "noSaveAttempt": { "$ref": "common.schema.json#/$defs/Count" }
+          }
+        },
+        "byBodyType": {
+          "title": "InterventionBodyTypeCounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["head", "hands", "upperBody", "lowerBody", "feet"],
+          "properties": {
+            "head": { "$ref": "common.schema.json#/$defs/Count" },
+            "hands": { "$ref": "common.schema.json#/$defs/Count" },
+            "upperBody": { "$ref": "common.schema.json#/$defs/Count" },
+            "lowerBody": { "$ref": "common.schema.json#/$defs/Count" },
+            "feet": { "$ref": "common.schema.json#/$defs/Count" }
+          }
+        }
+      }
+    },
+    "CrossDeliveryTypeCounts": {
+      "title": "CrossDeliveryTypeCounts",
+      "description": "Counts across the six cross delivery types plus their total.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inswing",
+        "outswing",
+        "driven",
+        "lofted",
+        "cutback",
+        "pushCross",
+        "total"
+      ],
+      "properties": {
+        "inswing": { "$ref": "common.schema.json#/$defs/Count" },
+        "outswing": { "$ref": "common.schema.json#/$defs/Count" },
+        "driven": { "$ref": "common.schema.json#/$defs/Count" },
+        "lofted": { "$ref": "common.schema.json#/$defs/Count" },
+        "cutback": { "$ref": "common.schema.json#/$defs/Count" },
+        "pushCross": { "$ref": "common.schema.json#/$defs/Count" },
+        "total": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "AerialControl": {
+      "title": "AerialControl",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalInterventions",
+        "punches",
+        "claims",
+        "tippedPalmed",
+        "crossesFacedAttempted",
+        "crossesFacedCompleted",
+        "deliveryTypesFaced"
+      ],
+      "properties": {
+        "totalInterventions": { "$ref": "common.schema.json#/$defs/Count" },
+        "punches": { "$ref": "#/$defs/CompletionCounts" },
+        "claims": { "$ref": "#/$defs/CompletionCounts" },
+        "tippedPalmed": { "$ref": "#/$defs/CompletionCounts" },
+        "crossesFacedAttempted": { "$ref": "common.schema.json#/$defs/Count" },
+        "crossesFacedCompleted": { "$ref": "common.schema.json#/$defs/Count" },
+        "deliveryTypesFaced": { "$ref": "#/$defs/CrossDeliveryTypeCounts" }
+      }
+    },
+    "GoalkeeperRecord": {
+      "title": "GoalkeeperRecord",
+      "description": "Domain E, one goalkeeper.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "teamId",
+        "playerId",
+        "playerName",
+        "totalInvolvements",
+        "involvementTimeline",
+        "distribution",
+        "goalPrevention",
+        "aerialControl"
+      ],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "GoalkeeperName",
+          "type": "string",
+          "minLength": 1
+        },
+        "totalInvolvements": { "$ref": "common.schema.json#/$defs/Count" },
+        "involvementTimeline": {
+          "title": "GoalkeeperInvolvementTimeline",
+          "description": "Involvements bucketed along the match clock, as the Goalkeeping Involvement page's timeline chart plots them.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/GoalkeeperInvolvementSample" }
+        },
+        "distribution": { "$ref": "#/$defs/GoalkeeperDistribution" },
+        "goalPrevention": { "$ref": "#/$defs/GoalPrevention" },
+        "aerialControl": { "$ref": "#/$defs/AerialControl" }
+      }
+    },
+
+    "CornerSideCounts": {
+      "title": "CornerSideCounts",
+      "description": "Corners of one delivery type, split by the side they were taken from. The two sides sum to the total.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left", "right", "total"],
+      "properties": {
+        "left": { "$ref": "common.schema.json#/$defs/Count" },
+        "right": { "$ref": "common.schema.json#/$defs/Count" },
+        "total": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "TeamSetPlays": {
+      "title": "TeamSetPlays",
+      "description": "Domain F, one team.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalSetPlays",
+        "totalFreeKicks",
+        "totalPenalties",
+        "totalCorners",
+        "totalThrowIns",
+        "freeKicks",
+        "cornersByDeliveryType",
+        "cornersByDeliveryStyle"
+      ],
+      "properties": {
+        "totalSetPlays": { "$ref": "common.schema.json#/$defs/Count" },
+        "totalFreeKicks": { "$ref": "common.schema.json#/$defs/Count" },
+        "totalPenalties": { "$ref": "common.schema.json#/$defs/Count" },
+        "totalCorners": { "$ref": "common.schema.json#/$defs/Count" },
+        "totalThrowIns": { "$ref": "common.schema.json#/$defs/Count" },
+        "freeKicks": {
+          "title": "FreeKickCounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["direct", "directOnTarget", "directOffTarget", "indirect"],
+          "properties": {
+            "direct": { "$ref": "common.schema.json#/$defs/Count" },
+            "directOnTarget": { "$ref": "common.schema.json#/$defs/Count" },
+            "directOffTarget": { "$ref": "common.schema.json#/$defs/Count" },
+            "indirect": { "$ref": "common.schema.json#/$defs/Count" }
+          }
+        },
+        "cornersByDeliveryType": {
+          "title": "CornerDeliveryTypeCounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["directToArea", "short", "edgeOfPenaltyArea"],
+          "properties": {
+            "directToArea": { "$ref": "#/$defs/CornerSideCounts" },
+            "short": { "$ref": "#/$defs/CornerSideCounts" },
+            "edgeOfPenaltyArea": { "$ref": "#/$defs/CornerSideCounts" }
+          }
+        },
+        "cornersByDeliveryStyle": {
+          "title": "CornerDeliveryStyleCounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["inswing", "outswing", "driven", "lofted"],
+          "properties": {
+            "inswing": { "$ref": "common.schema.json#/$defs/Count" },
+            "outswing": { "$ref": "common.schema.json#/$defs/Count" },
+            "driven": { "$ref": "common.schema.json#/$defs/Count" },
+            "lofted": { "$ref": "common.schema.json#/$defs/Count" }
+          }
+        }
+      }
+    },
+    "SetPlaysBlock": {
+      "title": "SetPlaysBlock",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["home", "away"],
+      "properties": {
+        "home": { "$ref": "#/$defs/TeamSetPlays" },
+        "away": { "$ref": "#/$defs/TeamSetPlays" }
+      }
+    },
+
+    "OfferMovementCounts": {
+      "title": "OfferMovementCounts",
+      "description": "One player's offers, split across the six movement types.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inFront",
+        "inBetween",
+        "outToIn",
+        "inToOut",
+        "inBehind",
+        "noMovement"
+      ],
+      "properties": {
+        "inFront": { "$ref": "common.schema.json#/$defs/Count" },
+        "inBetween": { "$ref": "common.schema.json#/$defs/Count" },
+        "outToIn": { "$ref": "common.schema.json#/$defs/Count" },
+        "inToOut": { "$ref": "common.schema.json#/$defs/Count" },
+        "inBehind": { "$ref": "common.schema.json#/$defs/Count" },
+        "noMovement": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "PlayerInPossession": {
+      "title": "PlayerInPossession",
+      "description": "Domain G, in-possession half.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passesAttempted",
+        "passesCompleted",
+        "passCompletion",
+        "switchesOfPlay",
+        "crossesAttempted",
+        "crossesCompleted",
+        "lineBreaksAttempted",
+        "lineBreaksCompleted",
+        "lineBreakCompletion",
+        "ballProgressions",
+        "takeOns",
+        "stepIns",
+        "attemptsAtGoal",
+        "goals",
+        "totalOffers",
+        "offersByMovementType",
+        "offersReceived"
+      ],
+      "properties": {
+        "passesAttempted": { "$ref": "common.schema.json#/$defs/Count" },
+        "passesCompleted": { "$ref": "common.schema.json#/$defs/Count" },
+        "passCompletion": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "switchesOfPlay": { "$ref": "common.schema.json#/$defs/Count" },
+        "crossesAttempted": { "$ref": "common.schema.json#/$defs/Count" },
+        "crossesCompleted": { "$ref": "common.schema.json#/$defs/Count" },
+        "lineBreaksAttempted": { "$ref": "common.schema.json#/$defs/Count" },
+        "lineBreaksCompleted": { "$ref": "common.schema.json#/$defs/Count" },
+        "lineBreakCompletion": { "$ref": "common.schema.json#/$defs/Percentage" },
+        "ballProgressions": { "$ref": "common.schema.json#/$defs/Count" },
+        "takeOns": { "$ref": "common.schema.json#/$defs/Count" },
+        "stepIns": { "$ref": "common.schema.json#/$defs/Count" },
+        "attemptsAtGoal": { "$ref": "common.schema.json#/$defs/Count" },
+        "goals": { "$ref": "common.schema.json#/$defs/Count" },
+        "totalOffers": { "$ref": "common.schema.json#/$defs/Count" },
+        "offersByMovementType": { "$ref": "#/$defs/OfferMovementCounts" },
+        "offersReceived": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "PlayerOutOfPossession": {
+      "title": "PlayerOutOfPossession",
+      "description": "Domain G, out-of-possession half. tacklesMade and tacklesWon are the two halves of the page's 'Tackles Made / Won' column.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tacklesMade",
+        "tacklesWon",
+        "blocks",
+        "interceptions",
+        "pressingDirect",
+        "pressingIndirect",
+        "duelsWonAerial",
+        "duelsWonPhysical",
+        "possessionContestsWon",
+        "clearances",
+        "looseBallReceptions",
+        "pushingOn",
+        "pushingOnIntoPressing",
+        "possessionRegains",
+        "possessionInterrupted"
+      ],
+      "properties": {
+        "tacklesMade": { "$ref": "common.schema.json#/$defs/Count" },
+        "tacklesWon": { "$ref": "common.schema.json#/$defs/Count" },
+        "blocks": { "$ref": "common.schema.json#/$defs/Count" },
+        "interceptions": { "$ref": "common.schema.json#/$defs/Count" },
+        "pressingDirect": { "$ref": "common.schema.json#/$defs/Count" },
+        "pressingIndirect": { "$ref": "common.schema.json#/$defs/Count" },
+        "duelsWonAerial": { "$ref": "common.schema.json#/$defs/Count" },
+        "duelsWonPhysical": { "$ref": "common.schema.json#/$defs/Count" },
+        "possessionContestsWon": { "$ref": "common.schema.json#/$defs/Count" },
+        "clearances": { "$ref": "common.schema.json#/$defs/Count" },
+        "looseBallReceptions": { "$ref": "common.schema.json#/$defs/Count" },
+        "pushingOn": { "$ref": "common.schema.json#/$defs/Count" },
+        "pushingOnIntoPressing": { "$ref": "common.schema.json#/$defs/Count" },
+        "possessionRegains": { "$ref": "common.schema.json#/$defs/Count" },
+        "possessionInterrupted": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "PlayerPhysical": {
+      "title": "PlayerPhysical",
+      "description": "Domain G, physical half. Distances are metres, as the Physical Data page prints them. The speed zones are the page's own bands: distanceZone1 is 0-7 km/h, distanceZone2 is 7-15, distanceZone3 is 15-20, distanceZone4 is 20-25, distanceZone5 is 25+. highSpeedRuns counts Zone 3 runs; sprints counts Zone 4 and 5 runs.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalDistance",
+        "distanceZone1",
+        "distanceZone2",
+        "distanceZone3",
+        "distanceZone4",
+        "distanceZone5",
+        "highSpeedRuns",
+        "sprints",
+        "topSpeed"
+      ],
+      "properties": {
+        "totalDistance": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone1": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone2": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone3": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone4": { "$ref": "common.schema.json#/$defs/Metres" },
+        "distanceZone5": { "$ref": "common.schema.json#/$defs/Metres" },
+        "highSpeedRuns": { "$ref": "common.schema.json#/$defs/Count" },
+        "sprints": { "$ref": "common.schema.json#/$defs/Count" },
+        "topSpeed": { "$ref": "common.schema.json#/$defs/KmPerHour" }
+      }
+    },
+    "PlayerRecord": {
+      "title": "PlayerRecord",
+      "description": "Domain G, one player. Every field the Expert Layer's per-player tables show is here — there is no reduced variant.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "teamId",
+        "playerId",
+        "playerName",
+        "shirtNumber",
+        "position",
+        "inPossession",
+        "outOfPossession",
+        "physical"
+      ],
+      "properties": {
+        "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "PlayerRecordName",
+          "type": "string",
+          "minLength": 1
+        },
+        "shirtNumber": { "$ref": "common.schema.json#/$defs/ShirtNumber" },
+        "position": { "$ref": "common.schema.json#/$defs/Position" },
+        "inPossession": { "$ref": "#/$defs/PlayerInPossession" },
+        "outOfPossession": { "$ref": "#/$defs/PlayerOutOfPossession" },
+        "physical": { "$ref": "#/$defs/PlayerPhysical" }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+# Pipeline stack pins (AR-15). Installed with pip into pipeline/venv — never `uv`.
+# Exact patch versions as installed and verified on 2026-07-22, Python 3.14.4 (Windows).
+pymupdf==1.28.0
+pdfplumber==0.11.10
+pytest==8.4.2
+# Contract validation (Story 1.1). The [format] extra is what makes `format: "date-time"`
+# and `"date"` actually checked -- format assertion is off by default and must be opted
+# into with an explicit format_checker. `referencing` replaces the deprecated RefResolver
+# for cross-file $ref resolution.
+jsonschema[format]==4.26.0
+referencing==0.37.0

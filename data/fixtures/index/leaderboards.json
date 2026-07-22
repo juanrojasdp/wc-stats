@@ -1,0 +1,477 @@
+{
+  "boards": [
+    {
+      "aggregation": "average",
+      "higherIsBetter": true,
+      "metricCode": "possession",
+      "rows": [
+        {
+          "entity": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 65.5,
+          "rank": 1,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 65.5
+        },
+        {
+          "entity": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 57.1,
+          "rank": 2,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 57.1
+        },
+        {
+          "entity": {
+            "id": "korea-republic",
+            "name": "Korea Republic"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 55.8,
+          "rank": 3,
+          "team": {
+            "id": "korea-republic",
+            "name": "Korea Republic"
+          },
+          "value": 55.8
+        },
+        {
+          "entity": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 36.1,
+          "rank": 4,
+          "team": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "value": 36.1
+        },
+        {
+          "entity": {
+            "id": "czechia",
+            "name": "Czechia"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 34.2,
+          "rank": 5,
+          "team": {
+            "id": "czechia",
+            "name": "Czechia"
+          },
+          "value": 34.2
+        },
+        {
+          "entity": {
+            "id": "paraguay",
+            "name": "Paraguay"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 23.7,
+          "rank": 6,
+          "team": {
+            "id": "paraguay",
+            "name": "Paraguay"
+          },
+          "value": 23.7
+        }
+      ],
+      "scope": "team"
+    },
+    {
+      "aggregation": "sum",
+      "higherIsBetter": true,
+      "metricCode": "distanceCovered",
+      "rows": [
+        {
+          "entity": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 152.4,
+          "rank": 1,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 152.4
+        },
+        {
+          "entity": {
+            "id": "paraguay",
+            "name": "Paraguay"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 143.8,
+          "rank": 2,
+          "team": {
+            "id": "paraguay",
+            "name": "Paraguay"
+          },
+          "value": 143.8
+        },
+        {
+          "entity": {
+            "id": "czechia",
+            "name": "Czechia"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 117.6,
+          "rank": 3,
+          "team": {
+            "id": "czechia",
+            "name": "Czechia"
+          },
+          "value": 117.6
+        },
+        {
+          "entity": {
+            "id": "korea-republic",
+            "name": "Korea Republic"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 111.8,
+          "rank": 4,
+          "team": {
+            "id": "korea-republic",
+            "name": "Korea Republic"
+          },
+          "value": 111.8
+        },
+        {
+          "entity": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 107.3,
+          "rank": 5,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 107.3
+        },
+        {
+          "entity": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "matchesPlayed": 1,
+          "perMatch": 97.1,
+          "rank": 6,
+          "team": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "value": 97.1
+        }
+      ],
+      "scope": "team"
+    },
+    {
+      "aggregation": "max",
+      "higherIsBetter": true,
+      "metricCode": "topSpeed",
+      "rows": [
+        {
+          "entity": {
+            "id": "son-heungmin-kor",
+            "name": "SON Heungmin"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 1,
+          "team": {
+            "id": "korea-republic",
+            "name": "Korea Republic"
+          },
+          "value": 35.2
+        },
+        {
+          "entity": {
+            "id": "mbatha-thalente-rsa",
+            "name": "Thalente MBATHA"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 2,
+          "team": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "value": 34.4
+        },
+        {
+          "entity": {
+            "id": "rayners-iqraam-rsa",
+            "name": "Iqraam RAYNERS"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 3,
+          "team": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "value": 34.1
+        },
+        {
+          "entity": {
+            "id": "chaloupek-stepan-cze",
+            "name": "Stepan CHALOUPEK"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 4,
+          "team": {
+            "id": "czechia",
+            "name": "Czechia"
+          },
+          "value": 34.0
+        },
+        {
+          "entity": {
+            "id": "sane-leroy-ger",
+            "name": "Leroy SANE"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 5,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 33.9
+        },
+        {
+          "entity": {
+            "id": "goretzka-leon-ger",
+            "name": "Leon GORETZKA"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 6,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 33.7
+        },
+        {
+          "entity": {
+            "id": "mudau-khuliso-rsa",
+            "name": "Khuliso MUDAU"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 7,
+          "team": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "value": 33.3
+        },
+        {
+          "entity": {
+            "id": "provod-lukas-cze",
+            "name": "Lukas PROVOD"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 8,
+          "team": {
+            "id": "czechia",
+            "name": "Czechia"
+          },
+          "value": 33.3
+        },
+        {
+          "entity": {
+            "id": "jimenez-raul-mex",
+            "name": "Raul JIMENEZ"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 9,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 33.3
+        },
+        {
+          "entity": {
+            "id": "anton-waldemar-ger",
+            "name": "Waldemar ANTON"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 10,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 33.3
+        },
+        {
+          "entity": {
+            "id": "enciso-julio-par",
+            "name": "Julio ENCISO"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 11,
+          "team": {
+            "id": "paraguay",
+            "name": "Paraguay"
+          },
+          "value": 33.1
+        },
+        {
+          "entity": {
+            "id": "wirtz-florian-ger",
+            "name": "Florian WIRTZ"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 12,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 33.0
+        },
+        {
+          "entity": {
+            "id": "quinones-julian-mex",
+            "name": "Julian QUINONES"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 13,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 32.9
+        },
+        {
+          "entity": {
+            "id": "makgopa-evidence-rsa",
+            "name": "Evidence MAKGOPA"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 14,
+          "team": {
+            "id": "south-africa",
+            "name": "South Africa"
+          },
+          "value": 32.4
+        },
+        {
+          "entity": {
+            "id": "musiala-jamal-ger",
+            "name": "Jamal MUSIALA"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 15,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 32.3
+        },
+        {
+          "entity": {
+            "id": "ruediger-antonio-ger",
+            "name": "Antonio RUEDIGER"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 16,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 32.2
+        },
+        {
+          "entity": {
+            "id": "thiaw-malick-ger",
+            "name": "Malick THIAW"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 17,
+          "team": {
+            "id": "germany",
+            "name": "Germany"
+          },
+          "value": 32.2
+        },
+        {
+          "entity": {
+            "id": "alvarado-roberto-mex",
+            "name": "Roberto ALVARADO"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 18,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 32.2
+        },
+        {
+          "entity": {
+            "id": "mauricio-par",
+            "name": "MAURICIO"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 19,
+          "team": {
+            "id": "paraguay",
+            "name": "Paraguay"
+          },
+          "value": 32.1
+        },
+        {
+          "entity": {
+            "id": "gonzalez-armando-mex",
+            "name": "Armando GONZALEZ"
+          },
+          "matchesPlayed": 1,
+          "perMatch": null,
+          "rank": 20,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 32.0
+        }
+      ],
+      "scope": "player"
+    }
+  ],
+  "schemaVersion": 1
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@wc-stats/contract",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "v1 artifact schemas and the TypeScript codegen path (AD-2). Epic 1 owns this, Epic 2 consumes the generated types — never a hand-written mirror.",
+  "scripts": {
+    "generate:types": "node scripts/generate-types.mjs"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "15.0.4"
+  }
+}

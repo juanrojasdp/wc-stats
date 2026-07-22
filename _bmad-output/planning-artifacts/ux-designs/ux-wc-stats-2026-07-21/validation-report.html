@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UX Design Validation: wc-stats</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+
+    --verdict-strong: #16a34a;
+    --verdict-adequate: #65a30d;
+    --verdict-thin: #d97706;
+    --verdict-broken: #dc2626;
+
+    --sev-low: #64748b;
+    --sev-medium: #ca8a04;
+    --sev-high: #ea580c;
+    --sev-critical: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header.report-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  .synthesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--muted);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15.5px;
+  }
+  .synthesis p { margin: 0 0 10px; }
+  .synthesis p:last-child { margin-bottom: 0; }
+
+  .dimension-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .dim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .dim-card .dim-name { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .dim-card .dim-verdict { font-size: 14px; font-weight: 600; }
+
+  section.dimension, section.reviewer-section { margin-bottom: 14px; }
+  section.dimension details, section.reviewer-section details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  section summary {
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section summary::-webkit-details-marker { display: none; }
+  section summary::before {
+    content: "▸";
+    display: inline-block;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  section details[open] summary::before { transform: rotate(90deg); }
+  section summary h2 {
+    display: inline;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .verdict-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: white;
+  }
+  .verdict-strong { background: var(--verdict-strong); }
+  .verdict-adequate { background: var(--verdict-adequate); }
+  .verdict-thin { background: var(--verdict-thin); }
+  .verdict-broken { background: var(--verdict-broken); }
+
+  .dim-body { padding: 4px 20px 18px; }
+  .dim-judgment { color: var(--text); font-size: 14.5px; }
+  .dim-judgment p { margin: 0 0 10px; }
+
+  .findings-list { padding: 0 20px 4px; }
+  article.finding {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  article.finding:first-child { border-top: none; }
+  article.finding header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .badge-sev-low { background: rgba(100, 116, 139, 0.12); color: var(--sev-low); }
+  .badge-sev-medium { background: rgba(202, 138, 4, 0.14); color: var(--sev-medium); }
+  .badge-sev-high { background: rgba(234, 88, 12, 0.14); color: var(--sev-high); }
+  .badge-sev-critical { background: rgba(220, 38, 38, 0.14); color: var(--sev-critical); }
+  .finding-title { margin: 0; font-size: 15px; font-weight: 500; flex: 1; min-width: 200px; }
+  .finding-location { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+  .finding-note, .finding-fix { margin-top: 6px; font-size: 14px; }
+  .finding-fix strong { color: var(--muted); font-weight: 500; }
+  .finding-credit { margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+
+  .reviewer-source {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  .mechanical {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  .mechanical h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .mechanical ul { margin: 0; padding-left: 20px; }
+  .mechanical li { margin-bottom: 4px; color: var(--text); }
+
+  footer.report-footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  footer .meta { display: flex; gap: 24px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="report-header">
+      <div class="title">
+        <h1>wc-stats — UX Design Validation Report</h1>
+        <div class="subtitle">_bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/DESIGN.md · EXPERIENCE.md</div>
+      </div>
+    </header>
+
+    <div class="synthesis">
+      <p>A disciplined, extraction-ready pair: canonical DESIGN.md shape, all EXPERIENCE.md defaults present, every <code>{token}</code> reference in both files resolves, all four app-side UJs are covered verbatim with protagonists/climaxes/failure paths, and the stated contrast claims check out arithmetically where checked (pitch-line 3.62:1 vs claimed ≈3.6:1; ink 17.3:1 vs claimed ≥15:1). No critical findings from the rubric walk. The gaps cluster at the seams of the data-viz palette (goal markers illegible on the light-theme Momentum Timeline at 1.28:1; the heat ramp violates its own monotonic-lightness rule) and at a handful of small surfaces that are named but never specified (result chip anatomy, site header, a dangling "search" capability, a Hero-contract self-contradiction). All are targeted fixes; none require restructuring.</p>
+      <p>The accessibility and i18n reviewers shift that picture: between them they surface four criticals the rubric walk did not. Computed from the declared hexes, the heatmap's lowest step lands at 1.94:1 on the pitch and the light-theme focus ring at 2.28:1 on the theme-invariant pitch surface — blinding keyboard focus on every pitch viz in light mode — so the spines fail a WCAG 2.1 AA audit as written. On the i18n side, "pérdida forzada" semantically inverts the forced-turnover metric on the exact surface Diego screenshots, and the no-flash language-toggle promise contradicts the pre-rendered-Spanish render model without owning a mechanism. Both reviewers judge every fix token- or sentence-level; neither asks for restructuring, but the i18n reviewer's gate verdict is explicit: fail as-is, approvable after fixes. The two reconciliation passes (reconcile-prd.md, reconcile-project-brief.md) independently corroborate the dangling "search" reference and the Hero "nothing collapsible" contradiction, and add two parent-attention items outside the reviewers' scope: the missing "incomplete" shot outcome (binding addendum ground truth vs. DESIGN's four-outcome encoding) and the momentum-first narrative contradicting the §4.6 section order the same document reproduces. After deduplication: 4 critical, 11 high, 28 medium, 23 low.</p>
+    </div>
+
+    <div class="dimension-summary">
+      <div class="dim-card">
+        <div class="dim-name">Flow coverage</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Token completeness</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Component coverage</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">State coverage</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Visual reference coverage</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Bloat &amp; overspecification</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Inheritance discipline</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Shape fit</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+    </div>
+
+    <!-- 1. Flow coverage -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Flow coverage</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>UJ-1 through UJ-4 each have a Key Flow in EXPERIENCE.md with the PRD's title verbatim, a named protagonist, numbered steps, a bolded climax beat, and a failure path (UJ-4's is explicitly argued as non-critical, which is acceptable). UJ-1's edge case (unremembered match → stage-context chip) is carried into step 2. UJ-5 is the builder/pipeline journey and correctly has no UX flow.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">UJ-5 omitted without saying so</h3>
+              <span class="finding-location">EXPERIENCE.md → Key Flows; prd.md §2.3 UJ-5</span>
+            </header>
+            <div class="finding-note">UJ-5 (pipeline re-run) is omitted silently; a consumer extracting "every UJ" from the sources hits a silent gap.</div>
+            <div class="finding-fix"><strong>Fix:</strong> One line under Key Flows: "UJ-5 is a pipeline journey (Epic 1); no App surface."</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 2. Token completeness -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Token completeness</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>All 47 color tokens, 10 typography roles, 4 radii, 5 named spacing tokens, and 8 component token groups extracted; every <code>{path.to.token}</code> reference in both files resolves; every color has a hex; light/dark pairing is systematic. Contrast targets are stated for the load-bearing combinations and the checkable claims verify. The failures sit at the data-viz palette's seams — two consolidated to high where the accessibility review's computed ratios raised the stakes.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">shot-goal has no light-canvas variant — goal markers invisible on light-theme Momentum Timeline (1.28:1)</h3>
+              <span class="finding-location">DESIGN.md → Colors → Data-visualization palette → "Momentum Timeline"; frontmatter shot-goal</span>
+            </header>
+            <div class="finding-note">The Momentum Timeline — rendered on theme-aware <code>{colors.surface-raised}</code>, not the theme-invariant pitch — uses shot-goal for goal markers. On light surface-raised-light (#FFFFFF) the lime is 1.28:1 — invisible. The momentum spec switches team fills to -light variants but is silent on goal markers. Downstream code mirrors the spine and ships an illegible light-theme chart.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add shot-goal-light (or specify markers use the theme's ink-primary with lime ring on light) and name it in the momentum spec.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Heatmap ramp is not "monotonic in lightness" as claimed — reversal at peak intensity</h3>
+              <span class="finding-location">DESIGN.md → Colors → "Heatmap ramp"; frontmatter heat-4/heat-5</span>
+            </header>
+            <div class="finding-note">The ramp claims "monotonic in lightness so intensity reads without color perception," but computed relative luminance runs 0.117 → 0.218 → 0.462 → 0.788 → 0.532 — heat-5 #F5B63C (amber) is darker than heat-4 #E4EF52, so the ramp reverses at the top, exactly where intensity peaks. Under achromatopsia/grayscale or deuteranopia, peak-intensity zones read as less intense than heat-4 zones, inverting the story at the most important spot; this also breaks the 1.4.1 redundancy the spec relies on.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Make heat-5 the lightest stop (e.g., swap 4/5 or replace the amber terminal with a near-white yellow) or drop the monotonicity claim and add a non-hue cue; re-verify computed luminance ordering.</div>
+            <div class="finding-credit">Found by: rubric (medium) + accessibility (high) — consolidated at high.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">One color, two meanings in the Momentum Timeline — shot-goal, accent-lime, and viz-team-a are the same hex</h3>
+              <span class="finding-location">DESIGN.md → Colors → "Momentum Timeline" vs. Do's and Don'ts row 5</span>
+            </header>
+            <div class="finding-note">The momentum spec violates DESIGN.md's own Don't ("Mix team encoding and outcome encoding in one chart") and the palette's normative rule "one color means one thing per visualization": goal markers use <code>{colors.shot-goal}</code> #C3F53C in a chart whose team-A encoding uses <code>{colors.viz-team-a}</code> — the identical hex. A Team-B goal marker reads as a Team-A element.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Neutral/ink goal markers on the momentum axis, or per-team markers using the team accents with a shape cue; note the token-aliasing hazard.</div>
+            <div class="finding-credit">Found by: rubric (medium) + accessibility (high) — consolidated at high.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">No single-series chart token</h3>
+              <span class="finding-location">DESIGN.md → Data-visualization palette; EXPERIENCE.md → Visualization Layering "Profile trends"</span>
+            </header>
+            <div class="finding-note">The palette is declared "normative for every d3 and recharts view," yet single-series charts (Player Profile cross-match trends, Hub leaderboard charts) have no assigned series token — only the two-team pair, neutral, outcomes, edges, heat, results exist. Downstream must guess the trend-line color.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Declare the single-entity series color (e.g., "single-series charts use viz-team-a / -light") or add a viz-single token.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">accent-cyan-ink defined but never referenced</h3>
+              <span class="finding-location">DESIGN.md frontmatter line 31</span>
+            </header>
+            <div class="finding-note">accent-cyan-ink (#062226) is defined but never referenced in either file; cyan is never specified as a fill.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Remove, or document the cyan-fill case it serves.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Literal #FFFFFF in shadcn mapping</h3>
+              <span class="finding-location">DESIGN.md → Colors → shadcn CSS-variable mapping</span>
+            </header>
+            <div class="finding-note">The shadcn mapping table uses literal #FFFFFF for light --primary-foreground instead of a token, the only raw hex outside frontmatter.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Tokenize (e.g., surface-raised-light) or leave with a comment; cosmetic.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 3. Component coverage -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Component coverage</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>The core twelve components each have a DESIGN.md Components visual row and an EXPERIENCE.md Component Patterns behavioral row with real rules — names match exactly across all four sections. shadcn inheritance (Skeleton, Tabs, Button, Command, Accordion) is properly declared rather than restated. The misses are peripheral components that are named but specified nowhere.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Result chip has no component row — and the obvious dark-theme letter color fails contrast</h3>
+              <span class="finding-location">DESIGN.md → Colors "Result chips" / Shapes; used in Hub standings</span>
+            </header>
+            <div class="finding-note">Result chips have color tokens (result-win/draw/loss + light), a shape rule (rounded.full), and a letter-pairing rule, but no DESIGN.md Components row (filled pill vs. outline? letter color?) and no EXPERIENCE.md row (static? linked to the match?). The accessibility review shows why it matters: ink-primary #F2F5F7 on the chip fills computes to 1.62 (win), 2.72 (draw), 2.60 (loss) — all hard 4.5:1 text fails — while surface-base #0E1114 as letter color passes all three (10.68 / 6.35 / 6.66); light theme with white text passes (5.36–5.61).</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add a result-chip row to both files (one line each), specifying dark-theme chip text = surface-base (or accent-lime-ink-style near-black), light-theme = #FFFFFF, with computed ratios.</div>
+            <div class="finding-credit">Found by: rubric (medium) + accessibility (medium) — consolidated.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Site header never specified as a component</h3>
+              <span class="finding-location">EXPERIENCE.md → IA "header logo"; Component Patterns ("Site header" appears only as a location)</span>
+            </header>
+            <div class="finding-note">The site header is load-bearing on every route (logo→/, language toggle, theme toggle) but never specified: composition, nav links (how are /glossary and /compare reached other than footer/profile actions?), sticky behavior, mobile treatment.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add a Site header row to Component Patterns (contents + order + sticky rule) and, if it has visual deltas, to DESIGN.md Components.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Hero "stage context chip" has no visual spec</h3>
+              <span class="finding-location">EXPERIENCE.md → UJ-1; DESIGN.md → Components</span>
+            </header>
+            <div class="finding-note">The stage context chip (UJ-1 step 2) has no visual spec — the only chip spec is result chips.</div>
+            <div class="finding-fix"><strong>Fix:</strong> One clause in the stat-tile or layer-shell row, or reuse the label-caps pill explicitly.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Mobile Hub "sort menu" has no behavioral spec</h3>
+              <span class="finding-location">EXPERIENCE.md → Responsive &amp; Platform, Hub row</span>
+            </header>
+            <div class="finding-note">"Sort still on all columns via sort menu" has no spec beyond the phrase — trigger and a11y semantics unstated.</div>
+            <div class="finding-fix"><strong>Fix:</strong> One line in the data-table row (e.g., shadcn DropdownMenu, mirrors aria-sort).</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 4. State coverage -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>State coverage</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>All eight IA surfaces walked. Covered: cold load (skeleton-shaped), missing Tactical section, missing momentum series (OQ-5, anchor-preserving), empty/partial/invalid comparison, unknown route/404, bundle fetch failure with retry, focus-visible everywhere. Offline is explicitly declared out of scope (correct per sources); permission-denied is structurally N/A. Invalid entity slugs on static export correctly collapse into the 404 case. Locale-flash-on-load is handled (read before first paint) — though see the i18n review's critical on the mechanism.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Empty states scoped to Match Dashboard only</h3>
+              <span class="finding-location">EXPERIENCE.md → Component Patterns "Empty-state panel"; Progressive Disclosure Contract last ¶</span>
+            </header>
+            <div class="finding-note">Empty states are scoped to the Match Dashboard (FR-22); Profile and Comparison surfaces can also have missing sections (a one-match player's trend chart, a keeper-less Domain E block) and only inherit treatment via the "same grammar" sentence — inference, not commitment.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Extend the empty-state-panel Use column to "any missing section on any surface."</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 5. Visual reference coverage -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Visual reference coverage</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Workspace contains only <code>imports/</code>, which is empty; no mockups or wireframes exist. No orphans possible, no references to nonexistent files in either spine. Spines-win-on-conflict is stated once, in the EXPERIENCE.md header note. Vacuously but properly satisfied. No findings.</p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- 6. Bloat & overspecification -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Bloat &amp; overspecification</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Both files are lean for the product's surface area. DESIGN.md prose carries editorial voice where the examples license it; tables everywhere else. EXPERIENCE.md is table-dominant; no persona or FR prose restatement. The i18n per-term table is not bloat: it is the OQ-1/FR-32 resolution the PRD explicitly assigns to the UX pass. The Requirements traceability table is consumer-serving, not ceremony. <code>Intl.NumberFormat('es-CO')</code> is a borderline implementation detail but functions as a commitment that prevents hand-formatting drift — acceptable. No findings.</p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- 7. Inheritance discipline -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Inheritance discipline</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>All three sources paths resolve on disk. UJ titles verbatim from prd.md §2.3. Glossary vocabulary used identically to PRD §3; Story Stats composition matches exactly. Tactical section order matches PRD §4.6 with the one deviation (goalkeeping appended) properly tagged [ASSUMPTION]. FR references spot-check correct. Assumptions are consistently tagged inline, matching PRD discipline.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Dangling "search" reference — entry path to a surface no pattern defines</h3>
+              <span class="finding-location">EXPERIENCE.md → IA rows /players/…, /teams/…</span>
+            </header>
+            <div class="finding-note">Player/Team Profile "Reached from" columns name "search" as an entry path, but no search surface, component, or FR exists anywhere — the PRD has no search requirement and EXPERIENCE.md specifies none. A story-writer will either invent a search feature or dead-end.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Delete "search" from both rows, or spec it (e.g., "comparison picker's Command index reused in header") — deleting is the source-faithful move.</div>
+            <div class="finding-credit">Found by: rubric; independently flagged by the project-brief reconciliation ("dangling reference").</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Deep-link anchor list omits #key-stats</h3>
+              <span class="finding-location">EXPERIENCE.md → IA "Deep-link anchors" vs. Progressive Disclosure Contract Tactical row</span>
+            </header>
+            <div class="finding-note">The anchor list omits the head-to-head Key Statistics section, though the contract says "every section has an anchor" and Key Statistics is the first named Tactical section.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add #key-stats to the list.</div>
+            <div class="finding-credit">Found by: rubric; independently flagged by the PRD reconciliation.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 8. Shape fit -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>Shape fit</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>DESIGN.md body sections are in exact canonical order, none omitted; frontmatter conforms to spec types. EXPERIENCE.md has all eight required defaults; Responsive &amp; Platform is present as required for a breakpointed product. The four invented sections all earn their place: Progressive Disclosure Contract (the product's core mechanism, marked normative), Visualization Layering, i18n &amp; Terminology (discharges OQ-1/OQ-3/FR-30..32), Requirements traceability.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Hero Layer contract self-contradicts: "nothing collapsible" vs. lineups "in a compact disclosure"</h3>
+              <span class="finding-location">EXPERIENCE.md → Progressive Disclosure Contract, Hero row</span>
+            </header>
+            <div class="finding-note">"Nothing collapsible — it is simply there" sits in the same row that places "lineups &amp; formations in a compact disclosure" — a disclosure is collapsible. A story-writer cannot tell whether lineups may collapse, and FR-21's 15-second test depends on the answer.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Rephrase to "nothing collapsible except the lineups/formations disclosure" or move lineups to the Tactical Layer.</div>
+            <div class="finding-credit">Found by: rubric; independently flagged by both reconciliation passes (PRD C3; brief §2.3).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Key Flows sits mid-document</h3>
+              <span class="finding-location">EXPERIENCE.md section order</span>
+            </header>
+            <div class="finding-note">Three invented sections follow Key Flows; both shape examples read flows-last as the narrative capstone. Cosmetic — extraction is unaffected.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Optional reorder.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- Accessibility reviewer -->
+    <section class="reviewer-section">
+      <details>
+        <summary>
+          <h2>Accessibility review</h2>
+          <span class="reviewer-source">review-accessibility.md</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Adversarial WCAG 2.1 AA review; all contrast ratios computed from the declared hex tokens (WCAG relative-luminance formula), not taken from the spines' own assertions. In the reviewer's words: "The spines have an unusually strong a11y skeleton — mandatory data-table alternatives, shape-dual-encoded shot outcomes, roving tabindex, aria-sort/aria-expanded, reduced-motion, 44px hit areas — but two computed hard-fails land on core paths … Add a systemic 1.4.1 gap (leading-value and team-A/B encodings by hue alone) and a keyboard-inoperable momentum scrub that contradicts the spec's own drag ban, and this fails an AA audit as written. All are token- or sentence-level fixes; the architecture is sound." Verified-passing checks are listed at the top of each section of the source file so fixes don't churn what already holds. Three findings this reviewer shares with the rubric (heat-ramp monotonicity, momentum color aliasing, result-chip letter contrast) are consolidated into the Token completeness and Component coverage sections above.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">Heatmap heat-1 on pitch computes to 1.94:1 — fails 1.4.11 on a core Tactical viz</h3>
+              <span class="finding-location">DESIGN → Data-visualization palette → Heatmap ramp; EXPERIENCE → Visualization Layering</span>
+            </header>
+            <div class="finding-note">heat-1 #2E6B50 on pitch-surface #0B3D2E computes to 1.94:1 — fails WCAG 1.4.11 non-text 3:1 for the lowest visible intensity band. Low-intensity zones will be imperceptible to low-vision users, silently converting "low activity" into "no data."</div>
+            <div class="finding-fix"><strong>Fix:</strong> Lighten heat-1 to ≥3:1 vs #0B3D2E (e.g. ≈#3E7F60 territory) or raise the transparent-below threshold so the first rendered step is heat-2 (3.11:1) — and state the verified ratio.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">Light-theme focus ring fails at 2.28:1 on the theme-invariant pitch — keyboard focus blinded on every pitch viz in light mode</h3>
+              <span class="finding-location">DESIGN → shadcn CSS-variable mapping + "The pitch is sacred ground"; EXPERIENCE → State Patterns → Focus</span>
+            </header>
+            <div class="finding-note">--ring maps to accent-cyan-light #0E7490, which computes to 2.28:1 against the theme-invariant pitch-surface #0B3D2E — fails 1.4.11/2.4.7 for every focusable d3 marker, node, and cluster in light mode. DESIGN's claim "lime and cyan are also ≥3:1 … against both canvases and the pitch" is true only for the dark cyan; the light variant fails on the pitch.</div>
+            <div class="finding-fix"><strong>Fix:</strong> One sentence: focus indicators rendered on the pitch surface always use dark-canonical accent-cyan #3DDBE8 (7.26:1 vs pitch) regardless of theme — consistent with the pitch being theme-invariant.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Leading-value encoding is color-only (1.4.1) on the core 15-second path</h3>
+              <span class="finding-location">DESIGN → Components → Stat tile; EXPERIENCE → UJ-3 step 4, Comparison column</span>
+            </header>
+            <div class="finding-note">"Leading side's value takes the team accent; trailing side stays ink-primary" and "leading values carry each side's entity accent" encode who leads by color alone — a direct 1.4.1 fail on the Hero head-to-head tiles and Comparison Mode.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add a non-color leader cue (▲ glyph, weight bump, or "líder" affix in the accessible name) to every accented leading value.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Team A vs Team B is hue-only — 1.32:1 (dark), 1.07:1 (light) between the pair</h3>
+              <span class="finding-location">DESIGN → Two-team contrast pair; EXPERIENCE → Visualization Layering</span>
+            </header>
+            <div class="finding-note">viz-team-a vs viz-team-b computes 1.32:1 (dark) and 1.07:1 (light variants) — near-identical lightness, distinguishable only by hue. Momentum's above/below-midline position is a redundant channel, but the recharts Phases-of-Play comparison, pressing, and Defensive Blocks comparative charts specify no direct labels, pattern, or ordering rule — legend-by-hue alone fails 1.4.1 for deuteranopic users (lime-green vs teal is risky) and grayscale.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Mandate direct series labels (team name/code at bar or line end) on every two-team recharts view, and/or a pattern/dash differential for team B.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Momentum scrub is pointer-only — and "tap-drag" contradicts the spec's own drag ban</h3>
+              <span class="finding-location">EXPERIENCE → Component Patterns → Momentum Timeline; Responsive table; Interaction Primitives</span>
+            </header>
+            <div class="finding-note">"Hover/tap on the timeline scrubs a minute cursor" and mobile "scrub by tap-drag" — no arrow-key scrub is specified, so per-minute values are not keyboard-operable (2.1.1); only goal markers are focusable. Worse, "tap-drag" contradicts Interaction Primitives' "Banned: … drag interactions in v1." The Expert data table is a mitigation, not an excuse for an inoperable control on the flagship Tactical viz. At mobile, the reduced-height strip also concentrates a fine-grained 90+-minute slider into a short, narrow target motor-impaired users can't land on — the same fix resolves both.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Make the scrubber a focusable slider (role="slider", arrow keys = ±1 minute, aria-valuetext = minute + values), resolve the drag contradiction (tap-to-position also works, for touch too).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">ink-muted "tertiary" text below 4.5:1 everywhere (4.04 / 3.69 / 3.30)</h3>
+              <span class="finding-location">DESIGN → Canvas &amp; ink</span>
+            </header>
+            <div class="finding-note">ink-muted #6B757F computes 4.04 on base, 3.69 on raised, 3.30 on overlay — below 4.5:1 everywhere except large text. "Tertiary" is not "disabled": if any real content (captions, meta, timestamps) ships in ink-muted at body sizes it is an AA text fail.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Restrict ink-muted to disabled states and ≥3:1 non-text glyphs explicitly; move tertiary text to ink-secondary.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Momentum midline vanishes inside team A's area (1.03:1)</h3>
+              <span class="finding-location">DESIGN → Momentum Timeline spec</span>
+            </header>
+            <div class="finding-note">viz-neutral #8C979F over the composited team-A 60% fill (#7E9E30) computes to 1.03:1 — the midline (the zero-reference that gives the areas meaning) disappears.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Draw the midline in ink-primary (or add a 1px ink-primary casing), or render areas only up to a gap around the axis.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Pass-network selection state is color/contrast-only</h3>
+              <span class="finding-location">EXPERIENCE → Component Patterns → Pitch panel</span>
+            </header>
+            <div class="finding-note">Node focus "highlights that player's edges, dims the rest" — if "dims" is opacity/color only, the selected-vs-dimmed state has no specified non-color cue for the selected node itself.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Specify a selection ring/stroke change on the focused node plus the aria state.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Cluster z-order cycling is tap-only</h3>
+              <span class="finding-location">EXPERIENCE → Pitch panel</span>
+            </header>
+            <div class="finding-note">"Repeated taps cycle the stack's z-order" — neither keyboard cycling nor the cluster popover's internal arrow-key navigation is specified.</div>
+            <div class="finding-fix"><strong>Fix:</strong> State that Enter on a cluster opens the list popover with focus on the first item and arrow-key navigation; z-cycling is a pointer redundancy, not the only path.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Stat-tile glossary trigger under-specified: focusability and discoverability</h3>
+              <span class="finding-location">EXPERIENCE → Stat tile; Component Patterns (glossary tooltip trigger style)</span>
+            </header>
+            <div class="finding-note">"Tapping a tile with a glossary term in its label opens the glossary tooltip" — but the tile is otherwise "static display," so is it focusable? A non-focusable tap target is a 2.1.1 fail. The i18n review adds the discoverability half: the Hero contract gates tactical vocabulary behind tooltips, yet Story Stats tile labels (posesión, xG, distancia) are the terms — the dotted-underline trigger styling should visibly apply inside tile labels too.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Make the glossary term within the label the focusable trigger (consistent with the dotted-underline trigger spec), not the whole tile; one sentence in the stat-tile pattern confirming the trigger styling applies inside tile labels.</div>
+            <div class="finding-credit">Found by: accessibility (medium) + i18n (low) — consolidated at medium.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Language switch has no status announcement (4.1.3)</h3>
+              <span class="finding-location">EXPERIENCE → Language toggle</span>
+            </header>
+            <div class="finding-note">The toggle swaps every string on the page client-side and sets <code>&lt;html lang&gt;</code>, but no live-region announcement or focus management is specified — a screen-reader user gets a silently rewritten page.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Polite live-region announcement ("Idioma: Español" / "Language: English") on toggle.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Heatmap data-table equivalence is unverifiable — no schema defined</h3>
+              <span class="finding-location">EXPERIENCE → Visualization Layering</span>
+            </header>
+            <div class="finding-note">"Every viz has its data-table alternative," and Expert logs cover shots/crosses/passes/sets — but no tabular form is defined for the heatmap. Without a defined schema, "genuinely equivalent" cannot be audited.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Specify the heatmap alternative (e.g., zone-by-zone table: pitch third × channel × intensity %) like the other logs.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Reflow specced at 390px/200% — WCAG 1.4.10 requires 320 CSS px</h3>
+              <span class="finding-location">EXPERIENCE → Accessibility Floor; DESIGN → Layout</span>
+            </header>
+            <div class="finding-note">AA requires no 2-D scrolling at 320 CSS px (equivalent to 400% zoom at 1280px); the spines' floor is "390px … 200% zoom." Pitch panels, paired stat tiles, and the comparison stack are unverified at 320px — the Hero acceptance test would pass while the AA audit fails.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Extend the reflow requirement to 320px for all non-data-table content.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Hit-area collision on dense shot maps — no disambiguation for overlapping 44px targets</h3>
+              <span class="finding-location">EXPERIENCE → Interaction Primitives; FR-24</span>
+            </header>
+            <div class="finding-note">Markers draw at ~8–14px but get ≥44px invisible hit areas; the cluster popover only covers visually overlapping markers (FR-24 forbids displacement). Two markers 20px apart — routine in a box-mouth cluster — have massively overlapping targets with no specified disambiguation, so touch users get the wrong shot.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Define hit-area partition (Voronoi) and/or extend the cluster-list pattern to any markers whose hit areas collide, not only visual overlaps.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Glossary tooltip missing hoverable/persistent guarantees (1.4.13)</h3>
+              <span class="finding-location">EXPERIENCE → Glossary tooltip</span>
+            </header>
+            <div class="finding-note">"Tap/hover/focus opens" and Esc-closes-topmost is global, but hoverable (pointer can move onto the tooltip content — it contains a "Ver en el glosario" link the user must reach) and persistent (stays until dismissed/invalid) are not specified. A hover tooltip with an interactive link inside that vanishes on pointer-leave is a classic 1.4.13 + 2.1.1 fail.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Specify: remains open while pointer or focus is within trigger or panel; dismissible via Esc without moving focus; the link is reachable by Tab from the trigger.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Asserted contrast claims overstate</h3>
+              <span class="finding-location">DESIGN → Canvas &amp; ink</span>
+            </header>
+            <div class="finding-note">ink-secondary-light on surface-overlay-light computes 6.65, not the claimed "≥7:1" (passes AA regardless); ink-primary on surface-overlay is 14.13, not "≥15:1."</div>
+            <div class="finding-fix"><strong>Fix:</strong> Restate claims as computed, or scope them to surface-base only.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Pitch panel vs dark canvas is 1.55:1 with no border</h3>
+              <span class="finding-location">DESIGN → Elevation &amp; Depth</span>
+            </header>
+            <div class="finding-note">"The green field against charcoal … is contrast enough" — computed, it isn't much. Decorative boundary, not an AA fail, but low-vision users lose the panel edge.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Permit the hairline border on pitch panels in dark theme.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Pass-network "second tap clears" has no keyboard equivalent</h3>
+              <span class="finding-location">EXPERIENCE → Pitch panel</span>
+            </header>
+            <div class="finding-note">Enter toggles? Esc clears? Unstated.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Enter toggles isolation on the focused node; Esc clears.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Async bundle load has no aria-busy / loading announcement</h3>
+              <span class="finding-location">EXPERIENCE → State Patterns → Cold route load</span>
+            </header>
+            <div class="finding-note">Skeletons are specified, but SR users may read a half-populated page with no status.</div>
+            <div class="finding-fix"><strong>Fix:</strong> aria-busy on loading regions + polite "Datos cargados" when the bundle lands.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Sticky headers can occlude the focused row</h3>
+              <span class="finding-location">EXPERIENCE → Responsive (Expert tables)</span>
+            </header>
+            <div class="finding-note">No scroll-margin/focus-into-view rule specified for sticky headers/columns on scroll.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Note scroll-padding equal to sticky-header height.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Retained-English jargon vs Spanish TTS — blanket "no per-element lang" is asserted, not tested</h3>
+              <span class="finding-location">EXPERIENCE → Accessibility Floor</span>
+            </header>
+            <div class="finding-note">"xG", "sprint", "momentum" lean on the 3.1.2 vernacular exemption — defensible — but headings embedding retained-English terms (e.g. "Línea de momentum") will be pronounced by es-MX/es-ES TTS engines.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Keep the assumption but add an acceptance note: spot-check jargon terms with a Spanish screen-reader voice; add lang="en" spans only where pronunciation is unintelligible.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Aria strings specified in Spanish only — EN variants implied, not stated as locale keys</h3>
+              <span class="finding-location">EXPERIENCE → Accessibility Floor (marker accessible-name pattern)</span>
+            </header>
+            <div class="finding-note">The accessible-name pattern ("Tiro de {player}, minuto 63, xG 0,08, atajado") is specified in Spanish only; the EN variants of these aria strings are implied but not stated as locale-file entries.</div>
+            <div class="finding-fix"><strong>Fix:</strong> One line: all aria-label/aria-valuetext strings are locale-file keys under FR-30, never hardcoded.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- i18n reviewer -->
+    <section class="reviewer-section">
+      <details>
+        <summary>
+          <h2>i18n &amp; terminology review</h2>
+          <span class="reviewer-source">review-i18n.md</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Policy under test: Spanish-first, es-CO/LatAm audience (Bogotá persona), English toggle. In the reviewer's words: "Fail the gate as-is; approvable after fixes. The terminology table's core is genuinely good (bloque alto/medio/bajo, salida de balón, contrapresión, regate, balón parado, the xG and sprint jargon calls are all correct real-world usage). But there are two critical defects — one semantically inverted Spanish term on a core tactical surface, and an internally contradictory i18n render mechanic — plus a systemic coverage gap: the table covers tactical vocabulary but almost none of the labels the product will actually render most often (shot-outcome legends, goalkeeping, stage names, standings abbreviations, dates). Fixable in one pass; nothing structural." Rows explicitly verified as correct real usage: contrapresión, salida de balón, bloque alto/medio/bajo, red de pases, zonas de velocidad, regate, segunda jugada, progresión de balón, recepción en el último tercio, xG-as-jargon, sprint-as-jargon, momentum-as-tooltip.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">"forced turnover → pérdida forzada" inverts the metric's perspective</h3>
+              <span class="finding-location">EXPERIENCE → i18n table; pressing/Defensive Blocks surface</span>
+            </header>
+            <div class="finding-note">FIFA-style forced turnovers are credited to the team that forces the loss — a defensive/pressing achievement. "Pérdidas forzadas" as a stat label on a team's pressing section or leaderboard reads as that team's own giveaways — the exact opposite meaning, on the surface Diego screenshots. Spanish analytics media renders this from the recovering side.</div>
+            <div class="finding-fix"><strong>Fix:</strong> "recuperaciones forzadas" (or "pérdidas forzadas al rival" where the losing-side framing is genuinely intended); never bare "pérdidas forzadas" for the forcing team's count.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">The no-flash promise contradicts the render model</h3>
+              <span class="finding-location">EXPERIENCE → Component Patterns (language toggle) vs. IA (pre-rendered Spanish HTML)</span>
+            </header>
+            <div class="finding-note">Locale is "read before first paint to avoid flash" — but every route is pre-rendered Spanish HTML. For a persisted-EN user, the Spanish DOM exists before any script runs: either a Spanish flash (FOUC) before the client-side swap, or a blocking inline script rewrites strings pre-paint — and either way React hydration will mismatch (server text ≠ client text), which in Next static export means hydration errors or a deliberate two-pass render. The spec asserts the outcome without owning the mechanism.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Specify the mechanism. Realistic options: (a) accept one-frame Spanish flash for EN users and say so, or (b) inline script sets <code>&lt;html lang&gt;</code> + a locale class pre-paint and all strings render client-side post-hydration with the skeleton covering the gap. Log the choice.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Shot-outcome legend labels absent from the terminology table</h3>
+              <span class="finding-location">DESIGN → shot-outcome encoding (Goal / On target / Off target / Blocked, English only)</span>
+            </header>
+            <div class="finding-note">They render on the product's signature surface and need ruled-on Spanish with a LatAm decision: "on target" is "al arco" in LatAm broadcast ("a puerta" is peninsular).</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add rows — gol / al arco / desviado / bloqueado — and mirror them in the legend spec and the "Ver los datos" table headers.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Goalkeeping domain has zero terminology coverage — including "portero" vs "arquero"</h3>
+              <span class="finding-location">EXPERIENCE → Tactical section #goalkeeping, Domain E</span>
+            </header>
+            <div class="finding-note">The single most audience-sensitive word on the site: "portero" vs "arquero" (the LatAm/Colombian term). Also missing: atajada (save — the spec's own aria example already says "atajado"), salidas, distribución, mano a mano.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add a goalkeeping block to the table; recommend "arquero" and "atajadas" for the LatAm register, section label "Arqueros" or "Portería" (decide once).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">No date/month rendering rule anywhere in either spine</h3>
+              <span class="finding-location">EXPERIENCE → Voice and Tone (numbers specified, dates not); Hub renders 104 match dates</span>
+            </header>
+            <div class="finding-note">es-CO dates are "21 de julio de 2026", lowercase months, and <code>Intl.DateTimeFormat('es-CO')</code> should be mandated exactly as <code>Intl.NumberFormat</code> is.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add a date-format rule beside the number rule, with one worked example per locale (and a decision on kickoff-time/timezone display across the three host countries).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Single-tree i18n consequences unowned: no EN SEO, Spanish share cards for EN users</h3>
+              <span class="finding-location">EXPERIENCE → IA [ASSUMPTION]</span>
+            </header>
+            <div class="finding-note">English content is invisible to search engines (no /en/ URLs, no hreflang), and every link Diego shares after switching to EN produces a Spanish link preview (og:title/description are the pre-rendered Spanish). The spec notes "Spanish-default content for SEO/link previews" as if it were only an implementation detail.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Explicitly accept and log the tradeoffs (no EN SEO, es-only share cards), and confirm no hreflang is emitted (a lone self-referencing one is worse than none).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">Text expansion unaddressed at the tightest layouts</h3>
+              <span class="finding-location">DESIGN → typography (stat-label, label-caps); 390px tile grid</span>
+            </header>
+            <div class="finding-note">Spanish runs ~20–30% longer, and the system's labels are 11px ALL-CAPS with 0.08em tracking in 12px-gap tiles at 390px. "VELOCIDAD MÁXIMA" vs "TOP SPEED"; "CARRERAS A ALTA VELOCIDAD" as a table column head will not fit. No wrap/truncate/abbreviation rule exists in either spine.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add a label-overflow rule (two-line wrap allowed in tiles; ruled abbreviations for column heads, e.g. "VEL. MÁX.", with the full term in the header tooltip/aria-label).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"carrera de alta velocidad" is a calque</h3>
+              <span class="finding-location">EXPERIENCE → i18n table</span>
+            </header>
+            <div class="finding-note">Spanish physical-performance reporting says "carrera a alta velocidad".</div>
+            <div class="finding-fix"><strong>Fix:</strong> "carreras a alta velocidad" (plural in table/label contexts).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"altura de línea" reads like typography</h3>
+              <span class="finding-location">EXPERIENCE → i18n table; UJ-3 step 3 "Line Heights"</span>
+            </header>
+            <div class="finding-note">Nobody says it bare; broadcast/analytics usage is "altura de la línea (defensiva)".</div>
+            <div class="finding-fix"><strong>Fix:</strong> "altura de la línea defensiva", short label "altura de la línea".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"step-in → irrupción" is a made-up label</h3>
+              <span class="finding-location">EXPERIENCE → i18n table [ASSUMPTION]</span>
+            </header>
+            <div class="finding-note">Matches neither community's vocabulary, and the spec itself flags it unverified. If the PMSR metric means a defender stepping out of the line to press, the established Spanish tactical term is "salto" (saltar a presionar); if it means carrying into the block, it's "conducción (al interior)".</div>
+            <div class="finding-fix"><strong>Fix:</strong> Resolve the PMSR definition before the content pass; candidate map: defender-steps-out → "salto"; ball-carry-entry → "conducción interior".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"pressing" has no row in the table</h3>
+              <span class="finding-location">EXPERIENCE → Progressive Disclosure Contract; UJ-2 step 2</span>
+            </header>
+            <div class="finding-note">Used as a section concept ("pressing &amp; Defensive Blocks") but unruled — exactly the kind of term the Spanish-first policy must rule on ("presión"/"presión alta" is strong real usage; untranslated "pressing" is also naturalized).</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add a row; recommend translate → "presión" (section label "Presión y bloques defensivos"), consistent with the already-chosen "contrapresión".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Stage names uncovered — including the new round of 32</h3>
+              <span class="finding-location">EXPERIENCE → UJ-1 ("Octavos de final" only)</span>
+            </header>
+            <div class="finding-note">The full 2026 set is uncovered — critically the round of 32, whose Spanish is the awkward-but-real "dieciseisavos de final" (Spanish media already uses it). Also: fase de grupos, cuartos de final, semifinal, tercer puesto, final.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Enumerate all stage strings in the locale files/table.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Standings/leaderboard scaffolding absent</h3>
+              <span class="finding-location">DESIGN → result chips (G/E/P only); Hub tables</span>
+            </header>
+            <div class="finding-note">Column abbreviations (PJ, G, E, P, GF, GC, DG, Pts), position names (arquero/defensa/mediocampista/delantero), lineup labels (titulares/suplentes, alineaciones, formación) all unruled.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add a "table &amp; roster labels" block.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Key Statistics block terms unruled — offside is a genuine LatAm decision</h3>
+              <span class="finding-location">EXPERIENCE → Key Statistics; UJ-2 "duels"</span>
+            </header>
+            <div class="finding-note">Corner ("tiro de esquina"), offside ("posición adelantada"/"fuera de lugar" vs peninsular "fuera de juego"), faltas, duelos, and "cross/cross map" → "centros / mapa de centros".</div>
+            <div class="finding-fix"><strong>Fix:</strong> Add rows; recommend "posición adelantada" for the target register.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Aria example "atajado" invents a fifth shot outcome the taxonomy can't show</h3>
+              <span class="finding-location">EXPERIENCE → Accessibility Floor vs. DESIGN shot taxonomy</span>
+            </header>
+            <div class="finding-note">"Tiro de {player}, minuto 63, xG 0,08, atajado" uses an outcome that does not exist in the Goal/On target/Off target/Blocked taxonomy (a saved shot is "on target").</div>
+            <div class="finding-fix"><strong>Fix:</strong> Align the aria vocabulary to the four ruled outcomes ("al arco") or add "saved" to the taxonomy deliberately.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"Clasificaciones" collides with standings</h3>
+              <span class="finding-location">EXPERIENCE → UJ-4 step 2; Hub (FR-25 standings + FR-26 leaderboards)</span>
+            </header>
+            <div class="finding-note">In LatAm Spanish "la clasificación" is the league table, and the Hub carries both standings and leaderboards — one word pointing at two different surfaces.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Standings → "Tabla de posiciones", leaderboards → "Líderes del torneo" (or "Líderes").</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Empty-state copy "no incluye esta página" reads as a broken web page</h3>
+              <span class="finding-location">EXPERIENCE → State Patterns</span>
+            </header>
+            <div class="finding-note">"El informe oficial no incluye esta página." — "página" means the PDF page, but in a web UI it reads as this web page doesn't exist, which is alarming next to working content.</div>
+            <div class="finding-fix"><strong>Fix:</strong> "El informe oficial no incluye esta sección."</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Text sorting lacks Intl.Collator('es') — Á/É/Ñ missort</h3>
+              <span class="finding-location">EXPERIENCE → Component Patterns (data table sort)</span>
+            </header>
+            <div class="finding-note">Client-side sort "on any column head" includes name columns, but nothing mandates a collator — default string compare missorts Á/É/Ñ (Ñíguez, Álvarez sort after Z).</div>
+            <div class="finding-fix"><strong>Fix:</strong> Mandate <code>Intl.Collator('es', {sensitivity:'base'})</code> for all text sorts, same normative style as the Intl.NumberFormat rule.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">No localStorage-unavailable fallback</h3>
+              <span class="finding-location">EXPERIENCE → Component Patterns (wcstats.locale / wcstats.theme)</span>
+            </header>
+            <div class="finding-note">Safari private mode / blocked storage has no specified fallback.</div>
+            <div class="finding-fix"><strong>Fix:</strong> try/catch wrapper; fall back to in-memory es default; toggle still works for the session.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">Diego's bilingual bridge is missing from the glossary</h3>
+              <span class="finding-location">EXPERIENCE → i18n table; UJ-2; /glossary</span>
+            </header>
+            <div class="finding-note">Terms ruled "translate" surface only the Spanish term in the ES UI, and UJ-2 has Diego toggling the whole site to EN just to recover blog-standard terminology. A bilingual reader can't map "salida de balón" ↔ "build-up" without flipping the entire interface. Spanish-first stands — but the glossary should carry the mapping.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Every glossary tooltip and /glossary entry shows the counterpart term as a subtitle ("salida de balón — en: build-up"); zero cost to Mariana, removes Diego's toggle dance for citation.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">"ruptura de línea" — real usage is plural</h3>
+              <span class="finding-location">EXPERIENCE → i18n table</span>
+            </header>
+            <div class="finding-note">"Ruptura/rotura de líneas", "pases que rompen líneas"; FIFA's own Spanish EFI materials use the plural.</div>
+            <div class="finding-fix"><strong>Fix:</strong> "rupturas de líneas" in labels.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">"longitud del equipo" is slightly lab-speak</h3>
+              <span class="finding-location">EXPERIENCE → i18n table</span>
+            </header>
+            <div class="finding-note">Broadcast Spanish says a team is "largo/corto".</div>
+            <div class="finding-fix"><strong>Fix:</strong> Acceptable as-is; "largo del equipo" is the more colloquial alternative — pick one and note it.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">"fases de juego" → more common form is "fases del juego"</h3>
+              <span class="finding-location">EXPERIENCE → i18n table</span>
+            </header>
+            <div class="finding-note">Minor register correction.</div>
+            <div class="finding-fix"><strong>Fix:</strong> "fases del juego".</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">"balón parado" vs Colombian "pelota quieta" — log the decision</h3>
+              <span class="finding-location">EXPERIENCE → i18n table</span>
+            </header>
+            <div class="finding-note">"Balón parado" is correct and universal; Colombian broadcast overwhelmingly says "pelota quieta". Keeping the neutral form is defensible under "no regionalisms."</div>
+            <div class="finding-fix"><strong>Fix:</strong> Log the decision so it isn't relitigated.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Canonical control string drift: "Ver los datos"</h3>
+              <span class="finding-location">EXPERIENCE → Voice and Tone vs. Component Patterns</span>
+            </header>
+            <div class="finding-note">Voice and Tone's Do column says "Ver los datos de este gráfico" while Component Patterns specifies "Ver los datos / View data". Two canonical forms invite ad-hoc copies.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Pick one (the short control string) and make the Voice example match.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Flow narratives use English terms the table has ruled Spanish</h3>
+              <span class="finding-location">EXPERIENCE → UJ-2, UJ-3, layer table</span>
+            </header>
+            <div class="finding-note">"Line Heights, Defensive Block distribution, formation usage"; "pressing &amp; Defensive Blocks". Spec narrative isn't UI copy, but the spine is the document implementers copy labels from.</div>
+            <div class="finding-fix"><strong>Fix:</strong> One sentence noting section labels come from the i18n table, and/or use the es labels in the layer-order list.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">"En posesión / Sin posesión" tabs — broadcast Spanish says "Con balón / Sin balón"</h3>
+              <span class="finding-location">EXPERIENCE → Responsive table (Expert column-group tabs)</span>
+            </header>
+            <div class="finding-note">Fine as-is, but if kept it should be ruled, not ad-hoc.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Optional swap; if kept, add the pair to the terminology table.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">RAE prescribes a space before % — log "62%" as deliberate</h3>
+              <span class="finding-location">EXPERIENCE → Voice and Tone</span>
+            </header>
+            <div class="finding-note">Number formatting is otherwise consistent everywhere checked (xG 1,24; 10,4 km; 36,8 km/h; aria "xG 0,08" — all es-CO comma). "62%" is fine for UI.</div>
+            <div class="finding-fix"><strong>Fix:</strong> Log it as a deliberate choice so locale QA doesn't churn on it.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <div class="mechanical">
+      <h3>Mechanical notes</h3>
+      <ul>
+        <li><strong>Markdown table breakage:</strong> EXPERIENCE.md → Component Patterns, Language toggle row contains an unescaped pipe inside a code span (<code>ES | EN</code>). In GFM, pipes inside code spans in tables still delimit cells — the row parses as four columns and will render/extract broken. Escape it (<code>ES \| EN</code>) or write "ES/EN". The same string is safe in DESIGN.md (not in a table).</li>
+        <li>All three sources frontmatter paths resolve on disk (prd.md, addendum.md, project-brief-wc2026-analytics.md).</li>
+        <li>Zero unresolved <code>{path.to.token}</code> references in either file; zero references to nonexistent components, sections, or files.</li>
+        <li>Frontmatter complete on both spines; DESIGN.md correctly carries no sources, matching the examples.</li>
+        <li>Naming is exact across files: layer-shell, Momentum Timeline, pitch-panel, etc. — frontmatter keys and prose names map 1:1.</li>
+        <li>Spot-checked contrast claims that verify: pitch-line 3.62:1 (claimed ≈3.6), ink-primary 17.3:1 (≥15), ink-secondary 8.6:1 (≥7), accents 14.8/11.3/6.6/5.0:1 (≥4.5), shot markers 5.75–9.56 and edge-weight-1 3.83 vs. pitch (≥3:1), momentum 60%-opacity team fills 5.62 / 4.48 vs. the card.</li>
+        <li>Reconciliation context (not reviewer findings): reconcile-prd.md and reconcile-project-brief.md both conclude "clean enough to finalize" with parent-attention items — the missing "incomplete" shot outcome (addendum §1 / brief Appendix B vs. DESIGN's four-outcome encoding) and the momentum-first vs. §4.6 order contradiction (C1), plus a defer-or-include decision on Domain D's offers/movement-to-receive and defensive-action visualizations.</li>
+      </ul>
+    </div>
+
+    <footer class="report-footer">
+      <div class="meta">
+        <span>Rubric: _bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/review-rubric.md</span>
+        <span>Reviewers: review-accessibility.md · review-i18n.md</span>
+        <span>Generated: 2026-07-21</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

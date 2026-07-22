@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wc-stats.dev/contract/leaderboards.schema.json",
+  "title": "Leaderboards",
+  "description": "Every ranked board the Leaderboards surface shows. Boards are keyed by a CLOSED metricCode enum: Story 2.13 maps each code to its locale label, so an unknown code is a TypeScript compile error by design (AD-2). Rows carry every column the App may show — the responsive rule hides columns behind a disclosure, it never re-fetches.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "boards"],
+  "properties": {
+    "schemaVersion": {
+      "title": "LeaderboardsSchemaVersion",
+      "type": "integer",
+      "const": 1
+    },
+    "boards": {
+      "title": "Boards",
+      "type": "array",
+      "items": { "$ref": "#/$defs/Leaderboard" }
+    }
+  },
+
+  "$defs": {
+    "LeaderboardRow": {
+      "title": "LeaderboardRow",
+      "description": "One ranked entity on a board. rank is pipeline-computed and explicit, so ties are represented honestly rather than implied by array order (AD-5). `entity` is a team on a team-scoped board and a player on a player-scoped board; `team` is the row's team — equal to entity on a team-scoped board, the player's team on a player-scoped one. The board always shows the team, so it is carried here and never fetched separately.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank", "entity", "team", "value", "matchesPlayed", "perMatch"],
+      "properties": {
+        "rank": { "$ref": "common.schema.json#/$defs/Rank" },
+        "entity": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "team": { "$ref": "common.schema.json#/$defs/EntityRef" },
+        "value": {
+          "title": "LeaderboardValue",
+          "description": "The ranked value, in the metric's own unit. Unformatted (AD-7); the App applies the unit and number format from its locale layer, keyed by metricCode.",
+          "type": "number"
+        },
+        "matchesPlayed": { "$ref": "common.schema.json#/$defs/Count" },
+        "perMatch": {
+          "title": "LeaderboardPerMatchValue",
+          "description": "The value normalized per match played. A derived aggregate, so it is a field (AD-5). Null when the metric is not meaningfully rateable — a maximum such as topSpeed, for instance.",
+          "anyOf": [{ "type": "number" }, { "type": "null" }]
+        }
+      }
+    },
+    "Leaderboard": {
+      "title": "Leaderboard",
+      "description": "One ranked board. `aggregation` records how value was computed across matches, so the App never has to assume and never re-aggregates (AD-5, FR-27).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metricCode", "scope", "aggregation", "higherIsBetter", "rows"],
+      "properties": {
+        "metricCode": { "$ref": "common.schema.json#/$defs/MetricCode" },
+        "scope": { "$ref": "common.schema.json#/$defs/LeaderboardScope" },
+        "aggregation": { "$ref": "common.schema.json#/$defs/AggregationSemantics" },
+        "higherIsBetter": {
+          "title": "HigherIsBetter",
+          "description": "Sort direction the ranks already reflect. Carried so the App can label the board correctly without a hard-coded metric table of its own.",
+          "type": "boolean"
+        },
+        "rows": {
+          "title": "LeaderboardRows",
+          "description": "Rows in rank order.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/LeaderboardRow" }
+        }
+      }
+    }
+  }
+}
