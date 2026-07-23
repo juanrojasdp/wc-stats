@@ -14,9 +14,11 @@ REQUIREMENTS = Path(__file__).resolve().parents[1] / "requirements.txt"
 def test_pipeline_subpackages_import():
     import pipeline
     import pipeline.discover
+    import pipeline.ingest
     import pipeline.validate
 
     assert pipeline.discover is not None
+    assert pipeline.ingest is not None
     assert pipeline.validate is not None
 
 

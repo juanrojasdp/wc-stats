@@ -7,7 +7,11 @@ report must land in exactly one of:
 
 Knockout rounds come straight from the stage line the cover prints. Group matchdays are
 *not* printed in a usable form — `spike/mex_rsa.pdf` prints "Group A - Match 1", which is
-a match number within the group (1..6), not a matchday (1..3) — so they are derived.
+the *global* match number of the tournament (1..104), not a matchday (1..3) — so they are
+derived. Verified against all 104 reports (2026-07-22): "Group A - Match 25" and
+"Group B - Match 51" are matches 25 and 51 of the tournament, not of their group. Nothing
+here reads the number, so no behaviour depends on the distinction, but `pipeline/ingest/
+identity.py` derives the match id from it and needs the true rule stated.
 
 Derivation rule (deterministic, corpus-level):
   sort each group's matches by (date, kick-off, report id), then walk them in order,

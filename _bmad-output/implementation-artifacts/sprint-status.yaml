@@ -59,11 +59,20 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-07-22
+last_updated: 2026-07-23
 project: wc-stats
 # 2026-07-22: story 1-1 completed and moved to review.
 # 2026-07-22: story 1-1 code review complete — 5 decisions resolved, 35 patches applied,
 #             3 items deferred to deferred-work.md. Status review -> done.
+# 2026-07-22: story 1-2 context created and moved to ready-for-dev.
+# 2026-07-22: story 1-2 implemented and moved to review — 104/104 reports extracted,
+#             0 failures, all 47 anchors resolved on every report (1.4 sampled 16).
+# 2026-07-23: story 1-2 code review complete — 3 decisions resolved, 31 patches applied,
+#             6 items deferred to deferred-work.md, ~20 dismissed. All 7 ACs satisfied.
+#             Decisions: requirements.txt folded into code_version; orphan records now
+#             fail the run (exit 1); match number bounded 1..104 per the contract.
+#             Re-verified after patching: 104/104 extracted, re-run 104/104 skipped (42x),
+#             --force byte-identical, 1.4 gate clean, 440 tests pass. Status review -> done.
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -74,7 +83,7 @@ development_status:
   1-4-template-consistency-verification-across-the-venue-matchday-sample: done
   # Contract bootstrap (AD-14) — unblocks Epic 2 via fixtures
   1-1-contract-v1-schemas-fixtures-type-generation-spike: done
-  1-2-batch-ingestion-run-manifest-text-anchored-page-discovery: backlog
+  1-2-batch-ingestion-run-manifest-text-anchored-page-discovery: done
   1-3-shots-pitch-map-parser-with-marker-count-self-validation: backlog
   # Gates all spatial-join stories (1-11..1-14 and Epic 2 spatial surfaces)
   1-5-marker-event-linking-via-digit-glyph-proximity: backlog
