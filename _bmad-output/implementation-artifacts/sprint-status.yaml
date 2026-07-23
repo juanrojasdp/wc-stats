@@ -162,7 +162,24 @@ project: wc-stats
 #             the closed enum; deflected-on-target-defensive-event drawn in BOTH marker
 #             colours (10 incomplete / 1 on-target of 11 rows); stoppage-minute finding
 #             (time_raw prints cumulative; period only from row order) deferred to 1.16.
-project_key: NOKEY
+# 2026-07-23: story 2-3 context created and moved to ready-for-dev (AD-14 gate: per-surface
+#             contract sign-off. Verification story — walks the 1.1 pre-computed checklist
+#             against /contract v1 + fixtures; 10 pre-analyzed findings F1-F10 to adjudicate
+#             incl. per-shot xG conflict, own-goal stale $comment, and 1.5's ShotOutcomeDetail
+#             enum gaps routed to this sign-off; change requests batch into ONE change-set,
+#             no schemaVersion bump landing mid-flight under 1-5/1-7).
+# 2026-07-23: story 2-3 implemented and moved to review — AD-14 gate walked: 24 checklist
+#             rows (15 PASS, 7 PASS-with-note, shot-maps carries the 2 change requests),
+#             F1-F10 all adjudicated with evidence citations. Outcome SIGNED-OFF-WITH-
+#             CHANGE-REQUESTS: CR-1 (ShotOutcomeDetail + bare incomplete/on-target) and
+#             CR-2 (deflected-on-target-defensive-event one-to-many map) batched into
+#             change-set CS-1 (one atomic bump commit, must land before 1.16 emission;
+#             F2 stale own-goal $comment correction rides it); FR-1 fixture-coverage
+#             request routed to 1.18 (no bump); FD-1 rendering decision binds 2.7/2.11
+#             (uniform markers, popover omits null xG); F3/F8 NO-CHANGE. Epic 1 extraction
+#             1.7-1.15 UNBLOCKED; 1.16 blocked-pending CS-1. Durable record appended to
+#             contract/README.md; ledger entries struck/added. No contract file changed;
+#             baseline + post-edit guards green (192+1 pytest, check:types, schema-version).
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -196,7 +213,7 @@ development_status:
   2-1-static-app-scaffold-with-design-tokens-i18n-structure-build-gates: done
   2-2-site-chrome-header-language-theme-toggles-footer-404: done
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
-  2-3-contract-v1-per-surface-sign-off: backlog
+  2-3-contract-v1-per-surface-sign-off: review
   2-4-match-route-hero-layer: backlog
   2-5-tactical-layer-shell-key-statistics-empty-state-pattern: backlog
   2-6-momentum-timeline: backlog

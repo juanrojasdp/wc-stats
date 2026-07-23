@@ -440,3 +440,75 @@ stop being one. `pipeline/tests/test_fixtures.py` covers the fixture half, and
 
 Story **2.3** is the formal sign-off gate on v1: it walks a per-surface data-needs checklist
 against these schemas, and every gap it finds becomes a change request.
+
+---
+
+## Story 2.3 sign-off (v1)
+
+**Date:** 2026-07-23 · **Walked at commit `e6cfa7e`** · **Overall outcome: SIGNED-OFF-WITH-CHANGE-REQUESTS**
+
+The Story 1.1 per-surface data-needs checklist was walked in full against the six schemas,
+the seven fixtures, EXPERIENCE.md/DESIGN.md and the epic 2.4–2.18 ACs. Full evidence table
+(every verdict cites schema file:line + fixture branch) lives in the story record:
+`_bmad-output/implementation-artifacts/2-3-contract-v1-per-surface-sign-off.md`.
+
+**Per-surface verdicts (24 rows):**
+
+- **PASS** — Hero (score/knockoutScore/stage/group; scorers+minutes incl. own-goal
+  benefiting-team attribution; exactly five storyStats/team; lineups disclosure with
+  mandatory `playerId`), search/typeahead (`EntityIndex` = corpus, AD-3 slug ids),
+  `#key-stats` (19 fields/team + `contestedPossession`), cross maps, `#pass-networks`,
+  offers/movement-to-receive, `#defensive-actions`, `#expert` (17+15+9 Domain G fields, no
+  lite variants), Hub results/standings (explicit `rank`, `form[]`, match reachability),
+  leaderboards, player profile, team profile, heatmap (confirmed out of contract scope).
+- **PASS-with-note** — `<title>`/OG (pens suffix composes via a same-file build-time join to
+  `knockoutResults[].knockoutScore` — no change needed); comparison (App aligns sides from
+  `metadata.homeTeam`/`awayTeam` ordering; presentation logic under AD-5); `#momentum`
+  (series shape PROVISIONAL until Story 1.8's AD-14 bump; the key contract is final);
+  `#phases`/`#pressing` + `#set-plays` + `#goalkeeping` (non-partition semantics: independent
+  rates, mirrored block values, nested free-kicks, overlapping corner views, dual GK
+  denominators — renderers in 2.10/2.16 must never sum, normalize, or pie these); null/empty
+  semantics (branch coverage gaps recorded as fixture request FR-1).
+- **CHANGE-REQUEST** — `#shot-maps` only, two requests (below).
+
+**Filed change requests (AD-14 step 1 — surface + field), batched as change-set CS-1:**
+
+1. **CR-1** — surface: `#shot-maps` popover/log (Story 2.7) + Expert shot log (2.11); field:
+   `common.schema.json#ShotOutcomeDetail` (via `ShotEvent.outcomeDetail`). Extend the closed
+   enum with the two corpus-real bare values `incomplete` (31 rows) and `on-target` (3 rows),
+   plus `x-maps-to-outcome` entries `incomplete → incomplete`, `on-target → on-target`
+   (mirroring the existing bare `off-target`). Blocks Story 1.16 emission until landed.
+2. **CR-2** — surface: `#shot-maps` marker/outcome consistency; field:
+   `x-maps-to-outcome["deflected-on-target-defensive-event"]`. The corpus contradicts the
+   declared `on-target` 10:1. Acknowledge the one-to-many rendering: this one entry becomes
+   `["incomplete", "on-target"]` (majority first); the other 21 mappings stay exact; the
+   outcome/detail pytest invariant relaxes to set-membership for array entries. The App
+   treats `outcome` as authoritative for marker encoding and never derives it from
+   `outcomeDetail`.
+
+**Riding CS-1 (not themselves change requests):** the stale own-goal `$comment` correction
+at `match-bundle.schema.json` (`GoalOwnGoal`) — Story 1.6 proved the corpus DOES mark own
+goals; a `$comment` edit alone trips `check:types`, so it rides the bump.
+
+**CS-1 landing rule:** one atomic commit — schema edits + logged decision 17 + `version.json`
+1 → 2 + hand-edited fixtures re-pinned + BOTH regenerated type outputs
+(`contract/generated/` and `app/src/lib/contract/`) — proven by
+`pytest pipeline/tests/test_contract_schemas.py pipeline/tests/test_fixtures.py` and
+`npm run check:types` in that same commit. Must land before Story 1.16 begins emission.
+
+**Filed fixture request (no schema change, no version bump):** **FR-1**, routed to Story
+1.18's fixture work — add coverage for the schema-guaranteed-but-unfixtured branches:
+`goalkeeping: null`, `players: null`, `events.*: null` beyond `shootoutAttempts`, an empty
+`[]` event array, `decidedBy: "extra-time"`, a zero-appearance player, `movementType: null`,
+a `CardRecord`, and `penalty: true`. Fixture-only hand-edits validate against unchanged
+schemas; the AD-14 flow triggers on shape changes, so no bump.
+
+**Filed rendering decision FD-1 (binds Story 2.7/2.11):** per-shot xG does not exist in the
+source (team totals only — see "Where the contract is deliberately empty"), so shot markers
+render at uniform size and popovers/logs omit the xG row while `ShotEvent.expectedGoals` is
+`null`. The nullable slot stays as the forward-compatible landing zone. This resolves the
+EXPERIENCE.md/DESIGN.md/epic-2.7 xG-sizing conflict without a contract change.
+
+**Gate consequence:** Epic 1 extraction past the AD-8 sample set (stories 1.7–1.15) is
+**unblocked** by this sign-off. Story **1.16 is blocked-pending CS-1**. Fixture request FR-1
+blocks nothing.
