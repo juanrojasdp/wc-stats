@@ -81,6 +81,49 @@ DEFAULT_SHOTS_MARKERS = {
     "away": [("on-target", 0.55, 0.3)],
 }
 
+# Story 1.5: the synthetic attempts table draws each cell at its header column's
+# x-position (the real layout the column segmentation keys on). Values chosen so the
+# longest contract outcome label ("Deflected Off Target - Defensive Event") stays inside
+# its column at fontsize 10.
+SHOTS_TABLE_COLUMNS = {
+    "Time": 55.0,
+    "Player": 100.0,
+    "Outcome": 240.0,
+    "Body Part": 470.0,
+    "Delivery Type": 580.0,
+}
+
+# Marker outcome -> a compatible printed Outcome label (one per five-color outcome), so
+# default table rows always satisfy the linking outcome cross-check. Deliberately a
+# literal restatement, like SHOTS_OUTCOME_RGB: the fixtures must keep printing labels
+# the contract fixes even if the module under test corrupts its mapping.
+SHOTS_OUTCOME_TO_LABEL = {
+    "goal": "On Target - Goal",
+    "on-target": "On Target - Saved",
+    "off-target": "Off Target",
+    "blocked": "Incomplete - Blocked",
+    "incomplete": "Incomplete - Assist",
+}
+
+
+def default_attempt_cells(markers, row_index):
+    """What the factory prints in table row `row_index` (0-based, per side) by default.
+
+    Row k's outcome label derives from marker k's outcome so linking's cross-check holds
+    on default fixtures; rows beyond the marker list (count-mismatch fixtures) print the
+    off-target default. Exported so tests derive expected values from what the factory
+    drew instead of hardcoding a second literal.
+    """
+    outcome = markers[row_index][0] if row_index < len(markers) else "off-target"
+    return {
+        "time": 3 + 5 * row_index,
+        "shirt": 9,
+        "name": "Test PLAYER",
+        "outcome": SHOTS_OUTCOME_TO_LABEL[outcome],
+        "body": "Right Foot",
+        "delivery": "Pass",
+    }
+
 
 def _shots_pitch():
     import pymupdf
@@ -124,6 +167,13 @@ def make_report():
     `shots_decorate`/`shots_decorate_table` draw extra content on the map/table page for
     collision and ambiguity tests.
 
+    Story 1.5 (additive): every marker gets a white ordinal digit label drawn on it and
+    every table row prints full cells (Time, shirt+name, Outcome, Body Part, Delivery
+    Type) at their header column x-positions, row k's outcome label derived from marker
+    k's outcome (`default_attempt_cells`). `shots_ordinal_labels=False` suppresses all
+    labels; `shots_label_text` / `shots_label_offset` corrupt, duplicate, suppress or
+    displace individual labels; `shots_table_cells` overrides individual printed cells.
+
     `page_order` re-orders the anchor pages (the cover always stays first — `probe_report`
     reads it by position). `AC 4` says a shuffled or offset report must still resolve, so
     a fixture that can only ever emit registry order cannot demonstrate it.
@@ -158,6 +208,16 @@ def make_report():
         shots_draw_pitch: bool = True,
         shots_decorate=None,
         shots_decorate_table=None,
+        # Story 1.5 (additive): ordinal digit labels drawn centered on each marker,
+        # matching the real layout, default on. `shots_label_text` overrides the label
+        # printed for marker index i per side (a string to duplicate/corrupt, None to
+        # suppress); `shots_label_offset` displaces a label by (dx, dy) pt so it falls
+        # outside the link threshold; `shots_table_cells` overrides printed cell values
+        # of table row k per side (keys: time, shirt, name, outcome, body, delivery).
+        shots_ordinal_labels: bool = True,
+        shots_label_text: "dict[str, dict[int, str | None]] | None" = None,
+        shots_label_offset: "dict[str, dict[int, tuple[float, float]]] | None" = None,
+        shots_table_cells: "dict[str, dict[int, dict]] | None" = None,
     ) -> Path:
         import pymupdf
 
@@ -174,14 +234,33 @@ def make_report():
             map_page.insert_text((40, 60), anchor_text, fontsize=11)
             if shots_draw_pitch:
                 map_page.draw_rect(pitch, color=(1, 1, 1))
-            for outcome, fx, fy in markers:
+            for marker_index, (outcome, fx, fy) in enumerate(markers):
+                center_x = pitch.x0 + fx * pitch.width
+                center_y = pitch.y0 + fy * pitch.height
                 map_page.draw_circle(
-                    (pitch.x0 + fx * pitch.width, pitch.y0 + fy * pitch.height),
+                    (center_x, center_y),
                     SHOTS_MARKER_RADIUS,
                     color=(1, 1, 1),
                     fill=SHOTS_OUTCOME_RGB[outcome],
                     width=0.75,
                 )
+                if shots_ordinal_labels:
+                    # The real maps print the attempt's 1-based ordinal as white text
+                    # ON its marker (probe 2026-07-23: label center < 1 pt from the
+                    # marker center).
+                    label = (shots_label_text or {}).get(side, {}).get(
+                        marker_index, str(marker_index + 1)
+                    )
+                    if label is not None:
+                        dx, dy = (shots_label_offset or {}).get(side, {}).get(
+                            marker_index, (0.0, 0.0)
+                        )
+                        map_page.insert_text(
+                            (center_x - 2.0 + dx, center_y + 2.2 + dy),
+                            label,
+                            fontsize=6,
+                            color=(1, 1, 1),
+                        )
             # The legend row the real maps carry: five distinct palette colors sharing
             # one y inside the pitch. Every synthetic run exercises legend exclusion.
             legend_y = pitch.y0 + 0.97 * pitch.height
@@ -208,6 +287,7 @@ def make_report():
             rows_per_page = (shots_table_pages or {}).get(
                 side, [(shots_table_rows or {}).get(side, len(markers))]
             )
+            global_row = 0
             for page_rows in rows_per_page:
                 table_page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
                 table_page.insert_text((40, 60), anchor_text, fontsize=11)
@@ -217,14 +297,26 @@ def make_report():
                     pymupdf.Rect(55, 85, 400, 103), fill=SHOTS_OUTCOME_RGB["incomplete"]
                 )
                 header = (shots_table_header or {}).get(side, SHOTS_TABLE_HEADER)
-                if header:
+                if header == SHOTS_TABLE_HEADER:
+                    # The default header prints each column title at its column
+                    # x-position — the geometry Story 1.5's column segmentation keys on.
+                    for title, column_x in SHOTS_TABLE_COLUMNS.items():
+                        table_page.insert_text((column_x, 100), title, fontsize=10)
+                elif header:
                     table_page.insert_text((55, 100), header, fontsize=10)
                 for i in range(page_rows):
-                    table_page.insert_text(
-                        (55, 130 + i * 20),
-                        f"{3 + 5 * i} 9 Test PLAYER Off Target Right Foot Pass",
-                        fontsize=10,
-                    )
+                    cells = default_attempt_cells(markers, global_row)
+                    cells.update((shots_table_cells or {}).get(side, {}).get(global_row, {}))
+                    y = 130 + i * 20
+                    for column_x, text in (
+                        (SHOTS_TABLE_COLUMNS["Time"], str(cells["time"])),
+                        (SHOTS_TABLE_COLUMNS["Player"], f"{cells['shirt']} {cells['name']}"),
+                        (SHOTS_TABLE_COLUMNS["Outcome"], cells["outcome"]),
+                        (SHOTS_TABLE_COLUMNS["Body Part"], cells["body"]),
+                        (SHOTS_TABLE_COLUMNS["Delivery Type"], cells["delivery"]),
+                    ):
+                        table_page.insert_text((column_x, y), text, fontsize=10)
+                    global_row += 1
                 if shots_decorate_table is not None:
                     shots_decorate_table(side, table_page)
             if page_count == 3:

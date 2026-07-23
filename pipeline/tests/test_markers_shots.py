@@ -80,7 +80,24 @@ def test_shot_events_carry_the_full_snake_case_shape(make_report, tmp_path):
     assert shots["shootout_attempts"] is None
     assert shots["shot_events"], "default factory draws markers"
     for event in shots["shot_events"]:
-        assert set(event) == {"team_id", "x", "y", "outcome", "own_goal", "source"}
+        # Story 1.5 widened the event shape with the linked-row join fields.
+        assert set(event) == {
+            "team_id",
+            "x",
+            "y",
+            "outcome",
+            "own_goal",
+            "source",
+            "linked",
+            "ordinal",
+            "time_raw",
+            "shirt_number",
+            "player_name",
+            "outcome_detail",
+            "body_part",
+            "delivery_type",
+            "expected_goals",
+        }
         assert event["team_id"] in ("mexico", "south-africa")
         assert event["own_goal"] is False
         assert 0 <= event["x"] <= 100 and 0 <= event["y"] <= 100

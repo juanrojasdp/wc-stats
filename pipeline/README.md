@@ -267,3 +267,27 @@ pinned stack installed.
 Tests are deterministic and offline. Real-PDF tests use the permanent ground-truth fixture
 `spike/mex_rsa.pdf`; set-cover, matchday-derivation, and report-format tests use synthetic
 fixtures and need no PDFs.
+
+## Marker–event linking (Story 1.5)
+
+Every shots-map marker is joined to its attempts-table row by digit-glyph proximity: the
+map prints each attempt's 1-based ordinal as white text ON its marker, and the ordinal
+indexes the table's printed row order per side (there is no number column in the table;
+multi-page tables concatenate in anchored page order). A link is accepted only when the
+nearest digit word sits within the marker radius, the ordinals form a bijection into the
+row range, and the row's Outcome label maps onto the marker's RGB-keyed outcome via the
+contract's `x-maps-to-outcome`. A marker failing any of those is retained with
+coordinates and outcome, carries `linked: false` with null joined fields, and fails that
+report's Self-Validation (`shots-link-rate`, binary, never loosened).
+
+**Minute/stoppage caveat (defers to Story 1.16):** the table's Time column prints
+first-half stoppage as plain cumulative minutes — the ground-truth report's home rows run
+`…41, 41, 46, 48, 45, 47, 51…`, where 48 = 45+3 *precedes* 45, so only row order reveals
+the period. Records therefore store `time_raw` verbatim (plus `ordinal`, which preserves
+the row order); the split into the contract's `MinuteStamp {minute, stoppageMinute}`
+needs period inference and is deliberately not attempted here.
+
+**xG:** `expected_goals` is always `null` — PMSR prints xG only as a team total; the
+shots event table has no xG column (verified across all 104 reports; contract
+`$comment` on `ShotEvent.expectedGoals`). A per-shot xG source is an AD-14 change
+request, not an extractor gap.

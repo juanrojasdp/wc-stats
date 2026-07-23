@@ -35,14 +35,12 @@ from pipeline.discover.errors import MissingAnchorError, ProbeError
 from pipeline.discover.probe import ReportMeta, probe_report
 from pipeline.discover.text import PageTextIndex
 from pipeline.errors import PipelineError
-from pipeline.extract.domain_a import (
-    aggregate_self_validation,
-    domain_a_checks,
-    extract_domain_a,
-)
+from pipeline.extract import aggregate_self_validation
+from pipeline.extract.domain_a import domain_a_checks, extract_domain_a
 from pipeline.ingest.fingerprint import PIPELINE_ROOT, code_version, pdf_content_hash
 from pipeline.ingest.identity import match_id_for, match_number_for
 from pipeline.ingest.records import RECORD_VERSION
+from pipeline.markers.linking import link_rate_checks
 from pipeline.markers.shots import parse_shots, self_validation_block
 
 REPO_ROOT = PIPELINE_ROOT.parent
@@ -181,7 +179,13 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     # Each domain APPENDS its checks and the result re-aggregates over whatever checks
     # are actually present, so domain stories compose without clobbering one another.
     self_validation = self_validation_block(shots["counts"])
-    self_validation["checks"].extend(domain_a_checks(match_metadata, metadata))
+    # Story 1.5: per-team link-rate checks appended beside the marker-count checks —
+    # Self-Validation is now the full binary check, exact marker count AND 100% link
+    # rate (FR-14, complete).
+    self_validation["checks"].extend(
+        link_rate_checks(shots["shot_events"], meta.home_team, meta.away_team)
+    )
+    self_validation["checks"].extend(domain_a_checks(match_metadata))
     self_validation["result"] = aggregate_self_validation(self_validation["checks"])
 
     return {

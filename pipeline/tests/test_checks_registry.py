@@ -123,21 +123,23 @@ def test_a_later_story_can_register_a_check_into_the_registry(clean_registry):
     """The registry surface only. That a registered check actually reaches the manifest
     is proved end-to-end by `test_runner.test_a_newly_registered_check_flows_into_the_report`.
     """
+    # `marker-event-link-rate` was this test's example until Story 1.5 registered it for
+    # real; the example must stay a check no story has claimed yet.
     marker = Deviation(
         report_id="r1",
-        check="marker-event-link-rate",
+        check="crosses-count-match",
         category=DeviationCategory.COUNT_MISMATCH,
         specifics="parsed 15 markers, page prints 16",
     )
     register_check(
         Check(
-            check_id="marker-event-link-rate",
+            check_id="crosses-count-match",
             applies_to=lambda meta: True,
             run=lambda doc, meta: [marker],
         )
     )
 
-    assert "marker-event-link-rate" in {c.check_id for c in registered_checks()}
+    assert "crosses-count-match" in {c.check_id for c in registered_checks()}
 
 
 def test_register_check_rejects_duplicate_ids(clean_registry):

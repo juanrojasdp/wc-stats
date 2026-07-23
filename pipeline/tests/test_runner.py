@@ -136,6 +136,7 @@ def test_checks_run_are_recorded(spike_corpus):
         "anchor-coverage",
         "domain-a-completeness",
         "domain-a-counts",
+        "marker-event-link-rate",
         "metadata-probe",
         "shots-count-match",
         "shots-parse",

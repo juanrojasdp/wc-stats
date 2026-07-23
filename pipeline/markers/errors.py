@@ -63,6 +63,52 @@ class AttemptsTableError(MarkerError):
         super().__init__(f"[{where}] attempts table on page {page_index} unparseable: {reason}")
 
 
+class UnknownLabelError(MarkerError):
+    """An attempts-table cell label is not in its frozen label -> enum mapping.
+
+    Assert-on-unknown, the `UnknownRgbError` precedent: an unmapped Outcome / Body Part /
+    Delivery Type label is either a template revision or a corpus value the contract does
+    not know, and silently skipping or guessing it would fabricate event data. Carries the
+    column, the verbatim label and the 0-based page index.
+    """
+
+    def __init__(
+        self,
+        column: str,
+        label: str,
+        page_index: "int | None" = None,
+        report_id: "str | None" = None,
+    ) -> None:
+        self.column = column
+        self.label = label
+        self.page_index = page_index
+        self.report_id = report_id
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(
+            f"[{where}] {column} label {label!r} on page {page_index} "
+            "is not in the known label mapping"
+        )
+
+
+class AttemptRowError(MarkerError):
+    """An attempts-table row is structurally malformed.
+
+    A row that leads with a Time value but then resists the row grammar — no shirt
+    number opening the Player cell, an empty player name, a Time cell that is not a
+    single integer — is a parser-breaking template revision, never a row to skip: a
+    skipped row would silently shift every later ordinal's join by one.
+    """
+
+    def __init__(
+        self, reason: str, report_id: "str | None" = None, page_index: "int | None" = None
+    ) -> None:
+        self.reason = reason
+        self.report_id = report_id
+        self.page_index = page_index
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(f"[{where}] attempts-table row on page {page_index} malformed: {reason}")
+
+
 class ShotsPageLayoutError(MarkerError):
     """A shots anchor did not resolve to [map page, event-table page(s)].
 

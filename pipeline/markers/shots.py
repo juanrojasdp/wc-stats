@@ -11,23 +11,27 @@ away map is drawn from its own attacking perspective with the same page orientat
 
 The expected attempt count comes from the tabular attempts table on the section's second
 page — never from the markers themselves, which would make Self-Validation a tautology.
-Pure: no I/O beyond the open `pymupdf.Document`. Story 1.3 Tasks 2-3; ACs 1-4.
+The table helpers live in `attempts.py` since Story 1.5, which also enriches every event
+with its linked table row via `linking.py` (digit-glyph proximity).
+Pure: no I/O beyond the open `pymupdf.Document`. Story 1.3 Tasks 2-3; Story 1.5 Task 4.
 """
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING
 
 from pipeline.ingest.identity import team_slug
-from pipeline.markers.errors import AttemptsTableError, ShotsPageLayoutError
+from pipeline.markers.attempts import parse_attempt_rows
+from pipeline.markers.errors import ShotsPageLayoutError
 from pipeline.markers.filter_chain import (
+    LEGEND_Y_DECIMALS,
     MarkerSpec,
     collect_candidate_markers,
     detect_pitch_frame,
-    exclude_legend_rows,
     key_outcomes,
+    legend_row_ys,
 )
+from pipeline.markers.linking import collect_digit_glyphs, event_fields, link_markers
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     import pymupdf
@@ -53,17 +57,6 @@ SHOTS_MARKER_SPEC = MarkerSpec(
 # rounding is what keeps records byte-identical across float environments (AD-8).
 COORD_DECIMALS = 2
 
-# Words on one visual table row share y0 to well under a point; consecutive rows sit
-# ~25 pt apart on the real reports. 3 pt mirrors the cover parser's line tolerance.
-_ROW_Y_TOLERANCE_PT = 3.0
-
-# `re.ASCII`: fullwidth digits otherwise satisfy `\d` and `int()` accepts them happily.
-_TIME_TOKEN_RE = re.compile(r"\d+", re.ASCII)
-
-# A header row must carry all three of these words; the real header reads
-# "Time | Player | Outcome | Body Part | Delivery Type".
-_HEADER_TOKENS = ("Time", "Player", "Outcome")
-
 
 def parse_shots(
     doc: "pymupdf.Document",
@@ -83,9 +76,11 @@ def parse_shots(
     and a table-first ordering as `PitchFrameError` — nothing parses the wrong page
     silently.
 
-    Raises `PitchFrameError`, `UnknownRgbError`, `AttemptsTableError` and
-    `ShotsPageLayoutError`, all typed and report-scoped. A count mismatch is NOT an
-    exception — it lands in `counts` for `self_validation_block` to judge.
+    Raises `PitchFrameError`, `UnknownRgbError`, `AttemptsTableError`,
+    `AttemptRowError`, `UnknownLabelError` and `ShotsPageLayoutError`, all typed and
+    report-scoped. A count mismatch is NOT an exception — it lands in `counts` for
+    `self_validation_block` to judge — and neither is an unlinkable marker: it stays in
+    `shot_events` with `linked: false` and null joined fields (Story 1.5, AC 2).
     """
     events: list[dict] = []
     counts: dict[str, dict[str, int]] = {}
@@ -99,11 +94,24 @@ def parse_shots(
         page = doc[map_index]
         pitch = detect_pitch_frame(page, report_id)
         candidates = collect_candidate_markers(page.get_drawings(), pitch, SHOTS_MARKER_SPEC)
-        markers = exclude_legend_rows(candidates, SHOTS_MARKER_SPEC)
+        legend_ys = legend_row_ys(candidates, SHOTS_MARKER_SPEC)
+        markers = [
+            candidate
+            for candidate in candidates
+            if round(candidate.pdf_y, LEGEND_Y_DECIMALS) not in legend_ys
+        ]
         keyed = key_outcomes(markers, SHOTS_MARKER_SPEC, report_id, map_index)
 
+        # Story 1.5: the tabular event rows plus the on-marker ordinal glyphs. Linking
+        # runs best-effort per marker even when marker count != row count — the 1.3
+        # count check already fails Self-Validation for that; a marker whose ordinal
+        # has a row can still link.
+        rows = parse_attempt_rows(doc, table_indices, report_id)
+        glyphs = collect_digit_glyphs(page, pitch, legend_ys, len(rows))
+        linked_rows = link_markers(keyed, glyphs, rows)
+
         team_id = team_slug(team_name)
-        for marker in keyed:
+        for marker, row in zip(keyed, linked_rows):
             events.append(
                 {
                     "team_id": team_id,
@@ -113,6 +121,9 @@ def parse_shots(
                     # PMSR marks no own goals anywhere (Story 1.1, corpus-verified); the
                     # field exists so Story 1.16's `ownGoal` mapping is mechanical.
                     "own_goal": False,
+                    # Story 1.5's join: time/player/labels from the linked attempts-table
+                    # row, or nulls with `linked: false` when no trustworthy link exists.
+                    **event_fields(row),
                     # pdf-space position on the map page, for Story 1.5's digit-glyph
                     # proximity linking.
                     "source": {
@@ -124,10 +135,9 @@ def parse_shots(
             )
         counts[side] = {
             "markers": len(keyed),
-            "table": sum(
-                _attempts_table_count(doc[table_index], report_id, table_index)
-                for table_index in table_indices
-            ),
+            # `parse_attempt_rows` internally asserts this equals the 1.3 counting
+            # heuristic's result for the same pages.
+            "table": len(rows),
         }
 
     # Deterministic record order (AD-8): team, then map page, then pdf position.
@@ -172,60 +182,3 @@ def self_validation_block(counts: "dict[str, dict[str, int]]") -> dict:
     }
 
 
-def _table_lines(page: "pymupdf.Page") -> "list[tuple[float, list[tuple[float, str]]]]":
-    """The page's words rebuilt into visual rows: (y, [(x, word), ...]) top to bottom.
-
-    The span-clustering technique of `probe.cover_lines`, on `get_text("words")` because
-    row membership is decided by geometry, not by extraction order.
-    """
-    words = sorted(
-        (y0, x0, text)
-        for x0, y0, _x1, _y1, text, *_ in page.get_text("words")
-        if text.strip()
-    )
-    lines: list[tuple[float, list[tuple[float, str]]]] = []
-    current: list[tuple[float, str]] = []
-    current_y: float | None = None
-    for y0, x0, text in words:
-        if current_y is not None and abs(y0 - current_y) > _ROW_Y_TOLERANCE_PT:
-            lines.append((current_y, sorted(current)))
-            current, current_y = [], None
-        if current_y is None:
-            current_y = y0
-        current.append((x0, text))
-    if current:
-        lines.append((current_y, sorted(current)))
-    return lines
-
-
-def _attempts_table_count(page: "pymupdf.Page", report_id: str, page_index: int) -> int:
-    """Count attempt rows in the tabular attempts table (the count check's other half).
-
-    Heuristic, inspected on the real table: exactly one header row carries the words
-    Time/Player/Outcome; every attempt row below it leads with its Time value — a purely
-    ASCII-digit leftmost word. Zero rows is a valid count (a team can go without an
-    attempt); a missing or ambiguous header is `AttemptsTableError`, and the fallback is
-    never the marker count — that would make Self-Validation a tautology.
-    """
-    lines = _table_lines(page)
-    header_ys = [
-        y
-        for y, cells in lines
-        if all(any(word == token for _x, word in cells) for token in _HEADER_TOKENS)
-    ]
-    if not header_ys:
-        raise AttemptsTableError(
-            f"no header row containing {_HEADER_TOKENS} found", report_id, page_index
-        )
-    if len(header_ys) > 1:
-        raise AttemptsTableError(
-            f"{len(header_ys)} header-shaped rows found; the attempts table is ambiguous",
-            report_id,
-            page_index,
-        )
-    header_y = header_ys[0]
-    return sum(
-        1
-        for y, cells in lines
-        if y > header_y and cells and _TIME_TOKEN_RE.fullmatch(cells[0][1])
-    )

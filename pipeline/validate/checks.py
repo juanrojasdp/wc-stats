@@ -7,15 +7,17 @@ when a new one arrives. That is what makes the gate cheap to re-run as the stand
 acceptance criterion of Stories 1.5-1.14.
 
 Registered here today:
-  anchor-coverage        every registered section anchor resolves in the report
-  metadata-probe         the report's stratification keys are complete
-  shots-parse            the shots maps parse; an off-palette fill is unknown-rgb
-  shots-count-match      parsed markers equal the attempts table's rows (Story 1.3)
-  domain-a-completeness  Domain A extracts with its full §6 field inventory (Story 1.6)
-  domain-a-counts        Domain A's Self-Validation count checks, as deviations (1.6)
+  anchor-coverage         every registered section anchor resolves in the report
+  metadata-probe          the report's stratification keys are complete
+  shots-parse             the shots maps parse; an off-palette fill is unknown-rgb
+  shots-count-match       parsed markers equal the attempts table's rows (Story 1.3)
+  marker-event-link-rate  every shot marker links to its event row (Story 1.5,
+                          count-mismatch)
+  domain-a-completeness   Domain A extracts with its full §6 field inventory (Story 1.6);
+                          an unknown minute-glyph fill is unknown-rgb, like shots
+  domain-a-counts         Domain A's Self-Validation count checks, as deviations (1.6)
 
 Later stories add, for example:
-  1.5   marker-event-link-rate           (count-mismatch)
   1.7+  per-domain extractor checks
 """
 
@@ -30,7 +32,8 @@ from pipeline.discover.text import PageTextIndex
 from pipeline.discover.probe import ReportMeta
 from pipeline.errors import PipelineError
 from pipeline.extract.domain_a import domain_a_checks, extract_domain_a
-from pipeline.extract.errors import ExtractError
+from pipeline.extract.errors import ExtractError, UnknownMinuteGlyphError
+from pipeline.ingest.identity import team_slug
 from pipeline.markers.errors import UnknownRgbError
 from pipeline.markers.shots import parse_shots
 from pipeline.validate.deviations import Deviation, DeviationCategory
@@ -225,6 +228,45 @@ def _check_shots_count_match(doc: "pymupdf.Document", meta: ReportMeta) -> list[
     return deviations
 
 
+def _check_marker_event_link_rate(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Every parsed marker links to its attempts-table row — 100%, binary (FR-15, 1.5 AC 4).
+
+    Specifics carry the per-report link rate plus each unlinked marker's identifying
+    position, so a below-100% report's rate lands in the deviation summary. A report
+    that does not parse yields no deviation *here* (shots-parse's or anchor-coverage's
+    finding), and a clean report emits none — the deviation framework records only
+    departures.
+    """
+    try:
+        shots = _shots_parse_result(doc, meta)
+    except PipelineError:
+        return []
+    if shots is None:
+        return []
+    deviations: list[Deviation] = []
+    for side, team_name in (("home", meta.home_team), ("away", meta.away_team)):
+        team_id = team_slug(team_name)
+        events = [event for event in shots["shot_events"] if event["team_id"] == team_id]
+        unlinked = [event for event in events if not event["linked"]]
+        if unlinked:
+            details = ", ".join(
+                f"{event['outcome']}@({event['source']['pdf_x']},{event['source']['pdf_y']})"
+                for event in unlinked
+            )
+            deviations.append(
+                Deviation(
+                    report_id=meta.report_id,
+                    check="marker-event-link-rate",
+                    category=DeviationCategory.COUNT_MISMATCH,
+                    specifics=(
+                        f"{side}: {len(events) - len(unlinked)}/{len(events)} markers "
+                        f"linked; unlinked: {details}"
+                    ),
+                )
+            )
+    return deviations
+
+
 register_check(
     Check(
         check_id="anchor-coverage",
@@ -253,19 +295,51 @@ register_check(
         run=_check_shots_count_match,
     )
 )
+register_check(
+    Check(
+        check_id="marker-event-link-rate",
+        applies_to=lambda meta: True,
+        run=_check_marker_event_link_rate,
+    )
+)
 
 
-def _domain_a_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "tuple[dict, dict] | None":
-    """Domain A's (payload, metadata) for one report, or `None` when the lineups
-    anchor does not resolve.
+# One-slot memo for `_domain_a_payload`, same shape and justification as `_parse_memo`
+# above: the runner hands the same open document to `domain-a-completeness` and then
+# `domain-a-counts`, and each uncached call rebuilds the full-text `PageTextIndex` and
+# re-parses the entire lineup page.
+_domain_a_memo: dict = {"doc": None, "result": None, "error": None}
+
+
+def _domain_a_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """Domain A's payload for one report, or `None` when the lineups anchor does not
+    resolve.
 
     A missing lineup page is anchor-coverage's finding (Story 1.6 maps lineup-anchor
     problems to `missing-anchor` through that existing check); re-reporting it here
     would count one root cause twice. Every other typed extract failure propagates —
     each check decides for itself what it owns.
     """
+    if _domain_a_memo["doc"] is not doc:
+        _domain_a_memo.update(doc=doc, result=None, error=None)
+        try:
+            _domain_a_memo["result"] = _domain_a_uncached(doc, meta)
+        except Exception as exc:
+            _domain_a_memo["error"] = exc
+    if _domain_a_memo["error"] is not None:
+        raise _domain_a_memo["error"]
+    return _domain_a_memo["result"]
+
+
+def _domain_a_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
     index = PageTextIndex(doc, report_id=meta.report_id)
-    spec = next(anchor for anchor in ANCHOR_REGISTRY if anchor.anchor_id == "lineups")
+    spec = next(
+        (anchor for anchor in ANCHOR_REGISTRY if anchor.anchor_id == "lineups"), None
+    )
+    if spec is None:
+        # An authoring bug, not report data — a bare StopIteration here would be
+        # recorded against the check with an empty message.
+        raise LookupError("anchor registry has no 'lineups' spec; Domain A checks need it")
     try:
         anchors = {"lineups": index.find_all(spec.template, at_start=spec.at_page_start)}
     except MissingAnchorError:
@@ -281,28 +355,38 @@ def _domain_a_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "tuple[dict,
         "venue": meta.venue,
         "shootout": meta.shootout,
     }
-    return extract_domain_a(doc, metadata, anchors, report_id=meta.report_id), metadata
+    return extract_domain_a(doc, metadata, anchors, report_id=meta.report_id)
 
 
 def _check_domain_a_completeness(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
     """Domain A extracts with its full addendum §6 field inventory (AC 1, AC 3).
 
-    Any typed extract failure — a §6 field missing, a lineup row that resists the
-    grammar, an unknown stage/venue/position/glyph — is a completeness-probe finding,
-    the same `probe-failure` semantics as `metadata-probe`. A raising *bug* (anything
-    untyped) deliberately propagates: the runner records it against this check's id.
+    An unknown minute-glyph fill is the same phenomenon as an off-palette shots marker
+    and lands in the same `unknown-rgb` bucket (review decision 2026-07-23). Every
+    other typed extract failure — a §6 field missing, a lineup row that resists the
+    grammar, an unknown stage/venue/position — is a completeness-probe finding, the
+    same `probe-failure` semantics as `metadata-probe`. Specifics carry the typed
+    class name: the localization histogram exists to separate failure classes. A
+    raising *bug* (anything untyped) deliberately propagates: the runner records it
+    against this check's id.
     """
-    try:
-        _domain_a_payload(doc, meta)
-    except ExtractError as exc:
+
+    def deviation(category: DeviationCategory, exc: ExtractError) -> list[Deviation]:
         return [
             Deviation(
                 report_id=meta.report_id,
                 check="domain-a-completeness",
-                category=DeviationCategory.PROBE_FAILURE,
-                specifics=exc.reason,
+                category=category,
+                specifics=f"{type(exc).__name__}: {exc.reason}",
             )
         ]
+
+    try:
+        _domain_a_payload(doc, meta)
+    except UnknownMinuteGlyphError as exc:
+        return deviation(DeviationCategory.UNKNOWN_RGB, exc)
+    except ExtractError as exc:
+        return deviation(DeviationCategory.PROBE_FAILURE, exc)
     return []
 
 
@@ -310,16 +394,16 @@ def _check_domain_a_counts(doc: "pymupdf.Document", meta: ReportMeta) -> list[De
     """Domain A's Self-Validation count checks, re-run as gate deviations (AC 3).
 
     A report that does not extract yields no deviation *here*: extract failures are
-    domain-a-completeness's finding (or anchor-coverage's), and running count checks
-    over a failed extract would attribute one root cause to two checks.
+    domain-a-completeness's finding (or anchor-coverage's), and any other pipeline
+    failure surfaces once through whichever check owns it — running count checks over
+    a failed extract would attribute one root cause to two checks.
     """
     try:
-        extracted = _domain_a_payload(doc, meta)
-    except ExtractError:
+        payload = _domain_a_payload(doc, meta)
+    except PipelineError:
         return []
-    if extracted is None:
+    if payload is None:
         return []
-    payload, metadata = extracted
     return [
         Deviation(
             report_id=meta.report_id,
@@ -327,7 +411,7 @@ def _check_domain_a_counts(doc: "pymupdf.Document", meta: ReportMeta) -> list[De
             category=DeviationCategory.COUNT_MISMATCH,
             specifics=f"{check['check']}: {check['specifics']}",
         )
-        for check in domain_a_checks(payload, metadata)
+        for check in domain_a_checks(payload)
         if check["result"] == "fail"
     ]
 

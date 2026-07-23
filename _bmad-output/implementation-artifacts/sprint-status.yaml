@@ -142,6 +142,26 @@ project: wc-stats
 #             105 tests in 1.6 files green; Domain A sweep over all 104 PDFs clean (the
 #             full batch/gate is currently blocked by in-flight 1-5 label mapping, not
 #             1-6). Status review -> done.
+# 2026-07-23: story 1-7 context created and moved to ready-for-dev (Domains B & C:
+#             Key Statistics 19-field block + contested possession, Phases of Play 8+9,
+#             line-height/team-length pages with the 3-per-panel metre investigation;
+#             AC 2's "block sum ~100%" corrected on corpus evidence — blocks are
+#             independent rates (contract $comment + mex_rsa 43/49); possession-sum +
+#             metre-bounds are the recorded checks. Tabular extract/ only — coordinates
+#             around in-flight 1-5 (markers/); batch/gate acceptance caveat noted).
+# 2026-07-23: story 1-5 implemented and moved to review — pipeline/markers/attempts.py
+#             (column-segmented row extraction, frozen label->enum maps) + linking.py
+#             (digit-glyph collection, two-pass bijective assignment with outcome-
+#             compatibility constraint, merged-word readings, link-rate checks); events
+#             enriched with linked/ordinal/time_raw/shirt/player/labels/xG-null;
+#             Self-Validation completed (count AND 100% link rate); marker-event-link-rate
+#             gate check. Heuristic iterated over 5 full-corpus runs to 2571/2571 markers
+#             linked; batch 104/104 PASS, gate PASS 0 deviations, re-runs byte-identical
+#             (unblocks the batch/gate caveat noted by 1-6's review). Discovery: 3 AD-14
+#             contract gaps — bare 'Incomplete'/'On Target' outcome labels missing from
+#             the closed enum; deflected-on-target-defensive-event drawn in BOTH marker
+#             colours (10 incomplete / 1 on-target of 11 rows); stoppage-minute finding
+#             (time_raw prints cumulative; period only from row order) deferred to 1.16.
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -155,9 +175,9 @@ development_status:
   1-2-batch-ingestion-run-manifest-text-anchored-page-discovery: done
   1-3-shots-pitch-map-parser-with-marker-count-self-validation: done
   # Gates all spatial-join stories (1-11..1-14 and Epic 2 spatial surfaces)
-  1-5-marker-event-linking-via-digit-glyph-proximity: in-progress
+  1-5-marker-event-linking-via-digit-glyph-proximity: review
   1-6-domain-a-extraction-metadata-lineups-formations: done
-  1-7-domains-b-c-extraction-key-statistics-tactical-identity: backlog
+  1-7-domains-b-c-extraction-key-statistics-tactical-identity: ready-for-dev
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
   1-10-domain-g-extraction-per-player-performance-physical-data: backlog

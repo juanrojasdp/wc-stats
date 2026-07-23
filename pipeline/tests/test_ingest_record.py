@@ -126,8 +126,9 @@ def test_the_record_carries_no_timestamp(tmp_path, make_report):
         if isinstance(value, str)
         and ISO_TIMESTAMP_RE.search(value)
         # Domain A's kickoff is venue-local *match* time read off the PDF (AD-7) —
-        # deterministic report data, not a wall-clock run stamp.
-        and not key.endswith(".kickoff")
+        # deterministic report data, not a wall-clock run stamp. Exact path, not a
+        # suffix: any future field merely *ending* in ".kickoff" must not escape.
+        and key != ".domains.match_metadata.kickoff"
     ]
     assert offenders == []
     assert not {"extracted_at", "run_timestamp", "run_id", "run_index"} & _keys(record)
@@ -208,6 +209,26 @@ def test_self_validation_is_real_once_shots_parse_never_not_applicable(tmp_path,
         if check["check"] == "shots-marker-count"
     ]
     assert [check["team"] for check in shots_checks] == ["home", "away"]
+
+
+def test_link_rate_checks_join_the_self_validation_block(tmp_path, make_report):
+    """Story 1.5: `shots-link-rate` checks are appended beside `shots-marker-count` —
+    keyed independently here, because both families carry home/away team keys and a
+    widened shared filter would collide."""
+    record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
+
+    link_checks = {
+        check["team"]: check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "shots-link-rate"
+    }
+    assert set(link_checks) == {"home", "away"}
+    for check in link_checks.values():
+        assert check["result"] == "pass"
+        assert check["linked_count"] == check["marker_count"]
+        assert check["unlinked"] == []
+    assert link_checks["home"]["marker_count"] == len(DEFAULT_SHOTS_MARKERS["home"])
+    assert link_checks["away"]["marker_count"] == len(DEFAULT_SHOTS_MARKERS["away"])
 
 
 def test_a_count_mismatch_still_produces_a_record_with_both_counts(tmp_path, make_report):

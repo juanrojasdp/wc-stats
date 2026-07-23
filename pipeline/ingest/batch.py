@@ -437,7 +437,21 @@ def format_summary(manifest: dict) -> str:
             # what the check actually holds — a shots-shaped template over a Domain A
             # check would print `None: None markers, table lists None`.
             for check in entry["self_validation_failures"]:
-                if "marker_count" in check or "table_count" in check:
+                if "unlinked" in check:
+                    # Story 1.5's link-rate check: rate first, then each unlinked
+                    # marker's identifying specifics (FR-14's manifest specifics).
+                    unlinked = check.get("unlinked") or []
+                    positions = ", ".join(
+                        f"{marker.get('outcome')}@({marker.get('pdf_x')},{marker.get('pdf_y')})"
+                        for marker in unlinked
+                        if isinstance(marker, dict)
+                    )
+                    detail = (
+                        f"{check.get('team')}: {check.get('linked_count')}/"
+                        f"{check.get('marker_count')} markers linked"
+                        + (f"; unlinked: {positions}" if positions else "")
+                    )
+                elif "marker_count" in check or "table_count" in check:
                     detail = (
                         f"{check.get('team')}: {check.get('marker_count')} markers, "
                         f"table lists {check.get('table_count')}"

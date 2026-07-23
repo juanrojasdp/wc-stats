@@ -147,6 +147,23 @@ def collect_candidate_markers(
     return found
 
 
+def legend_row_ys(candidates: list[CandidateMarker], spec: MarkerSpec) -> set[float]:
+    """The rounded y values of legend rows: >= `legend_min_colors` distinct fills at one y.
+
+    Exposed separately from `exclude_legend_rows` (Story 1.5): digit-glyph linking must
+    ignore any digit word sitting in the legend band, and the band's position is defined
+    by exactly this grouping — one definition, two consumers.
+    """
+    groups: dict[float, list[CandidateMarker]] = {}
+    for candidate in candidates:
+        groups.setdefault(round(candidate.pdf_y, LEGEND_Y_DECIMALS), []).append(candidate)
+    return {
+        y
+        for y, group in groups.items()
+        if len({candidate.rgb for candidate in group}) >= spec.legend_min_colors
+    }
+
+
 def exclude_legend_rows(
     candidates: list[CandidateMarker], spec: MarkerSpec
 ) -> list[CandidateMarker]:
@@ -156,14 +173,7 @@ def exclude_legend_rows(
     legend containing a color the palette does not know still reads as a legend instead
     of surviving into keying and aborting the report.
     """
-    groups: dict[float, list[CandidateMarker]] = {}
-    for candidate in candidates:
-        groups.setdefault(round(candidate.pdf_y, LEGEND_Y_DECIMALS), []).append(candidate)
-    legend_ys = {
-        y
-        for y, group in groups.items()
-        if len({candidate.rgb for candidate in group}) >= spec.legend_min_colors
-    }
+    legend_ys = legend_row_ys(candidates, spec)
     return [
         candidate
         for candidate in candidates
