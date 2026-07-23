@@ -1,0 +1,11 @@
+# Pure static publish of the app export (AD-13, NFR-8, NFR-9):
+# no functions, no middleware, no redirects, no env-dependent behavior,
+# no analytics. NETLIFY_NEXT_PLUGIN_SKIP keeps Netlify's auto-detected
+# Next.js runtime plugin from hijacking the deploy.
+[build]
+  base = "app"
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"

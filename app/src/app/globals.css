@@ -1,0 +1,354 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * Design tokens — values are normative from DESIGN.md (UX-DR1, UX-DR2).
+ * Dark is canonical (:root and .dark); light variants live on .light.
+ * The theme class is set on <html>; Story 2.1 hardcodes class="dark",
+ * the pre-paint theme script arrives with Story 2.2.
+ *
+ * This file is the ONE token source of truth: the shadcn-init oklch defaults
+ * were replaced by the DESIGN.md mapping below (Story 2.1 Task 4.2).
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root,
+.dark {
+  color-scheme: dark;
+
+  /* Canvas & ink */
+  --surface-base: #0e1114;
+  --surface-raised: #171b1f;
+  --surface-overlay: #1f252b;
+  --ink-primary: #f2f5f7;
+  --ink-secondary: #a7b0b8;
+  /* Restricted: disabled states + >=3:1 non-text glyphs only — fails 4.5:1 for text on dark */
+  --ink-muted: #6b757f;
+  /* The ONLY divider weight */
+  --border-hairline: #2a3138;
+
+  /* Brand accents */
+  --accent-lime: #c3f53c;
+  --ink-on-lime: #131a02;
+  --accent-cyan: #3ddbe8;
+  --ink-on-cyan: #062226;
+
+  /* shadcn variable mapping (unlisted shadcn vars keep shadcn defaults) */
+  --background: #0e1114;
+  --foreground: #f2f5f7;
+  --card: #171b1f;
+  --card-foreground: #f2f5f7;
+  --muted: #171b1f;
+  --muted-foreground: #a7b0b8;
+  --popover: #1f252b;
+  --popover-foreground: #f2f5f7;
+  --primary: #c3f53c;
+  --primary-foreground: #131a02;
+  --secondary: #1f252b;
+  --secondary-foreground: #f2f5f7;
+  --accent: #1f252b;
+  --accent-foreground: #f2f5f7;
+  --border: #2a3138;
+  --input: #2a3138;
+  --ring: #3ddbe8;
+  --destructive: #f0708a;
+
+  /* Data-viz palette — theme-switching entries (a light variant exists) */
+  --viz-team-a: #c3f53c;
+  --viz-team-b: #3ddbe8;
+  --viz-neutral: #8c979f;
+  /* Deliberate alias of viz-team-a; single-series only */
+  --viz-single: var(--viz-team-a);
+  --shot-goal: #3fdd85;
+  --shot-on-target: #63c8f5;
+  --shot-off-target: #f5b63c;
+  --shot-blocked: #c9a1f5;
+  --shot-incomplete: #7c9bf7;
+  --result-win: #65d98a;
+  --result-draw: #8c979f;
+  --result-loss: #f0708a;
+  --result-chip-ink: #0e1114;
+
+  /* Tonal elevation — shadows only on true overlays */
+  --elevation-overlay: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/*
+ * Theme-invariant viz tokens: the pitch is deep green in BOTH themes, and the
+ * edge/heat ramps render only on the pitch. focus-ring-on-pitch is near-white
+ * in both themes — the light --ring cyan fails 3:1 on the pitch (DESIGN.md
+ * final; supersedes review-accessibility.md's interim #3DDBE8 suggestion).
+ */
+:root {
+  --pitch-surface: #0b3d2e;
+  --pitch-stripe: #0e4634;
+  --pitch-line: #4c9b72;
+  --focus-ring-on-pitch: #eafbfd;
+  --edge-weight-1: #5a9e78;
+  --edge-weight-2: #7db56e;
+  --edge-weight-3: #a3cc60;
+  --edge-weight-4: #c9e455;
+  --edge-weight-5: #eefb4e;
+  --heat-1: #4e9e52;
+  --heat-2: #6fb44f;
+  --heat-3: #93c44b;
+  --heat-4: #c4de4f;
+  --heat-5: #eef9a3;
+}
+
+.light {
+  color-scheme: light;
+
+  /* Canvas & ink */
+  --surface-base: #f5f7f8;
+  --surface-raised: #ffffff;
+  --surface-overlay: #edf0f2;
+  --ink-primary: #15191d;
+  --ink-secondary: #4b555e;
+  --ink-muted: #5f6970;
+  --border-hairline: #dce1e5;
+
+  /* Brand accents */
+  --accent-lime: #3f6212;
+  --ink-on-lime: #ffffff;
+  --accent-cyan: #0e7490;
+  --ink-on-cyan: #ffffff;
+
+  /* shadcn variable mapping */
+  --background: #f5f7f8;
+  --foreground: #15191d;
+  --card: #ffffff;
+  --card-foreground: #15191d;
+  --muted: #ffffff;
+  --muted-foreground: #4b555e;
+  --popover: #edf0f2;
+  --popover-foreground: #15191d;
+  --primary: #3f6212;
+  --primary-foreground: #ffffff;
+  --secondary: #edf0f2;
+  --secondary-foreground: #15191d;
+  --accent: #edf0f2;
+  --accent-foreground: #15191d;
+  --border: #dce1e5;
+  --input: #dce1e5;
+  --ring: #0e7490;
+  --destructive: #c22d50;
+
+  /* Data-viz light-canvas variants */
+  --viz-team-a: #4d7c0f;
+  --viz-team-b: #0e7490;
+  --viz-neutral: #5f6970;
+  --shot-goal: #177245;
+  --shot-on-target: #155e8f;
+  --shot-off-target: #7a5200;
+  --shot-blocked: #6d28d9;
+  --shot-incomplete: #3346c2;
+  --result-win: #1e7a43;
+  --result-draw: #5f6970;
+  --result-loss: #c22d50;
+  --result-chip-ink: #ffffff;
+
+  --elevation-overlay: 0 4px 16px rgba(21, 25, 29, 0.12);
+}
+
+/*
+ * Register token namespaces so Tailwind utilities generate from them.
+ * `inline` because the values reference theme-switching :root variables
+ * (and the next/font-provided --font-archivo / --font-inter).
+ */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Vendored shadcn components reach headings through font-heading — Archivo per DESIGN.md */
+  --font-heading: var(--font-display);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+
+  --color-surface-base: var(--surface-base);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-ink-primary: var(--ink-primary);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-hairline: var(--border-hairline);
+  --color-accent-lime: var(--accent-lime);
+  --color-ink-on-lime: var(--ink-on-lime);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-ink-on-cyan: var(--ink-on-cyan);
+
+  --color-pitch-surface: var(--pitch-surface);
+  --color-pitch-stripe: var(--pitch-stripe);
+  --color-pitch-line: var(--pitch-line);
+  --color-viz-team-a: var(--viz-team-a);
+  --color-viz-team-b: var(--viz-team-b);
+  --color-viz-neutral: var(--viz-neutral);
+  --color-viz-single: var(--viz-single);
+  --color-shot-goal: var(--shot-goal);
+  --color-shot-on-target: var(--shot-on-target);
+  --color-shot-off-target: var(--shot-off-target);
+  --color-shot-blocked: var(--shot-blocked);
+  --color-shot-incomplete: var(--shot-incomplete);
+  --color-focus-ring-on-pitch: var(--focus-ring-on-pitch);
+  --color-edge-weight-1: var(--edge-weight-1);
+  --color-edge-weight-2: var(--edge-weight-2);
+  --color-edge-weight-3: var(--edge-weight-3);
+  --color-edge-weight-4: var(--edge-weight-4);
+  --color-edge-weight-5: var(--edge-weight-5);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
+  --color-heat-4: var(--heat-4);
+  --color-heat-5: var(--heat-5);
+  --color-result-win: var(--result-win);
+  --color-result-draw: var(--result-draw);
+  --color-result-loss: var(--result-loss);
+  --color-result-chip-ink: var(--result-chip-ink);
+
+  /* DESIGN.md radii: sm 4 / md 8 / lg 12 / full 9999 (larger steps keep Tailwind defaults) */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+
+  --spacing-gutter-mobile: 1rem;
+  --spacing-gutter-desktop: 1.5rem;
+  --spacing-tile-gap: 0.75rem;
+  --spacing-section-gap: 3rem;
+  --spacing-layer-gap: 4rem;
+
+  --shadow-overlay: var(--elevation-overlay);
+}
+
+/*
+ * Typography ramp (DESIGN.md; px-specified, implemented in rem @16px base).
+ * Every aligned-numeric entry carries tabular-nums. No type below 11px.
+ */
+@utility type-display-score {
+  font-family: var(--font-display);
+  font-size: 2.75rem; /* 44px */
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility type-display-stat {
+  font-family: var(--font-display);
+  font-size: 1.875rem; /* 30px */
+  font-weight: 700;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility type-headline {
+  font-family: var(--font-display);
+  font-size: 1.375rem; /* 22px */
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@utility type-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.625rem; /* 26px */
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility type-title {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem; /* 17px */
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+@utility type-body {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+@utility type-table-numeric {
+  font-family: var(--font-sans);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility type-stat-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@utility type-label-caps {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+}
+
+@utility type-caption {
+  font-family: var(--font-sans);
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+@layer base {
+  /* Vendored shadcn components use color-less `border-*` utilities and expect
+     the shadcn default-border convention; --border IS border-hairline. */
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+
+  /* Focus is always visible, everywhere, from --ring (NFR-2).
+     Never `outline: none` without a replacement. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Motion is decorative-only product-wide: reduced motion kills all of it. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

@@ -67,12 +67,21 @@ project: wc-stats
 # 2026-07-22: story 1-2 context created and moved to ready-for-dev.
 # 2026-07-22: story 1-2 implemented and moved to review — 104/104 reports extracted,
 #             0 failures, all 47 anchors resolved on every report (1.4 sampled 16).
+# 2026-07-23: story 2-1 context created and moved to ready-for-dev; epic-2 in-progress.
 # 2026-07-23: story 1-2 code review complete — 3 decisions resolved, 31 patches applied,
 #             6 items deferred to deferred-work.md, ~20 dismissed. All 7 ACs satisfied.
 #             Decisions: requirements.txt folded into code_version; orphan records now
 #             fail the run (exit 1); match number bounded 1..104 per the contract.
 #             Re-verified after patching: 104/104 extracted, re-run 104/104 skipped (42x),
 #             --force byte-identical, 1.4 gate clean, 440 tests pass. Status review -> done.
+# 2026-07-23: story 1-3 context created and moved to ready-for-dev.
+# 2026-07-23: story 2-1 implemented and moved to review — app/ scaffold (Next 16.2.11
+#             static export), full DESIGN.md tokens, typed es/en i18n + Intl helpers,
+#             generated contract types, AR-13 build chain green, 24 tests, 4 negative
+#             gate proofs, zero-external-request audit clean.
+# 2026-07-23: story 1-6 context created and moved to ready-for-dev (Domain A: metadata
+#             normalization + lineup-page parse; establishes pipeline/extract/; tabular
+#             only — coordinates around in-flight 1-3 (markers/) and 2-1 (app/)).
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -84,10 +93,10 @@ development_status:
   # Contract bootstrap (AD-14) — unblocks Epic 2 via fixtures
   1-1-contract-v1-schemas-fixtures-type-generation-spike: done
   1-2-batch-ingestion-run-manifest-text-anchored-page-discovery: done
-  1-3-shots-pitch-map-parser-with-marker-count-self-validation: backlog
+  1-3-shots-pitch-map-parser-with-marker-count-self-validation: in-progress
   # Gates all spatial-join stories (1-11..1-14 and Epic 2 spatial surfaces)
   1-5-marker-event-linking-via-digit-glyph-proximity: backlog
-  1-6-domain-a-extraction-metadata-lineups-formations: backlog
+  1-6-domain-a-extraction-metadata-lineups-formations: in-progress
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: backlog
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
@@ -102,9 +111,9 @@ development_status:
   1-18-team-player-profile-artifacts: backlog
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
   epic-1-retrospective: optional
-  epic-2: backlog
+  epic-2: in-progress
   # i18n scaffolding first within Epic 2 (per sprint-planning directive); requires 1-1 fixtures
-  2-1-static-app-scaffold-with-design-tokens-i18n-structure-build-gates: backlog
+  2-1-static-app-scaffold-with-design-tokens-i18n-structure-build-gates: review
   2-2-site-chrome-header-language-theme-toggles-footer-404: backlog
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
   2-3-contract-v1-per-surface-sign-off: backlog
