@@ -24,10 +24,10 @@ from pipeline.ingest.identity import team_slug
 from pipeline.markers.attempts import parse_attempt_rows
 from pipeline.markers.errors import ShotsPageLayoutError
 from pipeline.markers.filter_chain import (
-    LEGEND_Y_DECIMALS,
     MarkerSpec,
     collect_candidate_markers,
     detect_pitch_frame,
+    exclude_legend_rows,
     key_outcomes,
     legend_row_ys,
 )
@@ -95,11 +95,7 @@ def parse_shots(
         pitch = detect_pitch_frame(page, report_id)
         candidates = collect_candidate_markers(page.get_drawings(), pitch, SHOTS_MARKER_SPEC)
         legend_ys = legend_row_ys(candidates, SHOTS_MARKER_SPEC)
-        markers = [
-            candidate
-            for candidate in candidates
-            if round(candidate.pdf_y, LEGEND_Y_DECIMALS) not in legend_ys
-        ]
+        markers = exclude_legend_rows(candidates, SHOTS_MARKER_SPEC)
         keyed = key_outcomes(markers, SHOTS_MARKER_SPEC, report_id, map_index)
 
         # Story 1.5: the tabular event rows plus the on-marker ordinal glyphs. Linking
@@ -135,8 +131,8 @@ def parse_shots(
             )
         counts[side] = {
             "markers": len(keyed),
-            # `parse_attempt_rows` internally asserts this equals the 1.3 counting
-            # heuristic's result for the same pages.
+            # Same row-admission rule (`_attempt_lines`) as the 1.3 counting heuristic,
+            # shared by construction — the counts cannot drift apart.
             "table": len(rows),
         }
 

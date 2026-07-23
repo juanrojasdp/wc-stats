@@ -437,7 +437,7 @@ def format_summary(manifest: dict) -> str:
             # what the check actually holds — a shots-shaped template over a Domain A
             # check would print `None: None markers, table lists None`.
             for check in entry["self_validation_failures"]:
-                if "unlinked" in check:
+                if check.get("check") == "shots-link-rate":
                     # Story 1.5's link-rate check: rate first, then each unlinked
                     # marker's identifying specifics (FR-14's manifest specifics).
                     unlinked = check.get("unlinked") or []

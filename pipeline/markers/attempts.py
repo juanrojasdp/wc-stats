@@ -9,9 +9,9 @@ therefore segmented by the header words' x-positions — the boundaries sit at t
 Label -> enum mappings are frozen literal dicts (the `SHOTS_RGB_TO_OUTCOME` precedent —
 never imported from the schema at runtime; a test cross-checks every value against the
 contract JSON). An unmapped label raises `UnknownLabelError`: assert-on-unknown, never a
-guess. The row parser's admission rule is the exact rule `attempts_table_count` counts
-by, and the two are asserted equal per page — a divergence is a parser bug, typed, never
-silently reconciled.
+guess. The row parser and `attempts_table_count` admit rows through the single shared
+rule in `_attempt_lines`, so their counts agree by construction — they cannot drift
+apart without editing that one function.
 
 Pure: no I/O beyond the open `pymupdf.Document`. Story 1.5 Task 2.
 """
@@ -225,10 +225,10 @@ def parse_attempt_rows(
     Multi-page tables (37 of the 104 corpus reports) repeat the header per page; each
     page is parsed below its own header and the rows concatenate in anchored page order,
     so `ordinal` is the 1-based position in the concatenated list. Raises
-    `AttemptsTableError` (header missing/ambiguous/unsegmentable, or a row-count
-    divergence from `attempts_table_count` — a parser bug surfacing loud),
-    `AttemptRowError` (a row resisting the grammar) and `UnknownLabelError` (a label
-    outside the frozen mappings).
+    `AttemptsTableError` (header missing/ambiguous/unsegmentable), `AttemptRowError`
+    (a row resisting the grammar) and `UnknownLabelError` (a label outside the frozen
+    mappings). Row admission is `_attempt_lines` — the exact rule
+    `attempts_table_count` counts by, shared so the two cannot diverge.
     """
     rows: list[AttemptRow] = []
     for page_index in table_indices:
@@ -236,16 +236,6 @@ def parse_attempt_rows(
         lines = table_lines(page)
         header_y, boundaries = _header_geometry(lines, report_id, page_index)
         attempt_lines = _attempt_lines(lines, header_y)
-
-        expected = attempts_table_count(page, report_id, page_index)
-        if len(attempt_lines) != expected:
-            raise AttemptsTableError(
-                f"row parser found {len(attempt_lines)} attempt rows where the row "
-                f"counter found {expected}; the two share one admission rule, so this "
-                "is a parser bug",
-                report_id,
-                page_index,
-            )
 
         for cells in attempt_lines:
             rows.append(

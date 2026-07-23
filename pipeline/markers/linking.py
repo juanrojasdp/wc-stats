@@ -45,6 +45,12 @@ SHOTS_MARKER_RADIUS = 5.625
 # accepts them — the whole feature is digit matching, so this is not optional.
 _DIGIT_RE = re.compile(r"\d+", re.ASCII)
 
+# A merged word is a pileup of overlapping 1-2 digit labels; the corpus maximum is 4
+# digits ("1819"). Longer digit runs are page furniture, never a label cluster, and
+# `_word_readings`' partition count grows Fibonacci-fast with length — so words beyond
+# this cap yield no readings at all rather than an unbounded enumeration.
+_MAX_MERGED_WORD_DIGITS = 8
+
 
 @dataclass(frozen=True)
 class DigitGlyph:
@@ -81,6 +87,8 @@ def _word_readings(text: str, row_count: int) -> "list[list[tuple[int, int, int]
     zero.
     """
     readings: "list[list[tuple[int, int, int]]]" = []
+    if len(text) > _MAX_MERGED_WORD_DIGITS:
+        return readings
 
     def extend(start: int, acc: "list[tuple[int, int, int]]") -> None:
         if start == len(text):
@@ -242,8 +250,13 @@ def link_markers(
 
     # Resolve pass-1 ordinal collisions (two *different* words printing one ordinal —
     # e.g. a real "12" label plus a merged "1"+"2" word read whole): keep the nearest
-    # claimant, release the rest for the rescue pass. This is not the final verdict —
-    # a collision that survives the rescue pass still unlinks everyone below.
+    # claimant, release the rest for the rescue pass. This is not the final verdict,
+    # and the keep only matters when every released marker finds a *different* ordinal
+    # in the rescue (a merged word yielding its split parts): a released marker with no
+    # viable split rescue re-claims its released word — whole-word re-claims are not
+    # barred from held ordinals — recreating the duplicate, and the demotion below then
+    # unlinks every claimant including the kept one. That round-trip is the designed
+    # outcome for a genuinely duplicate printed ordinal (Task 7: both markers unlink).
     claimants_by_ordinal: dict[int, list[int]] = {}
     for marker_index, (glyph_index, _distance) in assigned.items():
         claimants_by_ordinal.setdefault(glyphs[glyph_index].ordinal, []).append(marker_index)

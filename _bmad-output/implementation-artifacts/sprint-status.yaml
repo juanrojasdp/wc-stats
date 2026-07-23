@@ -180,6 +180,16 @@ project: wc-stats
 #             1.7-1.15 UNBLOCKED; 1.16 blocked-pending CS-1. Durable record appended to
 #             contract/README.md; ledger entries struck/added. No contract file changed;
 #             baseline + post-edit guards green (192+1 pytest, check:types, schema-version).
+# 2026-07-23: story 1-5 adversarial code review (3 layers over d60827c..e6cfa7e): 19 unique
+#             findings — 3 decisions (2 pre-adjudicated by 2.3's CR-1/CR-2; cross-check-as-
+#             assignment-constraint ratified by user), 11 patches applied (commit-scope
+#             disclosure in the story record — 19816fc carried 1.6's Domain A repairs that
+#             fixed a 4-commit ImportError on main; tautological row-count assert removed;
+#             exclude_legend_rows back in the production path; _word_readings capped;
+#             format_summary dispatch by check id; 7 new tests incl. merged-word rescue
+#             assignment-level coverage), 1 deferred (_domain_a_memo, ledgered), 5 dismissed.
+#             Re-verified: suite 663+1, batch 104/104 PASS, gate PASS 0 deviations.
+#             Status review -> done. Spatial-join stories (1-11..1-14, 2-7+) unblocked.
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -192,7 +202,7 @@ development_status:
   1-2-batch-ingestion-run-manifest-text-anchored-page-discovery: done
   1-3-shots-pitch-map-parser-with-marker-count-self-validation: done
   # Gates all spatial-join stories (1-11..1-14 and Epic 2 spatial surfaces)
-  1-5-marker-event-linking-via-digit-glyph-proximity: review
+  1-5-marker-event-linking-via-digit-glyph-proximity: done
   1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: ready-for-dev
   1-8-momentum-series-extraction-oq-5-resolution: backlog

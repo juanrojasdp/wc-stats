@@ -255,6 +255,89 @@ def test_the_cross_check_accepts_the_non_prefix_mapping():
     assert link_markers(markers, glyphs, rows) == [rows[0]]
 
 
+def test_an_incompatible_nearest_glyph_reroutes_to_the_nearest_compatible_one():
+    """Ratified review decision (2026-07-23): compatibility is an assignment
+    constraint, not a post-link demotion — a marker whose geometrically nearest glyph
+    leads to an outcome-contradicting row links to its nearest COMPATIBLE glyph within
+    the radius instead. With no compatible glyph in radius it stays unlinked
+    (`test_the_outcome_cross_check_demotes_a_contradicted_link`)."""
+    markers = [make_marker(100.0, 200.0, outcome="goal")]
+    glyphs = [DigitGlyph(101.0, 200.0, ordinal=1), DigitGlyph(103.0, 200.0, ordinal=2)]
+    rows = [
+        make_row(1, outcome_detail="off-target"),
+        make_row(2, outcome_detail="on-target-goal"),
+    ]
+
+    assert link_markers(markers, glyphs, rows) == [rows[1]]
+
+
+def test_a_released_collision_claimant_rescues_via_its_merged_words_split_part():
+    """The canonical merged-word round trip: marker A prints a real "12" label while
+    overlapping markers B and C print "1" and "2" that extract as ONE word "12". Pass 1
+    reads both words whole as ordinal 12 (a collision); keep-nearest holds A, releases
+    B, and the rescue pass hands B and C the merged word's split parts — every marker
+    links and the kept claim survives."""
+    a = make_marker(100.0, 100.3)
+    b = make_marker(202.0, 300.4)
+    c = make_marker(206.0, 300.4)
+    real_label = DigitGlyph(100.0, 100.0, ordinal=12, word_id=1, start=0, end=2)
+    merged = [
+        DigitGlyph(204.0, 300.0, ordinal=12, word_id=2, start=0, end=2),
+        DigitGlyph(202.0, 300.0, ordinal=1, word_id=2, start=0, end=1, whole=False),
+        DigitGlyph(206.0, 300.0, ordinal=2, word_id=2, start=1, end=2, whole=False),
+    ]
+    rows = [make_row(ordinal) for ordinal in range(1, 13)]
+
+    linked = link_markers([a, b, c], [real_label, *merged], rows)
+
+    assert linked == [rows[11], rows[0], rows[1]]
+
+
+def test_a_whole_word_claim_blocks_split_part_claims_on_the_same_ink():
+    """Each printed character explains at most one ordinal: once ordinal 12 is claimed
+    from the whole word, a second marker cannot read "1" or "2" out of the same ink —
+    it stays unlinked rather than double-spending a character."""
+    a = make_marker(204.0, 300.0)
+    b = make_marker(202.0, 300.5)
+    glyphs = [
+        DigitGlyph(204.0, 300.0, ordinal=12, word_id=1, start=0, end=2),
+        DigitGlyph(202.0, 300.0, ordinal=1, word_id=1, start=0, end=1, whole=False),
+        DigitGlyph(206.0, 300.0, ordinal=2, word_id=1, start=1, end=2, whole=False),
+    ]
+    rows = [make_row(ordinal) for ordinal in range(1, 13)]
+
+    assert link_markers([a, b], glyphs, rows) == [rows[11], None]
+
+
+def test_a_split_part_never_contests_an_ordinal_a_marker_already_holds():
+    """Rescue-grade evidence stays rescue-grade: with ordinal 1 held from a whole word,
+    a merged word's "1" part is skipped and the rescued marker takes its "2" part —
+    contesting would only demote the stronger whole-word claim."""
+    a = make_marker(100.0, 100.0)
+    b = make_marker(202.0, 300.0)
+    glyphs = [
+        DigitGlyph(100.0, 100.0, ordinal=1, word_id=1, start=0, end=1),
+        DigitGlyph(202.0, 300.0, ordinal=1, word_id=2, start=0, end=1, whole=False),
+        DigitGlyph(206.0, 300.0, ordinal=2, word_id=2, start=1, end=2, whole=False),
+    ]
+    rows = [make_row(1), make_row(2)]
+
+    assert link_markers([a, b], glyphs, rows) == [rows[0], rows[1]]
+
+
+def test_a_pathologically_long_digit_word_yields_no_readings():
+    """`_word_readings` enumeration grows Fibonacci-fast with length; beyond the merged
+    cap (corpus max is 4 digits) the word is page furniture and offers nothing, in
+    bounded time."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=960, height=540)
+    pitch = pymupdf.Rect(40, 115, 400, 520)
+    page.insert_text((200, 300), "1" * 40, fontsize=6)
+
+    assert collect_digit_glyphs(page, pitch, legend_ys=set(), row_count=20) == []
+    doc.close()
+
+
 def test_event_fields_join_a_row_and_null_out_when_unlinked():
     row = make_row(3, outcome_detail="on-target-goal")
 
@@ -344,12 +427,17 @@ def test_a_duplicate_ordinal_resolved_by_the_outcome_constraint_links_the_true_m
 
 
 def test_a_corrupted_out_of_range_label_unlinks_its_marker(make_report, tmp_path):
+    """Specifically the marker whose label was corrupted — not merely "one of them"."""
     labels = {"home": {0: "99"}}
     with open_report(make_report, tmp_path, shots_label_text=labels) as doc:
         shots = parse(doc)
 
-    by_linked = {event["linked"] for event in team_events(shots, "mexico")}
-    assert by_linked == {True, False}
+    by_outcome = {event["outcome"]: event for event in team_events(shots, "mexico")}
+    corrupted = DEFAULT_SHOTS_MARKERS["home"][0][0]
+    healthy = DEFAULT_SHOTS_MARKERS["home"][1][0]
+    assert by_outcome[corrupted]["linked"] is False
+    assert by_outcome[healthy]["linked"] is True
+    assert by_outcome[healthy]["ordinal"] == 2
 
 
 def test_a_suppressed_label_unlinks_its_marker(make_report, tmp_path):

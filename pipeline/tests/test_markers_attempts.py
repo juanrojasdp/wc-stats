@@ -110,6 +110,14 @@ def test_compatible_outcomes_are_singletons_except_the_documented_both_colours_d
     assert set(DETAIL_COMPATIBLE_OUTCOMES) == set(DETAIL_TO_OUTCOME)
 
 
+def test_every_parsed_detail_has_a_compatible_outcomes_entry():
+    """`link_markers` looks each parsed row's detail up in `DETAIL_COMPATIBLE_OUTCOMES`
+    with no fallback (its docstring promises nothing raises), so a drift between the
+    two frozen dicts would surface as a bare KeyError mid-linking. Today this holds by
+    construction; this pins it against future edits."""
+    assert set(OUTCOME_LABEL_TO_DETAIL.values()) <= set(DETAIL_COMPATIBLE_OUTCOMES)
+
+
 def test_body_part_labels_cover_the_contract_enum_exactly(common_schema):
     enum = common_schema["$defs"]["BodyPart"]["enum"]
 
@@ -204,8 +212,8 @@ def test_an_empty_table_parses_to_zero_rows(make_report, tmp_path):
 
 
 def test_the_row_parser_and_the_row_counter_agree_on_every_fixture(make_report, tmp_path):
-    """The internal count assert's premise, verified from the outside: both derive from
-    one admission rule."""
+    """Both derive from the one admission rule in `_attempt_lines` and cannot drift by
+    construction — verified here from the outside in case the implementations fork."""
     markers = {"home": [("goal", 0.5, 0.5)] * 3, "away": []}
     with open_report(
         make_report, tmp_path, shots_markers=markers, shots_table_pages={"home": [2, 1]}
