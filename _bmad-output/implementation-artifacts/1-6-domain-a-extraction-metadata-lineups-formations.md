@@ -4,7 +4,7 @@ baseline_commit: 41f28e0a0ec6929603fa78713c67c8961c30cd51
 
 # Story 1.6: Domain A Extraction — Metadata, Lineups & Formations
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
