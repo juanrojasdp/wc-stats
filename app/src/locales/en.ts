@@ -17,6 +17,33 @@ export const en: Dictionary = {
     scaffold: {
       demoRegion: "Design token demo",
     },
+    localeAnnouncement: "Language: English",
+  },
+  chrome: {
+    skipLink: "Skip to content",
+    languageToggle: {
+      label: "Language",
+      es: "ES",
+      en: "EN",
+      // Each segment is named in its own language in BOTH locales.
+      esFull: "Español",
+      enFull: "English",
+    },
+    themeToggle: {
+      label: "Light theme",
+    },
+    footer: {
+      attribution:
+        "Data: official FIFA Post-Match Summary Reports — 2026 World Cup. Independent site, not affiliated with FIFA.",
+      aboutLink: "About this site",
+    },
+  },
+  about: {
+    title: "About this site",
+  },
+  notFound: {
+    message: "This page does not exist. Were you looking for a match?",
+    homeLink: "Back to home",
   },
   meta: {
     title: "WC Stats — 2026 World Cup Analytics",

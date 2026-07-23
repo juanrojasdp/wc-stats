@@ -22,6 +22,37 @@ export const es = {
     scaffold: {
       demoRegion: "Demostración de tokens de diseño",
     },
+    // Announced in the TARGET language on switch (WCAG 4.1.3, ruled strings).
+    localeAnnouncement: "Idioma: Español",
+  },
+  chrome: {
+    skipLink: "Saltar al contenido",
+    languageToggle: {
+      label: "Idioma",
+      es: "ES",
+      en: "EN",
+      esFull: "Español",
+      enFull: "English",
+    },
+    themeToggle: {
+      // Stable accessible name (2.2 review): the toggle is named for the
+      // light theme; aria-pressed carries whether it is active.
+      label: "Tema claro",
+    },
+    footer: {
+      // Ruled copy, verbatim (EXPERIENCE.md → i18n & Terminology → Attribution OQ-3).
+      attribution:
+        "Datos: informes oficiales post-partido de la FIFA — Copa Mundial 2026. Sitio independiente, sin afiliación con la FIFA.",
+      aboutLink: "Acerca del sitio",
+    },
+  },
+  about: {
+    title: "Acerca del sitio",
+  },
+  notFound: {
+    // Ruled copy, verbatim (EXPERIENCE.md → State Patterns → Unknown route).
+    message: "Esta página no existe. ¿Buscabas un partido?",
+    homeLink: "Volver al inicio",
   },
   meta: {
     title: "WC Stats — Analítica del Mundial 2026",

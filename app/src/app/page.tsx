@@ -7,7 +7,7 @@ import { DEFAULT_LOCALE, t } from "@/lib/i18n";
  */
 export default function Home() {
   return (
-    <main className="mx-auto min-h-screen max-w-6xl px-gutter-mobile py-layer-gap md:px-gutter-desktop">
+    <div className="mx-auto max-w-6xl px-gutter-mobile py-layer-gap md:px-gutter-desktop">
       <p className="type-label-caps text-ink-secondary">{t("app.siteName")}</p>
       <h1 className="type-headline mt-tile-gap text-ink-primary">{t("app.scaffold.heading")}</h1>
       <p className="type-body mt-tile-gap max-w-prose text-ink-secondary">{t("app.scaffold.body")}</p>
@@ -17,6 +17,6 @@ export default function Home() {
           <p className="type-stat-value mt-tile-gap text-primary">{formatDecimal(1.24, DEFAULT_LOCALE)}</p>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

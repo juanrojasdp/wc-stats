@@ -105,6 +105,63 @@ describe("i18n gate catches hardcoded user-facing strings", () => {
   });
 });
 
+/*
+ * Client-import seam (Story 2.2 Task 4): a client component importing the
+ * server-safe t() compiles, renders Spanish and silently ignores locale
+ * switching. src/components/** must bind locale via useT()/useLocale();
+ * server components and src/app/** keep direct t().
+ */
+describe("client-import seam bars direct t() from src/components", () => {
+  const SEAM_RULE = "no-restricted-imports";
+
+  async function seamErrorsFor(code: string, filePath: string): Promise<string[]> {
+    const [result] = await eslint.lintText(code, { filePath });
+    return result.messages
+      .filter((message) => message.ruleId === SEAM_RULE)
+      .map((message) => message.ruleId as string);
+  }
+
+  it("t() import via the @ alias is barred in src/components/**", async () => {
+    const errors = await seamErrorsFor(
+      `import { t } from "@/lib/i18n";\nexport const x = t;\n`,
+      "src/components/__seam_probe__.tsx"
+    );
+    expect(errors).toContain(SEAM_RULE);
+  });
+
+  it("t() import via a relative path is barred in src/components/**", async () => {
+    const errors = await seamErrorsFor(
+      `import { t } from "../lib/i18n";\nexport const x = t;\n`,
+      "src/components/__seam_probe__.tsx"
+    );
+    expect(errors).toContain(SEAM_RULE);
+  });
+
+  it("type-only imports from @/lib/i18n stay legal in src/components/**", async () => {
+    const errors = await seamErrorsFor(
+      `import type { DictionaryKey, Locale } from "@/lib/i18n";\nexport type K = DictionaryKey;\nexport type L = Locale;\n`,
+      "src/components/__seam_probe__.tsx"
+    );
+    expect(errors).toEqual([]);
+  });
+
+  it("useT()/useLocale() from the provider stay legal in src/components/**", async () => {
+    const errors = await seamErrorsFor(
+      `import { useLocale, useT } from "@/lib/i18n-provider";\nexport const hooks = { useLocale, useT };\n`,
+      "src/components/__seam_probe__.tsx"
+    );
+    expect(errors).toEqual([]);
+  });
+
+  it("direct t() stays legal outside src/components (server components, metadata)", async () => {
+    const errors = await seamErrorsFor(
+      `import { t } from "@/lib/i18n";\nexport const x = t;\n`,
+      "src/app/__seam_probe__.tsx"
+    );
+    expect(errors).toEqual([]);
+  });
+});
+
 describe("i18n gate keeps legal patterns legal", () => {
   it("t() everywhere, className and data-* strings", async () => {
     const errors = await gateErrorsFor(

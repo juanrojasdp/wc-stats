@@ -18,20 +18,45 @@ type DotPaths<T> = {
 
 export type DictionaryKey = DotPaths<Dictionary>;
 
-/**
- * The ONLY read path into the dictionaries (AD-12). Server components and
- * metadata call it directly (pre-rendered HTML is Spanish); client components
- * bind the active locale through `useT()` in i18n-provider.tsx.
- */
-export function t(key: DictionaryKey, locale: Locale = DEFAULT_LOCALE): string {
+function lookup(key: DictionaryKey, locale: Locale): string | null {
   let node: unknown = dictionaries[locale];
   for (const part of key.split(".")) {
     node = typeof node === "object" && node !== null ? (node as Record<string, unknown>)[part] : undefined;
   }
-  if (typeof node !== "string") {
-    // Unreachable for a well-typed key; guards the untyped boundary (e.g. a
-    // stale key arriving from persisted state).
-    throw new Error(`i18n: key "${key}" did not resolve to a string in locale "${locale}"`);
+  return typeof node === "string" ? node : null;
+}
+
+/**
+ * The ONLY read path into the dictionaries (AD-12). Server components and
+ * metadata call it directly (pre-rendered HTML is Spanish); client components
+ * bind the active locale through `useT()` in i18n-provider.tsx — a direct
+ * import from src/components/** is an ESLint error (client-import seam,
+ * Story 2.2 Task 4).
+ *
+ * Unresolvable keys (only reachable through the untyped boundary, e.g. stale
+ * persisted state) throw in dev/test so regressions stay loud; in production
+ * they fall back — canonical es value, else the key itself — with a
+ * console.error, because a wrong-language string beats an uncaught crash
+ * (Story 2.2 Task 4 decision).
+ */
+// A stale key can sit in a rendered list and re-resolve on every render;
+// report each (locale, key) miss once instead of flooding the console.
+const reportedMissing = new Set<string>();
+
+export function t(key: DictionaryKey, locale: Locale = DEFAULT_LOCALE): string {
+  const resolved = lookup(key, locale);
+  if (resolved !== null) {
+    return resolved;
   }
-  return node;
+  const message = `i18n: key "${key}" did not resolve to a string in locale "${locale}"`;
+  if (process.env.NODE_ENV !== "production") {
+    throw new Error(message);
+  }
+  const reportKey = `${locale}:${key}`;
+  if (!reportedMissing.has(reportKey)) {
+    reportedMissing.add(reportKey);
+    console.error(message);
+  }
+  const fallback = locale === DEFAULT_LOCALE ? null : lookup(key, DEFAULT_LOCALE);
+  return fallback ?? key;
 }

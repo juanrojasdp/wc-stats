@@ -62,6 +62,41 @@ export default defineConfig([
     },
   },
   {
+    /*
+     * Client-import seam (Story 2.2 Task 4): everything under src/components
+     * is a client component (or composed by one) — importing the server-safe
+     * t() there compiles, renders Spanish and silently ignores locale
+     * switching. Components bind locale via useT()/useLocale() from
+     * @/lib/i18n-provider; server components and src/app/** (metadata,
+     * build-time-static text) keep direct t(). Type-only imports of
+     * DictionaryKey/Locale are unaffected: only the `t` binding is barred.
+     */
+    files: ["src/components/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/lib/i18n",
+              importNames: ["t"],
+              message:
+                "Client components must bind locale via useT()/useLocale() from @/lib/i18n-provider; a direct t() import silently ignores locale switching.",
+            },
+          ],
+          patterns: [
+            {
+              group: ["**/lib/i18n"],
+              importNames: ["t"],
+              message:
+                "Client components must bind locale via useT()/useLocale() from @/lib/i18n-provider; a direct t() import silently ignores locale switching.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // The string store itself and generated contract output are exempt by
     // definition (generated files also carry /* eslint-disable */).
     files: ["src/locales/**", "src/lib/contract/**"],
