@@ -32,6 +32,7 @@ defaulted, never dropped.
 
 from __future__ import annotations
 
+import datetime
 import re
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
@@ -39,6 +40,7 @@ from typing import TYPE_CHECKING
 from pipeline.extract.errors import (
     LineupCountError,
     LineupParseError,
+    MalformedFieldError,
     MissingFieldError,
     UnknownMinuteGlyphError,
     UnknownPositionError,
@@ -72,7 +74,11 @@ _GLYPH_ROW_TOLERANCE_PT = 7.0
 _GLYPH_GAP_PT = 14.0
 
 # Name-wrap fragments sit ~6pt from their entry row; distinct rows sit ~13.5pt apart.
+# The adjacent row above a fragment is therefore ~7.5pt away — inside the tolerance —
+# so nearest-wins needs a real separation margin, not a float-exact equidistance test:
+# the corpus margin is 1.5pt, and anything closer than the margin below is ambiguous.
 _NAME_WRAP_TOLERANCE_PT = 8.0
+_NAME_WRAP_MARGIN_PT = 1.0
 
 # --- closed vocabularies (AD-3 / AD-8: enumerate, never fuzzy-match) -------------
 
@@ -265,10 +271,28 @@ def _parse_column(
             section = "substitutes"
             continue
         if section is None:
+            # Only the page title and team-name header print above STARTING. A row that
+            # matches the player grammar up there is a displaced player, and dropping it
+            # silently would surface (at best) as a downstream count-check data failure.
+            if row_re.match(joined):
+                raise LineupParseError(
+                    f"{side} player row {joined!r} appears above the STARTING header",
+                    report_id,
+                )
             continue  # page title / team-name header above STARTING
 
         match = row_re.match(joined)
         if not match:
+            # A non-player row after the header can only be a wrapped-name fragment,
+            # and names never contain digits — a digit here is a minute marker missing
+            # its apostrophe or other template drift, and absorbing it into a player
+            # name would corrupt the record silently.
+            if any(character.isdigit() for character in joined):
+                raise LineupParseError(
+                    f"{side} row {joined!r} is neither a player row nor a name fragment "
+                    "(fragments never contain digits)",
+                    report_id,
+                )
             fragments.append((row.y, joined))
             continue
         if side == "home":
@@ -308,9 +332,14 @@ def _parse_column(
             raise LineupParseError(
                 f"{side} row {text!r} is neither a player row nor adjacent to one", report_id
             )
-        if len(nearby) > 1 and abs(nearby[0].y - fragment_y) == abs(nearby[1].y - fragment_y):
+        if (
+            len(nearby) > 1
+            and abs(nearby[1].y - fragment_y) - abs(nearby[0].y - fragment_y)
+            < _NAME_WRAP_MARGIN_PT
+        ):
             raise LineupParseError(
-                f"{side} name fragment {text!r} is equidistant from two player rows", report_id
+                f"{side} name fragment {text!r} sits ambiguously between two player rows",
+                report_id,
             )
         nearby[0].name_parts.append((fragment_y, text))
 
@@ -401,6 +430,15 @@ def _parse_formations(
         raise LineupCountError(
             f"found {len(found)} formation strings {values}, expected exactly 2", report_id
         )
+    # Home is the label left of the diagram, away right. Two labels on the same side of
+    # the page centre would still pass the exactly-two count while swapping the teams'
+    # formations silently — assert the straddle instead of trusting the sort.
+    if not (found[0].center_x < width / 2 <= found[1].center_x):
+        raise LineupCountError(
+            "the two formation strings do not straddle the page centre "
+            f"(centers x={found[0].center_x:.0f}, x={found[1].center_x:.0f})",
+            report_id,
+        )
     return found[0].text.strip(), found[1].text.strip()
 
 
@@ -410,21 +448,34 @@ def _parse_lineups(page: "pymupdf.Page", report_id: str | None) -> dict:
     spans = text_spans(page)
     glyphs = _page_glyphs(page)
 
-    minute_spans = [span for span in spans if _MINUTE_RE.match(span.text.strip())]
-    home_core = [
-        span
-        for span in spans
-        if span not in minute_spans and span.x1 <= width * _HOME_BAND_FRACTION
-    ]
-    away_core = [
-        span
-        for span in spans
-        if span not in minute_spans and span.x0 >= width * _AWAY_BAND_FRACTION
-    ]
+    # Single-pass partition: a span is a minute marker or column material, never both.
+    # (Membership tests against the minute list would exclude a byte-identical
+    # double-printed span from both groups.)
+    minute_spans: list[TextSpan] = []
+    other_spans: list[TextSpan] = []
+    for span in spans:
+        (minute_spans if _MINUTE_RE.match(span.text.strip()) else other_spans).append(span)
+    home_core = [span for span in other_spans if span.x1 <= width * _HOME_BAND_FRACTION]
+    away_core = [span for span in other_spans if span.x0 >= width * _AWAY_BAND_FRACTION]
+    band_edges = {"home": width * _HOME_BAND_FRACTION, "away": width * _AWAY_BAND_FRACTION}
 
     lineups: dict[str, dict] = {}
     for side, core in (("home", home_core), ("away", away_core)):
         starters, substitutes = _parse_column(group_rows(core), side, report_id)
+        # A non-minute span straddling the band edge belongs to neither core; if it is
+        # y-aligned with a player row, its text (a long name reaching past the band)
+        # would silently vanish from that row — only fully-empty names raise later.
+        edge = band_edges[side]
+        for span in other_spans:
+            if span.x0 < edge < span.x1 and any(
+                abs(entry.y - span.y0) <= LINE_TOLERANCE_PT
+                for entry in starters + substitutes
+            ):
+                raise LineupParseError(
+                    f"span {span.text.strip()!r} straddles the {side} column band edge "
+                    "on a player row; its text would be dropped from the lineup",
+                    report_id,
+                )
         # Minute markers extend from the name toward the page centre, so they are
         # split at the half-width line, not at the core-column band edge: a long
         # marker chain reaches past the band (observed to x~314 home, x~658 away).
@@ -469,6 +520,18 @@ def _require(metadata: dict, key: str, report_id: str | None):
     return value
 
 
+def _numeric_score(metadata: dict, key: str, report_id: str | None) -> int:
+    value = _require(metadata, key, report_id)
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        # A bare ValueError would escape the ExtractError handlers and lose the typed,
+        # localizing class name in the manifest and the gate.
+        raise MalformedFieldError(
+            f"metadata.{key} is not numeric: {value!r}", report_id
+        ) from None
+
+
 def _validate_completeness(payload: dict, report_id: str | None) -> None:
     """The addendum §6 inventory, checked field by field, each failure named (AC 1).
 
@@ -504,6 +567,14 @@ def _validate_completeness(payload: dict, report_id: str | None) -> None:
                 for entry_field in ("name", "shirt_number", "position"):
                     if entry.get(entry_field) in (None, ""):
                         raise missing(f"lineups.{side}.{section}[{index}].{entry_field}")
+                # The §6 minute lists: the lists must exist (empty is valid data), and
+                # the substitution stamps must be present as keys (null is valid data).
+                for list_field in ("goals", "own_goals", "cards"):
+                    if entry.get(list_field) is None:
+                        raise missing(f"lineups.{side}.{section}[{index}].{list_field}")
+                for stamp_field in ("substituted_on", "substituted_off"):
+                    if stamp_field not in entry:
+                        raise missing(f"lineups.{side}.{section}[{index}].{stamp_field}")
 
 
 def extract_domain_a(
@@ -538,14 +609,24 @@ def extract_domain_a(
 
     date = str(_require(metadata, "match_date", report_id))
     if not _DATE_RE.match(date):
-        raise MissingFieldError(
-            f"domain A field missing: metadata.match_date is not ISO 8601: {date!r}", report_id
+        raise MalformedFieldError(
+            f"metadata.match_date is not ISO 8601: {date!r}", report_id
         )
+    try:
+        datetime.date.fromisoformat(date)
+    except ValueError:
+        raise MalformedFieldError(
+            f"metadata.match_date is not a real calendar date: {date!r}", report_id
+        ) from None
     kickoff_local = str(_require(metadata, "kickoff", report_id))
     if not _KICKOFF_RE.match(kickoff_local):
-        raise MissingFieldError(
-            f"domain A field missing: metadata.kickoff is not HH:MM: {kickoff_local!r}",
-            report_id,
+        raise MalformedFieldError(
+            f"metadata.kickoff is not HH:MM: {kickoff_local!r}", report_id
+        )
+    hour, minute_of_hour = (int(part) for part in kickoff_local.split(":"))
+    if hour > 23 or minute_of_hour > 59:
+        raise MalformedFieldError(
+            f"metadata.kickoff is not a real clock time: {kickoff_local!r}", report_id
         )
     venue = str(_require(metadata, "venue", report_id))
     kickoff = f"{date}T{kickoff_local}:00{utc_offset_for(venue, report_id)}"
@@ -561,8 +642,8 @@ def extract_domain_a(
             "away": str(_require(metadata, "away_team", report_id)),
         },
         "score": {
-            "home": int(_require(metadata, "home_score", report_id)),
-            "away": int(_require(metadata, "away_score", report_id)),
+            "home": _numeric_score(metadata, "home_score", report_id),
+            "away": _numeric_score(metadata, "away_score", report_id),
             # Verbatim shoot-out line for the knockout ties that print one, else null.
             "shootout": metadata.get("shootout"),
         },
@@ -579,10 +660,12 @@ def _check(check_id: str, passed: bool, specifics: str) -> dict:
     return {"check": check_id, "result": "pass" if passed else "fail", "specifics": specifics}
 
 
-def domain_a_checks(payload: dict, metadata: dict) -> list[dict]:
+def domain_a_checks(payload: dict) -> list[dict]:
     """The six Domain A self-validation checks over an extracted payload.
 
-    Pure over the payload plus the probed cover block; recorded into the record's
+    Pure over the payload alone — the payload's `score` is the probed cover score
+    passed through by `extract_domain_a`, so goal reconciliation already compares the
+    lineup markers against the cover. Recorded into the record's
     `self_validation.checks`, never raised — a failed consistency check is data about
     this report, and the record still stages so the gate can localize it.
     """
@@ -700,14 +783,3 @@ def domain_a_checks(payload: dict, metadata: dict) -> list[dict]:
     )
 
     return checks
-
-
-def aggregate_self_validation(checks: "list[dict]") -> str:
-    """The record-level result over whatever checks are present.
-
-    "fail" if any present check failed, "pass" only over checks that actually ran, and
-    the seam's honest "not-applicable" when no extractor contributed any check at all.
-    """
-    if not checks:
-        return "not-applicable"
-    return "fail" if any(check.get("result") == "fail" for check in checks) else "pass"

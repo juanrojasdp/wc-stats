@@ -35,6 +35,18 @@ class MissingFieldError(ExtractError):
     what = "required field missing"
 
 
+class MalformedFieldError(ExtractError):
+    """A required field is present but its value has the wrong shape (AC 1, AD-8).
+
+    Distinct from `MissingFieldError` by the module rule above — "missing" and
+    "present but malformed" are two failure kinds, and a gate operator triaging
+    deviations must not read "field missing" for a field whose value is printed right
+    there in the message. The message names the field and carries the offending value.
+    """
+
+    what = "field value malformed"
+
+
 class LineupParseError(ExtractError):
     """The lineup page's structure does not match the two-column template grammar.
 
