@@ -17,8 +17,11 @@ count (claims 8, reports run ~52). Anchors are resolved through `PageTextIndex`,
 extracts each page's text once per document rather than once per anchor — the naive walk
 is ~18x slower over 47 anchors, measured in Story 1.4.
 
-This story fills identity, anchors and the idempotence keys. `domains` and the real
-content of `self_validation` are the seams Stories 1.3+ plug into.
+Story 1.2 filled identity, anchors and the idempotence keys; Story 1.3 plugged the shots
+parser into `domains` and made `self_validation` real (marker count vs the attempts
+table, exact and binary); Story 1.6 added Domain A (`domains["match_metadata"]`: the
+normalized cover block plus the lineup-page parse) and its six appended checks. Stories
+1.5-1.14 keep plugging into the same two seams.
 """
 
 from __future__ import annotations
@@ -32,9 +35,15 @@ from pipeline.discover.errors import MissingAnchorError, ProbeError
 from pipeline.discover.probe import ReportMeta, probe_report
 from pipeline.discover.text import PageTextIndex
 from pipeline.errors import PipelineError
+from pipeline.extract.domain_a import (
+    aggregate_self_validation,
+    domain_a_checks,
+    extract_domain_a,
+)
 from pipeline.ingest.fingerprint import PIPELINE_ROOT, code_version, pdf_content_hash
 from pipeline.ingest.identity import match_id_for, match_number_for
 from pipeline.ingest.records import RECORD_VERSION
+from pipeline.markers.shots import parse_shots, self_validation_block
 
 REPO_ROOT = PIPELINE_ROOT.parent
 
@@ -110,9 +119,13 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     """Extract one PMSR report into an Extraction Record.
 
     Raises `ProbeError` (cover unreadable), `MatchNumberError` / `TeamSlugError` /
-    `MatchIdFormatError` (identity could not be established) or `MissingAnchorError` (a
-    required section is gone). The batch runner turns each into a `failed` manifest entry;
-    nothing is caught here, because a partial record is worse than none.
+    `MatchIdFormatError` (identity could not be established), `MissingAnchorError` (a
+    required section is gone), the shots parser's typed errors (`PitchFrameError`,
+    `UnknownRgbError`, `AttemptsTableError`, `ShotsPageLayoutError`), or Domain A's
+    (`MissingFieldError`, `LineupParseError`, `LineupCountError`, `UnknownStageError`,
+    `UnknownVenueError`, `UnknownPositionError`, `UnknownMinuteGlyphError`). The batch
+    runner turns each into a `failed` manifest entry; nothing is caught here, because a
+    partial record is worse than none.
 
     `content_hash` lets the caller hand in the SHA-256 it already computed for the skip
     decision. Passing it avoids a second full read of a multi-megabyte file 104 times per
@@ -135,18 +148,41 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     resolved = resolve_anchors(ANCHOR_REGISTRY, home=meta.home_team, away=meta.away_team)
 
     try:
-        with pymupdf.open(path) as doc:
+        doc = pymupdf.open(path)
+    except Exception as exc:
+        raise ProbeError(f"could not read report pages: {exc}", meta.report_id) from exc
+
+    with doc:
+        try:
             index = PageTextIndex(doc, meta.report_id)
             page_count = len(index)
             anchors, warnings = _resolve_anchor_pages(index, resolved)
-    except PipelineError:
-        # MissingAnchorError and ProbeError travel as themselves.
-        raise
-    except Exception as exc:
-        # Only a genuine page-reading failure of this PDF can reach here now.
-        raise ProbeError(f"could not read report pages: {exc}", meta.report_id) from exc
+        except PipelineError:
+            # MissingAnchorError and ProbeError travel as themselves.
+            raise
+        except Exception as exc:
+            # Only a genuine page-reading failure of this PDF can reach here now.
+            raise ProbeError(f"could not read report pages: {exc}", meta.report_id) from exc
+
+        # Deliberately outside the handler above: the shots parser raises its own typed
+        # errors (PitchFrameError, UnknownRgbError, ...), and a bug in parser code must
+        # surface as itself, not be relabeled as this report's page-reading ProbeError.
+        shots = parse_shots(doc, anchors, meta.report_id, meta.home_team, meta.away_team)
+
+        # Same transparency rule for Domain A (Story 1.6): its typed errors
+        # (MissingFieldError, UnknownVenueError, LineupParseError, ...) travel as
+        # themselves. The probed cover block goes in as-is and comes back normalized —
+        # the cover is never re-parsed here.
+        metadata = _metadata_block(meta, match_number)
+        match_metadata = extract_domain_a(doc, metadata, anchors, report_id=meta.report_id)
 
     warnings.extend(f"probe note: {note}" for note in meta.probe_notes)
+
+    # Each domain APPENDS its checks and the result re-aggregates over whatever checks
+    # are actually present, so domain stories compose without clobbering one another.
+    self_validation = self_validation_block(shots["counts"])
+    self_validation["checks"].extend(domain_a_checks(match_metadata, metadata))
+    self_validation["result"] = aggregate_self_validation(self_validation["checks"])
 
     return {
         "record_version": RECORD_VERSION,
@@ -157,14 +193,14 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             "pdf_content_hash": content_hash if content_hash is not None else pdf_content_hash(path),
             "code_version": code_version(),
         },
-        "metadata": _metadata_block(meta, match_number),
+        "metadata": metadata,
         "page_count": page_count,
         "anchors": anchors,
-        # Filled by Stories 1.3 and 1.6-1.14.
-        "domains": {},
-        # Structurally present from day one so the shape never changes underneath an
-        # earlier run. "not-applicable" is the honest value while no extractor exists —
-        # "pass" would read as a passed check in Story 1.19's acceptance.
-        "self_validation": {"result": "not-applicable", "checks": []},
+        # Further domains filled by Stories 1.7-1.14.
+        "domains": {"match_metadata": match_metadata, "shots": shots},
+        # Real from Story 1.3 on: once extractors run, the result is "pass" or "fail",
+        # never left "not-applicable" (a failed consistency check is data, not an
+        # exception — the record still stages so the gate can localize it).
+        "self_validation": self_validation,
         "warnings": warnings,
     }

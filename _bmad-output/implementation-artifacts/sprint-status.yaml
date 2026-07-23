@@ -100,6 +100,13 @@ project: wc-stats
 #             shots-check filters, kickoff purity exemption). Discovery: red-football
 #             glyph = own goal (score = goals + opponent own-goals verified on all 104);
 #             second-yellow unrecoverable from card RGBs — AD-14 note filed.
+# 2026-07-23: story 1-3 code review complete — 1 decision resolved (off-shape staged
+#             self_validation disqualifies the skip: re-extract, per the match_id trust
+#             precedent), 11 patches applied (stroked pitch-frame constraint restored,
+#             shape-aware failure summary, e2e ground-truth self-validation assertion,
+#             gate parse memo, 5 new tests, doc fixes), 3 deferred to deferred-work.md,
+#             6 dismissed on full-corpus evidence. Re-verified after patching: suite
+#             593+1 green, batch 104/104 PASS, gate PASS 0 deviations. Status review -> done.
 # 2026-07-23: story 2-1 code review complete — 4 decisions resolved, 16 patches applied,
 #             3 items deferred to deferred-work.md, 3 dismissed. Highlights: i18n lint
 #             gate hardened (bypasses closed, component copy-props gated, 13 lint-fixture
@@ -118,7 +125,7 @@ development_status:
   # Contract bootstrap (AD-14) — unblocks Epic 2 via fixtures
   1-1-contract-v1-schemas-fixtures-type-generation-spike: done
   1-2-batch-ingestion-run-manifest-text-anchored-page-discovery: done
-  1-3-shots-pitch-map-parser-with-marker-count-self-validation: review
+  1-3-shots-pitch-map-parser-with-marker-count-self-validation: done
   # Gates all spatial-join stories (1-11..1-14 and Epic 2 spatial surfaces)
   1-5-marker-event-linking-via-digit-glyph-proximity: backlog
   1-6-domain-a-extraction-metadata-lineups-formations: review

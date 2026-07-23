@@ -132,7 +132,14 @@ def test_report_always_carries_all_four_categories(spike_corpus):
 
 def test_checks_run_are_recorded(spike_corpus):
     report = run_verification(spike_corpus)
-    assert report["checks_run"] == ["anchor-coverage", "metadata-probe"]
+    assert report["checks_run"] == [
+        "anchor-coverage",
+        "domain-a-completeness",
+        "domain-a-counts",
+        "metadata-probe",
+        "shots-count-match",
+        "shots-parse",
+    ]
 
 
 # --- deviations ------------------------------------------------------------------

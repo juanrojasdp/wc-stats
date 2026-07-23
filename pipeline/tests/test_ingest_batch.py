@@ -278,7 +278,9 @@ def test_changed_pdf_bytes_invalidate_the_skip(tmp_path, make_report):
         number=2,
         home="Charlie",
         away="Delta",
-        venue="A Different Stadium",
+        # Another *real* corpus venue: the point is different PDF bytes, and Domain A
+        # fails loud on any venue outside the committed offset table.
+        venue="Toronto Stadium",
     )
 
     manifest = _run(tmp_path, corpus)
@@ -749,3 +751,120 @@ def test_the_summary_is_printed_even_when_the_manifest_cannot_be_written(
     assert "Batch ingestion" in out.out
     assert "extracted" in out.out
     assert "manifest could not be written" in out.err
+
+
+# --- Story 1.3: Self-Validation mirrored into the manifest ------------------------
+
+
+def _mismatch_corpus(directory: Path, make_report) -> Path:
+    """One report whose home attempts table lists more rows than the map draws markers."""
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(
+        directory / "PMSR-M01-ALP-V-BRA.pdf",
+        number=1,
+        home="Alpha",
+        away="Bravo",
+        shots_table_rows={"home": 9},
+    )
+    return directory
+
+
+def test_every_clean_entry_mirrors_a_self_validation_pass(tmp_path, make_report):
+    manifest = _run(tmp_path, _corpus(tmp_path / "corpus", make_report))
+
+    assert all(entry["self_validation"] == "pass" for entry in manifest["reports"])
+    assert all(entry["self_validation_failures"] == [] for entry in manifest["reports"])
+    assert manifest["run"]["self_validation_fail_count"] == 0
+    assert manifest["run"]["result"] == "pass"
+
+
+def test_a_count_mismatch_fails_the_run_with_both_counts_in_the_manifest(tmp_path, make_report):
+    """The orphan precedent: the record is written and `failed_count` stays 0, but the
+    run fails — and the manifest entry itself carries both counts (AC 4)."""
+    from pipeline.tests.conftest import DEFAULT_SHOTS_MARKERS
+
+    manifest = _run(tmp_path, _mismatch_corpus(tmp_path / "corpus", make_report))
+
+    [entry] = manifest["reports"]
+    assert entry["status"] == "extracted"
+    assert entry["self_validation"] == "fail"
+    [check] = entry["self_validation_failures"]
+    assert check["team"] == "home"
+    assert check["marker_count"] == len(DEFAULT_SHOTS_MARKERS["home"])
+    assert check["table_count"] == 9
+    assert manifest["run"]["failed_count"] == 0
+    assert manifest["run"]["self_validation_fail_count"] == 1
+    assert manifest["run"]["result"] == "fail"
+
+
+def test_a_skipped_unchanged_entry_carries_its_staged_records_verdict(tmp_path, make_report):
+    """The mirror reads the staged record, the same way `warnings` flows: a re-run over
+    an unchanged mismatching corpus must keep failing, not launder the verdict."""
+    corpus = _mismatch_corpus(tmp_path / "corpus", make_report)
+
+    _run(tmp_path, corpus)
+    second = _run(tmp_path, corpus)
+
+    [entry] = second["reports"]
+    assert entry["status"] == "skipped-unchanged"
+    assert entry["self_validation"] == "fail"
+    [check] = entry["self_validation_failures"]
+    assert check["marker_count"] is not None and check["table_count"] == 9
+    assert second["run"]["result"] == "fail"
+
+
+def test_an_off_shape_staged_self_validation_block_forces_re_extraction(tmp_path, make_report):
+    """The `match_id` trust precedent applied to the verdict (review decision,
+    2026-07-23): a staged record whose Self-Validation block is off-shape cannot say
+    what this report proved, so the record is treated as absent and the report
+    re-extracts — mirroring it as a neutral `None` would launder a corrupt verdict
+    into a passing run."""
+    corpus = _corpus(tmp_path / "corpus", make_report, count=1)
+    first = _run(tmp_path, corpus)
+    [entry] = first["reports"]
+    record_path = Path(entry["record_path"])
+    staged = json.loads(record_path.read_text(encoding="utf-8"))
+    staged["self_validation"] = {"result": "maybe"}
+    record_path.write_text(json.dumps(staged), encoding="utf-8")
+
+    second = _run(tmp_path, corpus)
+
+    [entry] = second["reports"]
+    assert entry["status"] == "extracted"
+    assert entry["self_validation"] == "pass"
+    assert second["run"]["result"] == "pass"
+
+
+def test_a_failed_report_has_no_self_validation_verdict(tmp_path, make_report):
+    corpus = _corpus(tmp_path / "corpus", make_report, count=2)
+    _corrupt_pdf(corpus / "PMSR-M02-CHA-V-DEL.pdf")
+
+    manifest = _run(tmp_path, corpus)
+
+    entry = _by_id(manifest)["PMSR-M02-CHA-V-DEL"]
+    assert entry["status"] == "failed"
+    assert entry["self_validation"] is None
+    assert entry["self_validation_failures"] == []
+
+
+def test_a_self_validation_failure_exits_one_and_is_named_in_the_summary(
+    tmp_path, make_report, capsys
+):
+    corpus = _mismatch_corpus(tmp_path / "corpus", make_report)
+
+    code = main(
+        [
+            "--input-dir",
+            str(corpus),
+            "--output",
+            str(tmp_path / "work" / "run-manifest.json"),
+            "--extracted-dir",
+            str(tmp_path / "work" / "extracted"),
+        ]
+    )
+    out = capsys.readouterr().out
+
+    assert code == 1
+    assert "Self-validation failures" in out
+    assert "table lists 9" in out
+    assert "RUN RESULT: FAIL" in out

@@ -25,6 +25,8 @@ from pipeline.ingest.records import (
     serialize_record,
     write_record,
 )
+from pipeline.markers.errors import UnknownRgbError
+from pipeline.tests.conftest import DEFAULT_SHOTS_MARKERS
 
 ISO_TIMESTAMP_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}")
 
@@ -71,6 +73,18 @@ def test_the_ground_truth_report_extracts_a_complete_record(mex_rsa_pdf, tmp_pat
         resolve_anchors(ANCHOR_REGISTRY, home="Mexico", away="South Africa")
     )
     assert record["warnings"] == []
+    # AC 2 end-to-end: the full `extract_report` path — not just `parse_shots` — must
+    # Self-Validate both teams against the ground truth (16/16 home, 3/3 away; the one
+    # place hardcoding counts is correct, AR-16).
+    self_validation = record["self_validation"]
+    assert self_validation["result"] == "pass"
+    shots_checks = {
+        check["team"]: check
+        for check in self_validation["checks"]
+        if check["check"] == "shots-marker-count"
+    }
+    assert shots_checks["home"]["marker_count"] == shots_checks["home"]["table_count"] == 16
+    assert shots_checks["away"]["marker_count"] == shots_checks["away"]["table_count"] == 3
 
 
 def test_the_record_is_a_pure_function_of_the_pdf(mex_rsa_pdf, tmp_path):
@@ -109,7 +123,11 @@ def test_the_record_carries_no_timestamp(tmp_path, make_report):
     offenders = [
         (key, value)
         for key, value in _values(record)
-        if isinstance(value, str) and ISO_TIMESTAMP_RE.search(value)
+        if isinstance(value, str)
+        and ISO_TIMESTAMP_RE.search(value)
+        # Domain A's kickoff is venue-local *match* time read off the PDF (AD-7) —
+        # deterministic report data, not a wall-clock run stamp.
+        and not key.endswith(".kickoff")
     ]
     assert offenders == []
     assert not {"extracted_at", "run_timestamp", "run_id", "run_index"} & _keys(record)
@@ -169,19 +187,62 @@ def test_the_ground_truth_fixture_cannot_be_ingested_under_its_own_name(mex_rsa_
         extract_report(mex_rsa_pdf)
 
 
-def test_the_self_validation_and_domains_blocks_are_structurally_present(tmp_path, make_report):
-    """Stories 1.3+ plug into these seams; their absence must not change the shape later."""
+def test_the_domains_block_carries_the_shots_domain(tmp_path, make_report):
+    """Story 1.3 filled the seam: shots events and counts live in the record."""
     record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
 
-    assert record["domains"] == {}
-    assert record["self_validation"] == {"result": "not-applicable", "checks": []}
+    shots = record["domains"]["shots"]
+    assert shots["shootout_attempts"] is None
+    assert {event["team_id"] for event in shots["shot_events"]} == {"mexico", "south-africa"}
+    assert set(shots["counts"]) == {"home", "away"}
 
 
-def test_self_validation_does_not_claim_a_pass_it_never_ran(tmp_path, make_report):
-    """`"pass"` would read as a passed check in Story 1.19's acceptance. It is not one."""
+def test_self_validation_is_real_once_shots_parse_never_not_applicable(tmp_path, make_report):
+    """The placeholder `"not-applicable"` may no longer appear: the count check ran."""
     record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
 
-    assert record["self_validation"]["result"] == "not-applicable"
+    assert record["self_validation"]["result"] == "pass"
+    shots_checks = [
+        check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "shots-marker-count"
+    ]
+    assert [check["team"] for check in shots_checks] == ["home", "away"]
+
+
+def test_a_count_mismatch_still_produces_a_record_with_both_counts(tmp_path, make_report):
+    """AD-8: a mismatch is data, not an exception — the record is written and says `fail`."""
+    record = extract_report(
+        make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7, shots_table_rows={"home": 9})
+    )
+
+    assert record["self_validation"]["result"] == "fail"
+    by_team = {
+        check["team"]: check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "shots-marker-count"
+    }
+    assert by_team["home"]["result"] == "fail"
+    assert by_team["home"]["marker_count"] == len(DEFAULT_SHOTS_MARKERS["home"])
+    assert by_team["home"]["table_count"] == 9
+    assert by_team["away"]["result"] == "pass"
+
+
+def test_a_typed_marker_error_propagates_as_itself_not_as_probe_error(tmp_path, make_report):
+    """The shots parser sits outside the page-reading handler: an off-palette marker must
+    surface as `UnknownRgbError` (its manifest `error_type`), never relabeled `ProbeError`.
+    """
+
+    def decorate(side, page, pitch):
+        if side == "home":
+            page.draw_circle((200, 300), 5.625, color=(1, 1, 1), fill=(0.5, 0.5, 0.5), width=0.75)
+
+    pdf = make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7, shots_decorate=decorate)
+
+    with pytest.raises(UnknownRgbError) as excinfo:
+        extract_report(pdf)
+
+    assert excinfo.value.rgb == (0.5, 0.5, 0.5)
 
 
 def test_the_idempotence_keys_live_inside_the_record(tmp_path, make_report):

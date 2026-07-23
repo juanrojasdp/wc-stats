@@ -25,6 +25,11 @@ orphan does not inflate `failed_count` (it is not a failed report) but it **does
 run**: a review decision (2026-07-22), because an orphan is the phantom-match hazard the
 scan exists to surface, and a hazard that exits 0 is one CI can never catch.
 
+Self-Validation (Story 1.3) follows the same precedent: each entry mirrors its record's
+`self_validation.result`, a `fail` carries the failing checks with both counts, and any
+`fail` fails the run (exit 1) without inflating `failed_count` — the record exists and was
+written; it just disagreed with the count its own attempts table prints.
+
 `run_timestamp` is the single permitted volatile field, matching the precedent set by
 `work/verification/verification-report.json`. Nothing else in the manifest, and nothing at
 all in an Extraction Record, may vary between two runs over an unchanged corpus.
@@ -138,7 +143,55 @@ def _entry(report_id: str) -> dict:
         "error_type": None,
         "error": None,
         "warnings": [],
+        # Mirrored from the record's `self_validation.result`; `None` for a report that
+        # produced no record. On "fail", `self_validation_failures` copies the failing
+        # check entries — the AC requires both counts in the manifest itself.
+        "self_validation": None,
+        "self_validation_failures": [],
     }
+
+
+def _self_validation_trustworthy(record: dict) -> bool:
+    """Whether a staged record's Self-Validation block can be mirrored as-is.
+
+    The same trust rule `_records_by_report_id` applies to `match_id`: a staged block
+    that is off-shape — missing, a non-dict, a result outside the enum, or a "fail"
+    whose failing checks cannot be copied out — cannot be trusted to say what this
+    report proved, so the record is treated as absent and the report re-extracted
+    (review decision, 2026-07-23). Mirroring it as `None` instead would let a corrupt
+    verdict launder into a passing run, since only `"fail"` counts toward the tally.
+    """
+    block = record.get("self_validation")
+    if not isinstance(block, dict) or block.get("result") not in ("pass", "fail", "not-applicable"):
+        return False
+    if block.get("result") == "fail":
+        checks = block.get("checks")
+        if not isinstance(checks, list) or not any(
+            isinstance(check, dict) and check.get("result") == "fail" for check in checks
+        ):
+            return False
+    return True
+
+
+def _mirror_self_validation(entry: dict, record: dict) -> None:
+    """Copy the record's Self-Validation verdict into its manifest entry.
+
+    Reads the record — staged or fresh — the same way `warnings` flows, so a
+    skipped-unchanged entry carries the verdict its staged record already proved.
+    Staged records reach here only after `_self_validation_trustworthy` admitted their
+    block on the skip decision; the shape guards below are kept as a backstop so an
+    off-shape block can never crash the run or invent a "pass".
+    """
+    block = record.get("self_validation")
+    result = block.get("result") if isinstance(block, dict) else None
+    entry["self_validation"] = result if result in ("pass", "fail", "not-applicable") else None
+    if entry["self_validation"] == "fail":
+        checks = block.get("checks")
+        entry["self_validation_failures"] = [
+            check
+            for check in (checks if isinstance(checks, list) else [])
+            if isinstance(check, dict) and check.get("result") == "fail"
+        ]
 
 
 def _fail(entry: dict, exc: BaseException) -> None:
@@ -154,6 +207,8 @@ def _fail(entry: dict, exc: BaseException) -> None:
     entry["match_id"] = None
     entry["record_path"] = None
     entry["warnings"] = []
+    entry["self_validation"] = None
+    entry["self_validation_failures"] = []
     entry["error_type"] = type(exc).__name__
     entry["error"] = str(exc)
 
@@ -226,6 +281,7 @@ def run_batch(
                 not force
                 and staged_record is not None
                 and is_unchanged(staged_record, content_hash, version)
+                and _self_validation_trustworthy(staged_record)
             )
 
             if reuse:
@@ -261,6 +317,7 @@ def run_batch(
                 if isinstance(staged_warnings, list)
                 else []
             )
+            _mirror_self_validation(entry, record)
             # Claimed last, and only once every field above has succeeded. Claiming
             # earlier would hide the file from the orphan scan if any of them raised —
             # leaving a record that the manifest names nowhere and the orphan list omits.
@@ -290,6 +347,12 @@ def run_batch(
     ]
     gaps = _corpus_gaps(len(paths), expect_reports)
     failed_count = counts["failed"]
+    # The orphan-records precedent: a Self-Validation failure is reported on its entry
+    # and fails the *run*, never inflating `failed_count` — the record exists and is
+    # written, it just failed its own count check.
+    self_validation_fail_count = sum(
+        1 for entry in entries if entry["self_validation"] == "fail"
+    )
 
     manifest = {
         "manifest_version": MANIFEST_VERSION,
@@ -306,8 +369,18 @@ def run_batch(
             # inflates `failed_count` — but it does fail the run (review decision,
             # 2026-07-22). An orphan is the phantom-match hazard the scan exists to
             # surface, and one that exits 0 is a hazard CI can never be taught to catch.
-            "result": "pass" if (failed_count == 0 and not gaps and not orphans) else "fail",
+            "result": (
+                "pass"
+                if (
+                    failed_count == 0
+                    and not gaps
+                    and not orphans
+                    and self_validation_fail_count == 0
+                )
+                else "fail"
+            ),
             "failed_count": failed_count,
+            "self_validation_fail_count": self_validation_fail_count,
             "corpus_gaps": gaps,
         },
     }
@@ -353,6 +426,26 @@ def format_summary(manifest: dict) -> str:
             lines.append(f"  {entry['report_id']}")
             lines.append(f"      [{entry['error_type']}] {entry['error']}")
 
+    if run["self_validation_fail_count"]:
+        lines += ["", "Self-validation failures (record written; run fails)"]
+        for entry in manifest["reports"]:
+            if entry["self_validation"] != "fail":
+                continue
+            lines.append(f"  {entry['report_id']}")
+            # Each domain's checks carry their own detail shape: the shots count check
+            # has per-team marker/table counts, Domain A's carry `specifics`. Render
+            # what the check actually holds — a shots-shaped template over a Domain A
+            # check would print `None: None markers, table lists None`.
+            for check in entry["self_validation_failures"]:
+                if "marker_count" in check or "table_count" in check:
+                    detail = (
+                        f"{check.get('team')}: {check.get('marker_count')} markers, "
+                        f"table lists {check.get('table_count')}"
+                    )
+                else:
+                    detail = str(check.get("specifics") or "no detail recorded")
+                lines.append(f"      [{check.get('check')}] {detail}")
+
     if manifest["orphan_record_paths"]:
         lines += [
             "",
@@ -371,6 +464,7 @@ def format_summary(manifest: dict) -> str:
     lines += [
         "",
         f"RUN RESULT: {result} ({run['failed_count']} failed report(s), "
+        f"{run['self_validation_fail_count']} self-validation-failed report(s), "
         f"{len(run['corpus_gaps'])} corpus gap(s), "
         f"{len(manifest['orphan_record_paths'])} orphan record(s))",
         "",
