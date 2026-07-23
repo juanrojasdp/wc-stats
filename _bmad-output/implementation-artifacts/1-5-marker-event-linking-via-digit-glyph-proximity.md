@@ -253,8 +253,8 @@ Claude Fable 5 (claude-fable-5) via Claude Code
 - `pipeline/ingest/batch.py` — `format_summary`: link-rate failure rendering branch (additive)
 - `pipeline/validate/checks.py` — `marker-event-link-rate` check registered (append-only), docstring roster updated
 - `pipeline/tests/conftest.py` — additive `make_report` params (`shots_ordinal_labels`, `shots_label_text`, `shots_label_offset`, `shots_table_cells`); default ordinal labels + column-positioned table cells; exports `SHOTS_TABLE_COLUMNS`, `SHOTS_OUTCOME_TO_LABEL`, `default_attempt_cells`
-- `pipeline/tests/test_markers_attempts.py` — NEW (17 tests)
-- `pipeline/tests/test_markers_linking.py` — NEW (26 tests)
+- `pipeline/tests/test_markers_attempts.py` — NEW (18 tests)
+- `pipeline/tests/test_markers_linking.py` — NEW (31 tests)
 - `pipeline/tests/test_markers_shots.py` — event-shape assertion widened to the enriched shape
 - `pipeline/tests/test_ingest_record.py` — new independent `shots-link-rate` test
 - `pipeline/tests/test_runner.py` — `checks_run` list gains `marker-event-link-rate`
