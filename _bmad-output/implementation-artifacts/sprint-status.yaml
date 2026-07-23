@@ -114,6 +114,34 @@ project: wc-stats
 #             non-finite), storage no longer resurrects deleted keys, vendored components
 #             reconciled to tokens, shadcn package dep dropped, --ink-on-cyan light
 #             ratified in DESIGN.md. Chain + 41 tests green. Status review -> done.
+# 2026-07-23: story 2-2 context created and moved to ready-for-dev (site chrome: header,
+#             ES|EN + theme toggles with pre-paint bootstrap, attribution footer, static
+#             404; resolves the deferred t() boundary policy; touches app/ only —
+#             coordinates around in-flight 1-5/1-6 pipeline work).
+# 2026-07-23: story 1-5 context created and moved to ready-for-dev (marker–event linking;
+#             scoping probe on spike/mex_rsa.pdf settled the digit-glyph semantics: on-marker
+#             ordinal labels 1..N joining table row position; outcome cross-check via the
+#             contract's x-maps-to-outcome; xG stays null per the contract's corpus-verified
+#             decision. Touches pipeline/markers/ only — coordinates around in-review 1-6).
+# 2026-07-23: story 2-2 implemented and moved to review — site chrome shell (pre-paint
+#             locale/theme bootstrap script generated from tested pure functions, Theme/
+#             Locale Contexts with wcstats.* persistence + polite live-region announce,
+#             sticky header with ES|EN radiogroup + theme toggles, skip link, attribution
+#             footer + /about stub, static out/404.html). Deferred t() boundary items
+#             resolved: production fallback-to-es policy + no-restricted-imports client
+#             seam (5 lint fixtures). Chain green, tests 41 -> 67, browser-verified
+#             (no hydration warnings; persistence across reload; en swap on 404/about).
+# 2026-07-23: story 1-6 code review complete — 2 decisions resolved (unknown minute
+#             glyph -> unknown-rgb like shots; formation-sum stays a recorded check per
+#             Task 7.2), 24 patches applied (5 new fail-loud parser guards, typed
+#             MalformedFieldError + calendar/clock validation, full §6 completeness walk,
+#             gate memo + PipelineError single-attribution, strict self-validation
+#             aggregator moved to the package seam, exact-path kickoff purity exemption,
+#             AD-14 own-goal ledger note vs stale contract $comment, 14 new tests, 1.6
+#             tests + story finally committed), 2 deferred, 6 dismissed. Re-verified:
+#             105 tests in 1.6 files green; Domain A sweep over all 104 PDFs clean (the
+#             full batch/gate is currently blocked by in-flight 1-5 label mapping, not
+#             1-6). Status review -> done.
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -127,8 +155,8 @@ development_status:
   1-2-batch-ingestion-run-manifest-text-anchored-page-discovery: done
   1-3-shots-pitch-map-parser-with-marker-count-self-validation: done
   # Gates all spatial-join stories (1-11..1-14 and Epic 2 spatial surfaces)
-  1-5-marker-event-linking-via-digit-glyph-proximity: backlog
-  1-6-domain-a-extraction-metadata-lineups-formations: review
+  1-5-marker-event-linking-via-digit-glyph-proximity: in-progress
+  1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: backlog
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
@@ -146,7 +174,7 @@ development_status:
   epic-2: in-progress
   # i18n scaffolding first within Epic 2 (per sprint-planning directive); requires 1-1 fixtures
   2-1-static-app-scaffold-with-design-tokens-i18n-structure-build-gates: done
-  2-2-site-chrome-header-language-theme-toggles-footer-404: backlog
+  2-2-site-chrome-header-language-theme-toggles-footer-404: review
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
   2-3-contract-v1-per-surface-sign-off: backlog
   2-4-match-route-hero-layer: backlog

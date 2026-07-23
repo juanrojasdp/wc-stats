@@ -208,7 +208,8 @@ team, formation outfield sum = 10, every sub-on paired with a sub-off at the sam
 and goal/own-goal reconciliation against the cover score. A failed check is data: the
 record stages with `self_validation.result: "fail"` and the run exits 1, same as shots.
 
-The FR-15 gate gains `domain-a-completeness` (typed extract failures → `probe-failure`)
+The FR-15 gate gains `domain-a-completeness` (typed extract failures → `probe-failure`,
+except an unknown minute-glyph fill, which shares the shots checks' `unknown-rgb` bucket)
 and `domain-a-counts` (failed Self-Validation checks → `count-mismatch`); a missing
 lineup page stays anchor-coverage's `missing-anchor` finding.
 
