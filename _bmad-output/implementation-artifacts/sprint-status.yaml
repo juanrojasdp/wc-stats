@@ -82,6 +82,31 @@ project: wc-stats
 # 2026-07-23: story 1-6 context created and moved to ready-for-dev (Domain A: metadata
 #             normalization + lineup-page parse; establishes pipeline/extract/; tabular
 #             only — coordinates around in-flight 1-3 (markers/) and 2-1 (app/)).
+# 2026-07-23: story 1-3 implemented and moved to review — pipeline/markers/ filter chain
+#             + shots parser, AD-6 frame verified on ground truth (16 markers, 2/2/8/3/1),
+#             Self-Validation in records + manifest, shots-parse/shots-count-match gate
+#             checks. Full run 104/104 PASS, all 104 Self-Validations pass, gate PASS.
+#             Discovery: 37 reports' attempts tables span two pages; parser sums table
+#             pages, count check unchanged. Suite green at verification point (496+1);
+#             later reds in test_ingest_*/test_extract_domain_a stem from 1-6's in-flight
+#             pipeline/extract/ fixture needs (venue table / lineup content), not 1-3.
+# 2026-07-23: story 1-6 implemented and moved to review — pipeline/extract/ established
+#             (Domain A: stage/date/kickoff normalization + 16-venue offset table +
+#             two-column lineup parse with glyph-classified goal/own-goal/sub/card
+#             minutes), 6 self-validation checks appended beside 1-3's, 2 FR-15 gate
+#             checks. Full run 104/104 PASS (all match_metadata populated, all checks
+#             pass), gate PASS 0 deviations, re-runs byte-identical, suite 588+1 green
+#             (the 1-3-noted reds resolved: make_report lineups page + real venue,
+#             shots-check filters, kickoff purity exemption). Discovery: red-football
+#             glyph = own goal (score = goals + opponent own-goals verified on all 104);
+#             second-yellow unrecoverable from card RGBs — AD-14 note filed.
+# 2026-07-23: story 2-1 code review complete — 4 decisions resolved, 16 patches applied,
+#             3 items deferred to deferred-work.md, 3 dismissed. Highlights: i18n lint
+#             gate hardened (bypasses closed, component copy-props gated, 13 lint-fixture
+#             regression tests), format helpers fail loudly (Z-kickoff/invalid date/time/
+#             non-finite), storage no longer resurrects deleted keys, vendored components
+#             reconciled to tokens, shadcn package dep dropped, --ink-on-cyan light
+#             ratified in DESIGN.md. Chain + 41 tests green. Status review -> done.
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -93,10 +118,10 @@ development_status:
   # Contract bootstrap (AD-14) — unblocks Epic 2 via fixtures
   1-1-contract-v1-schemas-fixtures-type-generation-spike: done
   1-2-batch-ingestion-run-manifest-text-anchored-page-discovery: done
-  1-3-shots-pitch-map-parser-with-marker-count-self-validation: in-progress
+  1-3-shots-pitch-map-parser-with-marker-count-self-validation: review
   # Gates all spatial-join stories (1-11..1-14 and Epic 2 spatial surfaces)
   1-5-marker-event-linking-via-digit-glyph-proximity: backlog
-  1-6-domain-a-extraction-metadata-lineups-formations: in-progress
+  1-6-domain-a-extraction-metadata-lineups-formations: review
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: backlog
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
@@ -113,7 +138,7 @@ development_status:
   epic-1-retrospective: optional
   epic-2: in-progress
   # i18n scaffolding first within Epic 2 (per sprint-planning directive); requires 1-1 fixtures
-  2-1-static-app-scaffold-with-design-tokens-i18n-structure-build-gates: review
+  2-1-static-app-scaffold-with-design-tokens-i18n-structure-build-gates: done
   2-2-site-chrome-header-language-theme-toggles-footer-404: backlog
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
   2-3-contract-v1-per-surface-sign-off: backlog

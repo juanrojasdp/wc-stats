@@ -30,6 +30,9 @@ colors:
   accent-cyan: '#3DDBE8'
   accent-cyan-ink: '#062226'
   accent-cyan-light: '#0E7490'
+  # Ratified 2026-07-23 (Story 2.1 review): on the darker light-theme cyan
+  # (#0E7490) the dark ink fails contrast; light theme uses white ink.
+  accent-cyan-ink-light: '#FFFFFF'
   destructive: '#F0708A'
   destructive-light: '#C22D50'
   # --- Data-visualization palette ---

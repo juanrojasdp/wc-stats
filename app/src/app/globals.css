@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
+/*
+ * No shadcn package import (Story 2.1 review): the vendored button/card use
+ * only core Tailwind variants (aria-*, data-[...], has-data-[...]) — nothing
+ * from shadcn/tailwind.css (named data-state variants, scroll-fade, shimmer).
+ * If a later vendored component needs one of those, vendor that CSS here.
+ */
 
 /*
  * Design tokens — values are normative from DESIGN.md (UX-DR1, UX-DR2).
@@ -346,8 +351,10 @@
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
       scroll-behavior: auto !important;
     }
   }

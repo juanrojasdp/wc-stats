@@ -17,5 +17,10 @@ export async function fetchArtifact<T>(path: string): Promise<T> {
   if (!response.ok) {
     throw new Error(`data: ${url} responded ${response.status}`);
   }
-  return (await response.json()) as T;
+  try {
+    return (await response.json()) as T;
+  } catch {
+    // e.g. a host's HTML fallback page served with a 200 status.
+    throw new Error(`data: ${url} returned a 200 response that is not valid JSON`);
+  }
 }

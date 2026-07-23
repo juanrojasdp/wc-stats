@@ -14,23 +14,34 @@ export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
 const memoryFallback = new Map<string, string>();
 
+/*
+ * The in-memory map substitutes ONLY when localStorage itself is unavailable
+ * (throws). When localStorage works, its answer is authoritative — including
+ * `null` for an absent key: a key deleted in another tab or via "clear site
+ * data" must read as gone, never resurrect from a stale in-memory copy.
+ */
 export function readStorage(key: StorageKey): string | null {
   try {
-    const value = window.localStorage.getItem(key);
-    if (value !== null) {
-      return value;
-    }
+    return window.localStorage.getItem(key);
   } catch {
-    // fall through to the in-memory copy
+    return memoryFallback.get(key) ?? null;
   }
-  return memoryFallback.get(key) ?? null;
 }
 
 export function writeStorage(key: StorageKey, value: string): void {
-  memoryFallback.set(key, value);
   try {
     window.localStorage.setItem(key, value);
+    memoryFallback.delete(key);
   } catch {
-    // in-memory copy already updated
+    memoryFallback.set(key, value);
+  }
+}
+
+export function removeStorage(key: StorageKey): void {
+  memoryFallback.delete(key);
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // nothing persisted to remove
   }
 }

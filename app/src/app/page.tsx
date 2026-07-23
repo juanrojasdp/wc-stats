@@ -1,5 +1,5 @@
 import { formatDecimal } from "@/lib/format";
-import { t } from "@/lib/i18n";
+import { DEFAULT_LOCALE, t } from "@/lib/i18n";
 
 /*
  * Disposable placeholder proving the stack end-to-end: tokens, typography
@@ -14,7 +14,7 @@ export default function Home() {
       <section aria-label={t("a11y.scaffold.demoRegion")} className="mt-section-gap">
         <div className="inline-block rounded-lg border border-hairline bg-surface-raised p-gutter-desktop">
           <p className="type-stat-label text-ink-secondary">{t("app.scaffold.statLabel")}</p>
-          <p className="type-stat-value mt-tile-gap text-primary">{formatDecimal(1.24, "es")}</p>
+          <p className="type-stat-value mt-tile-gap text-primary">{formatDecimal(1.24, DEFAULT_LOCALE)}</p>
         </div>
       </section>
     </main>

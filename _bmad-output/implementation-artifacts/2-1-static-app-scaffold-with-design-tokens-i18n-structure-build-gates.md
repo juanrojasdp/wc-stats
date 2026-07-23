@@ -4,7 +4,7 @@ baseline_commit: 41f28e0a0ec6929603fa78713c67c8961c30cd51
 
 # Story 2.1: Static App Scaffold with Design Tokens, i18n Structure & Build Gates
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created (2026-07-23). -->
 
@@ -81,6 +81,30 @@ So that every subsequent story inherits i18n, theming, and contract safety mecha
   - [x] 8.3 Full `npm run build` green on Node 24; `out/` contains every route pre-rendered, `out/data/fixtures/**` present, `out/404.html` emitted (Next default export behavior; real 404 content is Story 2.2).
   - [x] 8.4 Zero-external-request audit: grep `out/**` HTML/CSS/JS for `https?://` third-party origins — none allowed (fonts self-contained per Task 2.2).
   - [x] 8.5 Deploy-readiness check: `npx serve out` (or equivalent) — placeholder route renders dark-canonical with tokens + fonts. Actual Netlify account hookup is optional for this story; the AC is "deployable as-is", proven by config + local static serve.
+
+### Review Findings
+
+<!-- Code review 2026-07-23 (adversarial 3-layer: blind hunter, edge-case hunter, acceptance auditor). Severity noted per finding. -->
+
+- [x] [Review][Patch] **Component props ungated — add copy-prop name-pattern selector** (medium; resolved decision) — gate copy-carrying prop names (message, label, text, description, caption, …) on ALL elements including custom components via `no-restricted-syntax`; className/data-* stay legal [app/eslint.config.mjs:28-45]
+- [x] [Review][Patch] **Vendor the needed shadcn CSS and drop the `shadcn` package dependency** (medium; resolved decision) — copy the required variant/utility CSS out of `shadcn/tailwind.css` into committed source; remove `@import "shadcn/tailwind.css"` and the dep [app/src/app/globals.css:3, app/package.json]
+- [x] [Review][Patch] **Ratify `--ink-on-cyan` light variant `#ffffff` in DESIGN.md** (low; resolved decision) — add the light-theme value to DESIGN.md's normative token set so globals.css stops carrying an invented value [planning-artifacts DESIGN.md]
+- [x] [Review][Defer] **`t()` boundary policy — client-import seam + throw-on-stale-key** (medium; resolved decision) — deferred into Story 2.2's scope: both concerns only become real when locale switching and persistence land there
+- [x] [Review][Patch] **i18n ESLint gate bypassable — selectors match only `Literal`** (high): template literals, string concatenation, logical expressions in gated attributes, `generateMetadata()`, and template/concat metadata values all pass lint (proven with probe files); aria regex omits `aria-roledescription`/`aria-placeholder`. Extend selectors and add lint-fixture regression tests so the gate can't silently regress [app/eslint.config.mjs:28-45]
+- [x] [Review][Patch] **`formatKickoff` accepts `Z`-suffixed datetimes and renders UTC as venue-local** (medium) — contract defines kickoff as venue-local WITH offset; no 2026 venue is at UTC, so `Z` input is by definition a pipeline bug that should fail loudly. A test currently blesses the behavior [app/src/lib/format.ts:67-68]
+- [x] [Review][Patch] **Silent date/time rollover in format helpers** (medium) — `formatDate("2026-13-45")` renders "14 de febrero de 2027"; unanchored `DATE_ONLY` accepts trailing garbage (`2026-07-219`); hour 25 / minute 99 roll over in `formatKickoff` [app/src/lib/format.ts:45-90]
+- [x] [Review][Patch] **Number formatters render NaN/∞ and coerce null to 0** (low) — guard `formatDecimal`/`formatInteger`/`formatPercent` with `Number.isFinite` so an erased nullable artifact field fails loudly instead of rendering "NaN"/"0" [app/src/lib/format.ts:27-43]
+- [x] [Review][Patch] **Kickoff tests assert `toContain("9:00")`** (low) — passes for an AM/PM bug and for a 24-hour "19:00" rendering; day-period never asserted anywhere. Use exact-match assertions [app/src/lib/format.test.ts]
+- [x] [Review][Patch] **Vendored components not fully reconciled with DESIGN.md** (medium) — card edge is `ring-1 ring-foreground/10` instead of border-hairline ("the ONLY divider weight"); button sets `outline-none` and replaces the global 2px solid `--ring` focus treatment with a 50%-opacity ring (3:1 non-text contrast risk); `CardTitle` is 16px/500, not a ramp entry [app/src/components/ui/card.tsx:15, app/src/components/ui/button.tsx:8]
+- [x] [Review][Patch] **`readStorage` resurrects deleted values** (medium) — memory fallback is consulted whenever localStorage returns `null`, so a key removed after a successful write reads back stale; also no remove primitive for Story 2.2 [app/src/lib/storage.ts:17-36]
+- [x] [Review][Patch] **Schema assert: malformed JSON / non-object artifact fails without the file path** (low) — FR-20 requires file + values; wrap parse and root-shape checks with the offending path [app/scripts/assert-schema-version.mjs:71-77]
+- [x] [Review][Patch] **copy-data: missing repo /data source rejects with a raw stack trace** (low) — add the same guarded exit the `out/` check has [app/scripts/copy-data.mjs:23]
+- [x] [Review][Patch] **`fetchArtifact`: non-JSON 200 body throws a bare SyntaxError with no URL** (low) — wrap `response.json()` with URL context [app/src/lib/data.ts:20]
+- [x] [Review][Patch] **vitest includes only `src/**/*.test.ts`** (low) — a future `.test.tsx` component test is silently never run [app/vitest.config.ts:7]
+- [x] [Review][Patch] **Reduced-motion kill-switch misses `animation-delay`/`transition-delay`** (low) — delayed state changes still fire for reduced-motion users [app/src/app/globals.css:344-353]
+- [x] [Review][Patch] **page.tsx hardcodes `formatDecimal(1.24, "es")` instead of `DEFAULT_LOCALE`** (low) — the first example future stories will copy from [app/src/app/page.tsx:17]
+- [x] [Review][Defer] **Story 2.1 commit flips stories 1-3/1-6 to in-progress while their context files sit uncommitted** [sprint-status.yaml] — deferred, resolves when the 1.3/1.6 working-tree changes are committed; log-line ordering nit alongside
+- [x] [Review][Defer] **Zero-external-request audit is a one-time manual grep — nothing re-checks it** (medium) [Task 8.4] — deferred to Story 2.19's audit/harness scope (post-export origin-grep step in the chain)
 
 ## Dev Notes
 
@@ -297,7 +321,9 @@ Claude Fable 5 (claude-fable-5) via Claude Code
 - `app/src/lib/format.test.ts` (new)
 - `app/src/lib/i18n.test.ts` (new)
 - `app/src/lib/assert-schema-version.test.ts` (new)
+- `app/src/lib/eslint-gate.test.ts` (new, code review 2026-07-23: lint-fixture regression tests for the i18n gate)
 
 ## Change Log
 
+- 2026-07-23: Code review (adversarial 3-layer) — 16 patches applied, 3 deferred, story done. Highlights: i18n ESLint gate hardened (template-literal/concat/logical bypasses closed, `generateMetadata()` + nested title covered, aria list extended, copy-carrying component props gated, 13 lint-fixture regression tests added); format helpers reject Z-suffixed kickoffs, impossible dates, out-of-range times, non-finite numbers; storage fallback no longer resurrects deleted keys (+`removeStorage`); vendored card/button reconciled to border-hairline, global focus ring, `type-title` ramp; `shadcn` package dependency dropped (components use only core Tailwind variants); `--ink-on-cyan` light `#FFFFFF` ratified in DESIGN.md. Full chain + 41 tests green; zero-external-origin audit re-verified.
 - 2026-07-23: Story 2.1 implemented — Next 16.2.11 static-export scaffold with full DESIGN.md token set, typed es/en locale layer + Intl helpers, vendored shadcn (button/card), generated contract types, AR-13 build-gate chain (ESLint i18n gate → typecheck → schema-version assert → next build → data copy), netlify.toml static publish. 24 unit tests + 4 negative gate proofs. Notable calls: ESLint 9.39.5 fallback (typescript-eslint not yet ESLint-10-runtime-compatible), jsx-no-literals prop coverage delegated to targeted selectors, `shadcn` pkg kept for build-time CSS, i18n split into server-safe `t()` + client provider.

@@ -23,6 +23,14 @@ describe("formatDecimal", () => {
   it("pads to the requested precision", () => {
     expect(formatDecimal(2, "es")).toBe("2,00");
   });
+
+  it("rejects non-finite values instead of rendering NaN/Infinity/0", () => {
+    expect(() => formatDecimal(Number.NaN, "es")).toThrow();
+    expect(() => formatDecimal(Number.POSITIVE_INFINITY, "es")).toThrow();
+    // A nullable artifact field erased at a boundary: Intl would coerce to "0".
+    expect(() => formatDecimal(null as unknown as number, "es")).toThrow();
+    expect(() => formatInteger(Number.NaN, "en")).toThrow();
+  });
 });
 
 describe("formatInteger", () => {
@@ -62,22 +70,40 @@ describe("formatDate", () => {
   it("rejects non-ISO input", () => {
     expect(() => formatDate("21/07/2026", "es")).toThrow();
   });
+
+  it("rejects a date with trailing garbage after the day", () => {
+    expect(() => formatDate("2026-07-219", "es")).toThrow();
+  });
+
+  it("rejects impossible calendar dates instead of rolling them over", () => {
+    // Date.UTC would silently turn 2026-13-45 into 2027-02-14.
+    expect(() => formatDate("2026-13-45", "es")).toThrow();
+    expect(() => formatDate("2026-02-30", "es")).toThrow();
+  });
 });
 
 describe("formatKickoff", () => {
-  // Wall clock 21:00 at a +02:00 venue: any timezone conversion bug would
-  // surface a different hour (19:00 UTC, 14:00 Bogotá, ...).
-  it("keeps the venue-local wall-clock time", () => {
-    expect(formatKickoff("2026-06-11T21:00:00+02:00", "es")).toContain("9:00");
-    expect(formatKickoff("2026-06-11T21:00:00+02:00", "en")).toContain("9:00");
-  });
-
-  it("accepts Z-offset datetimes", () => {
-    expect(formatKickoff("2026-06-11T15:00:00Z", "en")).toContain("3:00");
+  // Wall clock 21:00 at a +02:00 venue. Exact-match assertions on purpose:
+  // toContain("9:00") would also pass for an AM/PM bug ("9:00 a. m.") and for
+  // a 24-hour rendering of the UTC instant ("19:00" contains "9:00").
+  it("keeps the venue-local wall-clock time, day period included", () => {
+    expect(formatKickoff("2026-06-11T21:00:00+02:00", "es")).toBe("9:00 p. m.");
+    expect(formatKickoff("2026-06-11T21:00:00+02:00", "en")).toBe("9:00 PM");
   });
 
   it("rejects datetimes without a UTC offset", () => {
     expect(() => formatKickoff("2026-06-11T21:00:00", "es")).toThrow();
+  });
+
+  it("rejects Z-suffixed datetimes — UTC is by definition not venue-local", () => {
+    // The contract carries venue-local time WITH its offset; no 2026 venue is
+    // at UTC, so a Z timestamp is a pipeline bug that must fail loudly.
+    expect(() => formatKickoff("2026-06-11T15:00:00Z", "en")).toThrow();
+  });
+
+  it("rejects out-of-range times instead of rolling them over", () => {
+    expect(() => formatKickoff("2026-06-11T25:00:00+02:00", "es")).toThrow();
+    expect(() => formatKickoff("2026-06-11T21:99:00+02:00", "es")).toThrow();
   });
 });
 

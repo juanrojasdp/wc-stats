@@ -20,5 +20,12 @@ try {
   process.exit(1);
 }
 
+try {
+  await access(SOURCE);
+} catch {
+  console.error(`copy-data: ${SOURCE} does not exist — nothing to ship`);
+  process.exit(1);
+}
+
 await cp(SOURCE, TARGET, { recursive: true });
 console.log(`copy-data: copied ${SOURCE} -> ${TARGET}`);

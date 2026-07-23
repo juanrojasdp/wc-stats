@@ -25,21 +25,37 @@ export default defineConfig([
        * any literal JSX text or {'literal'} expression.
        */
       "react/jsx-no-literals": ["error", { noStrings: true, ignoreProps: true }],
+      /*
+       * Gated attribute names, on ANY element — DOM attributes and custom
+       * component props alike (<EmptyState message="..."> is gated the same
+       * as aria-label). Beyond bare Literals the selectors also catch
+       * template literals and string operands of concatenation/ternary/
+       * logical expressions, which would otherwise bypass the gate.
+       * t()/variable/function values stay legal.
+       */
       "no-restricted-syntax": [
         "error",
         {
           selector:
-            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-valuetext|title|alt|placeholder)$/] > Literal",
+            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-placeholder|aria-roledescription|aria-braillelabel|aria-valuetext|title|alt|placeholder|label|message|text|description|caption|heading|tooltip)$/] > Literal",
           message: "User-facing strings must come from the locale layer (t()).",
         },
         {
           selector:
-            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-valuetext|title|alt|placeholder)$/] JSXExpressionContainer > Literal",
+            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-placeholder|aria-roledescription|aria-braillelabel|aria-valuetext|title|alt|placeholder|label|message|text|description|caption|heading|tooltip)$/] JSXExpressionContainer > :matches(Literal, TemplateLiteral)",
           message: "User-facing strings must come from the locale layer (t()).",
         },
         {
           selector:
-            'VariableDeclarator[id.name="metadata"] Property[key.name=/^(title|description)$/] > Literal',
+            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-placeholder|aria-roledescription|aria-braillelabel|aria-valuetext|title|alt|placeholder|label|message|text|description|caption|heading|tooltip)$/] JSXExpressionContainer :matches(BinaryExpression, LogicalExpression, ConditionalExpression) > :matches(Literal, TemplateLiteral)",
+          message: "User-facing strings must come from the locale layer (t()).",
+        },
+        {
+          // Covers `export const metadata = {...}` AND generateMetadata()
+          // (Next's other first-class metadata path), including nested
+          // title objects ({ default, template, absolute }).
+          selector:
+            ':matches(VariableDeclarator[id.name="metadata"], FunctionDeclaration[id.name="generateMetadata"], VariableDeclarator[id.name="generateMetadata"]) Property[key.name=/^(title|description|default|template|absolute)$/] > :matches(Literal, TemplateLiteral, BinaryExpression, LogicalExpression, ConditionalExpression)',
           message: "Metadata strings must come from the locale layer.",
         },
       ],

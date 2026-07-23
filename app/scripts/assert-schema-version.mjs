@@ -69,7 +69,20 @@ async function main() {
   const mismatches = [];
   let checked = 0;
   for await (const filePath of walkJsonFiles(DATA_DIR)) {
-    const artifact = JSON.parse(await readFile(filePath, "utf8"));
+    // FR-20: every failure names the offending file — including a file that
+    // cannot even be parsed, which would otherwise surface as a bare
+    // SyntaxError with no path.
+    let artifact;
+    try {
+      artifact = JSON.parse(await readFile(filePath, "utf8"));
+    } catch (error) {
+      throw new Error(
+        `${path.relative(REPO_DIR, filePath)}: invalid JSON — ${error instanceof Error ? error.message : error}`
+      );
+    }
+    if (typeof artifact !== "object" || artifact === null || Array.isArray(artifact)) {
+      throw new Error(`${path.relative(REPO_DIR, filePath)}: root is not a JSON object`);
+    }
     checked += 1;
     if (artifact.schemaVersion !== contract) {
       mismatches.push(
