@@ -109,6 +109,84 @@ export const es = {
       loading: "Cargando datos del partido",
     },
   },
+  /*
+   * Tactical Layer (Story 2.5). `sections` carries one title per section and a
+   * summary for the NINE collapsible ones only — key-stats and momentum never
+   * collapse, so a summary key for them would be dead copy. Summaries are
+   * static descriptive copy in this story (ruled decision 2); stories 2.6-2.10
+   * may replace their own with artifact-sourced values when they own the data.
+   */
+  tactical: {
+    sections: {
+      "key-stats": {
+        title: "Estadísticas clave",
+      },
+      momentum: {
+        title: "Línea de momentum",
+      },
+      "shot-maps": {
+        title: "Mapa de tiros y xG",
+        summary: "Desde dónde y cuándo llegaron los tiros de cada equipo.",
+      },
+      "pass-networks": {
+        title: "Red de pases",
+        summary: "Quién conectó con quién y por dónde circuló el balón.",
+      },
+      "offers-to-receive": {
+        title: "Ofrecimientos para recibir",
+        summary: "Cuántas veces se pidió el balón y cuántas llegó el pase.",
+      },
+      "movement-to-receive": {
+        title: "Desmarques",
+        summary: "Cómo se movieron sin balón para recibir con ventaja.",
+      },
+      "defensive-actions": {
+        title: "Acciones defensivas",
+        summary: "Dónde recuperó cada equipo y dónde forzó las pérdidas.",
+      },
+      phases: {
+        title: "Fases del juego",
+        summary: "Cómo se repartió el partido entre ataque, transición y defensa.",
+      },
+      pressing: {
+        title: "Presión y bloques defensivos",
+        summary: "Altura de la línea defensiva e intensidad de la presión.",
+      },
+      "set-plays": {
+        title: "Balón parado",
+        summary: "Córners, tiros libres y laterales: cuántos y con qué resultado.",
+      },
+      goalkeeping: {
+        title: "Arqueros",
+        summary: "Intervenciones, distribución y juego aéreo de los arqueros.",
+      },
+    },
+    /*
+     * Ruled decision 1: the copy carries no section name. EXPERIENCE's
+     * "Sin datos de {sección}…" is a template slot and t() has no
+     * interpolation by design; the section is named by the <h2> directly
+     * above the panel.
+     */
+    empty: {
+      headline: "Sin datos de esta sección para este partido.",
+      explanation: "El informe oficial no incluye esta sección.",
+    },
+    /*
+     * Ruled decision 9: a section whose data IS in the bundle but whose
+     * content component has not shipped yet gets this, never the empty state
+     * — claiming the report omits present data is the dishonesty FR-22 exists
+     * to prevent.
+     */
+    pending: {
+      headline: "Esta sección aún no está disponible en el sitio.",
+      explanation: "Estamos construyendo esta vista; los datos ya están en el informe.",
+    },
+    keyStats: {
+      showAll: "Ver todas las estadísticas",
+      showLess: "Ver menos estadísticas",
+      contested: "Posesión disputada:",
+    },
+  },
   enums: {
     // Tournament stage labels, keyed by the Stage enum codes (AD-7).
     stage: {
@@ -128,8 +206,37 @@ export const es = {
       fw: "Delantero",
     },
     shotOutcome: {},
-    metric: {},
-    unit: {},
+    /*
+     * Metric labels keyed by the artifact FIELD name. MetricCode is
+     * deliberately string-identical to the field it ranks, so Story 2.13
+     * inherits eighteen of these for free (`directPressures` is the one field
+     * that is not a MetricCode).
+     */
+    metric: {
+      possession: "Posesión",
+      goals: "Goles",
+      expectedGoals: "xG",
+      shots: "Tiros",
+      shotsOnTarget: "Tiros al arco",
+      passes: "Pases",
+      passesCompleted: "Pases completados",
+      passCompletion: "Precisión de pases",
+      completedLineBreaks: "Rupturas de líneas completadas",
+      defensiveLineBreaks: "Rupturas de líneas defensivas",
+      receptionsInFinalThird: "Recepciones en el último tercio",
+      crosses: "Centros",
+      ballProgressions: "Progresiones de balón",
+      defensivePressures: "Presiones defensivas",
+      directPressures: "Presiones directas",
+      forcedTurnovers: "Recuperaciones forzadas",
+      secondBalls: "Segundas jugadas",
+      distanceCovered: "Distancia",
+      sprintDistance: "Distancia en sprint",
+    },
+    // Units are locale metadata, never baked into a label string (AD-7).
+    unit: {
+      km: "km",
+    },
   },
 };
 

@@ -2,7 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { en } from "@/locales/en";
 import { es } from "@/locales/es";
-import { t } from "@/lib/i18n";
+import { t, type Locale } from "@/lib/i18n";
+import { KEY_STAT_FIELDS } from "@/lib/tactical-sections";
 
 describe("t()", () => {
   it("defaults to the canonical Spanish dictionary", () => {
@@ -72,6 +73,35 @@ describe("t() production fallback policy", () => {
   it("keeps throwing outside production", () => {
     vi.stubEnv("NODE_ENV", "development");
     expect(() => t("app.missing" as Parameters<typeof t>[0])).toThrow(/did not resolve/);
+  });
+});
+
+/*
+ * Story 2.5 Task 9.2: the enums.metric namespace is keyed by TeamKeyStatistics
+ * field name (MetricCode is string-identical to the field it ranks), so a
+ * field added to the contract must not silently render an unlabelled row.
+ */
+describe("enums.metric / enums.unit (AD-7)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("has exactly one entry per Key Statistics field", () => {
+    expect(Object.keys(es.enums.metric).sort()).toEqual([...KEY_STAT_FIELDS].sort());
+  });
+
+  it("resolves every metric label in both locales", () => {
+    for (const field of KEY_STAT_FIELDS) {
+      for (const locale of locales) {
+        const label = t(`enums.metric.${field}`, locale);
+        expect(label, `${field} in ${locale}`).not.toBe("");
+        expect(label).not.toContain("enums.metric");
+      }
+    }
+  });
+
+  it("resolves the km unit in both locales", () => {
+    for (const locale of locales) {
+      expect(t("enums.unit.km", locale)).toBe("km");
+    }
   });
 });
 

@@ -318,6 +318,81 @@ project_key: NOKEY
 #             own goals); with the term, 0 mismatches / 208. Suite baselined 766 passed +
 #             1 skipped at f932f6c. Touches pipeline/extract/ + the record/gate seams +
 #             conftest only — stays off the marker/parser-chain family for in-dev 1-12.)
+# 2026-07-24: story 1-12 implemented and moved to review — pipeline/markers/
+#             defensive_actions.py on the shared filter chain. Corpus probe (104 reports /
+#             208 pages) confirmed the pre-filed findings and sharpened three: the two
+#             panels are NOT exactly equal in area (61,168.1435 vs 61,168.1451), so
+#             detect_pitch_frame's max() deterministically discarded the LEFT (Forced
+#             Turnovers) map on 208/208 — closed by an additive detect_pitch_frames
+#             (proven identical on all 5,448 pages; shots+crosses payloads byte-identical
+#             over all 104 reports); each panel also draws 4 stroke-only corner arcs at the
+#             marker's exact width (only fill-is-None excludes them) and WHITE filled
+#             penalty/centre spots inside the pitch (only marker_min_pt excludes them —
+#             admitting either aborts all 104 on an unknown fill). Task 1.2's open question
+#             RESOLVED by measurement: the possession-regain map matches NO printed number
+#             (best single field 4/208; exhaustive ±1 linear combos never reach 150/208;
+#             dedup at 7 thresholds reconciles ≤16/208 and destroys the left panel's own
+#             206/208; markers form one contiguous draw block) and R−PR ranges −3..+36,
+#             negative on 2 pages — so it takes AC 2's documented-absence branch (table:
+#             null, no check, one per-report warning) while forced-turnover checks against
+#             the page's printed headline. Panel→type is text-anchored via the frozen
+#             label map; no linking possible (0 digit glyphs in-panel), contest_type null.
+#             Suite 766 -> 811. HEADS-UP: batch is 104/104 extracted, 0 failed, but 2
+#             reports self-validate FAIL — PMSR-M19-ARG-V-ALG (39 markers drawn vs 40
+#             printed) and PMSR-M58-TUN-V-NED (33 vs 34), verified by rendering and hand-
+#             counting as genuine source self-contradictions, not parse defects. The check
+#             was NOT loosened (SM-C1/AD-8), so the full-corpus run now exits 1; filed as
+#             NEEDS ADJUDICATION at the top of deferred-work.md with three options. FR-15
+#             gate PASS 0 deviations (neither report is in the 16-report sample; the
+#             count-mismatch path was proven directly on the anomalous pair). Re-run
+#             104/104 skipped-unchanged, records byte-identical.
+# 2026-07-24: story 2-5 context created and moved to ready-for-dev (Tactical Layer shell +
+#             Key Statistics + the shared empty-state pattern 2.6-2.10 depend on. Builds
+#             ONTO 2.4's route without touching the AR-11 split: the layer mounts inside
+#             MatchBundleRegion's loaded branch, so it is client-only — no Tactical markup
+#             exists in out/, static-output tests cannot cover it (turned into an assertion
+#             instead), and deep links must be re-resolved on mount because the browser
+#             gives up on #momentum before the target exists. 11 section shells in the
+#             normative order from a pure registry; disclosure precedence ruled: empty
+#             sections never collapse (an absence you must tap to find is still silent),
+#             key-stats + momentum never collapse (both mockups render them expanded at
+#             390px; UJ-1 reads them), the other nine collapse <lg via heading-wrapping
+#             <button aria-expanded> with lazy-mounted content (deliberately NOT 2.4's
+#             hidden-in-DOM pattern). Key Statistics = the full 19-field Domain B block,
+#             paired tiles, higher-value-leads + ▲ + sr-only «líder»; at <md the six
+#             mockup-led rows show with the rest behind "Ver todas las estadísticas" —
+#             the ruled resolution of AC 2's two clauses (full block vs. one scroll still
+#             reaching momentum). contestedPossession is match-level, rendered as a caption.
+#             null vs [] is load-bearing: only null triggers the empty state. Registry keys
+#             enums.metric by TeamKeyStatistics field name, which is string-identical to
+#             MetricCode for 18 of 19 — 2.13 inherits the labels. Closes 2.4 deferred
+#             decision D4 (bundle now consumed, so matchId/schemaVersion are validated).
+#             Route container widens max-w-2xl -> max-w-6xl for the ≥md two-column grid.
+#             Touches app/ + locales only — coordinates around in-dev 1-10 and in-review
+#             1-12 pipeline work; never `git add -A`.)
+# 2026-07-24: story 2-5 implemented and moved to review — Tactical Layer shell mounted inside
+#             MatchBundleRegion's loaded branch (client-only, AR-11 untouched): 11 section
+#             shells from a pure registry (tactical-sections.ts) in the normative order, each
+#             with its stable anchor. Disclosure resolved against the mockups: at ≥lg the nine
+#             collapsible sections render in the NON-collapsible presentation (plain <h2>, no
+#             trigger, no summary — the desktop mockup's only aria-expanded is the Hero's), at
+#             <lg they are heading-wrapping <button aria-expanded> shells with one-line summary
+#             and LAZY-MOUNTED content (deliberately not 2.4's hidden-in-DOM pattern); key-stats
+#             and momentum never collapse, and an empty section never collapses at any width.
+#             Focus-on-expand is nonce-driven so a ≥lg render or a resize never steals focus.
+#             Key Statistics: 19 paired tiles (higher value leads + ▲ + sr-only líder), six
+#             compact rows + "Ver todas las estadísticas" at <md, contestedPossession as a
+#             caption. Shared EmptyStatePanel + a distinct PendingSectionPanel (a ready section
+#             with no view yet must never claim the report omits it). Anchors re-resolved on
+#             mount + hashchange because the browser gives up on #momentum before the layer
+#             exists; scroll-padding-top added for the sticky header. Closes 2.4 deferred
+#             decision D4: the bundle is now held and validated (matchId + SCHEMA_VERSION)
+#             before "loaded". Route container max-w-2xl -> max-w-6xl (Hero keeps its measure).
+#             Locale: tactical.* namespace + enums.metric (19, keyed by field name so 2.13
+#             inherits 18) + enums.unit.km. Suite 103 -> 131, build chain green. Browser-verified
+#             at ≥lg and <lg (fold, keyboard, deep links + hashchange, m002 empty state, ES/EN,
+#             light theme). One item filed: the page reflows cleanly at 320 CSS px but not at
+#             195 (header + Hero + key-stats together) — routed to 2.19.
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -335,9 +410,9 @@ development_status:
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
-  1-10-domain-g-extraction-per-player-performance-physical-data: ready-for-dev
+  1-10-domain-g-extraction-per-player-performance-physical-data: in-progress
   1-11-crosses-map-parser: done
-  1-12-defensive-actions-map-parser: in-progress
+  1-12-defensive-actions-map-parser: review
   1-13-offers-movement-to-receive-parsers: backlog
   1-14-pass-network-extraction-nodes-edges: backlog
   1-15-cross-match-identity-resolution-normalized-spine: backlog
@@ -356,7 +431,7 @@ development_status:
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
   2-3-contract-v1-per-surface-sign-off: done
   2-4-match-route-hero-layer: done
-  2-5-tactical-layer-shell-key-statistics-empty-state-pattern: backlog
+  2-5-tactical-layer-shell-key-statistics-empty-state-pattern: review
   2-6-momentum-timeline: backlog
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data
   2-7-pitch-panel-infrastructure-with-shot-cross-maps: backlog

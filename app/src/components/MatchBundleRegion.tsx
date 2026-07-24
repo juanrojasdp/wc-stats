@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { TacticalLayer } from "@/components/TacticalLayer";
 import { Button } from "@/components/ui/button";
 import type { MatchBundle } from "@/lib/contract/contract-types";
+import { SCHEMA_VERSION } from "@/lib/contract/schema-version";
 import { fetchArtifact } from "@/lib/data";
 import { useT } from "@/lib/i18n-provider";
 
@@ -13,9 +15,9 @@ import { useT } from "@/lib/i18n-provider";
  * (FR-34: no tournament.json at runtime) — via the sole fetch path. State is
  * ephemeral (AD-10: no cache, no store). While loading it shows layout-shaped
  * skeletons with aria-busy; on success a polite live region announces "Datos
- * cargados." and the skeletons clear to an empty container (Story 2.5 owns
- * everything that renders below the Hero once loaded); on failure an inline
- * retry panel appears with the shell and nav left fully usable.
+ * cargados." and the Tactical Layer (Story 2.5) renders from the held payload;
+ * on failure an inline retry panel appears with the shell and nav left fully
+ * usable.
  *
  * The announcement text is rendered from t() in a persistent live region, so a
  * post-load language toggle re-announces it in the new language (Task 9.3)
@@ -27,6 +29,7 @@ type Status = "loading" | "loaded" | "error";
 export function MatchBundleRegion({ matchId }: { matchId: string }) {
   const t = useT();
   const [status, setStatus] = useState<Status>("loading");
+  const [bundle, setBundle] = useState<MatchBundle | null>(null);
   const [attempt, setAttempt] = useState(0);
   const busyRef = useRef<HTMLDivElement>(null);
 
@@ -44,10 +47,23 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
     // the effect never sets state synchronously (react-hooks/set-state-in-effect).
     let cancelled = false;
     fetchArtifact<MatchBundle>(`/matches/${matchId}.json`)
-      .then(() => {
-        if (!cancelled) {
-          setStatus("loaded");
+      .then((payload) => {
+        if (cancelled) {
+          return;
         }
+        /*
+         * Validate before declaring success (2.4 deferred decision D4, closed
+         * here now that the payload is actually consumed). A stale CDN copy or
+         * a redirected 200 parses fine and would render another match's data,
+         * or v1 shapes against a v2 reader — both take the error branch.
+         * SCHEMA_VERSION comes from the generated module; never hardcoded.
+         */
+        if (payload.matchId !== matchId || payload.schemaVersion !== SCHEMA_VERSION) {
+          setStatus("error");
+          return;
+        }
+        setBundle(payload);
+        setStatus("loaded");
       })
       .catch(() => {
         if (!cancelled) {
@@ -97,6 +113,7 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
             variant="destructive"
             onClick={() => {
               setStatus("loading");
+              setBundle(null);
               setAttempt((a) => a + 1);
             }}
             className="mt-3 min-h-11"
@@ -106,7 +123,7 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
         </div>
       ) : null}
 
-      {/* Loaded state is intentionally empty — Story 2.5 fills below the Hero. */}
+      {status === "loaded" && bundle !== null ? <TacticalLayer bundle={bundle} /> : null}
     </div>
   );
 }

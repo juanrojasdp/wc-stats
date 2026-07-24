@@ -166,6 +166,25 @@ describe.skipIf(!anyBuilt)("m074 Hero markup — own goal, shoot-out, knockout (
   });
 });
 
+/*
+ * Story 2.5 Task 9.3. The Tactical Layer mounts only after the client fetch
+ * resolves (AR-11), so the exported HTML legitimately contains none of it —
+ * that absence is the assertion. A regression here means someone moved the
+ * layer to the build-time path and broke the rendering split.
+ */
+describe.skipIf(!anyBuilt)("the Tactical Layer stays off the build-time path (AR-11)", () => {
+  it("exports no Tactical section markup", () => {
+    for (const entity of readTournament().entities.matches) {
+      const html = matchHtml(entity.matchId);
+      expect(html).not.toContain('id="key-stats"');
+      expect(html).not.toContain('id="momentum"');
+      // The pre-rendered document is Spanish canonical; the section titles are
+      // the copy that would appear if the layer were server-rendered.
+      expect(html).not.toContain(es.tactical.sections["key-stats"].title);
+    }
+  });
+});
+
 describe.skipIf(!anyBuilt)("Hero links and the single disclosure (AC 2)", () => {
   const html = anyBuilt ? matchHtml("m001-mexico-south-africa") : "";
 

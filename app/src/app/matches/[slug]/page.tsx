@@ -59,9 +59,16 @@ export default async function MatchPage({
   const bundle = readMatchBundle(slug);
   const data = toHeroData(bundle);
   return (
-    <div className="mx-auto max-w-2xl px-gutter-mobile pb-layer-gap md:px-gutter-desktop">
+    /*
+     * max-w-6xl is DESIGN's dashboard width: the ≥md two-column key-statistics
+     * grid and 2.7's side-by-side pitch panels do not fit 672px. The Hero keeps
+     * its own measure inside it.
+     */
+    <div className="mx-auto max-w-6xl px-gutter-mobile pb-layer-gap md:px-gutter-desktop">
       {/* Pre-rendered Hero from metadata + storyStats (AR-11 build-time path). */}
-      <MatchHero data={data} />
+      <div className="mx-auto w-full max-w-2xl">
+        <MatchHero data={data} />
+      </div>
       {/* Below-Hero region fetches only this match's own bundle at runtime. */}
       <MatchBundleRegion matchId={slug} />
     </div>

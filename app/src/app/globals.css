@@ -354,6 +354,13 @@
     border-color: var(--border);
   }
 
+  /* Anchored headings must clear the sticky header (h-14 = 3.5rem) — without
+     this every #section deep link and every scrollIntoView() lands under the
+     bar. Also fixes the #main-content skip link. */
+  html {
+    scroll-padding-top: 4.5rem;
+  }
+
   body {
     background-color: var(--background);
     color: var(--foreground);

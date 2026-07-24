@@ -86,6 +86,65 @@ export const en: Dictionary = {
       loading: "Loading match data",
     },
   },
+  tactical: {
+    sections: {
+      "key-stats": {
+        title: "Key statistics",
+      },
+      momentum: {
+        title: "Momentum timeline",
+      },
+      "shot-maps": {
+        title: "Shot map & xG",
+        summary: "Where and when each team's shots came from.",
+      },
+      "pass-networks": {
+        title: "Pass networks",
+        summary: "Who connected with whom, and where the ball circulated.",
+      },
+      "offers-to-receive": {
+        title: "Offers to receive",
+        summary: "How often players asked for the ball, and how often it arrived.",
+      },
+      "movement-to-receive": {
+        title: "Movement to receive",
+        summary: "How players moved off the ball to receive in space.",
+      },
+      "defensive-actions": {
+        title: "Defensive actions",
+        summary: "Where each team regained the ball and forced turnovers.",
+      },
+      phases: {
+        title: "Phases of play",
+        summary: "How the match split between attack, transition and defence.",
+      },
+      pressing: {
+        title: "Pressing & defensive blocks",
+        summary: "Defensive line height and pressing intensity.",
+      },
+      "set-plays": {
+        title: "Set plays",
+        summary: "Corners, free kicks and throw-ins: how many, and to what effect.",
+      },
+      goalkeeping: {
+        title: "Goalkeeping",
+        summary: "Goalkeeper interventions, distribution and aerial play.",
+      },
+    },
+    empty: {
+      headline: "No data for this section in this match.",
+      explanation: "The official report does not include this section.",
+    },
+    pending: {
+      headline: "This section is not on the site yet.",
+      explanation: "We are building this view; the data is already in the report.",
+    },
+    keyStats: {
+      showAll: "View all statistics",
+      showLess: "View fewer statistics",
+      contested: "Contested possession:",
+    },
+  },
   enums: {
     stage: {
       group: "Group stage",
@@ -103,7 +162,29 @@ export const en: Dictionary = {
       fw: "Forward",
     },
     shotOutcome: {},
-    metric: {},
-    unit: {},
+    metric: {
+      possession: "Possession",
+      goals: "Goals",
+      expectedGoals: "xG",
+      shots: "Shots",
+      shotsOnTarget: "Shots on target",
+      passes: "Passes",
+      passesCompleted: "Completed passes",
+      passCompletion: "Pass accuracy",
+      completedLineBreaks: "Completed line breaks",
+      defensiveLineBreaks: "Defensive line breaks",
+      receptionsInFinalThird: "Receptions in final third",
+      crosses: "Crosses",
+      ballProgressions: "Ball progressions",
+      defensivePressures: "Defensive pressures",
+      directPressures: "Direct pressures",
+      forcedTurnovers: "Forced turnovers",
+      secondBalls: "Second balls",
+      distanceCovered: "Distance",
+      sprintDistance: "Sprint distance",
+    },
+    unit: {
+      km: "km",
+    },
   },
 };
