@@ -26,7 +26,7 @@ from pipeline.ingest.records import (
     write_record,
 )
 from pipeline.markers.errors import UnknownRgbError
-from pipeline.tests.conftest import DEFAULT_SHOTS_MARKERS
+from pipeline.tests.conftest import DEFAULT_CROSSES_MARKERS, DEFAULT_SHOTS_MARKERS
 
 ISO_TIMESTAMP_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}")
 
@@ -259,6 +259,60 @@ def test_a_count_mismatch_still_produces_a_record_with_both_counts(tmp_path, mak
     assert by_team["home"]["marker_count"] == len(DEFAULT_SHOTS_MARKERS["home"])
     assert by_team["home"]["table_count"] == 9
     assert by_team["away"]["result"] == "pass"
+
+
+def test_crosses_domain_and_checks_join_the_record(tmp_path, make_report):
+    """Story 1.11: `crosses-marker-count` checks are appended beside the existing
+    families — filtered by their OWN check id here, never a widened shots filter (both
+    families carry home/away team keys and a shared filter would collide)."""
+    record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
+
+    crosses = record["domains"]["crosses"]
+    assert set(crosses) == {"cross_events", "cross_table_rows", "counts"}
+    assert len(crosses["cross_events"]) == sum(
+        len(markers) for markers in DEFAULT_CROSSES_MARKERS.values()
+    )
+    for event in crosses["cross_events"]:
+        assert isinstance(event["completed"], bool)
+        assert event["delivery_type"] is None
+
+    crosses_checks = {
+        check["team"]: check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "crosses-marker-count"
+    }
+    assert set(crosses_checks) == {"home", "away"}
+    for side, check in crosses_checks.items():
+        assert check["result"] == "pass"
+        assert check["marker_count"] == len(DEFAULT_CROSSES_MARKERS[side])
+        assert check["table_count"] == check["marker_count"]
+    assert record["self_validation"]["result"] == "pass"
+
+
+def test_a_crosses_count_mismatch_fails_the_record_with_both_counts(tmp_path, make_report):
+    """AD-8 for the crosses family: mismatch is data — record written, `fail`, both
+    counts recorded — while the shots checks stay green (independent families)."""
+    rows = {"home": [{"shirt": 9, "name": "Test PLAYER", "counts": (7, 0, 0, 0, 0, 0)}]}
+    record = extract_report(
+        make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7, crosses_rows=rows)
+    )
+
+    assert record["self_validation"]["result"] == "fail"
+    by_team = {
+        check["team"]: check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "crosses-marker-count"
+    }
+    assert by_team["home"]["result"] == "fail"
+    assert by_team["home"]["marker_count"] == len(DEFAULT_CROSSES_MARKERS["home"])
+    assert by_team["home"]["table_count"] == 7
+    assert by_team["away"]["result"] == "pass"
+    shots_results = {
+        check["result"]
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "shots-marker-count"
+    }
+    assert shots_results == {"pass"}
 
 
 def test_a_typed_marker_error_propagates_as_itself_not_as_probe_error(tmp_path, make_report):

@@ -123,23 +123,24 @@ def test_a_later_story_can_register_a_check_into_the_registry(clean_registry):
     """The registry surface only. That a registered check actually reaches the manifest
     is proved end-to-end by `test_runner.test_a_newly_registered_check_flows_into_the_report`.
     """
-    # `marker-event-link-rate` was this test's example until Story 1.5 registered it for
-    # real; the example must stay a check no story has claimed yet.
+    # `marker-event-link-rate` was this test's example until Story 1.5 registered it
+    # for real, then `crosses-count-match` until Story 1.11 did; the example must stay
+    # a check no story has claimed yet (`register_check` raises on duplicates).
     marker = Deviation(
         report_id="r1",
-        check="crosses-count-match",
+        check="defensive-actions-count-match",
         category=DeviationCategory.COUNT_MISMATCH,
         specifics="parsed 15 markers, page prints 16",
     )
     register_check(
         Check(
-            check_id="crosses-count-match",
+            check_id="defensive-actions-count-match",
             applies_to=lambda meta: True,
             run=lambda doc, meta: [marker],
         )
     )
 
-    assert "crosses-count-match" in {c.check_id for c in registered_checks()}
+    assert "defensive-actions-count-match" in {c.check_id for c in registered_checks()}
 
 
 def test_register_check_rejects_duplicate_ids(clean_registry):
@@ -260,3 +261,103 @@ def test_shots_count_match_stays_silent_on_a_parse_failure_shots_parse_raises(
         assert _checks_by_id()["shots-count-match"].run(doc, sample_meta()) == []
         with pytest.raises(PitchFrameError):
             _checks_by_id()["shots-parse"].run(doc, sample_meta())
+
+
+# --- Story 1.11: the crosses checks ------------------------------------------------
+
+
+def test_the_crosses_checks_are_registered_once():
+    ids = [check.check_id for check in registered_checks()]
+
+    assert ids.count("crosses-parse") == 1
+    assert ids.count("crosses-count-match") == 1
+
+
+def test_crosses_checks_are_clean_on_a_well_formed_report(tmp_path, make_report):
+    with _open_report(make_report, tmp_path) as doc:
+        assert _checks_by_id()["crosses-parse"].run(doc, sample_meta()) == []
+        assert _checks_by_id()["crosses-count-match"].run(doc, sample_meta()) == []
+
+
+def test_the_two_crosses_checks_share_one_parse_per_document(
+    tmp_path, make_report, monkeypatch
+):
+    """The `_parse_memo` pattern, copied for crosses: neither check may rebuild the
+    full-text index and re-parse both crosses pages on its own."""
+    import pipeline.validate.checks as checks_module
+
+    calls: list[int] = []
+    real = checks_module._crosses_parse_uncached
+    monkeypatch.setattr(
+        checks_module,
+        "_crosses_parse_uncached",
+        lambda doc, meta: calls.append(1) or real(doc, meta),
+    )
+    with _open_report(make_report, tmp_path) as doc:
+        _checks_by_id()["crosses-parse"].run(doc, sample_meta())
+        _checks_by_id()["crosses-count-match"].run(doc, sample_meta())
+
+    assert len(calls) == 1
+
+
+def test_crosses_parse_reports_an_off_palette_marker_as_unknown_rgb(tmp_path, make_report):
+    from pipeline.tests.conftest import CROSSES_MARKER_RADIUS
+
+    def decorate(side, page, pitch):
+        if side == "home":
+            page.draw_circle(
+                (pitch.x0 + 0.4 * pitch.width, pitch.y0 + 0.6 * pitch.height),
+                CROSSES_MARKER_RADIUS,
+                color=(1, 1, 1),
+                fill=(0.5, 0.5, 0.5),
+                width=0.75,
+            )
+
+    with _open_report(make_report, tmp_path, crosses_decorate=decorate) as doc:
+        deviations = _checks_by_id()["crosses-parse"].run(doc, sample_meta())
+
+    [deviation] = deviations
+    assert deviation.category == DeviationCategory.UNKNOWN_RGB
+    assert "(0.5, 0.5, 0.5)" in deviation.specifics
+    assert "page" in deviation.specifics
+
+
+def test_crosses_count_match_reports_one_deviation_per_failing_team_with_both_counts(
+    tmp_path, make_report
+):
+    rows = {
+        "home": [{"shirt": 9, "name": "Test PLAYER", "counts": (9, 0, 0, 0, 0, 0)}],
+        "away": [{"shirt": 4, "name": "Other PLAYER", "counts": (0, 5, 0, 0, 0, 0)}],
+    }
+    with _open_report(make_report, tmp_path, crosses_rows=rows) as doc:
+        deviations = _checks_by_id()["crosses-count-match"].run(doc, sample_meta())
+
+    assert [d.category for d in deviations] == [
+        DeviationCategory.COUNT_MISMATCH,
+        DeviationCategory.COUNT_MISMATCH,
+    ]
+    by_side = {d.specifics.split(":")[0]: d.specifics for d in deviations}
+    assert "table lists 9" in by_side["home"]
+    assert "table lists 5" in by_side["away"]
+
+
+def test_crosses_checks_stay_silent_when_a_crosses_anchor_is_missing(tmp_path, make_report):
+    """A missing anchor is anchor-coverage's finding; double-reporting it here would
+    inflate the localization histograms with one root cause counted twice."""
+    with _open_report(make_report, tmp_path, drop_anchor_ids=("crosses:home",)) as doc:
+        assert _checks_by_id()["crosses-parse"].run(doc, sample_meta()) == []
+        assert _checks_by_id()["crosses-count-match"].run(doc, sample_meta()) == []
+
+
+def test_crosses_count_match_stays_silent_on_a_parse_failure_crosses_parse_raises(
+    tmp_path, make_report
+):
+    """One root cause, one finding: the count check yields nothing on a broken parse,
+    while crosses-parse raises the typed error for the runner to isolate and record."""
+    from pipeline.markers.errors import CrossesTableError
+
+    replace = {"home": {"Driven": None}}
+    with _open_report(make_report, tmp_path, crosses_header_replace=replace) as doc:
+        assert _checks_by_id()["crosses-count-match"].run(doc, sample_meta()) == []
+        with pytest.raises(CrossesTableError):
+            _checks_by_id()["crosses-parse"].run(doc, sample_meta())

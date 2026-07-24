@@ -243,6 +243,63 @@ DEFAULT_LINE_HEIGHTS = {
 # The measurement-graphic gray of the real line-height brackets.
 LINE_HEIGHT_GRAY = (0.42, 0.447, 0.502)
 
+# --- Story 1.11: crosses page synthesis constants ------------------------------------
+#
+# Deliberate literals like SHOTS_OUTCOME_RGB: the fixtures must keep drawing what the
+# corpus fixes even if the module under test corrupts its constants. The real crosses
+# section is a SINGLE page per team: pitch map (left), stat panels (middle) and a
+# per-player delivery-aggregate table (right, x >= ~585). Cross markers are 7.4 pt
+# filled Bezier circles with a white stroke in exactly two fills; the legend is a pair
+# of 9.0 pt STROKELESS swatches drawn INSIDE the pitch rect (the visible map only uses
+# the frame's top; panels overprint its clipped lower region).
+
+CROSSES_PITCH_COORDS = (40.0, 115.0, 400.0, 520.0)  # same frame window as the shots page
+CROSSES_MARKER_RADIUS = 3.7  # 7.4 pt diameter, the real cross markers' size
+CROSSES_LEGEND_RADIUS = 4.5  # 9.0 pt legend swatches — outside the marker size window
+
+# Internal outcome key -> fill RGB, from the page legend words ("Attempted" = drawn
+# orange = not completed; "Completed" = drawn blue).
+CROSSES_OUTCOME_RGB = {
+    "attempted": (0.96, 0.74, 0.00),
+    "completed": (0.18, 0.30, 1.00),
+}
+
+# (outcome, fx, fy) per side: fractions of the pitch rect, like DEFAULT_SHOTS_MARKERS.
+DEFAULT_CROSSES_MARKERS = {
+    "home": [("attempted", 0.2, 0.15), ("completed", 0.85, 0.3)],
+    "away": [("attempted", 0.6, 0.25)],
+}
+
+# Header word -> x position (the real template's layout: "Push Cross" and
+# "Total Attempted" print stacked over two lines).
+CROSSES_TABLE_COLUMNS = {
+    "#": 590.0,
+    "Player": 606.0,
+    "Inswing": 725.0,
+    "Outswing": 756.0,
+    "Driven": 794.0,
+    "Lofted": 823.0,
+    "Cutback": 851.0,
+    "Push": 887.0,
+    "Cross": 886.0,
+    "Total": 921.0,
+    "Attempted": 913.0,
+}
+
+# Numeric cell x positions in column order (Inswing..Push Cross, then Total Attempted).
+CROSSES_VALUE_XS = (734.0, 768.0, 801.0, 830.0, 861.0, 891.0)
+CROSSES_TOTAL_X = 925.0
+
+
+def default_cross_rows(markers):
+    """One aggregate player row whose Total Attempted equals the marker count.
+
+    Mirrors `default_attempt_cells`' role: exported so tests derive expected values
+    from what the factory drew instead of hardcoding a second literal. `counts` is the
+    six delivery-column values in printed order (all inswing by default).
+    """
+    return [{"shirt": 9, "name": "Test PLAYER", "counts": (len(markers), 0, 0, 0, 0, 0)}]
+
 # Line-height page geometry (mirrors the real 960x540 template).
 _LH_PITCH_Y0, _LH_PITCH_Y1 = 163.5, 485.2
 _LH_PITCH_WIDTH = 225.0
@@ -597,6 +654,24 @@ def make_report():
         key_statistics: "dict | None" = None,
         phases: "dict | None" = None,
         line_heights: "dict | None" = None,
+        # Story 1.11 (additive): every report now carries parseable single-page crosses
+        # sections — extract_report runs the crosses parser on every report. Markers are
+        # (outcome, fx, fy) pitch fractions with outcome in CROSSES_OUTCOME_RGB;
+        # `crosses_rows` overrides the per-player aggregate rows (dicts with shirt/name/
+        # counts, optional total/name_below; cell values may be strings for doctored
+        # pages); `crosses_two_tone` double-draws marker index i in BOTH palette fills
+        # at the identical rect (the corpus anomaly the parser collapses);
+        # `crosses_pages` emits extra anchored pages to break the single-page layout;
+        # `crosses_header_replace` swaps or (None) drops individual header words;
+        # `crosses_decorate` draws extra content on the map for collision tests.
+        crosses_markers: "dict[str, list[tuple[str, float, float]]] | None" = None,
+        crosses_rows: "dict[str, list[dict]] | None" = None,
+        crosses_two_tone: "dict[str, tuple[int, ...]] | None" = None,
+        crosses_pages: "dict[str, int] | None" = None,
+        crosses_legend: bool = True,
+        crosses_draw_pitch: bool = True,
+        crosses_header_replace: "dict[str, dict[str, str | None]] | None" = None,
+        crosses_decorate=None,
     ) -> Path:
         import pymupdf
 
@@ -702,6 +777,93 @@ def make_report():
                 extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
                 extra.insert_text((40, 60), anchor_text, fontsize=11)
 
+        def emit_crosses_pages(side: str, anchor_text: str) -> None:
+            # Story 1.11: the real crosses section is ONE page — map, legend and the
+            # per-player delivery table together (Task 1 probe: 208/208 corpus pages).
+            pitch = pymupdf.Rect(*CROSSES_PITCH_COORDS)
+            markers = (
+                DEFAULT_CROSSES_MARKERS if crosses_markers is None else crosses_markers
+            ).get(side, DEFAULT_CROSSES_MARKERS[side])
+
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+
+            def txt(x: float, y: float, text, fontsize: int = 7) -> None:
+                # Fontsize 7 like the real table: the template's column x-positions
+                # leave gaps a 10 pt font would bridge, gluing adjacent header words
+                # into one extracted word.
+                text = str(text)
+                # Fullwidth digits need a font that can encode them (the shots tests'
+                # `fontname="japan"` precedent).
+                kwargs = {} if text.isascii() else {"fontname": "japan"}
+                page.insert_text((x, y), text, fontsize=fontsize, **kwargs)
+
+            if crosses_draw_pitch:
+                page.draw_rect(pitch, color=(1, 1, 1))
+            two_tone = (crosses_two_tone or {}).get(side, ())
+            for marker_index, (outcome, fx, fy) in enumerate(markers):
+                center = (pitch.x0 + fx * pitch.width, pitch.y0 + fy * pitch.height)
+                fills = (
+                    (CROSSES_OUTCOME_RGB["attempted"], CROSSES_OUTCOME_RGB["completed"])
+                    if marker_index in two_tone
+                    else (CROSSES_OUTCOME_RGB[outcome],)
+                )
+                for fill in fills:
+                    page.draw_circle(
+                        center, CROSSES_MARKER_RADIUS, color=(1, 1, 1), fill=fill, width=0.75
+                    )
+            if crosses_legend:
+                # The two-swatch legend INSIDE the pitch rect, strokeless at 9.0 pt —
+                # the real anatomy the size window must exclude.
+                legend_y = pitch.y0 + 0.55 * pitch.height
+                for i, rgb in enumerate(CROSSES_OUTCOME_RGB.values()):
+                    page.draw_circle(
+                        (pitch.x0 + 30 + i * 120, legend_y),
+                        CROSSES_LEGEND_RADIUS,
+                        color=None,
+                        fill=rgb,
+                    )
+
+            # Header: main line plus the stacked "Push Cross" / "Total Attempted" pairs.
+            replace = (crosses_header_replace or {}).get(side, {})
+
+            def header_word(word: str, y_offset: float = 0.0) -> None:
+                printed = replace.get(word, word)
+                if printed is not None:
+                    txt(CROSSES_TABLE_COLUMNS[word], 100.0 + y_offset, printed)
+
+            for word in ("#", "Player", "Inswing", "Outswing", "Driven", "Lofted", "Cutback"):
+                header_word(word)
+            header_word("Push", -4.0)
+            header_word("Cross", 3.7)
+            header_word("Total", -4.0)
+            header_word("Attempted", 3.7)
+
+            side_rows = (
+                crosses_rows[side]
+                if crosses_rows is not None and side in crosses_rows
+                else default_cross_rows(markers)
+            )
+            y = 130.0
+            for row in side_rows:
+                txt(CROSSES_TABLE_COLUMNS["#"], y, row["shirt"])
+                if row.get("name") is not None:
+                    txt(CROSSES_TABLE_COLUMNS["Player"], y - row.get("name_dy", 0.0), row["name"])
+                if row.get("name_below") is not None:
+                    # A two-line name straddles the numeric row line (±4.5 pt corpus).
+                    txt(CROSSES_TABLE_COLUMNS["Player"], y + 4.5, row["name_below"])
+                counts = row["counts"]
+                total = row.get("total", sum(v for v in counts if isinstance(v, int)))
+                for x, value in zip(CROSSES_VALUE_XS, counts):
+                    txt(x, y, value)
+                txt(CROSSES_TOTAL_X, y, total)
+                y += 24.7
+            if crosses_decorate is not None:
+                crosses_decorate(side, page, pitch)
+            for _ in range((crosses_pages or {}).get(side, 1) - 1):
+                extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+                extra.insert_text((40, 60), anchor_text, fontsize=11)
+
         stage = stage if stage is not None else f"Group A - Match {number}"
         lines = [f"{home} {home_score} - {away_score} {away}"]
         if shootout is not None:
@@ -765,6 +927,9 @@ def make_report():
         for anchor in body:
             if anchor.anchor_id in ("shots:home", "shots:away"):
                 emit_shots_pages(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            if anchor.anchor_id in ("crosses:home", "crosses:away"):
+                emit_crosses_pages(anchor.anchor_id.split(":")[1], anchor.text)
                 continue
             page = doc.new_page(width=960, height=540)
             page.insert_text((40, 60), anchor.text, fontsize=11)

@@ -21,6 +21,10 @@ Registered here today:
                           (possession-sum, internal-consistency, shots-reconciliation)
   domain-c-completeness   Domain C extracts phases + line-height pages, typed (1.7)
   domain-c-counts         Domain C's Self-Validation checks (metre bounds), as deviations
+  crosses-parse           the crosses maps parse; an off-palette fill is unknown-rgb
+                          (Story 1.11)
+  crosses-count-match     parsed cross markers equal the delivery table's Total sum
+                          (Story 1.11)
 
 Later stories add, for example:
   1.8+  per-domain extractor checks
@@ -41,6 +45,7 @@ from pipeline.extract.domain_b import domain_b_checks, extract_domain_b
 from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
 from pipeline.extract.errors import ExtractError, UnknownMinuteGlyphError
 from pipeline.ingest.identity import team_slug
+from pipeline.markers.crosses import parse_crosses
 from pipeline.markers.errors import UnknownRgbError
 from pipeline.markers.shots import parse_shots
 from pipeline.validate.deviations import Deviation, DeviationCategory
@@ -659,5 +664,112 @@ register_check(
         check_id="domain-c-counts",
         applies_to=lambda meta: True,
         run=_check_domain_c_counts,
+    )
+)
+
+
+# One-slot memo for `_crosses_parse_result`, same shape and justification as
+# `_parse_memo` above (Story 1.11): the runner hands the same open document to
+# `crosses-parse` and then `crosses-count-match`, and each uncached call rebuilds the
+# full-text `PageTextIndex` and re-parses both crosses pages. Copied, not refactored:
+# the memo pattern carries two OPEN deferred-work entries (strong doc ref, replayed
+# cached exceptions) that a shared abstraction would have to inherit anyway.
+_crosses_memo: dict = {"doc": None, "result": None, "error": None}
+
+
+def _crosses_parse_result(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """Both teams' crosses domain, or `None` when the crosses anchors do not resolve.
+
+    A missing anchor is anchor-coverage's finding; re-reporting it here would count one
+    root cause twice. Every *other* typed parse failure propagates to the caller —
+    each check decides for itself what it owns.
+    """
+    if _crosses_memo["doc"] is not doc:
+        _crosses_memo.update(doc=doc, result=None, error=None)
+        try:
+            _crosses_memo["result"] = _crosses_parse_uncached(doc, meta)
+        except Exception as exc:
+            _crosses_memo["error"] = exc
+    if _crosses_memo["error"] is not None:
+        raise _crosses_memo["error"]
+    return _crosses_memo["result"]
+
+
+def _crosses_parse_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    index = PageTextIndex(doc, report_id=meta.report_id)
+    anchors: dict[str, list[int]] = {}
+    for anchor in resolve_anchors(ANCHOR_REGISTRY, home=meta.home_team, away=meta.away_team):
+        if anchor.anchor_id not in ("crosses:home", "crosses:away"):
+            continue
+        try:
+            anchors[anchor.anchor_id] = index.find_all(anchor.text, at_start=anchor.at_page_start)
+        except MissingAnchorError:
+            return None
+    return parse_crosses(doc, anchors, meta.report_id, meta.home_team, meta.away_team)
+
+
+def _check_crosses_parse(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """The crosses maps parse cleanly; an off-palette marker is `unknown-rgb` (FR-11).
+
+    Other typed failures (pitch frame, page layout, table grammar) deliberately raise:
+    the runner isolates a raising check and records it against this check's id — the
+    loud, localizable surfacing the gate owes a template revision.
+    """
+    try:
+        _crosses_parse_result(doc, meta)
+    except UnknownRgbError as exc:
+        return [
+            Deviation(
+                report_id=meta.report_id,
+                check="crosses-parse",
+                category=DeviationCategory.UNKNOWN_RGB,
+                specifics=f"marker fill rgb {exc.rgb} on page {exc.page_index} "
+                "is not in the crosses palette",
+            )
+        ]
+    return []
+
+
+def _check_crosses_count_match(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Per-team cross-marker count equals the delivery table's Total sum (FR-14).
+
+    A report that does not parse yields no deviation *here*: parse failures are
+    crosses-parse's finding (or anchor-coverage's), and a count comparison over a
+    failed parse would attribute one root cause to two checks.
+    """
+    try:
+        crosses = _crosses_parse_result(doc, meta)
+    except PipelineError:
+        return []
+    if crosses is None:
+        return []
+    deviations: list[Deviation] = []
+    for side in ("home", "away"):
+        markers = crosses["counts"][side]["markers"]
+        table = crosses["counts"][side]["table"]
+        if markers != table:
+            deviations.append(
+                Deviation(
+                    report_id=meta.report_id,
+                    check="crosses-count-match",
+                    category=DeviationCategory.COUNT_MISMATCH,
+                    specifics=f"{side}: parsed {markers} markers, table lists {table}",
+                )
+            )
+    return deviations
+
+
+register_check(
+    Check(
+        check_id="crosses-parse",
+        applies_to=lambda meta: True,
+        run=_check_crosses_parse,
+    )
+)
+register_check(
+    Check(
+        check_id="crosses-count-match",
+        applies_to=lambda meta: True,
+        run=_check_crosses_count_match,
     )
 )

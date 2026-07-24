@@ -56,6 +56,11 @@ class MarkerSpec:
     # many distinct fill colors. 4+ distinct outcome colors at one identical y is
     # implausible for real events — spike-validated on the shots maps.
     legend_min_colors: int = 4
+    # How far outside the pitch rect a marker center may sit and still be admitted
+    # (Story 1.11): touchline/goal-line crosses print centers up to 0.35 pt beyond the
+    # frame on 9 corpus pages. The default 0.0 preserves the strict containment the
+    # shots parser shipped with, byte-identically.
+    pitch_margin_pt: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -118,7 +123,17 @@ def collect_candidate_markers(
     `"re"` items, the wrong size, and/or outside the pitch — they never reach the color
     stage. Fill values are rounded here, once, so the legend and keying stages see the
     same tuple `UnknownRgbError` would report.
+
+    Containment is judged against the pitch expanded by `spec.pitch_margin_pt` (0.0 for
+    shots — strict, unchanged): the crosses corpus prints touchline-cross centers a
+    fraction of a point outside the frame, and those are real events, not noise.
     """
+    zone = pitch
+    if spec.pitch_margin_pt > 0:
+        margin = spec.pitch_margin_pt
+        zone = pymupdf.Rect(
+            pitch.x0 - margin, pitch.y0 - margin, pitch.x1 + margin, pitch.y1 + margin
+        )
     found: list[CandidateMarker] = []
     for drawing in drawings:
         fill = drawing.get("fill")
@@ -135,7 +150,7 @@ def collect_candidate_markers(
             continue
         center_x = (rect.x0 + rect.x1) / 2
         center_y = (rect.y0 + rect.y1) / 2
-        if not pitch.contains(pymupdf.Point(center_x, center_y)):
+        if not zone.contains(pymupdf.Point(center_x, center_y)):
             continue
         found.append(
             CandidateMarker(

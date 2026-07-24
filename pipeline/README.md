@@ -59,8 +59,10 @@ runner, the sample selection, or the report format. Registered today: `anchor-co
 `unknown-rgb` deviation) and `shots-count-match` (a per-team marker/table disagreement surfaces
 as a `count-mismatch` deviation carrying both counts) from Story 1.3;
 `domain-a-completeness` plus `domain-a-counts` from Story 1.6 (see the Domain A section);
-`marker-event-link-rate` from Story 1.5; and `domain-b-completeness`, `domain-b-counts`,
-`domain-c-completeness` plus `domain-c-counts` from Story 1.7 (see the Domains B & C section).
+`marker-event-link-rate` from Story 1.5; `domain-b-completeness`, `domain-b-counts`,
+`domain-c-completeness` plus `domain-c-counts` from Story 1.7 (see the Domains B & C section);
+and `crosses-parse` plus `crosses-count-match` from Story 1.11 (same unknown-rgb /
+count-mismatch semantics as the shots pair, against the crosses page's own delivery table).
 
 ## Batch ingestion
 
@@ -304,8 +306,8 @@ pipeline/
   extract/    tabular per-domain extractors (Domains A, B and C today; Stories 1.8-1.10
               follow the same convention) + the committed venue -> UTC-offset table
   ingest/     batch orchestration, run manifest, idempotence, per-report Extract, CLI
-  markers/    shared pitch-map filter chain + map parser family (shots today; crosses,
-              defensive actions, offers/movement reuse it in Stories 1.11-1.13)
+  markers/    shared pitch-map filter chain + map parser family (shots + crosses today;
+              defensive actions, offers/movement reuse it in Stories 1.12-1.13)
   validate/   check registry, sample selection, verification runner, CLI
   tests/      pytest suite
 ```
@@ -356,3 +358,51 @@ needs period inference and is deliberately not attempted here.
 shots event table has no xG column (verified across all 104 reports; contract
 `$comment` on `ShotEvent.expectedGoals`). A per-shot xG source is an AD-14 change
 request, not an extractor gap.
+
+## The crosses domain (Story 1.11)
+
+Every Extraction Record also carries `domains.crosses`, extracted by the same shared
+filter chain with crosses tuning (`pipeline/markers/crosses.py`). The section is ONE page
+per team — pitch map, two-swatch legend, stat panels and a per-player delivery-aggregate
+table together (all 208 corpus pages):
+
+```jsonc
+"crosses": {
+  "cross_events": [       // sorted by team_id, page_index, pdf_y, pdf_x
+    { "team_id": "mexico", "x": 89.32, "y": 26.41, "completed": false,
+      "delivery_type": null,
+      "source": { "page_index": 17, "pdf_x": 86.31, "pdf_y": 147.66 } }
+  ],
+  "cross_table_rows": {   // the per-player aggregate table, staged verbatim per side
+    "home": [ { "shirt_number": 25, "player_name": "Roberto ALVARADO",
+                "deliveries": { "inswing": 2, "outswing": 0, "driven": 0,
+                                "lofted": 0, "cutback": 0, "push_cross": 0 },
+                "total_attempted": 2 } ]
+  },
+  "counts": { "home": { "markers": 10, "table": 10 },
+              "away": { "markers": 7,  "table": 7 } }
+}
+```
+
+Crosses tuning, measured on the full corpus: markers are 7.4 pt circles in exactly two
+fills — orange `(0.96, 0.74, 0.0)` = attempted-not-completed, blue `(0.18, 0.3, 1.0)` =
+completed (`completed: bool`; the contract has no CrossOutcome enum) — and the 9.0 pt
+strokeless legend swatches sit INSIDE the pitch rect, excluded by the size window (a
+2-color legend can never reach `legend_min_colors`). Two corpus quirks are decoded, not
+tolerated: real touchline crosses print centers up to 0.35 pt outside the frame
+(`pitch_margin_pt=1.0` admits them; coordinates clamp into [0, 100]), and 16 pages render
+one event as an orange AND a blue marker at the bit-identical rect — collapsed to one
+completed event (real same-spot pairs always differ in position or share a color, and are
+never deduped).
+
+**No linking pass exists for crosses**: the table is per-player aggregates with no
+ordinal glyphs on markers, so `delivery_type` is `null` per event and the rows are staged
+under `cross_table_rows` for later work. The contract's per-event
+`playerId`/`playerName`/`at`/`deliveryType` requirements are unfulfillable from this page
+— an AD-14 emission gap ledgered in `deferred-work.md` for Story 1.16.
+
+**Self-Validation** (`crosses-marker-count`, exact and binary) compares each team's
+event count to the sum of the table's Total Attempted column — the page's own tabular
+total (== the printed Attempted panel on 208/208 pages), never Key Statistics `crosses`
+(that Domain B scalar counts set-play crosses too; this page is open play only — M01
+prints 13/8 there vs 10/7 here).

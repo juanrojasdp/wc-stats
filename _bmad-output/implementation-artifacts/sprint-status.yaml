@@ -60,6 +60,22 @@
 
 generated: 2026-07-22
 last_updated: 2026-07-24
+# 2026-07-24: story 2-4 (match route + Hero layer) started — status ready-for-dev -> in-progress.
+# 2026-07-24: story 2-4 implemented and moved to review — first dynamic route /matches/[slug]
+#             (SSG over tournament.json manifest, dynamicParams=false, 3 routes pre-rendered),
+#             AR-11 split (build-data fs reader for generateStaticParams/metadata/Hero;
+#             MatchBundleRegion fetches only its own bundle at runtime, FR-34). Hero as useT()
+#             client components (Spanish canonical HTML + post-hydration swap): stage chip,
+#             context line (venue-local kickoff), score row (display-score once, team->/teams
+#             links), decidedBy caption (shootout "Penales: 3–4"; extra-time type-first +
+#             unit-tested, FR-1 gap), scorers grouped by benefiting team (m074 GOMEZ own-goal
+#             in Germany's column, AD-6), five Story-Stat tiles with ▲+accent+sr-only leader
+#             (never color-only), lineups disclosure (one aria-expanded; player->/players
+#             links ship in DOM). Locale: enums.stage/position filled + match.* namespace.
+#             build-data client-import seam added (+3 gate fixtures). Build chain green; 98
+#             tests pass (68->98). Browser-verified ES/EN swap (no mixed-language) + light
+#             theme + disclosure expand. Note for review: stage chip uses type-label-caps
+#             (no uppercase transform) per the story's explicit token over the mockup CSS.
 project: wc-stats
 # 2026-07-22: story 1-1 completed and moved to review.
 # 2026-07-22: story 1-1 code review complete — 5 decisions resolved, 35 patches applied,
@@ -226,11 +242,43 @@ project_key: NOKEY
 #             run_timestamp, suite 663+1 -> 726+1 (63 new tests). Two forced test repairs
 #             (checks_run list; kebab panel keys vs snake-case walk — documented). AD-14
 #             line-height shape note + 1.8 momentum location note filed in deferred-work.md.
-# 2026-07-24: story 1-7 code review complete — 1 decision + 9 patches applied, 3 deferred,
-#             6 dismissed; team_width metre bound corrected (68 not 105, corpus-verified
-#             max 60), possession-sum float boundary, unknown row-kind raise, side-
-#             differentiated fixtures, subtree-scoped snake-case exemption, en-dash unit
-#             test. Full suite 765+1 green. Status review -> done.
+# 2026-07-23: story 2-4 context created and moved to ready-for-dev (match route + Hero:
+#             first dynamic route /matches/[slug] via generateStaticParams over the
+#             tournament.json manifest; AR-11 split — Hero pre-rendered from metadata+
+#             storyStats via useT() client components, below-Hero fetches only its own
+#             bundle; 2.3 sign-off gate verified — all Hero rows PASS (title/OG row
+#             PASS-with-note F3), CR-1/CR-2/FD-1 are shot-maps-only, so no Hero-relevant
+#             contract change is unresolved; ET decidedBy branch built type-first (FR-1
+#             fixture gap, unit-tested); validation pass applied 9 corrections (substitutes
+#             field name, tile digit pinning, knockoutScore always-present). Touches app/ +
+#             locales only — coordinates around in-review 1-7 and in-dev 1-11 pipeline work).
+# 2026-07-23: story 1-11 implemented and moved to review — pipeline/markers/crosses.py on
+#             the shared filter chain (7.4pt 2-color markers -> completed:bool; 9pt legend
+#             excluded by size window; additive MarkerSpec.pitch_margin_pt=1.0 admits 9
+#             corpus touchline crosses, coords clamp to [0,100]; orange+blue bit-identical
+#             two-tone double-draws collapse to one completed event, 17/16 pages — real
+#             same-spot pairs never deduped). Probe overturned the spec's shots-shaped
+#             assumptions: section is ONE page/team (208/208), table is per-player delivery
+#             AGGREGATES (no per-event rows, no ordinal glyphs) -> Task 4.2 no-linking
+#             branch; SV counts markers vs SUM of Total Attempted column (== printed
+#             Attempted panel 208/208). crosses-parse/crosses-count-match gate checks.
+#             Suite 764+1 green, batch 104/104 PASS (208/208 crosses checks pass, re-run
+#             byte-identical), gate PASS 0 deviations (sample includes the anomaly reports).
+#             3 AD-14 notes filed — headline: CrossEvent's required playerId/playerName/at/
+#             deliveryType are unfulfillable from this page; 1.16 emission needs an AD-14
+#             decision (ride CS-1's successor, not CS-1).
+# 2026-07-24: story 1-11 adversarial code review (3 layers: Blind Hunter, Edge Case
+#             Hunter, Acceptance Auditor). Acceptance Auditor: 0 AC/constraint violations
+#             — all 3 ACs + every Dev Note verified against code, batch (104/104 PASS) and
+#             gate (PASS). 1 decision resolved → patch: the unconditional coordinate clamp
+#             could silently rewrite a mis-normalized coordinate to a plausible boundary
+#             (AD-8 tension, count check blind to it). Fix: COORD_CLAMP_TOLERANCE=0.5 +
+#             _clamp_coord helper raising the new typed CrossesCoordinateError beyond the
+#             sub-tolerance touchline overshoot (1pt-margin markers overshoot ≤~0.4, so the
+#             real case still clamps; existing 100.1 test green). 0 deferred, 13 dismissed
+#             (fail-loud, unreachable in the 208/208 corpus, or already ledgered).
+#             Re-verified: 170 tests pass (crosses + ingest_record/batch + checks_registry
+#             + runner). Status review -> done.
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -249,7 +297,7 @@ development_status:
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
   1-10-domain-g-extraction-per-player-performance-physical-data: backlog
-  1-11-crosses-map-parser: in-progress
+  1-11-crosses-map-parser: done
   1-12-defensive-actions-map-parser: backlog
   1-13-offers-movement-to-receive-parsers: backlog
   1-14-pass-network-extraction-nodes-edges: backlog
@@ -268,7 +316,7 @@ development_status:
   2-2-site-chrome-header-language-theme-toggles-footer-404: done
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
   2-3-contract-v1-per-surface-sign-off: done
-  2-4-match-route-hero-layer: backlog
+  2-4-match-route-hero-layer: review
   2-5-tactical-layer-shell-key-statistics-empty-state-pattern: backlog
   2-6-momentum-timeline: backlog
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data

@@ -797,6 +797,46 @@ def test_a_count_mismatch_fails_the_run_with_both_counts_in_the_manifest(tmp_pat
     assert manifest["run"]["result"] == "fail"
 
 
+def test_a_crosses_mismatch_fails_the_run_with_both_counts_in_the_manifest(
+    tmp_path, make_report
+):
+    """Story 1.11: the crosses family mirrors through `_mirror_self_validation`
+    unchanged — the failing `crosses-marker-count` check lands in the entry with both
+    counts and fails the run without inflating `failed_count`, and `format_summary`'s
+    generic count branch names it."""
+    from pipeline.ingest.batch import format_summary
+    from pipeline.tests.conftest import DEFAULT_CROSSES_MARKERS
+
+    directory = tmp_path / "corpus"
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(
+        directory / "PMSR-M01-ALP-V-BRA.pdf",
+        number=1,
+        home="Alpha",
+        away="Bravo",
+        crosses_rows={
+            "home": [{"shirt": 9, "name": "Test PLAYER", "counts": (7, 0, 0, 0, 0, 0)}]
+        },
+    )
+
+    manifest = _run(tmp_path, directory)
+
+    [entry] = manifest["reports"]
+    assert entry["status"] == "extracted"
+    assert entry["self_validation"] == "fail"
+    [check] = entry["self_validation_failures"]
+    assert check["check"] == "crosses-marker-count"
+    assert check["team"] == "home"
+    assert check["marker_count"] == len(DEFAULT_CROSSES_MARKERS["home"])
+    assert check["table_count"] == 7
+    assert manifest["run"]["failed_count"] == 0
+    assert manifest["run"]["self_validation_fail_count"] == 1
+    assert manifest["run"]["result"] == "fail"
+    summary = format_summary(manifest)
+    assert "[crosses-marker-count]" in summary
+    assert f"home: {len(DEFAULT_CROSSES_MARKERS['home'])} markers, table lists 7" in summary
+
+
 def test_a_skipped_unchanged_entry_carries_its_staged_records_verdict(tmp_path, make_report):
     """The mirror reads the staged record, the same way `warnings` flows: a re-run over
     an unchanged mismatching corpus must keep failing, not launder the verdict."""

@@ -43,6 +43,7 @@ from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
 from pipeline.ingest.fingerprint import PIPELINE_ROOT, code_version, pdf_content_hash
 from pipeline.ingest.identity import match_id_for, match_number_for
 from pipeline.ingest.records import RECORD_VERSION
+from pipeline.markers.crosses import crosses_self_validation_block, parse_crosses
 from pipeline.markers.linking import link_rate_checks
 from pipeline.markers.shots import parse_shots, self_validation_block
 
@@ -122,7 +123,9 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     Raises `ProbeError` (cover unreadable), `MatchNumberError` / `TeamSlugError` /
     `MatchIdFormatError` (identity could not be established), `MissingAnchorError` (a
     required section is gone), the shots parser's typed errors (`PitchFrameError`,
-    `UnknownRgbError`, `AttemptsTableError`, `ShotsPageLayoutError`), Domain A's
+    `UnknownRgbError`, `AttemptsTableError`, `ShotsPageLayoutError`), the crosses
+    parser's (Story 1.11: `CrossesPageLayoutError`, `CrossesTableError`,
+    `UnknownLabelError`, `CrossesCoordinateError`, plus the shared-chain errors), Domain A's
     (`MissingFieldError`, `LineupParseError`, `LineupCountError`, `UnknownStageError`,
     `UnknownVenueError`, `UnknownPositionError`, `UnknownMinuteGlyphError`), Domain B's
     (`StatisticsParseError`, `UnknownStatisticError`, `MissingFieldError`,
@@ -173,6 +176,10 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         # surface as itself, not be relabeled as this report's page-reading ProbeError.
         shots = parse_shots(doc, anchors, meta.report_id, meta.home_team, meta.away_team)
 
+        # Story 1.11, same transparency rule: the crosses parser's typed errors
+        # (CrossesPageLayoutError, CrossesTableError, UnknownRgbError, ...) travel as
+        # themselves.
+        crosses = parse_crosses(doc, anchors, meta.report_id, meta.home_team, meta.away_team)
 
         # Same transparency rule for Domain A (Story 1.6): its typed errors
         # (MissingFieldError, UnknownVenueError, LineupParseError, ...) travel as
@@ -207,6 +214,9 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         domain_b_checks(key_statistics, shots_counts=shots["counts"])
     )
     self_validation["checks"].extend(domain_c_checks(tactical_identity))
+    # Story 1.11: the crosses marker-count checks append after every existing appender;
+    # the counterpart is the crosses page's OWN table total, never Key Statistics.
+    self_validation["checks"].extend(crosses_self_validation_block(crosses["counts"]))
     self_validation["result"] = aggregate_self_validation(self_validation["checks"])
 
     return {
@@ -227,6 +237,7 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             "shots": shots,
             "key_statistics": key_statistics,
             "tactical_identity": tactical_identity,
+            "crosses": crosses,
         },
         # Real from Story 1.3 on: once extractors run, the result is "pass" or "fail",
         # never left "not-applicable" (a failed consistency check is data, not an

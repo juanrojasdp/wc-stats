@@ -136,6 +136,8 @@ def test_checks_run_are_recorded(spike_corpus):
     report = run_verification(spike_corpus)
     assert report["checks_run"] == [
         "anchor-coverage",
+        "crosses-count-match",
+        "crosses-parse",
         "domain-a-completeness",
         "domain-a-counts",
         "domain-b-completeness",

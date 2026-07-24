@@ -109,6 +109,70 @@ class AttemptRowError(MarkerError):
         super().__init__(f"[{where}] attempts-table row on page {page_index} malformed: {reason}")
 
 
+class CrossesPageLayoutError(MarkerError):
+    """A crosses anchor did not resolve to exactly one page (Story 1.11).
+
+    Carries the anchor id and the page list it actually resolved to. The crosses
+    section is a single page — map, legend, stat panels and the per-player delivery
+    table together — on all 208 corpus pages (Task 1 probe). More or fewer anchored
+    pages is a template revision, never a page to guess at.
+    """
+
+    def __init__(self, anchor_id: str, pages: "list[int] | None", report_id: str | None = None) -> None:
+        self.anchor_id = anchor_id
+        self.pages = pages
+        self.report_id = report_id
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(
+            f"[{where}] anchor {anchor_id!r} resolved to pages {pages}, "
+            "expected exactly one crosses page"
+        )
+
+
+class CrossesTableError(MarkerError):
+    """The crosses page's per-player delivery table resists the house grammar.
+
+    A missing/ambiguous header, an unexpected or missing header word, a shirt-led row
+    without seven numeric tail cells or a printed name, or a row whose Total Attempted
+    does not equal the sum of its six delivery counts — each is a template revision,
+    and the fallback is never the marker count (Self-Validation comparing the marker
+    count to itself is a tautology, the `AttemptsTableError` rule).
+    """
+
+    def __init__(self, reason: str, report_id: str | None = None, page_index: int | None = None) -> None:
+        self.reason = reason
+        self.report_id = report_id
+        self.page_index = page_index
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(f"[{where}] crosses table on page {page_index} unparseable: {reason}")
+
+
+class CrossesCoordinateError(MarkerError):
+    """A cross marker normalized to a coordinate outside the tolerated [0, 100] envelope.
+
+    The pitch margin admits touchline centers a fraction of a point beyond the frame
+    (normalizing to at most ~100.1, and at most ~0.4 beyond either edge for the 1.0 pt
+    crosses margin), and those sub-tolerance overshoots clamp into [0, 100]. A coordinate
+    further out than the tolerance is a mis-normalization — a wrong or undersized pitch
+    rect, an orientation flip, or a stray glyph admitted through the margin — never a real
+    cross, so it fails loud rather than being silently clamped to a plausible boundary
+    (AD-8; Code Review 2026-07-24). Carries the axis, the pre-clamp value and the page.
+    """
+
+    def __init__(
+        self, axis: str, value: float, report_id: str | None = None, page_index: int | None = None
+    ) -> None:
+        self.axis = axis
+        self.value = value
+        self.report_id = report_id
+        self.page_index = page_index
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(
+            f"[{where}] cross marker {axis}={value} on page {page_index} is outside the "
+            "tolerated [0, 100] coordinate envelope"
+        )
+
+
 class ShotsPageLayoutError(MarkerError):
     """A shots anchor did not resolve to [map page, event-table page(s)].
 
