@@ -140,6 +140,378 @@ class _ShotsPitchProxy:
 SHOTS_PITCH = _ShotsPitchProxy()
 
 
+# --- Story 1.7: Key Statistics / Phases / Line-Height synthesis constants --------
+#
+# Deliberate literals, like SHOTS_OUTCOME_RGB: the fixtures must keep drawing the
+# layout the corpus fixes even if the modules under test corrupt their constants.
+
+KEY_STATISTICS_ROW_ORDER = (
+    ("Goals", "goals", "count"),
+    ("xG (Expected Goals)", "expected_goals", "decimal"),
+    ("Attempts at Goal (On Target)", ("shots", "shots_on_target"), "compound"),
+    ("Total Passes (Complete)", ("passes", "passes_completed"), "compound"),
+    ("Pass Completion %", "pass_completion", "percent"),
+    ("Completed Line Breaks", "completed_line_breaks", "count"),
+    ("Defensive Line Breaks", "defensive_line_breaks", "count"),
+    ("Receptions in the Final Third", "receptions_in_final_third", "count"),
+    ("Crosses", "crosses", "count"),
+    ("Ball Progressions", "ball_progressions", "count"),
+    (
+        "Defensive Pressures Applied (Direct Pressures)",
+        ("defensive_pressures", "direct_pressures"),
+        "compound",
+    ),
+    ("Forced Turnovers", "forced_turnovers", "count"),
+    ("Second Balls", "second_balls", "count"),
+    ("Total Distance Covered", "distance_covered", "km"),
+    # The real label prints an en-dash (U+2013) after "Zone 4"; the parser folds it to
+    # this hyphen form. The base-14 fixture font cannot encode the en-dash, so the
+    # en-dash path itself is proven by the mex_rsa ground-truth tests.
+    ("Zone 4 - Low Speed Sprinting: 20-25 km/h", "sprint_distance", "km"),
+)
+
+PHASES_IN_ROWS = (
+    ("Build Up Unopposed", "build_up_unopposed"),
+    ("Build Up Opposed", "build_up_opposed"),
+    ("Progression", "progression"),
+    ("Final Third", "final_third"),
+    ("Long Ball", "long_ball"),
+    ("Attacking Transition", "attacking_transition"),
+    ("Counter Attack", "counter_attack"),
+    ("Set Piece", "set_piece"),
+)
+PHASES_OUT_ROWS = (
+    ("High Press", "high_press"),
+    ("Mid Press", "mid_press"),
+    ("Low Press", "low_press"),
+    ("High Block", "high_block"),
+    ("Mid Block", "mid_block"),
+    ("Low Block", "low_block"),
+    ("Recovery", "recovery"),
+    ("Defensive Transition", "defensive_transition"),
+    ("Counter-press", "counter_press"),
+)
+
+# The mex_rsa phase percentages (hand-verified in the m001 fixture).
+DEFAULT_PHASES = {
+    "home": {
+        "build_up_unopposed": 47.0, "build_up_opposed": 13.0, "progression": 16.0,
+        "final_third": 11.0, "long_ball": 3.0, "attacking_transition": 10.0,
+        "counter_attack": 1.0, "set_piece": 5.0,
+        "high_press": 9.0, "mid_press": 3.0, "low_press": 0.0, "high_block": 7.0,
+        "mid_block": 25.0, "low_block": 11.0, "recovery": 5.0,
+        "defensive_transition": 12.0, "counter_press": 8.0,
+    },
+    "away": {
+        "build_up_unopposed": 43.0, "build_up_opposed": 13.0, "progression": 14.0,
+        "final_third": 7.0, "long_ball": 6.0, "attacking_transition": 12.0,
+        "counter_attack": 2.0, "set_piece": 5.0,
+        "high_press": 6.0, "mid_press": 3.0, "low_press": 1.0, "high_block": 5.0,
+        "mid_block": 30.0, "low_block": 14.0, "recovery": 2.0,
+        "defensive_transition": 10.0, "counter_press": 7.0,
+    },
+}
+
+LINE_HEIGHT_PANELS = {
+    "in_possession": (
+        ("Build Up Low", "build-up-low"),
+        ("Build Up Mid", "build-up-mid"),
+        ("Final Third Phase", "final-third-phase"),
+    ),
+    "out_of_possession": (
+        ("High Block / Press", "high-block-press"),
+        ("Mid Block", "mid-block"),
+        ("Low Block", "low-block"),
+    ),
+}
+
+# The mex_rsa home-team line-height values (measure names per Task 4.3's resolved
+# bracket semantics: line height / team length / team width).
+DEFAULT_LINE_HEIGHTS = {
+    "in_possession": {
+        "build-up-low": {"line_height": 19.0, "team_length": 40.0, "team_width": 56.0},
+        "build-up-mid": {"line_height": 39.0, "team_length": 33.0, "team_width": 57.0},
+        "final-third-phase": {"line_height": 54.0, "team_length": 35.0, "team_width": 47.0},
+    },
+    "out_of_possession": {
+        "high-block-press": {"line_height": 46.0, "team_length": 38.0, "team_width": 43.0},
+        "mid-block": {"line_height": 38.0, "team_length": 30.0, "team_width": 42.0},
+        "low-block": {"line_height": 19.0, "team_length": 26.0, "team_width": 35.0},
+    },
+}
+
+# The measurement-graphic gray of the real line-height brackets.
+LINE_HEIGHT_GRAY = (0.42, 0.447, 0.502)
+
+# Line-height page geometry (mirrors the real 960x540 template).
+_LH_PITCH_Y0, _LH_PITCH_Y1 = 163.5, 485.2
+_LH_PITCH_WIDTH = 225.0
+_LH_PITCH_LENGTH_M, _LH_PITCH_WIDTH_M = 105.0, 68.0
+
+
+def default_key_statistics(home_score=2, away_score=0, home_shots=2, away_shots=1):
+    """A full Domain B stats block whose every self-validation check passes.
+
+    `goals` mirror the cover score and `shots` the attempts-table rows the shots
+    fixtures actually draw, so goal and shots reconciliation stay green by default.
+    Every field differs between the two sides (the mex_rsa reference values), so a
+    left/right stat misclassification cannot slip past the synthetic suite unseen — an
+    equal-on-both-sides default would only be caught by the single mex_rsa ground-truth
+    test (review 2026-07-23).
+    """
+
+    def side(score, shots, possession, passes, completed, completion, rest):
+        return {
+            "possession": possession,
+            "goals": score,
+            "expected_goals": round(0.4 + 0.7 * score, 2),
+            "shots": shots,
+            "shots_on_target": shots // 2,
+            "passes": passes,
+            "passes_completed": completed,
+            "pass_completion": completion,
+            "completed_line_breaks": rest[0],
+            "defensive_line_breaks": rest[1],
+            "receptions_in_final_third": rest[2],
+            "crosses": rest[3],
+            "ball_progressions": rest[4],
+            "defensive_pressures": rest[5],
+            "direct_pressures": rest[6],
+            "forced_turnovers": rest[7],
+            "second_balls": rest[8],
+            "distance_covered": rest[9],
+            "sprint_distance": rest[10],
+        }
+
+    # `rest` = the 11 non-score/possession/pass fields, distinct per side; home is the
+    # mex_rsa home row, away its away row (direct_pressures stays <= defensive_pressures
+    # on both, so internal-consistency holds).
+    home_rest = (105, 10, 117, 13, 23, 170, 26, 31, 56, 107.3, 5.3)
+    away_rest = (57, 3, 36, 8, 8, 306, 45, 32, 45, 97.1, 5.1)
+    return {
+        "home": side(home_score, home_shots, 57.1, 547, 495, 90.0, home_rest),
+        "away": side(away_score, away_shots, 36.1, 351, 290, 83.0, away_rest),
+        "contested_possession": 6.8,
+    }
+
+
+def _format_stat(value, kind):
+    """The on-page text of one side's value for a stat row (space-separated pieces
+    are drawn as separate spans, like the real template). A string value passes
+    through verbatim so tests can print doctored raw text."""
+    if isinstance(value, str):
+        return value
+    if kind == "count":
+        return str(value)
+    if kind == "compound":
+        return f"{value[0]} ({value[1]})"
+    if kind == "percent":
+        return f"{value:g} %"
+    if kind == "decimal":
+        return f"{value:g}"
+    return f"{value:g} km"  # kind == "km"
+
+
+def default_key_statistics_rows(stats):
+    """The (label, home_text, away_text) rows the factory prints for a stats block."""
+    rows = []
+    for label, fields, kind in KEY_STATISTICS_ROW_ORDER:
+        values = []
+        for side in ("home", "away"):
+            if isinstance(fields, tuple):
+                values.append(tuple(stats[side][field] for field in fields))
+            else:
+                values.append(stats[side][fields])
+        rows.append((label, _format_stat(values[0], kind), _format_stat(values[1], kind)))
+    return rows
+
+
+def _insert_value_pieces(page, x, y, text, fontsize=10):
+    """Print `text` as one span per space-separated piece, abutting like the real
+    template (a value and its unit arrive as separate spans)."""
+    import pymupdf
+
+    cursor = x
+    for piece in text.split(" "):
+        page.insert_text((cursor, y), piece, fontsize=fontsize)
+        cursor += pymupdf.get_text_length(piece, fontsize=fontsize) + 2.0
+
+
+def draw_key_statistics_page(
+    page,
+    home_team="Mexico",
+    away_team="South Africa",
+    stats=None,
+    *,
+    rows=None,
+    possession_texts=None,
+    team_names=True,
+):
+    """Draw a parseable Key Statistics page body onto `page` (expects 960x540).
+
+    The page anchor text is the caller's job (make_report prints it at the top).
+    `rows` replaces the (label, home_text, away_text) stat rows for doctored pages;
+    `possession_texts` replaces the three bar percentages (home, contested, away) as
+    raw strings, or is `None`-able entirely by passing an empty tuple.
+    """
+    if stats is None:
+        stats = default_key_statistics()
+    if team_names:
+        page.insert_text((60, 85), home_team, fontsize=11)
+        page.insert_text((722, 85), away_team, fontsize=11)
+    if possession_texts is None:
+        possession_texts = (
+            f"{stats['home']['possession']:g}%",
+            f"{stats['contested_possession']:g}%",
+            f"{stats['away']['possession']:g}%",
+        )
+    page.insert_text((450, 110), "Possession", fontsize=10)
+    if possession_texts:
+        page.insert_text((60, 128), "Total", fontsize=10)
+        page.insert_text((95, 128), "86", fontsize=10)
+        for x, text in zip((345, 526, 646), possession_texts):
+            page.insert_text((x, 128), text, fontsize=10)
+        page.insert_text((800, 128), "Total", fontsize=10)
+        page.insert_text((838, 128), "835", fontsize=10)
+    if rows is None:
+        rows = default_key_statistics_rows(stats)
+    y = 152.0
+    for label, home_text, away_text in rows:
+        _insert_value_pieces(page, 84, y, home_text)
+        page.insert_text((380, y), label, fontsize=10)
+        _insert_value_pieces(page, 833, y, away_text)
+        y += 21.0
+
+
+def draw_phases_page(page, phases=None, *, rows_in=None, rows_out=None):
+    """Draw a parseable Phases of Play page body onto `page` (expects 960x540).
+
+    `phases` is `{"home": {...17 snake keys...}, "away": {...}}` (defaults to the
+    mex_rsa values). `rows_in` / `rows_out` replace a section's rows for doctored
+    pages: tuples of (home_text, label, away_text) or (home_text, label, away_text,
+    home_x, away_x) — the positional form places a bar-end value near the centre.
+    """
+    if phases is None:
+        phases = DEFAULT_PHASES
+
+    def default_rows(labels):
+        return [
+            (f"{phases['home'][key]:g}%", label, f"{phases['away'][key]:g}%")
+            for label, key in labels
+        ]
+
+    if rows_in is None:
+        rows_in = default_rows(PHASES_IN_ROWS)
+    if rows_out is None:
+        rows_out = default_rows(PHASES_OUT_ROWS)
+
+    def draw_section(header, header_y, rows):
+        page.insert_text((430, header_y), header, fontsize=11)
+        y = header_y + 22.0
+        for row in rows:
+            home_text, label, away_text = row[:3]
+            home_x = row[3] if len(row) > 3 else 100
+            away_x = row[4] if len(row) > 4 else 700
+            page.insert_text((home_x, y), home_text, fontsize=10)
+            page.insert_text((430, y), label, fontsize=10)
+            page.insert_text((away_x, y), away_text, fontsize=10)
+            y += 22.0
+
+    draw_section("IN POSSESSION", 105, rows_in)
+    draw_section("OUT OF POSSESSION", 310, rows_out)
+
+
+def _draw_bracket_badge(page, cx, cy):
+    """The gray arrow badge a metre value prints on: a many-segment closed polygon
+    (the real badge is a 20-item vector glyph ~24x15pt)."""
+    import math
+
+    shape = page.new_shape()
+    points = [
+        (cx + 12.0 * math.cos(2 * math.pi * k / 20), cy + 7.5 * math.sin(2 * math.pi * k / 20))
+        for k in range(20)
+    ]
+    shape.draw_polyline(points + [points[0]])
+    shape.finish(color=None, fill=LINE_HEIGHT_GRAY, closePath=True)
+    shape.commit()
+
+
+def _draw_metre_value(page, cx, cy, text):
+    import pymupdf
+
+    width = pymupdf.get_text_length(text, fontsize=9)
+    page.insert_text((cx - width / 2 - 4, cy + 3), text, fontsize=9)
+    page.insert_text((cx - width / 2 - 4 + width + 1.0, cy + 3), "m", fontsize=9)
+
+
+def draw_line_height_page(
+    page,
+    kind="in_possession",
+    values=None,
+    *,
+    headers=None,
+    panel_count=3,
+    skip=(),
+    value_texts=None,
+    value_offsets=None,
+):
+    """Draw a parseable Line Height & Team Length page onto `page` (expects 960x540).
+
+    `values` maps panel key -> {line_height, team_length, team_width} in metres
+    (defaults to `DEFAULT_LINE_HEIGHTS[kind]`); geometry is derived from the values at
+    the real pitch scale. `headers` overrides the three printed panel headers;
+    `panel_count` draws fewer/more pitch frames; `skip` omits (panel_index, measure)
+    pairs entirely; `value_texts` overrides just the printed number of a pair;
+    `value_offsets` displaces just the printed number by (dx, dy) so it misses its
+    badge.
+    """
+    import pymupdf
+
+    if values is None:
+        values = DEFAULT_LINE_HEIGHTS[kind]
+    panel_specs = LINE_HEIGHT_PANELS[kind]
+    if headers is None:
+        headers = [label for label, _ in panel_specs[:panel_count]]
+
+    for index in range(panel_count):
+        x0 = 82.5 + index * 285.0
+        pitch = pymupdf.Rect(x0, _LH_PITCH_Y0, x0 + _LH_PITCH_WIDTH, _LH_PITCH_Y1)
+        page.draw_rect(pitch, color=(1, 1, 1), width=3.2)
+        if index < len(headers):
+            page.insert_text((x0 + 60, _LH_PITCH_Y0 - 12), headers[index], fontsize=10)
+        panel_key = panel_specs[index][1] if index < len(panel_specs) else None
+        if panel_key is None or panel_key not in values:
+            continue
+        for measure, metres in values[panel_key].items():
+            if (index, measure) in skip:
+                continue
+            text = (value_texts or {}).get((index, measure), f"{metres:g}")
+            dx, dy = (value_offsets or {}).get((index, measure), (0.0, 0.0))
+            if measure == "team_width":
+                extent = metres / _LH_PITCH_WIDTH_M * _LH_PITCH_WIDTH
+                cx, cy = (pitch.x0 + pitch.x1) / 2, pitch.y0 + 90.0
+                for rx0, rx1 in ((cx - extent / 2, cx - 13), (cx + 13, cx + extent / 2)):
+                    page.draw_rect(
+                        pymupdf.Rect(rx0, cy - 0.35, rx1, cy + 0.35),
+                        color=None,
+                        fill=LINE_HEIGHT_GRAY,
+                    )
+            else:
+                extent = metres / _LH_PITCH_LENGTH_M * (_LH_PITCH_Y1 - _LH_PITCH_Y0)
+                if measure == "team_length":
+                    cx, cy = pitch.x0 + 6.0, pitch.y0 + 160.0
+                else:  # line_height: the bracket reaches the own-goal line
+                    cx, cy = pitch.x1 - 6.0, pitch.y1 - extent / 2
+                for ry0, ry1 in ((cy - extent / 2, cy - 9), (cy + 9, cy + extent / 2)):
+                    page.draw_rect(
+                        pymupdf.Rect(cx - 0.35, ry0, cx + 0.35, ry1),
+                        color=None,
+                        fill=LINE_HEIGHT_GRAY,
+                    )
+            _draw_bracket_badge(page, cx, cy)
+            _draw_metre_value(page, cx + dx, cy + dy, text)
+
+
 @pytest.fixture(scope="session")
 def make_report():
     """Factory for a synthetic PMSR report whose every registered anchor resolves.
@@ -218,6 +590,13 @@ def make_report():
         shots_label_text: "dict[str, dict[int, str | None]] | None" = None,
         shots_label_offset: "dict[str, dict[int, tuple[float, float]]] | None" = None,
         shots_table_cells: "dict[str, dict[int, dict]] | None" = None,
+        # Story 1.7 (additive): every report now carries parseable Key Statistics,
+        # Phases and four line-height pages — extract_report runs Domains B and C on
+        # every report. Defaults are self-consistent: B `goals` mirror the cover
+        # score and B `shots` the attempts-table rows the shots pages actually draw.
+        key_statistics: "dict | None" = None,
+        phases: "dict | None" = None,
+        line_heights: "dict | None" = None,
     ) -> Path:
         import pymupdf
 
@@ -360,12 +739,55 @@ def make_report():
         for _ in range(filler_pages):
             doc.new_page(width=960, height=540)
 
+        def drawn_table_rows(side: str) -> int:
+            """The attempts-table row count the shots fixtures actually draw — the
+            Domain B default `shots` value derives from it (Story 1.7, Task 5.4)."""
+            side_markers = (
+                DEFAULT_SHOTS_MARKERS if shots_markers is None else shots_markers
+            ).get(side, DEFAULT_SHOTS_MARKERS[side])
+            if (shots_pages or {}).get(side, 2) == 1:
+                return 0
+            if side in (shots_table_pages or {}):
+                return sum(shots_table_pages[side])
+            return (shots_table_rows or {}).get(side, len(side_markers))
+
+        stats_block = (
+            key_statistics
+            if key_statistics is not None
+            else default_key_statistics(
+                home_score, away_score, drawn_table_rows("home"), drawn_table_rows("away")
+            )
+        )
+        line_height_blocks = (
+            line_heights if line_heights is not None else DEFAULT_LINE_HEIGHTS
+        )
+
         for anchor in body:
             if anchor.anchor_id in ("shots:home", "shots:away"):
                 emit_shots_pages(anchor.anchor_id.split(":")[1], anchor.text)
                 continue
             page = doc.new_page(width=960, height=540)
             page.insert_text((40, 60), anchor.text, fontsize=11)
+            # Story 1.7: the anchor loop matches RESOLVED ids, so the per-team
+            # line-height branches use the suffixed forms (like the shots pair above).
+            if anchor.anchor_id == "key-statistics":
+                draw_key_statistics_page(page, home, away, stats=stats_block)
+            elif anchor.anchor_id == "phases-of-play":
+                draw_phases_page(page, phases)
+            elif anchor.anchor_id in (
+                "in-possession-line-height:home",
+                "in-possession-line-height:away",
+            ):
+                draw_line_height_page(
+                    page, "in_possession", line_height_blocks["in_possession"]
+                )
+            elif anchor.anchor_id in (
+                "defensive-line-height:home",
+                "defensive-line-height:away",
+            ):
+                draw_line_height_page(
+                    page, "out_of_possession", line_height_blocks["out_of_possession"]
+                )
             if anchor.anchor_id == "lineups":
                 # The lineups page must parse as Domain A (Story 1.6) — extract_report
                 # runs the extractor on every report. Default sides score-adaptively

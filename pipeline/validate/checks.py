@@ -16,9 +16,14 @@ Registered here today:
   domain-a-completeness   Domain A extracts with its full §6 field inventory (Story 1.6);
                           an unknown minute-glyph fill is unknown-rgb, like shots
   domain-a-counts         Domain A's Self-Validation count checks, as deviations (1.6)
+  domain-b-completeness   Domain B extracts the full Key Statistics block, typed (1.7)
+  domain-b-counts         Domain B's Self-Validation consistency checks, as deviations
+                          (possession-sum, internal-consistency, shots-reconciliation)
+  domain-c-completeness   Domain C extracts phases + line-height pages, typed (1.7)
+  domain-c-counts         Domain C's Self-Validation checks (metre bounds), as deviations
 
 Later stories add, for example:
-  1.7+  per-domain extractor checks
+  1.8+  per-domain extractor checks
 """
 
 from __future__ import annotations
@@ -32,6 +37,8 @@ from pipeline.discover.text import PageTextIndex
 from pipeline.discover.probe import ReportMeta
 from pipeline.errors import PipelineError
 from pipeline.extract.domain_a import domain_a_checks, extract_domain_a
+from pipeline.extract.domain_b import domain_b_checks, extract_domain_b
+from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
 from pipeline.extract.errors import ExtractError, UnknownMinuteGlyphError
 from pipeline.ingest.identity import team_slug
 from pipeline.markers.errors import UnknownRgbError
@@ -428,5 +435,229 @@ register_check(
         check_id="domain-a-counts",
         applies_to=lambda meta: True,
         run=_check_domain_a_counts,
+    )
+)
+
+
+# One-slot memos for the Domain B and C payloads, same shape and justification as
+# `_parse_memo` / `_domain_a_memo` above: the runner hands the same open document to
+# each domain's completeness and then counts check, and each uncached call rebuilds
+# the full-text `PageTextIndex` and re-parses the domain's pages.
+_domain_b_memo: dict = {"doc": None, "result": None, "error": None}
+_domain_c_memo: dict = {"doc": None, "result": None, "error": None}
+
+
+def _domain_anchor_pages(
+    doc: "pymupdf.Document", meta: ReportMeta, anchor_ids: "tuple[str, ...]"
+) -> "dict[str, list[int]] | None":
+    """The resolved pages of `anchor_ids`, or `None` when any does not resolve.
+
+    A missing section page is anchor-coverage's finding (missing-anchor); re-reporting
+    it through a domain check would count one root cause twice.
+    """
+    index = PageTextIndex(doc, report_id=meta.report_id)
+    wanted = set(anchor_ids)
+    anchors: dict[str, list[int]] = {}
+    for anchor in resolve_anchors(ANCHOR_REGISTRY, home=meta.home_team, away=meta.away_team):
+        if anchor.anchor_id not in wanted:
+            continue
+        try:
+            anchors[anchor.anchor_id] = index.find_all(anchor.text, at_start=anchor.at_page_start)
+        except MissingAnchorError:
+            return None
+    missing = sorted(wanted - set(anchors))
+    if missing:
+        # An authoring bug, not report data — the registry no longer carries a spec
+        # this domain's checks were written against.
+        raise LookupError(f"anchor registry has no spec(s) for {missing}")
+    return anchors
+
+
+def _domain_b_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """Domain B's payload for one report, or `None` when its anchor does not resolve."""
+    if _domain_b_memo["doc"] is not doc:
+        _domain_b_memo.update(doc=doc, result=None, error=None)
+        try:
+            _domain_b_memo["result"] = _domain_b_uncached(doc, meta)
+        except Exception as exc:
+            _domain_b_memo["error"] = exc
+    if _domain_b_memo["error"] is not None:
+        raise _domain_b_memo["error"]
+    return _domain_b_memo["result"]
+
+
+def _domain_b_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    anchors = _domain_anchor_pages(doc, meta, ("key-statistics",))
+    if anchors is None:
+        return None
+    return extract_domain_b(doc, anchors, meta.report_id, meta.home_team, meta.away_team)
+
+
+def _domain_c_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """Domain C's payload for one report, or `None` when any of its five anchors does
+    not resolve."""
+    if _domain_c_memo["doc"] is not doc:
+        _domain_c_memo.update(doc=doc, result=None, error=None)
+        try:
+            _domain_c_memo["result"] = _domain_c_uncached(doc, meta)
+        except Exception as exc:
+            _domain_c_memo["error"] = exc
+    if _domain_c_memo["error"] is not None:
+        raise _domain_c_memo["error"]
+    return _domain_c_memo["result"]
+
+
+def _domain_c_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    anchors = _domain_anchor_pages(
+        doc,
+        meta,
+        (
+            "phases-of-play",
+            "in-possession-line-height:home",
+            "in-possession-line-height:away",
+            "defensive-line-height:home",
+            "defensive-line-height:away",
+        ),
+    )
+    if anchors is None:
+        return None
+    return extract_domain_c(doc, anchors, report_id=meta.report_id)
+
+
+def _extract_failure_deviation(
+    check_id: str, meta: ReportMeta, exc: ExtractError
+) -> list[Deviation]:
+    """A typed B/C extract failure as this check's probe-failure deviation (Task 7.2).
+
+    Every parse/typing/completeness failure class lands in `probe-failure` with the
+    typed class name prefixed in specifics — the closed four-category set admits no
+    fifth category, and the localization histogram separates failure classes by name.
+    """
+    return [
+        Deviation(
+            report_id=meta.report_id,
+            check=check_id,
+            category=DeviationCategory.PROBE_FAILURE,
+            specifics=f"{type(exc).__name__}: {exc.reason}",
+        )
+    ]
+
+
+def _failed_check_deviations(
+    check_id: str, meta: ReportMeta, checks: "list[dict]"
+) -> list[Deviation]:
+    """A domain's failed Self-Validation checks as count-mismatch deviations."""
+    return [
+        Deviation(
+            report_id=meta.report_id,
+            check=check_id,
+            category=DeviationCategory.COUNT_MISMATCH,
+            specifics=f"{check['check']}: {check['specifics']}",
+        )
+        for check in checks
+        if check["result"] == "fail"
+    ]
+
+
+def _check_domain_b_completeness(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Domain B extracts its full §6 Key Statistics inventory, all numeric-typed (AC 1,
+    AC 3).
+
+    Every typed extract failure — an unknown or missing row, a value that fails its
+    expected type, a layout that resists the grammar — is a `probe-failure` finding
+    naming the typed class. A raising `PipelineError` bug propagates once and is
+    recorded against this check's id, while `domain-b-counts` swallows it (Task 7.3,
+    the 1.6 single-attribution patch). NOTE: an exception outside the `PipelineError`
+    hierarchy (e.g. the `LookupError` `_domain_anchor_pages` raises on registry drift)
+    is caught by neither check, so the memo replays it into both and the runner records
+    it against two ids — an authoring-bug-only path, ledgered for the runner-owned
+    parse-handoff that retires the shared memo pattern.
+    """
+    try:
+        _domain_b_payload(doc, meta)
+    except ExtractError as exc:
+        return _extract_failure_deviation("domain-b-completeness", meta, exc)
+    return []
+
+
+def _check_domain_b_counts(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Domain B's Self-Validation consistency checks, re-run as gate deviations (AC 3).
+
+    A report that does not extract yields no deviation *here* (completeness's or
+    anchor-coverage's finding). The shots reconciliation reuses `_shots_parse_result`'s
+    memo — never a third parse (Task 5.4); a report whose shots domain does not parse
+    simply runs without the reconciliation check, because that failure is shots-parse's
+    finding.
+    """
+    try:
+        payload = _domain_b_payload(doc, meta)
+    except PipelineError:
+        return []
+    if payload is None:
+        return []
+    shots_counts = None
+    try:
+        shots = _shots_parse_result(doc, meta)
+    except PipelineError:
+        shots = None
+    if shots is not None:
+        shots_counts = shots["counts"]
+    return _failed_check_deviations(
+        "domain-b-counts", meta, domain_b_checks(payload, shots_counts=shots_counts)
+    )
+
+
+def _check_domain_c_completeness(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Domain C extracts the phases and all four line-height pages, typed (AC 2, AC 3).
+
+    Same attribution rules as `domain-b-completeness`: typed `ExtractError` failures are
+    probe-failure findings naming the class; a raising `PipelineError` propagates once to
+    the runner. The same non-`PipelineError` caveat applies (registry-drift `LookupError`
+    lands in both this check and `domain-c-counts` via the replayed memo — ledgered).
+    """
+    try:
+        _domain_c_payload(doc, meta)
+    except ExtractError as exc:
+        return _extract_failure_deviation("domain-c-completeness", meta, exc)
+    return []
+
+
+def _check_domain_c_counts(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Domain C's Self-Validation checks (metre bounds), re-run as gate deviations."""
+    try:
+        payload = _domain_c_payload(doc, meta)
+    except PipelineError:
+        return []
+    if payload is None:
+        return []
+    return _failed_check_deviations("domain-c-counts", meta, domain_c_checks(payload))
+
+
+register_check(
+    Check(
+        check_id="domain-b-completeness",
+        applies_to=lambda meta: True,
+        run=_check_domain_b_completeness,
+    )
+)
+register_check(
+    Check(
+        check_id="domain-b-counts",
+        applies_to=lambda meta: True,
+        run=_check_domain_b_counts,
+    )
+)
+register_check(
+    Check(
+        check_id="domain-c-completeness",
+        applies_to=lambda meta: True,
+        run=_check_domain_c_completeness,
+    )
+)
+register_check(
+    Check(
+        check_id="domain-c-counts",
+        applies_to=lambda meta: True,
+        run=_check_domain_c_counts,
     )
 )

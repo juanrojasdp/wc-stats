@@ -100,3 +100,53 @@ class LineupCountError(ExtractError):
     """
 
     what = "lineup element count impossible"
+
+
+class StatisticsParseError(ExtractError):
+    """The Key Statistics page's layout or a row resists the stat-row grammar (Story 1.7).
+
+    Covers everything structural about the page: the anchor resolving to zero or several
+    pages, a missing or side-swapped team-name row (AD-8's silent home/away swap failure
+    mode), a possession bar without exactly three percentage values, or a stat row whose
+    value spans do not flank its label. Value-level failures are NOT this class:
+    a present-but-wrong-type value is `MalformedFieldError`, an unrecognized row label is
+    `UnknownStatisticError`, an absent required row is `MissingFieldError`.
+    """
+
+    what = "key statistics page did not parse"
+
+
+class PhasesParseError(ExtractError):
+    """The Phases of Play page's structure does not match the template grammar (1.7).
+
+    A missing section header, a phase row without exactly one percentage span on each
+    side of its label, a duplicated phase row, or the anchor resolving to zero or
+    several pages. Label- and value-level failures carry their own classes, as for
+    `StatisticsParseError`.
+    """
+
+    what = "phases of play page did not parse"
+
+
+class LineHeightParseError(ExtractError):
+    """A Line Height & Team Length page resists the three-panel grammar (Story 1.7).
+
+    The pages carry no textual key for what each printed metre value measures — only a
+    drawn measurement bracket per value — so this class also covers every vector-side
+    failure: a panel count other than three, a metre-value count other than nine, an
+    unknown panel header, or a value whose bracket cannot be classified as exactly one
+    of line height / team length / team width. Classification is never guessed (AD-8).
+    """
+
+    what = "line-height page did not parse"
+
+
+class UnknownStatisticError(ExtractError):
+    """A stat or phase row label outside the closed corpus-enumerated label set (AD-3).
+
+    Deliberately loud, never fuzzy-matched: a new or reworded row is a template revision
+    the extractor has never seen, and absorbing it silently — or dropping it — would
+    stage a plausible but incomplete Key Statistics or Phases block.
+    """
+
+    what = "unknown statistic label"

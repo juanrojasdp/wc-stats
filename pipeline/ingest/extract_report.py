@@ -20,8 +20,9 @@ is ~18x slower over 47 anchors, measured in Story 1.4.
 Story 1.2 filled identity, anchors and the idempotence keys; Story 1.3 plugged the shots
 parser into `domains` and made `self_validation` real (marker count vs the attempts
 table, exact and binary); Story 1.6 added Domain A (`domains["match_metadata"]`: the
-normalized cover block plus the lineup-page parse) and its six appended checks. Stories
-1.5-1.14 keep plugging into the same two seams.
+normalized cover block plus the lineup-page parse) and its six appended checks; Story
+1.7 added Domains B and C (`key_statistics`, `tactical_identity`) and their appended
+checks. Stories 1.8-1.14 keep plugging into the same two seams.
 """
 
 from __future__ import annotations
@@ -37,6 +38,8 @@ from pipeline.discover.text import PageTextIndex
 from pipeline.errors import PipelineError
 from pipeline.extract import aggregate_self_validation
 from pipeline.extract.domain_a import domain_a_checks, extract_domain_a
+from pipeline.extract.domain_b import domain_b_checks, extract_domain_b
+from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
 from pipeline.ingest.fingerprint import PIPELINE_ROOT, code_version, pdf_content_hash
 from pipeline.ingest.identity import match_id_for, match_number_for
 from pipeline.ingest.records import RECORD_VERSION
@@ -119,11 +122,14 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     Raises `ProbeError` (cover unreadable), `MatchNumberError` / `TeamSlugError` /
     `MatchIdFormatError` (identity could not be established), `MissingAnchorError` (a
     required section is gone), the shots parser's typed errors (`PitchFrameError`,
-    `UnknownRgbError`, `AttemptsTableError`, `ShotsPageLayoutError`), or Domain A's
+    `UnknownRgbError`, `AttemptsTableError`, `ShotsPageLayoutError`), Domain A's
     (`MissingFieldError`, `LineupParseError`, `LineupCountError`, `UnknownStageError`,
-    `UnknownVenueError`, `UnknownPositionError`, `UnknownMinuteGlyphError`). The batch
-    runner turns each into a `failed` manifest entry; nothing is caught here, because a
-    partial record is worse than none.
+    `UnknownVenueError`, `UnknownPositionError`, `UnknownMinuteGlyphError`), Domain B's
+    (`StatisticsParseError`, `UnknownStatisticError`, `MissingFieldError`,
+    `MalformedFieldError`), or Domain C's (`PhasesParseError`, `LineHeightParseError`,
+    `UnknownStatisticError`, `MissingFieldError`). The batch runner turns each into a
+    `failed` manifest entry; nothing is caught here, because a partial record is worse
+    than none.
 
     `content_hash` lets the caller hand in the SHA-256 it already computed for the skip
     decision. Passing it avoids a second full read of a multi-megabyte file 104 times per
@@ -167,12 +173,20 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         # surface as itself, not be relabeled as this report's page-reading ProbeError.
         shots = parse_shots(doc, anchors, meta.report_id, meta.home_team, meta.away_team)
 
+
         # Same transparency rule for Domain A (Story 1.6): its typed errors
         # (MissingFieldError, UnknownVenueError, LineupParseError, ...) travel as
         # themselves. The probed cover block goes in as-is and comes back normalized —
         # the cover is never re-parsed here.
         metadata = _metadata_block(meta, match_number)
         match_metadata = extract_domain_a(doc, metadata, anchors, report_id=meta.report_id)
+
+        # Domains B and C (Story 1.7), same transparency rule: their typed errors
+        # travel as themselves. Pure over this report's own anchored pages only.
+        key_statistics = extract_domain_b(
+            doc, anchors, meta.report_id, meta.home_team, meta.away_team
+        )
+        tactical_identity = extract_domain_c(doc, anchors, report_id=meta.report_id)
 
     warnings.extend(f"probe note: {note}" for note in meta.probe_notes)
 
@@ -186,6 +200,13 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         link_rate_checks(shots["shot_events"], meta.home_team, meta.away_team)
     )
     self_validation["checks"].extend(domain_a_checks(match_metadata))
+    # Story 1.7: both payloads are in hand here, so the shots reconciliation check
+    # (Key Statistics printed attempts vs the attempts-TABLE row count) is computed at
+    # this seam via `shots_counts` — the Domain B parser itself stays single-source.
+    self_validation["checks"].extend(
+        domain_b_checks(key_statistics, shots_counts=shots["counts"])
+    )
+    self_validation["checks"].extend(domain_c_checks(tactical_identity))
     self_validation["result"] = aggregate_self_validation(self_validation["checks"])
 
     return {
@@ -200,8 +221,13 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         "metadata": metadata,
         "page_count": page_count,
         "anchors": anchors,
-        # Further domains filled by Stories 1.7-1.14.
-        "domains": {"match_metadata": match_metadata, "shots": shots},
+        # Further domains filled by Stories 1.8-1.14.
+        "domains": {
+            "match_metadata": match_metadata,
+            "shots": shots,
+            "key_statistics": key_statistics,
+            "tactical_identity": tactical_identity,
+        },
         # Real from Story 1.3 on: once extractors run, the result is "pass" or "fail",
         # never left "not-applicable" (a failed consistency check is data, not an
         # exception — the record still stages so the gate can localize it).

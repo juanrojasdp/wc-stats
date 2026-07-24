@@ -131,11 +131,17 @@ def test_report_always_carries_all_four_categories(spike_corpus):
 
 
 def test_checks_run_are_recorded(spike_corpus):
+    # Story 1.7 forced repair: the four domain-b/c ids joined this list when their
+    # checks registered — the list stays exact and sorted by design.
     report = run_verification(spike_corpus)
     assert report["checks_run"] == [
         "anchor-coverage",
         "domain-a-completeness",
         "domain-a-counts",
+        "domain-b-completeness",
+        "domain-b-counts",
+        "domain-c-completeness",
+        "domain-c-counts",
         "marker-event-link-rate",
         "metadata-probe",
         "shots-count-match",

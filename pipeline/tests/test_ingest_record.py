@@ -48,6 +48,18 @@ def _keys(node) -> "set[str]":
     return set()
 
 
+def _keys_except(node, exempt_own_keys: "set[int]") -> "set[str]":
+    """`_keys`, but the immediate keys of any dict whose `id()` is in `exempt_own_keys`
+    are not collected (nested keys still are). Exempts a specific subtree by identity,
+    never a bare key string — so the same name reused elsewhere is still checked."""
+    if isinstance(node, dict):
+        own = set() if id(node) in exempt_own_keys else set(node)
+        return own | {k for value in node.values() for k in _keys_except(value, exempt_own_keys)}
+    if isinstance(node, list):
+        return {k for value in node for k in _keys_except(value, exempt_own_keys)}
+    return set()
+
+
 # --- the record, on the real report ----------------------------------------------
 
 
@@ -403,7 +415,20 @@ def test_record_keys_are_snake_case(tmp_path, make_report):
     """`work/` is pipeline-internal staging (AD-9); camelCase binds only /contract and /data."""
     record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
 
-    structural = _keys(record) - set(record["anchors"])  # anchor ids are kebab, by design
+    # Story 1.7 forced repair: line-height panel keys are kebab by the same design as
+    # anchor ids — they name page-family sections (`build-up-low`, ...), not fields
+    # (Task 4.4). Exempt them ONLY inside their own subtree: subtracting the kebab
+    # strings record-wide (this repair's first cut) would let a future domain reuse
+    # `mid-block` as a key anywhere and silently escape the guard. The rule this test
+    # defends (no camelCase in staging) is untouched.
+    panel_dicts = {
+        id(state)
+        for side in ("home", "away")
+        for state in record["domains"]["tactical_identity"][side][
+            "line_height_team_length"
+        ].values()
+    }
+    structural = _keys_except(record, panel_dicts) - set(record["anchors"])
     assert all(re.fullmatch(r"[a-z][a-z0-9_]*", key) for key in structural), structural
 
 

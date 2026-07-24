@@ -57,8 +57,10 @@ its own checks with the check registry in `pipeline/validate/checks.py` without 
 runner, the sample selection, or the report format. Registered today: `anchor-coverage` and
 `metadata-probe` (Story 1.4); `shots-parse` (an off-palette marker fill surfaces as an
 `unknown-rgb` deviation) and `shots-count-match` (a per-team marker/table disagreement surfaces
-as a `count-mismatch` deviation carrying both counts) from Story 1.3; and
-`domain-a-completeness` plus `domain-a-counts` from Story 1.6 (see the Domain A section).
+as a `count-mismatch` deviation carrying both counts) from Story 1.3;
+`domain-a-completeness` plus `domain-a-counts` from Story 1.6 (see the Domain A section);
+`marker-event-link-rate` from Story 1.5; and `domain-b-completeness`, `domain-b-counts`,
+`domain-c-completeness` plus `domain-c-counts` from Story 1.7 (see the Domains B & C section).
 
 ## Batch ingestion
 
@@ -213,6 +215,69 @@ except an unknown minute-glyph fill, which shares the shots checks' `unknown-rgb
 and `domain-a-counts` (failed Self-Validation checks → `count-mismatch`); a missing
 lineup page stays anchor-coverage's `missing-anchor` finding.
 
+### Key Statistics and tactical identity — Domains B & C (Story 1.7)
+
+Every Extraction Record also carries `domains.key_statistics` (`pipeline/extract/domain_b.py`)
+and `domains.tactical_identity` (`pipeline/extract/domain_c.py`), both raw and locale-neutral
+per AD-7 (plain ints/floats, no `%`/`km`/`m` strings):
+
+```jsonc
+"key_statistics": {
+  "home": {                       // away mirrors it — the contract's 19-field checklist
+    "possession": 57.1, "goals": 2, "expected_goals": 1.78,
+    "shots": 16, "shots_on_target": 4, "passes": 547, "passes_completed": 495,
+    "pass_completion": 90.0, "completed_line_breaks": 105, "defensive_line_breaks": 10,
+    "receptions_in_final_third": 117, "crosses": 13, "ball_progressions": 23,
+    "defensive_pressures": 170, "direct_pressures": 26, "forced_turnovers": 31,
+    "second_balls": 56, "distance_covered": 107.3, "sprint_distance": 5.3
+  },
+  "contested_possession": 6.8     // the possession bar's match-level third share
+},
+"tactical_identity": {
+  "home": {                       // away mirrors it
+    "phases_in_possession":  { "build_up_unopposed": 47.0, /* ...8 phases... */ },
+    "phases_out_of_possession": { "high_press": 9.0, /* ...9 phases... */ },
+    "defensive_block": { "high": 7.0, "mid": 25.0, "low": 11.0 },  // projection of the
+                                  // same three parsed block phases — never re-parsed
+    "line_height_team_length": {  // per-phase pitch panels, three measures each
+      "in_possession":     { "build-up-low": { "line_height": 19.0, "team_length": 40.0,
+                                               "team_width": 56.0 }, /* 2 more panels */ },
+      "out_of_possession": { /* high-block-press | mid-block | low-block */ }
+    }
+  }
+}
+```
+
+The Key Statistics page prints home values left of each row label and away values right of
+it (classified relative to the row's own label position, never fixed x-bands); the
+Possession row is a three-value bar read left-to-right as home/contested/away. The row-label
+set is closed: an unknown row is `UnknownStatisticError`, a missing row `MissingFieldError`,
+a wrong-type value `MalformedFieldError` naming the field and raw text, and the printed
+left/right team names are asserted against the probed home/away (a swapped page raises
+`StatisticsParseError` rather than staging every stat under the wrong team).
+
+The line-height pages carry no textual key for what each printed metre value measures — the
+key is drawn: each value sits on the arrow badge of a measurement bracket, and the bracket
+geometry classifies it (verified on all 104 reports × 4 pages × 3 panels = 3,744 values):
+horizontal rails → `team_width` (the team block's x-extent); vertical rails reaching a pitch
+goal-line edge → `line_height` (own goal line to the block's nearest edge); the other
+vertical bracket → `team_length`. An unclassifiable value is `LineHeightParseError`, never a
+guess. Defensive Block percentages are **independent per-phase rates that do not sum to
+100** (mex_rsa: 43/49) — there is deliberately no block-sum check.
+
+**Self-Validation** appends four recorded binary checks: `key-statistics-possession-sum`
+(home + contested + away within ±0.2 of 100 — three 1-decimal roundings drift at most
+±0.15), `key-statistics-internal-consistency` (on-target ≤ shots, completed ≤ passes,
+direct ≤ total pressures, printed completion within ±1.0 of the computed ratio),
+`key-statistics-shots-reconciliation` (the page's printed attempts vs the attempts-table
+row count — two independent sources of one fact; the table, never the marker count), and
+`tactical-metre-bounds` (every metre value in (0, 105]).
+
+The FR-15 gate gains `domain-b-completeness` / `domain-c-completeness` (typed extract
+failures → `probe-failure`, class name prefixed) and `domain-b-counts` / `domain-c-counts`
+(failed Self-Validation checks → `count-mismatch`); missing section pages stay
+anchor-coverage's `missing-anchor` finding.
+
 ### Orphan records
 
 `work/extracted/` is keyed by match id while the batch iterates by PDF, so the two can
@@ -236,8 +301,8 @@ would otherwise enter the dataset as a phantom match.
 ```
 pipeline/
   discover/   text-anchored page discovery, anchor registry, corpus metadata probe
-  extract/    tabular per-domain extractors (Domain A today; Stories 1.7-1.10 follow the
-              same convention) + the committed venue -> UTC-offset table
+  extract/    tabular per-domain extractors (Domains A, B and C today; Stories 1.8-1.10
+              follow the same convention) + the committed venue -> UTC-offset table
   ingest/     batch orchestration, run manifest, idempotence, per-report Extract, CLI
   markers/    shared pitch-map filter chain + map parser family (shots today; crosses,
               defensive actions, offers/movement reuse it in Stories 1.11-1.13)
