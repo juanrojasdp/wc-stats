@@ -169,7 +169,8 @@ project: wc-stats
 #             enum gaps routed to this sign-off; change requests batch into ONE change-set,
 #             no schemaVersion bump landing mid-flight under 1-5/1-7).
 # 2026-07-23: story 2-3 implemented and moved to review — AD-14 gate walked: 24 checklist
-#             rows (15 PASS, 7 PASS-with-note, shot-maps carries the 2 change requests),
+#             rows (15 PASS, 8 PASS-with-note, shot-maps carries the 2 change requests;
+#             counts as re-tallied by the 2026-07-23 review — original line said 15+7=24),
 #             F1-F10 all adjudicated with evidence citations. Outcome SIGNED-OFF-WITH-
 #             CHANGE-REQUESTS: CR-1 (ShotOutcomeDetail + bare incomplete/on-target) and
 #             CR-2 (deflected-on-target-defensive-event one-to-many map) batched into
@@ -190,6 +191,28 @@ project: wc-stats
 #             assignment-level coverage), 1 deferred (_domain_a_memo, ledgered), 5 dismissed.
 #             Re-verified: suite 663+1, batch 104/104 PASS, gate PASS 0 deviations.
 #             Status review -> done. Spatial-join stories (1-11..1-14, 2-7+) unblocked.
+project_key: NOKEY
+# 2026-07-23: story 1-11 context created and moved to ready-for-dev (crosses map parser;
+#             reuses the 1.3 filter chain via MarkerSpec per-type tuning; crosses anchor
+#             already registered; contract pins CrossEvent completed:boolean + 6-value
+#             CrossDeliveryType with NO cross RGB legend anywhere — mandatory probe task
+#             first, AD-14 dev-note candidates pre-filed. Self-validation counts against
+#             the crosses page's OWN table rows, never key_statistics (1.7's Domain B).
+#             Touches pipeline/markers/ + the two extract seams + gate checks only —
+#             coordinates around in-dev 1-7; shared-file edits append-only).
+# 2026-07-23: story 2-3 adversarial code review (3 layers over e6cfa7e..063544e): 18 unique
+#             findings — 3 decisions resolved (CR-2 array entry stands, enum-split recorded
+#             as rejected alternative; CS-1 tracked via 1-16 BLOCKED annotation + Task 6.2
+#             coordination rule restored + 2.7/2.13/2.18 bound to post-CS-1 enum; fixtures-
+#             only no-bump carve-out ratified in the AD-14 section), 15 patches applied
+#             (headline: CS-1 recipe now names its pipeline consumers — test_markers_attempts
+#             frozen-map asserts, BOTH test_fixtures outcome/detail asserts, attempts.py
+#             constants — and proves by the FULL pipeline suite; "nothing else consumes the
+#             changed values" was false. Also: project_key restored after accidental delete;
+#             1.5-review ledger co-commit disclosed in the Debug Log; verdict tally corrected
+#             15+7->15+8 with row 13 reclassified PASS-with-note; stale own-goal README table
+#             row corrected; FR-1 guard-test scope added; FD-1 annotated at epic 2.7's AC),
+#             0 deferred, 3 dismissed. Status review -> done. 1-16 stays blocked-pending CS-1.
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -204,15 +227,18 @@ development_status:
   # Gates all spatial-join stories (1-11..1-14 and Epic 2 spatial surfaces)
   1-5-marker-event-linking-via-digit-glyph-proximity: done
   1-6-domain-a-extraction-metadata-lineups-formations: done
-  1-7-domains-b-c-extraction-key-statistics-tactical-identity: ready-for-dev
+  1-7-domains-b-c-extraction-key-statistics-tactical-identity: in-progress
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
   1-10-domain-g-extraction-per-player-performance-physical-data: backlog
-  1-11-crosses-map-parser: backlog
+  1-11-crosses-map-parser: in-progress
   1-12-defensive-actions-map-parser: backlog
   1-13-offers-movement-to-receive-parsers: backlog
   1-14-pass-network-extraction-nodes-edges: backlog
   1-15-cross-match-identity-resolution-normalized-spine: backlog
+  # BLOCKED-pending CS-1 (Story 2.3 sign-off change-set: ShotOutcomeDetail enum + map +
+  # pipeline constant/test updates — see deferred-work.md "Filed by Story 2.3 sign-off").
+  # Do NOT start 1-16 before CS-1 lands as its atomic AD-14 bump commit.
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: backlog
   1-17-tournament-index-results-standings-leaderboards: backlog
   1-18-team-player-profile-artifacts: backlog
@@ -223,7 +249,7 @@ development_status:
   2-1-static-app-scaffold-with-design-tokens-i18n-structure-build-gates: done
   2-2-site-chrome-header-language-theme-toggles-footer-404: done
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
-  2-3-contract-v1-per-surface-sign-off: review
+  2-3-contract-v1-per-surface-sign-off: done
   2-4-match-route-hero-layer: backlog
   2-5-tactical-layer-shell-key-statistics-empty-state-pattern: backlog
   2-6-momentum-timeline: backlog

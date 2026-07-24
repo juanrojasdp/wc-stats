@@ -762,6 +762,8 @@ So that I can study and screenshot every attempt exactly as the source recorded 
 **Then** markers use the five-outcome encoding — color token AND shape dual-encoding (filled circle + ring / filled circle / hollow circle / filled square / hollow square) — sized by xG, with own goals excluded and shootout attempts never plotted (UX-DR10, AR-6)
 **And** the rendered layout spot-check-matches the source PDF for the fixture match (SM-3).
 
+> **FD-1 (Story 2.3 sign-off, 2026-07-23) amends the two xG mentions above:** per-shot xG does not exist in the source PDFs (`ShotEvent.expectedGoals` is `null` in contract v1 — team totals only), so markers render at UNIFORM size and the detail popover/event log OMITS the xG row while the field is `null`. The nullable slot stays as the forward-compatible landing zone. See `contract/README.md` → "Story 2.3 sign-off (v1)".
+
 **Given** marker interaction
 **When** a user taps, hovers, or focuses a marker
 **Then** a detail popover shows player, minute, xG, outcome; hit areas partition by nearest marker (Voronoi) at ≥44px; colliding hit areas collapse to a cluster list popover with z-order cycling, Enter/arrow-key equivalence, and overlapping markers never displaced (UX-DR9, UX-DR15)
