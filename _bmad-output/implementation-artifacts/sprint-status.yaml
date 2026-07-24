@@ -61,6 +61,7 @@
 generated: 2026-07-22
 last_updated: 2026-07-24
 # 2026-07-24: story 2-4 (match route + Hero layer) started — status ready-for-dev -> in-progress.
+# 2026-07-24: story 2-4 code review — 16 patches applied, 7 decisions deferred to deferred-work.md; review -> done.
 # 2026-07-24: story 2-4 implemented and moved to review — first dynamic route /matches/[slug]
 #             (SSG over tournament.json manifest, dynamicParams=false, 3 routes pre-rendered),
 #             AR-11 split (build-data fs reader for generateStaticParams/metadata/Hero;
@@ -279,6 +280,44 @@ project_key: NOKEY
 #             (fail-loud, unreachable in the 208/208 corpus, or already ledgered).
 #             Re-verified: 170 tests pass (crosses + ingest_record/batch + checks_registry
 #             + runner). Status review -> done.
+# 2026-07-24: story 1-12 context created and moved to ready-for-dev (defensive-actions map
+#             parser; second map family on the shared 1.3 chain, following 1.11's per-type
+#             tuning template. Scoping probe (spike + M01-M04, 10 pages) pre-filed in the
+#             story: the page carries TWO stroked pitch panels of EXACTLY equal area
+#             (61,168 pt2) titled "Forced Turnovers" / "Possession Regain", so
+#             detect_pitch_frame's max() silently discards one map — the story's central
+#             chain gap (additive multi-frame accessor, shots/crosses byte-identical).
+#             All markers share ONE fill (0.18,0.3,1.0), so actionType comes from the
+#             panel title, not the colour; the 9.0 pt bullet swatches share that exact
+#             blue and sit 0.13 pt above the marker size — size window + panel containment
+#             are the only defenses. Left panel count == printed Forced Turnovers on 10/10
+#             pages; right panel consistently EXCEEDS printed Possession Regained (and the
+#             per-player table sum, which match each other exactly) — unresolved, gating
+#             Task 5's SV design and AC 2's documented-absence branch. No linking possible
+#             (no ordinal glyphs, no per-event rows). Touches pipeline/markers/ + the two
+#             extract seams + gate checks only — coordinates around in-dev 1-10; shared-file
+#             edits append-only. Note: 1-12 claims the `defensive-actions-count-match` id
+#             that test_checks_registry.py currently uses as its unclaimed placeholder.)
+# 2026-07-24: story 1-10 context created and moved to ready-for-dev (Domain G: per-player
+#             in/out-of-possession + physical. Tabular only — the third instance of the
+#             1.6/1.7 extractor convention; no new anchor spec (1.2 registered all four
+#             per-team specs). Story-creation probe + full 104-report sweep pinned every
+#             structural question BEFORE dev: all 8 G anchors resolve to exactly ONE page
+#             (832/832, no 1.3-style overflow); numeric columns invariant at 14/8/15/9 per
+#             family over 3,289 rows each; 0 non-numeric tokens; hsr/sprints print '.0' but
+#             are integral 3289/3289. Join integrity resolved in BOTH directions and it is
+#             ASYMMETRIC — 3,289 page rows join 1:1 to a lineup player with minutes (0
+#             unmatched, 0 shirt disagreements) while 8,412 unused-substitute entries
+#             legitimately have NO row; the natural "every lineup player needs a row" check
+#             would fire on all 104. Four recorded checks corpus-verified with derived
+#             tolerances: zone-sum (worst 0.200 m of 0.35 bound), cross-domain distance
+#             reconciliation vs Domain B (worst 0.0499 km), internal consistency (offers
+#             movement types sum EXACT; completion worst 0.500), and goals reconciliation —
+#             corrected at creation time to include Story 1.6's own-goal term after the
+#             naive form was found corpus-FALSE on exactly 14 team-innings (the corpus's 14
+#             own goals); with the term, 0 mismatches / 208. Suite baselined 766 passed +
+#             1 skipped at f932f6c. Touches pipeline/extract/ + the record/gate seams +
+#             conftest only — stays off the marker/parser-chain family for in-dev 1-12.)
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -296,9 +335,9 @@ development_status:
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
-  1-10-domain-g-extraction-per-player-performance-physical-data: backlog
+  1-10-domain-g-extraction-per-player-performance-physical-data: ready-for-dev
   1-11-crosses-map-parser: done
-  1-12-defensive-actions-map-parser: backlog
+  1-12-defensive-actions-map-parser: in-progress
   1-13-offers-movement-to-receive-parsers: backlog
   1-14-pass-network-extraction-nodes-edges: backlog
   1-15-cross-match-identity-resolution-normalized-spine: backlog
@@ -316,7 +355,7 @@ development_status:
   2-2-site-chrome-header-language-theme-toggles-footer-404: done
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
   2-3-contract-v1-per-surface-sign-off: done
-  2-4-match-route-hero-layer: review
+  2-4-match-route-hero-layer: done
   2-5-tactical-layer-shell-key-statistics-empty-state-pattern: backlog
   2-6-momentum-timeline: backlog
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data

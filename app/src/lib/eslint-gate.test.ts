@@ -160,6 +160,30 @@ describe("client-import seam bars direct t() from src/components", () => {
     );
     expect(errors).toEqual([]);
   });
+
+  it("build-data import via the @ alias is barred in src/components/** (Story 2.4)", async () => {
+    const errors = await seamErrorsFor(
+      `import { readMatchBundle } from "@/lib/build-data";\nexport const x = readMatchBundle;\n`,
+      "src/components/__seam_probe__.tsx"
+    );
+    expect(errors).toContain(SEAM_RULE);
+  });
+
+  it("build-data import via a relative path is barred in src/components/** (Story 2.4)", async () => {
+    const errors = await seamErrorsFor(
+      `import { readTournament } from "../lib/build-data";\nexport const x = readTournament;\n`,
+      "src/components/__seam_probe__.tsx"
+    );
+    expect(errors).toContain(SEAM_RULE);
+  });
+
+  it("build-data import stays legal outside src/components (build-time server code)", async () => {
+    const errors = await seamErrorsFor(
+      `import { readMatchBundle } from "@/lib/build-data";\nexport const x = readMatchBundle;\n`,
+      "src/app/__seam_probe__.tsx"
+    );
+    expect(errors).toEqual([]);
+  });
 });
 
 describe("i18n gate keeps legal patterns legal", () => {

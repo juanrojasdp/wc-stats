@@ -58,9 +58,75 @@ export const es = {
     title: "WC Stats — Analítica del Mundial 2026",
     description: "Análisis táctico y estadístico de los 104 partidos de la Copa Mundial 2026.",
   },
+  match: {
+    hero: {
+      // Stage-chip group suffix (Task 3.3): "Fase de grupos · Grupo A".
+      group: "Grupo",
+      // Context line trailing clarifier: kickoff is venue-local wall-clock.
+      localTime: "hora local",
+      // En-dash between scoreline numbers; routed through the layer so the
+      // score row carries no hardcoded JSX text (AD-12 gate).
+      scoreSeparator: "–",
+      // Scorer-line suffixes (ruled decision 3 — no UX convention existed).
+      ownGoal: "(a.g.)",
+      penalty: "(pen.)",
+      // decidedBy captions beneath the score row (Task 3.6).
+      extraTime: "Definido en tiempo extra",
+      shootout: "Penales:",
+      // Story-Stat leader marker (Task 4.2) — appended to the sr-only name.
+      leader: "líder",
+      // xG glossary term + its sr-only expansion (Task 4.4).
+      xg: "xG",
+      xgExpansion: "goles esperados",
+      tiles: {
+        possession: "Posesión",
+        shots: "Tiros",
+        distance: "Distancia (km)",
+        topSpeed: "Vel. máx. (km/h)",
+      },
+      lineups: {
+        title: "Alineaciones y formaciones",
+        // Summary line tail after the two formation strings.
+        summary: "titulares y suplentes",
+        starters: "Titulares",
+        substitutes: "Suplentes",
+        formation: "Formación",
+      },
+    },
+    // Title/OG composition fragments (Task 2.2). Punctuation only — the
+    // fragments themselves are locale-neutral but registered so the composer
+    // never hardcodes them.
+    meta: {
+      separator: " · ",
+      penShort: "pen.",
+    },
+    // Below-Hero client lifecycle (Task 6): announcement + inline retry panel.
+    bundle: {
+      loaded: "Datos cargados.",
+      error: "No pudimos cargar los datos. Revisa tu conexión e intenta de nuevo.",
+      retry: "Reintentar",
+      // aria-label for the aria-busy skeleton container (no visible text).
+      loading: "Cargando datos del partido",
+    },
+  },
   enums: {
-    stage: {},
-    position: {},
+    // Tournament stage labels, keyed by the Stage enum codes (AD-7).
+    stage: {
+      group: "Fase de grupos",
+      r32: "Dieciseisavos de final",
+      r16: "Octavos de final",
+      qf: "Cuartos de final",
+      sf: "Semifinal",
+      "third-place": "Tercer puesto",
+      final: "Final",
+    },
+    // Lineup position labels, keyed by the Position enum codes.
+    position: {
+      gk: "Arquero",
+      df: "Defensa",
+      mf: "Mediocampista",
+      fw: "Delantero",
+    },
     shotOutcome: {},
     metric: {},
     unit: {},

@@ -83,6 +83,14 @@ export default defineConfig([
               message:
                 "Client components must bind locale via useT()/useLocale() from @/lib/i18n-provider; a direct t() import silently ignores locale switching.",
             },
+            {
+              // Build-time fs reader (Story 2.4): node:fs at module scope crashes
+              // in the browser and inlining bundles violates AR-11. Server pages
+              // read data; client components fetch via @/lib/data.
+              name: "@/lib/build-data",
+              message:
+                "Client components must not import the build-time fs reader; fetch runtime data via fetchArtifact() from @/lib/data.",
+            },
           ],
           patterns: [
             {
@@ -90,6 +98,11 @@ export default defineConfig([
               importNames: ["t"],
               message:
                 "Client components must bind locale via useT()/useLocale() from @/lib/i18n-provider; a direct t() import silently ignores locale switching.",
+            },
+            {
+              group: ["**/lib/build-data"],
+              message:
+                "Client components must not import the build-time fs reader; fetch runtime data via fetchArtifact() from @/lib/data.",
             },
           ],
         },

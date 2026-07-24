@@ -325,6 +325,28 @@
   line-height: 1.4;
 }
 
+/*
+ * Loading skeleton (Story 2.4 Task 6.2): token-only surface-raised blocks with
+ * a gentle opacity pulse. The pulse is decorative — the global
+ * prefers-reduced-motion kill in @layer base neutralizes the animation to a
+ * static block (verified: the `*` animation-duration override covers it).
+ */
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@utility skeleton {
+  background-color: var(--surface-raised);
+  border-radius: var(--radius-md);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
 @layer base {
   /* Vendored shadcn components use color-less `border-*` utilities and expect
      the shadcn default-border convention; --border IS border-hairline. */
