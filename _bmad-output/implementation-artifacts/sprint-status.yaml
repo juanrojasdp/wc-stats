@@ -59,7 +59,156 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-07-26
+last_updated: 2026-07-27
+# 2026-07-27: story 1-9 (Domains E & F extraction) started — status ready-for-dev -> in-progress.
+# 2026-07-27: story 1-9 context created and moved to ready-for-dev — and the story-creation
+#             probe OVERTURNED the epic's premise for Domain E, corpus-wide over all 104
+#             reports / 936 E+F pages. Domain E is printed PER TEAM, not per goalkeeper: all
+#             four goalkeeping page families are titled `{team}`, NO goalkeeper name appears
+#             anywhere on any of them, and 7 of 208 team-innings used TWO keepers (M21, M41,
+#             M53, M62, M66, M88, M98 — verified on M53, where Mexico's RANGEL came off at 78'
+#             and the page still prints one chart, one total, no name). AC 1's "every
+#             goalkeeper with minutes has a record" is therefore unfulfillable, and so is the
+#             contract's per-keeper GoalkeeperRecord. Scope ruled by Juan: re-scope inside the
+#             story (the 1.13 precedent), staging per team with Domain A's goalkeeper list
+#             carried BESIDE the block so the attribution is recorded, never inferred. Domain E
+#             is also four different extraction problems under one name — one table page (goal
+#             prevention), one half-table (aerial control), one MAP page (distribution) and one
+#             CHART page (involvement) — so the "tabular extractor" framing fits Domain F only.
+#             Juan ruled BOTH hard parts IN: the involvement per-minute series is extracted now
+#             (95-111 slots regulation / 129-145 extra-time, per-report exactly like 1.8's
+#             momentum; scale from the printed y-axis labels, never gridline spacing), and the
+#             distribution complete/incomplete split is recovered by counting markers through
+#             the SHARED CHAIN read-only — detect_pitch_frames returns exactly 4 equal-area
+#             panels (59,516.0 pt2 each) on 208/208, so 1.12's plural accessor + title-anchored
+#             panel typing is mandatory and detect_pitch_frame's max() is unusable. The exact
+#             MarkerSpec is corpus-verified and pitch_margin_pt=0.0 is LOAD-BEARING: every
+#             panel frame ends at y1=406.5 while the Complete/Incomplete legend sits at y~411,
+#             so strict containment excludes the legend by geometry (any positive margin
+#             inflates every count by 2); 0 off-palette markers admitted on 208/208, and no
+#             legend-row exclusion is needed at all. Eleven relations measured EXACT corpus-wide
+#             to key Self-Validation on, incl. AC 1's (feet+hands+throw == total panel, 208/208),
+#             AC 2's (corner sides sum to total corners, 208/208), the marker-count-vs-printed-
+#             donut-centre cross-check, and sum(5 intervention types) == attempts faced
+#             (208/208). SIX tempting relations are corpus-FALSE and are named as do-not-ship,
+#             headline: the contract's FreeKickCounts $comment asserts direct == directOnTarget
+#             + directOffTarget "holds across all six fixture team-innings" — it fails on
+#             208/208 REAL team-innings (160 print on+off == 0 while direct > 0). Also false:
+#             corner delivery STYLE is not a partition of corners (112/208), and sum(series) ==
+#             Total Involvements (149/208) — so the involvement check ships as the BOUND
+#             sum(series) <= total, true 208/208 (delta 0..5, never negative, mean 1.26); the
+#             residual gap is the one open question left to dev, explicitly NOT to be closed by
+#             making the numbers agree (the 1.8/1.12 rule). Three documented absences take the
+#             absence branch, all raster-only like 1.13's donut slices: the distribution
+#             technique breakdowns, goal prevention's byBodyType, and aerial
+#             crossesFacedCompleted. Two page traps pre-filed: the goal-prevention 7-column
+#             table must be found by header-anchor + x>=460 (naive "row of 7 digits" finds ZERO
+#             on M38 home, where a stray pitch-marker ordinal shares the row, and TWO on
+#             M34/M38 away), and the set-plays KPI values print ABOVE their labels with one
+#             value row shared by two KPIs. No new AnchorSpec — 1.2 registered all five specs.
+#             Gate ids ruled goalkeeping-{completeness,counts} / set-plays-{completeness,counts};
+#             deliberately NOT offers-count-match, which is test_checks_registry.py's unclaimed
+#             placeholder. Touches pipeline/extract/ + the record/gate seams + conftest only —
+#             /contract stays READ-ONLY (1-8's schemaVersion 2 bump has already landed and is in
+#             review; the v2 diff touches the momentum defs alone, so every E/F shape 1-9 cites
+#             is unchanged), and pipeline/markers/ is read-only for in-dev 1-13 (filter_chain is
+#             imported, never edited). Baseline commit 7279637.
+# 2026-07-27: story 2-8 context created and moved to ready-for-dev (pass-network visualization —
+#             the second PitchPanel consumer, app/ only). Builds on 2.7's seam rather than
+#             re-implementing pitch rendering: nodes are PitchMarkers (so the shared extent,
+#             Voronoi hit cells, >=44px floor, clustering, popover, roving tabindex and
+#             role="figure" all come free) and edges ride the `underlay` prop 2.7 cut for exactly
+#             this story. Sixteen ruled decisions; the load-bearing ones: node positions are
+#             EXTRACTED not derived (AD-3, not AD-4 — no force layout, d3-force stays
+#             uninstalled), the pass network is a FULL pitch by construction (fixture node x
+#             spans 20.21-79.71, so pitchExtentFor returns xMin:0 on its own — the halfway-line/
+#             centre-circle code path 2.7 unit-tested but never rendered); the edge ramp bins by
+#             panel-pooled nearest-rank quintiles so that UX-DR17's "lowest weight quintile" and
+#             DESIGN's 5-stop ramp become the SAME partition (resolving the unruled `<` vs `<=`);
+#             and isolation is PINNED-ONLY, keyed on playerId never an index — focus does not
+#             pin, because aria-pressed on mere focus announces a state the reader never set
+#             (the exact defect review-accessibility.md:29 filed against this interaction).
+#             Measured at creation time rather than left to dev: all five --edge-weight stops
+#             clear 3:1 on the pitch (3.83/5.06/6.60/8.55/10.77) but ADJACENT stops separate by
+#             only 1.32/1.31/1.29/1.26 — so DESIGN's "stroke width rising in parallel" is the
+#             encoding, not a flourish, and a colour-only ramp would read as one green smear.
+#             Dim values measured too: nodes 0.55 (4.02/3.34:1, still hittable targets so still
+#             >=3:1), edges 0.25 (1.42:1, a recorded exception — no single alpha both dims and
+#             holds the floor across the ramp). 2.8 is the FIRST consumer of --edge-weight-*,
+#             the same position from which 2.7's light-theme disaster surfaced, so Task 9.4
+#             re-measures. Validation pass (2 fresh-context agents, 44 fact-checks) caught seven
+#             CRITICAL defects in the first draft and all are fixed: node dimming had NO
+#             mechanism (nodes are markers, unreachable from the underlay closure — now an
+#             explicit selection.dimmedKeys), Enter/Space silently collided with PitchPanel's
+#             existing popover handler (now a ruled three-way split; clustered nodes keep the
+#             dialog and pin from its list items), "Esc clears" was unreachable (focus opens the
+#             hover popover, so the guard always ate the first Esc — now a layered panel-level
+#             handler, two presses, disclosed), team-switch clear was uncallable from the
+#             section, cross-side dimming would have greyed out the opposing team, and the
+#             legend's React key collides on narrow distributions. Two DEVIATIONS flagged for
+#             Juan: the pass matrix ships PLAIN, not sortable (EXPERIENCE.md:207 lists it among
+#             the Expert-layer tables 2.11 owns; UX-DR16's floor is still met in full), and
+#             player names are plain text because /players/{slug} does not exist yet. Highest
+#             unfiled risk recorded as Task 8.2: nobody has ever probed the "Passing Networks"
+#             page, and three of the four Domain D families probed so far had unfulfillable
+#             required per-row fields (1.11 CrossEvent, 1.13 ReceivingEvent) — PassNetworkNode.x/y
+#             could be the third, and the 2.3 sign-off row walked the contract, not the PDF.
+#             Touches app/ + locales only — coordinates around in-dev 1-8 and 1-13, which have
+#             contract/, data/fixtures/ and app/src/lib/contract/* dirty; never `git add -A`.
+#             Baseline re-measured live at 240 passed / 14 files.
+# 2026-07-27: story 2-8 implemented and moved to review — pass-network visualization, the SECOND
+#             consumer of 2.7's PitchPanel rather than a second pitch renderer. Nodes are
+#             PitchMarkers (shared per-panel extent, Voronoi hit cells, >=44px floor, clustering,
+#             popover, roving tabindex, focus ring, role="figure" all inherited); edges ride the
+#             `underlay` seam 2.7 cut for exactly this story, inside the aria-hidden decorative
+#             group under both the hit layer and the markers. All 16 ruled decisions implemented as
+#             written. THE FULL PITCH IS AUTOMATIC AND PROVEN: pitchExtentFor returns {xMin:0}
+#             unaided for all six team-innings at all six probed widths, so the halfway-line/
+#             centre-circle/centre-spot path 2.7 unit-tested but never rendered was rendered and
+#             inspected. The ramp and the quintile split are ONE partition, asserted directly
+#             (edgeStop(v,t)==1 <=> v<=t[0] on every fixture edge); thresholds and stop
+#             distributions were computed INDEPENDENTLY IN PYTHON before the TypeScript existed and
+#             pinned as literals (m001 [4,7,11,14] 12/10/15/7/9; m002 [5,7,13,15] 12/7/10/8/9;
+#             m074 [4,9,13,15] 12/7/10/9/7) — one test literal was wrong and the implementation
+#             right (m001's top band is 15-18: 18 is the POOLED max, Mexico's own side tops at 17,
+#             which is the pooling ruling proving itself). Isolation verified LIVE: Enter pins,
+#             aria-pressed=true, exactly 1 selection ring, 8/11 nodes and 18/20 edges dimmed on its
+#             OWN figure while the other figure stays 0/0 (decision 15), second Enter clears, and
+#             the node's transform is BYTE-IDENTICAL before and after (AR-6). Clustered path also
+#             verified: Enter opens the dialog and does NOT pin; its list items do. Two Escapes
+#             clear a pin — the ruled, disclosed consequence of focus opening the popover. <md
+#             declutter measured: 16 edges drawn -> 20 after "Mostrar todos los pases". Reflow at a
+#             TRUE 320 CSS px: scrollWidth == clientWidth == 320, #pass-networks NOT in the overflow
+#             list (a 5px in-section bleed is TacticalSection's expanded-state chevron, proven
+#             pre-existing by reproducing it identically on #shot-maps). 0 animations in the
+#             subtree, 0 console messages on all three fixtures. LIGHT THEME: 2.8 is the first
+#             consumer of --edge-weight-*, and all eleven on-pitch tokens read byte-identical in
+#             both themes — no .light override exists and none was added. TWO DEVIATIONS for Juan:
+#             the pass matrix ships PLAIN not sortable (routed to 2.11 with plug-in points named;
+#             UX-DR16's floor is met in full — this is the one decision to overrule if sorting is
+#             wanted in 2.8), and player names are plain text because /players/{slug} does not
+#             exist. THREE declared departures: passNetworkMarkers takes edges + a valuePhrase
+#             callback (degree is required in the accessible name by Task 2.6 and cannot be
+#             computed or worded inside src/viz); quintileBands DROPS an empty band rather than
+#             labelling an impossible "8-7" range; and a node with an unreadable x/y THROWS naming
+#             the playerId (no honest placeholder exists for a position — NaN paints an invisible
+#             marker, a drop publishes an invisible absence). TWO items flagged, NOT changed:
+#             pitchMarkings draws goal furniture at ONE end only, so the full pitch has a bare
+#             defending half (shipped 2.7 code, aria-hidden decoration, no ruled reference for the
+#             second end — 2.8 is just the first surface wide enough to expose it); and at the
+#             shipped >=lg figure width (527px HORIZONTAL) only 4 of 22 nodes are singletons, so
+#             decision 6a's dialog path is the PRIMARY pin route, not the exception — the story's
+#             "most clusters are singletons" premise is false, though 6a rules the case correctly.
+#             Highest unfiled risk NOW FILED: nobody has ever probed the "Passing Networks" page,
+#             PassNetworkNode.x/y is required and must be extracted (AD-3), and three of the four
+#             Domain D families probed so far had unfulfillable required per-row fields — routed to
+#             1.14 with the note that 2.3's sign-off row for this surface walked the contract, not
+#             the PDF. PitchPanel changes are strictly additive: with `selection` absent the Enter
+#             branch calls openClusterOf VERBATIM and ShotMapsSection's output is unchanged (all
+#             240 pre-existing tests green). No new dependency; d3-force stays uninstalled;
+#             tactical-sections.ts's `&&` untouched. Suite 240 -> 307 (14 -> 15 files), build chain
+#             green. Touches app/ + locales + the ledger only — coordinates around in-flight 1-8
+#             and 1-13; never `git add -A`.
 # 2026-07-26: story 2-7 adversarial code review (3 layers over f8ca7ee..1e67e25): 25 unique
 #             findings — 4 decisions ruled, 18 patches applied, 1 deferred (ShotLogRow's dead
 #             minute fields, routed to 2.11), 5 dismissed. Two defects the 237-test suite
@@ -170,6 +319,51 @@ last_updated: 2026-07-26
 #             tests pass (68->98). Browser-verified ES/EN swap (no mixed-language) + light
 #             theme + disclosure expand. Note for review: stage chip uses type-label-caps
 #             (no uppercase transform) per the story's explicit token over the mockup CSS.
+# 2026-07-27: story 1-8 implemented and moved to review — momentum-series extraction plus the
+#             project's FIRST contract bump (schemaVersion 1 -> 2, AD-14). OQ-5 verified in code
+#             over all 104 reports: every pinned fact reproduced (title once per report on page 1,
+#             baseline y=429.13 single-valued, peak 50.3805pt, width/pitch 0.7000-0.7004, 0
+#             non-integer heights, printed top label == derived peak, orange->home / purple->away
+#             proven by matching each legend swatch's name to that report's cover). THREE findings
+#             sharpen the story's table: the chart draws TEN grey lines (nine value gridlines plus
+#             an axis rule 0.75pt below), so a naive max(y) puts the half height at 50.755 and
+#             corrupts the peak cross-check; the peak equals the axis half height EXACTLY on
+#             104/104 (an independent confirmation of the auto-scale, now asserted); and the
+#             '45HT'/'90FT' merge hazard is neutralized by construction (tick reading is
+#             character-level, regrouped on the digit/alpha boundary, so both spellings parse).
+#             Task 1.3 CLOSED: first half slot = minute-1 (0 violations/104); the HT tick marks the
+#             FIRST slot of the second half (slots 48-56) and slot(M)=M-46+HT_slot holds with 0
+#             violations on the 101 reports printing HT — 3 omit it (M67/M86/M104) and infer it
+#             from 60/75/90, which must agree; the FT tick is the grid's last slot on 94/94 that
+#             print it and 1 omits it (M42, fallback recorded); the 9 extra-time reports print NO
+#             ET break anywhere, so ET1 opens after FT and the 120 tick's own 15 regular minutes
+#             place ET2 — a derivation, filed in deferred-work.md. TWO numerical bugs were caught
+#             by the corpus run and not by unit tests: the floored Euclidean GCD converged on PDF
+#             coordinate noise (~0.001pt "unit" on 13/104; fixed by nearest-multiple remainder +
+#             smallest-first divisor), and a GCD over individual bar-gap distances drifts (replaced
+#             by the outermost span over its whole slot count). ONE design correction mid-story:
+#             deriving the unit as peak/printed-label made momentum-axis-scale TAUTOLOGICAL, so
+#             the unit is now geometric (GCD over heights) and the printed label is the recorded
+#             contrast — geometry contradicting itself still raises, the printed axis
+#             contradicting geometry is recorded (SM-C1). Like 1.12's possession-regain map there
+#             is NO printed row total, and none was manufactured. Contract: MomentumSample
+#             {minute,home,away} -> {at: MinuteStamp, home/away integer >= 0} (the bare Minute
+#             could not represent stoppage slots at all — every first-half stoppage minute
+#             collapsed onto 45), version 2 across all five artifact schemas, types regenerated
+#             for contract/ and app/, all seven fixtures re-stamped, m001 (101 samples) and m074
+#             (138) regenerated from real corpus data, m002 LEFT null by design and now pinned by
+#             a test + a fixtures-README note. Also did the ledgered _check extraction (momentum
+#             would have been the fifth copy) -> pipeline.extract.check_entry. Batch --force:
+#             104 extracted / 0 failed / exactly 2 self-validation failures (M19, M58 — 1.12's
+#             ledgered pair) with the ruled non-zero exit; momentum-axis-scale and
+#             momentum-coverage pass 104/104, 0 momentum warnings, 10,954 samples total (96-145
+#             per report). Re-run: 104/104 skipped-unchanged, records byte-identical. Gate PASS
+#             0 deviations with both new ids in checks_run; two gate runs byte-identical apart
+#             from run_timestamp. Suite 1040 passed / 1 skipped (incl. in-flight 1-10 and 1-13);
+#             app 240 passed, lint + check:types + build green. Four forced test repairs, all
+#             expected: checks_run list, anchor count 30/47 -> 31/48, version.json == 1, and the
+#             app's assert-schema-version test (now reads the generated constant). Coordinated
+#             with in-flight 1-13 in the same tree: all shared-file edits append-only.
 project: wc-stats
 # 2026-07-22: story 1-1 completed and moved to review.
 # 2026-07-22: story 1-1 code review complete — 5 decisions resolved, 35 patches applied,
@@ -609,6 +803,81 @@ project_key: NOKEY
 #             the shape at all. Touches pipeline/markers/ + the two extract seams + gate checks
 #             only — stays off pipeline/extract/ for in-review 1-10; deferred-work.md's
 #             filter-chain advisory reaches its LAST named story here.
+# 2026-07-26: story 1-13 implemented and moved to review — pipeline/markers/receiving.py.
+#             The story-creation probe's premise overturn was RE-DERIVED from scratch over
+#             all 104 reports / 416 receiving pages by an INDEPENDENT prototype extractor
+#             written before the module existed, then compared cell-for-cell with the
+#             shipped parser: 208/208 sides agree, 0 disagreements. Every pre-filed figure
+#             reproduced exactly — offers 4 qualifying rects / 2 distinct panels 208/208,
+#             11 dots per panel on 416/416 panels at 8.229 pt in ONE fill with a
+#             BYTE-IDENTICAL 11-offset signature on all 208 pages, exactly 1 word inside
+#             each panel (the badge), row counts 16/15/17/14/13 = 154/26/15/11/2, movement
+#             exactly 1 stroked panel with ZERO markers and 48 in-panel digits (15 grid +
+#             33 axis ticks), 5 deduped image rects with exactly 1 digit inside each titled
+#             donut, 5 Top-Ranked rows 208/208. All NINE reconciliations exact: r1-r5
+#             208/208, r6-r8 208/208 (incl. #8, the grid == Domain G's FIVE-type sum that
+#             IDENTIFIES what the page counts), r9 3,208/3,208 rows worst deviation 0.0 pp.
+#             The crash branch measured: 81 rows print offers_made == 0 and all 81 print
+#             "0%" — skipped by count, never divided, never coerced. Both documented
+#             absences confirmed: donut slices raster-only, phase delta -48..+314 zero on
+#             3/208 — recorded as null counterparts + one warning each, NO check (the
+#             binary aggregator would fail every record). Seven check ids / 26 checks per
+#             report, both operands always present; the two cross-domain families computed
+#             at the extract seam and emitting NOTHING when Domain G is unavailable. The
+#             chain is composed but stages nothing: the 11-dot census is a template-revision
+#             tripwire so a future page that draws real markers aborts loud instead of
+#             publishing silence — NO chain edit. Gate ids receiving-parse /
+#             receiving-count-match (offers-* deliberately unclaimed — it is
+#             test_checks_registry's placeholder). DISCOVERY not in the pre-filed probe:
+#             four corpus pages print a THREE-LINE player name straddling its numeric row,
+#             which the first full sweep failed on; closed with the crosses/defensive-actions
+#             name x-band. ONE forced repair, and it was the named trap: counts keyed
+#             grid_by_type by kebab codes (the 1.12 slip), caught by
+#             test_record_keys_are_snake_case. Suite 906+2F -> 1040 passed / 1 skipped /
+#             0 failed (+66 tests from this story). Batch --force 104 extracted / 0 failed /
+#             exactly 2 SV failures (M19, M58 — 1.12's ledgered pair, no third), re-run
+#             104/104 skipped-unchanged, records byte-identical 104/104. FR-15 gate PASS
+#             0 deviations with both new ids in checks_run; deviation path proven live on a
+#             forced-mismatch directory (one deviation per failing team AND check id, both
+#             operands in specifics). Task 7 filed six AD-14 notes — headline: ReceivingEvent
+#             is unfulfillable in EVERY required field, so 1.16 can only emit
+#             events.receiving: null, Story 2.9 must be re-scoped against the aggregates,
+#             and 2.3's offers/movement sign-off row is superseded. deferred-work.md's
+#             filter-chain advisory reached its LAST named story and is CLOSED (facets a/b
+#             never engage — one fill; facet c held on two independent geometry defenses).
+# 2026-07-27: story 1-13 code review — 3 decisions ruled, 14 patches applied, status done.
+#             Three adversarial layers over the 1.13-scoped diff; all three ACs audited as
+#             satisfied and every Task 2.x/3.x/4.x constraint plus the scope boundaries
+#             verified independently. The substantive theme was TEST EVIDENCE, not parser
+#             correctness: every player row carries the same DEFAULT_OFFERS, so total_made
+#             is always 21 x N — divisible by 3 for any lineup — and the fixture's
+#             total//3 and total//2 splits printed 84/84/84 thirds and 126/126 shape
+#             badges. test_panel_typing_is_text_anchored_not_positional was therefore
+#             asserting 126 == 126 and passed whether panel typing read the printed titles
+#             or merely the x order; the movement grid was identical across all three
+#             thirds, so any permutation was invisible. Fixtures de-degenerated to
+#             asymmetric splits. RULED: the grid now asserts 15 DISTINCT (pitch third,
+#             movement type) pairs — the 5-per-third guard alone was satisfied by a
+#             cross-band swap, and no reconciliation is third-sensitive (grid-total and
+#             domain-g both sum across thirds); phase_sum REMOVED from counts (Task 7.4
+#             tells downstream never to sum the phases, and staging a pre-computed sum is
+#             what invites it); receiving-offers-table-pct now records both operands. The
+#             gate's receiving anchor loop was hand-rolled and skipped _domain_anchor_pages'
+#             registry-drift LookupError, so an authoring bug would have surfaced as
+#             ReceivingPageLayoutError(pages=None) on all 104 reports — routed through the
+#             shared helper. Also: top_ranked_players asserts five DISTINCT types (a future
+#             sixth "No Movement" row was silently skipped while the 5-row count still
+#             passed), _count_check spreads **extra first so a caller keyword cannot
+#             overwrite the verdict, _rotated_lines uses the direction tolerance instead of
+#             bit-exact equality, _labelled_value splits its two diagnoses, and two
+#             cross-domain FAILING-case tests were added (Task 5.2 required pass and fail
+#             for each of the seven ids; those two had only the green path). Three doc
+#             figures corrected: 78 -> 81 zero-made rows, 66 -> 67 tests, "six AD-14 notes"
+#             -> five (Tasks 7.1-7.5) plus two ordinary deferrals. 7 findings deferred to
+#             the ledger, 5 dismissed. Suite 1041 passed / 1 skipped (+2 from this review);
+#             the lone test_code_version_is_stable_across_calls failure is the documented
+#             in-flight-edit artifact (Story 1.9 was editing pipeline/** during the run)
+#             and passes clean in isolation.
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -624,12 +893,12 @@ development_status:
   1-5-marker-event-linking-via-digit-glyph-proximity: done
   1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
-  1-8-momentum-series-extraction-oq-5-resolution: in-progress
-  1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
+  1-8-momentum-series-extraction-oq-5-resolution: review
+  1-9-domains-e-f-extraction-goalkeeping-set-plays: in-progress
   1-10-domain-g-extraction-per-player-performance-physical-data: done
   1-11-crosses-map-parser: done
   1-12-defensive-actions-map-parser: done
-  1-13-offers-movement-to-receive-parsers: in-progress
+  1-13-offers-movement-to-receive-parsers: done
   1-14-pass-network-extraction-nodes-edges: backlog
   1-15-cross-match-identity-resolution-normalized-spine: backlog
   # BLOCKED-pending CS-1 (Story 2.3 sign-off change-set: ShotOutcomeDetail enum + map +
@@ -651,7 +920,7 @@ development_status:
   2-6-momentum-timeline: backlog
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data
   2-7-pitch-panel-infrastructure-with-shot-cross-maps: done
-  2-8-pass-network-visualization: backlog
+  2-8-pass-network-visualization: review
   2-9-receiving-defensive-action-maps-heatmap-decision: backlog
   2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: backlog
   2-11-expert-layer-per-player-tables-event-logs: backlog

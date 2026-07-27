@@ -24,8 +24,14 @@ normalized cover block plus the lineup-page parse) and its six appended checks; 
 1.7 added Domains B and C (`key_statistics`, `tactical_identity`) and their appended
 checks; Story 1.11 the crosses map and Story 1.12 the defensive-actions maps; Story 1.10
 Domain G (`player_stats`: the four per-player page families, joined to Domain A's
-lineups) and its four appended checks. Stories 1.8-1.14 keep plugging into the same two
-seams.
+lineups) and its four appended checks; Story 1.8 the momentum series (`momentum`: the
+per-minute two-team bar chart resolving OQ-5) and its two appended checks; Story 1.13
+the two receiving page families (`receiving`: offers & movement to receive — dashboards,
+not maps, so the payload is values rather than events) and its seven appended check ids;
+Story 1.9 Domains E and F (`goalkeeping`: the four goalkeeping page families — a table, a
+half-table, a marker MAP and a per-minute CHART — staged PER TEAM with Domain A's
+goalkeeper list carried beside each block, plus `set_plays`) and their seven appended
+checks. Stories 1.10-1.14 keep plugging into the same two seams.
 """
 
 from __future__ import annotations
@@ -43,7 +49,14 @@ from pipeline.extract import aggregate_self_validation
 from pipeline.extract.domain_a import domain_a_checks, extract_domain_a
 from pipeline.extract.domain_b import domain_b_checks, extract_domain_b
 from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
+from pipeline.extract.domain_e import (
+    domain_e_checks,
+    domain_e_warnings,
+    extract_domain_e,
+)
+from pipeline.extract.domain_f import domain_f_checks, extract_domain_f
 from pipeline.extract.domain_g import domain_g_checks, extract_domain_g
+from pipeline.extract.momentum import extract_momentum, momentum_checks
 from pipeline.ingest.fingerprint import PIPELINE_ROOT, code_version, pdf_content_hash
 from pipeline.ingest.identity import match_id_for, match_number_for
 from pipeline.ingest.records import RECORD_VERSION
@@ -53,6 +66,12 @@ from pipeline.markers.defensive_actions import (
     parse_defensive_actions,
 )
 from pipeline.markers.linking import link_rate_checks
+from pipeline.markers.receiving import (
+    parse_movement,
+    parse_offers,
+    receiving_domain,
+    receiving_self_validation_block,
+)
 from pipeline.markers.shots import parse_shots, self_validation_block
 
 REPO_ROOT = PIPELINE_ROOT.parent
@@ -135,14 +154,20 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     parser's (Story 1.11: `CrossesPageLayoutError`, `CrossesTableError`,
     `UnknownLabelError`, `CrossesCoordinateError`, plus the shared-chain errors), the
     defensive-actions parser's (Story 1.12: `DefensiveActionsPageLayoutError`,
-    `DefensiveActionsTableError`, `DefensiveActionsCoordinateError`), Domain A's
+    `DefensiveActionsTableError`, `DefensiveActionsCoordinateError`), the two receiving
+    parsers' (Story 1.13: `ReceivingPageLayoutError`, `ReceivingTableError`), Domain A's
     (`MissingFieldError`, `LineupParseError`, `LineupCountError`, `UnknownStageError`,
     `UnknownVenueError`, `UnknownPositionError`, `UnknownMinuteGlyphError`), Domain B's
     (`StatisticsParseError`, `UnknownStatisticError`, `MissingFieldError`,
     `MalformedFieldError`), Domain C's (`PhasesParseError`, `LineHeightParseError`,
     `UnknownStatisticError`, `MissingFieldError`), or Domain G's (Story 1.10:
     `PlayerTableParseError`, `PlayerJoinError`, `MalformedFieldError`,
-    `MissingFieldError`). The batch runner turns each into a
+    `MissingFieldError`), or the momentum parser's (Story 1.8:
+    `MomentumChartError`, `MomentumFillError`, `MomentumScaleError`,
+    `MomentumAxisError`, `MomentumClockError`), or Domains E and F's (Story 1.9:
+    `GoalkeepingPageParseError`, `InvolvementChartError`, `SetPlaysParseError`,
+    `MalformedFieldError`, `MissingFieldError`, plus the shared-chain errors on the
+    distribution map page). The batch runner turns each into a
     `failed` manifest entry; nothing is caught here, because a partial record is worse
     than none.
 
@@ -200,6 +225,16 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             doc, anchors, meta.report_id, meta.home_team, meta.away_team
         )
 
+        # Story 1.13, same transparency rule: the two receiving parsers' typed errors
+        # (ReceivingPageLayoutError, ReceivingTableError, UnknownLabelError,
+        # UnknownRgbError, ...) travel as themselves. This family draws NO markers — both
+        # pages are dashboards — so the parsers stage values, not events.
+        offers = parse_offers(doc, anchors, meta.report_id, meta.home_team, meta.away_team)
+        movement = parse_movement(
+            doc, anchors, meta.report_id, meta.home_team, meta.away_team
+        )
+        receiving = receiving_domain(offers, movement)
+
         # Same transparency rule for Domain A (Story 1.6): its typed errors
         # (MissingFieldError, UnknownVenueError, LineupParseError, ...) travel as
         # themselves. The probed cover block goes in as-is and comes back normalized —
@@ -221,12 +256,59 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             doc, anchors, match_metadata["lineups"], report_id=meta.report_id
         )
 
+        # Momentum (Story 1.8), same transparency rule: its typed errors
+        # (MomentumChartError, MomentumFillError, MomentumScaleError, MomentumAxisError,
+        # MomentumClockError) travel as themselves. The team names are handed in so the
+        # parser can PROVE the chart's colour -> team mapping against this report's own
+        # cover rather than assuming it.
+        momentum = extract_momentum(
+            doc,
+            anchors,
+            report_id=meta.report_id,
+            home_team=meta.home_team,
+            away_team=meta.away_team,
+        )
+
+        # Domains E and F (Story 1.9), same transparency rule: their typed errors
+        # (`GoalkeepingPageParseError`, `InvolvementChartError`, `SetPlaysParseError`,
+        # `MalformedFieldError`, `MissingFieldError`) and the shared marker chain's
+        # `PitchFrameError` / `UnknownRgbError` all travel as themselves.
+        #
+        # Domain E takes Domain A's lineups like Domain G does — but only to carry the
+        # goalkeeper(s) with minutes BESIDE the team block; no page data is joined to
+        # them, because no goalkeeping page names a keeper and 7 of 208 corpus
+        # team-innings used two. It also takes this report's cover team names, because
+        # the involvement page carries BOTH teams' charts and identifies them only by
+        # their printed titles (the `extract_momentum` precedent).
+        goalkeeping = extract_domain_e(
+            doc,
+            anchors,
+            match_metadata["lineups"],
+            report_id=meta.report_id,
+            home_team=meta.home_team,
+            away_team=meta.away_team,
+        )
+        set_plays = extract_domain_f(doc, anchors, report_id=meta.report_id)
+
     warnings.extend(f"probe note: {note}" for note in meta.probe_notes)
     # Story 1.12: the documented absence of a printed counterpart for the
     # possession-regain map travels as a per-report warning (never as a non-"pass" check,
     # which the strictly binary aggregator would read as a failure). `batch.py` mirrors
     # record warnings into the manifest entry.
     warnings.extend(defensive_actions["warnings"])
+    # Story 1.8, the same rule for the same reason: a report whose momentum chart draws no
+    # bars stages `momentum: None` and says so in a warning, never in a non-"pass" check.
+    warnings.extend(momentum["warnings"])
+    # Story 1.13, the same rule again for AC 2's TWO documented absences: the movement
+    # donuts' slice values are raster-only, and the three per-phase totals are NOT a
+    # partition of the movement total. Both are recorded as `None` counterparts in
+    # `counts` plus one warning per report — never as a non-"pass" check.
+    warnings.extend(movement["warnings"])
+    # Story 1.9, the same rule again for AC 4's THREE documented absences: the distribution
+    # technique breakdowns, goal prevention's intervention body type, and the aerial
+    # crosses-faced completed count. All three are `None` in the payload plus one warning
+    # each — never a non-"pass" check.
+    warnings.extend(domain_e_warnings())
 
     # Each domain APPENDS its checks and the result re-aggregates over whatever checks
     # are actually present, so domain stories compose without clobbering one another.
@@ -266,6 +348,22 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             lineups=match_metadata["lineups"],
         )
     )
+    # Story 1.8: appended after every existing appender. An absent series contributes no
+    # checks at all — its absence is already carried by the warning above.
+    self_validation["checks"].extend(momentum_checks(momentum["series"]))
+    # Story 1.13: appended after every existing appender. The five page-internal checks
+    # come from the two receiving pages' own printed numbers; the two cross-domain
+    # families (offers totals, and the grid's per-type totals) are computed HERE because
+    # Domain G's payload is only in hand at this seam — the receiving parsers stay
+    # single-source, the 1.7 `shots_counts` / 1.10 `domain_g_checks` precedent.
+    self_validation["checks"].extend(
+        receiving_self_validation_block(receiving["counts"], player_stats=player_stats)
+    )
+    # Story 1.9: appended after every existing appender. Both blocks are page-internal —
+    # every relation they check comes from the goalkeeping or set-plays pages' own printed
+    # numbers, so neither needs a sibling payload at this seam.
+    self_validation["checks"].extend(domain_e_checks(goalkeeping))
+    self_validation["checks"].extend(domain_f_checks(set_plays))
     self_validation["result"] = aggregate_self_validation(self_validation["checks"])
 
     return {
@@ -280,7 +378,7 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         "metadata": metadata,
         "page_count": page_count,
         "anchors": anchors,
-        # Further domains filled by Stories 1.8-1.14.
+        # Further domains filled by Stories 1.9-1.14.
         "domains": {
             "match_metadata": match_metadata,
             "shots": shots,
@@ -289,6 +387,17 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             "crosses": crosses,
             "defensive_actions": defensive_actions,
             "player_stats": player_stats,
+            # Story 1.8 (AD-4): ALWAYS present. The value is the series payload or `None`
+            # with the reason in `warnings` — never omitted, and never an empty series.
+            "momentum": momentum["series"],
+            # Story 1.13: the two receiving page families under one payload. Values, not
+            # events — this family draws no markers (see `pipeline/markers/receiving.py`).
+            "receiving": receiving,
+            # Story 1.9 (AC 1's re-scope): PER TEAM, not per goalkeeper. No goalkeeping
+            # page names a keeper, so the keeper(s) with minutes ride alongside the team
+            # block from Domain A rather than keying it.
+            "goalkeeping": goalkeeping,
+            "set_plays": set_plays,
         },
         # Real from Story 1.3 on: once extractors run, the result is "pass" or "fail",
         # never left "not-applicable" (a failed consistency check is data, not an

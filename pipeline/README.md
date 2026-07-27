@@ -68,7 +68,14 @@ count check covers the forced-turnover map only — see the defensive-actions se
 why the possession-regain map has no printed counterpart to check against);
 and `domain-g-completeness` plus `domain-g-counts` from Story 1.10 (see the Domain G
 section — parse, typing and join failures land in `probe-failure` with the typed class
-name prefixed, so join integrity is localizable per player, side and page family).
+name prefixed, so join integrity is localizable per player, side and page family);
+`receiving-parse` plus `receiving-count-match` from Story 1.13 (one prefix covering BOTH
+receiving page families, which share one payload — the count check re-runs all seven
+receiving reconciliations, including the two cross-domain ones when Domain G is
+available; see the receiving section); and `goalkeeping-completeness` plus
+`goalkeeping-counts` / `set-plays-completeness` plus `set-plays-counts` from Story 1.9
+(see the Domains E & F section — an off-palette distribution marker is `unknown-rgb`, the
+same as shots, and every other typed failure is a `probe-failure` naming its class).
 
 ## Batch ingestion
 
@@ -313,8 +320,10 @@ pipeline/
               domains follow the same convention) + the committed venue -> UTC-offset
               table
   ingest/     batch orchestration, run manifest, idempotence, per-report Extract, CLI
-  markers/    shared pitch-map filter chain + map parser family (shots, crosses and
-              defensive actions today; offers/movement reuses it in Story 1.13)
+  markers/    shared pitch-map filter chain + the page-family parsers built on it (shots,
+              crosses, defensive actions, and receiving — which turned out to draw no
+              markers at all and stages values, but composes the chain as its
+              template-revision tripwire; see "The receiving domain")
   validate/   check registry, sample selection, verification runner, CLI
   tests/      pytest suite
 ```
@@ -504,6 +513,148 @@ orphan_record_paths 0` with **exactly two** self-validation failures, both
 exit code; a third failing report means the discrepancy is systematic and re-opens the
 ruling. The FR-15 gate is unaffected.
 
+## The receiving domain (Story 1.13) — **this family has no events**
+
+Every Extraction Record also carries `domains.receiving`, extracted by
+`pipeline/markers/receiving.py` from the two page families `Offering to Receive {team}`
+and `Movement to Receive {team}` (one page per team each, 208/208 corpus pages per
+family).
+
+**Neither page is a pitch map.** Both are dashboards. Measured over all 104 reports /
+416 receiving pages: there is **no marker, no coordinate, no per-event row and no ordinal
+glyph anywhere in the family**, so **no `ReceivingEvent` row is producible and none is
+fabricated**. This module therefore stages *values*, not events, and Story 1.16 can only
+emit `events.receiving: null` (filed as an AD-14 emission blocker; it is strictly harder
+than Story 1.11's `CrossEvent` blocker, which at least yields real coordinates). Read the
+module docstring before assuming a scatter parser and going looking for the bug.
+
+```jsonc
+"receiving": {
+  "offers": {
+    "home": { "team_id": "mexico", "type": "offer",
+              "total_offers_made": 424, "total_offers_received": 166,
+              "offers_final_third": 134, "offers_middle_third": 212,
+              "offers_defensive_third": 78,
+              "offers_inside_shape": 213, "offers_outside_shape": 211,
+              "most_offers": { "value": 54, "player_name": "Julian QUINONES",
+                               "position": "LEFT WINGER" },
+              "table_rows": [ { "shirt_number": 1, "player_name": "Raul RANGEL",
+                                "offers_made": 13, "offers_received": 4,
+                                "made_received_pct": 30.8 } ] }
+  },
+  "movement": {
+    "home": { "team_id": "mexico", "type": "movement", "total_movements": 309,
+              "by_phase": { "final_third": 65, "progression": 96, "build_up": 176 },
+              "by_third_and_type": [   // 15 cells: printed third order, then type
+                { "pitch_third": "final-third", "movement_type": "in-behind",
+                  "count": 76 } ],
+              "top_ranked_players": [ { "movement_type": "in-front", "shirt_number": 6,
+                                        "player_name": "Erik LIRA", "movements": 25 } ] }
+  },
+  "counts": { "home": { "offers": { ... }, "movement": { ...,
+                        "donut_slice_table": null, "phase_partition_table": null } } }
+}
+```
+
+`teamId` is the **RECEIVING** player's team (`ReceivingEvent`'s own `$comment`) — the team
+the anchor names. Mechanically the same `team_slug` call every other family makes,
+semantically the opposite end of the event.
+
+**The offers page.** Four qualifying stroked rects, **two** distinct panels: the right
+panel additionally carries two stroke+fill rects of bit-identical geometry (the raster
+shape overlay's border), so the parser de-duplicates by rounded geometry — per-family
+tuning, not a chain edit. Each panel is typed from **its own printed title**
+(`Offers Made Inside Shape` / `Offers Made Outside Shape`), never by x order, and its
+shape badge is then read as the unique digit word inside that typed panel — so the
+inside/outside assignment is text-anchored end to end. The five KPI values are each read
+as the integer printed above its own label, centred on it (`Offers Made in Defensive
+Third` wraps onto two lines, and its anchor is the first line only). The per-player table
+is x-restricted to the region derived from the header's own `#`: the left KPI column
+prints its value **0.8 pt** from the first table row's y — inside `table_lines`' 3 pt
+tolerance — so an unrestricted rule glues two KPI values into the first player row. Names
+are gathered from the name x-band across neighbouring lines, because four corpus pages
+print a three-line name straddling its numeric row.
+
+**The 11 dots are asserted, not extracted.** Each offers panel holds exactly 11 filled
+8.229 pt circles in one fill `(0.18, 0.3, 1.0)`, and their positions relative to their own
+panel are identical between the two panels on 208/208 pages *and* across every team page —
+a static formation template carrying zero per-report information. Staging them would put 22
+meaningless rows in every record and invite a consumer to render them as positions. But
+dropping the chain would leave the one page in this family with pitch-panel geometry
+unguarded, and silence is the worst outcome, so the full chain runs and **asserts**: 11
+dots per panel, one known fill (`key_outcomes` is the FR-11 assert-on-unknown seam), and
+positions equal across panels. That census is the template-revision tripwire, and it is
+what makes "reuse the chain, assert on unknown RGB" true here rather than a formality.
+`exclude_legend_rows` is a no-op by construction (one fill, so no y-bucket reaches
+`legend_min_colors`) and is kept in the production path anyway. `marker_min_pt = 8.0`
+excludes the in-panel white penalty (1.371 pt) and centre (2.743 pt) spots, which would
+otherwise abort every report on a white fill.
+
+**The movement page.** One titled stroked panel (`Movement Types Pitch Third`) holding
+**zero** markers: it is a pitch split into three thirds, each carrying a five-row
+horizontal bar chart. Its own rotated `DIRECTION` label is asserted before anything is read
+off it — no coordinate is produced here, so AD-6's formula pair never runs, but a
+re-oriented panel would silently swap `final-third` and `defensive-third` on every grid row
+while every reconciliation still passed. The rotated `FINAL`/`MIDDLE`/`DEFENSIVE THIRD`
+labels assign each row its third (text-anchored, never "top band = final third"); they
+extract 6-7 pt *left* of the panel's own x0, which is also why the Top Ranked Players
+table's right bound comes from its header's last column and not from the panel edge. The
+grid is read label-anchored rather than by visual row, because the panel prints 33
+axis-tick digits beside the 15 values and the corpus offsets a value up to 3 pt from its
+own label's line.
+
+Movement-type labels resolve through the frozen `MOVEMENT_LABEL_TO_ENUM` to the contract's
+kebab codes. **`no-movement` is the contract's sixth value and never appears on this
+page** — reconciliation #8 (below) proves the grid is the five-type sum and never the
+six-type sum; it exists only per-player, on Domain G's Offers & Receptions page. Record
+keys stay snake_case throughout; the kebab code travels as a *value*.
+
+**Self-Validation: five page-internal check ids plus two cross-domain, all exact and
+binary with both operands always recorded.** Nine reconciliations were measured
+corpus-wide and every one holds exactly:
+
+| # | reconciliation | check id | result |
+| --- | --- | --- | --- |
+| 1 | final + middle + defensive == total made | `receiving-offers-thirds-sum` | 208/208 |
+| 2 | inside + outside shape == total made | `receiving-offers-shape-sum` | 208/208 |
+| 3 | Σ table `offers_made` == total made | `receiving-offers-table-sum` (`column: offers_made`) | 208/208 |
+| 4 | Σ table `offers_received` == total received | `receiving-offers-table-sum` (`column: offers_received`) | 208/208 |
+| 5 | Σ the 15 grid counts == total movements | `receiving-movement-grid-total` | 208/208 |
+| 6 | total made == Σ Domain G `in_possession.total_offers` | `receiving-offers-domain-g` | 208/208 |
+| 7 | total received == Σ Domain G `offers_received` | `receiving-offers-domain-g` | 208/208 |
+| 8 | grid per-type total == Σ Domain G `offers_by_movement_type`, each of the FIVE | `receiving-movement-domain-g` | 208/208 |
+| 9 | printed `%` == `round(100 × received / made, 1)` | `receiving-offers-table-pct` | 3,208/3,208 rows, worst deviation **0.0 pp** |
+
+3 and 4 are emitted as two checks with one operand pair each: a merged check could not say
+which column failed. Reconciliation 9 carries the family's one crash branch — **81 corpus
+rows print `offers_made == 0`** (and print `0%` beside it), where the ratio is undefined;
+the check skips exactly those rows and records how many, never dividing and never coercing
+a value into existence. The two cross-domain families are computed at the
+`extract_report.py` seam, where Domain G's payload is in hand; if it is unavailable they
+emit **nothing** rather than a failing check (one root cause, one finding).
+
+**Two documented absences take AC 2's absence branch** — recorded as `null` counterparts in
+`counts` plus one warning per report each, and **no check at all**, because
+`aggregate_self_validation` is strictly binary and would read a "not-applicable" check as a
+failure of every record in the corpus:
+
+- **The donut slice values are raster-only.** The three phase donuts and the
+  All-Movement-Types donut are images; exactly one text word is recoverable per donut — its
+  centre total — so no independently printed per-type total exists to check against. The
+  grid is the counterpart that does exist, and it reconciles exactly.
+- **The three per-phase totals are NOT a partition.**
+  `(final + progression + build_up) − total_movements` ranges **−48..+314** and is zero on
+  only **3 of 208** pages. They are staged verbatim and **never summed into a check** —
+  the same family as `InPossessionPhase`'s "independent rates, never normalize" warning.
+
+**Gate checks** (FR-15): `receiving-parse` (an off-palette decoration fill →
+`unknown-rgb`; every other typed failure raises for the runner to isolate) and
+`receiving-count-match` (any failing reconciliation → `count-mismatch`, one deviation per
+failing team and check id, both operands in the specifics). One prefix covers both page
+families because they share one payload — and because `offers-count-match` is
+`test_checks_registry.py`'s deliberately-unclaimed placeholder id, which `register_check`
+would refuse as a duplicate.
+
 ## Per-player performance and physical data — Domain G (Story 1.10)
 
 Every Extraction Record also carries `domains.player_stats`, extracted by
@@ -605,3 +756,329 @@ class name prefixed, so `PlayerJoinError` localizes the player, side and family)
 `domain-g-counts` (failed Self-Validation checks → `count-mismatch`). A missing anchor
 stays anchor-coverage's `missing-anchor` finding, and a Domain A failure — which blocks
 Domain G, since it joins to those lineups — stays `domain-a-completeness`'s.
+
+---
+
+## The momentum series — OQ-5 resolved (Story 1.8)
+
+The PMSR carries **no page containing the word *Momentum***. It carries exactly one
+per-minute two-team time series: the vector bar chart titled **`Distribution in the Final
+Third`**, drawn once per report at the foot of the lineups page (page index 1 on 104/104,
+but located by its own title anchor and never by index — AD-8).
+
+`home`/`away` are that minute's count of **final-third distributions** per team. That is not
+a possession percentage and not an abstract momentum index, and the schema description and
+both READMEs say so; the pipeline records the true source metric so nothing downstream can
+quietly let "momentum" imply "possession". It is nonetheless the only candidate for FR-35
+and the App's Momentum Timeline — a per-minute attacking-presence count is exactly what a
+broadcast momentum chart plots.
+
+### What is constant, and what must be derived
+
+Everything about this chart is per-report except three measurements. Getting that backwards
+is the trap: a fixed absolute bar-width window catches only **75 of 104** reports.
+
+These are **measurements, not assertions.** The parser derives the baseline from the middle
+value gridline and the half height from the gridline run, then asserts the bars agree with
+what it derived — it never compares either against the literal below. That is deliberate
+(AD-8: derive, never hard-code): a template revision that translated the whole chart band
+vertically would still produce correct values, because every quantity that feeds a sample is
+relative, and failing such a report would be a false alarm. What the parser does assert is
+the auto-scale itself — peak bar height equals the axis half height — which is the property
+that would actually corrupt the values if it changed.
+
+| Constant on 104/104 | Value |
+| --- | --- |
+| Baseline (the axis zero, and every bar's shared edge) | `y = 429.13` |
+| Peak bar height (the chart auto-scales so the tallest bar fills the axis half height) | `50.38 pt` |
+| Bar width as a fraction of the slot pitch | `0.70` |
+| Home fill (grows **up**) / away fill (grows **down**) | `(1.0, 0.239, 0.0)` / `(0.702, 0.533, 1.0)` |
+| Value gridlines | nine, evenly spaced, symmetric ±peak, plus a tenth axis rule 0.75 pt below |
+
+| Per-report, derived every time | Range |
+| --- | --- |
+| Slot pitch | 1.95 – 2.95 pt |
+| Value unit | 2.40 – 5.60 pt |
+| Slot count | 96 – 114 (regulation), 132 – 145 (the 9 extra-time reports) |
+| Empty slots (a minute with no bar on either side) | 9 – 36 |
+
+**The tenth gridline matters.** The axis rule sits 0.75 pt below the last value line, so a
+naive `max(y)` puts the "half height" at 50.755 pt instead of 50.38 and corrupts the
+geometric peak cross-check. The parser keeps the evenly-spaced run explicitly and asserts it
+is exactly nine lines.
+
+### Colour to team is proven, never assumed
+
+The chart encodes which team a bar belongs to **only** in its fill, so the legend swatch's
+own printed name is matched against that report's cover metadata on every extraction. Orange
+= home and purple = away on 104/104, and a report where it did not hold would fail loud
+rather than silently swap the two series.
+
+The lineups page also draws those exact two colours as *stroke* colours on unrelated
+elements, and carries Domain A's own goal/card glyphs. Colour alone is therefore not
+sufficient: the filter is **shape first** (AD-9) — a filled path whose item ops are exactly
+four lines, inside the plot box — and only then colour-keyed. A bar-shaped path inside the
+box carrying any other fill raises `MomentumFillError`, the same `unknown-rgb` phenomenon as
+an off-palette shots marker.
+
+### Three pitch derivations, and a geometric value scale
+
+The slot pitch is derived three independent ways and all three must agree within 0.01 pt:
+the printed tick spacing (the 45' tick minus the 15' tick, thirty slots), the plot box
+divided into a whole number of slots, and the drawn bars' own outermost span.
+
+The value unit is derived **geometrically** — the approximate GCD over the bar heights — and
+never as `peak / printed label`. That split is load-bearing: deriving it from the printed
+label would make `momentum-axis-scale` tautological, because the peak's value would then
+equal the printed label by construction on every chart, including one whose axis is wrong.
+Geometry contradicting *itself* (a bar height off the value grid, a peak that no longer
+fills the axis half height) fails loud; the printed axis contradicting the geometry is the
+recorded check.
+
+> The approximate GCD takes its remainder against the **nearest** multiple, not the largest
+> smaller one, and starts its running divisor at the smallest height. The textbook Euclidean
+> form turns sub-thousandth PDF coordinate noise into a real residue and converges on it —
+> measured against the real corpus, it returned ~0.001 pt as the "GCD" of 13 reports whose
+> true unit is 2.4 – 3.9 pt.
+
+### Slot to match clock (the story's one open question, closed)
+
+Derived per report from the printed ticks — never a hard-coded formula, because stoppage
+time shifts every tick after half time.
+
+- **First half:** minute *M* sits at slot *M − 1*. Verified on the 15'/30'/45' ticks with
+  **zero violations on 104/104**; slot 0 is match minute 1.
+- **Half time:** the `HT` tick marks the **first slot of the second half**. It lands anywhere
+  from slot 48 to 56, and the slots between the 45' tick and it are first-half stoppage
+  (45+1, 45+2, …). Second-half ticks then satisfy `slot(M) = M − 46 + HT_slot` — again zero
+  violations on the 101 reports that print `HT`. **Three reports omit the `HT` tick
+  entirely** (M67, M86, M104); there the 60'/75'/90' ticks pin the same number and are
+  required to agree.
+- **Full time:** the `FT` tick lands on the **last slot of the grid** on all 94 regulation
+  reports that print it. **One report omits it** (M42) and falls back to the grid's last
+  slot; `momentum-coverage` still passes there, but its `specifics` say the grid-end
+  cross-check was unavailable, so that report is never mistaken for a cross-checked one.
+- **Extra time (9 reports):** neither extra-time break is printed on any of them. The first
+  extra period opens on the slot after `FT`, and the `120` tick's own fifteen regular minutes
+  place the second period's opening slot. That is the only reading the printed ticks support,
+  and the parser asserts the two periods do not overlap.
+
+Observed stoppage: 1–11 minutes in the first half, 3–19 in the second, 0–4 and 1–11 in the
+two extra periods — all inside the contract's `StoppageMinute` bound of 30.
+
+### There is no printed row total to reconcile against
+
+Exactly as with Story 1.12's possession-regain map. The per-team bar sum was tested against
+**every** numeric Domain B field over all 208 team-innings; the best exact-match rate was
+`pass_completion` at 2/208 — coincidence. `receptions_in_final_third` is a related metric but
+consistently smaller (M01: 117 vs 138 home, 36 vs 78 away). No reconciliation was
+manufactured and no check was weakened to produce one (SM-C1).
+
+**Self-Validation** appends two recorded checks:
+
+| Check | Rule |
+| --- | --- |
+| `momentum-axis-scale` | the printed y-axis top label equals the peak value derived from the bar heights — the one genuine printed counterpart the page offers |
+| `momentum-coverage` | the series opens at kick-off, its clock strictly advances, it ends in the final period (90' or 120'), and the printed `FT` tick falls on the last sample |
+
+Both pass on 104/104. The FR-15 gate gains the same two ids: `momentum-axis-scale` owns the
+parse (typed failures to `probe-failure` naming the class, an off-palette fill to
+`unknown-rgb`) and `momentum-coverage` swallows parse failures so one root cause is
+attributed once.
+
+### Absence travels as a warning, not a failed check
+
+A report whose chart is anchored but draws no bars stages `momentum: None` plus a per-report
+warning that `batch.py` mirrors into the manifest — never a non-`pass` check, which the
+strictly binary aggregator would read as a *failure* of a merely incomplete report (Story
+1.12's precedent). **No corpus report takes this branch**: all 104 draw a band, and
+`momentum: null` never occurs in real data. A clean corpus run is therefore not evidence
+that the branch is dead code; AD-4 requires the key to be present with a flagged absence, and
+it is unit-tested directly.
+
+### The contract bump (AD-14)
+
+This story carried the project's first `schemaVersion` bump, **1 to 2**. `MomentumSample`'s
+`minute` field referenced `Minute` — an integer capped at the end of its period — and the
+momentum grid runs on stoppage-inclusive slots, so every first-half stoppage minute collapsed
+onto 45 and collided. The provisional shape could not represent the data. It is now
+`at: MinuteStamp` with non-negative integer values. Details in `contract/README.md` section 3.
+
+Staging stays raw and snake_case (AD-7): the record holds `{minute, stoppage_minute, home,
+away}` per sample and the camelCase `at:` composite is Story 1.16's emit-boundary job. No
+derived float (pitch, unit) ever reaches the record — two machines' float noise would break
+AD-8 byte-identity.
+
+## Goalkeeping and set plays — Domains E & F (Story 1.9)
+
+`domains["goalkeeping"]` and `domains["set_plays"]`, from `pipeline/extract/domain_e.py`
+and `domain_f.py`. Nine pages per report, all located by anchors Story 1.2 already
+registered — this story adds no `AnchorSpec`.
+
+### Domain E is staged PER TEAM, not per goalkeeper
+
+The epic asked for "every goalkeeper with minutes has a record". That is **unfulfillable**,
+and the story-creation probe proved it over all 104 reports:
+
+- all four goalkeeping page families are titled `{team}`, and **no goalkeeper name appears
+  anywhere on any of them**;
+- **7 of 208 team-innings used two goalkeepers** (M21 home, M41 away, M53 away, M62 away,
+  M66 home, M88 home, M98 away) and their pages still print one team-level block each —
+  one chart, one total, no name.
+
+So the block is per team, and the goalkeeper(s) with minutes are carried **beside** it from
+Domain A's lineups as `goalkeepers: [{name, shirt_number, substituted_on, substituted_off}]`
+— context recorded, never a key. No page data is joined to that list and no keeper is
+inferred from it, not even on the 201 unambiguous innings: a shape that varies between
+reports is worse than one that is honestly team-level everywhere. The list is asserted
+non-empty and deliberately **not** asserted to hold exactly one entry.
+
+### Four different extraction problems under one domain name
+
+| Page family | Shape | How it is read |
+| --- | --- | --- |
+| Goal Prevention | one table | seven-column table at the page foot, header-anchored, values bounded to `x >= 460` |
+| Aerial Control | half table | KPI tiles left of `x = 450`, the `Delivery Types Faced` table right of `x = 460` |
+| Goalkeeping Distribution | a marker **MAP** | four equal-area panels through the shared filter chain, read-only |
+| Goalkeeping Involvement | a per-minute **CHART** | one page carrying BOTH teams' timelines |
+
+Two printed-layout rules recur across all four families and across set plays:
+
+1. **A KPI value prints ABOVE its label and CENTRED on it**, and the row immediately above
+   is frequently not the value's row — for `Total Set Plays` it is the corners table's first
+   data row, and for `Goalkeeper Line Breaks` it is the three donut centres. Every KPI is
+   read by walking up from its label to the first row carrying a number centred on it, and
+   the walk is **bounded to 80 pt**: KPI columns repeat down these pages, so an unbounded
+   walk past a missing value would silently adopt the tile above's number.
+2. **A table's values print BELOW a header** whose own band text is a closed constant
+   asserted by equality (one distinct form on 208/208 pages for both E tables), so a
+   reworded or reordered column fails loud rather than shifting every value by one.
+
+### Two page traps, both corpus-measured
+
+- **Goal prevention's seven-column table.** `PMSR-M38-ESP-V-KSA` home prints a stray
+  pitch-marker ordinal at `x = 275` on the table's own visual row, so a naive "row of seven
+  digits" finds **zero** there; `PMSR-M34-ECU-V-CUW` away and `PMSR-M38` away each carry a
+  *second* seven-digit row higher up the page. Header anchoring plus the `x >= 460` bound
+  resolves all three: 208/208.
+- **The goal-prevention donut centres are in the text layer and are NOT trustworthy.** On
+  `PMSR-M01` the Intervention Type donut reads `4` against a table whose attempts-faced,
+  total-interventions and five-type sum are all `3`. They are neither staged nor checked.
+  (The *distribution* page's three donut centres are reliable, and are the printed
+  counterpart the marker counts are compared against.)
+
+### The distribution map: four equal-area panels
+
+`detect_pitch_frames` returns exactly **4** panels on 208/208 pages, each **59,516.0 pt²**
+and every frame ending at `y1 = 406.5` on all 832 panels. Because they are equal-area,
+`detect_pitch_frame`'s `max()` would return an arbitrary one and discard the other three —
+the Story 1.12 lesson verbatim, which is why the plural accessor is mandatory. Panel →
+category is keyed by the **printed panel title**, never by position (AD-8).
+
+Marker spec: `marker_min_pt=5.0`, `marker_max_pt=6.5` (real dots are 5.83 pt filled circles
+with a white stroke), palette `(0.18,0.30,1.00) → complete` / `(1.00,0.00,0.00) →
+incomplete`. **0 off-palette markers are admitted on 208/208.** No dedup anywhere (AD-8):
+two markers at the same point are two distributions.
+
+`pitch_margin_pt` is **0.5**, a recorded departure from the story's `0.0`, and the departure
+was measured rather than assumed. The story's stated reason for strict containment — that
+any positive margin would admit two `Complete`/`Incomplete` legend swatches per panel and
+inflate every count by 2 — does not hold for this spec: swept over all 208 pages, the
+swatches are 9.0 pt circles (outside the 5.0–6.5 window) whose centres sit **10.5 pt** below
+the frame, and **no** out-of-size filled circle sits within 6.0 pt of any frame. Meanwhile
+strict containment *drops real markers*: eight team-innings print a dot whose centre falls a
+fraction of a point below its frame (max overshoot **0.2917 pt**), and admitting it makes
+seven of them match their printed donut centre exactly. This is Story 1.11's touchline-cross
+finding, answered the same way.
+
+### The involvement chart: scale from the labels, baseline from the grid
+
+One page carries both teams' timelines, and which chart belongs to which team is read from
+the printed `'{team} GK Involvement Timeline'` title matched against this report's own cover
+— never from drawing order (the discipline `extract_momentum` applies to its legend). The
+extractor therefore takes the cover team names, a recorded departure from the story's stated
+signature: without them the home/away split could only be positional.
+
+The scale is established twice, from two independent sources that must agree:
+
+- the printed y-axis labels (a descending run of consecutive integers ending at 0) give the
+  points-per-unit factor;
+- the drawn value gridlines give the **baseline**, selected as the one run of exactly
+  `len(labels)` lines spaced that unit apart. The chart draws an extra axis rule 0.75 pt
+  below the zero line — the momentum chart's tenth-line problem again — so a spacing-derived
+  unit would be wrong.
+
+That split resolves the story's open tolerance question. Its proposed label-anchored fit
+`value = (y_of_zero_LABEL − y) / unit` carries a systematic offset: the labels sit 1.81 pt
+above their gridlines, which is 0.117 units on the reference report but **scales with the
+per-report unit** — measured worst **0.161278 units**, exceeding the proposed 0.15 bound on
+206 dots rather than on 2 charts. Anchoring the baseline on the zero **gridline** removes the
+fit entirely: over all 208 charts / **21,764 dots** the worst deviation from an integer is
+**0.000001 units**, so the shipped `0.01` tolerance is float slack, not a fit.
+
+Slot counts are **per report** — 95–111 regulation and 129–145 extra time, measured — and
+are never hard-coded.
+
+### Recorded Self-Validation checks
+
+Seven ids, all binary, all appended after every existing appender:
+
+| id | relation | corpus |
+| --- | --- | --- |
+| `goalkeeping-distribution-sum` | `feet + hands + throw == total` panel | exact 208/208 |
+| `goalkeeping-distribution-printed` | marker count **>=** printed donut centre | true 624/624 |
+| `goalkeeping-goal-prevention-sum` | Σ(5 intervention types) `==` attempts faced, and the KPI tile agrees with the table | exact 208/208 |
+| `goalkeeping-aerial-sum` | Σ(6 delivery types) `==` printed total | exact 208/208 |
+| `goalkeeping-involvement-bound` | Σ(series) **<=** printed total | true 208/208 |
+| `set-plays-corner-sides` | Σleft + Σright `==` total corners, and per row `total == left + right` | exact 208/208 |
+| `set-plays-totals` | FK + PEN + COR + THR `==` total set plays; `direct + indirect == total free kicks`; Σ(delivery-type row totals) `==` total corners | exact 208/208 |
+
+**Two of these are BOUNDS rather than equalities, and both were earned on evidence.**
+
+- `goalkeeping-involvement-bound`: `Σ(series) == total_involvements` is corpus-FALSE on
+  **149/208** — the delta is 0..5, never negative, exact on 59, mean 1.26. The chart
+  consistently plots *fewer* involvements than the KPI counts, and the cause is unresolved
+  (not axis clipping: the plotted maximum equals the axis top label; not lost dots: the dot
+  count equals the slot count). The observed delta is written into `specifics` on **every**
+  report so the gap stays visible rather than being absorbed.
+- `goalkeeping-distribution-printed`: over 208 team-innings × 3 printed panels, `drawn >=
+  printed` is true on **624/624** while equality holds on **604/624**. Every one of the 20
+  residuals is in the `feet` panel (+1 on 18, +2 on 2); `hands` and `throw` are exact on
+  208/208 each. No geometric cause survived investigation — the Total Distributions panel is
+  the **exact union** of the other three on every case examined, so the drawn set is
+  self-consistent and the map simply plots more feet distributions than the technique donut
+  counts. Every panel's delta is recorded in `specifics`.
+
+### Relations that are corpus-FALSE and are deliberately NOT shipped
+
+| Tempting relation | Reality |
+| --- | --- |
+| `direct == direct_on_target + direct_off_target` | **false 208/208** — 160 innings print `on + off == 0` while `direct > 0`. The contract's `FreeKickCounts` `$comment` asserts it; the `$comment` is wrong (filed in `deferred-work.md`). |
+| Σ(corner delivery style) `==` total corners | false on **112/208** — the style table is not a partition of corners |
+| Σ(5 intervention types) `==` total interventions | false on **207/208** — different denominators, as the contract itself notes |
+| `total_interventions == attempts_faced − no_save_attempt` | false on **183/208** |
+
+The synthetic fixtures make all four of these **false by construction**, so no test can
+quietly bless a relation the corpus refutes.
+
+### Documented absences (AC 4)
+
+Three contracted values are not extractable. Each stages as `null` plus one per-report
+**warning** — never a non-`pass` check, which the strictly binary aggregator would read as a
+failure of a merely incomplete report (the 1.12/1.13 branch):
+
+| Absent value | Why |
+| --- | --- |
+| `distribution.{feet,hands,throw}_techniques` | the donut **slice** labels are inside raster images; only the centre total is in the text layer |
+| `goal_prevention.by_body_type` | same, and this page's text-layer donut centres are demonstrably untrustworthy |
+| `aerial_control.crosses_faced_completed` | drawn only as marker colour on a goal-mouth crop, not a full pitch, with no printed counterpart to validate against |
+
+### Page-level tripwires
+
+Set plays carries exactly **24 bare-integer words** (22 printed values plus the date strip's
+day and year) on 208/208, and the distribution page exactly **4** numbers below the panel
+band (three donut centres plus `Goalkeeper Line Breaks`). Both are asserted, because every
+other value on those pages is found *by name* — a template revision that ADDED a printed
+number would otherwise stage a silently incomplete block. The set-plays census runs **after**
+the grammar, so a DROPPED value still fails with its own row's message rather than with a
+page-level word count that localizes nothing.

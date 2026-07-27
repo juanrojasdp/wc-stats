@@ -37,8 +37,39 @@ Registered here today:
                           Turnovers total (Story 1.12; the possession-regain map has no
                           established printed counterpart and is deliberately unchecked)
 
+  momentum-axis-scale     the momentum chart parses and its printed y-axis top label
+                          equals the peak bar's derived value — the ONLY printed
+                          counterpart the chart offers (Story 1.8)
+  momentum-coverage       the staged series covers the full match, kick-off to the final
+                          period, with the printed FT tick stamped at regulation's end.
+                          A backstop over the staged payload, not an independent
+                          cross-check — the parser's own `_clock_structure` already fails
+                          loud on every clock inconsistency (Story 1.8)
+
+  receiving-parse         both receiving page families parse; an off-palette decoration
+                          fill is unknown-rgb (Story 1.13)
+  receiving-count-match   every receiving reconciliation holds — the five page-internal
+                          ones plus, when Domain G is available, the two cross-domain
+                          ones (Story 1.13). One prefix covers both page families
+                          because they share one payload; `offers-*` is deliberately NOT
+                          claimed (it is test_checks_registry's unclaimed placeholder).
+
+  goalkeeping-completeness
+                          Domain E extracts all four goalkeeping page families for both
+                          teams, typed, with each team's goalkeeper list carried from
+                          Domain A (Story 1.9); an off-palette distribution marker is
+                          unknown-rgb, like shots
+  goalkeeping-counts      Domain E's Self-Validation checks (distribution sum, the printed
+                          donut cross-check, goal-prevention sum, aerial sum and the
+                          involvement bound), as deviations (Story 1.9)
+  set-plays-completeness  Domain F extracts both teams' set-plays pages, typed (Story 1.9)
+  set-plays-counts        Domain F's Self-Validation checks (corner sides, set-play
+                          totals), as deviations (Story 1.9). `offers-count-match` is
+                          deliberately NOT claimed by either pair — it is
+                          test_checks_registry's unclaimed placeholder.
+
 Later stories add, for example:
-  1.8+  per-domain extractor checks
+  1.10+ per-domain extractor checks
 """
 
 from __future__ import annotations
@@ -54,12 +85,40 @@ from pipeline.errors import PipelineError
 from pipeline.extract.domain_a import domain_a_checks, extract_domain_a
 from pipeline.extract.domain_b import domain_b_checks, extract_domain_b
 from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
+from pipeline.extract.domain_e import (
+    AERIAL_ANCHOR_STEM,
+    DISTRIBUTION_ANCHOR_STEM,
+    GOAL_PREVENTION_ANCHOR_STEM,
+    INVOLVEMENT_ANCHOR_ID,
+    domain_e_checks,
+    extract_domain_e,
+)
+from pipeline.extract.domain_f import (
+    SET_PLAYS_ANCHOR_STEM,
+    domain_f_checks,
+    extract_domain_f,
+)
 from pipeline.extract.domain_g import FAMILIES, domain_g_checks, extract_domain_g
-from pipeline.extract.errors import ExtractError, UnknownMinuteGlyphError
+from pipeline.extract.errors import (
+    ExtractError,
+    MomentumFillError,
+    UnknownMinuteGlyphError,
+)
+from pipeline.extract.momentum import (
+    MOMENTUM_ANCHOR_ID,
+    extract_momentum,
+    momentum_checks,
+)
 from pipeline.ingest.identity import team_slug
 from pipeline.markers.crosses import parse_crosses
 from pipeline.markers.defensive_actions import parse_defensive_actions
 from pipeline.markers.errors import UnknownRgbError
+from pipeline.markers.receiving import (
+    parse_movement,
+    parse_offers,
+    receiving_domain,
+    receiving_self_validation_block,
+)
 from pipeline.markers.shots import parse_shots
 from pipeline.validate.deviations import Deviation, DeviationCategory
 
@@ -1036,5 +1095,466 @@ register_check(
         check_id="domain-g-counts",
         applies_to=lambda meta: True,
         run=_check_domain_g_counts,
+    )
+)
+
+
+# One-slot memo for `_momentum_payload`, same shape and justification as the memos above
+# (Story 1.8): the runner hands the same open document to `momentum-axis-scale` and then
+# `momentum-coverage`, and each uncached call rebuilds the full-text `PageTextIndex` and
+# re-reads every drawing on the chart page. Copied, not refactored: the memo pattern
+# carries OPEN deferred-work entries (strong doc ref, replayed cached exceptions) that a
+# shared abstraction would have to inherit anyway.
+_momentum_memo: dict = {"doc": None, "result": None, "error": None}
+
+
+def _momentum_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """The momentum parser's result for one report, or `None` when its anchor does not
+    resolve.
+
+    A missing chart page is anchor-coverage's finding; re-reporting it here would count
+    one root cause twice. Note the return is the parser's `{"series", "warnings"}` wrapper,
+    not the series itself: a report whose chart draws no bars stages `series: None` and
+    that is a legitimate, check-free outcome — distinct from "could not be attempted".
+    """
+    if _momentum_memo["doc"] is not doc:
+        _momentum_memo.update(doc=doc, result=None, error=None)
+        try:
+            _momentum_memo["result"] = _momentum_uncached(doc, meta)
+        except Exception as exc:
+            _momentum_memo["error"] = exc
+    if _momentum_memo["error"] is not None:
+        raise _momentum_memo["error"]
+    return _momentum_memo["result"]
+
+
+def _momentum_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    anchors = _domain_anchor_pages(doc, meta, (MOMENTUM_ANCHOR_ID,))
+    if anchors is None:
+        return None
+    return extract_momentum(
+        doc,
+        anchors,
+        report_id=meta.report_id,
+        home_team=meta.home_team,
+        away_team=meta.away_team,
+    )
+
+
+def _check_momentum_axis_scale(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """The chart parses, and its printed y-axis top label equals the peak bar's value.
+
+    This check owns the parse, so every typed failure surfaces under this id: an
+    off-palette bar fill is the same phenomenon as an off-palette shots marker and lands
+    in `unknown-rgb`, while a structural, scale, axis or clock failure is a probe-failure
+    finding naming the typed class. `momentum-coverage` swallows those, so one root cause
+    is attributed once.
+
+    The same non-`PipelineError` caveat as the domain-g pair applies and is ledgered: the
+    single-attribution guarantee holds for `ExtractError` here and `PipelineError` in
+    `_check_momentum_coverage`, but `_domain_anchor_pages` raises a bare `LookupError` on
+    registry drift, which neither handler catches — so that one cause would be reported
+    against both ids.
+
+    The axis comparison itself is the genuine printed cross-check the page offers: this
+    chart has NO printed row total to reconcile a sum against (the probe tested the bar
+    sum against every numeric Domain B field over all 208 team-innings), and inventing one
+    is exactly what SM-C1 forbids.
+    """
+
+    def deviation(category: DeviationCategory, exc: ExtractError) -> list[Deviation]:
+        return [
+            Deviation(
+                report_id=meta.report_id,
+                check="momentum-axis-scale",
+                category=category,
+                specifics=f"{type(exc).__name__}: {exc.reason}",
+            )
+        ]
+
+    try:
+        payload = _momentum_payload(doc, meta)
+    except MomentumFillError as exc:
+        return deviation(DeviationCategory.UNKNOWN_RGB, exc)
+    except ExtractError as exc:
+        return deviation(DeviationCategory.PROBE_FAILURE, exc)
+    if payload is None:
+        return []
+    return _failed_check_deviations(
+        "momentum-axis-scale",
+        meta,
+        [
+            check
+            for check in momentum_checks(payload["series"])
+            if check["check"] == "momentum-axis-scale"
+        ],
+    )
+
+
+def _check_momentum_coverage(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """The staged series spans the whole match — kick-off to the final period.
+
+    A backstop over the staged payload, NOT an independent cross-check of the parse: every
+    clock inconsistency it could describe is already a typed failure inside the parser's
+    `_clock_structure`, which aborts the report before a series exists. See
+    `momentum_checks`' docstring in `pipeline/extract/momentum.py`.
+
+    A report that does not parse yields no deviation *here* (momentum-axis-scale's or
+    anchor-coverage's finding). A report whose chart draws no bars also yields none: its
+    absence travels as a per-report warning into the manifest, and the strictly binary
+    aggregator would read a non-`pass` check as a failure of a merely incomplete report.
+
+    Same non-`PipelineError` caveat as `_check_momentum_axis_scale`, ledgered there.
+    """
+    try:
+        payload = _momentum_payload(doc, meta)
+    except PipelineError:
+        return []
+    if payload is None:
+        return []
+    return _failed_check_deviations(
+        "momentum-coverage",
+        meta,
+        [
+            check
+            for check in momentum_checks(payload["series"])
+            if check["check"] == "momentum-coverage"
+        ],
+    )
+
+
+register_check(
+    Check(
+        check_id="momentum-axis-scale",
+        applies_to=lambda meta: True,
+        run=_check_momentum_axis_scale,
+    )
+)
+register_check(
+    Check(
+        check_id="momentum-coverage",
+        applies_to=lambda meta: True,
+        run=_check_momentum_coverage,
+    )
+)
+
+
+# One-slot memo for `_receiving_parse_result`, same shape and justification as
+# `_crosses_memo` above (Story 1.13): the runner hands the same open document to
+# `receiving-parse` and then `receiving-count-match`, and each uncached call rebuilds the
+# full-text `PageTextIndex` and re-parses all four receiving pages. Copied, not
+# refactored: the memo pattern carries OPEN deferred-work entries (strong doc ref,
+# replayed cached exceptions) that a shared abstraction would have to inherit anyway.
+_receiving_memo: dict = {"doc": None, "result": None, "error": None}
+
+# One prefix for both page families, deliberately: `offers-count-match` is
+# `test_checks_registry.py`'s unclaimed placeholder id (Story 1.12 moved it there) and
+# `register_check` raises on duplicates, so claiming it would silently break that test.
+# One prefix also matches the one `domains["receiving"]` payload the two families share.
+_RECEIVING_ANCHOR_IDS = ("offers:home", "offers:away", "movement:home", "movement:away")
+
+
+def _receiving_parse_result(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """Both teams' receiving domain, or `None` when the receiving anchors do not resolve.
+
+    A missing anchor is anchor-coverage's finding; re-reporting it here would count one
+    root cause twice. Every *other* typed parse failure propagates to the caller — each
+    check decides for itself what it owns.
+    """
+    if _receiving_memo["doc"] is not doc:
+        _receiving_memo.update(doc=doc, result=None, error=None)
+        try:
+            _receiving_memo["result"] = _receiving_parse_uncached(doc, meta)
+        except Exception as exc:
+            _receiving_memo["error"] = exc
+    if _receiving_memo["error"] is not None:
+        raise _receiving_memo["error"]
+    return _receiving_memo["result"]
+
+
+def _receiving_parse_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    # `_domain_anchor_pages`, not a hand-rolled loop (2026-07-27 review patch): the
+    # inlined copy silently left an anchor id OUT of the map when the registry no longer
+    # carried a spec for it, so `_single_anchor_page` then raised
+    # `ReceivingPageLayoutError(..., pages=None)` — report data — on all 104 reports for
+    # what is an authoring bug. The shared helper raises the deliberate
+    # `LookupError("anchor registry has no spec(s) for ...")` instead, and reuses the
+    # index rather than building a second full-document one per report.
+    anchors = _domain_anchor_pages(doc, meta, _RECEIVING_ANCHOR_IDS)
+    if anchors is None:
+        return None
+    return receiving_domain(
+        parse_offers(doc, anchors, meta.report_id, meta.home_team, meta.away_team),
+        parse_movement(doc, anchors, meta.report_id, meta.home_team, meta.away_team),
+    )
+
+
+def _check_receiving_parse(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Both receiving page families parse; an off-palette fill is `unknown-rgb` (FR-11).
+
+    The only fills this family keys are the offers panels' 11-dot formation template —
+    decoration, not data — and that is exactly the point: the census is a
+    template-revision tripwire, so a panel that ever starts drawing real markers in a
+    second colour surfaces here instead of publishing silence.
+
+    Other typed failures (pitch frame, page layout, panel title, table grammar)
+    deliberately raise: the runner isolates a raising check and records it against this
+    check's id — the loud, localizable surfacing the gate owes a template revision.
+    """
+    try:
+        _receiving_parse_result(doc, meta)
+    except UnknownRgbError as exc:
+        return [
+            Deviation(
+                report_id=meta.report_id,
+                check="receiving-parse",
+                category=DeviationCategory.UNKNOWN_RGB,
+                specifics=f"decoration fill rgb {exc.rgb} on page {exc.page_index} "
+                "is not in the receiving palette",
+            )
+        ]
+    return []
+
+
+def _check_receiving_count_match(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Every receiving reconciliation holds — one deviation per failing team and check.
+
+    Re-runs the record's own Self-Validation block as gate deviations, including the two
+    cross-domain families when Domain G's payload is available (it comes from the sibling
+    memo, the `_check_domain_g_counts` precedent). When it is not, those checks are not
+    emitted at all rather than failed: a Domain G parse failure is `domain-g-*`'s
+    finding.
+
+    A report that does not parse yields no deviation *here*: parse failures are
+    receiving-parse's finding (or anchor-coverage's), and a count comparison over a
+    failed parse would attribute one root cause to two checks.
+    """
+    try:
+        receiving = _receiving_parse_result(doc, meta)
+    except PipelineError:
+        return []
+    if receiving is None:
+        return []
+    try:
+        player_stats = _domain_g_payload(doc, meta)
+    except PipelineError:
+        player_stats = None
+    # Every receiving check carries a `specifics` string holding BOTH operands, so the
+    # shared builder renders one deviation per failing team and check id.
+    return _failed_check_deviations(
+        "receiving-count-match",
+        meta,
+        receiving_self_validation_block(receiving["counts"], player_stats=player_stats),
+    )
+
+
+register_check(
+    Check(
+        check_id="receiving-parse",
+        applies_to=lambda meta: True,
+        run=_check_receiving_parse,
+    )
+)
+register_check(
+    Check(
+        check_id="receiving-count-match",
+        applies_to=lambda meta: True,
+        run=_check_receiving_count_match,
+    )
+)
+
+
+# One-slot memos for the Domain E and F payloads, same shape and justification as the memos
+# above (Story 1.9): the runner hands the same open document to each domain's completeness
+# and then counts check, and each uncached call rebuilds the full-text `PageTextIndex` and
+# re-parses seven (E) or two (F) pages. Copied, not refactored: the memo pattern carries
+# OPEN deferred-work entries (strong doc ref, replayed cached exceptions) that a shared
+# abstraction would have to inherit anyway, and the runner-owned parse-handoff that retires
+# it is ledgered as a single joint fix.
+_domain_e_memo: dict = {"doc": None, "result": None, "error": None}
+_domain_f_memo: dict = {"doc": None, "result": None, "error": None}
+
+# The seven resolved anchor ids Domain E reads. `gk-involvement` is BARE — its spec is not
+# `per_team`, because one page carries both teams' charts — while the other three families
+# are per-team. Derived from the parser's own anchor constants so the two cannot drift.
+_DOMAIN_E_ANCHOR_IDS: "tuple[str, ...]" = (INVOLVEMENT_ANCHOR_ID,) + tuple(
+    f"{stem}:{side}"
+    for stem in (
+        DISTRIBUTION_ANCHOR_STEM,
+        GOAL_PREVENTION_ANCHOR_STEM,
+        AERIAL_ANCHOR_STEM,
+    )
+    for side in ("home", "away")
+)
+_DOMAIN_F_ANCHOR_IDS: "tuple[str, ...]" = tuple(
+    f"{SET_PLAYS_ANCHOR_STEM}:{side}" for side in ("home", "away")
+)
+
+
+def _domain_e_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """Domain E's payload for one report, or `None` when it cannot be attempted.
+
+    `None` covers both skip paths: one of the seven goalkeeping anchors did not resolve
+    (anchor-coverage's finding), or Domain A did not extract, which leaves the lineups this
+    domain carries its goalkeeper list from unavailable. A Domain A failure is
+    `domain-a-completeness`'s finding, and re-reporting it under a `goalkeeping-*` id is
+    exactly the double attribution the 1.6 review patched out (Task 7.2).
+    """
+    if _domain_e_memo["doc"] is not doc:
+        _domain_e_memo.update(doc=doc, result=None, error=None)
+        try:
+            _domain_e_memo["result"] = _domain_e_uncached(doc, meta)
+        except Exception as exc:
+            _domain_e_memo["error"] = exc
+    if _domain_e_memo["error"] is not None:
+        raise _domain_e_memo["error"]
+    return _domain_e_memo["result"]
+
+
+def _domain_e_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    anchors = _domain_anchor_pages(doc, meta, _DOMAIN_E_ANCHOR_IDS)
+    if anchors is None:
+        return None
+    # Reuse Domain A's memo rather than an eighth parse of the same document.
+    try:
+        domain_a = _domain_a_payload(doc, meta)
+    except PipelineError:
+        return None
+    if domain_a is None:
+        return None
+    return extract_domain_e(
+        doc,
+        anchors,
+        domain_a["lineups"],
+        report_id=meta.report_id,
+        home_team=meta.home_team,
+        away_team=meta.away_team,
+    )
+
+
+def _domain_f_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """Domain F's payload for one report, or `None` when its anchors do not resolve."""
+    if _domain_f_memo["doc"] is not doc:
+        _domain_f_memo.update(doc=doc, result=None, error=None)
+        try:
+            _domain_f_memo["result"] = _domain_f_uncached(doc, meta)
+        except Exception as exc:
+            _domain_f_memo["error"] = exc
+    if _domain_f_memo["error"] is not None:
+        raise _domain_f_memo["error"]
+    return _domain_f_memo["result"]
+
+
+def _domain_f_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    anchors = _domain_anchor_pages(doc, meta, _DOMAIN_F_ANCHOR_IDS)
+    if anchors is None:
+        return None
+    return extract_domain_f(doc, anchors, report_id=meta.report_id)
+
+
+def _check_goalkeeping_completeness(
+    doc: "pymupdf.Document", meta: ReportMeta
+) -> list[Deviation]:
+    """All four goalkeeping page families extract for both teams, typed (AC 1, AC 3).
+
+    An off-palette distribution marker is the same phenomenon as an off-palette shots
+    marker and lands in the same `unknown-rgb` bucket. Every other typed extract failure —
+    a page that resists its family's grammar, a chart whose scale cannot be established, a
+    value that fails its expected type, a team with no goalkeeper in the lineup — is a
+    `probe-failure` finding naming the typed class, so the localization histogram can
+    separate the four families' failure modes.
+
+    A raising `PipelineError` bug propagates once and is recorded against this check's id
+    while `goalkeeping-counts` swallows it (Task 7.4). The same non-`PipelineError` caveat
+    applies as for Domains B, C and G (registry-drift `LookupError` lands in both ids via
+    the replayed memo — ledgered).
+    """
+    try:
+        _domain_e_payload(doc, meta)
+    except UnknownRgbError as exc:
+        return [
+            Deviation(
+                report_id=meta.report_id,
+                check="goalkeeping-completeness",
+                category=DeviationCategory.UNKNOWN_RGB,
+                specifics=f"distribution marker fill rgb {exc.rgb} on page "
+                f"{exc.page_index} is not in the goalkeeping palette",
+            )
+        ]
+    except ExtractError as exc:
+        return _extract_failure_deviation("goalkeeping-completeness", meta, exc)
+    return []
+
+
+def _check_goalkeeping_counts(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Domain E's Self-Validation checks, re-run as gate deviations (AC 3).
+
+    A report that does not extract yields no deviation *here* (goalkeeping-completeness's,
+    domain-a-completeness's or anchor-coverage's finding). Every check is page-internal, so
+    no sibling payload is needed.
+    """
+    try:
+        payload = _domain_e_payload(doc, meta)
+    except PipelineError:
+        return []
+    if payload is None:
+        return []
+    return _failed_check_deviations("goalkeeping-counts", meta, domain_e_checks(payload))
+
+
+def _check_set_plays_completeness(
+    doc: "pymupdf.Document", meta: ReportMeta
+) -> list[Deviation]:
+    """Both teams' set-plays pages extract with their full label inventory (AC 2, AC 3).
+
+    Same attribution rules as `domain-b-completeness`: typed `ExtractError` failures — a
+    missing KPI or table label, a row with the wrong value count, a page whose
+    numeric-word census departs from the corpus-invariant 24 — are probe-failure findings
+    naming the class; a raising `PipelineError` propagates once to the runner.
+    """
+    try:
+        _domain_f_payload(doc, meta)
+    except ExtractError as exc:
+        return _extract_failure_deviation("set-plays-completeness", meta, exc)
+    return []
+
+
+def _check_set_plays_counts(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Domain F's Self-Validation checks, re-run as gate deviations (AC 2, AC 3)."""
+    try:
+        payload = _domain_f_payload(doc, meta)
+    except PipelineError:
+        return []
+    if payload is None:
+        return []
+    return _failed_check_deviations("set-plays-counts", meta, domain_f_checks(payload))
+
+
+register_check(
+    Check(
+        check_id="goalkeeping-completeness",
+        applies_to=lambda meta: True,
+        run=_check_goalkeeping_completeness,
+    )
+)
+register_check(
+    Check(
+        check_id="goalkeeping-counts",
+        applies_to=lambda meta: True,
+        run=_check_goalkeeping_counts,
+    )
+)
+register_check(
+    Check(
+        check_id="set-plays-completeness",
+        applies_to=lambda meta: True,
+        run=_check_set_plays_completeness,
+    )
+)
+register_check(
+    Check(
+        check_id="set-plays-counts",
+        applies_to=lambda meta: True,
+        run=_check_set_plays_counts,
     )
 )

@@ -167,6 +167,125 @@ class PlayerTableParseError(ExtractError):
     what = "per-player page did not parse"
 
 
+class MomentumChartError(ExtractError):
+    """The momentum bar chart's structure resists the template grammar (Story 1.8).
+
+    Everything structural about the chart: the anchor resolving to zero or several pages,
+    a gridline set that is not the nine evenly-spaced value lines the template draws, a
+    baseline that is not single-valued or does not sit on the middle gridline, a bar
+    outside the plot box, a bar whose centre does not land on a slot, or two bars of the
+    same colour in one slot. Scale failures are `MomentumScaleError`, axis-label failures
+    `MomentumAxisError`, clock failures `MomentumClockError`, and an off-palette bar fill
+    `MomentumFillError` — five failure kinds, five classes, per the module rule above.
+    """
+
+    what = "momentum chart did not parse"
+
+
+class MomentumFillError(ExtractError):
+    """A bar-shaped path inside the chart box carries a fill outside the two-colour
+    palette (AD-8, AD-9).
+
+    The same phenomenon as an off-palette shots marker or an unclassifiable minute glyph,
+    and it lands in the gate's `unknown-rgb` bucket for the same reason: the chart encodes
+    which team a bar belongs to ONLY in its fill, so an unrecognized colour means the
+    home/away attribution would be a guess. The filter is shape-first (AD-9): only paths
+    with the bar's exact four-line item signature that sit inside the plot box are
+    considered, so the lineup page's own glyphs can never reach this check.
+    """
+
+    what = "momentum bar fill not in the palette"
+
+
+class MomentumScaleError(ExtractError):
+    """The bar-height -> value scale cannot be established beyond doubt (Story 1.8).
+
+    The chart auto-scales, so the pixels-per-unit factor is per-report and must be
+    *derived*. Three independent derivations exist — the printed y-axis top label against
+    the peak bar, the approximate GCD over every bar height, and the plot box's own half
+    height — and this class is raised when they disagree, or when any bar height is not an
+    integer multiple of the resolved unit. Deliberately loud: a silently wrong scale
+    multiplies every value in the series by a constant, and nothing downstream would
+    catch it (the series has no printed row total to reconcile against).
+    """
+
+    what = "momentum value scale unresolvable"
+
+
+class MomentumAxisError(ExtractError):
+    """The printed y-axis cannot be read (Story 1.8).
+
+    A label column that is not the nine symmetric labels the template prints, a top label
+    that is not a positive integer, or a column whose ends disagree. The top label is the
+    ONLY printed counterpart this chart offers, so losing it means losing the one genuine
+    cross-check on the scale — that is a template revision, not a value to guess.
+    """
+
+    what = "momentum y-axis unreadable"
+
+
+class MomentumClockError(ExtractError):
+    """The printed x-axis ticks cannot pin the slot -> match-clock mapping (Story 1.8).
+
+    Slot spacing is per-report and stoppage time shifts every tick after half time, so the
+    mapping is derived from the printed ticks on each report, never from a hard-coded
+    formula. Raised when the ticks needed to pin it are absent or contradict each other,
+    when a derived period boundary is impossible, or when a drawn slot falls outside the
+    span the ticks describe.
+    """
+
+    what = "momentum match-clock mapping unresolvable"
+
+
+class GoalkeepingPageParseError(ExtractError):
+    """A Domain E goalkeeping page resists its family's grammar (Story 1.9).
+
+    One class for everything structural across the four families, because they fail the
+    same way and a gate operator triaging deviations wants "goalkeeping page did not
+    parse" localized by the message, not by four near-identical class names: an anchor
+    resolving to zero or several pages, a required KPI or table label the page does not
+    print, a distribution page whose panel titles are not the four the template fixes,
+    or a table row that does not yield its family's exact value count.
+
+    Deliberately NOT this class: a value present but of the wrong type
+    (`MalformedFieldError`), a required field the page does not print at all
+    (`MissingFieldError`), the involvement chart's own geometry (`InvolvementChartError`),
+    and the shared marker chain's `PitchFrameError` / `UnknownRgbError`, which travel as
+    themselves so the gate keeps mapping an off-palette fill to `unknown-rgb` (the
+    1.11/1.12 precedent).
+    """
+
+    what = "goalkeeping page did not parse"
+
+
+class SetPlaysParseError(ExtractError):
+    """The Set Plays page's structure does not match the template grammar (Story 1.9).
+
+    The anchor resolving to zero or several pages, a missing KPI or table label, a
+    corners or free-kick row that does not yield its exact value count, or a page whose
+    numeric-word census departs from the corpus-invariant 24. Value-level failures keep
+    their own classes, as for `StatisticsParseError`.
+    """
+
+    what = "set plays page did not parse"
+
+
+class InvolvementChartError(ExtractError):
+    """The GK involvement timeline's structure or scale cannot be established (1.9).
+
+    The chart auto-scales, so the points-per-unit factor is per-report and must be
+    derived twice — once from the printed y-axis labels and once from the drawn value
+    gridlines — and this class is raised when the two disagree, when the label column is
+    not the descending run ending at 0 that the template prints, when a dot falls outside
+    the plot box, or when a dot's value is not a non-negative integer. Deliberately loud
+    for the `MomentumScaleError` reason: a silently wrong unit multiplies every value in
+    the series by a constant, and the printed total is a BOUND rather than an equality,
+    so nothing downstream would catch it.
+    """
+
+    what = "goalkeeping involvement chart did not parse"
+
+
 class PlayerJoinError(ExtractError):
     """A Domain G page row cannot be joined to this report's Domain A lineup (AC 2).
 

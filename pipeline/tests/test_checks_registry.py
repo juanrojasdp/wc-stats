@@ -362,3 +362,111 @@ def test_crosses_count_match_stays_silent_on_a_parse_failure_crosses_parse_raise
         assert _checks_by_id()["crosses-count-match"].run(doc, sample_meta()) == []
         with pytest.raises(CrossesTableError):
             _checks_by_id()["crosses-parse"].run(doc, sample_meta())
+
+
+# --- Story 1.13: the receiving checks -----------------------------------------------
+
+
+def test_the_receiving_checks_are_registered_once():
+    """One prefix covers BOTH page families, because they share one `domains.receiving`
+    payload — and because `offers-count-match` is this module's deliberately-unclaimed
+    placeholder id above, which `register_check` would refuse as a duplicate."""
+    ids = [check.check_id for check in registered_checks()]
+
+    assert ids.count("receiving-parse") == 1
+    assert ids.count("receiving-count-match") == 1
+    assert not [check_id for check_id in ids if check_id.startswith("offers-")]
+    assert not [check_id for check_id in ids if check_id.startswith("movement-")]
+
+
+def test_receiving_checks_are_clean_on_a_well_formed_report(tmp_path, make_report):
+    with _open_report(make_report, tmp_path) as doc:
+        assert _checks_by_id()["receiving-parse"].run(doc, sample_meta()) == []
+        assert _checks_by_id()["receiving-count-match"].run(doc, sample_meta()) == []
+
+
+def test_the_receiving_parse_is_memoized_across_its_two_checks(tmp_path, make_report, monkeypatch):
+    """The runner hands the same open document to both checks; an uncached second call
+    would rebuild the full-text index and re-parse all four receiving pages."""
+    from pipeline.validate import checks as checks_module
+
+    calls: list[int] = []
+    real = checks_module._receiving_parse_uncached
+    monkeypatch.setattr(
+        checks_module,
+        "_receiving_parse_uncached",
+        lambda doc, meta: calls.append(1) or real(doc, meta),
+    )
+    checks_module._receiving_memo.update(doc=None, result=None, error=None)
+    with _open_report(make_report, tmp_path) as doc:
+        _checks_by_id()["receiving-parse"].run(doc, sample_meta())
+        _checks_by_id()["receiving-count-match"].run(doc, sample_meta())
+
+    assert len(calls) == 1
+
+
+def test_receiving_parse_reports_an_off_palette_decoration_fill_as_unknown_rgb(
+    tmp_path, make_report
+):
+    """FR-11. The only fills this family keys are the offers panels' formation template —
+    decoration, not data — and that is the point: a panel that starts drawing real
+    markers in a second colour surfaces here instead of publishing silence."""
+    from pipeline.validate import checks as checks_module
+
+    checks_module._receiving_memo.update(doc=None, result=None, error=None)
+    with _open_report(
+        make_report, tmp_path, offers_dot_rgbs={"offers_inside_shape": {2: (0.91, 0.12, 0.44)}}
+    ) as doc:
+        [deviation] = _checks_by_id()["receiving-parse"].run(doc, sample_meta())
+
+    assert deviation.category == DeviationCategory.UNKNOWN_RGB
+    assert "(0.91, 0.12, 0.44)" in deviation.specifics
+    assert deviation.check == "receiving-parse"
+
+
+def test_receiving_count_match_reports_one_deviation_per_failing_check_with_both_operands(
+    tmp_path, make_report
+):
+    from pipeline.validate import checks as checks_module
+
+    checks_module._receiving_memo.update(doc=None, result=None, error=None)
+    with _open_report(
+        make_report,
+        tmp_path,
+        offers_values={"home": {"offers_final_third": 7}, "away": {"offers_inside_shape": 5}},
+    ) as doc:
+        deviations = _checks_by_id()["receiving-count-match"].run(doc, sample_meta())
+
+    assert {d.category for d in deviations} == {DeviationCategory.COUNT_MISMATCH}
+    assert all(d.check == "receiving-count-match" for d in deviations)
+    # One per failing team AND check id, each naming both operands.
+    kinds = {tuple(part.strip() for part in d.specifics.split(":")[:2]) for d in deviations}
+    assert ("receiving-offers-thirds-sum", "home") in kinds
+    assert ("receiving-offers-shape-sum", "away") in kinds
+    assert all("page reads" in d.specifics and "counterpart is" in d.specifics for d in deviations)
+
+
+def test_receiving_checks_stay_silent_when_a_receiving_anchor_is_missing(tmp_path, make_report):
+    """A missing anchor is anchor-coverage's finding; double-reporting it here would
+    inflate the localization histograms with one root cause counted twice."""
+    from pipeline.validate import checks as checks_module
+
+    checks_module._receiving_memo.update(doc=None, result=None, error=None)
+    with _open_report(make_report, tmp_path, drop_anchor_ids=("movement:home",)) as doc:
+        assert _checks_by_id()["receiving-parse"].run(doc, sample_meta()) == []
+        assert _checks_by_id()["receiving-count-match"].run(doc, sample_meta()) == []
+
+
+def test_receiving_count_match_stays_silent_on_a_parse_failure_receiving_parse_raises(
+    tmp_path, make_report
+):
+    """One root cause, one finding: the count check yields nothing on a broken parse,
+    while receiving-parse raises the typed error for the runner to isolate and record."""
+    from pipeline.markers.errors import ReceivingPageLayoutError
+    from pipeline.validate import checks as checks_module
+
+    checks_module._receiving_memo.update(doc=None, result=None, error=None)
+    with _open_report(make_report, tmp_path, movement_direction={"home": 270}) as doc:
+        assert _checks_by_id()["receiving-count-match"].run(doc, sample_meta()) == []
+        with pytest.raises(ReceivingPageLayoutError):
+            _checks_by_id()["receiving-parse"].run(doc, sample_meta())

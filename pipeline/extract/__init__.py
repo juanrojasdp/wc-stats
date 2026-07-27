@@ -10,10 +10,23 @@ the same convention. Pitch-map marker parsing is NOT here — `pipeline/markers/
 
 `aggregate_self_validation` lives here, not in any one domain's module: it is the
 record-level seam every extractor's checks flow through, and importing it from a
-sibling domain would couple each new story to Domain A's extractor.
+sibling domain would couple each new story to Domain A's extractor. `check_entry` is
+here for the same reason (Story 1.8): four domain modules carried byte-identical private
+copies of it, and the ledger's rule is that extraction becomes cheaper than duplication
+at the third copy — momentum would have been the fifth.
 """
 
 from __future__ import annotations
+
+
+def check_entry(check_id: str, passed: bool, specifics: str) -> dict:
+    """One Self-Validation check, in the shape `aggregate_self_validation` reads.
+
+    `result` is the literal `"pass"`/`"fail"` the aggregator compares against — never a
+    bool, never a truthy value — because the aggregator treats anything that is not the
+    exact string `"pass"` as a failure, and a bool would silently fail every check.
+    """
+    return {"check": check_id, "result": "pass" if passed else "fail", "specifics": specifics}
 
 
 def aggregate_self_validation(checks: "list[dict]") -> str:

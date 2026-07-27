@@ -247,6 +247,58 @@ class DefensiveActionsCoordinateError(MarkerError):
         )
 
 
+class ReceivingPageLayoutError(MarkerError):
+    """A receiving page does not present the layout the corpus fixes (Story 1.13).
+
+    Covers both receiving page families — `Offering to Receive {team}` and `Movement to
+    Receive {team}` — because one anchor pair, one `domains["receiving"]` payload and one
+    gate-check prefix cover both. Raised for an anchor that does not resolve to exactly
+    one page (each family is a single page per team on all 208 corpus pages of each), for
+    a page whose de-duplicated stroked panels are not the expected count, for a
+    decoration census that is not the corpus-invariant 11 dots per offers panel, for
+    offers panels whose decoration is not positionally identical, and for a movement
+    panel whose rotated `DIRECTION` label does not fix the assumed orientation. Carries
+    the anchor id and the pages it resolved to, plus a reason naming what the page showed
+    — a template revision must be localizable without reopening the PDF.
+    """
+
+    def __init__(
+        self,
+        anchor_id: str,
+        pages: "list[int] | None",
+        report_id: str | None = None,
+        reason: str = "expected exactly one receiving page",
+    ) -> None:
+        self.anchor_id = anchor_id
+        self.pages = pages
+        self.report_id = report_id
+        self.reason = reason
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(f"[{where}] anchor {anchor_id!r} resolved to pages {pages}: {reason}")
+
+
+class ReceivingTableError(MarkerError):
+    """A receiving page's printed values resist the house grammar (Story 1.13).
+
+    Covers every text read on both families: the label-anchored KPI values, the in-panel
+    shape badges, the Most-Offers block, the per-player offers table (missing/ambiguous
+    header, a shirt-led row without the two counts and a percentage), the four donut
+    centre totals, the 15-cell movement grid, and the Top Ranked Players table. Never
+    fall back to a value the page did not print — a Self-Validation check whose two
+    operands come from the same read is a tautology, not a check (the
+    `AttemptsTableError` rule).
+    """
+
+    def __init__(self, reason: str, report_id: str | None = None, page_index: int | None = None) -> None:
+        self.reason = reason
+        self.report_id = report_id
+        self.page_index = page_index
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(
+            f"[{where}] receiving page values on page {page_index} unparseable: {reason}"
+        )
+
+
 class ShotsPageLayoutError(MarkerError):
     """A shots anchor did not resolve to [map page, event-table page(s)].
 

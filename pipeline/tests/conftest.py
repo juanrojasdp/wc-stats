@@ -369,6 +369,299 @@ def default_defensive_action_rows(markers):
     return [{"shirt": 7, "name": "Test REGAINER", "total": 3}]
 
 
+# --- Story 1.13: receiving page synthesis constants ----------------------------------
+#
+# Both receiving families are DASHBOARDS, not marker maps, and the fixtures reproduce the
+# real anatomy measured over all 104 reports / 416 pages — including the three collisions
+# the parsers exist to survive:
+#
+#   1. a KPI value on the SAME `table_lines` cluster as the first table row (0.8 pt apart
+#      on the real page), so the offers table's x-restriction has a regression that bites;
+#   2. a three-line player name straddling its numeric row (4.5 pt above and below), which
+#      leaves the numeric cluster with no name at all;
+#   3. the movement page's rotated `... THIRD` labels extracting LEFT of the pitch panel's
+#      own x0, so the Top Ranked Players table's right bound cannot be the panel edge.
+#
+# Geometry is expressed as word TOP (y0) rather than baseline, because that is what the
+# parsers see; `_baseline_for_top` converts. PyMuPDF's word bbox is exactly
+# `baseline - fontsize * ascender` .. `baseline - fontsize * descender`.
+_HELV_ASCENDER = 1.075
+_HELV_DESCENDER = -0.299
+
+
+def _baseline_for_top(top: float, fontsize: float) -> float:
+    """The insert_text baseline that puts a word's bbox top at `top`."""
+    return top + fontsize * _HELV_ASCENDER
+
+
+def _top_to_bottom(top: float, fontsize: float) -> float:
+    """The bbox bottom of a word whose top is `top`."""
+    return top - fontsize * _HELV_DESCENDER
+
+
+# The two panels, at the corpus' own rects. Both are 192 x 274.5, so the decoration's
+# per-panel relative positions come out bit-identical — the invariant the census asserts.
+RECEIVING_OFFERS_PANELS = (
+    ("offers_inside_shape", (234.0, 222.75, 426.0, 497.25)),
+    ("offers_outside_shape", (450.0, 222.75, 642.0, 497.25)),
+)
+RECEIVING_OFFERS_PANEL_TITLES = {
+    "offers_inside_shape": "Offers Made Inside Shape",
+    "offers_outside_shape": "Offers Made Outside Shape",
+}
+# The right panel additionally carries two stroke+fill rects of bit-identical geometry
+# (the raster shape overlay's border), so the page presents 4 qualifying rects for 2
+# panels — the de-duplication the parser must do.
+RECEIVING_OFFERS_OVERLAY_KEY = "offers_outside_shape"
+RECEIVING_OFFERS_OVERLAY_COPIES = 2
+
+RECEIVING_TITLE_TOP = 203.0
+RECEIVING_TITLE_FONTSIZE = 8
+
+RECEIVING_DOT_RADIUS = 4.1145  # 8.229 pt diameter, the real decoration's size
+RECEIVING_DOT_RGB = (0.18, 0.30, 1.00)
+# 11 (fx, fy) fractions of each panel — the static formation template, identical in both.
+RECEIVING_DOT_OFFSETS = (
+    (0.27, 0.28), (0.73, 0.28),
+    (0.09, 0.50), (0.27, 0.50), (0.73, 0.50), (0.91, 0.50),
+    (0.09, 0.67), (0.91, 0.67),
+    (0.27, 0.68), (0.73, 0.68),
+    (0.50, 0.90),
+)
+# White penalty/centre spots INSIDE the panels: filled all-Bezier circles that only
+# `marker_min_pt` excludes. Admitting either aborts every report on a white fill.
+RECEIVING_SPOT_RADIUS = 0.6855  # 1.371 pt penalty spots
+RECEIVING_CENTRE_SPOT_RADIUS = 1.3715  # 2.743 pt centre spot
+
+# The shape badges, the only word inside each panel. Different y per panel, as the corpus
+# prints them — nothing positional may be read into either.
+RECEIVING_BADGE_TOPS = {"offers_inside_shape": 350.0, "offers_outside_shape": 440.0}
+
+RECEIVING_KPI_FONTSIZE = 14
+RECEIVING_LABEL_FONTSIZE = 8
+# Staging key -> (label lines, value x-centre, value top, first label top).
+RECEIVING_KPI_LAYOUT = {
+    "total_offers_made": (("Total Offers Made",), 110.0, 119.8, 158.0),
+    "total_offers_received": (("Total Offers Received",), 325.0, 119.8, 158.0),
+    "offers_final_third": (("Offers Made in Final Third",), 110.0, 225.0, 264.0),
+    "offers_middle_third": (("Offers Made in Middle Third",), 110.0, 328.0, 366.0),
+    # Two printed lines on 208/208 pages; the parser anchors on the FIRST only.
+    "offers_defensive_third": (
+        ("Offers Made in Defensive", "Third"),
+        110.0,
+        432.0,
+        471.0,
+    ),
+}
+RECEIVING_LABEL_LINE_PITCH = 15.0
+
+RECEIVING_MOST_X = 534.0
+RECEIVING_MOST_TITLE_TOP = 96.0
+RECEIVING_MOST_VALUE_TOP = 110.0
+RECEIVING_MOST_VALUE_FONTSIZE = 12
+RECEIVING_MOST_NAME_TOP = 152.0
+RECEIVING_MOST_POSITION_TOP = 166.0
+
+RECEIVING_TABLE_FONTSIZE = 7
+RECEIVING_TABLE_COLUMNS = {"#": 666.0, "Player": 686.0}
+RECEIVING_TABLE_VALUE_XS = {"made": 820.0, "received": 868.0, "pct": 908.0}
+# The stacked three-line header. The '#'+'Player' line is the parser's anchor and shares
+# its y-cluster with the Most-Offers title, exactly as the corpus prints it.
+RECEIVING_TABLE_TOPS = {"stack_top": 88.0, "header": 95.0, "stack_bottom": 102.0}
+# `RECEIVING_ROW_TOP0 + 0.8` is where `total_offers_made`'s value lands: the collision the
+# x-restriction closes. Keep the two in step if either moves.
+RECEIVING_ROW_TOP0 = 119.0
+RECEIVING_ROW_PITCH = 24.75
+
+# --- the movement page
+RECEIVING_MOVEMENT_PANEL = (675.0, 129.0, 936.0, 502.5)
+RECEIVING_MOVEMENT_PANEL_TITLE = "Movement Types Pitch Third"
+RECEIVING_MOVEMENT_TITLE_TOP = 110.0
+# `rotate=90` reproduces the corpus' writing-direction vector (0.0, -1.0) exactly;
+# `rotate=270` is the mirrored panel the parser must reject.
+RECEIVING_DIRECTION_TEXT = "DIRECTION"
+RECEIVING_DIRECTION_ROTATE = 90
+RECEIVING_DIRECTION_AT = (920.0, 230.0)
+# Rotated third labels, printed just LEFT of the panel's x0 as the corpus prints them
+# (measured 6-7 pt outside). Values are (printed label, centre y).
+RECEIVING_THIRD_LABELS = (
+    ("FINAL THIRD", 166.0),
+    ("MIDDLE THIRD", 294.0),
+    ("DEFENSIVE THIRD", 420.0),
+)
+RECEIVING_THIRD_LABEL_X = 668.0
+
+# Printed donut title -> (image rect, title top, centre-total position as (x, top)).
+RECEIVING_DONUTS = {
+    "Final Third Phase": ((24.0, 141.6, 214.0, 246.0), 130.0, (110.0, 188.0)),
+    "Progression Phase": ((24.0, 272.9, 214.0, 376.6), 261.0, (110.0, 320.0)),
+    "Build Up Phase": ((24.0, 403.4, 214.0, 507.8), 392.0, (110.0, 450.0)),
+    "All Movement Types": ((310.0, 114.7, 610.0, 303.0), 100.0, (400.0, 195.0)),
+}
+RECEIVING_DONUT_TITLE_XS = {
+    "Final Third Phase": 100.0,
+    "Progression Phase": 100.0,
+    "Build Up Phase": 100.0,
+    "All Movement Types": 460.0,
+}
+# The five 9.0 pt legend swatches and their labels print INSIDE the All-Movement donut's
+# image rect — non-digit words that must not disturb the "unique digit inside" read.
+RECEIVING_LEGEND_X = 550.0
+RECEIVING_LEGEND_SWATCH_X = 540.0
+RECEIVING_LEGEND_TOP0 = 130.0
+RECEIVING_LEGEND_PITCH = 16.5
+RECEIVING_LEGEND_RADIUS = 4.5
+RECEIVING_LEGEND_RGBS = (
+    (1.00, 0.24, 0.00),
+    (0.36, 0.61, 0.84),
+    (0.96, 0.74, 0.00),
+    (0.70, 0.53, 1.00),
+    (0.18, 0.30, 1.00),
+)
+
+# The grid: label x inside the panel, values to their right. Row tops per third, plus the
+# axis-tick row each third carries >= 21 pt below its last label (33 digit words inside
+# the panel in total — why the grid is read label-anchored, not by visual row).
+RECEIVING_GRID_LABEL_X = 684.0
+RECEIVING_GRID_VALUE_X = 760.0
+RECEIVING_GRID_ROW_TOPS = {
+    "FINAL THIRD": (138.0, 153.0, 167.0, 179.0, 194.0),
+    "MIDDLE THIRD": (266.0, 280.0, 294.0, 308.0, 322.0),
+    "DEFENSIVE THIRD": (393.0, 407.0, 421.0, 435.0, 447.0),
+}
+# One value per third is printed off its label's own line, as the corpus does — the
+# reason `table_lines` clustering cannot be used to pair label and value.
+RECEIVING_GRID_VALUE_DY = {"FINAL THIRD": 3.0, "MIDDLE THIRD": 0.0, "DEFENSIVE THIRD": 0.0}
+RECEIVING_TICK_TOPS = {"FINAL THIRD": 216.0, "MIDDLE THIRD": 342.0, "DEFENSIVE THIRD": 469.0}
+RECEIVING_TICK_XS = (733.0, 752.0, 769.0, 788.0, 807.0, 827.0, 846.0, 865.0, 885.0, 904.0, 923.0)
+RECEIVING_TICK_LABELS = (0, 8, 15, 23, 31, 39, 46, 54, 62, 69, 77)
+
+RECEIVING_TOP_RANKED_TITLE_TOP = 346.0
+RECEIVING_TOP_RANKED_COLUMNS = {"Type": 249.75, "Player": 346.5, "Movements": 571.5}
+RECEIVING_TOP_RANKED_VALUE_XS = {"shirt": 346.0, "name": 358.0, "movements": 592.0}
+RECEIVING_TOP_RANKED_HEADER_TOP = 375.0
+# The fourth row deliberately shares a y-cluster with the defensive third's tick row, and
+# the third with a grid label row — both real collisions the x-restriction closes.
+RECEIVING_TOP_RANKED_ROW_TOPS = (396.0, 420.0, 446.0, 468.0, 495.0)
+
+# Printed label -> the contract's kebab code, in printed order. A literal copy of the
+# parser's own frozen map: a test asserts the two agree AND that neither carries
+# `no-movement`, the contract's sixth value, which this page never prints.
+RECEIVING_MOVEMENT_LABELS = (
+    ("In Front", "in-front"),
+    ("In Between", "in-between"),
+    ("Out to In", "out-to-in"),
+    ("In to Out", "in-to-out"),
+    ("In Behind", "in-behind"),
+)
+RECEIVING_THIRD_ENUMS = {
+    "FINAL THIRD": "final-third",
+    "MIDDLE THIRD": "middle-third",
+    "DEFENSIVE THIRD": "defensive-third",
+}
+
+
+def default_offers_block(player_rows):
+    """The offers page's printed values, DERIVED from this report's own Domain G rows.
+
+    Story 1.13 keys two cross-domain reconciliations on Domain G's per-player offers
+    (`total_offers_made == Σ total_offers`, `total_offers_received == Σ offers_received`),
+    so the fixture derives both totals rather than inventing them — the
+    `default_player_stats_rows` discipline. The per-player table simply IS the Domain G
+    row set, which makes the two table-sum reconciliations hold by construction too.
+
+    Exported so tests derive expected values from what the factory drew, never a second
+    literal.
+    """
+    made = [row["offers"][0] for row in player_rows]
+    received = [row["offers"][7] for row in player_rows]
+    total_made, total_received = sum(made), sum(received)
+    # ASYMMETRIC splits, deliberately (2026-07-27 review patch). Every player row carries
+    # the same `DEFAULT_OFFERS`, so `total_made` is always 21 x N — divisible by 3 for
+    # every lineup size — and the previous `total_made // 3` / `total_made // 2` splits
+    # printed 84/84/84 for the thirds and 126/126 for the two shape badges. That made the
+    # story's own AD-8 proofs tautological: `test_panel_typing_is_text_anchored_not_positional`
+    # asserted `126 == 126` and passed whether panel typing read the printed titles or
+    # merely the x order, and `test_the_two_line_defensive_third_label_still_finds_its_value`
+    # would have passed while returning the Final Third value. The three thirds and the
+    # two badges must be pairwise DISTINCT for those tests to be able to fail; the
+    # reconciliations they feed (`thirds_sum`, `shape_sum`) are sums, so any split holds.
+    final_third = total_made // 2
+    middle_third = total_made // 3
+    inside = total_made // 3
+    return {
+        "total_offers_made": total_made,
+        "total_offers_received": total_received,
+        "offers_final_third": final_third,
+        "offers_middle_third": middle_third,
+        "offers_defensive_third": total_made - final_third - middle_third,
+        "offers_inside_shape": inside,
+        "offers_outside_shape": total_made - inside,
+        "most_offers": {
+            "value": max(made) if made else 0,
+            "player_name": player_rows[0]["name"] if player_rows else "Test PLAYER",
+            "position": "LEFT WINGER",
+        },
+        "rows": [
+            {"shirt": row["shirt"], "name": row["name"], "made": m, "received": r}
+            for row, m, r in zip(player_rows, made, received)
+        ],
+    }
+
+
+def default_movement_block(player_rows):
+    """The movement page's printed values, derived from the same Domain G rows.
+
+    The grid's per-type totals must equal Domain G's FIVE-type sums (reconciliation #8 —
+    never the six-type sum, because `no-movement` never appears on this page), and the
+    All-Movement centre total must equal the grid sum. The three phase totals are
+    deliberately NOT a partition of it, as the corpus's are not (the real delta ranges
+    -48..+314 and is zero on 3 of 208 pages): a fixture whose phases summed to the total
+    would quietly bless the check AC 2 forbids.
+    """
+    thirds = tuple(RECEIVING_GRID_ROW_TOPS)
+    grid: dict[tuple[str, str], int] = {}
+    per_type: dict[str, int] = {}
+    for index, (_label, code) in enumerate(RECEIVING_MOVEMENT_LABELS, start=1):
+        total = sum(row["offers"][index] for row in player_rows)
+        per_type[code] = total
+        # ASYMMETRIC, for the same reason as the offers thirds above (2026-07-27 review
+        # patch): every per-type total is 21-times-something and divisible by 3, so the
+        # previous `total // 3, total // 3, remainder` split drew all three thirds
+        # IDENTICAL (24/24/24, 20/20/20, ...). `test_movement_values_are_what_the_page_printed`
+        # compares the whole `{(third, type): count}` dict, which was therefore invariant
+        # under any permutation of the three thirds — leaving the module's riskiest read
+        # (nearest-label third assignment) with no coverage at all. The grid sum is what
+        # the reconciliations use, and it is unchanged by how the total is split.
+        first = total // 2
+        second = total // 3
+        grid[(thirds[0], code)] = first
+        grid[(thirds[1], code)] = second
+        grid[(thirds[2], code)] = total - first - second
+    total_movements = sum(per_type.values())
+    return {
+        "total_movements": total_movements,
+        "by_phase": {
+            "Final Third Phase": total_movements // 2,
+            "Progression Phase": total_movements // 3,
+            "Build Up Phase": total_movements // 4,
+        },
+        "grid": grid,
+        "per_type": per_type,
+        "top_ranked": [
+            {
+                "label": label,
+                "shirt": player_rows[index % len(player_rows)]["shirt"],
+                "name": player_rows[index % len(player_rows)]["name"],
+                "movements": per_type[code],
+            }
+            for index, (label, code) in enumerate(RECEIVING_MOVEMENT_LABELS)
+        ]
+        if player_rows
+        else [],
+    }
+
+
 def default_cross_rows(markers):
     """One aggregate player row whose Total Attempted equals the marker count.
 
@@ -377,6 +670,171 @@ def default_cross_rows(markers):
     six delivery-column values in printed order (all inswing by default).
     """
     return [{"shirt": 9, "name": "Test PLAYER", "counts": (len(markers), 0, 0, 0, 0, 0)}]
+
+# --- Story 1.8: momentum chart synthesis constants ------------------------------------
+#
+# The real geometry, measured on all 104 reports: a plot box fixed in x, nine evenly
+# spaced value gridlines plus a tenth axis rule 0.75 pt below the last, the baseline on
+# the middle gridline at y=429.13, and bars 0.70 of the slot pitch wide. Slot pitch and
+# value unit are DERIVED here exactly as the parser derives them — hardcoding either
+# would let a fixture agree with a parser that had drifted from the corpus.
+
+MOMENTUM_TITLE = "Distribution in the Final Third"
+MOMENTUM_HOME_FILL = (1.0, 0.239, 0.0)
+MOMENTUM_AWAY_FILL = (0.702, 0.533, 1.0)
+MOMENTUM_GRID_STROKE = (0.878, 0.878, 0.878)
+MOMENTUM_PLOT_X0, MOMENTUM_PLOT_X1 = 349.688, 633.0
+MOMENTUM_GRID_TOP, MOMENTUM_GRID_STEP = 378.75, 12.595
+MOMENTUM_BASELINE = 429.13  # == MOMENTUM_GRID_TOP + 4 * MOMENTUM_GRID_STEP
+MOMENTUM_HALF_HEIGHT = 50.38
+MOMENTUM_WIDTH_RATIO = 0.70
+MOMENTUM_TICK_FONTSIZE = 9.0
+MOMENTUM_AXIS_FONTSIZE = 8.25
+MOMENTUM_LEGEND_Y0, MOMENTUM_LEGEND_Y1 = 509.25, 518.25
+
+# A compact but structurally real regulation match: 96 slots, three minutes of first-half
+# stoppage (HT on slot 48) and three of second-half (FT on the last slot, 95).
+DEFAULT_MOMENTUM_SLOTS = 96
+DEFAULT_MOMENTUM_TICKS = {
+    "0": 0, "15": 14, "30": 29, "45": 44, "HT": 48,
+    "60": 62, "75": 77, "90": 92, "FT": 95,
+}
+# slot -> (home, away). The peak (5) is a HOME bar, so a parser that read the away side
+# for the scale would disagree with the printed top label immediately. Every listed value
+# is distinct enough that an off-by-one slot assignment cannot pass.
+DEFAULT_MOMENTUM_VALUES = {
+    0: (1, 0), 10: (5, 2), 20: (3, 3), 44: (2, 0),
+    47: (0, 1), 48: (1, 1), 92: (0, 2), 95: (1, 0),
+}
+DEFAULT_MOMENTUM_TOP_LABEL = 5
+
+
+def momentum_pitch(slot_count=DEFAULT_MOMENTUM_SLOTS):
+    """Slot pitch for a chart of `slot_count` slots — the parser's own derivation."""
+    return (MOMENTUM_PLOT_X1 - MOMENTUM_PLOT_X0) / slot_count
+
+
+def momentum_unit(top_label=DEFAULT_MOMENTUM_TOP_LABEL):
+    """Points per value unit — the chart auto-scales so the peak fills the half height."""
+    return MOMENTUM_HALF_HEIGHT / top_label
+
+
+def _momentum_centred_text(page, text, centre_x, y, fontsize):
+    """Insert `text` horizontally centred on `centre_x` at text baseline `y`."""
+    import pymupdf
+
+    width = pymupdf.get_text_length(text, fontsize=fontsize)
+    page.insert_text((centre_x - width / 2.0, y), text, fontsize=fontsize)
+    return width
+
+
+def draw_momentum_page(
+    page,
+    home="Mexico",
+    away="South Africa",
+    *,
+    values=None,
+    slot_count=DEFAULT_MOMENTUM_SLOTS,
+    ticks=None,
+    top_label=DEFAULT_MOMENTUM_TOP_LABEL,
+    axis_labels=None,
+    gridlines=True,
+    axis_rule=True,
+    legend=True,
+    title=True,
+    decorate=None,
+):
+    """Draw the synthetic momentum band on `page`.
+
+    `values` maps slot index -> `(home, away)` integer counts; a slot absent from the map
+    draws no bar at all, which is exactly the corpus's own "empty minute" (9 to 36 per
+    report) and is what the parser must fill with a real zero rather than a gap.
+
+    `ticks` maps the printed x-axis label -> slot index. `axis_labels` overrides the nine
+    printed y-axis labels. `gridlines=False` / `axis_rule=False` / `legend=False` break
+    the chart structurally, and `decorate(page)` draws extra content for collision tests.
+    """
+    import pymupdf
+
+    values = DEFAULT_MOMENTUM_VALUES if values is None else values
+    ticks = DEFAULT_MOMENTUM_TICKS if ticks is None else ticks
+    pitch = momentum_pitch(slot_count)
+    unit = momentum_unit(top_label)
+    bar_width = MOMENTUM_WIDTH_RATIO * pitch
+    grid_bottom = MOMENTUM_GRID_TOP + 8 * MOMENTUM_GRID_STEP
+
+    if title:
+        page.insert_text((372.84, 361.89), MOMENTUM_TITLE, fontsize=12)
+
+    if gridlines:
+        for row in range(9):
+            y = MOMENTUM_GRID_TOP + row * MOMENTUM_GRID_STEP
+            page.draw_line(
+                (MOMENTUM_PLOT_X0, y), (MOMENTUM_PLOT_X1, y),
+                color=MOMENTUM_GRID_STROKE, width=0.75,
+            )
+        if axis_rule:
+            # The tenth line the template draws just below the axis. Present so the
+            # fixture exercises the parser's even-spacing run rather than letting a
+            # naive max(y) accidentally agree with it.
+            page.draw_line(
+                (MOMENTUM_PLOT_X0, grid_bottom + 0.75),
+                (MOMENTUM_PLOT_X1, grid_bottom + 0.75),
+                color=MOMENTUM_GRID_STROKE, width=0.75,
+            )
+
+    if axis_labels is None:
+        quarter = top_label / 4.0
+        steps = [top_label - i * quarter for i in range(5)]
+        printed = [f"{value:g}" for value in steps]
+        axis_labels = printed + printed[-2::-1]
+    for row, text in enumerate(axis_labels):
+        y = MOMENTUM_GRID_TOP + row * MOMENTUM_GRID_STEP
+        width = pymupdf.get_text_length(text, fontsize=MOMENTUM_AXIS_FONTSIZE)
+        page.insert_text(
+            (MOMENTUM_PLOT_X0 - 7.5 - width, y + 3.0), text,
+            fontsize=MOMENTUM_AXIS_FONTSIZE,
+        )
+
+    for slot, (home_value, away_value) in sorted(values.items()):
+        x0 = MOMENTUM_PLOT_X0 + slot * pitch + (pitch - bar_width) / 2.0
+        x1 = x0 + bar_width
+        if home_value:
+            y0 = MOMENTUM_BASELINE - home_value * unit
+            page.draw_polyline(
+                [(x0, y0), (x1, y0), (x1, MOMENTUM_BASELINE), (x0, MOMENTUM_BASELINE), (x0, y0)],
+                color=None, fill=MOMENTUM_HOME_FILL,
+            )
+        if away_value:
+            y1 = MOMENTUM_BASELINE + away_value * unit
+            page.draw_polyline(
+                [(x0, MOMENTUM_BASELINE), (x1, MOMENTUM_BASELINE), (x1, y1), (x0, y1),
+                 (x0, MOMENTUM_BASELINE)],
+                color=None, fill=MOMENTUM_AWAY_FILL,
+            )
+
+    for label, slot in ticks.items():
+        _momentum_centred_text(
+            page, label, MOMENTUM_PLOT_X0 + (slot + 0.5) * pitch,
+            grid_bottom + 12.0, MOMENTUM_TICK_FONTSIZE,
+        )
+
+    if legend:
+        x = 420.0
+        for fill, name in ((MOMENTUM_HOME_FILL, home), (MOMENTUM_AWAY_FILL, away)):
+            page.draw_rect(
+                pymupdf.Rect(x, MOMENTUM_LEGEND_Y0, x + 9.0, MOMENTUM_LEGEND_Y1),
+                color=None, fill=fill,
+            )
+            page.insert_text((x + 11.0, MOMENTUM_LEGEND_Y1 - 2.0), name, fontsize=9.0)
+            # The parser assembles a legend name from the words right of its swatch and
+            # stops at the first gap wider than 8 pt, so the two entries must be further
+            # apart than the space inside a two-word team name.
+            x += 11.0 + pymupdf.get_text_length(name, fontsize=9.0) + 20.0
+
+    if decorate is not None:
+        decorate(page)
+
 
 # --- Story 1.10: Domain G per-player page synthesis constants ------------------------
 #
@@ -978,6 +1436,672 @@ def draw_line_height_page(
             _draw_metre_value(page, cx + dx, cy + dy, text)
 
 
+# --- Story 1.9: Domains E & F page synthesis constants --------------------------------
+#
+# Deliberate literals like SHOTS_OUTCOME_RGB: the fixtures must keep drawing what the
+# corpus fixes even if the modules under test corrupt their constants. Geometry is taken
+# from the real 960x540 pages measured on spike/mex_rsa.pdf, because the two layout rules
+# these parsers live on are geometric and cannot be exercised by a tidier fixture:
+#
+#   1. a KPI value prints ABOVE its label and CENTRED on it, with rows in between that
+#      carry OTHER numbers (for `Total Set Plays` the corners table's first data row, for
+#      `Goalkeeper Line Breaks` the three donut centres);
+#   2. a table's values print BELOW a header whose own band text is a closed constant, and
+#      the goal-prevention page prints a stray digit LEFT of the table on the value row —
+#      the corpus trap (PMSR-M38 home) that the `x >= 460` bound exists to survive.
+#
+# Positions are expressed as word TOPS (y0), because that is what the parsers' visual-row
+# grouping sees; `_baseline_for_top` converts (shared with the Story 1.13 helpers above).
+
+EF_FONTSIZE = 9
+EF_LABEL_FONTSIZE = 8
+# The date/venue strip every real page prints. It carries exactly two bare-integer words
+# ('11' and '2026'; '13:00' is not one), which is why the set-plays numeric census is 24
+# rather than 22 — the fixture must draw it or the census is unreachable.
+EF_DATE_STRIP = "11 June 2026 - Test Stadium - 13:00"
+EF_DATE_STRIP_X = 372.0
+EF_DATE_STRIP_TOP = 13.0
+
+
+def _ef_centred(page, centre_x, top, text, fontsize=EF_FONTSIZE):
+    """Insert `text` with its bbox centred on `centre_x` and its top at `top`."""
+    import pymupdf
+
+    text = str(text)
+    width = pymupdf.get_text_length(text, fontsize=fontsize)
+    page.insert_text(
+        (centre_x - width / 2.0, _baseline_for_top(top, fontsize)), text, fontsize=fontsize
+    )
+
+
+def _ef_left(page, x, top, text, fontsize=EF_FONTSIZE):
+    """Insert `text` with its left edge at `x` and its top at `top`."""
+    page.insert_text((x, _baseline_for_top(top, fontsize)), str(text), fontsize=fontsize)
+
+
+def _ef_date_strip(page):
+    _ef_left(page, EF_DATE_STRIP_X, EF_DATE_STRIP_TOP, EF_DATE_STRIP, fontsize=EF_FONTSIZE)
+
+
+# --- Domain F: the set-plays page -----------------------------------------------------
+
+# KPI tiles: payload key -> (label, centre x, label top, value top). Two pairs share one
+# label row and one value row, exactly as the corpus prints them.
+SET_PLAYS_KPI_LAYOUT = {
+    "total_set_plays": ("Total Set Plays", 237.0, 152.0, 113.0),
+    "total_free_kicks": ("Total Free Kicks", 121.5, 254.0, 217.0),
+    "total_penalties": ("Total Penalties", 352.5, 254.0, 217.0),
+    "total_corners": ("Total Corners", 121.5, 356.0, 319.0),
+    "total_throw_ins": ("Total Throw Ins", 352.5, 356.0, 319.0),
+}
+SET_PLAYS_CORNER_LABEL_X = 504.0
+SET_PLAYS_CORNER_VALUE_XS = (768.0, 840.0, 912.0)  # left / right / total
+SET_PLAYS_CORNER_TYPE_TOPS = {
+    "direct_to_area": 140.0,
+    "short": 165.0,
+    "edge_of_penalty_area": 190.0,
+}
+SET_PLAYS_CORNER_TYPE_LABELS = {
+    "direct_to_area": "Direct to Area",
+    "short": "Short",
+    "edge_of_penalty_area": "Edge of Penalty Area",
+}
+SET_PLAYS_CORNER_STYLE_TOPS = {
+    "inswing": 262.0,
+    "outswing": 287.0,
+    "driven": 312.0,
+    "lofted": 337.0,
+}
+SET_PLAYS_CORNER_STYLE_LABELS = {
+    "inswing": "Inswing",
+    "outswing": "Outswing",
+    "driven": "Driven",
+    "lofted": "Lofted",
+}
+SET_PLAYS_FREE_KICK_LABEL_X = 18.0
+SET_PLAYS_FREE_KICK_VALUE_X = 426.0
+SET_PLAYS_FREE_KICK_TOPS = {
+    "direct": 436.0,
+    "direct_on_target": 461.0,
+    "direct_off_target": 486.0,
+    "indirect": 511.0,
+}
+SET_PLAYS_FREE_KICK_LABELS = {
+    "direct": "Direct",
+    "direct_on_target": "Direct (on target)",
+    "direct_off_target": "Direct (off target)",
+    "indirect": "Indirect",
+}
+
+
+def default_set_plays_block(side):
+    """One team's printed set-plays values, satisfying every shipped relation exactly.
+
+    The two relations the corpus REFUTES are deliberately made FALSE here too, so a
+    fixture can never quietly bless a check Story 1.9 rejected on evidence: the delivery
+    STYLE values do not sum to the total corners (corpus-false on 112/208) and `direct`
+    does not equal `on target + off target` (corpus-false on 208/208).
+
+    Home and away carry different numbers in every field, so a side swap cannot pass.
+    Exported so tests derive expected values from what the factory drew.
+    """
+    if side == "home":
+        by_type = {"direct_to_area": (2, 1), "short": (1, 0), "edge_of_penalty_area": (0, 1)}
+        style = {"inswing": 2, "outswing": 1, "driven": 0, "lofted": 1}
+        direct, indirect, on_target, off_target = 7, 3, 2, 1
+        penalties, throw_ins = 1, 18
+    else:
+        by_type = {"direct_to_area": (0, 3), "short": (1, 1), "edge_of_penalty_area": (1, 0)}
+        style = {"inswing": 1, "outswing": 2, "driven": 1, "lofted": 1}
+        direct, indirect, on_target, off_target = 5, 4, 1, 3
+        penalties, throw_ins = 0, 12
+    corners = {
+        key: {"left": left, "right": right, "total": left + right}
+        for key, (left, right) in by_type.items()
+    }
+    total_corners = sum(row["total"] for row in corners.values())
+    total_free_kicks = direct + indirect
+    return {
+        "total_set_plays": total_free_kicks + penalties + total_corners + throw_ins,
+        "total_free_kicks": total_free_kicks,
+        "total_penalties": penalties,
+        "total_corners": total_corners,
+        "total_throw_ins": throw_ins,
+        "free_kicks": {
+            "direct": direct,
+            "direct_on_target": on_target,
+            "direct_off_target": off_target,
+            "indirect": indirect,
+        },
+        "corners_by_delivery_type": corners,
+        "corners_by_delivery_style": style,
+    }
+
+
+def draw_set_plays_page(page, block, *, date_strip=True, omit_labels=(), decorate=None):
+    """Draw a parseable Set Plays body onto `page`.
+
+    `omit_labels` drops printed labels by payload key (a missing-label failure path);
+    `date_strip=False` removes the two date tokens, which breaks the 24-word census;
+    `decorate(page)` draws extra content for collision tests. Cell values may be strings,
+    so a caller can print a non-numeric or extra token.
+    """
+    if date_strip:
+        _ef_date_strip(page)
+
+    for key, (label, centre_x, label_top, value_top) in SET_PLAYS_KPI_LAYOUT.items():
+        if key not in omit_labels:
+            _ef_centred(page, centre_x, label_top, label, fontsize=EF_LABEL_FONTSIZE)
+        _ef_centred(page, centre_x, value_top, block[key], fontsize=EF_FONTSIZE)
+
+    # The corners delivery-type header shares its visual row with the Total-Set-Plays
+    # value, exactly as the corpus prints it — the collision the KPI x bound closes.
+    _ef_left(page, SET_PLAYS_CORNER_LABEL_X, 113.0, "Delivery Type", fontsize=EF_LABEL_FONTSIZE)
+    for centre_x, header in zip(
+        SET_PLAYS_CORNER_VALUE_XS, ("From Left Side", "From Right Side", "Total")
+    ):
+        _ef_centred(page, centre_x, 113.0, header, fontsize=EF_LABEL_FONTSIZE)
+    _ef_left(page, SET_PLAYS_CORNER_LABEL_X, 241.0, "Delivery Style", fontsize=EF_LABEL_FONTSIZE)
+    _ef_centred(page, SET_PLAYS_CORNER_VALUE_XS[2], 241.0, "Total", fontsize=EF_LABEL_FONTSIZE)
+    _ef_left(page, SET_PLAYS_FREE_KICK_LABEL_X, 415.0, "Type", fontsize=EF_LABEL_FONTSIZE)
+    _ef_centred(page, SET_PLAYS_FREE_KICK_VALUE_X, 415.0, "Total", fontsize=EF_LABEL_FONTSIZE)
+
+    for key, top in SET_PLAYS_CORNER_TYPE_TOPS.items():
+        if key not in omit_labels:
+            _ef_left(
+                page, SET_PLAYS_CORNER_LABEL_X, top, SET_PLAYS_CORNER_TYPE_LABELS[key],
+                fontsize=EF_FONTSIZE,
+            )
+        row = block["corners_by_delivery_type"][key]
+        for centre_x, column in zip(SET_PLAYS_CORNER_VALUE_XS, ("left", "right", "total")):
+            if column in row:
+                _ef_centred(page, centre_x, top, row[column])
+
+    for key, top in SET_PLAYS_CORNER_STYLE_TOPS.items():
+        if key not in omit_labels:
+            _ef_left(
+                page, SET_PLAYS_CORNER_LABEL_X, top, SET_PLAYS_CORNER_STYLE_LABELS[key],
+                fontsize=EF_FONTSIZE,
+            )
+        _ef_centred(page, SET_PLAYS_CORNER_VALUE_XS[2], top, block["corners_by_delivery_style"][key])
+
+    for key, top in SET_PLAYS_FREE_KICK_TOPS.items():
+        if key not in omit_labels:
+            _ef_left(
+                page, SET_PLAYS_FREE_KICK_LABEL_X, top, SET_PLAYS_FREE_KICK_LABELS[key],
+                fontsize=EF_FONTSIZE,
+            )
+        _ef_centred(page, SET_PLAYS_FREE_KICK_VALUE_X, top, block["free_kicks"][key])
+
+    if decorate is not None:
+        decorate(page)
+
+
+# --- Domain E: goal prevention --------------------------------------------------------
+
+GOAL_PREVENTION_KPI_LAYOUT = {
+    "attempts_faced_printed": ("Total Attempts on Goal Faced", 117.8, 490.0, 447.0),
+    "save_percentage": ("Save %", 330.8, 490.0, 447.0),
+}
+# The header row's band text is a closed constant the parser asserts by EQUALITY, so the
+# fixture prints it as the corpus does — one span, right of the x bound.
+GOAL_PREVENTION_HEADER_X = 468.0
+GOAL_PREVENTION_HEADER_TOP = 481.0
+GOAL_PREVENTION_HEADER = (
+    "Total Attempts on Goal Total Goal Save & Deflect & Save & Save No Save"
+)
+GOAL_PREVENTION_HEADER_LINE_2 = "Faced Interventions Retain Retain Deflect Attempt Attempt"
+GOAL_PREVENTION_VALUE_TOP = 508.0
+GOAL_PREVENTION_VALUE_XS = (510.0, 606.0, 677.0, 736.0, 796.0, 852.0, 913.0)
+GOAL_PREVENTION_COLUMN_ORDER = (
+    "attempts_faced",
+    "total_interventions",
+    "save_and_retain",
+    "deflect_and_retain",
+    "save_and_deflect",
+    "save_attempt",
+    "no_save_attempt",
+)
+# The corpus trap, reproduced by default: PMSR-M38-ESP-V-KSA home prints a stray
+# pitch-marker ordinal at x=275 on the TABLE'S OWN visual row, so a naive "row of seven
+# digits" finds eight spans and zero tables. Only the `x >= 460` bound survives it.
+GOAL_PREVENTION_STRAY_ORDINAL = (275.0, "1")
+# The two donut centres, in the text layer and demonstrably untrustworthy (PMSR-M01 prints
+# 4 against a table of 3). Drawn deliberately WRONG so a parser that ever read them fails.
+GOAL_PREVENTION_DONUT_CENTRES = ((574.0, 358.0, "9"), (824.0, 365.0, "8"))
+
+
+def draw_goal_prevention_page(page, block, *, header=True, stray_ordinal=True, decorate=None):
+    """Draw a parseable Goal Prevention body onto `page`."""
+    _ef_date_strip(page)
+    for key, (label, centre_x, label_top, value_top) in GOAL_PREVENTION_KPI_LAYOUT.items():
+        _ef_centred(page, centre_x, label_top, label, fontsize=EF_LABEL_FONTSIZE)
+        value = block[key] if key in block else block["attempts_faced"]
+        _ef_centred(page, centre_x, value_top, value)
+    for centre_x, top, text in GOAL_PREVENTION_DONUT_CENTRES:
+        _ef_centred(page, centre_x, top, text, fontsize=12)
+    if header:
+        _ef_left(
+            page, GOAL_PREVENTION_HEADER_X, GOAL_PREVENTION_HEADER_TOP,
+            GOAL_PREVENTION_HEADER, fontsize=EF_LABEL_FONTSIZE,
+        )
+        _ef_left(
+            page, 499.0, 490.0, GOAL_PREVENTION_HEADER_LINE_2, fontsize=EF_LABEL_FONTSIZE
+        )
+    if stray_ordinal:
+        _ef_centred(
+            page, GOAL_PREVENTION_STRAY_ORDINAL[0], GOAL_PREVENTION_VALUE_TOP,
+            GOAL_PREVENTION_STRAY_ORDINAL[1],
+        )
+    values = dict(block["by_intervention_type"])
+    values["attempts_faced"] = block["attempts_faced"]
+    values["total_interventions"] = block["total_interventions"]
+    for centre_x, column in zip(GOAL_PREVENTION_VALUE_XS, GOAL_PREVENTION_COLUMN_ORDER):
+        if column in values:
+            _ef_centred(page, centre_x, GOAL_PREVENTION_VALUE_TOP, values[column])
+    if decorate is not None:
+        decorate(page)
+
+
+# --- Domain E: aerial control ---------------------------------------------------------
+
+AERIAL_TOTAL_LAYOUT = ("Total Interventions", 249.0, 163.0, 123.0)
+AERIAL_TRIPLE_CENTRES = (124.5, 249.0, 373.5)  # Complete / <type> / Incomplete
+AERIAL_TRIPLE_TOPS = {
+    "punches": (272.0, 233.0),  # (label top, value top)
+    "claims": (382.0, 342.0),
+    "tipped_palmed": (490.0, 452.0),
+}
+AERIAL_TRIPLE_LABELS = {
+    "punches": "Punches",
+    "claims": "Claims",
+    "tipped_palmed": "Tipped/Palmed",
+}
+# The delivery-types header shares its visual row with the Tipped/Palmed labels, exactly as
+# the corpus prints it — the collision the two x bands separate.
+AERIAL_HEADER_X = 517.0
+AERIAL_HEADER_TOP = 490.0
+AERIAL_HEADER = "Total In Swing Out Swing Driven Lofted Cutback Push"
+AERIAL_VALUE_TOP = 511.0
+AERIAL_VALUE_XS = (528.0, 589.0, 650.0, 710.0, 771.0, 832.0, 893.0)
+AERIAL_COLUMN_ORDER = (
+    "total",
+    "inswing",
+    "outswing",
+    "driven",
+    "lofted",
+    "cutback",
+    "push_cross",
+)
+
+
+def draw_aerial_control_page(page, block, *, header=True, decorate=None):
+    """Draw a parseable Aerial Control body onto `page`."""
+    _ef_date_strip(page)
+    label, centre_x, label_top, value_top = AERIAL_TOTAL_LAYOUT
+    _ef_centred(page, centre_x, label_top, label, fontsize=EF_LABEL_FONTSIZE)
+    _ef_centred(page, centre_x, value_top, block["total_interventions"])
+
+    for key, (label_top, value_top) in AERIAL_TRIPLE_TOPS.items():
+        labels = ("Complete", AERIAL_TRIPLE_LABELS[key], "Incomplete")
+        for centre, text in zip(AERIAL_TRIPLE_CENTRES, labels):
+            _ef_centred(page, centre, label_top, text, fontsize=EF_LABEL_FONTSIZE)
+        triple = block[key]
+        for centre, column in zip(AERIAL_TRIPLE_CENTRES, ("complete", "total", "incomplete")):
+            if column in triple:
+                _ef_centred(page, centre, value_top, triple[column])
+
+    _ef_left(page, 631.0, 459.0, "Delivery Types Faced", fontsize=EF_LABEL_FONTSIZE)
+    if header:
+        _ef_left(page, AERIAL_HEADER_X, AERIAL_HEADER_TOP, AERIAL_HEADER, fontsize=EF_LABEL_FONTSIZE)
+    delivery = block["delivery_types_faced"]
+    for centre_x, column in zip(AERIAL_VALUE_XS, AERIAL_COLUMN_ORDER):
+        if column in delivery:
+            _ef_centred(page, centre_x, AERIAL_VALUE_TOP, delivery[column])
+    if decorate is not None:
+        decorate(page)
+
+
+# --- Domain E: goalkeeping distribution (the marker MAP page) --------------------------
+
+# The four panel rects, at the corpus' own coordinates: 203.996 x 291.75 = 59,516.0 pt^2
+# each, all EQUAL-area, which is why `detect_pitch_frame`'s max() is unusable and the
+# plural accessor is mandatory. Every frame ends at y1 = 406.5 on all 832 corpus panels.
+GK_DISTRIBUTION_PANELS = (
+    ("feet", (18.002, 114.75, 221.998, 406.5)),
+    ("hands", (258.002, 114.75, 461.998, 406.5)),
+    ("throw", (498.002, 114.75, 701.998, 406.5)),
+    ("total", (738.002, 114.75, 941.998, 406.5)),
+)
+GK_DISTRIBUTION_PANEL_TITLES = {
+    "feet": "Kick from Feet",
+    "hands": "Kick from Hands",
+    "throw": "Throw Distribution",
+    "total": "Total Distributions",
+}
+GK_DISTRIBUTION_TITLE_TOP = 96.0
+GK_DISTRIBUTION_MARKER_RADIUS = 2.9145  # 5.829 pt, the real dots' size
+GK_DISTRIBUTION_RGB = {"complete": (0.18, 0.30, 1.00), "incomplete": (1.00, 0.00, 0.00)}
+# The legend: 9.0 pt swatches 10.5 pt BELOW every frame. Excluded twice over — by the size
+# window and by the pitch margin — which is exactly what the fixture must prove.
+GK_DISTRIBUTION_LEGEND_RADIUS = 4.5
+GK_DISTRIBUTION_LEGEND_CY = 417.0
+# White penalty/centre spots INSIDE each panel: filled all-Bezier circles that only
+# `marker_min_pt` excludes. Admitting either aborts the report on a white fill.
+GK_DISTRIBUTION_SPOT_RADII = (0.6855, 1.3715, 0.6855)
+GK_DISTRIBUTION_SPOT_FYS = (0.11, 0.5, 0.89)
+# The three donut centres print below the panels, one inside each of the first three
+# panels' x band; the Total Distributions panel prints NO centre of its own.
+GK_DISTRIBUTION_DONUT_TOP = 474.0
+GK_DISTRIBUTION_DONUT_XS = {"feet": 168.0, "hands": 410.0, "throw": 647.0}
+GK_DISTRIBUTION_LINE_BREAKS_LAYOUT = ("Goalkeeper Line Breaks", 840.0, 507.0, 470.0)
+# Technique labels the donuts carry — non-numeric furniture that shares the donut row, as
+# the corpus prints it ('30 From Hands 0 Under Arm 3').
+GK_DISTRIBUTION_TECHNIQUE_LABELS = ((274.5, "From Hands"), (514.5, "Under Arm"))
+
+# (fx, fy, outcome) per source panel. The Total Distributions panel is drawn as the exact
+# union of the other three at the SAME relative positions, which is what the corpus does
+# and what makes `goalkeeping-distribution-sum` true by construction.
+DEFAULT_GK_DISTRIBUTION_MARKERS = {
+    "home": {
+        "feet": [
+            (0.30, 0.72, "complete"), (0.45, 0.80, "complete"), (0.60, 0.75, "complete"),
+            (0.52, 0.88, "complete"), (0.38, 0.66, "incomplete"),
+        ],
+        "hands": [(0.50, 0.70, "complete")],
+        "throw": [(0.40, 0.78, "complete"), (0.62, 0.83, "complete"), (0.55, 0.69, "incomplete")],
+    },
+    "away": {
+        "feet": [
+            (0.35, 0.74, "complete"), (0.55, 0.82, "complete"), (0.48, 0.90, "complete"),
+            (0.28, 0.68, "incomplete"), (0.66, 0.71, "incomplete"),
+        ],
+        "hands": [(0.44, 0.76, "incomplete")],
+        "throw": [(0.58, 0.86, "complete")],
+    },
+}
+DEFAULT_GK_LINE_BREAKS = {"home": 6, "away": 4}
+
+
+def default_gk_distribution_block(side):
+    """The distribution page's printed values, DERIVED from the markers the factory draws.
+
+    The three printed donut centres equal their panel's marker count exactly, so
+    `goalkeeping-distribution-printed` holds by construction; the Total Distributions panel
+    prints no centre, as the corpus does not.
+    """
+    markers = DEFAULT_GK_DISTRIBUTION_MARKERS[side]
+    return {
+        "markers": markers,
+        "printed": {key: len(markers[key]) for key in ("feet", "hands", "throw")},
+        "line_breaks": DEFAULT_GK_LINE_BREAKS[side],
+    }
+
+
+def draw_gk_distribution_page(
+    page,
+    block,
+    *,
+    panels=GK_DISTRIBUTION_PANELS,
+    titles=None,
+    legend=True,
+    spots=True,
+    off_palette=False,
+    decorate=None,
+):
+    """Draw a parseable Goalkeeping Distribution map page onto `page`.
+
+    `panels` overrides the panel set (a panel-count failure path — pass `()` to draw none
+    at all, which raises the shared chain's own `PitchFrameError`); `titles` overrides the
+    printed panel titles; `off_palette=True` draws one marker in a fill the palette does
+    not know, which must raise `UnknownRgbError`.
+    """
+    import pymupdf
+
+    _ef_date_strip(page)
+    titles = GK_DISTRIBUTION_PANEL_TITLES if titles is None else titles
+    rects = {}
+    for key, coords in panels:
+        rect = pymupdf.Rect(*coords)
+        rects[key] = rect
+        # STROKED, which is what `detect_pitch_frames` requires: a fill-only band must
+        # never outcompete the frame as the normalization basis.
+        page.draw_rect(rect, color=(0.81, 0.84, 0.84), width=0.75)
+        if key in titles:
+            _ef_centred(
+                page, (rect.x0 + rect.x1) / 2, GK_DISTRIBUTION_TITLE_TOP, titles[key],
+                fontsize=EF_LABEL_FONTSIZE,
+            )
+        if spots:
+            for radius, fy in zip(GK_DISTRIBUTION_SPOT_RADII, GK_DISTRIBUTION_SPOT_FYS):
+                page.draw_circle(
+                    ((rect.x0 + rect.x1) / 2, rect.y0 + fy * rect.height),
+                    radius, color=None, fill=(1.0, 1.0, 1.0),
+                )
+        if legend:
+            for index, rgb in enumerate(GK_DISTRIBUTION_RGB.values()):
+                page.draw_circle(
+                    (rect.x0 + 30.0 + index * 100.0, GK_DISTRIBUTION_LEGEND_CY),
+                    GK_DISTRIBUTION_LEGEND_RADIUS, color=None, fill=rgb,
+                )
+
+    def plot(rect, fx, fy, outcome):
+        page.draw_circle(
+            (rect.x0 + fx * rect.width, rect.y0 + fy * rect.height),
+            GK_DISTRIBUTION_MARKER_RADIUS,
+            color=(1.0, 1.0, 1.0),
+            fill=GK_DISTRIBUTION_RGB.get(outcome, outcome),
+            width=0.75,
+        )
+
+    for key in ("feet", "hands", "throw"):
+        for fx, fy, outcome in block["markers"].get(key, ()):
+            if key in rects:
+                plot(rects[key], fx, fy, outcome)
+            # The Total Distributions panel is the exact union of the other three.
+            if "total" in rects:
+                plot(rects["total"], fx, fy, outcome)
+    if off_palette and "feet" in rects:
+        plot(rects["feet"], 0.5, 0.5, (0.0, 0.6, 0.2))
+
+    for key, centre_x in GK_DISTRIBUTION_DONUT_XS.items():
+        if key in block["printed"]:
+            _ef_centred(page, centre_x, GK_DISTRIBUTION_DONUT_TOP, block["printed"][key], fontsize=12)
+    for x, text in GK_DISTRIBUTION_TECHNIQUE_LABELS:
+        _ef_left(page, x, GK_DISTRIBUTION_DONUT_TOP, text, fontsize=EF_LABEL_FONTSIZE)
+    label, centre_x, label_top, value_top = GK_DISTRIBUTION_LINE_BREAKS_LAYOUT
+    _ef_centred(page, centre_x, label_top, label, fontsize=EF_LABEL_FONTSIZE)
+    _ef_centred(page, centre_x, value_top, block["line_breaks"], fontsize=12)
+    if decorate is not None:
+        decorate(page)
+
+
+# --- Domain E: the goalkeeping involvement page (ONE page, BOTH teams) -----------------
+
+GK_INVOLVEMENT_TITLE_SUFFIX = "GK Involvement Timeline"
+GK_INVOLVEMENT_GRID_STROKE = (0.878, 0.878, 0.878)
+GK_INVOLVEMENT_UNIT = 15.4403  # points per involvement, measured on the reference report
+# The printed axis LABELS sit 1.81 pt above their gridlines on every corpus chart — the
+# systematic offset that makes a label-anchored value fit wrong by up to 0.16 units, and
+# the reason the parser anchors its baseline on the zero GRIDLINE instead. The fixture
+# reproduces it deliberately.
+GK_INVOLVEMENT_LABEL_OFFSET = 1.81
+GK_INVOLVEMENT_AXIS_LABEL_X = 24.755
+GK_INVOLVEMENT_PLOT_X0, GK_INVOLVEMENT_PLOT_X1 = 36.844, 754.5
+# (chart title top, top gridline y) per printed chart position.
+GK_INVOLVEMENT_CHART_TOPS = ((135.0, 173.25), (355.0, 393.75))
+GK_INVOLVEMENT_DOT_RADIUS = 1.5  # 3.0 pt on 21,764 of 21,764 corpus dots
+GK_INVOLVEMENT_DOT_RGB = (0.18, 0.30, 1.00)
+GK_INVOLVEMENT_TOTAL_LABEL = "Total Involvements"
+GK_INVOLVEMENT_TOTAL_CENTRE_X = 861.0
+GK_INVOLVEMENT_TICK_LABELS = (
+    "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "HT",
+    "50", "55", "60", "65", "70", "75", "80", "85", "90", "90+5",
+)
+DEFAULT_GK_INVOLVEMENT_SLOTS = 100
+DEFAULT_GK_INVOLVEMENT_TOP_LABEL = 4
+# slot -> value. Every listed value is distinct enough that an off-by-one slot assignment
+# cannot pass, and the peak equals the printed top label, as the auto-scale requires.
+DEFAULT_GK_INVOLVEMENT_VALUES = {
+    "home": {0: 1, 7: 2, 19: 4, 33: 1, 48: 3, 61: 2, 77: 1, 95: 2},
+    "away": {2: 2, 14: 1, 26: 3, 40: 4, 52: 1, 66: 2, 81: 3, 99: 1},
+}
+# home's printed total equals its series sum exactly (delta 0, the 59/208 case); away's is
+# one higher (delta 1, the corpus mode) — both are PASSING states of the shipped bound, and
+# printing only the exact case would leave the corpus's normal behaviour untested.
+DEFAULT_GK_INVOLVEMENT_DELTA = {"home": 0, "away": 1}
+
+
+def default_gk_involvement_block(side, slots=DEFAULT_GK_INVOLVEMENT_SLOTS):
+    """One chart's series and printed total, derived so the shipped bound holds."""
+    values = DEFAULT_GK_INVOLVEMENT_VALUES[side]
+    series = [values.get(slot, 0) for slot in range(slots)]
+    return {
+        "series": series,
+        "total_involvements": sum(series) + DEFAULT_GK_INVOLVEMENT_DELTA[side],
+        "top_label": DEFAULT_GK_INVOLVEMENT_TOP_LABEL,
+    }
+
+
+def draw_gk_involvement_page(
+    page, home, away, blocks, *, axis_rule=True, reverse=False, dot_offsets=None, decorate=None
+):
+    """Draw the one page carrying BOTH teams' involvement timelines.
+
+    The home chart prints on top by default, as the corpus does. `reverse=True` prints the
+    AWAY chart on top instead, with each chart still carrying its own team's title and
+    series — the only way to prove the parser reads the split from the printed
+    `'{team} GK Involvement Timeline'` title rather than from drawing order (AD-8). A test
+    that merely swapped the cover names would redraw the whole page and prove nothing.
+
+    `dot_offsets` maps `(side, slot) -> dy` to displace one dot off the value grid (a
+    non-integral-slot failure path); `axis_rule=False` drops the extra rule the gridline
+    run must exclude.
+    """
+    _ef_date_strip(page)
+    _ef_left(page, 12.0, 32.0, "Goalkeeping Involvement", fontsize=12)
+    printed = [("home", home), ("away", away)]
+    if reverse:
+        printed.reverse()
+    for (side, team), (title_top, grid_top) in zip(printed, GK_INVOLVEMENT_CHART_TOPS):
+        block = blocks[side]
+        top_label = block["top_label"]
+        series = block["series"]
+        zero_line = grid_top + top_label * GK_INVOLVEMENT_UNIT
+
+        _ef_left(page, 60.0, title_top - 54.0, team, fontsize=11)
+        _ef_centred(page, 387.0, title_top, f"{team} {GK_INVOLVEMENT_TITLE_SUFFIX}", fontsize=10)
+
+        for step in range(top_label + 1):
+            y = grid_top + step * GK_INVOLVEMENT_UNIT
+            page.draw_line(
+                (GK_INVOLVEMENT_PLOT_X0, y), (GK_INVOLVEMENT_PLOT_X1, y),
+                color=GK_INVOLVEMENT_GRID_STROKE, width=0.75,
+            )
+            # The printed label, offset above its gridline exactly as the corpus prints it.
+            _ef_left(
+                page, GK_INVOLVEMENT_AXIS_LABEL_X,
+                y - GK_INVOLVEMENT_LABEL_OFFSET - 8 * _HELV_ASCENDER / 2.0 - 0.6,
+                top_label - step, fontsize=8,
+            )
+        if axis_rule:
+            # The extra rule 0.75 pt below the zero line — present so the fixture
+            # exercises the parser's evenly-spaced run rather than letting a naive
+            # min/max accidentally agree with it (the momentum-chart lesson).
+            page.draw_line(
+                (GK_INVOLVEMENT_PLOT_X0, zero_line + 0.75),
+                (GK_INVOLVEMENT_PLOT_X1, zero_line + 0.75),
+                color=GK_INVOLVEMENT_GRID_STROKE, width=0.75,
+            )
+
+        pitch = (GK_INVOLVEMENT_PLOT_X1 - GK_INVOLVEMENT_PLOT_X0) / (len(series) - 1)
+        for slot, value in enumerate(series):
+            dy = (dot_offsets or {}).get((side, slot), 0.0)
+            page.draw_circle(
+                (GK_INVOLVEMENT_PLOT_X0 + slot * pitch, zero_line - value * GK_INVOLVEMENT_UNIT + dy),
+                GK_INVOLVEMENT_DOT_RADIUS, color=None, fill=GK_INVOLVEMENT_DOT_RGB,
+            )
+
+        # The printed total: value ABOVE its label, centred on it, like every other KPI.
+        _ef_centred(
+            page, GK_INVOLVEMENT_TOTAL_CENTRE_X, zero_line - 46.7,
+            block["total_involvements"], fontsize=12,
+        )
+        _ef_centred(
+            page, GK_INVOLVEMENT_TOTAL_CENTRE_X, zero_line - 7.2,
+            GK_INVOLVEMENT_TOTAL_LABEL, fontsize=EF_LABEL_FONTSIZE,
+        )
+
+        # The x-axis ticks. The first label is centred on the plot box's left edge, which
+        # puts its right edge past the axis-label column bound — the real page's own
+        # geometry, and what keeps a tick out of the y-axis label read.
+        tick_pitch = (GK_INVOLVEMENT_PLOT_X1 - GK_INVOLVEMENT_PLOT_X0) / (
+            len(GK_INVOLVEMENT_TICK_LABELS) - 1
+        )
+        for index, text in enumerate(GK_INVOLVEMENT_TICK_LABELS):
+            _ef_centred(
+                page, GK_INVOLVEMENT_PLOT_X0 + index * tick_pitch, zero_line + 10.6, text,
+                fontsize=EF_FONTSIZE,
+            )
+    if decorate is not None:
+        decorate(page)
+
+
+def default_goalkeeping_blocks(side):
+    """One team's full goalkeeping page values, satisfying every shipped relation.
+
+    Derived, not invented, and the relations Story 1.9 REJECTED on corpus evidence are
+    deliberately made FALSE here so no fixture can bless them: the five intervention types
+    do not sum to `total_interventions` (corpus-false on 207/208), and `total_interventions`
+    does not equal `attempts_faced - no_save_attempt` (corpus-false on 183/208).
+    """
+    if side == "home":
+        types = {
+            "save_and_retain": 2, "deflect_and_retain": 1, "save_and_deflect": 1,
+            "save_attempt": 0, "no_save_attempt": 1,
+        }
+        total_interventions, save_percentage = 3, 80
+        aerial_triples = {
+            "punches": {"complete": 1, "total": 2, "incomplete": 1},
+            "claims": {"complete": 0, "total": 1, "incomplete": 1},
+            "tipped_palmed": {"complete": 1, "total": 1, "incomplete": 0},
+        }
+        delivery = {"inswing": 2, "outswing": 3, "driven": 1, "lofted": 2, "cutback": 1,
+                    "push_cross": 0}
+        aerial_total_interventions = 3
+    else:
+        types = {
+            "save_and_retain": 1, "deflect_and_retain": 0, "save_and_deflect": 1,
+            "save_attempt": 0, "no_save_attempt": 1,
+        }
+        # A decimal percentage, so the float branch is exercised as well as the integer one.
+        total_interventions, save_percentage = 1, 66.7
+        aerial_triples = {
+            "punches": {"complete": 0, "total": 1, "incomplete": 1},
+            "claims": {"complete": 1, "total": 2, "incomplete": 1},
+            "tipped_palmed": {"complete": 0, "total": 0, "incomplete": 0},
+        }
+        delivery = {"inswing": 1, "outswing": 2, "driven": 0, "lofted": 1, "cutback": 1,
+                    "push_cross": 1}
+        aerial_total_interventions = 2
+    attempts_faced = sum(types.values())
+    aerial = dict(aerial_triples)
+    aerial["total_interventions"] = aerial_total_interventions
+    aerial["delivery_types_faced"] = dict(delivery, total=sum(delivery.values()))
+    return {
+        "distribution": default_gk_distribution_block(side),
+        "goal_prevention": {
+            "attempts_faced": attempts_faced,
+            "attempts_faced_printed": attempts_faced,
+            "total_interventions": total_interventions,
+            "save_percentage": save_percentage,
+            "by_intervention_type": types,
+        },
+        "aerial_control": aerial,
+        "involvement": default_gk_involvement_block(side),
+    }
+
+
 @pytest.fixture(scope="session")
 def make_report():
     """Factory for a synthetic PMSR report whose every registered anchor resolves.
@@ -1019,6 +2143,16 @@ def make_report():
     per-player `Total Possession Regains` table at the real x-positions and ~7 pt font.
     The `defensive_actions_*` kwargs are documented on the parameters themselves.
 
+    Story 1.13 (additive, default-on): the `offers` and `movement` anchors emit the real
+    single-page dashboards — two titled stroked panels with the 11-dot formation
+    template and one shape badge each, label-anchored KPI pairs, the Most-Offers block
+    and the per-player table on the offers page; one titled pitch panel with rotated
+    third + DIRECTION labels, the 15-cell grid, its 33 axis ticks, four raster donuts and
+    the Top Ranked Players table on the movement page. Printed values DEFAULT to a
+    derivation of this report's own Domain G rows, which is what keeps the two
+    cross-domain reconciliations green. The `offers_*` / `movement_*` kwargs are
+    documented on the parameters themselves.
+
     Story 1.10 (additive, default-on): the eight Domain G anchors emit the real
     per-player tables — a right-aligned shirt number, a name, then the family's numeric
     columns (14 / 8 / 15 / 9), centre-aligned for three families and right-aligned for
@@ -1026,6 +2160,21 @@ def make_report():
     Statistics (`default_player_stats_rows`), so the join, the distance reconciliation
     and the goals reconciliation stay green when a caller changes the score, the lineup
     or the stats block. The `player_stats_*` kwargs are documented on the parameters.
+
+    Story 1.9 (additive, default-on): the nine Domain E/F anchors emit the real pages —
+    a Set Plays page whose five KPI values print ABOVE their labels (two pairs sharing one
+    value row) with three label-anchored tables and the date strip that makes its 24-word
+    numeric census reachable; a Goal Prevention page with the closed seven-column header,
+    the stray left-of-table ordinal the corpus prints on the value row, and two
+    deliberately WRONG donut centres; an Aerial Control page whose delivery-types header
+    shares a visual row with the Tipped/Palmed labels; a Goalkeeping Distribution MAP page
+    with four EQUAL-area stroked panels, 5.83 pt two-colour markers, the 9.0 pt legend
+    10.5 pt below every frame and the white penalty/centre spots; and ONE Goalkeeping
+    Involvement page carrying BOTH teams' timelines, whose printed axis labels sit 1.81 pt
+    above their gridlines exactly as the corpus prints them. Defaults satisfy every shipped
+    relation by construction and make both corpus-refuted relations FALSE. The
+    `set_plays_*` / `goalkeeping_*` / `gk_*` / `goal_prevention_*` / `aerial_*` kwargs are
+    documented on the parameters themselves.
 
     `page_order` re-orders the anchor pages (the cover always stays first — `probe_report`
     reads it by position). `AC 4` says a shuffled or offset report must still resolve, so
@@ -1078,6 +2227,20 @@ def make_report():
         key_statistics: "dict | None" = None,
         phases: "dict | None" = None,
         line_heights: "dict | None" = None,
+        # Story 1.8 (additive, default-on): every report now carries a parseable momentum
+        # chart on its own anchored page — extract_report runs the parser on every report.
+        # `momentum_values` maps slot -> (home, away) counts (`{}` draws no bars at all,
+        # which is the documented-absence branch); `momentum_ticks` maps printed x-axis
+        # label -> slot; the remaining kwargs break one structural element each.
+        momentum_values: "dict[int, tuple[int, int]] | None" = None,
+        momentum_slots: int = DEFAULT_MOMENTUM_SLOTS,
+        momentum_ticks: "dict[str, int] | None" = None,
+        momentum_top_label: int = DEFAULT_MOMENTUM_TOP_LABEL,
+        momentum_axis_labels: "list[str] | None" = None,
+        momentum_gridlines: bool = True,
+        momentum_axis_rule: bool = True,
+        momentum_legend: bool = True,
+        momentum_decorate=None,
         # Story 1.11 (additive): every report now carries parseable single-page crosses
         # sections — extract_report runs the crosses parser on every report. Markers are
         # (outcome, fx, fy) pitch fractions with outcome in CROSSES_OUTCOME_RGB;
@@ -1120,6 +2283,52 @@ def make_report():
         defensive_actions_pages: "dict[str, int] | None" = None,
         defensive_actions_decorate=None,
         defensive_actions_direction: "dict[str, dict[str, int | None]] | None" = None,
+        # Story 1.13 (additive, default-on): every report now carries the two parseable
+        # receiving pages per team — extract_report runs both parsers on every report, so
+        # a text-only auto-generated page would die in `PitchFrameError`. The printed
+        # values DEFAULT to a derivation of this report's own Domain G rows
+        # (`default_offers_block` / `default_movement_block`), which is what keeps the two
+        # cross-domain reconciliations green when a caller changes the lineup.
+        #
+        # `offers_values` overrides individual printed KPI/badge values per side (keys of
+        # `RECEIVING_KPI_LAYOUT` plus `offers_inside_shape`/`offers_outside_shape`);
+        # `offers_rows` replaces the per-player rows (dicts with shirt/name/made/received,
+        # optional `pct` to doctor the printed percentage and `name_split` to print a
+        # three-line name); `offers_most` overrides the Most-Offers block;
+        # `offers_titles` renames a panel title (None drops it); `offers_panels` replaces
+        # the (key, rect) panel list entirely; `offers_dots` overrides the decoration
+        # offsets per panel key (dropping, adding or moving a dot);
+        # `offers_dot_rgbs` recolours dot index i of a panel (an off-palette fill);
+        # `offers_draw_panels=False` omits the frames; `offers_pages` emits extra anchored
+        # pages; `offers_decorate` draws extra content for collision tests.
+        offers_values: "dict[str, dict[str, object]] | None" = None,
+        offers_rows: "dict[str, list[dict]] | None" = None,
+        offers_most: "dict[str, dict] | None" = None,
+        offers_titles: "dict[str, str | None] | None" = None,
+        offers_panels: "tuple | None" = None,
+        offers_dots: "dict[str, tuple] | None" = None,
+        offers_dot_rgbs: "dict[str, dict[int, tuple]] | None" = None,
+        offers_draw_panels: bool = True,
+        offers_pages: "dict[str, int] | None" = None,
+        offers_decorate=None,
+        # `movement_grid` overrides individual (third label, kebab code) grid counts per
+        # side; `movement_donuts` overrides a printed donut centre total by its printed
+        # title; `movement_top_rows` replaces the Top Ranked Players rows;
+        # `movement_third_labels` replaces the (printed label, centre y) list (renaming or
+        # dropping a third); `movement_direction` overrides the DIRECTION rotation per
+        # side (None drops the label, 270 mirrors the panel); `movement_panels` replaces
+        # the panel rect list; `movement_panel_title` renames the panel;
+        # `movement_pages` emits extra anchored pages; `movement_decorate` draws extra
+        # content for collision tests.
+        movement_grid: "dict[str, dict[tuple[str, str], object]] | None" = None,
+        movement_donuts: "dict[str, dict[str, object]] | None" = None,
+        movement_top_rows: "dict[str, list[dict]] | None" = None,
+        movement_third_labels: "tuple | None" = None,
+        movement_direction: "dict[str, int | None] | None" = None,
+        movement_panels: "tuple | None" = None,
+        movement_panel_title: "str | None" = None,
+        movement_pages: "dict[str, int] | None" = None,
+        movement_decorate=None,
         # Story 1.10 (additive, default-on): every report now carries the eight parseable
         # Domain G per-player pages — extract_report runs the extractor on every report,
         # so a text-only auto-generated page would die in `PlayerTableParseError`.
@@ -1133,6 +2342,44 @@ def make_report():
         # `test_extract_domain_g.build()` drives the drawers directly for them. A second
         # unused copy on this factory would drift from the one that is exercised.
         player_stats_rows: "dict[str, list[dict]] | None" = None,
+        # Story 1.9 (additive, default-on): every report now carries the nine parseable
+        # Domain E/F pages — extract_report runs both extractors on every report, so a
+        # text-only auto-generated page would die in `SetPlaysParseError` /
+        # `GoalkeepingPageParseError`. Defaults come from `default_set_plays_block` and
+        # `default_goalkeeping_blocks`, which satisfy every shipped relation by
+        # construction AND make the two corpus-refuted relations false.
+        #
+        # `set_plays_block` / `goalkeeping_blocks` replace the printed values for one or
+        # both sides (cell values may be strings or absent, for doctored pages);
+        # `set_plays_date_strip=False` breaks the 24-word census; `set_plays_omit_labels`
+        # drops printed labels by payload key; `gk_distribution_panels` /
+        # `gk_distribution_titles` break the four-panel/title grammar;
+        # `gk_distribution_off_palette` draws an unknown marker fill;
+        # `gk_involvement_dot_offsets` displaces a dot off the value grid;
+        # `gk_involvement_axis_rule=False` drops the extra rule; and the `*_extra_pages`
+        # counts emit additional anchored pages so an anchor resolves to more than one.
+        set_plays_block: "dict[str, dict] | None" = None,
+        set_plays_date_strip: bool = True,
+        set_plays_omit_labels: "tuple[str, ...]" = (),
+        set_plays_decorate=None,
+        set_plays_extra_pages: "dict[str, int] | None" = None,
+        goalkeeping_blocks: "dict[str, dict] | None" = None,
+        gk_distribution_panels: "tuple | None" = None,
+        gk_distribution_titles: "dict[str, str] | None" = None,
+        gk_distribution_legend: bool = True,
+        gk_distribution_off_palette: bool = False,
+        gk_distribution_decorate=None,
+        gk_distribution_extra_pages: "dict[str, int] | None" = None,
+        gk_involvement_axis_rule: bool = True,
+        gk_involvement_reverse: bool = False,
+        gk_involvement_dot_offsets: "dict | None" = None,
+        gk_involvement_decorate=None,
+        gk_involvement_extra_pages: int = 0,
+        goal_prevention_header: bool = True,
+        goal_prevention_stray_ordinal: bool = True,
+        goal_prevention_decorate=None,
+        aerial_header: bool = True,
+        aerial_decorate=None,
     ) -> Path:
         import pymupdf
 
@@ -1453,6 +2700,309 @@ def make_report():
                 extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
                 extra.insert_text((40, 60), anchor_text, fontsize=11)
 
+        def _receiving_writers(page):
+            """`left`/`centred`/`rotated` text helpers placing words by their bbox TOP."""
+            import pymupdf
+
+            def left(x, top, text, fontsize=RECEIVING_TABLE_FONTSIZE):
+                text = str(text)
+                # Fullwidth digits need a font that can encode them (the shots tests'
+                # `fontname="japan"` precedent).
+                kwargs = {} if text.isascii() else {"fontname": "japan"}
+                page.insert_text(
+                    (x, _baseline_for_top(top, fontsize)), text, fontsize=fontsize, **kwargs
+                )
+
+            def centred(x_centre, top, text, fontsize=RECEIVING_TABLE_FONTSIZE):
+                text = str(text)
+                kwargs = {} if text.isascii() else {"fontname": "japan"}
+                width = pymupdf.get_text_length(
+                    text, fontsize=fontsize, fontname=kwargs.get("fontname", "helv")
+                )
+                left(x_centre - width / 2, top, text, fontsize)
+
+            def rotated(x, centre_y, text, rotate=90, fontsize=RECEIVING_TABLE_FONTSIZE):
+                # `rotate=90` draws upward from the insertion point, so the run spans
+                # `centre_y - width/2 .. centre_y + width/2` once offset by half its width.
+                width = pymupdf.get_text_length(text, fontsize=fontsize)
+                page.insert_text(
+                    (x, centre_y + width / 2), text, fontsize=fontsize, rotate=rotate
+                )
+
+            return left, centred, rotated
+
+        def emit_offers_pages(side: str, anchor_text: str) -> None:
+            # Story 1.13: the real section is ONE page per team and it is a DASHBOARD —
+            # two titled stroked panels holding an 11-dot formation template and one shape
+            # badge each, five label-anchored KPI value/label pairs, a Most-Offers block
+            # and a per-player table at the real x-positions and ~7 pt font.
+            import pymupdf
+
+            panels = RECEIVING_OFFERS_PANELS if offers_panels is None else offers_panels
+            block = default_offers_block(player_stats_blocks[side])
+            values = dict(
+                {key: block[key] for key in RECEIVING_KPI_LAYOUT},
+                offers_inside_shape=block["offers_inside_shape"],
+                offers_outside_shape=block["offers_outside_shape"],
+            )
+            values.update((offers_values or {}).get(side, {}))
+            rows = (
+                block["rows"]
+                if offers_rows is None or side not in offers_rows
+                else offers_rows[side]
+            )
+            most = (offers_most or {}).get(side, block["most_offers"])
+
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            left, centred, _rotated = _receiving_writers(page)
+
+            titles = offers_titles or {}
+            dot_offsets = offers_dots or {}
+            for key, rect in panels:
+                pitch = pymupdf.Rect(*rect)
+                if offers_draw_panels:
+                    page.draw_rect(pitch, color=(1, 1, 1), width=2.744)
+                    if key == RECEIVING_OFFERS_OVERLAY_KEY:
+                        # The raster shape overlay's border: stroke+fill rects of
+                        # bit-identical geometry, so the page presents 4 qualifying rects
+                        # for 2 panels (208/208 corpus pages).
+                        for _ in range(RECEIVING_OFFERS_OVERLAY_COPIES):
+                            page.draw_rect(pitch, color=RECEIVING_DOT_RGB, fill=RECEIVING_DOT_RGB)
+                title = titles.get(key, RECEIVING_OFFERS_PANEL_TITLES.get(key, key))
+                if title:
+                    centred(
+                        (pitch.x0 + pitch.x1) / 2,
+                        RECEIVING_TITLE_TOP,
+                        title,
+                        RECEIVING_TITLE_FONTSIZE,
+                    )
+                for index, (fx, fy) in enumerate(dot_offsets.get(key, RECEIVING_DOT_OFFSETS)):
+                    fill = (offers_dot_rgbs or {}).get(key, {}).get(index, RECEIVING_DOT_RGB)
+                    page.draw_circle(
+                        (pitch.x0 + fx * pitch.width, pitch.y0 + fy * pitch.height),
+                        RECEIVING_DOT_RADIUS,
+                        color=(1, 1, 1),
+                        fill=fill,
+                        width=0.75,
+                    )
+                # The in-panel white furniture only `marker_min_pt` excludes.
+                for fx, fy in ((0.5, 0.12), (0.5, 0.88)):
+                    page.draw_circle(
+                        (pitch.x0 + fx * pitch.width, pitch.y0 + fy * pitch.height),
+                        RECEIVING_SPOT_RADIUS,
+                        color=None,
+                        fill=(1, 1, 1),
+                    )
+                page.draw_circle(
+                    (pitch.x0 + 0.5 * pitch.width, pitch.y0 + 0.5 * pitch.height),
+                    RECEIVING_CENTRE_SPOT_RADIUS,
+                    color=None,
+                    fill=(1, 1, 1),
+                )
+                badge = values.get(key)
+                if badge is not None and key in RECEIVING_BADGE_TOPS:
+                    centred(
+                        (pitch.x0 + pitch.x1) / 2,
+                        RECEIVING_BADGE_TOPS[key],
+                        badge,
+                        RECEIVING_TABLE_FONTSIZE,
+                    )
+
+            for key, (labels, x_centre, value_top, label_top) in RECEIVING_KPI_LAYOUT.items():
+                value = values.get(key)
+                if value is not None:
+                    centred(x_centre, value_top, value, RECEIVING_KPI_FONTSIZE)
+                for index, label in enumerate(labels):
+                    centred(
+                        x_centre,
+                        label_top + index * RECEIVING_LABEL_LINE_PITCH,
+                        label,
+                        RECEIVING_LABEL_FONTSIZE,
+                    )
+
+            # The Most Offers block: title, then value / name / position stacked under it,
+            # each x-overlapping the title and above the panel titles.
+            centred(
+                RECEIVING_MOST_X, RECEIVING_MOST_TITLE_TOP, "Most Offers", RECEIVING_LABEL_FONTSIZE
+            )
+            if most.get("value") is not None:
+                centred(
+                    RECEIVING_MOST_X,
+                    RECEIVING_MOST_VALUE_TOP,
+                    most["value"],
+                    RECEIVING_MOST_VALUE_FONTSIZE,
+                )
+            for top, text in (
+                (RECEIVING_MOST_NAME_TOP, most.get("player_name")),
+                (RECEIVING_MOST_POSITION_TOP, most.get("position")),
+            ):
+                if text is not None:
+                    centred(RECEIVING_MOST_X, top, text, RECEIVING_LABEL_FONTSIZE)
+
+            # The stacked three-line table header. The '#'+'Player' line deliberately
+            # shares its y-cluster with the Most-Offers title, as the corpus prints it.
+            for x, text in ((817.0, "Offers"), (865.0, "Offers"), (900.0, "%"), (912.0, "Made"), (932.0, "&")):
+                left(x, RECEIVING_TABLE_TOPS["stack_top"], text)
+            for word, x in RECEIVING_TABLE_COLUMNS.items():
+                left(x, RECEIVING_TABLE_TOPS["header"], word)
+            for x, text in ((818.0, "Made"), (859.0, "Received"), (900.0, "Received")):
+                left(x, RECEIVING_TABLE_TOPS["stack_bottom"], text)
+
+            top = RECEIVING_ROW_TOP0
+            for row in rows:
+                left(RECEIVING_TABLE_COLUMNS["#"], top, row["shirt"])
+                name = row.get("name")
+                if row.get("name_split"):
+                    # The three-line name four corpus pages print: halves 4.5 pt above and
+                    # below the numeric row, leaving that cluster with no name at all.
+                    above, below = row["name_split"]
+                    left(RECEIVING_TABLE_COLUMNS["Player"], top - 4.5, above)
+                    left(RECEIVING_TABLE_COLUMNS["Player"], top + 4.5, below)
+                elif name is not None:
+                    left(RECEIVING_TABLE_COLUMNS["Player"], top, name)
+                if row.get("made") is not None:
+                    left(RECEIVING_TABLE_VALUE_XS["made"], top, row["made"])
+                if row.get("received") is not None:
+                    left(RECEIVING_TABLE_VALUE_XS["received"], top, row["received"])
+                if "pct" in row:
+                    printed = row["pct"]
+                else:
+                    ratio = (
+                        round(100 * row["received"] / row["made"], 1) if row["made"] else 0
+                    )
+                    # The page drops a trailing ".0" ("50%", "32%", "0%") exactly as the
+                    # corpus does — 81 corpus rows print `0%` beside `offers_made == 0`.
+                    printed = f"{ratio:g}%"
+                if printed is not None:
+                    left(RECEIVING_TABLE_VALUE_XS["pct"], top, printed)
+                top += RECEIVING_ROW_PITCH
+            if offers_decorate is not None:
+                offers_decorate(side, page, panels)
+            for _ in range((offers_pages or {}).get(side, 1) - 1):
+                extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+                extra.insert_text((40, 60), anchor_text, fontsize=11)
+
+        def emit_movement_pages(side: str, anchor_text: str) -> None:
+            # Story 1.13: ONE titled stroked pitch panel holding ZERO markers (a
+            # three-thirds bar chart), rotated third + DIRECTION labels, four RASTER
+            # donuts whose only text is their centre total, and the Top Ranked Players
+            # table.
+            import pymupdf
+
+            panels = (
+                (RECEIVING_MOVEMENT_PANEL,) if movement_panels is None else movement_panels
+            )
+            block = default_movement_block(player_stats_blocks[side])
+            grid = dict(block["grid"])
+            grid.update((movement_grid or {}).get(side, {}))
+            donuts = dict(block["by_phase"])
+            donuts["All Movement Types"] = block["total_movements"]
+            donuts.update((movement_donuts or {}).get(side, {}))
+            top_rows = (
+                block["top_ranked"]
+                if movement_top_rows is None or side not in movement_top_rows
+                else movement_top_rows[side]
+            )
+
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            left, centred, rotated = _receiving_writers(page)
+
+            for rect in panels:
+                pitch = pymupdf.Rect(*rect)
+                page.draw_rect(pitch, color=(1, 1, 1), width=3.73)
+                title = (
+                    RECEIVING_MOVEMENT_PANEL_TITLE
+                    if movement_panel_title is None
+                    else movement_panel_title
+                )
+                if title:
+                    centred(
+                        (pitch.x0 + pitch.x1) / 2,
+                        RECEIVING_MOVEMENT_TITLE_TOP,
+                        title,
+                        RECEIVING_TITLE_FONTSIZE,
+                    )
+            rotate = (
+                RECEIVING_DIRECTION_ROTATE
+                if movement_direction is None or side not in movement_direction
+                else movement_direction[side]
+            )
+            if rotate is not None:
+                rotated(
+                    RECEIVING_DIRECTION_AT[0],
+                    RECEIVING_DIRECTION_AT[1],
+                    RECEIVING_DIRECTION_TEXT,
+                    rotate=rotate,
+                )
+            third_labels = (
+                RECEIVING_THIRD_LABELS if movement_third_labels is None else movement_third_labels
+            )
+            for label, centre_y in third_labels:
+                if label:
+                    # Printed just LEFT of the panel's own x0, as the corpus prints them.
+                    rotated(RECEIVING_THIRD_LABEL_X, centre_y, label)
+
+            centred(100.0, 88.0, "Movement Types by Phase", RECEIVING_LABEL_FONTSIZE)
+            for title, (rect, title_top, (value_x, value_top)) in RECEIVING_DONUTS.items():
+                centred(
+                    RECEIVING_DONUT_TITLE_XS[title], title_top, title, RECEIVING_LABEL_FONTSIZE
+                )
+                # A real raster image, because the parser locates each donut by its own
+                # image rect: the slice values are inside the picture and unextractable,
+                # so the centre total is the only text the donut offers.
+                pixmap = pymupdf.Pixmap(pymupdf.csRGB, pymupdf.IRect(0, 0, 8, 8), False)
+                pixmap.clear_with(200)
+                page.insert_image(pymupdf.Rect(*rect), pixmap=pixmap)
+                value = donuts.get(title)
+                if value is not None:
+                    centred(value_x, value_top, value, RECEIVING_LABEL_FONTSIZE)
+            # The five legend swatches and labels print INSIDE the All-Movement donut's
+            # image rect — non-digit words the "unique digit inside" read must survive.
+            for index, ((label, _code), rgb) in enumerate(
+                zip(RECEIVING_MOVEMENT_LABELS, RECEIVING_LEGEND_RGBS)
+            ):
+                top = RECEIVING_LEGEND_TOP0 + index * RECEIVING_LEGEND_PITCH
+                page.draw_circle(
+                    (RECEIVING_LEGEND_SWATCH_X, top + 3.0),
+                    RECEIVING_LEGEND_RADIUS,
+                    color=None,
+                    fill=rgb,
+                )
+                left(RECEIVING_LEGEND_X, top, label)
+
+            for third_label, row_tops in RECEIVING_GRID_ROW_TOPS.items():
+                for (label, code), row_top in zip(RECEIVING_MOVEMENT_LABELS, row_tops):
+                    left(RECEIVING_GRID_LABEL_X, row_top, label)
+                    count = grid.get((third_label, code))
+                    if count is not None:
+                        left(
+                            RECEIVING_GRID_VALUE_X,
+                            row_top + RECEIVING_GRID_VALUE_DY[third_label],
+                            count,
+                        )
+                # The axis-tick row: 11 more digit words inside the panel, >= 21 pt below
+                # the last label row. 33 per page in total.
+                for x, tick in zip(RECEIVING_TICK_XS, RECEIVING_TICK_LABELS):
+                    left(x, RECEIVING_TICK_TOPS[third_label], tick)
+
+            centred(420.0, RECEIVING_TOP_RANKED_TITLE_TOP, "Top Ranked Players", RECEIVING_LABEL_FONTSIZE)
+            for word, x in RECEIVING_TOP_RANKED_COLUMNS.items():
+                left(x, RECEIVING_TOP_RANKED_HEADER_TOP, word)
+            for row, row_top in zip(top_rows, RECEIVING_TOP_RANKED_ROW_TOPS):
+                left(RECEIVING_TOP_RANKED_COLUMNS["Type"], row_top, row["label"])
+                left(RECEIVING_TOP_RANKED_VALUE_XS["shirt"], row_top, row["shirt"])
+                if row.get("name") is not None:
+                    left(RECEIVING_TOP_RANKED_VALUE_XS["name"], row_top, row["name"])
+                if row.get("movements") is not None:
+                    left(RECEIVING_TOP_RANKED_VALUE_XS["movements"], row_top, row["movements"])
+            if movement_decorate is not None:
+                movement_decorate(side, page, panels)
+            for _ in range((movement_pages or {}).get(side, 1) - 1):
+                extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+                extra.insert_text((40, 60), anchor_text, fontsize=11)
+
         stage = stage if stage is not None else f"Group A - Match {number}"
         lines = [f"{home} {home_score} - {away_score} {away}"]
         if shootout is not None:
@@ -1529,6 +3079,87 @@ def make_report():
             page.insert_text((40, 60), anchor_text, fontsize=11)
             DOMAIN_G_DRAWERS[family](page, player_stats_blocks[side])
 
+        # Story 1.9: the Domain E/F blocks, resolved before the anchor loop because the
+        # involvement page needs BOTH sides at once.
+        set_plays_blocks = {side: default_set_plays_block(side) for side in ("home", "away")}
+        if set_plays_block is not None:
+            set_plays_blocks = {**set_plays_blocks, **set_plays_block}
+        gk_blocks = {side: default_goalkeeping_blocks(side) for side in ("home", "away")}
+        if goalkeeping_blocks is not None:
+            gk_blocks = {**gk_blocks, **goalkeeping_blocks}
+
+        def emit_anchored_extras(anchor_text: str, count: int) -> None:
+            """Extra pages carrying the same anchor text, so the anchor resolves to >1."""
+            for _ in range(count):
+                extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+                extra.insert_text((40, 60), anchor_text, fontsize=11)
+
+        def emit_set_plays_page(side: str, anchor_text: str) -> None:
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            draw_set_plays_page(
+                page,
+                set_plays_blocks[side],
+                date_strip=set_plays_date_strip,
+                omit_labels=set_plays_omit_labels,
+                decorate=set_plays_decorate,
+            )
+            emit_anchored_extras(anchor_text, (set_plays_extra_pages or {}).get(side, 0))
+
+        def emit_gk_distribution_page(side: str, anchor_text: str) -> None:
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            draw_gk_distribution_page(
+                page,
+                gk_blocks[side]["distribution"],
+                panels=(
+                    GK_DISTRIBUTION_PANELS
+                    if gk_distribution_panels is None
+                    else gk_distribution_panels
+                ),
+                titles=gk_distribution_titles,
+                legend=gk_distribution_legend,
+                off_palette=gk_distribution_off_palette,
+                decorate=gk_distribution_decorate,
+            )
+            emit_anchored_extras(anchor_text, (gk_distribution_extra_pages or {}).get(side, 0))
+
+        def emit_goal_prevention_page(side: str, anchor_text: str) -> None:
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            draw_goal_prevention_page(
+                page,
+                gk_blocks[side]["goal_prevention"],
+                header=goal_prevention_header,
+                stray_ordinal=goal_prevention_stray_ordinal,
+                decorate=goal_prevention_decorate,
+            )
+
+        def emit_aerial_control_page(side: str, anchor_text: str) -> None:
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            draw_aerial_control_page(
+                page,
+                gk_blocks[side]["aerial_control"],
+                header=aerial_header,
+                decorate=aerial_decorate,
+            )
+
+        def emit_gk_involvement_page(anchor_text: str) -> None:
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            draw_gk_involvement_page(
+                page,
+                home,
+                away,
+                {side: gk_blocks[side]["involvement"] for side in ("home", "away")},
+                axis_rule=gk_involvement_axis_rule,
+                reverse=gk_involvement_reverse,
+                dot_offsets=gk_involvement_dot_offsets,
+                decorate=gk_involvement_decorate,
+            )
+            emit_anchored_extras(anchor_text, gk_involvement_extra_pages)
+
         for anchor in body:
             if anchor.anchor_id in ("shots:home", "shots:away"):
                 emit_shots_pages(anchor.anchor_id.split(":")[1], anchor.text)
@@ -1538,6 +3169,14 @@ def make_report():
                 continue
             if anchor.anchor_id in ("defensive-actions:home", "defensive-actions:away"):
                 emit_defensive_actions_pages(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            # Story 1.13: the two receiving families, per team. Like the branches above,
+            # these match RESOLVED ids — a bare-id branch for a per-team spec never fires.
+            if anchor.anchor_id in ("offers:home", "offers:away"):
+                emit_offers_pages(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            if anchor.anchor_id in ("movement:home", "movement:away"):
+                emit_movement_pages(anchor.anchor_id.split(":")[1], anchor.text)
                 continue
             # Story 1.10: the four Domain G families, per team. The anchor loop matches
             # RESOLVED ids, so these are the eight suffixed forms — a bare-id branch for
@@ -1555,6 +3194,27 @@ def make_report():
             ):
                 family, side = anchor.anchor_id.split(":")
                 emit_player_stats_page(family, side, anchor.text)
+                continue
+            # Story 1.9: the four goalkeeping families and set plays. The anchor loop
+            # matches RESOLVED ids, so the per-team families use the SUFFIXED forms while
+            # `gk-involvement` uses the BARE one — its spec is deliberately not per_team
+            # (one page carries both teams' charts). A suffixed branch for gk-involvement,
+            # or a bare branch for a per-team spec, never fires at all and leaves behind a
+            # generic anchor-text-only page that fails the whole suite undiagnosably.
+            if anchor.anchor_id == "gk-involvement":
+                emit_gk_involvement_page(anchor.text)
+                continue
+            if anchor.anchor_id in ("gk-distribution:home", "gk-distribution:away"):
+                emit_gk_distribution_page(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            if anchor.anchor_id in ("goal-prevention:home", "goal-prevention:away"):
+                emit_goal_prevention_page(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            if anchor.anchor_id in ("aerial-control:home", "aerial-control:away"):
+                emit_aerial_control_page(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            if anchor.anchor_id in ("set-plays:home", "set-plays:away"):
+                emit_set_plays_page(anchor.anchor_id.split(":")[1], anchor.text)
                 continue
             page = doc.new_page(width=960, height=540)
             page.insert_text((40, 60), anchor.text, fontsize=11)
@@ -1577,6 +3237,26 @@ def make_report():
             ):
                 draw_line_height_page(
                     page, "out_of_possession", line_height_blocks["out_of_possession"]
+                )
+            if anchor.anchor_id == "momentum":
+                # Story 1.8: the real corpus draws this chart at the foot of the lineups
+                # page, but the parser locates it by its OWN title anchor and never by
+                # page identity — so the fixture gives it its own page, which is what
+                # proves the parser is not quietly relying on the lineups page.
+                draw_momentum_page(
+                    page,
+                    home,
+                    away,
+                    values=momentum_values,
+                    slot_count=momentum_slots,
+                    ticks=momentum_ticks,
+                    top_label=momentum_top_label,
+                    axis_labels=momentum_axis_labels,
+                    gridlines=momentum_gridlines,
+                    axis_rule=momentum_axis_rule,
+                    legend=momentum_legend,
+                    title=False,
+                    decorate=momentum_decorate,
                 )
             if anchor.anchor_id == "lineups":
                 # The lineups page must parse as Domain A (Story 1.6) — extract_report

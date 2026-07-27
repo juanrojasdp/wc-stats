@@ -90,13 +90,17 @@ def test_every_registered_anchor_resolves_on_mex_rsa(mex_rsa_pdf):
 
 
 def test_registry_resolves_to_the_expected_anchor_count():
-    """30 specs, 17 of them per_team -> 13 + 34 = 47 resolved anchors."""
+    """31 specs, 17 of them per_team -> 14 + 34 = 48 resolved anchors.
+
+    Story 1.8 forced repair: the momentum chart's own title anchor joined the registry
+    (OQ-5's resolution), which is exactly the widening this test exists to make visible.
+    """
     per_team = sum(1 for spec in ANCHOR_REGISTRY if spec.per_team)
     resolved = resolve_anchors(ANCHOR_REGISTRY, home="Mexico", away="South Africa")
 
-    assert len(ANCHOR_REGISTRY) == 30
+    assert len(ANCHOR_REGISTRY) == 31
     assert per_team == 17
-    assert len(resolved) == len(ANCHOR_REGISTRY) + per_team == 47
+    assert len(resolved) == len(ANCHOR_REGISTRY) + per_team == 48
 
 
 def test_divider_anchor_is_not_satisfied_by_a_longer_title_containing_it(mex_rsa_pdf):

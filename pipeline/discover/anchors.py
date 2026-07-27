@@ -52,6 +52,11 @@ class ResolvedAnchor:
 ANCHOR_REGISTRY: tuple[AnchorSpec, ...] = (
     AnchorSpec("cover", "POST MATCH SUMMARY REPORT", "metadata"),
     AnchorSpec("lineups", "Match Summary - Teams", "lineups"),
+    # Story 1.8 (OQ-5): the momentum series is the two-colour bar chart at the foot of the
+    # lineups page. Deliberately NOT per_team — one chart per report carries both teams —
+    # and deliberately its own spec rather than reusing `lineups`, because the parser must
+    # locate the chart by its own title on 104/104, never by the lineups page's identity.
+    AnchorSpec("momentum", "Distribution in the Final Third", "momentum"),
     AnchorSpec("key-statistics", "Match Summary - Key Statistics", "key-statistics"),
     AnchorSpec("phases-of-play", "{home} Phases of Play {away}", "phases-of-play"),
     AnchorSpec(

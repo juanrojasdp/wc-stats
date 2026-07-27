@@ -897,6 +897,73 @@ def test_the_documented_absence_reaches_the_manifest_as_a_warning(tmp_path, make
     assert ABSENT_COUNTERPART_WARNING in format_summary(manifest)
 
 
+def test_a_receiving_mismatch_fails_the_run_with_both_operands_in_the_manifest(
+    tmp_path, make_report
+):
+    """Story 1.13: the failing receiving check lands in the entry with both operands and
+    fails the run without inflating `failed_count` (the orphan-records precedent).
+
+    No `format_summary` branch is added for these ids: the receiving checks carry a
+    `specifics` string holding both operands, which the existing fallback renders — the
+    marker-count template would print `None: None markers, table lists None` over them.
+    """
+    from pipeline.ingest.batch import format_summary
+
+    directory = tmp_path / "corpus"
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(
+        directory / "PMSR-M01-ALP-V-BRA.pdf",
+        number=1,
+        home="Alpha",
+        away="Bravo",
+        offers_values={"home": {"offers_inside_shape": 999}},
+    )
+
+    manifest = _run(tmp_path, directory)
+
+    [entry] = manifest["reports"]
+    assert entry["status"] == "extracted"
+    assert entry["self_validation"] == "fail"
+    [check] = entry["self_validation_failures"]
+    assert check["check"] == "receiving-offers-shape-sum"
+    assert check["team"] == "home"
+    assert check["page_value"] != check["counterpart"]
+    assert manifest["run"]["failed_count"] == 0
+    assert manifest["run"]["self_validation_fail_count"] == 1
+    assert manifest["run"]["result"] == "fail"
+    summary = format_summary(manifest)
+    assert "[receiving-offers-shape-sum]" in summary
+    assert f"page reads {check['page_value']}" in summary
+    assert f"counterpart is {check['counterpart']}" in summary
+
+
+def test_the_two_receiving_absences_reach_the_manifest_as_warnings(tmp_path, make_report):
+    """AC 2's absence branch end to end, twice: the movement donuts' raster-only slice
+    values and the non-partitioned phase totals each record NO check at all and travel as
+    ONE per-report warning that `batch.py` mirrors and `format_summary` prints — while
+    the run still passes."""
+    from pipeline.ingest.batch import format_summary
+    from pipeline.markers.receiving import (
+        DONUT_SLICES_ABSENT_WARNING,
+        PHASE_PARTITION_ABSENT_WARNING,
+    )
+
+    directory = tmp_path / "corpus"
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(directory / "PMSR-M01-ALP-V-BRA.pdf", number=1, home="Alpha", away="Bravo")
+
+    manifest = _run(tmp_path, directory)
+
+    [entry] = manifest["reports"]
+    assert entry["self_validation"] == "pass"
+    assert entry["warnings"].count(DONUT_SLICES_ABSENT_WARNING) == 1
+    assert entry["warnings"].count(PHASE_PARTITION_ABSENT_WARNING) == 1
+    assert manifest["run"]["result"] == "pass"
+    summary = format_summary(manifest)
+    assert DONUT_SLICES_ABSENT_WARNING in summary
+    assert PHASE_PARTITION_ABSENT_WARNING in summary
+
+
 def test_a_skipped_unchanged_entry_carries_its_staged_records_verdict(tmp_path, make_report):
     """The mirror reads the staged record, the same way `warnings` flows: a re-run over
     an unchanged mismatching corpus must keep failing, not launder the verdict."""

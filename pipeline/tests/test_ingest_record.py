@@ -25,8 +25,14 @@ from pipeline.ingest.records import (
     serialize_record,
     write_record,
 )
+from pipeline.extract.domain_e import domain_e_warnings
 from pipeline.markers.defensive_actions import ABSENT_COUNTERPART_WARNING
 from pipeline.markers.errors import UnknownRgbError
+from pipeline.markers.receiving import (
+    DONUT_SLICES_ABSENT_WARNING,
+    MOVEMENT_LABEL_TO_ENUM,
+    PHASE_PARTITION_ABSENT_WARNING,
+)
 from pipeline.tests.conftest import (
     DEFAULT_CROSSES_MARKERS,
     DEFAULT_DEFENSIVE_ACTIONS_MARKERS,
@@ -89,11 +95,20 @@ def test_the_ground_truth_report_extracts_a_complete_record(mex_rsa_pdf, tmp_pat
     assert len(record["anchors"]) == len(
         resolve_anchors(ANCHOR_REGISTRY, home="Mexico", away="South Africa")
     )
-    # Story 1.12 forced repair: every record now carries exactly one warning — the
-    # documented absence of a printed counterpart for the possession-regain map (AC 2's
-    # absence branch, which must never be modelled as a non-"pass" check). Asserted
-    # exactly, so a second unexplained warning still fails this test.
-    assert record["warnings"] == [ABSENT_COUNTERPART_WARNING]
+    # Story 1.12 forced repair, widened by Story 1.13 and again by Story 1.9: every record
+    # now carries exactly SIX warnings, all of them documented absences taking the absence
+    # branch (which must never be modelled as a non-"pass" check) — the possession-regain
+    # map's missing printed counterpart; the receiving family's raster-only donut slices
+    # and non-partitioned phase totals; and Domain E's three (the distribution technique
+    # breakdowns, goal prevention's intervention body type, and the aerial crosses-faced
+    # completed count). Asserted as the exact expected set, not a length, so a seventh
+    # unexplained warning still fails this test.
+    assert record["warnings"] == [
+        ABSENT_COUNTERPART_WARNING,
+        DONUT_SLICES_ABSENT_WARNING,
+        PHASE_PARTITION_ABSENT_WARNING,
+        *domain_e_warnings(),
+    ]
     # AC 2 end-to-end: the full `extract_report` path — not just `parse_shots` — must
     # Self-Validate both teams against the ground truth (16/16 home, 3/3 away; the one
     # place hardcoding counts is correct, AR-16).
@@ -399,6 +414,120 @@ def test_a_defensive_actions_count_mismatch_fails_the_record_with_both_counts(
         if check["check"] in ("shots-marker-count", "crosses-marker-count")
     }
     assert other_results == {"pass"}
+
+
+def test_receiving_domain_and_checks_join_the_record(tmp_path, make_report):
+    """Story 1.13: the receiving checks are appended beside the existing families and
+    filtered here by their OWN check ids, never a widened shots/crosses/defensive-actions
+    filter (every family carries home/away team keys, so a shared filter would collide).
+
+    The payload stages VALUES, not events: this page family draws no markers, so there is
+    no event list to count and `events.receiving` can only ever be null (the AD-14
+    emission blocker Story 1.13 filed).
+    """
+    record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
+
+    receiving = record["domains"]["receiving"]
+    assert set(receiving) == {"offers", "movement", "counts"}
+    for side in ("home", "away"):
+        assert receiving["offers"][side]["type"] == "offer"
+        assert receiving["movement"][side]["type"] == "movement"
+        assert len(receiving["movement"][side]["by_third_and_type"]) == 15
+        assert len(receiving["movement"][side]["top_ranked_players"]) == 5
+        # AC 2's documented absences, recorded as explicit `None` counterparts.
+        movement_counts = receiving["counts"][side]["movement"]
+        assert movement_counts["donut_slice_table"] is None
+        assert movement_counts["phase_partition_table"] is None
+
+    by_id: dict[str, list[dict]] = {}
+    for check in record["self_validation"]["checks"]:
+        if check["check"].startswith("receiving-"):
+            by_id.setdefault(check["check"], []).append(check)
+    assert set(by_id) == {
+        "receiving-offers-thirds-sum",
+        "receiving-offers-shape-sum",
+        "receiving-offers-table-sum",
+        "receiving-offers-table-pct",
+        "receiving-movement-grid-total",
+        "receiving-offers-domain-g",
+        "receiving-movement-domain-g",
+    }
+    assert all(check["result"] == "pass" for checks in by_id.values() for check in checks)
+    # Two operand pairs per team for each split family, five for the per-type grid.
+    assert len(by_id["receiving-offers-table-sum"]) == 4
+    assert len(by_id["receiving-offers-domain-g"]) == 4
+    assert len(by_id["receiving-movement-domain-g"]) == 2 * len(MOVEMENT_LABEL_TO_ENUM)
+    assert record["self_validation"]["result"] == "pass"
+    assert DONUT_SLICES_ABSENT_WARNING in record["warnings"]
+    assert PHASE_PARTITION_ABSENT_WARNING in record["warnings"]
+
+
+def test_a_receiving_reconciliation_mismatch_fails_the_record_with_both_operands(
+    tmp_path, make_report
+):
+    """AD-8 for the receiving family: mismatch is data — record written, `fail`, both
+    operands recorded — while every other family's checks stay green."""
+    record = extract_report(
+        make_report(
+            tmp_path / "PMSR-M07-AAA-V-BBB.pdf",
+            number=7,
+            offers_values={"home": {"offers_final_third": 999}},
+        )
+    )
+
+    assert record["self_validation"]["result"] == "fail"
+    by_team = {
+        check["team"]: check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "receiving-offers-thirds-sum"
+    }
+    assert by_team["home"]["result"] == "fail"
+    assert by_team["home"]["page_value"] != by_team["home"]["counterpart"]
+    assert by_team["away"]["result"] == "pass"
+    other_results = {
+        check["result"]
+        for check in record["self_validation"]["checks"]
+        if check["check"]
+        in (
+            "shots-marker-count",
+            "crosses-marker-count",
+            "defensive-actions-marker-count",
+        )
+    }
+    assert other_results == {"pass"}
+
+
+def test_the_cross_domain_receiving_checks_read_domain_g_at_the_seam(tmp_path, make_report):
+    """The two cross-domain families are computed at the extract seam, where Domain G's
+    payload is in hand — the parsers themselves stay single-source and never re-parse the
+    Offers & Receptions page."""
+    record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
+
+    players = record["domains"]["player_stats"]["home"]
+    offers_check = next(
+        check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "receiving-offers-domain-g"
+        and check["team"] == "home"
+        and check["column"] == "total_offers_made"
+    )
+    assert offers_check["counterpart"] == sum(
+        player["in_possession"]["total_offers"] for player in players
+    )
+    # Reconciliation #8: the grid's per-type totals equal Domain G's FIVE-type sums, and
+    # `no-movement` — the contract's sixth value — never appears on the movement page.
+    grid_checks = {
+        check["movement_type"]: check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "receiving-movement-domain-g" and check["team"] == "home"
+    }
+    assert set(grid_checks) == set(MOVEMENT_LABEL_TO_ENUM.values())
+    assert "no-movement" not in grid_checks
+    for code, check in grid_checks.items():
+        assert check["counterpart"] == sum(
+            player["in_possession"]["offers_by_movement_type"][code.replace("-", "_")]
+            for player in players
+        )
 
 
 def test_a_typed_marker_error_propagates_as_itself_not_as_probe_error(tmp_path, make_report):

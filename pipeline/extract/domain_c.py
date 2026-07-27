@@ -37,6 +37,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from pipeline.discover.text import normalize
+from pipeline.extract import check_entry
 from pipeline.extract.errors import (
     LineHeightParseError,
     MissingFieldError,
@@ -529,8 +530,10 @@ _MEASURE_BOUND_METRES: dict[str, float] = {
 }
 
 
-def _check(check_id: str, passed: bool, specifics: str) -> dict:
-    return {"check": check_id, "result": "pass" if passed else "fail", "specifics": specifics}
+# Story 1.8: the four byte-identical private copies of this helper were extracted to the
+# `pipeline.extract` package seam at the ledgered moment (momentum would have been the
+# fifth). The local name is kept so every call site below reads unchanged.
+_check = check_entry
 
 
 def domain_c_checks(payload: dict) -> list[dict]:
