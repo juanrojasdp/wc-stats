@@ -23,13 +23,13 @@
       "title": "MatchBundleSchemaVersion",
       "description": "Stamped from /contract/version.json. One global integer, declared exactly once (AD-2).",
       "type": "integer",
-      "const": 1
+      "const": 2
     },
     "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
     "metadata": { "$ref": "#/$defs/MatchMetadata" },
     "storyStats": { "$ref": "#/$defs/StoryStatsBlock" },
     "momentum": {
-      "$comment": "PROVISIONAL series shape (OQ-5 / AR-17). The concrete shape lands in Story 1.8 via the AD-14 change flow, with a schemaVersion bump and regenerated fixtures in the same commit. The KEY contract is final in v1: required, never omitted, never [], and null triggers the App's empty state.",
+      "$comment": "RESOLVED in v2 (OQ-5 / AR-17, Story 1.8): the series is the PMSR's page-1 'Distribution in the Final Third' chart — a per-minute, per-team count of final-third distributions, present on 104/104 reports and the only per-minute two-team series the report carries. It is NOT a possession percentage and not an abstract momentum index; the App's own copy must not imply otherwise. The KEY contract is unchanged from v1: required, never omitted, never [], and null triggers the App's empty state.",
       "title": "Momentum",
       "anyOf": [{ "$ref": "#/$defs/MomentumSeries" }, { "type": "null" }]
     },
@@ -310,33 +310,39 @@
 
     "MomentumSample": {
       "title": "MomentumSample",
-      "description": "One sampled point on the momentum axis. EXPERIENCE.md's aria-valuetext announces the minute plus both teams' values, which is exactly this shape.",
+      "description": "One minute of the match. home/away are that minute's final-third distribution counts for each team — the PMSR's 'Distribution in the Final Third' chart, the report's only per-minute two-team series (OQ-5, resolved in Story 1.8). `at` is a MinuteStamp rather than a bare Minute because the series runs on the chart's own slot grid, which INCLUDES stoppage time: under a bare Minute every first-half stoppage minute collapses onto 45 and collides. CONSEQUENCE FOR STORY 2.6 (Momentum Timeline): `at.minute` is therefore NOT unique across the series — a real bundle carries minute 45 up to a dozen times and minute 90 more — so EXPERIENCE.md's aria-valuemin/max 'over match minutes' and its 'arrow keys move +/-1 minute' no longer map one-to-one onto samples. The slider must index samples, not minutes, and aria-valuetext must announce the stoppage offset alongside the minute. Filed as an AD-14 note in deferred-work.md.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["minute", "home", "away"],
+      "required": ["at", "home", "away"],
       "properties": {
-        "minute": { "$ref": "common.schema.json#/$defs/Minute" },
+        "at": { "$ref": "#/$defs/MinuteStamp" },
         "home": {
           "title": "MomentumHomeValue",
-          "type": "number",
-          "x-decimals": 2
+          "type": "integer",
+          "minimum": 0,
+          "x-decimals": 0
         },
         "away": {
           "title": "MomentumAwayValue",
-          "type": "number",
-          "x-decimals": 2
+          "type": "integer",
+          "minimum": 0,
+          "x-decimals": 0
         }
       }
     },
     "MomentumSeries": {
       "title": "MomentumSeries",
+      "description": "Every minute of the match, in clock order, with no gap: a minute in which neither team entered the final third carries 0/0, never a missing sample. Regulation matches run ~96-114 samples and extra-time matches ~132-145, both including stoppage time.",
       "type": "object",
       "additionalProperties": false,
       "required": ["samples"],
       "properties": {
         "samples": {
           "title": "MomentumSamples",
+          "$comment": "minItems/uniqueItems encode two of the three invariants this type's description asserts. The third — clock ORDER — is not expressible in JSON Schema and is enforced by the pipeline's momentum-coverage check and pinned by pipeline/tests/test_fixtures.py. A present-but-empty series is a contradiction: the momentum key carries null for 'no series', so [] would be a third state no consumer handles (AD-4).",
           "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
           "items": { "$ref": "#/$defs/MomentumSample" }
         }
       }

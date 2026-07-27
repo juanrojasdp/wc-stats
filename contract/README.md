@@ -9,7 +9,7 @@ The schemas are the **single definition** (AD-2). The App consumes the *generate
 never a hand-written mirror.
 
 ```
-version.json                    {"schemaVersion": 1} — the one global version declaration
+version.json                    {"schemaVersion": 2} — the one global version declaration
 common.schema.json              ids, closed vocabularies, coordinates, scalars, KnockoutScore
 match-bundle.schema.json        one match, Domains A-G, storyStats, momentum
 tournament.schema.json          standings + results + route manifest + search source
@@ -61,11 +61,10 @@ these at emit time (Story 1.16); v1 declares them.
 | Pitch coordinates `PitchX`, `PitchY` | 2 | `number` 0–100 | every spatial event |
 | Expected goals | 2 | `number` ≥ 0 | Domain B, shots, profiles |
 | Kilometres | 2 | `number` ≥ 0 | team distance covered, sprint distance |
-| Momentum values | 2 | `number` | `MomentumSample.home` / `.away` |
 | Percentages | 1 | `number` 0–100 | possession, completion %, phases, block share, save % |
 | Metres | 1 | `number` ≥ 0 | line height, team length, per-player distances |
 | km/h | 1 | `number` ≥ 0 | top speed |
-| Counts, minutes, ranks, shirt numbers | 0 | `integer` | everywhere else |
+| Counts, minutes, ranks, shirt numbers | 0 | `integer` | everywhere else, including `MomentumSample.home` / `.away` (v2; see §3) |
 
 ### Why not `multipleOf`
 
@@ -214,15 +213,57 @@ emitted never changes, this had to be settled before anything was emitted.
 
 See *Numeric precision* above. `multipleOf` fails on binary floating point.
 
-### 3. `momentum`'s series shape is provisional; its **key** contract is final
+### 3. `momentum` is the "Distribution in the Final Third" chart — RESOLVED in v2
 
-`MomentumSeries` is `{samples: [{minute, home, away}]}` — what EXPERIENCE.md's Momentum
-Timeline actually consumes (`aria-valuetext` announces the minute plus both teams' values).
-The concrete shape lands in Story 1.8 (OQ-5 / AR-17) via the AD-14 change flow.
+**Superseded record.** In v1 this section read "the series shape is provisional; its key
+contract is final", pending OQ-5 / AR-17. Story 1.8 resolved OQ-5 against all 104 reports
+and landed the concrete shape as the project's first `schemaVersion` bump.
 
-What is **final in v1**: `momentum` is a required key whose value is the series or JSON
+**What the series is.** The PMSR carries no page containing the word *Momentum*. It carries
+exactly one per-minute two-team time series: the vector bar chart titled **"Distribution in
+the Final Third"**, drawn once per report at the foot of the lineups page, present on
+104/104. `home`/`away` are that minute's count of final-third distributions per team. It is
+**not** a possession percentage and **not** an abstract momentum index, and neither the
+schema description nor the App's copy may imply otherwise. It is nonetheless the correct
+and only candidate for FR-35 and the App's Momentum Timeline: a per-minute attacking-presence
+count is exactly what a broadcast momentum chart plots.
+
+**The shape, and why it changed.** `MomentumSample` was `{minute, home, away}` with `minute`
+`$ref`ing `Minute` — an integer 0–120, *capped at the end of the period it fell in*. The
+chart's slot grid runs 96–145 slots **including stoppage time**, so under that shape every
+first-half stoppage minute collapses onto 45 and collides. The provisional shape was not
+merely imprecise; it could not represent the data. v2 is:
+
+```jsonc
+"MomentumSample": { "at": MinuteStamp, "home": integer >= 0, "away": integer >= 0 }
+```
+
+`MinuteStamp` (`{minute, stoppageMinute}`) is the composite the contract already uses for
+every other `at:` field. The values are exactly recoverable non-negative integers: the chart
+auto-scales so the tallest bar fills the axis half height, and 0 bar heights across the
+entire corpus are non-integral.
+
+**Not strictly additive, and deliberately so.** `minute` → `at` is a rename and
+`number` → `integer` a narrowing — precisely what the AD-14 change flow exists for. It was
+safe to land because a sweep of `app/src` found no field-level consumer: Story 2.5 tests
+only `bundle.momentum !== null`, and Story 2.6 (Momentum Timeline) was still `backlog`.
+
+**Unchanged from v1:** `momentum` is a required key whose value is the series or JSON
 `null`. Never omitted, never `[]`. Goal markers on the momentum axis come from Domain A's
 scorer list, not from the series — they are not duplicated into it.
+
+**What the pipeline validates.** The chart has **no printed row total** to reconcile a sum
+against: the per-team bar sum was tested against every numeric Domain B field over all 208
+team-innings and the best exact-match rate was 2/208, i.e. coincidence
+(`receptions_in_final_third` is consistently smaller). The printed y-axis is the one genuine
+printed counterpart, so `momentum-axis-scale` compares the printed top label against the
+peak value derived geometrically from the bar heights. That is the only genuinely
+independent check of the two: `momentum-coverage` is a backstop over the staged series
+(kick-off to the final period, the printed FT tick stamped at regulation's end), because
+every clock inconsistency it could describe already aborts the report inside the parser.
+The slot grid is dense by construction, so there is no gap check to perform — the schema's
+`minItems`/`uniqueItems` and the pipeline's ordering pin carry what the shape guarantees.
+No reconciliation was manufactured (SM-C1).
 
 ### 4. No tool swap — `json-schema-to-typescript@15.0.4` round-trips faithfully
 
@@ -307,8 +348,10 @@ other eight optional sections — `events.shots`, `events.crosses`, `events.pass
 missing was indistinguishable from one with zero defensive actions.
 
 All eight are now `anyOf: [<array>, {"type": "null"}]`. Done inside v1 rather than through the
-change flow because it is still `schemaVersion` 1 and nothing consumes the contract yet: after
-Story 2.1 the same change costs a version bump, regenerated fixtures and App churn.
+change flow because at the time it was still `schemaVersion` 1 and nothing consumed the
+contract yet. That window is now closed: Story 1.8's v2 bump was the first change to go
+through the full flow, and every change from here costs a version bump, regenerated fixtures
+and App churn.
 
 ### 10. `MetricCode` is scoped to the artifact field it ranks
 
@@ -470,7 +513,8 @@ the seven fixtures, EXPERIENCE.md/DESIGN.md and the epic 2.4–2.18 ACs. Full ev
 - **PASS-with-note** — `<title>`/OG (pens suffix composes via a same-file build-time join to
   `knockoutResults[].knockoutScore` — no change needed); comparison (App aligns sides from
   `metadata.homeTeam`/`awayTeam` ordering; presentation logic under AD-5); `#momentum`
-  (series shape PROVISIONAL until Story 1.8's AD-14 bump; the key contract is final);
+  (series shape was PROVISIONAL at sign-off; RESOLVED by Story 1.8's v2 AD-14 bump —
+  see §3; the key contract was and remains final);
   offers/movement-to-receive (`movementType: null` branch unfixtured — F5/FR-1;
   reclassified from PASS by the 2026-07-23 review);
   `#phases`/`#pressing` + `#set-plays` + `#goalkeeping` (non-partition semantics: independent

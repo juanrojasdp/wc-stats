@@ -16,15 +16,28 @@ green.
 | File | Covers |
 | --- | --- |
 | `matches/m001-mexico-south-africa.json` | Group match; `momentum` series present; `decidedBy: "regulation"` |
-| `matches/m002-korea-republic-czechia.json` | Group match; **`momentum: null`** (the empty state) |
+| `matches/m002-korea-republic-czechia.json` | Group match; **`momentum: null`** (the empty state — SYNTHETIC, see below) |
 | `matches/m074-germany-paraguay.json` | Knockout; extra time **and** shoot-out; **own goal**; `ShootoutAttempt` rows |
 | `index/tournament.json` | Group A standings with `rank` + form, results, entity lists |
 | `index/leaderboards.json` | One team board (×2) and one player board, ranked |
 | `index/team-profiles/mexico.json` | One full team profile |
 | `index/player-profiles/quinones-julian-mex.json` | One full player profile |
 
-Every file is stamped `schemaVersion: 1` and validates against `/contract`. The tests live in
+Every file is stamped `schemaVersion: 2` and validates against `/contract`. The tests live in
 `pipeline/tests/test_fixtures.py`.
+
+> **Story 1.8 (`schemaVersion` 1 -> 2).** `MomentumSample` became
+> `{at: MinuteStamp, home: integer, away: integer}` and the `momentum` blocks of `m001` and
+> `m074` were regenerated from the real corpus (101 and 138 per-minute samples). See
+> `contract/README.md` §3.
+>
+> **`m002`'s `momentum: null` is deliberate and must NOT be regenerated.** The real M02
+> report *does* carry a momentum band (95 bars, measured) — in fact all 104 reports do, so
+> `momentum: null` never occurs in real corpus data. This fixture's `null` is a synthetic
+> edge case required by AD-14 so the App's empty state is buildable against; regenerating it
+> from its PDF would delete the only such fixture in the project and leave Story 2.6's
+> empty-state branch and UX-DR13's dedicated copy unbuilt-against. Pinned by
+> `test_the_momentum_null_fixture_is_deliberate_and_stays_null`.
 
 ---
 
@@ -45,6 +58,7 @@ reports rather than merely plausible-looking.
 | Shot events — minute, player, outcome, outcome detail, body part, delivery type | `Attempts at Goal {team}` | |
 | Set-play totals — set plays, free kicks, penalties, corners, throw-ins | `Set Plays {team}` | |
 | **All of Domain G physical** — total distance, zones 1–5, high-speed runs, sprints, top speed | `Physical Data {team}` | |
+| **Momentum series** — per-minute final-third distribution counts, both teams (`m001`, `m074` only) | `Match Summary - Teams`, the `Distribution in the Final Third` chart | Read 2026-07-27, after Story 1.8 resolved OQ-5; 101 and 138 samples. `m002` is deliberately `null` — see above |
 | `storyStats` — all five Hero tiles | derived from the above | possession/shots/xG/distance from Domain B, top speed from Domain G |
 
 The shot events self-validate against Domain B in all six team-innings: Mexico's 16 shot rows
@@ -57,7 +71,9 @@ Paraguay `7 (3)`. `pipeline/tests/test_fixtures.py` asserts it.
 - **Every pitch coordinate** (`x`, `y`) on every event. Marker positions live in the PDF's
   vector graphics, not its text, so they are Stories 1.3 / 1.11–1.14's work. The values here
   are drawn from position-appropriate ranges and are stable across runs.
-- **Momentum series** — OQ-5 has not resolved the real shape yet (see below).
+- **Momentum series in `m002` only** — a deliberate `null`, the synthetic empty-state edge
+  case described above. `m001`'s and `m074`'s momentum blocks are **real** (see the table
+  above); this bullet used to cover all three and predates Story 1.8 resolving OQ-5.
 - **Cross, receiving, pass-network and defensive-action events** — counts are tied to the
   real Domain B totals where one exists (crosses, forced turnovers), the rest are shaped.
 - **Domain E goalkeeping** in full, though the attempts faced and goals conceded are real,

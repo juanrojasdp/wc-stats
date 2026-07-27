@@ -319,6 +319,37 @@ last_updated: 2026-07-27
 #             tests pass (68->98). Browser-verified ES/EN swap (no mixed-language) + light
 #             theme + disclosure expand. Note for review: stage chip uses type-label-caps
 #             (no uppercase transform) per the story's explicit token over the mockup CSS.
+# 2026-07-27: story 1-8 adversarial code review (3 layers over the 1.8-scoped working-tree diff):
+#             31 raw findings merged to 25 — 6 decisions ruled, 16 patches applied, 3 dismissed.
+#             All four ACs audited as satisfied and every substantive Dev Record claim verified
+#             against the codebase rather than taken on trust. Rulings: (a) momentum-coverage was
+#             largely TAUTOLOGICAL — two of four clauses unreachable because _clock_structure
+#             already fails loud on every clock inconsistency; narrowed and re-documented as the
+#             staged-payload backstop it is, with the real strength moved INTO _clock_structure as
+#             hard stoppage/FT bounds. (b) the v2 schema encoded NONE of the invariants its own
+#             descriptions assert — `{"samples": []}`, reversed order and duplicate stamps all
+#             validated clean against AC 3's "never []"; minItems/uniqueItems added inside the bump
+#             (order is not expressible in JSON Schema and stays pinned by check + fixture test).
+#             (c) Task 3.5's fail-loud text and (d) Task 3.3's 429.13 literal are both STALE — the
+#             code is right and the story text now says so. (e) the bump silently invalidated story
+#             2-6's aria-valuetext AC: at.minute is NOT unique (m001 carries minute 45 x5, 90 x8),
+#             so 2-6 must index its slider by SAMPLE, not minute — filed as an AD-14 note and
+#             recorded in the schema description; EXPERIENCE.md deliberately left to UX/2-6.
+#             (f) the fixtures gave the chart its own empty page, stripping every co-tenant of the
+#             real lineups page — four co-tenant tests added via the unused `decorate` hook.
+#             Parser hardening: stoppage bounded against the contract's StoppageMinute (corpus max
+#             is 19, so no false fire), a bar-signature template change now fails LOUD instead of
+#             staging momentum:null on all 104, legend reads are order-independent and normalized,
+#             gridlines cluster by tolerance so unrelated page furniture no longer aborts a report.
+#             Re-verified: batch 104/0/2 (M19,M58) with momentum checks 104/104 pass and the
+#             extraction byte-identical to pre-patch; gate PASS 0 deviations; app build green at
+#             schemaVersion 2. Suite 1136 passed / 1 skipped / 2 failed — both failures pass in
+#             isolation and are the shared-working-tree artifact below, not 1.8 defects.
+#             PROCESS FINDING (needs a ruling): stories 1-8, 1-9 and 1-13 are being developed in
+#             ONE working tree, and code_version() fingerprints all of pipeline/**/*.py. Every
+#             batch run therefore computes a different fingerprint and correctly invalidates all
+#             104 records, so NO story can verify a skip-unchanged or byte-identity claim (task
+#             8.3) while that holds — and long test runs flake on any file another session saves.
 # 2026-07-27: story 1-8 implemented and moved to review — momentum-series extraction plus the
 #             project's FIRST contract bump (schemaVersion 1 -> 2, AD-14). OQ-5 verified in code
 #             over all 104 reports: every pinned fact reproduced (title once per report on page 1,
@@ -893,7 +924,7 @@ development_status:
   1-5-marker-event-linking-via-digit-glyph-proximity: done
   1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
-  1-8-momentum-series-extraction-oq-5-resolution: review
+  1-8-momentum-series-extraction-oq-5-resolution: done
   1-9-domains-e-f-extraction-goalkeeping-set-plays: in-progress
   1-10-domain-g-extraction-per-player-performance-physical-data: done
   1-11-crosses-map-parser: done

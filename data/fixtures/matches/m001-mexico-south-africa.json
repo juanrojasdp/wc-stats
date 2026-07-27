@@ -4132,99 +4132,812 @@
   "momentum": {
     "samples": [
       {
-        "away": 0.0,
-        "home": 1.22,
-        "minute": 0
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
       },
       {
-        "away": 0.0,
-        "home": 0.76,
-        "minute": 5
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
       },
       {
-        "away": 0.0,
-        "home": 2.42,
-        "minute": 10
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
       },
       {
-        "away": 1.89,
-        "home": 3.36,
-        "minute": 15
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 7
       },
       {
-        "away": 0.37,
-        "home": 4.01,
-        "minute": 20
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
       },
       {
-        "away": 0.16,
-        "home": 5.13,
-        "minute": 25
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
       },
       {
-        "away": 0.96,
-        "home": 4.21,
-        "minute": 30
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
       },
       {
-        "away": 0.0,
-        "home": 2.06,
-        "minute": 35
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
       },
       {
-        "away": 0.63,
-        "home": 4.1,
-        "minute": 40
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
       },
       {
-        "away": 0.0,
-        "home": 6.1,
-        "minute": 45
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
       },
       {
-        "away": 2.1,
-        "home": 3.96,
-        "minute": 50
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
       },
       {
-        "away": 0.73,
-        "home": 4.01,
-        "minute": 55
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
       },
       {
-        "away": 2.32,
-        "home": 1.85,
-        "minute": 60
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
       },
       {
-        "away": 4.43,
-        "home": 0.33,
-        "minute": 65
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
       },
       {
-        "away": 3.11,
-        "home": 0.4,
-        "minute": 70
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 1
       },
       {
-        "away": 1.14,
-        "home": 0.0,
-        "minute": 75
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
       },
       {
-        "away": 0.3,
-        "home": 0.5,
-        "minute": 80
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
       },
       {
-        "away": 0.0,
-        "home": 0.0,
-        "minute": 85
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
       },
       {
-        "away": 0.25,
-        "home": 1.23,
-        "minute": 90
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 10
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 10
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 6
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 7
+        },
+        "away": 0,
+        "home": 0
       }
     ]
   },
@@ -6121,7 +6834,7 @@
       "teamId": "south-africa"
     }
   ],
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "setPlays": {
     "away": {
       "cornersByDeliveryStyle": {

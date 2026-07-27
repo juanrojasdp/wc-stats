@@ -152,10 +152,18 @@ def test_no_ref_node_carries_sibling_keywords(name: str) -> None:
     assert offenders == [], f"{name} has $ref nodes with siblings:\n" + "\n".join(offenders)
 
 
-def test_version_json_declares_schema_version_1_and_nothing_else() -> None:
+def test_version_json_declares_the_schema_version_and_nothing_else() -> None:
+    """Story 1.8 forced repair: v1 -> v2, the project's first contract bump (AD-14).
+
+    `MomentumSample.minute` (a bare `Minute`, capped at the end of its period) could not
+    represent the momentum series' stoppage-time samples at all — every first-half
+    stoppage minute collapsed onto 45 — so it became `at: MinuteStamp`, and the values
+    narrowed from 2-decimal numbers to non-negative integers. Not strictly additive, and
+    that is exactly what the AD-14 change flow exists for.
+    """
     contents = json.loads((CONTRACT_DIR / "version.json").read_text(encoding="utf-8"))
-    assert contents == {"schemaVersion": 1}
-    assert schema_version() == 1
+    assert contents == {"schemaVersion": 2}
+    assert schema_version() == 2
 
 
 def test_every_artifact_schema_pins_schema_version_to_the_declared_version() -> None:

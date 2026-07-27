@@ -626,7 +626,7 @@ export interface Leaderboards {
   boards: Boards;
 }
 
-export type LeaderboardsSchemaVersion = 1;
+export type LeaderboardsSchemaVersion = 2;
 
 export interface Lineup {
   formation: Formation;
@@ -685,7 +685,7 @@ export interface MatchBundle {
 /**
  * Stamped from /contract/version.json. One global integer, declared exactly once (AD-2).
  */
-export type MatchBundleSchemaVersion = 1;
+export type MatchBundleSchemaVersion = 2;
 
 /**
  * Calendar date of the match, venue-local, ISO 8601 (AD-7).
@@ -830,16 +830,22 @@ export type MomentumAwayValue = number;
 export type MomentumHomeValue = number;
 
 /**
- * One sampled point on the momentum axis. EXPERIENCE.md's aria-valuetext announces the minute plus both teams' values, which is exactly this shape.
+ * One minute of the match. home/away are that minute's final-third distribution counts for each team — the PMSR's 'Distribution in the Final Third' chart, the report's only per-minute two-team series (OQ-5, resolved in Story 1.8). `at` is a MinuteStamp rather than a bare Minute because the series runs on the chart's own slot grid, which INCLUDES stoppage time: under a bare Minute every first-half stoppage minute collapses onto 45 and collides. CONSEQUENCE FOR STORY 2.6 (Momentum Timeline): `at.minute` is therefore NOT unique across the series — a real bundle carries minute 45 up to a dozen times and minute 90 more — so EXPERIENCE.md's aria-valuemin/max 'over match minutes' and its 'arrow keys move +/-1 minute' no longer map one-to-one onto samples. The slider must index samples, not minutes, and aria-valuetext must announce the stoppage offset alongside the minute. Filed as an AD-14 note in deferred-work.md.
  */
 export interface MomentumSample {
-  minute: Minute;
+  at: MinuteStamp;
   home: MomentumHomeValue;
   away: MomentumAwayValue;
 }
 
-export type MomentumSamples = MomentumSample[];
+/**
+ * @minItems 1
+ */
+export type MomentumSamples = [MomentumSample, ...MomentumSample[]];
 
+/**
+ * Every minute of the match, in clock order, with no gap: a minute in which neither team entered the final third carries 0/0, never a missing sample. Regulation matches run ~96-114 samples and extra-time matches ~132-145, both including stoppage time.
+ */
 export interface MomentumSeries {
   samples: MomentumSamples;
 }
@@ -1104,7 +1110,7 @@ export interface PlayerProfile {
 
 export type PlayerProfileName = string;
 
-export type PlayerProfileSchemaVersion = 1;
+export type PlayerProfileSchemaVersion = 2;
 
 /**
  * Domain G, one player. Every field the Expert Layer's per-player tables show is here — there is no reduced variant.
@@ -1496,7 +1502,7 @@ export type TeamProfileGoalDifference = number;
 
 export type TeamProfileName = string;
 
-export type TeamProfileSchemaVersion = 1;
+export type TeamProfileSchemaVersion = 2;
 
 /**
  * A team's tournament record. The IA specifies team search results as name plus tournament record, and <title>/OG for a team route as name plus record — so this is a derived aggregate that must be a field (AD-5).
@@ -1596,7 +1602,7 @@ export interface Tournament {
  */
 export type TournamentName = string;
 
-export type TournamentSchemaVersion = 1;
+export type TournamentSchemaVersion = 2;
 
 export interface TrendPoint {
   matchId: MatchId;

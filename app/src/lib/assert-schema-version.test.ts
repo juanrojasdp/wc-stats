@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, it } from "vitest";
 
+import { SCHEMA_VERSION } from "./contract/schema-version";
+
 const APP_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT = path.join(APP_DIR, "scripts", "assert-schema-version.mjs");
 const FIXTURES_DIR = path.join(path.dirname(APP_DIR), "data", "fixtures");
@@ -31,9 +33,14 @@ afterEach(() => {
 
 describe("assert-schema-version gate (FR-20)", () => {
   it("passes on the current fixture tree", () => {
+    // Story 1.8 forced repair: the project's first contract bump moved every artifact to
+    // schemaVersion 2 (MomentumSample gained `at: MinuteStamp`). Read from the generated
+    // constant rather than re-hardcoding a literal, so the next bump does not land here.
     const result = runScript();
     expect(result.status).toBe(0);
-    expect(result.output).toMatch(/artifact\(s\) at schemaVersion 1/);
+    expect(result.output).toMatch(
+      new RegExp(`artifact\\(s\\) at schemaVersion ${SCHEMA_VERSION}`),
+    );
   });
 
   it("fails non-zero on a tampered copy, naming the file and values", () => {

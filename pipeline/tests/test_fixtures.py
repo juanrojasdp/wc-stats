@@ -250,6 +250,54 @@ def test_a_bundle_carries_a_momentum_series() -> None:
         assert bundle["momentum"]["samples"], "momentum series is present but empty"
 
 
+def test_the_momentum_series_is_dense_per_minute_and_integer_valued() -> None:
+    """Story 1.8 (schemaVersion 2): the resolved shape, regenerated from real corpus data.
+
+    A sample per MINUTE of the match — including stoppage time, which is why `at` is a
+    `MinuteStamp` composite and not a bare `Minute`. A minute in which neither team
+    entered the final third carries 0/0, never a missing sample: the App's timeline would
+    otherwise show phantom gaps where the match simply had no final-third entry.
+    """
+    for name, bundle in _bundles().items():
+        if bundle["momentum"] is None:
+            continue
+        samples = bundle["momentum"]["samples"]
+        assert len(samples) >= 90, f"{name}: {len(samples)} samples cannot span a match"
+        seen = []
+        for sample in samples:
+            assert sorted(sample) == ["at", "away", "home"], name
+            assert sorted(sample["at"]) == ["minute", "stoppageMinute"], name
+            assert isinstance(sample["home"], int) and sample["home"] >= 0, name
+            assert isinstance(sample["away"], int) and sample["away"] >= 0, name
+            seen.append((sample["at"]["minute"], sample["at"]["stoppageMinute"] or 0))
+        assert seen == sorted(seen), f"{name}: momentum samples are not in clock order"
+        assert len(set(seen)) == len(seen), f"{name}: duplicate momentum clock stamps"
+        assert seen[0] == (1, 0), f"{name}: series does not open at kick-off"
+        assert samples[-1]["at"]["minute"] in (90, 120), (
+            f"{name}: series does not end in the final period"
+        )
+
+
+def test_the_momentum_null_fixture_is_deliberate_and_stays_null() -> None:
+    """m002's `null` is a SYNTHETIC edge case, not real data.
+
+    All 104 corpus reports draw a momentum band — `momentum: null` never occurs in real
+    data — and the real M02 report has one too (95 bars, measured). Regenerating m002
+    from its PDF would delete the only `momentum: null` fixture in the project and leave
+    Story 2.6's empty-state branch and UX-DR13's dedicated copy unbuilt-against. AD-14
+    requires it to exist, so it is pinned here rather than left to convention.
+    """
+    bundles = _bundles()
+
+    assert bundles["m002-korea-republic-czechia.json"]["momentum"] is None
+    # Sorted, not raw: comparing `_bundles()`' iteration order against a one-element list
+    # would go order-fragile exactly when a second `momentum: null` fixture is added, which
+    # is the scenario this assertion exists to catch.
+    assert sorted(name for name, b in bundles.items() if b["momentum"] is None) == [
+        "m002-korea-republic-czechia.json"
+    ]
+
+
 def test_a_bundle_covers_a_knockout_decided_by_extra_time_and_a_shootout() -> None:
     """AC 5's knockout edge shape, checked end to end rather than by `decidedBy` alone."""
     bundles = _bundles()
