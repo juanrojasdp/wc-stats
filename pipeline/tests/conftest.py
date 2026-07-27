@@ -378,6 +378,337 @@ def default_cross_rows(markers):
     """
     return [{"shirt": 9, "name": "Test PLAYER", "counts": (len(markers), 0, 0, 0, 0, 0)}]
 
+# --- Story 1.10: Domain G per-player page synthesis constants ------------------------
+#
+# Deliberate literals like SHOTS_OUTCOME_RGB. The four families are plain rectangular
+# tables on the real 960x540 template: a right-aligned shirt number ending at x=30, a
+# name from x=42, then the numeric columns. Three families are CENTRE-aligned and
+# physical data is RIGHT-aligned — the fixtures reproduce both, because the parser's
+# ordinal assignment must not quietly become x-band classification.
+
+DOMAIN_G_FONTSIZE = 9.0
+DOMAIN_G_SHIRT_X1 = 30.0
+DOMAIN_G_NAME_X = 42.0
+DOMAIN_G_HEADER_Y = 100.0
+DOMAIN_G_ROW_Y0 = 130.0
+DOMAIN_G_ROW_PITCH = 24.7
+
+# Column centres / right edges measured on spike/mex_rsa.pdf.
+DISTRIBUTIONS_CENTRE_XS = (
+    219.0, 273.0, 327.0, 381.0, 435.0, 489.0, 543.0, 597.0, 651.0, 705.0, 759.0,
+    813.0, 867.0, 921.0,
+)
+# The two percentage columns of the distributions family, by column index.
+DISTRIBUTIONS_PERCENT_INDEXES = (2, 8)
+OFFERS_CENTRE_XS = (226.0, 322.0, 418.0, 514.0, 610.0, 706.0, 802.0, 898.0)
+# The `Tackles Made / Won` split cell prints as three spans; the other 13 columns are
+# ordinary centred values.
+OUT_OF_POSSESSION_TACKLE_XS = (209.0, 217.0, 223.0)
+OUT_OF_POSSESSION_CENTRE_XS = (
+    270.0, 324.0, 378.0, 432.0, 486.0, 540.0, 594.0, 648.0, 702.0, 756.0, 810.0,
+    864.0, 918.0,
+)
+PHYSICAL_RIGHT_XS = (321.0, 395.0, 474.0, 559.0, 645.0, 722.0, 798.0, 870.0, 942.0)
+
+# The per-row values every default Domain G row carries, minus the three derived from
+# the report's own lineup and Key Statistics (goals, attempts at goal, and the whole
+# physical block). Every column inside a family holds a DISTINCT value, so a
+# left-to-right assignment that slips by one column cannot pass the synthetic suite.
+#
+# The head must stay distinct from the two DERIVED distributions columns as well, which
+# is why it avoids 0, 1, 3 and 4: `attempts_at_goal` is `goals + 3` and `goals` is 0 or
+# 1, so a head carrying a 1 or a 4 would collide with a scorer's own two columns —
+# exactly the rows where a slip between `take_ons`, `attempts_at_goal` and `goals` is
+# most likely and least visible. `crosses_completed <= crosses_attempted` still holds.
+DEFAULT_DISTRIBUTIONS_HEAD = (33, 29, 88, 7, 20, 14, 13, 10, 77, 6, 18, 5)
+DEFAULT_OFFERS = (21, 6, 5, 4, 3, 2, 1, 9)
+DEFAULT_OUT_OF_POSSESSION = (8, 3, 2, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16)
+
+
+def _domain_g_players(spec):
+    """(shirt, name) for every synthetic lineup entry that took the field.
+
+    Mirrors `domain_g.has_minutes`: a starter always did, a substitute did exactly when
+    the column stamped a sub-on marker on them.
+
+    The name must mirror what Domain A will PARSE, not what the spec literally carries:
+    a wrapped entry sets `name=None` and prints `name_above`/`name_below` on two lines,
+    which Domain A joins into one name (`'Crysencio' + 'SUMMERVILLE'`). Reading only
+    `name` here would print no Domain G row for a starter who has minutes, and the join
+    would then raise `MissingFieldError` for a defect that is purely the fixture's — the
+    trap the first test to combine a wrapped name with `make_report` would have fallen
+    into. Only an entry with no printed name at all is skipped; those exist to make
+    Domain A raise, which happens before Domain G ever runs.
+    """
+    players = []
+    for section in ("starters", "substitutes"):
+        for entry in spec[section]:
+            name = entry.get("name")
+            if not isinstance(name, str) or not name:
+                wrapped = [
+                    part
+                    for part in (entry.get("name_above"), entry.get("name_below"))
+                    if isinstance(part, str) and part
+                ]
+                if not wrapped:
+                    continue
+                name = " ".join(wrapped)
+            if section == "starters" or any(
+                kind == "sub-on" for kind, _minute in entry["markers"]
+            ):
+                players.append((entry["shirt"], name))
+    return players
+
+
+def _own_goals_scored_by(spec):
+    """How many own goals this column's players scored (they credit the OPPONENT)."""
+    return sum(
+        1
+        for section in ("starters", "substitutes")
+        for entry in spec[section]
+        for kind, _minute in entry["markers"]
+        if kind == "own-goal"
+    )
+
+
+def _split_metres(total, count):
+    """`count` one-decimal metre values summing to `total` (the last absorbs the rest)."""
+    tenths = int(round(total * 10))
+    base, remainder = divmod(tenths, count) if count else (0, 0)
+    values = [base / 10.0] * count
+    if values:
+        values[0] = (base + remainder) / 10.0
+    return values
+
+
+def default_player_stats_rows(sides, stats):
+    """The Domain G rows the factory prints, per side, derived from the report itself.
+
+    The synthetic defaults carry three cross-domain couplings, and all three are derived
+    rather than invented so a caller who changes the cover score, the lineup or the Key
+    Statistics block keeps every Domain G check green:
+
+    - the rows name exactly the lineup players WITH minutes, with matching shirts (the
+      join, AC 2, and its completeness half, AC 1);
+    - per-player `total_distance` sums to Key Statistics `distance_covered` x 1000;
+    - per-player `goals` plus the OPPONENT column's own goals sum to Key Statistics
+      `goals` — the own-goal term the corpus proved mandatory.
+
+    Zone sums and the internal-consistency relations hold by construction. Exported so
+    tests derive expected values from what the factory drew, never a second literal.
+    """
+    rows = {}
+    specs = {"home": sides[0], "away": sides[1]}
+    for side, other in (("home", "away"), ("away", "home")):
+        players = _domain_g_players(specs[side])
+        count = len(players)
+
+        team_goals = stats[side]["goals"]
+        own_goals = _own_goals_scored_by(specs[other])
+        # A doctored non-integer `goals` exists only to make Domain B raise, which it
+        # does before Domain G runs; print no goals rather than crash the factory.
+        scored = (
+            max(0, team_goals - own_goals) if isinstance(team_goals, int) else 0
+        )
+        if scored > count:
+            # One goal per player from the top of the column cannot represent more goals
+            # than there are players. Fail the FACTORY loudly rather than print a row set
+            # whose goals reconciliation is short by construction — the caller would see
+            # a Domain G check failure with nothing in the report pointing at the cause,
+            # and this function's contract promises the opposite.
+            raise ValueError(
+                f"default_player_stats_rows: {side} scored {scored} but only {count} "
+                "players have minutes; give the side more players with minutes, lower "
+                "the score, or pass explicit player_stats_rows"
+            )
+
+        team_km = stats[side]["distance_covered"]
+        total_m = round(team_km * 1000.0, 1) if isinstance(team_km, (int, float)) else 0.0
+        distances = _split_metres(total_m, count)
+
+        side_rows = []
+        for index, ((shirt, name), metres) in enumerate(zip(players, distances)):
+            # Spread the team's goals one per player from the top of the column.
+            goals = 1 if index < scored else 0
+            zone_5 = round(metres * 0.01, 1)
+            zone_4 = round(metres * 0.02, 1)
+            zone_3 = round(metres * 0.05, 1)
+            zone_2 = round(metres * 0.20, 1)
+            zone_1 = round(metres - zone_2 - zone_3 - zone_4 - zone_5, 1)
+            side_rows.append(
+                {
+                    "shirt": shirt,
+                    "name": name,
+                    "distributions": DEFAULT_DISTRIBUTIONS_HEAD + (goals + 3, goals),
+                    "offers": DEFAULT_OFFERS,
+                    "out_of_possession": DEFAULT_OUT_OF_POSSESSION,
+                    "physical": (
+                        metres,
+                        zone_1,
+                        zone_2,
+                        zone_3,
+                        zone_4,
+                        zone_5,
+                        # `high_speed_runs` / `sprints` are integral values the page
+                        # prints with a `.0` decimal — the drawer adds it, so these stay
+                        # the ints the parser is expected to produce.
+                        10 + index,
+                        2 + index,
+                        round(23.2 + index / 10.0, 1),
+                    ),
+                }
+            )
+        rows[side] = side_rows
+    return rows
+
+
+def _g_text(page, x, y, text, fontsize=DOMAIN_G_FONTSIZE):
+    page.insert_text((x, y), str(text), fontsize=fontsize)
+
+
+def _g_right(page, x1, y, text, fontsize=DOMAIN_G_FONTSIZE):
+    """Print `text` right-aligned to `x1` (the shirt column and the physical values)."""
+    import pymupdf
+
+    text = str(text)
+    width = pymupdf.get_text_length(text, fontsize=fontsize)
+    page.insert_text((x1 - width, y), text, fontsize=fontsize)
+
+
+def _g_centred(page, centre, y, text, fontsize=DOMAIN_G_FONTSIZE):
+    import pymupdf
+
+    text = str(text)
+    width = pymupdf.get_text_length(text, fontsize=fontsize)
+    page.insert_text((centre - width / 2, y), text, fontsize=fontsize)
+
+
+def _g_row_head(page, row, y):
+    """The shirt number (right-aligned to x=30) and the player name (from x=42).
+
+    `name_spans` prints the name as SEVERAL spans — `[(dx, text), ...]`, each `dx` an
+    offset from the name column's left edge — instead of one `insert_text`. The real
+    pages fragment a name per glyph run (`'Ra' 'u' 'l' 'R' 'A' 'N' 'GE' 'L'`) and rely
+    entirely on `join_spans`' gap rule to restore the implied space; a single-span name
+    exercises none of that, so the gap rule's boundary is only reachable through this.
+    """
+    if row.get("shirt") is not None:
+        _g_right(page, DOMAIN_G_SHIRT_X1, y, row["shirt"])
+    pieces = row.get("name_spans")
+    if pieces is not None:
+        for offset, text in pieces:
+            _g_text(page, DOMAIN_G_NAME_X + offset, y, text)
+    elif row.get("name") is not None:
+        _g_text(page, DOMAIN_G_NAME_X, y, row["name"])
+
+
+def _g_header(page, titles):
+    """The `#` / `Player` header the real families print. Never a player row: its
+    leftmost span is the literal `#`, which the shirt grammar excludes."""
+    _g_text(page, 25.0, DOMAIN_G_HEADER_Y, "#")
+    _g_text(page, DOMAIN_G_NAME_X, DOMAIN_G_HEADER_Y, "Player")
+    for centre, title in titles:
+        _g_centred(page, centre, DOMAIN_G_HEADER_Y, title, fontsize=6)
+
+
+def draw_distributions_page(page, rows, *, header=True, percent_gap=0.0):
+    """Draw a parseable In Possession - Distributions body (14 centred columns).
+
+    `percent_gap` displaces the `%` span rightward of its number by that many points, so
+    a test can pin BOTH printed forms: abutting (the real page, and what pymupdf merges
+    into one span here) and visibly separated (which `join_spans` renders as `'88 %'`).
+    """
+    import pymupdf
+
+    if header:
+        _g_header(page, [(x, f"C{i + 1}") for i, x in enumerate(DISTRIBUTIONS_CENTRE_XS)])
+    y = DOMAIN_G_ROW_Y0
+    for row in rows:
+        _g_row_head(page, row, y)
+        for index, (centre, value) in enumerate(
+            zip(DISTRIBUTIONS_CENTRE_XS, row["distributions"])
+        ):
+            text = str(value)
+            if index in DISTRIBUTIONS_PERCENT_INDEXES and not text.endswith("%"):
+                # The number and its `%` print as two spans centred as one unit.
+                width = pymupdf.get_text_length(text, fontsize=DOMAIN_G_FONTSIZE)
+                percent_width = pymupdf.get_text_length("%", fontsize=DOMAIN_G_FONTSIZE)
+                x0 = centre - (width + percent_gap + percent_width) / 2
+                _g_text(page, x0, y, text)
+                _g_text(page, x0 + width + percent_gap, y, "%")
+            else:
+                _g_centred(page, centre, y, text)
+        y += DOMAIN_G_ROW_PITCH
+
+
+def draw_offers_receptions_page(page, rows, *, header=True):
+    """Draw a parseable In Possession - Offers & Receptions body (8 centred columns).
+
+    The real page also prints a centred `Offer movement types` banner above the header
+    row; it is furniture at its own y and never reaches a player row, so the fixture
+    prints it too rather than pretending the page is cleaner than it is.
+    """
+    if header:
+        _g_centred(page, 514.0, DOMAIN_G_HEADER_Y - 12.0, "Offer movement types", fontsize=7)
+        _g_header(page, [(x, f"C{i + 1}") for i, x in enumerate(OFFERS_CENTRE_XS)])
+    y = DOMAIN_G_ROW_Y0
+    for row in rows:
+        _g_row_head(page, row, y)
+        for centre, value in zip(OFFERS_CENTRE_XS, row["offers"]):
+            _g_centred(page, centre, y, value)
+        y += DOMAIN_G_ROW_PITCH
+
+
+def draw_out_of_possession_page(page, rows, *, header=True):
+    """Draw a parseable Out of Possession body: the `Tackles Made / Won` split cell
+    (three spans, as the real page prints it) then 13 centred columns."""
+    if header:
+        _g_header(
+            page,
+            [(OUT_OF_POSSESSION_TACKLE_XS[1], "Made/Won")]
+            + [(x, f"C{i + 2}") for i, x in enumerate(OUT_OF_POSSESSION_CENTRE_XS)],
+        )
+    y = DOMAIN_G_ROW_Y0
+    for row in rows:
+        _g_row_head(page, row, y)
+        values = row["out_of_possession"]
+        made_x, slash_x, won_x = OUT_OF_POSSESSION_TACKLE_XS
+        _g_text(page, made_x, y, values[0])
+        _g_text(page, slash_x, y, "/")
+        _g_text(page, won_x, y, values[1])
+        for centre, value in zip(OUT_OF_POSSESSION_CENTRE_XS, values[2:]):
+            _g_centred(page, centre, y, value)
+        y += DOMAIN_G_ROW_PITCH
+
+
+def draw_physical_page(page, rows, *, header=True):
+    """Draw a parseable Physical Data body — 9 RIGHT-aligned columns, unlike the other
+    three families, so the fixtures exercise both alignments the corpus prints.
+
+    Every numeric column prints to one decimal, as the real page does — including
+    `High Speed Runs` and `Sprints`, whose `.0` form is exactly the printed-decimal /
+    stored-integer seam the parser asserts before narrowing. A string value passes
+    through verbatim so doctored pages can print anything.
+    """
+    if header:
+        _g_header(page, [(x - 12.0, f"C{i + 1}") for i, x in enumerate(PHYSICAL_RIGHT_XS)])
+    y = DOMAIN_G_ROW_Y0
+    for row in rows:
+        _g_row_head(page, row, y)
+        for x1, value in zip(PHYSICAL_RIGHT_XS, row["physical"]):
+            text = value if isinstance(value, str) else f"{value:.1f}"
+            _g_right(page, x1, y, text)
+        y += DOMAIN_G_ROW_PITCH
+
+
+DOMAIN_G_DRAWERS = {
+    "individual-distributions": draw_distributions_page,
+    "individual-offers-receptions": draw_offers_receptions_page,
+    "individual-out-of-possession": draw_out_of_possession_page,
+    "physical-data": draw_physical_page,
+}
+
+
 # Line-height page geometry (mirrors the real 960x540 template).
 _LH_PITCH_Y0, _LH_PITCH_Y1 = 163.5, 485.2
 _LH_PITCH_WIDTH = 225.0
@@ -688,6 +1019,14 @@ def make_report():
     per-player `Total Possession Regains` table at the real x-positions and ~7 pt font.
     The `defensive_actions_*` kwargs are documented on the parameters themselves.
 
+    Story 1.10 (additive, default-on): the eight Domain G anchors emit the real
+    per-player tables — a right-aligned shirt number, a name, then the family's numeric
+    columns (14 / 8 / 15 / 9), centre-aligned for three families and right-aligned for
+    physical data. The default rows are DERIVED from this report's own lineup and Key
+    Statistics (`default_player_stats_rows`), so the join, the distance reconciliation
+    and the goals reconciliation stay green when a caller changes the score, the lineup
+    or the stats block. The `player_stats_*` kwargs are documented on the parameters.
+
     `page_order` re-orders the anchor pages (the cover always stays first — `probe_report`
     reads it by position). `AC 4` says a shuffled or offset report must still resolve, so
     a fixture that can only ever emit registry order cannot demonstrate it.
@@ -781,6 +1120,19 @@ def make_report():
         defensive_actions_pages: "dict[str, int] | None" = None,
         defensive_actions_decorate=None,
         defensive_actions_direction: "dict[str, dict[str, int | None]] | None" = None,
+        # Story 1.10 (additive, default-on): every report now carries the eight parseable
+        # Domain G per-player pages — extract_report runs the extractor on every report,
+        # so a text-only auto-generated page would die in `PlayerTableParseError`.
+        # `player_stats_rows` replaces the printed rows for one or both sides (dicts with
+        # shirt / name / distributions / offers / out_of_possession / physical; cell
+        # values may be strings for doctored pages, and `name_spans` prints the name as
+        # several spans to exercise `join_spans`' gap rule).
+        #
+        # The multi-page-anchor and split-`%` variants are NOT parameters here: both are
+        # properties of one family's page rather than of a whole report, and
+        # `test_extract_domain_g.build()` drives the drawers directly for them. A second
+        # unused copy on this factory would drift from the one that is exercised.
+        player_stats_rows: "dict[str, list[dict]] | None" = None,
     ) -> Path:
         import pymupdf
 
@@ -1160,6 +1512,22 @@ def make_report():
         line_height_blocks = (
             line_heights if line_heights is not None else DEFAULT_LINE_HEIGHTS
         )
+        # Story 1.10: the lineup specs are resolved BEFORE the anchor loop, because the
+        # Domain G pages are derived from them and may be emitted ahead of the lineups
+        # page (`page_order="reversed"` does exactly that).
+        lineup_specs = (
+            lineup_sides
+            if lineup_sides is not None
+            else default_lineup_sides(home, away, home_score, away_score)
+        )
+        player_stats_blocks = default_player_stats_rows(lineup_specs, stats_block)
+        if player_stats_rows is not None:
+            player_stats_blocks = {**player_stats_blocks, **player_stats_rows}
+
+        def emit_player_stats_page(family: str, side: str, anchor_text: str) -> None:
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            DOMAIN_G_DRAWERS[family](page, player_stats_blocks[side])
 
         for anchor in body:
             if anchor.anchor_id in ("shots:home", "shots:away"):
@@ -1170,6 +1538,23 @@ def make_report():
                 continue
             if anchor.anchor_id in ("defensive-actions:home", "defensive-actions:away"):
                 emit_defensive_actions_pages(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            # Story 1.10: the four Domain G families, per team. The anchor loop matches
+            # RESOLVED ids, so these are the eight suffixed forms — a bare-id branch for
+            # a per-team spec never fires, and the generic anchor-text-only page it would
+            # leave behind fails the whole suite undiagnosably.
+            if anchor.anchor_id in (
+                "individual-distributions:home",
+                "individual-distributions:away",
+                "individual-offers-receptions:home",
+                "individual-offers-receptions:away",
+                "individual-out-of-possession:home",
+                "individual-out-of-possession:away",
+                "physical-data:home",
+                "physical-data:away",
+            ):
+                family, side = anchor.anchor_id.split(":")
+                emit_player_stats_page(family, side, anchor.text)
                 continue
             page = doc.new_page(width=960, height=540)
             page.insert_text((40, 60), anchor.text, fontsize=11)
@@ -1196,14 +1581,14 @@ def make_report():
             if anchor.anchor_id == "lineups":
                 # The lineups page must parse as Domain A (Story 1.6) — extract_report
                 # runs the extractor on every report. Default sides score-adaptively
-                # reconcile their goal markers with the cover score.
-                sides = (
-                    lineup_sides
-                    if lineup_sides is not None
-                    else default_lineup_sides(home, away, home_score, away_score)
-                )
+                # reconcile their goal markers with the cover score. Resolved above the
+                # loop since Story 1.10, because the Domain G pages derive from them.
                 draw_lineup_page(
-                    page, sides[0], sides[1], formations=lineup_formations, title=False
+                    page,
+                    lineup_specs[0],
+                    lineup_specs[1],
+                    formations=lineup_formations,
+                    title=False,
                 )
 
         path.parent.mkdir(parents=True, exist_ok=True)

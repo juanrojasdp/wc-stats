@@ -150,3 +150,33 @@ class UnknownStatisticError(ExtractError):
     """
 
     what = "unknown statistic label"
+
+
+class PlayerTableParseError(ExtractError):
+    """A Domain G per-player page resists the table grammar (Story 1.10).
+
+    Everything structural about the four page families: an anchor resolving to zero or
+    several pages, a page with no player rows at all, a row carrying the wrong number of
+    numeric values, a non-numeric token in the value area, or the four families
+    disagreeing on which players the page set lists. Value-level failures keep their own
+    classes, as for `StatisticsParseError`: a present-but-wrong-type value is
+    `MalformedFieldError`, a player with minutes and no row is `MissingFieldError`, and a
+    row that matches no lineup player is `PlayerJoinError`.
+    """
+
+    what = "per-player page did not parse"
+
+
+class PlayerJoinError(ExtractError):
+    """A Domain G page row cannot be joined to this report's Domain A lineup (AC 2).
+
+    Raised when a row's assembled name matches no lineup player on that side, when its
+    shirt number disagrees with the matched lineup entry's, or when one side's lineup
+    prints a name twice (which would silently collapse two players into one). The join
+    is within-report name identity only — cross-report/normalized identity is Story
+    1.15's — so this never fuzzy-matches and never falls back to the shirt number. The
+    message carries the assembled name with `repr()`: a mis-inserted or missing space
+    from row assembly is otherwise invisible in a name that looks right.
+    """
+
+    what = "player row did not join to the lineup"

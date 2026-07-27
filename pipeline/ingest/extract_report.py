@@ -22,8 +22,10 @@ parser into `domains` and made `self_validation` real (marker count vs the attem
 table, exact and binary); Story 1.6 added Domain A (`domains["match_metadata"]`: the
 normalized cover block plus the lineup-page parse) and its six appended checks; Story
 1.7 added Domains B and C (`key_statistics`, `tactical_identity`) and their appended
-checks; Story 1.11 the crosses map and Story 1.12 the defensive-actions maps. Stories
-1.8-1.14 keep plugging into the same two seams.
+checks; Story 1.11 the crosses map and Story 1.12 the defensive-actions maps; Story 1.10
+Domain G (`player_stats`: the four per-player page families, joined to Domain A's
+lineups) and its four appended checks. Stories 1.8-1.14 keep plugging into the same two
+seams.
 """
 
 from __future__ import annotations
@@ -41,6 +43,7 @@ from pipeline.extract import aggregate_self_validation
 from pipeline.extract.domain_a import domain_a_checks, extract_domain_a
 from pipeline.extract.domain_b import domain_b_checks, extract_domain_b
 from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
+from pipeline.extract.domain_g import domain_g_checks, extract_domain_g
 from pipeline.ingest.fingerprint import PIPELINE_ROOT, code_version, pdf_content_hash
 from pipeline.ingest.identity import match_id_for, match_number_for
 from pipeline.ingest.records import RECORD_VERSION
@@ -136,8 +139,10 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     (`MissingFieldError`, `LineupParseError`, `LineupCountError`, `UnknownStageError`,
     `UnknownVenueError`, `UnknownPositionError`, `UnknownMinuteGlyphError`), Domain B's
     (`StatisticsParseError`, `UnknownStatisticError`, `MissingFieldError`,
-    `MalformedFieldError`), or Domain C's (`PhasesParseError`, `LineHeightParseError`,
-    `UnknownStatisticError`, `MissingFieldError`). The batch runner turns each into a
+    `MalformedFieldError`), Domain C's (`PhasesParseError`, `LineHeightParseError`,
+    `UnknownStatisticError`, `MissingFieldError`), or Domain G's (Story 1.10:
+    `PlayerTableParseError`, `PlayerJoinError`, `MalformedFieldError`,
+    `MissingFieldError`). The batch runner turns each into a
     `failed` manifest entry; nothing is caught here, because a partial record is worse
     than none.
 
@@ -209,6 +214,13 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         )
         tactical_identity = extract_domain_c(doc, anchors, report_id=meta.report_id)
 
+        # Domain G (Story 1.10), same transparency rule. The first extractor that takes
+        # another domain's output: the Domain A lineups it joins to are handed in from
+        # the payload already parsed above, never re-parsed from the page.
+        player_stats = extract_domain_g(
+            doc, anchors, match_metadata["lineups"], report_id=meta.report_id
+        )
+
     warnings.extend(f"probe note: {note}" for note in meta.probe_notes)
     # Story 1.12: the documented absence of a printed counterpart for the
     # possession-regain map travels as a per-report warning (never as a non-"pass" check,
@@ -242,6 +254,18 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     self_validation["checks"].extend(
         defensive_actions_self_validation_block(defensive_actions["counts"])
     )
+    # Story 1.10: appended after every existing appender. Both sibling payloads are in
+    # hand at this seam, so the two cross-domain checks (per-player distance vs the
+    # Domain B team total; per-player goals plus the opponent's Domain A own-goal ledger
+    # vs the Domain B team goals) are computed here — the Domain G parser stays
+    # single-source, the 1.7 `shots_counts` precedent.
+    self_validation["checks"].extend(
+        domain_g_checks(
+            player_stats,
+            key_statistics=key_statistics,
+            lineups=match_metadata["lineups"],
+        )
+    )
     self_validation["result"] = aggregate_self_validation(self_validation["checks"])
 
     return {
@@ -264,6 +288,7 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             "tactical_identity": tactical_identity,
             "crosses": crosses,
             "defensive_actions": defensive_actions,
+            "player_stats": player_stats,
         },
         # Real from Story 1.3 on: once extractors run, the result is "pass" or "fail",
         # never left "not-applicable" (a failed consistency check is data, not an

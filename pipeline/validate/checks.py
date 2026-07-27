@@ -21,6 +21,11 @@ Registered here today:
                           (possession-sum, internal-consistency, shots-reconciliation)
   domain-c-completeness   Domain C extracts phases + line-height pages, typed (1.7)
   domain-c-counts         Domain C's Self-Validation checks (metre bounds), as deviations
+  domain-g-completeness   Domain G extracts every player's four per-player pages and
+                          joins each row to the lineup, typed (Story 1.10)
+  domain-g-counts         Domain G's Self-Validation checks (zone sum, internal
+                          consistency, and the two cross-domain reconciliations), as
+                          deviations (Story 1.10)
   crosses-parse           the crosses maps parse; an off-palette fill is unknown-rgb
                           (Story 1.11)
   crosses-count-match     parsed cross markers equal the delivery table's Total sum
@@ -49,6 +54,7 @@ from pipeline.errors import PipelineError
 from pipeline.extract.domain_a import domain_a_checks, extract_domain_a
 from pipeline.extract.domain_b import domain_b_checks, extract_domain_b
 from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
+from pipeline.extract.domain_g import FAMILIES, domain_g_checks, extract_domain_g
 from pipeline.extract.errors import ExtractError, UnknownMinuteGlyphError
 from pipeline.ingest.identity import team_slug
 from pipeline.markers.crosses import parse_crosses
@@ -904,5 +910,131 @@ register_check(
         check_id="defensive-actions-count-match",
         applies_to=lambda meta: True,
         run=_check_defensive_actions_count_match,
+    )
+)
+
+
+# One-slot memo for `_domain_g_payload`, same shape and justification as `_domain_b_memo`
+# / `_domain_c_memo` above (Story 1.10): the runner hands the same open document to
+# `domain-g-completeness` and then `domain-g-counts`, and each uncached call rebuilds the
+# full-text `PageTextIndex` and re-parses eight per-player pages. Copied, not refactored:
+# the memo pattern carries OPEN deferred-work entries (strong doc ref, replayed cached
+# exceptions) that a shared abstraction would have to inherit anyway, and the
+# runner-owned parse-handoff that retires it is ledgered as a single joint fix.
+_domain_g_memo: dict = {"doc": None, "result": None, "error": None}
+
+# The eight resolved anchor ids Domain G reads, derived from the parser's own family
+# table so the two can never drift apart.
+_DOMAIN_G_ANCHOR_IDS: "tuple[str, ...]" = tuple(
+    f"{family.anchor_stem}:{side}" for family in FAMILIES for side in ("home", "away")
+)
+
+
+def _domain_g_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """Domain G's payload for one report, or `None` when it cannot be attempted.
+
+    `None` covers both skip paths: one of the eight per-player anchors did not resolve
+    (anchor-coverage's finding), or Domain A did not extract, which leaves the lineups
+    this domain joins to unavailable. A Domain A failure is `domain-a-completeness`'s
+    finding, and re-reporting it under a `domain-g-*` id is exactly the double
+    attribution the 1.6 review patched out.
+    """
+    if _domain_g_memo["doc"] is not doc:
+        _domain_g_memo.update(doc=doc, result=None, error=None)
+        try:
+            _domain_g_memo["result"] = _domain_g_uncached(doc, meta)
+        except Exception as exc:
+            _domain_g_memo["error"] = exc
+    if _domain_g_memo["error"] is not None:
+        raise _domain_g_memo["error"]
+    return _domain_g_memo["result"]
+
+
+def _domain_g_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    anchors = _domain_anchor_pages(doc, meta, _DOMAIN_G_ANCHOR_IDS)
+    if anchors is None:
+        return None
+    # Reuse Domain A's memo rather than a ninth parse of the same document.
+    try:
+        domain_a = _domain_a_payload(doc, meta)
+    except PipelineError:
+        return None
+    if domain_a is None:
+        return None
+    return extract_domain_g(doc, anchors, domain_a["lineups"], report_id=meta.report_id)
+
+
+def _check_domain_g_completeness(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Every player with minutes extracts and joins to the lineup, typed (AC 1, AC 2, AC 3).
+
+    Same attribution rules as `domain-b-completeness`: typed `ExtractError` failures —
+    a page that resists the table grammar, a value that fails its expected type, a row
+    that matches no lineup player, a player with minutes and no row — are probe-failure
+    findings naming the class, and the join failures land here through
+    `PlayerJoinError`, which is what puts join integrity in the deviation summary (AC 3).
+    A raising `PipelineError` propagates once to the runner while `domain-g-counts`
+    swallows it. The same non-`PipelineError` caveat applies as for Domains B and C
+    (registry-drift `LookupError` lands in both ids via the replayed memo — ledgered).
+    """
+    try:
+        _domain_g_payload(doc, meta)
+    except ExtractError as exc:
+        return _extract_failure_deviation("domain-g-completeness", meta, exc)
+    return []
+
+
+def _check_domain_g_counts(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """Domain G's Self-Validation checks, re-run as gate deviations (AC 3).
+
+    A report that does not extract yields no deviation *here* (completeness's,
+    domain-a-completeness's or anchor-coverage's finding). The two cross-domain checks
+    need Domain B's Key Statistics, so they reuse `_domain_b_payload`'s memo — never a
+    third parse of that page. A report whose Domain B raises a `PipelineError` simply
+    runs WITHOUT those two checks (the zone-sum and internal-consistency checks need
+    neither sibling): a Domain B parse failure is `domain-b-*`'s finding, and
+    re-reporting it under `domain-g-counts` would attribute one root cause to two
+    checks. The same non-`PipelineError` caveat as `domain-g-completeness` applies and
+    is NOT covered by that skip — a registry-drift `LookupError` out of the Domain B
+    memo propagates from here and is recorded against this id (ledgered). The Domain A
+    lineups the goals reconciliation needs are already inside the payload's own
+    precondition, so they are re-read from the same memo.
+    """
+    try:
+        payload = _domain_g_payload(doc, meta)
+    except PipelineError:
+        return []
+    if payload is None:
+        return []
+    key_statistics = None
+    lineups = None
+    try:
+        key_statistics = _domain_b_payload(doc, meta)
+    except PipelineError:
+        key_statistics = None
+    if key_statistics is not None:
+        try:
+            domain_a = _domain_a_payload(doc, meta)
+        except PipelineError:
+            domain_a = None
+        lineups = domain_a["lineups"] if domain_a is not None else None
+    return _failed_check_deviations(
+        "domain-g-counts",
+        meta,
+        domain_g_checks(payload, key_statistics=key_statistics, lineups=lineups),
+    )
+
+
+register_check(
+    Check(
+        check_id="domain-g-completeness",
+        applies_to=lambda meta: True,
+        run=_check_domain_g_completeness,
+    )
+)
+register_check(
+    Check(
+        check_id="domain-g-counts",
+        applies_to=lambda meta: True,
+        run=_check_domain_g_counts,
     )
 )

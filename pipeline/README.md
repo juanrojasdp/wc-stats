@@ -65,7 +65,10 @@ as a `count-mismatch` deviation carrying both counts) from Story 1.3;
 count-mismatch semantics as the shots pair, against the crosses page's own delivery table);
 `defensive-actions-parse` plus `defensive-actions-count-match` from Story 1.12 (the
 count check covers the forced-turnover map only — see the defensive-actions section for
-why the possession-regain map has no printed counterpart to check against).
+why the possession-regain map has no printed counterpart to check against);
+and `domain-g-completeness` plus `domain-g-counts` from Story 1.10 (see the Domain G
+section — parse, typing and join failures land in `probe-failure` with the typed class
+name prefixed, so join integrity is localizable per player, side and page family).
 
 ## Batch ingestion
 
@@ -306,8 +309,9 @@ would otherwise enter the dataset as a phantom match.
 ```
 pipeline/
   discover/   text-anchored page discovery, anchor registry, corpus metadata probe
-  extract/    tabular per-domain extractors (Domains A, B and C today; Stories 1.8-1.10
-              follow the same convention) + the committed venue -> UTC-offset table
+  extract/    tabular per-domain extractors (Domains A, B, C and G today; the remaining
+              domains follow the same convention) + the committed venue -> UTC-offset
+              table
   ingest/     batch orchestration, run manifest, idempotence, per-report Extract, CLI
   markers/    shared pitch-map filter chain + map parser family (shots, crosses and
               defensive actions today; offers/movement reuses it in Story 1.13)
@@ -499,3 +503,105 @@ orphan_record_paths 0` with **exactly two** self-validation failures, both
 `PMSR-M58-TUN-V-NED`. Verification steps must assert that baseline rather than a zero
 exit code; a third failing report means the discrepancy is systematic and re-opens the
 ruling. The FR-15 gate is unaffected.
+
+## Per-player performance and physical data — Domain G (Story 1.10)
+
+Every Extraction Record also carries `domains.player_stats`, extracted by
+`pipeline/extract/domain_g.py` from four page families, one page per team each:
+`In Possession - Distributions`, `In Possession - Offers & Receptions`,
+`Out of Possession` and `Physical Data`. All eight anchors were already registered by
+Story 1.2 — no new `AnchorSpec` was needed — and each resolves to exactly one page on
+all 104 reports (832/832; the assertion stays anyway, because Story 1.3's two-page
+attempts table is why the rule exists).
+
+```
+"player_stats": {
+  "home": [
+    {"name": "Raul RANGEL", "shirt_number": 1, "position": "gk",
+     "in_possession":     {...17 fields, incl. offers_by_movement_type {...6}},
+     "out_of_possession": {...15 fields},
+     "physical":          {...9 fields}}, ...
+  ],
+  "away": [ ... ]
+}
+```
+
+Values are raw and locale-neutral (AD-7): counts are `int`, percentages `float` on the
+0-100 scale, distances `float` metres, `top_speed` `float` km/h — no `%`, `m` or `km/h`
+strings anywhere. Keys are staging snake_case with no `/contract` dependency; the
+contract's `PlayerInPossession` (17) / `PlayerOutOfPossession` (15) / `PlayerPhysical` (9)
+field lists are Story 1.16's emit-time checklist, and the parser's own column tables are
+1:1 with them.
+
+**Row grammar.** A player row is a visual row whose leftmost span is a 1-2 digit shirt
+number at x < 32 (the header's leftmost span is the literal `#`, which the grammar
+excludes). Name spans end left of x=195 and are reassembled with `join_spans` — the real
+pages fragment a name per glyph run (`'Ra' 'u' 'l' 'R' 'A' 'N' 'GE' 'L'`). Values are
+assigned **left-to-right by ordinal**, guarded by an exact per-family count assertion
+(14 / 8 / 15 / 9, invariant on all 3,289 rows of each family). Never by x-band: three
+families are centre-aligned and physical data is right-aligned, so a value's `x0` shifts
+with its width. The value area's only non-numeric furniture is the `%` abutting its
+number and the `/` of the `Tackles Made / Won` split cell. `high_speed_runs` and
+`sprints` print with a `.0` decimal but are integral on all 3,289 rows — parsed as float,
+asserted integral, stored `int`, never rounded.
+
+**The join is asymmetric**, and the natural-but-wrong direction fails on every corpus
+report. Rows join to the Domain A lineup on within-report name identity, verbatim — never
+normalized, folded, fuzzy-matched, or fallen back to the shirt number (cross-report
+identity is Story 1.15's). The shirt number is the corroborating key. `position` is
+copied from the joined lineup entry, since the G pages never print it.
+
+| Direction | Corpus evidence | Behavior |
+| --- | --- | --- |
+| Page row → lineup player | 3,289 rows, 0 unmatched, 0 shirt disagreements | fail loud (`PlayerJoinError`) |
+| Page row → lineup player *with minutes* | 1 exception in 3,289, all-zero (see below) | an all-zero orphan row is admitted; a non-zero one fails loud (`PlayerJoinError`) |
+| Lineup player *with* minutes → page row | 0 missing over 104 reports | fail loud (`MissingFieldError`) |
+| Lineup player *without* minutes → no row | 2,103 such entries (8,412 entry×family pairs) | normal; not a finding, not a warning |
+
+`has_minutes(entry, section) = section == "starters" or substituted_on is not None` —
+starter-ness comes from the section the entry was read from, not from the entry itself.
+
+The rule holds in the lineup→row direction on all 104 reports. In the row→lineup
+direction the corpus carries **one exception**: `PMSR-M92-MEX-V-ENG` away #14 Jordan
+HENDERSON is an unused substitute (`substituted_on: null`, correctly — he was booked from
+the bench at 98' and never played) who nonetheless has a printed row on all four
+families, so 3,289 rows meet 3,288 lineup entries with minutes. **His row is entirely
+zeros** (0.0 m, 0 passes, 0.0 km/h), so the page is verbose rather than contradictory.
+
+The parser splits on exactly that: an orphan row whose every value is zero is admitted,
+and one carrying real numbers raises `PlayerJoinError`. The second case would mean the
+lineup missed a sub-on stamp for a player who actually took the field — which must not
+stage a phantom's stat line into the physical leaderboards or either reconciliation.
+
+The four families must also agree on the same players **in the same order** per side —
+assembly is positional, so a reordered family would merge one player's numbers onto
+another's row.
+
+**Self-Validation** appends four recorded checks (binary, never loosened — SM-C1). Every
+tolerance is derived from printed precision first and then corpus-verified:
+
+| Check | Rule | Derivation | Worst observed |
+| --- | --- | --- | --- |
+| `domain-g-zone-sum` | `\|total − Σ zones 1-5\| ≤ 0.35` m | six 1-decimal values drift ≤ 6 × 0.05 = 0.30 | **0.200 m** / 3,289 rows |
+| `domain-g-internal-consistency` | completed ≤ attempted (passes, crosses, line breaks), won ≤ made, received ≤ total offers, `goals ≤ attempts_at_goal`, `Σ movement types == total_offers` (EXACT), printed completion within ±0.55 of computed, and a printed completion beside **zero** attempts is itself a finding | the printed completion is integer-rounded, so ±0.5, plus the float margin — the same construction as the zone sum | **0.500** / 3,289 rows |
+| `domain-g-distance-reconciliation` | `\|Σ player m / 1000 − Domain B distance_covered\| ≤ 0.1` km | team km prints to 1 decimal (±0.05) plus per-player metre rounding | **0.0499 km** / 208 team-innings |
+| `domain-g-goals-reconciliation` | `Σ player goals + Σ opponent own_goals == Domain B goals` (EXACT) | — | **0 mismatches** / 208 |
+
+**The own-goal term is mandatory.** The naive `Σ player goals == team goals` is
+corpus-FALSE: it fails on exactly 14 of 208 team-innings, each short by one. A team's
+printed score includes own goals scored by the *opponent*, while the Distributions page
+credits the player who actually scored — and the corpus has exactly 14 own goals, the
+same 14 Story 1.6's lineup ledger records. Shipping the check without the term would have
+flooded the gate with 14 false `count-mismatch` deviations.
+
+The two cross-domain checks are computed at the `extract_report` seam, where both sibling
+payloads are already in hand, so the parser stays single-source (the Story 1.7
+`shots_counts` precedent). When a sibling payload is absent the checks that need it are
+**omitted** rather than emitted as passing — the Self-Validation aggregator is strictly
+binary and could not read a "not-applicable" dict honestly.
+
+The FR-15 gate gains `domain-g-completeness` (typed extract failures → `probe-failure`,
+class name prefixed, so `PlayerJoinError` localizes the player, side and family) and
+`domain-g-counts` (failed Self-Validation checks → `count-mismatch`). A missing anchor
+stays anchor-coverage's `missing-anchor` finding, and a Domain A failure — which blocks
+Domain G, since it joins to those lineups — stays `domain-a-completeness`'s.
