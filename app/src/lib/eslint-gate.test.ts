@@ -184,6 +184,36 @@ describe("client-import seam bars direct t() from src/components", () => {
     );
     expect(errors).toEqual([]);
   });
+
+  /*
+   * Story 2.7 Task 1.3/1.4: src/viz/** is a NEW top-level source directory, and
+   * a directory absent from the seam's `files` list escapes the bar entirely
+   * while looking covered — the exact residual gap the 2.2 and 2.4 reviews
+   * filed. These two fixtures make the extension permanent.
+   */
+  it("t() import is barred in src/viz/** (Story 2.7)", async () => {
+    const errors = await seamErrorsFor(
+      `import { t } from "@/lib/i18n";\nexport const x = t;\n`,
+      "src/viz/__gate_probe__.ts"
+    );
+    expect(errors).toContain(SEAM_RULE);
+  });
+
+  it("build-data import is barred in src/viz/** (Story 2.7)", async () => {
+    const errors = await seamErrorsFor(
+      `import { readMatchBundle } from "@/lib/build-data";\nexport const x = readMatchBundle;\n`,
+      "src/viz/__gate_probe__.ts"
+    );
+    expect(errors).toContain(SEAM_RULE);
+  });
+
+  it("type-only imports from @/lib/i18n stay legal in src/viz/** (models return KEYS)", async () => {
+    const errors = await seamErrorsFor(
+      `import type { DictionaryKey } from "@/lib/i18n";\nexport type K = DictionaryKey;\n`,
+      "src/viz/__gate_probe__.ts"
+    );
+    expect(errors).toEqual([]);
+  });
 });
 
 describe("i18n gate keeps legal patterns legal", () => {

@@ -60,6 +60,51 @@
 
 generated: 2026-07-22
 last_updated: 2026-07-26
+# 2026-07-26: story 2-7 implemented and moved to review — app/src/viz/ created (the architecture's
+#             own structural seed, first use) plus the reusable PitchPanel that 2.8/2.9 build on.
+#             The testability split IS the story: the harness has no jsdom, so projection,
+#             ordering, clustering, Voronoi, the encoding maps, the log rows and the figure counts
+#             all live in pure src/viz/ modules with real tests (90 of the 99 new tests) and the
+#             components stay thin. ONE new runtime dep, d3-delaunay@6.0.4 — exactly the Voronoi
+#             module inside the pinned d3 7.9.0, deliberately not the monolith; React owns every
+#             SVG node, d3 never touches the DOM. Layout arithmetic in MEASURED CSS px via a
+#             ResizeObserver hook, because a scaling viewBox turns the 44 px hit floor into 31 px
+#             on a 288 px phone: measured smallest Voronoi cell is 98x118 px at 1920 and
+#             135x104 px at 386. AR-6 held and PROVEN rather than asserted — the SM-3 spot check
+#             at <md reproduces Story 1.3's permanent ground truth for spike/mex_rsa.pdf (16
+#             markers, 2/2/8/3/1), the attacking goal is up the page (penalty area flush to the
+#             top edge, goal mouth outside the goal line), and one marker was hand-derived from
+#             the artifact to the rendered translate() exactly (95.28/32.00 -> 104.5,32.5). No
+#             transposition, no mirroring, no clamping. m074 is the honesty fixture and passes:
+#             Germany renders 21 markers and ZERO goal markers with a figure summary reading
+#             "0 goles" while keyStatistics.home.goals == 1 (counts come from the marks drawn,
+#             never from keyStatistics — ruled decision 12); the own-goal note renders; the log
+#             carries 8 PAR rows with "Gol (a.g.)" against 7 PAR markers; none of the 9 shoot-out
+#             attempts appear anywhere. Keyboard contract verified live: roving by minute, no
+#             wrap, Enter opens a real role=dialog on a 3-marker cluster with focus on the
+#             opening marker's own list item, Esc returns focus, and the marker's transform is
+#             BYTE-IDENTICAL before and after (overlapping markers are never displaced); repeat
+#             pointer clicks cycle the z-order. FD-1 applied throughout (uniform markers, no xG
+#             row, no xG column) with tests proving both APPEAR once a constructed shot carries a
+#             value. CS-1-proof by construction: maps ShotOutcome only, never ShotOutcomeDetail.
+#             CLOSES 2.5 review decision D7 — sectionDataState("shot-maps") now reads BOTH tables
+#             and is empty only when shots AND crosses are both null; 2.5's shots=null->"empty"
+#             assertion was replaced by the four-way truth table and the ledger entry is struck.
+#             Suite 138 -> 237 (10 -> 14 files), build chain green, no console errors. Three
+#             recorded departures from the task text, each with its reason: clusterMarkers adds a
+#             centroid-stabilisation pass (single-link ALONE makes Task 3.6's ">=44 px by
+#             construction" comment and Task 3.8's property test FALSE — an adversarial ring
+#             centroids onto a lone marker; the ring is now a named test); CROSS_COMPLETED_ENCODING
+#             is split into a static shape Record + a function of the team accent (the colour is
+#             per side, so a frozen table cannot hold it); and four singular/plural counter keys
+#             were added because t() has no plural machinery and "1 goles" is a visible defect.
+#             Flagged for review, NOT changed: #shot-maps renders a heading button at >=lg, which
+#             reads against 2.5's own sprint note — confirmed pre-existing (#pass-networks does
+#             the same; buildSectionPlans sets collapsible width-independently) and TacticalSection
+#             is on this story's do-not-touch list. Reflow: at 316 px client width scrollWidth ==
+#             clientWidth and NO #shot-maps element ever appears in the overflow sweep; the 7 px
+#             overflow below ~305 px is a Key Statistics tile (2.5 code, already 2.19's).
+#             Touches app/ + locales + the ledger only — pipeline/ never staged.
 # 2026-07-25: story 1-10 implemented and moved to review — pipeline/extract/domain_g.py, the
 #             third instance of the 1.6/1.7 extractor convention and the FIRST extractor that
 #             joins to another domain's output. Four page families on one shared row reader
@@ -429,6 +474,119 @@ project_key: NOKEY
 #             at ≥lg and <lg (fold, keyboard, deep links + hashchange, m002 empty state, ES/EN,
 #             light theme). One item filed: the page reflows cleanly at 320 CSS px but not at
 #             195 (header + Hero + key-stats together) — routed to 2.19.
+# 2026-07-26: story 2-7 context created and moved to ready-for-dev (pitch-panel infrastructure
+#             + shot & cross maps — the reusable base 2.8/2.9 build on). Creates app/src/viz/
+#             (the architecture's own structural seed, first use) and extends the ESLint
+#             client-import seam to cover it — closing, for the new directory, the residual gap
+#             the 2.2/2.4 reviews filed. ONE new runtime dep: d3-delaunay@6.0.4, exactly the
+#             Voronoi module inside the pinned d3 7.9.0, deliberately not the monolith; the
+#             affine projections are plain arithmetic and React owns every SVG node (d3 never
+#             touches the DOM). Testability drove the split: the harness has no jsdom, so
+#             projection/ordering/clustering/Voronoi/encoding/log-rows all live in pure
+#             src/viz/ modules with real tests and the components stay thin — the same shape
+#             that made buildSectionPlans the tested heart of 2.5. Twelve ruled decisions;
+#             the load-bearing ones: the cross map is a SECOND PANEL inside #shot-maps (the
+#             registry stays at eleven sections); `shot-maps` is empty only when shots AND
+#             crosses are both null, with a single missing table naming its own absence in
+#             its panel slot — this CLOSES 2.5 review decision D7, deferred here with the
+#             reason "2.7 owns shot/cross maps and should rule", and it BREAKS 2.5's existing
+#             `shots = null -> empty` unit assertion, which the story names as a required
+#             update; cross markers carry the TEAM ACCENT with completion dual-encoded by
+#             fill, not the shot-outcome hues (borrowing two would put one hex on two meanings
+#             inside one section); half pitch by default but full pitch the moment any event
+#             has x < 50 (never clamp — AR-6); layout arithmetic in MEASURED CSS px, because a
+#             scaling viewBox turns the 44 px hit floor into 31 px on a 288 px phone; and the
+#             root <svg> is NOT aria-hidden (AC 3's literal wording describes an axe
+#             aria-hidden-focus violation — decorative subtrees are hidden, the marker group
+#             is exposed). FD-1 applied throughout: uniform marker size, no xG row, no xG
+#             column. Story-creation probe pinned the traps BEFORE dev: m074 Germany has
+#             keyStatistics.goals == 1 and ZERO goal markers (GOMEZ's own goal benefits
+#             Germany but is excluded from the map per AD-6), so figure summaries count
+#             rendered marks and never read keyStatistics.goals; CrossEvent's playerId/
+#             playerName/at/deliveryType are handcrafted fixture values (Story 1.11 proved
+#             them unfulfillable from the source page — 1.16 emission is blocked pending an
+#             AD-14 decision), so the cross popover/table must be null-defensive today. SM-3
+#             has real ground truth: spike/mex_rsa.pdf IS the m001 report and Story 1.3 pinned
+#             Mexico at 16 markers, 2/2/8/3/1 — the verify task compares the rendered map
+#             against it at <md, where the vertical attacking-goal-up orientation is the
+#             source's own. CS-1-proof by construction: this story maps ShotOutcome (stable
+#             five values) only, never ShotOutcomeDetail. Touches app/ + locales only —
+#             coordinates around in-review 1-10; never `git add -A`. Baseline measured at
+#             f8ca7ee: 138 passed / 10 files, build green.
+# 2026-07-26: story 1-8 context created and moved to ready-for-dev (momentum-series
+#             extraction + the project's FIRST contract bump). OQ-5 was RESOLVED at story
+#             creation by a full 104-report probe rather than deferred to dev: the series is
+#             the page-1 (lineups page) chart titled "Distribution in the Final Third" —
+#             present exactly once per report on 104/104, and the report's ONLY per-minute
+#             two-team series (no page anywhere contains the text "Momentum", confirming
+#             1.7's Task 9.3 note). Verified 104/104: baseline y=429.13 constant, home fill
+#             (1.0,0.239,0.0) grows UP / away fill (0.702,0.533,1.0) grows DOWN, colour->team
+#             proven by matching the legend name to each record's metadata, bar width =
+#             0.70 x slot pitch exactly, peak bar ALWAYS 50.38pt (the chart auto-scales), and
+#             the printed y-axis top label == the peak value in units — the one printed
+#             cross-check the page offers. Values are exact non-negative INTEGERS (0
+#             non-integer heights corpus-wide); pitch and unit are PER-REPORT (1.95-2.95pt /
+#             2.40-5.60pt), so only the baseline, peak height and width ratio are constants —
+#             a fixed-width filter silently caught only 75/104 on the first probe pass. 9
+#             extra-time reports carry a 120 tick (span 131-144 vs 94-113). Like 1.12's
+#             possession-regain map there is NO printed row total: the bar sum matches no
+#             Domain B field over all 208 team-innings (receptions_in_final_third is
+#             consistently smaller), so the axis-scale check is the genuine validation and
+#             must not be manufactured into a fake reconciliation. Contract finding that
+#             shapes Task 6: the provisional MomentumSample.minute $refs Minute (0-120,
+#             "capped at the end of the period", stoppage carried separately), so it CANNOT
+#             represent the 94-144 stoppage-inclusive slots — every first-half stoppage slot
+#             collides on minute 45. Fix follows existing precedent: minute -> at:
+#             MinuteStamp (the {minute, stoppageMinute} composite already used by every
+#             other `at:` field), plus number -> non-negative integer. Bump is NOT strictly
+#             additive and the story says so. Safe anyway: an app/src sweep found NO
+#             field-level consumer — 2.5 (done) only tests `bundle.momentum !== null`, 2.6 is
+#             backlog. Fixture trap flagged: m002's `momentum: null` is a DELIBERATE synthetic
+#             edge case (AD-14 requires one) and must NOT be regenerated — all 104 real
+#             reports have a band, so the null branch never fires on real data. Anchor
+#             "Distribution in the Final Third" is NOT in the registry; story adds it. One
+#             question left to dev: slot->minute mapping (first half is stable at slot=minute-1;
+#             everything after HT shifts by the per-report stoppage allotment, and tick labels
+#             merge as '45HT'/'90FT' on 13 reports). Touches pipeline/extract/ + the record/
+#             gate seams + /contract + fixtures — 1-10 (review) and 2-7 (in-dev) touch neither
+#             /contract nor extract/momentum; app sessions MUST regenerate types after the
+#             bump lands. Suite baseline 895 passed / 1 skipped at f8ca7ee.
+# 2026-07-26: story 1-13 context created and moved to ready-for-dev — and the story-creation
+#             probe OVERTURNED the epic's premise, corpus-wide over all 104 reports / 416
+#             receiving pages: NEITHER `Offering to Receive` nor `Movement to Receive` is a
+#             marker-scatter pitch map. They are dashboards. The offers page's two titled
+#             panels each hold exactly 11 filled 8.229 pt dots whose positions are identical
+#             between the two panels on 208/208 AND identical across every team-page sampled —
+#             a static formation template carrying zero data; the movement page's single pitch
+#             panel holds ZERO markers (a three-thirds bar chart), and its donut slice values
+#             are inside RASTER IMAGES (one text word per donut, the centre total). There is no
+#             coordinate, no per-event row and no ordinal glyph anywhere in the family, so
+#             `ReceivingEvent` (playerId/playerName/type/movementType/at/x/y per row) is
+#             UNFULFILLABLE — strictly harder than 1.11's CrossEvent blocker, which at least
+#             had real coordinates. Scope ruled by Juan: re-scope inside the story rather than
+#             correct-course. The story extracts what the pages prove (offers: 5 KPIs, the two
+#             in-panel shape badges, Most-Offers block, per-player made/received/% table;
+#             movement: 4 donut centre totals, the 15-cell third x type grid, Top Ranked
+#             Players) and NINE reconciliations were measured exact corpus-wide to key
+#             Self-Validation on — incl. three cross-domain ones against Domain G's per-player
+#             offers (total made/received, and the grid's per-type totals == G's FIVE-type sum,
+#             never its six-type sum, which is what IDENTIFIES what the movement page counts),
+#             plus the table percentage == round(100*received/made, 1) exact on 3,208/3,208
+#             rows (81 rows print made == 0 — the family's one crash branch). Two documented
+#             absences take AC 2's absence branch: raster-only slice values, and the per-phase
+#             totals which are NOT a partition (phase sum minus total ranges -48..+314, equal
+#             on only 3/208) — never sum them. The chain is still composed (frame detect +
+#             an 11-dot/one-fill census tripwire) so a future template that draws real markers
+#             aborts loud instead of publishing silence; no chain edit. Gate ids ruled
+#             `receiving-parse`/`receiving-count-match` deliberately — `offers-count-match` is
+#             test_checks_registry.py's unclaimed placeholder (1.12 moved it there) and
+#             claiming it breaks that test. Task 7 owes the AD-14 filings: the 1.16 emission
+#             blocker (`events.receiving` can only be null), the re-scope notice for Story 2.9,
+#             and the notice that 2.3's offers/movement sign-off row (PASS-with-note on an
+#             unfixtured `movementType: null`) was filed without knowing the source cannot fill
+#             the shape at all. Touches pipeline/markers/ + the two extract seams + gate checks
+#             only — stays off pipeline/extract/ for in-review 1-10; deferred-work.md's
+#             filter-chain advisory reaches its LAST named story here.
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -444,12 +602,12 @@ development_status:
   1-5-marker-event-linking-via-digit-glyph-proximity: done
   1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
-  1-8-momentum-series-extraction-oq-5-resolution: backlog
+  1-8-momentum-series-extraction-oq-5-resolution: in-progress
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
-  1-10-domain-g-extraction-per-player-performance-physical-data: review
+  1-10-domain-g-extraction-per-player-performance-physical-data: done
   1-11-crosses-map-parser: done
   1-12-defensive-actions-map-parser: done
-  1-13-offers-movement-to-receive-parsers: backlog
+  1-13-offers-movement-to-receive-parsers: in-progress
   1-14-pass-network-extraction-nodes-edges: backlog
   1-15-cross-match-identity-resolution-normalized-spine: backlog
   # BLOCKED-pending CS-1 (Story 2.3 sign-off change-set: ShotOutcomeDetail enum + map +
@@ -470,7 +628,7 @@ development_status:
   2-5-tactical-layer-shell-key-statistics-empty-state-pattern: done
   2-6-momentum-timeline: backlog
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data
-  2-7-pitch-panel-infrastructure-with-shot-cross-maps: backlog
+  2-7-pitch-panel-infrastructure-with-shot-cross-maps: review
   2-8-pass-network-visualization: backlog
   2-9-receiving-defensive-action-maps-heatmap-decision: backlog
   2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: backlog

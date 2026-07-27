@@ -70,8 +70,15 @@ export default defineConfig([
      * @/lib/i18n-provider; server components and src/app/** (metadata,
      * build-time-static text) keep direct t(). Type-only imports of
      * DictionaryKey/Locale are unaffected: only the `t` binding is barred.
+     *
+     * src/viz/** joins the seam with Story 2.7, which creates it: a new
+     * top-level source directory that is not in this list silently escapes the
+     * bar — the residual gap the 2.2 and 2.4 reviews filed. The viz modules are
+     * pure and locale-free by design (they return dictionary KEYS, never
+     * resolved strings), so the rule should never fire there; it is the guard
+     * that keeps that design from eroding one convenient import at a time.
      */
-    files: ["src/components/**/*.{ts,tsx}"],
+    files: ["src/components/**/*.{ts,tsx}", "src/viz/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": [
         "error",

@@ -154,9 +154,26 @@ describe("sectionDataState: null vs [] (AC 3)", () => {
     return { ...m001, events: { ...m001.events, ...patch } };
   }
 
-  it("treats an empty shots array as ready and a null shots table as empty", () => {
-    expect(sectionDataState(withEvents({ shots: [] }), "shot-maps")).toBe("ready");
-    expect(sectionDataState(withEvents({ shots: null }), "shot-maps")).toBe("empty");
+  /*
+   * Story 2.7 ruled decision 2 (closing the 2.5 review's decision D7):
+   * #shot-maps is fed by TWO tables and is silent-absent only when BOTH are
+   * missing. The previous assertion here — `shots: null` -> "empty" — was
+   * correct while the section carried one map and is wrong now that the cross
+   * map is a second panel inside it.
+   */
+  it("calls shot-maps empty only when shots AND crosses are both null", () => {
+    expect(sectionDataState(withEvents({ shots: [], crosses: [] }), "shot-maps")).toBe("ready");
+    expect(sectionDataState(withEvents({ shots: null, crosses: [] }), "shot-maps")).toBe("ready");
+    expect(sectionDataState(withEvents({ shots: [], crosses: null }), "shot-maps")).toBe("ready");
+    expect(sectionDataState(withEvents({ shots: null, crosses: null }), "shot-maps")).toBe("empty");
+  });
+
+  it("keeps a crosses-only report's section visible rather than hiding present data", () => {
+    // The FR-22 failure mode inverted: a section-wide "the official report does
+    // not include this section" over crosses that are sitting in the bundle.
+    const crossesOnly = withEvents({ shots: null });
+    expect(crossesOnly.events.crosses).not.toBeNull();
+    expect(sectionDataState(crossesOnly, "shot-maps")).toBe("ready");
   });
 
   it("treats an empty defensive-actions array as ready and null as empty", () => {
@@ -318,12 +335,14 @@ describe("buildSectionPlans — disclosure precedence (AC 1)", () => {
   it("never collapses an EMPTY section, at either width (ruled decision 10)", () => {
     // m002 is the one fixture with a null slice: momentum. Use a constructed
     // bundle so an ALWAYS_EXPANDED id is not doing the work for us.
-    const noShots = {
+    // Both of #shot-maps' tables must be null for it to be empty at all
+    // (Story 2.7 ruled decision 2).
+    const noMaps = {
       ...m001,
-      events: { ...m001.events, shots: null },
+      events: { ...m001.events, shots: null, crosses: null },
     } as MatchBundle;
     for (const isLg of [false, true]) {
-      const plan = planFor(buildSectionPlans(noShots, isLg, {}), "shot-maps");
+      const plan = planFor(buildSectionPlans(noMaps, isLg, {}), "shot-maps");
       expect(plan.isEmpty).toBe(true);
       expect(plan.collapsible).toBe(false);
       expect(plan.open).toBe(true);

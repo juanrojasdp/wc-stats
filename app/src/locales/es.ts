@@ -135,9 +135,16 @@ export const es = {
       momentum: {
         title: "Línea de momentum",
       },
+      /*
+       * Story 2.7 ruled decision 11: the old title "Mapa de tiros y xG"
+       * promised a per-shot xG that FD-1 established does not exist in the
+       * source PDFs, and the section now carries TWO maps (ruled decision 1:
+       * the cross map is a second panel inside #shot-maps, so the registry
+       * stays at eleven sections).
+       */
       "shot-maps": {
-        title: "Mapa de tiros y xG",
-        summary: "Desde dónde y cuándo llegaron los tiros de cada equipo.",
+        title: "Mapa de tiros y centros",
+        summary: "Desde dónde llegaron los tiros y los centros de cada equipo.",
       },
       "pass-networks": {
         title: "Red de pases",
@@ -205,6 +212,73 @@ export const es = {
       contested: "Posesión disputada:",
     },
   },
+  /*
+   * Pitch-panel copy (Story 2.7). Every string that reaches a marker's
+   * accessible name, a popover row, a legend entry, a column head or the
+   * attribution caption lives here — the viz modules under src/viz return
+   * dictionary KEYS and raw values, and the components resolve them.
+   *
+   * Counters carry a singular AND a plural form. t() has no interpolation and
+   * no plural machinery, so "1 gol" vs "2 goles" is a two-key choice made at
+   * the call site; a single "goles" would render "1 goles" over m074 Paraguay's
+   * map, which is a visible copy defect in both languages.
+   */
+  viz: {
+    // EXPERIENCE's ruled in-panel short form (OQ-3), verbatim. Permanent,
+    // never conditional, never behind a disclosure — it must survive a
+    // screenshot (UX-DR21, UJ-2 step 5).
+    attribution: "Datos: FIFA PMSR · wc-stats",
+    // The ONE canonical control string for the data-table alternative.
+    viewData: "Ver los datos",
+    hideData: "Ocultar los datos",
+    teamSelector: "Equipo",
+    table: {
+      caption: "Ordenado por minuto.",
+      team: "Equipo",
+      player: "Jugador",
+      minute: "Minuto",
+      x: "X",
+      y: "Y",
+      outcome: "Resultado",
+      xg: "xG",
+      delivery: "Tipo de centro",
+      completed: "Completado",
+      // The placeholder for a CrossEvent field the source page cannot fill.
+      unknown: "—",
+      yes: "Sí",
+      no: "No",
+    },
+    cluster: {
+      dialogLabel: "Eventos en este punto",
+      countBefore: "Punto con",
+      countAfter: "eventos",
+    },
+    shotMap: {
+      title: "Mapa de tiros",
+      markerPrefix: "Tiro de",
+      minutePrefix: "minuto",
+      shots: "tiros",
+      shotsOne: "tiro",
+      goals: "goles",
+      goalsOne: "gol",
+      xg: "xG",
+      figurePrefix: "Mapa de tiros:",
+      zero: "El informe no registra tiros para este equipo.",
+      ownGoalsExcluded: "Los autogoles no se dibujan en el mapa; aparecen en la tabla.",
+    },
+    crossMap: {
+      title: "Mapa de centros",
+      markerPrefix: "Centro de",
+      crosses: "centros",
+      crossesOne: "centro",
+      completed: "Completado",
+      attempted: "Intentado",
+      // Lower-case plural for the panel's count chip ("21 centros · 9 completados").
+      completedCount: "completados",
+      figurePrefix: "Mapa de centros:",
+      zero: "El informe no registra centros para este equipo.",
+    },
+  },
   enums: {
     // Tournament stage labels, keyed by the Stage enum codes (AD-7).
     stage: {
@@ -223,7 +297,36 @@ export const es = {
       mf: "Mediocampista",
       fw: "Delantero",
     },
-    shotOutcome: {},
+    /*
+     * The five-value marker outcome (Story 2.7 Task 10.2), verbatim from
+     * EXPERIENCE's ruled i18n table row "shot outcomes (legend + log headers)".
+     * ShotOutcomeDetail labels are deliberately ABSENT: its 22->24 extension is
+     * CS-1's payload, and AD-14 decision CR-2 makes `outcome` authoritative for
+     * marker encoding — the detail labels belong to Stories 2.11/2.13/2.18.
+     */
+    shotOutcome: {
+      goal: "Gol",
+      "on-target": "Al arco",
+      "off-target": "Desviado",
+      blocked: "Bloqueado",
+      incomplete: "Incompleto",
+    },
+    /*
+     * Cross delivery types (Story 2.7 ruled decision 10). New terms with no row
+     * in EXPERIENCE's per-term table, decided here under its Spanish-first
+     * tie-breaker. Short adjectives because they live in a table column whose
+     * head already names the dimension ("Tipo de centro"); the long forms
+     * ("centro cerrado") would wrap at 390 px, where Spanish already runs
+     * 20-30 % longer than English.
+     */
+    crossDelivery: {
+      inswing: "Cerrado",
+      outswing: "Abierto",
+      driven: "Tenso",
+      lofted: "Bombeado",
+      cutback: "Atrás",
+      "push-cross": "Empujado",
+    },
     /*
      * Metric labels keyed by the artifact FIELD name. MetricCode is
      * deliberately string-identical to the field it ranks, so Story 2.13

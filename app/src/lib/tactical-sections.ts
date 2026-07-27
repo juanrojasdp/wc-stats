@@ -92,6 +92,14 @@ export function sectionSummaryKey(
  * `keyStatistics`, `tacticalIdentity` and `setPlays` are REQUIRED objects, so
  * their empty state is unreachable at contract v1; they are mapped anyway so
  * every section answers the same question the same way.
+ *
+ * `shot-maps` is the one section fed by TWO tables, and Story 2.7 ruled
+ * (decision 2, closing the 2.5 review's deferred decision D7) that it is
+ * `empty` only when `shots` AND `crosses` are both null. When exactly one is
+ * missing the section stays `ready` and the missing panel names its own
+ * absence in its own slot: a whole-section empty state over a report that
+ * carries crosses but no shots would hide data sitting in the bundle, which is
+ * the FR-22 failure mode inverted.
  */
 export type SectionDataState = "ready" | "empty";
 
@@ -111,7 +119,8 @@ export function sectionDataState(bundle: MatchBundle, id: SectionId): SectionDat
     case "momentum":
       return bundle.momentum !== null ? "ready" : "empty";
     case "shot-maps":
-      return events.shots !== null ? "ready" : "empty";
+      // Two panels, two tables (Story 2.7 ruled decision 2) — see the docblock.
+      return events.shots !== null || events.crosses !== null ? "ready" : "empty";
     case "pass-networks":
       return events.passNetworkNodes !== null && events.passNetworkEdges !== null ? "ready" : "empty";
     case "offers-to-receive":

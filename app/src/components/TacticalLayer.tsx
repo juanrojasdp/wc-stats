@@ -2,8 +2,9 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
-import { EmptyStatePanel, PendingSectionPanel } from "@/components/EmptyStatePanel";
+import { EmptyStatePanel, PendingSectionPanel, useEmptyHeadline } from "@/components/EmptyStatePanel";
 import { KeyStatisticsSection } from "@/components/KeyStatisticsSection";
+import { ShotMapsSection } from "@/components/ShotMapsSection";
 import { TacticalSection } from "@/components/TacticalSection";
 import type { MatchBundle } from "@/lib/contract/contract-types";
 import { useT } from "@/lib/i18n-provider";
@@ -42,6 +43,9 @@ interface FocusRequest {
 
 export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
   const t = useT();
+  // AC 3's section-named absence copy, shared with the panel-level absence
+  // ShotMapsSection renders (Story 2.7 Task 8.2a).
+  const emptyHeadline = useEmptyHeadline();
   const isLg = useMediaQuery(LG_MEDIA_QUERY);
   // Explicit user/anchor decisions only; everything unset follows the
   // breakpoint, so a resize past lg still expands the untouched sections.
@@ -88,8 +92,28 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
             awayCode={bundle.metadata.awayTeam.teamCode.toUpperCase()}
           />
         );
-      case "momentum":
       case "shot-maps":
+        return (
+          <ShotMapsSection
+            shots={bundle.events.shots}
+            crosses={bundle.events.crosses}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+            teamXg={{
+              home: bundle.keyStatistics.home.expectedGoals,
+              away: bundle.keyStatistics.away.expectedGoals,
+            }}
+          />
+        );
+      case "momentum":
       case "pass-networks":
       case "offers-to-receive":
       case "movement-to-receive":
@@ -116,16 +140,6 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
    * container; nothing here adds a second one.
    */
   const plans = buildSectionPlans(bundle, isLg, overrides);
-
-  /*
-   * AC 3's copy names the section — "Sin datos de {sección} para este partido."
-   * t() has no interpolation, so the headline is composed here around the
-   * section's own resolved <h2> title. Built as a variable: a template literal
-   * as a JSX child, or as a prop value, trips the i18n gate.
-   */
-  function emptyHeadline(title: string): string {
-    return `${t("tactical.empty.headlineBefore")} ${title} ${t("tactical.empty.headlineAfter")}`;
-  }
 
   return (
     <div>

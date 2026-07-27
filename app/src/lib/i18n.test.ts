@@ -4,6 +4,8 @@ import { en } from "@/locales/en";
 import { es } from "@/locales/es";
 import { t, type Locale } from "@/lib/i18n";
 import { KEY_STAT_FIELDS } from "@/lib/tactical-sections";
+import { CROSS_DELIVERY_TYPES, crossDeliveryKey } from "@/viz/cross-map-model";
+import { SHOT_OUTCOMES, shotOutcomeKey } from "@/viz/shot-map-model";
 
 describe("t()", () => {
   it("defaults to the canonical Spanish dictionary", () => {
@@ -102,6 +104,58 @@ describe("enums.metric / enums.unit (AD-7)", () => {
     for (const locale of locales) {
       expect(t("enums.unit.km", locale)).toBe("km");
     }
+  });
+});
+
+/*
+ * Story 2.7 Task 11.2. The marker legend, the popover qualifier and the log's
+ * Outcome column all read enums.shotOutcome; the cross table's delivery column
+ * reads enums.crossDelivery. A missing entry would render an unlabelled legend
+ * swatch — the failure the shape half of the dual encoding cannot cover.
+ *
+ * The `en` mirror is also enforced by the compile error on `en: Dictionary`;
+ * looping both locales through t() catches the same class of miss at runtime,
+ * following the enums.metric assertion's shape.
+ */
+describe("enums.shotOutcome / enums.crossDelivery (AD-7)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("has exactly one entry per ShotOutcome value", () => {
+    expect(Object.keys(es.enums.shotOutcome).sort()).toEqual(
+      [...SHOT_OUTCOMES].sort()
+    );
+  });
+
+  it("has exactly one entry per CrossDeliveryType value", () => {
+    expect(Object.keys(es.enums.crossDelivery).sort()).toEqual([...CROSS_DELIVERY_TYPES].sort());
+  });
+
+  it("resolves every shot-outcome label in both locales", () => {
+    for (const outcome of SHOT_OUTCOMES) {
+      for (const locale of locales) {
+        const label = t(shotOutcomeKey(outcome), locale);
+        expect(label, `${outcome} in ${locale}`).not.toBe("");
+        expect(label).not.toContain("enums.shotOutcome");
+      }
+    }
+  });
+
+  it("resolves every delivery-type label in both locales", () => {
+    for (const deliveryType of CROSS_DELIVERY_TYPES) {
+      for (const locale of locales) {
+        const label = t(crossDeliveryKey(deliveryType), locale);
+        expect(label, `${deliveryType} in ${locale}`).not.toBe("");
+        expect(label).not.toContain("enums.crossDelivery");
+      }
+    }
+  });
+
+  it("does NOT carry ShotOutcomeDetail labels — those ride CS-1 (Task 10.4)", () => {
+    // AD-14 decision CR-2 makes `outcome` authoritative for marker encoding, so
+    // this story maps the stable five-value enum only. The 22->24 detail
+    // extension is CS-1's payload and belongs to Stories 2.11/2.13/2.18.
+    expect(Object.keys(es.enums.shotOutcome)).toHaveLength(5);
+    expect(Object.keys(es.enums)).not.toContain("shotOutcomeDetail");
   });
 });
 

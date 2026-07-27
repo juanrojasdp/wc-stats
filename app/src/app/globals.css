@@ -347,6 +347,23 @@
   animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
+/*
+ * Focus on the pitch (Story 2.7 Task 6.8). The global :focus-visible rule in
+ * @layer base still supplies the 2px outline and its offset; this ONLY
+ * recolours it to the near-white the deep-green pitch requires in BOTH themes —
+ * the light theme's --ring cyan computes 2.28:1 against the pitch surface,
+ * which is the DESIGN clause the light theme exists to break.
+ *
+ * Never `outline-none` here or anywhere: the compiled utility beats the
+ * @layer base rule and kills the ring outright. That regression has cost a
+ * patch in two prior reviews.
+ */
+@utility focus-on-pitch {
+  &:focus-visible {
+    outline-color: var(--focus-ring-on-pitch);
+  }
+}
+
 @layer base {
   /* Vendored shadcn components use color-less `border-*` utilities and expect
      the shadcn default-border convention; --border IS border-hairline. */

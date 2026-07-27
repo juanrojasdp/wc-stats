@@ -48,6 +48,22 @@ export function EmptyStatePanel({
 }
 
 /**
+ * AC 3's copy names what is missing: "Sin datos de {sección} para este
+ * partido." t() carries no interpolation by design, so the headline is composed
+ * around an already-resolved title — the section's own <h2> for a whole-section
+ * absence, or a panel's own <h3> for a panel-level one (Story 2.7 Task 8.2).
+ *
+ * Extracted here in Story 2.7 and used by BOTH call sites: two independent
+ * copies of the same composition diverge the first time the copy changes, and
+ * the 2.5 review already spent a decision getting this wording right.
+ */
+export function useEmptyHeadline(): (title: string) => string {
+  const t = useT();
+  return (title: string) =>
+    `${t("tactical.empty.headlineBefore")} ${title} ${t("tactical.empty.headlineAfter")}`;
+}
+
+/**
  * Placeholder for a `ready` section whose content component has not shipped
  * yet (sections 2-11 during 2.5 → 2.10). Each of those stories deletes its own
  * section's placeholder when it lands, so the copy is fixed and resolved here.
