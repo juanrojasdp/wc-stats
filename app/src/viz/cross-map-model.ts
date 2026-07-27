@@ -133,6 +133,7 @@ export function crossMarkers(
         shape: state.shape,
         colorVar: state.colorVar,
         namePrefixKey: "viz.crossMap.markerPrefix" as DictionaryKey,
+        minutePrefixKey: "viz.crossMap.minutePrefix" as DictionaryKey,
         subjectName: cross.playerName ?? null,
         minuteLabel: cross.at == null ? null : formatGoalMinute(cross.at),
         qualifierKey: completionKey(cross),

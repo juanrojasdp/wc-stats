@@ -23,6 +23,7 @@ import {
   pitchExtentFor,
   pitchMarkings,
   project,
+  type PitchExtent,
   type PitchOrientation,
   type Projection,
   type Size,
@@ -52,6 +53,12 @@ const POPOVER_WIDTH_PX = 224;
 
 /** Gap between a cluster centroid and its popover. */
 const POPOVER_OFFSET_PX = 12;
+
+/**
+ * Floor for the popover's clamped height: one 44px row plus its chrome stays
+ * usable even when the centroid sits hard against the edge it opens toward.
+ */
+const POPOVER_MIN_HEIGHT_PX = 96;
 
 // Separator glyphs are module consts, never bare JSX literals (i18n gate).
 const DOT_SEPARATOR = " · ";
@@ -128,7 +135,14 @@ export function MarkerShapeGlyph({
         <circle
           r={radius}
           fill={color}
-          stroke="var(--ink-primary)"
+          /*
+           * --ink-on-pitch, not --ink-primary: the ring is drawn on the
+           * theme-invariant pitch, and the light canvas ink computed 1.45:1
+           * there, erasing the one mark that distinguishes a goal. Deliberately
+           * NOT --focus-ring-on-pitch, which must keep meaning "focus" alone —
+           * a focused goal marker would otherwise be indistinguishable.
+           */
+          stroke="var(--ink-on-pitch)"
           strokeWidth={GOAL_RING_STROKE_PX * scale}
         />
       );
@@ -270,6 +284,7 @@ function PitchFigure({
   side,
   sideIndex,
   orientation,
+  extent,
   open,
   onOpen,
   onClose,
@@ -278,9 +293,18 @@ function PitchFigure({
   side: PitchPanelSide;
   sideIndex: number;
   orientation: PitchOrientation;
+  /**
+   * Computed ONCE per panel from both sides' markers, never per side. A
+   * per-side extent let one team's long-range attempt flip that side alone to a
+   * full pitch, so the two figures rendered at different metres-per-pixel and
+   * different heights, side by side, with no axis to reveal it — in a component
+   * whose whole purpose is comparing the two teams. Amends Task 2.4 / ruled
+   * decision 3 from "per panel side" to "per panel" (Story 2.7 code review).
+   */
+  extent: PitchExtent;
   open: OpenPopover | null;
   onOpen: (next: OpenPopover) => void;
-  onClose: (returnFocus: boolean) => void;
+  onClose: () => void;
   underlay?: (projection: Projection, size: Size) => ReactNode;
 }) {
   const t = useT();
@@ -290,10 +314,10 @@ function PitchFigure({
   const [frontOfCluster, setFrontOfCluster] = useState<Record<number, number>>({});
   const markerRefs = useRef<(SVGGElement | null)[]>([]);
   const listRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const figureRef = useRef<HTMLElement | null>(null);
   const dialogId = useId();
 
   const markers = side.markers;
-  const extent = useMemo(() => pitchExtentFor(markers), [markers]);
 
   /*
    * Everything geometric recomputes together, keyed on the measured width, the
@@ -307,7 +331,22 @@ function PitchFigure({
     const points = markers.map((marker) => projection(marker.x, marker.y));
     const clusters = clusterMarkers(points);
     const centroids = clusters.map((cluster) => clusterCentroid(points, cluster));
-    const cells = hitCells(centroids, [0, 0, size.width, size.height]);
+    /*
+     * Cells are seeded on the MARKERS, not on the cluster centroids, so the
+     * partition is by nearest MARKER exactly as AC 3 words it. Seeding on
+     * centroids looked equivalent and is not: a single-link cluster can chain
+     * arbitrarily far, putting its own outlying member closer to a neighbouring
+     * cluster's centroid than to its own — a click dead-centre on a marker then
+     * opened a popover that did not contain it. Reproduced on all three
+     * fixtures at 320/386/527/768 px (12 cases, incl. m074 Germany's crosses at
+     * the shipped >=lg width), which is why this is per-marker now.
+     *
+     * The cluster is still the hit UNIT: every cell dispatches through
+     * clusterOfMarker, so a cluster's effective target is the union of its
+     * members' cells — a superset of the old single centroid cell, so the
+     * >=44px floor is not weakened by the change.
+     */
+    const cells = hitCells(points, [0, 0, size.width, size.height]);
     const clusterOfMarker: number[] = new Array(markers.length).fill(0);
     clusters.forEach((cluster, clusterIndex) => {
       for (const markerIndex of cluster) {
@@ -327,10 +366,15 @@ function PitchFigure({
   /**
    * The cluster member currently on top. Verified against the cluster's own
    * membership because a resize re-clusters, and a stored index from the
-   * previous layout may no longer belong to this cluster.
+   * previous layout may no longer belong to this cluster — and against the
+   * cluster's EXISTENCE, because the cluster count itself shrinks as the panel
+   * widens (the story's own measurement: 12 cells at 1920px, 4 at 386px).
    */
-  function frontOf(clusterIndex: number): number {
+  function frontOf(clusterIndex: number): number | null {
     const cluster = layout.clusters[clusterIndex];
+    if (cluster === undefined) {
+      return null;
+    }
     const stored = frontOfCluster[clusterIndex];
     return stored !== undefined && cluster.includes(stored) ? stored : cluster[0];
   }
@@ -378,7 +422,7 @@ function PitchFigure({
       case "Escape":
         if (isOpenHere) {
           event.preventDefault();
-          onClose(false);
+          onClose();
         }
         return;
       default:
@@ -388,19 +432,21 @@ function PitchFigure({
   /** Pointer entry point: a click always resolves through the cell layer. */
   function onCellActivate(clusterIndex: number) {
     const cluster = layout.clusters[clusterIndex];
+    const front = frontOf(clusterIndex);
+    if (cluster === undefined || front === null) {
+      return;
+    }
     const isRepeat =
       isOpenHere && open !== null && open.clusterIndex === clusterIndex && open.mode !== "hover";
     if (isRepeat && cluster.length > 1) {
       // Repeat click cycles the stack's z-order — the only thing that gives a
       // mouse user access to a marker hidden under another.
-      const current = frontOf(clusterIndex);
-      const position = cluster.indexOf(current);
+      const position = cluster.indexOf(front);
       const next = cluster[(position + 1) % cluster.length];
       setFrontOfCluster((previous) => ({ ...previous, [clusterIndex]: next }));
       onOpen({ sideIndex, clusterIndex, markerIndex: next, mode: "dialog" });
       return;
     }
-    const front = frontOf(clusterIndex);
     onOpen({
       sideIndex,
       clusterIndex,
@@ -414,34 +460,78 @@ function PitchFigure({
   /*
    * Draw order: the cluster's front marker renders last so it sits on top.
    * Positions are untouched — z-order is the only thing cycling (AR-6).
+   *
+   * Derived through frontOf(), which validates membership against the CURRENT
+   * layout. Reading Object.values(frontOfCluster) raw — as this did — hoisted
+   * marker indices left over from a previous clustering, so after a resize the
+   * marker drawn on top was not the one the popover described.
    */
   const drawOrder = useMemo(() => {
     const order = markers.map((_, index) => index);
-    const fronts = new Set(Object.values(frontOfCluster));
+    const fronts = new Set(
+      layout.clusters.map((cluster) => {
+        const stored = frontOfCluster[layout.clusters.indexOf(cluster)];
+        return stored !== undefined && cluster.includes(stored) ? stored : cluster[0];
+      })
+    );
     return order.sort((a, b) => Number(fronts.has(a)) - Number(fronts.has(b)));
-  }, [markers, frontOfCluster]);
+  }, [markers, frontOfCluster, layout]);
 
   function markerName(marker: PitchMarker): string {
-    const subject = marker.subjectName ?? t("viz.table.unknown");
+    /*
+     * Distinct SPOKEN keys, not the table's em-dash placeholder. An em dash is
+     * a typographic mark: most screen readers announce it as nothing, so
+     * "Tiro de —, —, bloqueado" degraded to "Tiro de, , bloqueado".
+     */
+    const subject = marker.subjectName ?? t("viz.marker.unknownPlayer");
     const minute =
       marker.minuteLabel === null
-        ? t("viz.table.unknown")
-        : `${t("viz.shotMap.minutePrefix")} ${marker.minuteLabel}`;
+        ? t("viz.marker.unknownMinute")
+        : `${t(marker.minutePrefixKey)} ${marker.minuteLabel}`;
     return `${t(marker.namePrefixKey)} ${subject}${NAME_SEPARATOR}${minute}${NAME_SEPARATOR}${t(
       marker.qualifierKey
     )}`;
   }
 
-  const openCluster = isOpenHere && open !== null ? layout.clusters[open.clusterIndex] : null;
-  const openCentroid = isOpenHere && open !== null ? layout.centroids[open.clusterIndex] : null;
+  /*
+   * `?? null` is load-bearing, not defensive noise: layout.clusters[i] yields
+   * `undefined` for an index left over from a previous, denser clustering, and
+   * `undefined !== null` passed the render guard below — so openCluster.map()
+   * threw and took the whole Tactical section down through the error boundary.
+   * Opening a popover and then narrowing the window was enough to trigger it.
+   */
+  const openCluster = isOpenHere && open !== null ? (layout.clusters[open.clusterIndex] ?? null) : null;
+  const openCentroid =
+    isOpenHere && open !== null ? (layout.centroids[open.clusterIndex] ?? null) : null;
 
   return (
-    <figure role="figure" aria-label={side.figureSummary} className="min-w-0">
+    <figure
+      ref={figureRef}
+      role="figure"
+      aria-label={side.figureSummary}
+      className="min-w-0"
+      /*
+       * Leaving the figure entirely closes the focus-driven popover. Scoped to
+       * the `hover` variant and to a relatedTarget outside this figure, so
+       * arrowing marker-to-marker and opening the cluster dialog (whose list
+       * lives inside the figure) both keep it open.
+       */
+      onBlur={(event) => {
+        if (!isOpenHere || open === null || open.mode !== "hover") {
+          return;
+        }
+        const next = event.relatedTarget as Node | null;
+        if (next !== null && figureRef.current?.contains(next) === true) {
+          return;
+        }
+        onClose();
+      }}
+    >
       <div className="mb-2 flex items-baseline justify-between gap-2">
         <span className="type-label-caps" style={{ color: `var(${accentVar})` }}>
           {side.teamCode}
         </span>
-        <span className="type-caption tabular-nums text-ink-primary">{side.metaLine}</span>
+        <span className="type-caption tabular-nums text-ink-on-pitch">{side.metaLine}</span>
       </div>
       <div ref={measureRef} className="relative">
         <svg
@@ -466,12 +556,17 @@ function PitchFigure({
               underlay={underlay}
             />
           </g>
-          {/* Pointer-only hit layer: Voronoi cells, transparent but clickable. */}
+          {/*
+           * Pointer-only hit layer: one transparent Voronoi cell per MARKER
+           * (nearest-marker partition, AC 3), each dispatching to its marker's
+           * cluster so the cluster stays the hit unit.
+           */}
           <g aria-hidden="true">
-            {layout.cells.map((cell, clusterIndex) =>
-              cell === null ? null : (
+            {layout.cells.map((cell, markerIndex) => {
+              const clusterIndex = layout.clusterOfMarker[markerIndex];
+              return cell === null ? null : (
                 <path
-                  key={clusterIndex}
+                  key={markerIndex}
                   d={cell}
                   fill="transparent"
                   pointerEvents="all"
@@ -483,24 +578,33 @@ function PitchFigure({
                     if (event.pointerType !== "mouse") {
                       return;
                     }
-                    onOpen({
-                      sideIndex,
-                      clusterIndex,
-                      markerIndex: frontOf(clusterIndex),
-                      mode: "hover",
-                    });
+                    /*
+                     * Never let a hover demote an open cluster DIALOG: it would
+                     * unmount the dialog out from under the reader's focused
+                     * list item and drop focus to <body>. The dialog is
+                     * dismissed deliberately (Esc, outside pointer-down), never
+                     * by the mouse wandering across the pitch.
+                     */
+                    if (open !== null && open.mode === "dialog") {
+                      return;
+                    }
+                    const front = frontOf(clusterIndex);
+                    if (front === null) {
+                      return;
+                    }
+                    onOpen({ sideIndex, clusterIndex, markerIndex: front, mode: "hover" });
                   }}
                   onPointerLeave={(event) => {
                     if (event.pointerType !== "mouse") {
                       return;
                     }
                     if (isOpenHere && open !== null && open.mode === "hover") {
-                      onClose(false);
+                      onClose();
                     }
                   }}
                 />
-              )
-            )}
+              );
+            })}
           </g>
           {/*
            * Keyboard-only targets. pointer-events="none" guarantees a click
@@ -550,7 +654,22 @@ function PitchFigure({
                   className="focus-on-pitch"
                   transform={`translate(${point.cx} ${point.cy})`}
                   onKeyDown={(event) => onMarkerKeyDown(event, index)}
-                  onFocus={() => setActiveMarker(index)}
+                  /*
+                   * AC 3 lists FOCUS beside tap and hover as a trigger, and the
+                   * popover follows focus for two reasons: a sighted keyboard
+                   * reader arrowing through 16 markers otherwise saw nothing
+                   * until they pressed Enter on each one, and an already-open
+                   * popover used to stay anchored to the marker it was opened
+                   * from while focus roved away — describing one marker while
+                   * the ring sat on another. Opening on focus fixes both, and
+                   * amends ruled decision 9: the single-marker panel is still
+                   * aria-hidden (its content IS this marker's accessible name),
+                   * it simply now follows focus as well as the mouse.
+                   */
+                  onFocus={() => {
+                    setActiveMarker(index);
+                    openClusterOf(index, "hover");
+                  }}
                 >
                   <MarkerShapeGlyph shape={marker.shape} colorVar={marker.colorVar} />
                 </g>
@@ -565,7 +684,7 @@ function PitchFigure({
             mode={open.mode}
             markers={openCluster.map((index) => markers[index])}
             memberIndices={openCluster}
-            frontIndex={frontOf(open.clusterIndex)}
+            frontIndex={frontOf(open.clusterIndex) ?? openCluster[0]}
             initialIndex={open.markerIndex}
             centroid={openCentroid}
             size={layout.size}
@@ -574,7 +693,7 @@ function PitchFigure({
               setFrontOfCluster((previous) => ({ ...previous, [open.clusterIndex]: markerIndex }))
             }
             onDismiss={() => {
-              onClose(true);
+              onClose();
               focusMarker(open.markerIndex);
             }}
             markerName={markerName}
@@ -584,7 +703,7 @@ function PitchFigure({
       {markers.length === 0 ? (
         // `[]` means "the page was present and listed nothing" — a fact about
         // the match, not a missing section (Story 2.5's null-vs-[] rule).
-        <p className="mt-2 type-caption text-ink-secondary">{side.zeroLine}</p>
+        <p className="mt-2 type-caption text-ink-on-pitch-secondary">{side.zeroLine}</p>
       ) : null}
     </figure>
   );
@@ -620,6 +739,14 @@ function ClusterPopover({
   const t = useT();
   const isDialog = mode === "dialog" && markers.length > 1;
   const initialPosition = Math.max(0, memberIndices.indexOf(initialIndex));
+  const [focusedPosition, setFocusedPosition] = useState<number | null>(null);
+  /*
+   * Clamped at READ time rather than synced in an effect (the same posture the
+   * marker roving index uses): a cluster can shrink under an open popover.
+   */
+  const rovingPosition =
+    focusedPosition !== null && focusedPosition < markers.length ? focusedPosition : initialPosition;
+  const setRovingPosition = setFocusedPosition;
 
   useEffect(() => {
     if (!isDialog) {
@@ -637,11 +764,23 @@ function ClusterPopover({
    */
   const left = Math.max(0, Math.min(centroid.cx - POPOVER_WIDTH_PX / 2, size.width - POPOVER_WIDTH_PX));
   const placeAbove = centroid.cy > size.height / 2;
+  /*
+   * The clamp bounds BOTH axes. Width was bounded and height was not, so a
+   * dense cluster — m074's Germany crosses collapse to ~26 members at the <md
+   * fallback width — rendered a >1000px popover inside a ~250px panel with no
+   * way to reach its lower half. maxHeight is the space actually available on
+   * the chosen side, and the list scrolls inside it rather than the page.
+   */
+  const available = placeAbove
+    ? centroid.cy - POPOVER_OFFSET_PX
+    : size.height - centroid.cy - POPOVER_OFFSET_PX;
+  const maxHeight = Math.max(POPOVER_MIN_HEIGHT_PX, available);
   const style = placeAbove
-    ? { left, bottom: size.height - centroid.cy + POPOVER_OFFSET_PX }
-    : { left, top: centroid.cy + POPOVER_OFFSET_PX };
+    ? { left, bottom: size.height - centroid.cy + POPOVER_OFFSET_PX, maxHeight }
+    : { left, top: centroid.cy + POPOVER_OFFSET_PX, maxHeight };
 
-  const className = "absolute z-10 w-56 max-w-full rounded-sm bg-surface-overlay p-3 shadow-overlay";
+  const className =
+    "absolute z-10 flex w-56 max-w-full flex-col rounded-sm bg-surface-overlay p-3 shadow-overlay";
 
   if (!isDialog) {
     const front = markers[Math.max(0, memberIndices.indexOf(frontIndex))] ?? markers[0];
@@ -672,8 +811,9 @@ function ClusterPopover({
         }
       }}
     >
-      <p className="mb-2 type-caption text-ink-secondary">{countLabel}</p>
-      <ul className="flex flex-col gap-1">
+      <p className="mb-2 shrink-0 type-caption text-ink-secondary">{countLabel}</p>
+      {/* Scrolls inside its own box, never the page (UX-DR16's exception). */}
+      <ul className="flex min-h-0 flex-col gap-1 overflow-y-auto overscroll-contain">
         {markers.map((marker, position) => (
           <li key={marker.key}>
             <button
@@ -681,9 +821,18 @@ function ClusterPopover({
               ref={(node) => {
                 listRefs.current[position] = node;
               }}
-              tabIndex={position === initialPosition ? 0 : -1}
-              className="flex min-h-11 w-full flex-col items-start rounded-sm px-2 py-1 text-left"
-              onFocus={() => onFront(memberIndices[position])}
+              /*
+               * Roving tabindex follows the LAST focused item, not the one the
+               * dialog opened on: freezing it at initialPosition meant tabbing
+               * out of the list and back returned to the original item rather
+               * than where the reader actually was.
+               */
+              tabIndex={position === rovingPosition ? 0 : -1}
+              className="flex min-h-11 w-full shrink-0 flex-col items-start rounded-sm px-2 py-1 text-left"
+              onFocus={() => {
+                setRovingPosition(position);
+                onFront(memberIndices[position]);
+              }}
               onClick={() => onFront(memberIndices[position])}
               onKeyDown={(event) => {
                 if (event.key === "ArrowDown" || event.key === "ArrowUp") {
@@ -719,13 +868,51 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
   const isMd = useMediaQuery(MD_MEDIA_QUERY);
   const [selectedCode, setSelectedCode] = useState(sides[0].teamCode);
   const [open, setOpen] = useState<OpenPopover | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   const selectedIndex = Math.max(
     0,
     sides.findIndex((side) => side.teamCode === selectedCode)
   );
 
+  /*
+   * ONE extent for the whole panel, computed from BOTH sides' markers, so the
+   * two half pitches always share a scale. Computing it per side let a single
+   * event at x < 50 widen one team's frame to a full pitch while its neighbour
+   * stayed a half pitch — two different metres-per-pixel and two different
+   * heights, side by side, with no axis to make the divergence visible. The
+   * cost is the reverse: one team's outlier widens both maps. That is the
+   * correct trade for a panel whose purpose is comparison (Story 2.7 code
+   * review; amends Task 2.4 / ruled decision 3 from "per panel side").
+   */
+  const extent = useMemo(
+    () => pitchExtentFor([...sides[0].markers, ...sides[1].markers]),
+    [sides]
+  );
+
   const closePopover = useCallback(() => setOpen(null), []);
+
+  /*
+   * Outside pointer-down dismisses. Without it a cluster dialog opened by click
+   * had no dismissal path but Esc — and on touch, where a tap opens the
+   * single-marker panel and markers are pointer-events:none so a tap never
+   * focuses one, a popover could be left pinned over the pitch with no way to
+   * close it at all. Pointer-down (not click) so it fires before focus moves.
+   */
+  useEffect(() => {
+    if (open === null) {
+      return;
+    }
+    function onDocumentPointerDown(event: PointerEvent) {
+      const target = event.target as Node | null;
+      if (target !== null && panelRef.current?.contains(target) === true) {
+        return;
+      }
+      setOpen(null);
+    }
+    document.addEventListener("pointerdown", onDocumentPointerDown);
+    return () => document.removeEventListener("pointerdown", onDocumentPointerDown);
+  }, [open]);
 
   const visible = isMd ? [0, 1] : [selectedIndex];
   /*
@@ -747,7 +934,10 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
        * React; the transparent border keeps the box identical across themes so
        * a theme swap never shifts layout. Flat: no shadow.
        */}
-      <div className="mt-2 rounded-lg border border-transparent bg-pitch-surface p-tile-gap dark:border-hairline">
+      <div
+        ref={panelRef}
+        className="mt-2 rounded-lg border border-transparent bg-pitch-surface p-tile-gap dark:border-hairline"
+      >
         {isMd ? null : (
           <ToggleGroup
             type="single"
@@ -768,7 +958,7 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
               <ToggleGroupItem
                 key={side.teamCode}
                 value={side.teamCode}
-                className="min-h-11 min-w-11 rounded-full px-3 type-label-caps text-ink-secondary data-[state=on]:bg-accent-lime data-[state=on]:text-ink-on-lime data-[state=on]:hover:bg-accent-lime data-[state=on]:hover:text-ink-on-lime"
+                className="min-h-11 min-w-11 rounded-full px-3 type-label-caps text-ink-on-pitch-secondary data-[state=on]:bg-accent-lime data-[state=on]:text-ink-on-lime data-[state=on]:hover:bg-accent-lime data-[state=on]:hover:text-ink-on-lime"
               >
                 {side.teamCode}
               </ToggleGroupItem>
@@ -782,6 +972,7 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
               side={sides[sideIndex]}
               sideIndex={sideIndex}
               orientation={isMd ? "horizontal" : "vertical"}
+              extent={extent}
               open={visibleOpen}
               onOpen={setOpen}
               onClose={closePopover}
@@ -791,7 +982,7 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
         </div>
         <div className="mt-tile-gap flex flex-wrap items-center gap-x-4 gap-y-1.5">
           {legend.map((entry) => (
-            <span key={entry.label} className="flex items-center gap-1.5 type-caption text-ink-primary">
+            <span key={entry.label} className="flex items-center gap-1.5 type-caption text-ink-on-pitch">
               <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true">
                 <g transform="translate(7 7)">
                   <MarkerShapeGlyph shape={entry.shape} colorVar={entry.colorVar} radius={4.6} />
@@ -801,7 +992,7 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
             </span>
           ))}
         </div>
-        {note ? <p className="mt-2 type-caption text-ink-secondary">{note}</p> : null}
+        {note ? <p className="mt-2 type-caption text-ink-on-pitch-secondary">{note}</p> : null}
         <div className="mt-tile-gap border-t border-pitch-line/40 pt-2.5">
           {/*
            * ONE "Ver los datos" per PANEL, not per side (Task 7.3): the table
@@ -813,7 +1004,10 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
            * screenshot (UX-DR21, UJ-2 step 5).
            */}
           <ViewDataDisclosure
-            trailing={<span className="type-caption text-ink-secondary">{t("viz.attribution")}</span>}
+            panelTitle={title}
+            trailing={
+              <span className="type-caption text-ink-on-pitch-secondary">{t("viz.attribution")}</span>
+            }
           >
             {dataTable}
           </ViewDataDisclosure>

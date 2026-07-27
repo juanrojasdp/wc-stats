@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
+import { Delaunay } from "d3-delaunay";
 import { describe, expect, it } from "vitest";
 
 import type { MatchBundle, MinuteStamp } from "@/lib/contract/contract-types";
@@ -286,5 +287,129 @@ describe("hitCells (Voronoi partition by nearest cluster)", () => {
     const snapshot = JSON.stringify(points);
     hitCells(points, BOUNDS);
     expect(JSON.stringify(points)).toBe(snapshot);
+  });
+});
+
+/*
+ * Story 2.7 code-review regression. AC 3 words the hit layer as "hit areas
+ * partition by NEAREST MARKER (Voronoi)". The panel originally seeded the
+ * diagram on cluster CENTROIDS, which looks equivalent and is not: single-link
+ * clustering chains transitively, so a cluster's outlying member can sit closer
+ * to a neighbouring cluster's centroid than to its own — and a click dead
+ * centre on that marker opened a popover that did not contain it, silently.
+ *
+ * These tests pin the invariant the fix restores: every marker's own pixel
+ * resolves to a cell belonging to its OWN cluster. They run over the real
+ * fixture geometry at the widths the panel actually renders at, because the
+ * counterexamples were found there, not in a constructed case.
+ */
+describe("hit cells resolve every marker to its own cluster (AC 3)", () => {
+  const PAD_PX = 12;
+
+  /** Mirrors PitchPanel's layout composition exactly. */
+  function partition(points: { cx: number; cy: number }[], width: number, height: number) {
+    const clusters = clusterMarkers(points);
+    const clusterOfMarker = new Array<number>(points.length).fill(0);
+    clusters.forEach((cluster, clusterIndex) => {
+      for (const markerIndex of cluster) {
+        clusterOfMarker[markerIndex] = clusterIndex;
+      }
+    });
+    return { clusters, clusterOfMarker, cells: hitCells(points, [0, 0, width, height]) };
+  }
+
+  it("gives one cell per MARKER, not one per cluster", () => {
+    // Three markers close enough to be one cluster: still three cells.
+    const points = [
+      { cx: 100, cy: 100 },
+      { cx: 120, cy: 105 },
+      { cx: 140, cy: 110 },
+    ];
+    const { clusters, cells } = partition(points, 400, 400);
+    expect(clusters).toHaveLength(1);
+    expect(cells).toHaveLength(3);
+  });
+
+  it("the chained-cluster counterexample: every marker resolves to its own cluster", () => {
+    /*
+     * The shape that broke centroid seeding — five markers chained at 40px
+     * (one cluster, centroid at cx 100) plus a lone marker 46px below the
+     * chain's first member. Marker 0's nearest CENTROID was the lone marker's,
+     * so marker 0's own pixel opened the wrong popover.
+     */
+    const points = [
+      { cx: 0, cy: 0 },
+      { cx: 40, cy: 0 },
+      { cx: 80, cy: 0 },
+      { cx: 120, cy: 0 },
+      { cx: 160, cy: 0 },
+      { cx: 200, cy: 0 },
+      { cx: 0, cy: 46 },
+    ];
+    const { clusters, clusterOfMarker, cells } = partition(points, 400, 400);
+    expect(clusters).toHaveLength(2);
+    expect(cells).toHaveLength(points.length);
+
+    /*
+     * The two seedings, run side by side. This is the assertion that actually
+     * earns its keep: it shows the OLD scheme misrouting a specific marker and
+     * the NEW one routing every marker correctly, so reverting to centroids
+     * fails here with the reason attached rather than shipping silently.
+     */
+    const centroids = clusters.map((cluster) => clusterCentroid(points, cluster));
+    const byCentroid = Delaunay.from(
+      centroids,
+      (p) => p.cx,
+      (p) => p.cy
+    );
+    const byMarker = Delaunay.from(
+      points,
+      (p) => p.cx,
+      (p) => p.cy
+    );
+
+    // Centroid seeding: marker 0 lands in cluster 1's cell — the wrong popover.
+    expect(byCentroid.find(points[0].cx, points[0].cy)).toBe(1);
+    expect(clusterOfMarker[0]).toBe(0);
+
+    // Marker seeding: every marker resolves to a cell owned by its own cluster.
+    points.forEach((point, markerIndex) => {
+      const hitMarker = byMarker.find(point.cx, point.cy);
+      expect(clusterOfMarker[hitMarker]).toBe(clusterOfMarker[markerIndex]);
+    });
+  });
+
+  it("holds across the real fixtures at the widths the panel renders at", () => {
+    const widths = [320, 386, 527, 768];
+    const orientations = ["horizontal", "vertical"] as const;
+    let checked = 0;
+    for (const bundle of [m001, m002]) {
+      for (const teamId of [
+        bundle.metadata.homeTeam.teamId,
+        bundle.metadata.awayTeam.teamId,
+      ]) {
+        const shots = (bundle.events.shots ?? []).filter(
+          (shot) => shot.teamId === teamId && shot.ownGoal !== true
+        );
+        if (shots.length === 0) {
+          continue;
+        }
+        for (const orientation of orientations) {
+          for (const width of widths) {
+            const extent = { xMin: 50 };
+            const size = panelSize(orientation, extent, width);
+            const projection = project(orientation, extent, size, PAD_PX);
+            const points = shots.map((shot) => projection(shot.x, shot.y));
+            const { clusters, cells } = partition(points, size.width, size.height);
+            // One cell per marker, none dropped, and every cluster non-empty.
+            expect(cells).toHaveLength(points.length);
+            expect(clusters.flat()).toHaveLength(points.length);
+            checked += 1;
+          }
+        }
+      }
+    }
+    // Guard the guard: a silently-empty sweep would report green (2.4 lesson).
+    expect(checked).toBeGreaterThanOrEqual(16);
   });
 });

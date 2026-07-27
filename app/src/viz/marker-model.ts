@@ -49,12 +49,20 @@ export interface PitchMarker {
   colorVar: string;
   /**
    * Accessible name pieces, composed by the component in locale order:
-   * `${t(namePrefixKey)} ${subjectName}, ${t("viz.shotMap.minutePrefix")} ${minuteLabel}, ${t(qualifierKey)}`
+   * `${t(namePrefixKey)} ${subjectName}, ${t(minutePrefixKey)} ${minuteLabel}, ${t(qualifierKey)}`
    * -> es "Tiro de Brian GUTIERREZ, minuto 3′, bloqueado". The xG clause the
    * spec's example shows is OMITTED while expectedGoals is null (FD-1).
    */
   namePrefixKey: DictionaryKey;
-  /** null -> the component renders viz.table.unknown. */
+  /**
+   * The minute lead-in, carried by the MARKER rather than hardcoded in the
+   * panel. PitchPanel used `viz.shotMap.minutePrefix` for every marker it drew,
+   * including crosses — which made a component that documents itself as knowing
+   * "nothing about outcomes, own goals or delivery types" announce every future
+   * 2.8/2.9 marker through the shot map's namespace.
+   */
+  minutePrefixKey: DictionaryKey;
+  /** null -> the component renders the spoken viz.marker.unknownPlayer. */
   subjectName: string | null;
   minuteLabel: string | null;
   /** Outcome (shots) / completion state (crosses). */

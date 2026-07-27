@@ -95,6 +95,22 @@ export function clusterCentroid(points: readonly Point[], cluster: readonly numb
  * middle). So clusters whose representatives collide are merged until the set
  * is stable. It converges because every pass strictly reduces the cluster
  * count.
+ *
+ * TWO LIMITS OF THAT GUARANTEE, stated because the property test cannot see
+ * either one (it asserts representative SEPARATION, which both survive):
+ *
+ *  1. It is a claim about the UNBOUNDED diagram. `hitCells` clips to the panel
+ *     box, so a marker sitting on the internal padding line has its cell
+ *     truncated at PAD_PX on that side — roughly 34px across rather than 44.
+ *     Widening the clip bounds does not help: the SVG viewport is the real
+ *     limit, and nothing outside it is clickable. Closing it properly means
+ *     more internal padding (DESIGN says "at LEAST {spacing.tile-gap}", so
+ *     there is room), which is a geometry change and therefore a design call.
+ *  2. The caller seeds cells per MARKER, not per representative, so an
+ *     individual cell may be smaller than minDistPx. That is deliberate and
+ *     does not weaken the floor: cells dispatch by cluster, so a cluster's
+ *     effective hit target is the UNION of its members' cells, which is a
+ *     superset of the single representative cell this paragraph reasons about.
  */
 export function clusterMarkers(
   points: readonly Point[],

@@ -85,12 +85,33 @@
  * edge/heat ramps render only on the pitch. focus-ring-on-pitch is near-white
  * in both themes — the light --ring cyan fails 3:1 on the pitch (DESIGN.md
  * final; supersedes review-accessibility.md's interim #3DDBE8 suggestion).
+ *
+ * THE RULE THIS BLOCK ENCODES (Story 2.7 code review): a theme-invariant
+ * surface may only carry theme-invariant ink. Anything whose ONLY canvas is
+ * the pitch belongs here and must never be overridden in `.light` — the light
+ * variants are built for the light CANVAS, and on the green they computed
+ * 1.45–2.05:1 where 3:1 (marks) and 4.5:1 (text) are required. The five
+ * --shot-* hues are exactly that case: they render on the pitch and nowhere
+ * else, so their former `.light` overrides were deleted rather than retuned.
+ * The -on-pitch ink and team accents below exist because --ink-* and
+ * --viz-team-* DO have legitimate light-canvas uses elsewhere (Key Statistics,
+ * the stat tiles) and so cannot simply be frozen.
  */
 :root {
   --pitch-surface: #0b3d2e;
   --pitch-stripe: #0e4634;
   --pitch-line: #4c9b72;
   --focus-ring-on-pitch: #eafbfd;
+
+  /*
+   * On-pitch ink and accents — identical to the dark-canvas values above,
+   * declared separately so they survive the `.light` overrides. Measured on
+   * --pitch-surface: 11.14:1, 5.55:1, 9.56:1, 7.26:1.
+   */
+  --ink-on-pitch: #f2f5f7;
+  --ink-on-pitch-secondary: #a7b0b8;
+  --viz-team-a-on-pitch: #c3f53c;
+  --viz-team-b-on-pitch: #3ddbe8;
   --edge-weight-1: #5a9e78;
   --edge-weight-2: #7db56e;
   --edge-weight-3: #a3cc60;
@@ -141,15 +162,17 @@
   --ring: #0e7490;
   --destructive: #c22d50;
 
-  /* Data-viz light-canvas variants */
+  /*
+   * Data-viz light-canvas variants. The five --shot-* hues are deliberately
+   * ABSENT: they render only on the theme-invariant pitch, so a light-canvas
+   * variant of them is unconditionally wrong (Story 2.7 code review — the
+   * light values computed 1.62–2.05:1 on the green against a 3:1 floor).
+   * --viz-team-a/-b keep their light variants because Key Statistics and the
+   * stat tiles paint them on the CANVAS; on the pitch, use the -on-pitch pair.
+   */
   --viz-team-a: #4d7c0f;
   --viz-team-b: #0e7490;
   --viz-neutral: #5f6970;
-  --shot-goal: #177245;
-  --shot-on-target: #155e8f;
-  --shot-off-target: #7a5200;
-  --shot-blocked: #6d28d9;
-  --shot-incomplete: #3346c2;
   --result-win: #1e7a43;
   --result-draw: #5f6970;
   --result-loss: #c22d50;
@@ -193,6 +216,9 @@
   --color-surface-overlay: var(--surface-overlay);
   --color-ink-primary: var(--ink-primary);
   --color-ink-secondary: var(--ink-secondary);
+  /* On-pitch ink — theme-invariant, for anything drawn on --pitch-surface. */
+  --color-ink-on-pitch: var(--ink-on-pitch);
+  --color-ink-on-pitch-secondary: var(--ink-on-pitch-secondary);
   --color-ink-muted: var(--ink-muted);
   --color-hairline: var(--border-hairline);
   --color-accent-lime: var(--accent-lime);

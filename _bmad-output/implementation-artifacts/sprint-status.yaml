@@ -60,6 +60,28 @@
 
 generated: 2026-07-22
 last_updated: 2026-07-26
+# 2026-07-26: story 2-7 adversarial code review (3 layers over f8ca7ee..1e67e25): 25 unique
+#             findings — 4 decisions ruled, 18 patches applied, 1 deferred (ShotLogRow's dead
+#             minute fields, routed to 2.11), 5 dismissed. Two defects the 237-test suite
+#             structurally could not see, because neither is reachable in a jsdom-less harness:
+#             (a) hit cells were seeded on cluster CENTROIDS, so a click dead-centre on a marker
+#             could open a popover not containing it — 12 reproduced cases across all three
+#             fixtures at 320/386/527/768 px, incl. m074 Germany's crosses at the shipped >=lg
+#             width; now seeded per MARKER (AC 3 as written) with the cluster still the hit unit,
+#             pinned by 3 new tests that fail if centroid seeding returns. (b) a stale
+#             open.clusterIndex passed an `!== null` guard as `undefined` and threw the whole
+#             Tactical section into the error boundary on any resize that shrank the cluster
+#             count (the story's own measurement: 12 cells at 1920px, 4 at 386px). Also LIGHT
+#             THEME: 2.7 is the first-ever consumer of --pitch-surface and the five --shot-*
+#             tokens, and .light overrode them to light-canvas variants on a theme-invariant
+#             green — every marker 1.62–2.05:1 and every panel string 1.45–1.60:1. The .light
+#             --shot-* overrides are deleted (pitch-only hues are theme-invariant by definition)
+#             and --ink-on-pitch{,-secondary} / --viz-team-{a,b}-on-pitch added; all on-pitch
+#             tokens now 4.58–11.14:1 in BOTH themes. Ruled decisions 3 (extent now per PANEL,
+#             not per side) and 9 (popover follows focus — AC 3's third trigger) amended.
+#             Co-commit disclosed: 1e67e25 also carried 1-8/1-10/1-13 sprint flips and the 1-10
+#             review's ledger entries; ruled to stand as accurate, the Completion Notes claim
+#             corrected. Suite 237 -> 240; build chain green. Status review -> done.
 # 2026-07-26: story 2-7 implemented and moved to review — app/src/viz/ created (the architecture's
 #             own structural seed, first use) plus the reusable PitchPanel that 2.8/2.9 build on.
 #             The testability split IS the story: the harness has no jsdom, so projection,
@@ -628,7 +650,7 @@ development_status:
   2-5-tactical-layer-shell-key-statistics-empty-state-pattern: done
   2-6-momentum-timeline: backlog
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data
-  2-7-pitch-panel-infrastructure-with-shot-cross-maps: review
+  2-7-pitch-panel-infrastructure-with-shot-cross-maps: done
   2-8-pass-network-visualization: backlog
   2-9-receiving-defensive-action-maps-heatmap-decision: backlog
   2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: backlog

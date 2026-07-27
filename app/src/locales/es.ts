@@ -253,6 +253,14 @@ export const es = {
       countBefore: "Punto con",
       countAfter: "eventos",
     },
+    // SPOKEN placeholders for a marker's accessible name. Deliberately not
+    // viz.table.unknown: an em dash is a typographic mark that most screen
+    // readers announce as nothing, so "Tiro de —, —, bloqueado" degraded to
+    // "Tiro de, , bloqueado". The table keeps the em dash; speech gets words.
+    marker: {
+      unknownPlayer: "jugador desconocido",
+      unknownMinute: "minuto desconocido",
+    },
     shotMap: {
       title: "Mapa de tiros",
       markerPrefix: "Tiro de",
@@ -269,12 +277,16 @@ export const es = {
     crossMap: {
       title: "Mapa de centros",
       markerPrefix: "Centro de",
+      minutePrefix: "minuto",
       crosses: "centros",
       crossesOne: "centro",
       completed: "Completado",
       attempted: "Intentado",
-      // Lower-case plural for the panel's count chip ("21 centros · 9 completados").
+      // Lower-case for the panel's count chip ("21 centros · 9 completados").
+      // The singular exists for the same reason goalsOne does: without it a
+      // team with one completed cross reads "1 completados".
       completedCount: "completados",
+      completedCountOne: "completado",
       figurePrefix: "Mapa de centros:",
       zero: "El informe no registra centros para este equipo.",
     },

@@ -175,6 +175,10 @@ export const en: Dictionary = {
       countBefore: "Point with",
       countAfter: "events",
     },
+    marker: {
+      unknownPlayer: "unknown player",
+      unknownMinute: "unknown minute",
+    },
     shotMap: {
       title: "Shot map",
       markerPrefix: "Shot by",
@@ -191,11 +195,13 @@ export const en: Dictionary = {
     crossMap: {
       title: "Cross map",
       markerPrefix: "Cross by",
+      minutePrefix: "minute",
       crosses: "crosses",
       crossesOne: "cross",
       completed: "Completed",
       attempted: "Attempted",
       completedCount: "completed",
+      completedCountOne: "completed",
       figurePrefix: "Cross map:",
       zero: "The report records no crosses for this team.",
     },

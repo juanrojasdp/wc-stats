@@ -112,6 +112,7 @@ export function shotMarkers(shots: readonly ShotEvent[], teamId: string): PitchM
         shape: encoding.shape,
         colorVar: encoding.colorVar,
         namePrefixKey: "viz.shotMap.markerPrefix" as DictionaryKey,
+        minutePrefixKey: "viz.shotMap.minutePrefix" as DictionaryKey,
         subjectName: shot.playerName ?? null,
         minuteLabel: shot.at == null ? null : formatGoalMinute(shot.at),
         qualifierKey: shotOutcomeKey(shot.outcome),

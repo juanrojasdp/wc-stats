@@ -8,6 +8,7 @@ import type { Crosses, Shots } from "@/lib/contract/contract-types";
 import { formatDecimal, formatInteger } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
+import { cn } from "@/lib/utils";
 import {
   CROSS_COMPLETED_SHAPE,
   crossFigureCounts,
@@ -62,8 +63,18 @@ export interface ShotMapsSectionProps {
   teamXg: { home: number; away: number };
 }
 
-/** The accent each side carries: Team A = home, Team B = away. */
-const ACCENT_VAR = { a: "--viz-team-a", b: "--viz-team-b" } as const;
+/*
+ * The accent each side carries: Team A = home, Team B = away.
+ *
+ * The -on-pitch variants, NOT --viz-team-a/-b: these hues are painted on the
+ * theme-invariant pitch, where the light-canvas variants compute 2.44:1 and
+ * 2.28:1 against a 3:1 floor (Story 2.7 code review). The canvas tokens keep
+ * their light variants for Key Statistics and the stat tiles.
+ */
+const ACCENT_VAR = { a: "--viz-team-a-on-pitch", b: "--viz-team-b-on-pitch" } as const;
+
+/** Separator glyphs are module consts, never bare JSX literals (i18n gate). */
+const CAPTION_SEPARATOR = " — ";
 
 function DataTable({
   caption,
@@ -75,18 +86,25 @@ function DataTable({
   children: ReactNode;
 }) {
   return (
-    // {components.data-table}: hairline row dividers, NO zebra striping.
+    /*
+     * {components.data-table}: row dividers, NO zebra striping. The divider is
+     * --pitch-line/40 rather than --border-hairline because this table renders
+     * INSIDE the panel, on the deep-green pitch, where the charcoal hairline is
+     * invisible; the mockup's own .panel-foot makes the same substitution.
+     * Recorded here because it is a departure from Task 7.2's "verbatim".
+     */
     <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-secondary">{caption}</caption>
+      <caption className="mb-2 text-left type-caption text-ink-on-pitch-secondary">{caption}</caption>
       <thead>
         <tr className="border-b border-pitch-line/40">
           {headers.map((header) => (
             <th
               key={header.key}
               scope="col"
-              className={`px-2 py-1.5 type-stat-label text-ink-secondary ${
+              className={cn(
+                "px-2 py-1.5 type-stat-label text-ink-on-pitch-secondary",
                 header.numeric ? "text-right" : "text-left"
-              }`}
+              )}
             >
               {header.label}
             </th>
@@ -153,12 +171,20 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
       counts.crosses,
       "viz.crossMap.crossesOne",
       "viz.crossMap.crosses"
-    )}${DOT_SEPARATOR}${formatInteger(counts.completed, locale)} ${t("viz.crossMap.completedCount")}`;
+    )}${DOT_SEPARATOR}${countPhrase(
+      counts.completed,
+      "viz.crossMap.completedCountOne",
+      "viz.crossMap.completedCount"
+    )}`;
     const figureSummary = `${t("viz.crossMap.figurePrefix")} ${side.name}, ${countPhrase(
       counts.crosses,
       "viz.crossMap.crossesOne",
       "viz.crossMap.crosses"
-    )}, ${formatInteger(counts.completed, locale)} ${t("viz.crossMap.completedCount")}`;
+    )}, ${countPhrase(
+      counts.completed,
+      "viz.crossMap.completedCountOne",
+      "viz.crossMap.completedCount"
+    )}`;
     return {
       teamCode: side.teamCode,
       accent,
@@ -236,9 +262,20 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
   ];
 
   const unknown = t("viz.table.unknown");
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
-  const textCell = "px-2 py-1.5 type-caption text-ink-primary";
+  // On-pitch ink: this table renders inside the panel, on --pitch-surface.
+  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-on-pitch";
+  const textCell = "px-2 py-1.5 type-caption text-ink-on-pitch";
   const rowClass = "border-b border-pitch-line/40";
+
+  /*
+   * Each table's caption and each disclosure control name themselves after
+   * their own panel. Two panels on one page previously shipped two identical
+   * "Ver los datos" buttons and two identical "Ordenado por minuto." captions,
+   * so a reader listing the page's tables or buttons got two indistinguishable
+   * entries with nothing separating shots from crosses.
+   */
+  const shotCaption = `${shotTitle}${CAPTION_SEPARATOR}${t("viz.table.caption")}`;
+  const crossCaption = `${crossTitle}${CAPTION_SEPARATOR}${t("viz.table.caption")}`;
 
   /*
    * Not sortable in this story: Story 2.11 owns aria-sort, the collator sort
@@ -246,7 +283,7 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
    * elements in DataTable and at the row arrays built here.
    */
   const shotTable = (
-    <DataTable caption={t("viz.table.caption")} headers={shotHeaders}>
+    <DataTable caption={shotCaption} headers={shotHeaders}>
       {shotRows.map((row) => (
         <tr key={row.key} className={rowClass}>
           <td className={textCell}>{row.teamCode}</td>
@@ -270,7 +307,7 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
   );
 
   const crossTable = (
-    <DataTable caption={t("viz.table.caption")} headers={crossHeaders}>
+    <DataTable caption={crossCaption} headers={crossHeaders}>
       {crossRows.map((row) => (
         <tr key={row.key} className={rowClass}>
           <td className={textCell}>{row.teamCode}</td>
