@@ -25,6 +25,12 @@ Registered here today:
                           (Story 1.11)
   crosses-count-match     parsed cross markers equal the delivery table's Total sum
                           (Story 1.11)
+  defensive-actions-parse the two defensive-actions panels parse; an off-palette fill is
+                          unknown-rgb (Story 1.12)
+  defensive-actions-count-match
+                          parsed forced-turnover markers equal the page's printed Forced
+                          Turnovers total (Story 1.12; the possession-regain map has no
+                          established printed counterpart and is deliberately unchecked)
 
 Later stories add, for example:
   1.8+  per-domain extractor checks
@@ -46,6 +52,7 @@ from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
 from pipeline.extract.errors import ExtractError, UnknownMinuteGlyphError
 from pipeline.ingest.identity import team_slug
 from pipeline.markers.crosses import parse_crosses
+from pipeline.markers.defensive_actions import parse_defensive_actions
 from pipeline.markers.errors import UnknownRgbError
 from pipeline.markers.shots import parse_shots
 from pipeline.validate.deviations import Deviation, DeviationCategory
@@ -771,5 +778,131 @@ register_check(
         check_id="crosses-count-match",
         applies_to=lambda meta: True,
         run=_check_crosses_count_match,
+    )
+)
+
+
+# One-slot memo for `_defensive_actions_parse_result`, same shape and justification as
+# `_crosses_memo` above (Story 1.12): the runner hands the same open document to
+# `defensive-actions-parse` and then `defensive-actions-count-match`, and each uncached
+# call rebuilds the full-text `PageTextIndex` and re-parses both pages. Copied, not
+# refactored: the memo pattern carries OPEN deferred-work entries (strong doc ref,
+# replayed cached exceptions) that a shared abstraction would have to inherit anyway.
+_defensive_actions_memo: dict = {"doc": None, "result": None, "error": None}
+
+
+def _defensive_actions_parse_result(
+    doc: "pymupdf.Document", meta: ReportMeta
+) -> "dict | None":
+    """Both teams' defensive actions, or `None` when the anchors do not resolve.
+
+    A missing anchor is anchor-coverage's finding; re-reporting it here would count one
+    root cause twice. Every *other* typed parse failure propagates to the caller — each
+    check decides for itself what it owns.
+    """
+    if _defensive_actions_memo["doc"] is not doc:
+        _defensive_actions_memo.update(doc=doc, result=None, error=None)
+        try:
+            _defensive_actions_memo["result"] = _defensive_actions_parse_uncached(doc, meta)
+        except Exception as exc:
+            _defensive_actions_memo["error"] = exc
+    if _defensive_actions_memo["error"] is not None:
+        raise _defensive_actions_memo["error"]
+    return _defensive_actions_memo["result"]
+
+
+def _defensive_actions_parse_uncached(
+    doc: "pymupdf.Document", meta: ReportMeta
+) -> "dict | None":
+    index = PageTextIndex(doc, report_id=meta.report_id)
+    anchors: dict[str, list[int]] = {}
+    for anchor in resolve_anchors(ANCHOR_REGISTRY, home=meta.home_team, away=meta.away_team):
+        if anchor.anchor_id not in ("defensive-actions:home", "defensive-actions:away"):
+            continue
+        try:
+            anchors[anchor.anchor_id] = index.find_all(anchor.text, at_start=anchor.at_page_start)
+        except MissingAnchorError:
+            return None
+    return parse_defensive_actions(
+        doc, anchors, meta.report_id, meta.home_team, meta.away_team
+    )
+
+
+def _check_defensive_actions_parse(
+    doc: "pymupdf.Document", meta: ReportMeta
+) -> list[Deviation]:
+    """Both defensive-actions panels parse; an off-palette marker is `unknown-rgb` (FR-11).
+
+    Other typed failures (pitch frame, page layout, panel title, table grammar)
+    deliberately raise: the runner isolates a raising check and records it against this
+    check's id — the loud, localizable surfacing the gate owes a template revision.
+    """
+    try:
+        _defensive_actions_parse_result(doc, meta)
+    except UnknownRgbError as exc:
+        return [
+            Deviation(
+                report_id=meta.report_id,
+                check="defensive-actions-parse",
+                category=DeviationCategory.UNKNOWN_RGB,
+                specifics=f"marker fill rgb {exc.rgb} on page {exc.page_index} "
+                "is not in the defensive-actions palette",
+            )
+        ]
+    return []
+
+
+def _check_defensive_actions_count_match(
+    doc: "pymupdf.Document", meta: ReportMeta
+) -> list[Deviation]:
+    """Per-team, per-family marker count equals the family's printed total (FR-14).
+
+    Only families with an established printed counterpart are compared: the
+    possession-regain map's `table` count is `None` by design (its marker count matches
+    no printed number on the page), and a comparison against a different family's total
+    would manufacture 208 false deviations. One deviation per failing team/family.
+
+    A report that does not parse yields no deviation *here*: parse failures are
+    defensive-actions-parse's finding (or anchor-coverage's), and a count comparison over
+    a failed parse would attribute one root cause to two checks.
+    """
+    try:
+        defensive_actions = _defensive_actions_parse_result(doc, meta)
+    except PipelineError:
+        return []
+    if defensive_actions is None:
+        return []
+    deviations: list[Deviation] = []
+    for side in ("home", "away"):
+        for _key, counts in sorted(defensive_actions["counts"][side].items()):
+            table = counts["table"]
+            if table is None:
+                continue
+            markers = counts["markers"]
+            if markers != table:
+                deviations.append(
+                    Deviation(
+                        report_id=meta.report_id,
+                        check="defensive-actions-count-match",
+                        category=DeviationCategory.COUNT_MISMATCH,
+                        specifics=f"{side} {counts['action_type']}: parsed {markers} "
+                        f"markers, page prints {table}",
+                    )
+                )
+    return deviations
+
+
+register_check(
+    Check(
+        check_id="defensive-actions-parse",
+        applies_to=lambda meta: True,
+        run=_check_defensive_actions_parse,
+    )
+)
+register_check(
+    Check(
+        check_id="defensive-actions-count-match",
+        applies_to=lambda meta: True,
+        run=_check_defensive_actions_count_match,
     )
 )

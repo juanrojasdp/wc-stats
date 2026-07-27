@@ -26,6 +26,7 @@ from pipeline.markers.filter_chain import (
     MarkerSpec,
     collect_candidate_markers,
     detect_pitch_frame,
+    detect_pitch_frames,
     exclude_legend_rows,
     key_outcomes,
 )
@@ -151,6 +152,72 @@ def test_a_larger_fill_only_rectangle_does_not_outcompete_the_stroked_pitch():
 
 def test_pitch_area_floor_is_the_spike_threshold():
     assert PITCH_MIN_AREA_PT == 10000
+
+
+# ---------------------------------------------------- stage 1, multi-panel (Story 1.12)
+
+
+def test_detect_pitch_frames_returns_every_qualifying_rectangle():
+    """The gap `detect_pitch_frame` cannot close: two panels, one of them discarded."""
+    page = make_page()
+    second = pymupdf.Rect(500, 115, 860, 519)  # very slightly smaller than PITCH
+    page.draw_rect(second, color=(1, 1, 1))
+
+    frames = detect_pitch_frames(page, report_id="r1")
+
+    assert frames == [PITCH, second]
+    assert detect_pitch_frame(page, report_id="r1") == PITCH
+
+
+def test_detect_pitch_frames_preserves_drawing_order_not_area_order():
+    """Drawing order is the contract, and the only ordering the page itself fixes.
+
+    Defensive-actions events carry `source.panel` as an index into this list, so a
+    reordering here (e.g. "make it deterministic — sort by area") would silently swap the
+    provenance of every event in the corpus while leaving family typing, which is
+    text-anchored, entirely green. Drawn largest-last on purpose.
+    """
+    page = make_page()
+    larger = pymupdf.Rect(420, 20, 950, 530)
+    page.draw_rect(larger, color=(1, 1, 1))
+
+    frames = detect_pitch_frames(page, report_id="r1")
+
+    assert frames == [PITCH, larger]
+    assert frames[0].get_area() < frames[1].get_area()
+
+
+def test_detect_pitch_frames_applies_the_same_window_and_stroke_rule():
+    """Same candidate rule as the single-rect form: stroked only, inside the area window."""
+    page = make_page()
+    page.draw_rect(pymupdf.Rect(10, 10, 60, 60), color=(0, 0, 0))  # below the floor
+    page.draw_rect(page.rect, color=(0, 0, 0))  # above the ceiling
+    page.draw_rect(pymupdf.Rect(500, 115, 860, 519), color=None, fill=(0.9, 0.9, 0.9))
+
+    assert detect_pitch_frames(page, report_id="r1") == [PITCH]
+
+
+def test_detect_pitch_frames_fails_loud_on_a_page_with_no_qualifying_rectangle():
+    doc = pymupdf.open()
+    page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+    page.draw_rect(pymupdf.Rect(10, 10, 60, 60), color=(0, 0, 0))
+
+    with pytest.raises(PitchFrameError) as excinfo:
+        detect_pitch_frames(page, report_id="r1")
+
+    assert excinfo.value.page_index == page.number
+    assert "r1" in str(excinfo.value)
+
+
+def test_detect_pitch_frame_keeps_the_first_of_two_equal_area_panels():
+    """The corpus tie-break, pinned: `max` keeps the FIRST maximal element, so expressing
+    `detect_pitch_frame` over `detect_pitch_frames` preserves drawing-order precedence."""
+    page = make_page()
+    twin = pymupdf.Rect(500, 115, 860, 520)  # identical area, drawn second
+    page.draw_rect(twin, color=(1, 1, 1))
+
+    assert twin.get_area() == PITCH.get_area()
+    assert detect_pitch_frame(page, report_id="r1") == PITCH
 
 
 # --- stage 2: circle-geometry filter ----------------------------------------------

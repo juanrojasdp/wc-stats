@@ -124,23 +124,24 @@ def test_a_later_story_can_register_a_check_into_the_registry(clean_registry):
     is proved end-to-end by `test_runner.test_a_newly_registered_check_flows_into_the_report`.
     """
     # `marker-event-link-rate` was this test's example until Story 1.5 registered it
-    # for real, then `crosses-count-match` until Story 1.11 did; the example must stay
-    # a check no story has claimed yet (`register_check` raises on duplicates).
+    # for real, then `crosses-count-match` until Story 1.11 did, then
+    # `defensive-actions-count-match` until Story 1.12 did; the example must stay a check
+    # no story has claimed yet (`register_check` raises on duplicates).
     marker = Deviation(
         report_id="r1",
-        check="defensive-actions-count-match",
+        check="offers-count-match",
         category=DeviationCategory.COUNT_MISMATCH,
         specifics="parsed 15 markers, page prints 16",
     )
     register_check(
         Check(
-            check_id="defensive-actions-count-match",
+            check_id="offers-count-match",
             applies_to=lambda meta: True,
             run=lambda doc, meta: [marker],
         )
     )
 
-    assert "defensive-actions-count-match" in {c.check_id for c in registered_checks()}
+    assert "offers-count-match" in {c.check_id for c in registered_checks()}
 
 
 def test_register_check_rejects_duplicate_ids(clean_registry):

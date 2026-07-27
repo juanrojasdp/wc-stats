@@ -61,8 +61,11 @@ as a `count-mismatch` deviation carrying both counts) from Story 1.3;
 `domain-a-completeness` plus `domain-a-counts` from Story 1.6 (see the Domain A section);
 `marker-event-link-rate` from Story 1.5; `domain-b-completeness`, `domain-b-counts`,
 `domain-c-completeness` plus `domain-c-counts` from Story 1.7 (see the Domains B & C section);
-and `crosses-parse` plus `crosses-count-match` from Story 1.11 (same unknown-rgb /
-count-mismatch semantics as the shots pair, against the crosses page's own delivery table).
+`crosses-parse` plus `crosses-count-match` from Story 1.11 (same unknown-rgb /
+count-mismatch semantics as the shots pair, against the crosses page's own delivery table);
+`defensive-actions-parse` plus `defensive-actions-count-match` from Story 1.12 (the
+count check covers the forced-turnover map only — see the defensive-actions section for
+why the possession-regain map has no printed counterpart to check against).
 
 ## Batch ingestion
 
@@ -306,8 +309,8 @@ pipeline/
   extract/    tabular per-domain extractors (Domains A, B and C today; Stories 1.8-1.10
               follow the same convention) + the committed venue -> UTC-offset table
   ingest/     batch orchestration, run manifest, idempotence, per-report Extract, CLI
-  markers/    shared pitch-map filter chain + map parser family (shots + crosses today;
-              defensive actions, offers/movement reuse it in Stories 1.12-1.13)
+  markers/    shared pitch-map filter chain + map parser family (shots, crosses and
+              defensive actions today; offers/movement reuses it in Story 1.13)
   validate/   check registry, sample selection, verification runner, CLI
   tests/      pytest suite
 ```
@@ -406,3 +409,93 @@ event count to the sum of the table's Total Attempted column — the page's own 
 total (== the printed Attempted panel on 208/208 pages), never Key Statistics `crosses`
 (that Domain B scalar counts set-play crosses too; this page is open play only — M01
 prints 13/8 there vs 10/7 here).
+
+## The defensive-actions domain (Story 1.12)
+
+Every Extraction Record also carries `domains.defensive_actions`, extracted by the same
+shared filter chain with defensive-actions tuning
+(`pipeline/markers/defensive_actions.py`). The section is ONE page per team, and that page
+carries **two** stroked pitch panels (all 208 corpus pages):
+
+```jsonc
+"defensive_actions": {
+  "defensive_action_events": [   // sorted by team_id, action_type, page_index, pdf_y, pdf_x
+    { "team_id": "mexico", "action_type": "forced-turnover",
+      "x": 97.43, "y": 59.57, "contest_type": null,
+      "source": { "page_index": 24, "panel": 0, "pdf_x": 141.32, "pdf_y": 233.35 } }
+  ],
+  "regain_table_rows": {         // the per-player regains table, staged verbatim per side
+    "home": [ { "shirt_number": 1, "player_name": "Raul RANGEL",
+                "total_possession_regains": 6 } ]
+  },
+  "counts": {
+    "home": { "forced_turnover":   { "action_type": "forced-turnover",
+                                     "markers": 31, "printed_total": 31,
+                                     "table": 31 },
+              "possession_regain": { "action_type": "possession-regain",
+                                     "markers": 47, "printed_total": 37,
+                                     "table": null } }
+  },
+  "warnings": [ "defensive-actions: no marker-count check recorded for ..." ]
+}
+```
+
+`teamId` is the **DEFENDING** team — the team the anchor names. Mechanically the same
+`team_slug` call the crosses parser makes, semantically the opposite end of the event.
+
+**Two panels, all but equal in area.** `Forced Turnovers` (left) and `Possession Regain`
+(right) measure 61,168.1435 and 61,168.1451 pt², so `detect_pitch_frame`'s `max` silently
+kept only the right one. Story 1.12 added a sibling `detect_pitch_frames` returning every
+qualifying stroked rect in drawing order and re-expressed `detect_pitch_frame` over it;
+the two are proven identical on all 5,448 corpus pages, with the shots and crosses
+payloads byte-identical over all 104 reports.
+
+**The family is not keyed by colour.** All 20,169 corpus markers share ONE fill,
+`(0.18, 0.3, 1.0)` — the blue the shots palette calls `incomplete` and the crosses palette
+calls `completed`. The marker's family comes from its panel's printed **title** (AD-8:
+text-anchored, never "the left panel is forced turnovers"). `key_outcomes` stays in the
+chain as the FR-11 assert-on-unknown seam, so a second fill inside a panel aborts the
+report with its RGB and page rather than being typed as a defensive action.
+
+Tuning, measured on the full corpus: markers are 8.871 × 8.865 pt, and the 9.0 pt
+strokeless bullet swatches share their exact blue — a 0.13 pt separation, so
+`marker_max_pt = 8.95` sits inside that gap and is never rounded to 9.0. `marker_min_pt =
+8.5` excludes the white penalty (1.479 pt) and centre (2.957 pt) spots drawn *inside* the
+panels, which would otherwise abort every report on an unknown white fill. Each panel's
+four corner arcs are stroke-only Beziers of the marker's exact width — only the `fill is
+None` test excludes them. `pitch_margin_pt = 0.5` admits the corpus' maximum 0.296 pt
+overshoot of a marker centre beyond its panel edge.
+
+**No linking pass exists**: zero digit glyphs print inside either panel and the page
+carries no per-event rows, so `contest_type` is `null` per event. Only two of the
+contract's four `DefensiveActionType` values are pitch maps at all — `block` and
+`possession-contest` are aggregate panels with no coordinates.
+
+**Self-Validation** (`defensive-actions-marker-count`, exact and binary) covers the
+**forced-turnover** map only: its marker count equals the page's own printed
+`Forced Turnovers` headline total on 206 of 208 corpus pages. The **possession-regain**
+map records a documented absence instead (`"table": null`, no check, one per-report
+warning): its marker count matches no number printed on the page and no ±1 linear
+combination of them, differing from the printed `Possession Regained` total by −3..+36
+across the corpus. Both families' printed headline totals are staged as `printed_total`
+regardless, so that delta stays on the record as evidence; only a family with an
+established counterpart promotes its total to `table`, which is what the check keys on. That printed total and the per-player `Total Possession Regains` column
+sum agree with each other on 208/208 pages, so they consistently count something the map
+does not plot — checking the map against either would manufacture 208 false failures, and
+checking it against its own marker count would be a tautology.
+
+**Two corpus pages genuinely disagree with themselves** (`PMSR-M19-ARG-V-ALG` away: 39
+markers drawn, 40 printed; `PMSR-M58-TUN-V-NED` away: 33 drawn, 34 printed). Both were
+verified by rendering the page and counting: the PDF really draws one marker fewer than
+its own headline claims. The check is exact and never loosened (SM-C1, AD-8), so those two
+records write with `self_validation: "fail"` and the batch run reports FAIL (exit 1)
+without inflating `failed_count`.
+
+**Adjudicated (code review, 2026-07-25): the standing FAIL is accepted as the intended
+signal.** From Story 1.12 onward a full-corpus `python -m pipeline.ingest.batch` exits 1
+by design. The clean-run baseline is `extracted 104 / failed 0 / corpus_gaps 0 /
+orphan_record_paths 0` with **exactly two** self-validation failures, both
+`defensive-actions-marker-count` on the away side of `PMSR-M19-ARG-V-ALG` and
+`PMSR-M58-TUN-V-NED`. Verification steps must assert that baseline rather than a zero
+exit code; a third failing report means the discrepancy is systematic and re-opens the
+ruling. The FR-15 gate is unaffected.

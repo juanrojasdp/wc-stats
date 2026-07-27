@@ -451,6 +451,19 @@ def format_summary(manifest: dict) -> str:
                         f"{check.get('marker_count')} markers linked"
                         + (f"; unlinked: {positions}" if positions else "")
                     )
+                elif check.get("check") == "defensive-actions-marker-count":
+                    # Story 1.12: the check id is shared by a family set that may grow —
+                    # only forced-turnover carries a counterpart today, but the id is not
+                    # per-family, so the line names the family rather than leaving two
+                    # families indistinguishable if a second one ever gains one. The
+                    # generic branch below also says "table lists", which misreports a
+                    # count read from a printed headline. Keyed on the exact check id,
+                    # never sniffed from a `family` key (the Story 1.5 review patch).
+                    detail = (
+                        f"{check.get('team')} {check.get('family')}: "
+                        f"{check.get('marker_count')} markers, page prints "
+                        f"{check.get('table_count')}"
+                    )
                 elif "marker_count" in check or "table_count" in check:
                     detail = (
                         f"{check.get('team')}: {check.get('marker_count')} markers, "

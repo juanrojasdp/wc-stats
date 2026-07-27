@@ -173,6 +173,80 @@ class CrossesCoordinateError(MarkerError):
         )
 
 
+class DefensiveActionsPageLayoutError(MarkerError):
+    """A defensive-actions page does not present the layout the corpus fixes (Story 1.12).
+
+    Raised for either half of the layout contract: an anchor that does not resolve to
+    exactly one page (the section is a single page per team on all 208 corpus pages), or
+    a page whose stroked pitch panels are not exactly the expected titled pair. Carries
+    the anchor id and the pages it resolved to, plus a reason naming what the page showed
+    — a template revision must be localizable without reopening the PDF.
+    """
+
+    def __init__(
+        self,
+        anchor_id: str,
+        pages: "list[int] | None",
+        report_id: str | None = None,
+        reason: str = "expected exactly one defensive-actions page",
+    ) -> None:
+        self.anchor_id = anchor_id
+        self.pages = pages
+        self.report_id = report_id
+        self.reason = reason
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(
+            f"[{where}] anchor {anchor_id!r} resolved to pages {pages}: {reason}"
+        )
+
+
+class DefensiveActionsTableError(MarkerError):
+    """The defensive-actions page's printed counterparts resist the house grammar.
+
+    Covers the per-player `Total Possession Regains` table (missing/ambiguous header, a
+    shirt-led row without a name and a numeric total) and the headline band above the
+    panels (a missing or ambiguous `Forced Turnovers` / `Possession Regained` label, or a
+    label with no printed value above it). Never fall back to the marker count: a
+    Self-Validation check comparing the marker count to itself is a tautology, not a
+    check (the `AttemptsTableError` rule).
+    """
+
+    def __init__(self, reason: str, report_id: str | None = None, page_index: int | None = None) -> None:
+        self.reason = reason
+        self.report_id = report_id
+        self.page_index = page_index
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(
+            f"[{where}] defensive-actions counterparts on page {page_index} unparseable: {reason}"
+        )
+
+
+class DefensiveActionsCoordinateError(MarkerError):
+    """A defensive-action marker normalized outside the tolerated [0, 100] envelope.
+
+    The `CrossesCoordinateError` discipline, per panel: the pitch margin admits marker
+    centers a fraction of a point beyond their panel's frame (0.296 pt at the corpus
+    maximum, ~0.14 in normalized units), and those sub-tolerance overshoots clamp into
+    [0, 100]. A coordinate further out than the tolerance is a mis-normalization — the
+    wrong panel rect, an orientation flip, a stray glyph admitted through the margin —
+    never a real defensive action, so it fails loud rather than being silently rewritten
+    to a plausible boundary (AD-8). Carries the axis, the pre-clamp value and the page.
+    """
+
+    def __init__(
+        self, axis: str, value: float, report_id: str | None = None, page_index: int | None = None
+    ) -> None:
+        self.axis = axis
+        self.value = value
+        self.report_id = report_id
+        self.page_index = page_index
+        where = report_id if report_id is not None else "<unknown report>"
+        super().__init__(
+            f"[{where}] defensive-action marker {axis}={value} on page {page_index} is "
+            "outside the tolerated [0, 100] coordinate envelope"
+        )
+
+
 class ShotsPageLayoutError(MarkerError):
     """A shots anchor did not resolve to [map page, event-table page(s)].
 

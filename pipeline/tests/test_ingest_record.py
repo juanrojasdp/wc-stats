@@ -25,8 +25,13 @@ from pipeline.ingest.records import (
     serialize_record,
     write_record,
 )
+from pipeline.markers.defensive_actions import ABSENT_COUNTERPART_WARNING
 from pipeline.markers.errors import UnknownRgbError
-from pipeline.tests.conftest import DEFAULT_CROSSES_MARKERS, DEFAULT_SHOTS_MARKERS
+from pipeline.tests.conftest import (
+    DEFAULT_CROSSES_MARKERS,
+    DEFAULT_DEFENSIVE_ACTIONS_MARKERS,
+    DEFAULT_SHOTS_MARKERS,
+)
 
 ISO_TIMESTAMP_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}")
 
@@ -84,7 +89,11 @@ def test_the_ground_truth_report_extracts_a_complete_record(mex_rsa_pdf, tmp_pat
     assert len(record["anchors"]) == len(
         resolve_anchors(ANCHOR_REGISTRY, home="Mexico", away="South Africa")
     )
-    assert record["warnings"] == []
+    # Story 1.12 forced repair: every record now carries exactly one warning — the
+    # documented absence of a printed counterpart for the possession-regain map (AC 2's
+    # absence branch, which must never be modelled as a non-"pass" check). Asserted
+    # exactly, so a second unexplained warning still fails this test.
+    assert record["warnings"] == [ABSENT_COUNTERPART_WARNING]
     # AC 2 end-to-end: the full `extract_report` path — not just `parse_shots` — must
     # Self-Validate both teams against the ground truth (16/16 home, 3/3 away; the one
     # place hardcoding counts is correct, AR-16).
@@ -313,6 +322,83 @@ def test_a_crosses_count_mismatch_fails_the_record_with_both_counts(tmp_path, ma
         if check["check"] == "shots-marker-count"
     }
     assert shots_results == {"pass"}
+
+
+def test_defensive_actions_domain_and_checks_join_the_record(tmp_path, make_report):
+    """Story 1.12: `defensive-actions-marker-count` checks are appended beside the
+    existing families — filtered by their OWN check id here, never a widened shots or
+    crosses filter (every family carries home/away team keys, so a shared filter would
+    collide). One check per team for the forced-turnover map only; the possession-regain
+    map's absent counterpart travels as the record warning, never as a check."""
+    record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
+
+    defensive_actions = record["domains"]["defensive_actions"]
+    assert set(defensive_actions) == {
+        "defensive_action_events",
+        "regain_table_rows",
+        "counts",
+        "warnings",
+    }
+    assert len(defensive_actions["defensive_action_events"]) == sum(
+        len(markers)
+        for side in DEFAULT_DEFENSIVE_ACTIONS_MARKERS.values()
+        for markers in side.values()
+    )
+    for event in defensive_actions["defensive_action_events"]:
+        assert event["action_type"] in ("forced-turnover", "possession-regain")
+        assert event["contest_type"] is None
+
+    checks = [
+        check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "defensive-actions-marker-count"
+    ]
+    assert {(check["team"], check["family"]) for check in checks} == {
+        ("home", "forced-turnover"),
+        ("away", "forced-turnover"),
+    }
+    for check in checks:
+        assert check["result"] == "pass"
+        assert check["marker_count"] == len(
+            DEFAULT_DEFENSIVE_ACTIONS_MARKERS[check["team"]]["forced-turnover"]
+        )
+        assert check["table_count"] == check["marker_count"]
+    assert record["self_validation"]["result"] == "pass"
+    assert ABSENT_COUNTERPART_WARNING in record["warnings"]
+
+
+def test_a_defensive_actions_count_mismatch_fails_the_record_with_both_counts(
+    tmp_path, make_report
+):
+    """AD-8 for the defensive-actions family: mismatch is data — record written, `fail`,
+    both counts recorded — while the shots and crosses checks stay green."""
+    record = extract_report(
+        make_report(
+            tmp_path / "PMSR-M07-AAA-V-BBB.pdf",
+            number=7,
+            defensive_actions_headline={"home": {"forced-turnover": 12}},
+        )
+    )
+
+    assert record["self_validation"]["result"] == "fail"
+    by_team = {
+        check["team"]: check
+        for check in record["self_validation"]["checks"]
+        if check["check"] == "defensive-actions-marker-count"
+    }
+    assert by_team["home"]["result"] == "fail"
+    assert by_team["home"]["family"] == "forced-turnover"
+    assert by_team["home"]["table_count"] == 12
+    assert by_team["home"]["marker_count"] == len(
+        DEFAULT_DEFENSIVE_ACTIONS_MARKERS["home"]["forced-turnover"]
+    )
+    assert by_team["away"]["result"] == "pass"
+    other_results = {
+        check["result"]
+        for check in record["self_validation"]["checks"]
+        if check["check"] in ("shots-marker-count", "crosses-marker-count")
+    }
+    assert other_results == {"pass"}
 
 
 def test_a_typed_marker_error_propagates_as_itself_not_as_probe_error(tmp_path, make_report):

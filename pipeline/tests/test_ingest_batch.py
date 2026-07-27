@@ -837,6 +837,66 @@ def test_a_crosses_mismatch_fails_the_run_with_both_counts_in_the_manifest(
     assert f"home: {len(DEFAULT_CROSSES_MARKERS['home'])} markers, table lists 7" in summary
 
 
+def test_a_defensive_actions_mismatch_fails_the_run_with_both_counts_in_the_manifest(
+    tmp_path, make_report
+):
+    """Story 1.12: the failing `defensive-actions-marker-count` check lands in the entry
+    with both counts and fails the run without inflating `failed_count`. Two marker
+    families share this check id, so `format_summary` names the family — a detail the
+    generic count branch cannot render."""
+    from pipeline.ingest.batch import format_summary
+    from pipeline.tests.conftest import DEFAULT_DEFENSIVE_ACTIONS_MARKERS
+
+    directory = tmp_path / "corpus"
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(
+        directory / "PMSR-M01-ALP-V-BRA.pdf",
+        number=1,
+        home="Alpha",
+        away="Bravo",
+        defensive_actions_headline={"home": {"forced-turnover": 12}},
+    )
+
+    manifest = _run(tmp_path, directory)
+
+    drawn = len(DEFAULT_DEFENSIVE_ACTIONS_MARKERS["home"]["forced-turnover"])
+    [entry] = manifest["reports"]
+    assert entry["status"] == "extracted"
+    assert entry["self_validation"] == "fail"
+    [check] = entry["self_validation_failures"]
+    assert check["check"] == "defensive-actions-marker-count"
+    assert check["team"] == "home"
+    assert check["family"] == "forced-turnover"
+    assert check["marker_count"] == drawn
+    assert check["table_count"] == 12
+    assert manifest["run"]["failed_count"] == 0
+    assert manifest["run"]["self_validation_fail_count"] == 1
+    assert manifest["run"]["result"] == "fail"
+    summary = format_summary(manifest)
+    assert "[defensive-actions-marker-count]" in summary
+    assert f"home forced-turnover: {drawn} markers, page prints 12" in summary
+
+
+def test_the_documented_absence_reaches_the_manifest_as_a_warning(tmp_path, make_report):
+    """AC 2's absence branch end to end: the possession-regain map records no check at
+    all, and its documented absence travels as ONE per-report warning that `batch.py`
+    mirrors into the entry and `format_summary` prints — while the run still passes."""
+    from pipeline.ingest.batch import format_summary
+    from pipeline.markers.defensive_actions import ABSENT_COUNTERPART_WARNING
+
+    directory = tmp_path / "corpus"
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(directory / "PMSR-M01-ALP-V-BRA.pdf", number=1, home="Alpha", away="Bravo")
+
+    manifest = _run(tmp_path, directory)
+
+    [entry] = manifest["reports"]
+    assert entry["self_validation"] == "pass"
+    assert entry["warnings"].count(ABSENT_COUNTERPART_WARNING) == 1
+    assert manifest["run"]["result"] == "pass"
+    assert ABSENT_COUNTERPART_WARNING in format_summary(manifest)
+
+
 def test_a_skipped_unchanged_entry_carries_its_staged_records_verdict(tmp_path, make_report):
     """The mirror reads the staged record, the same way `warnings` flows: a re-run over
     an unchanged mismatching corpus must keep failing, not launder the verdict."""

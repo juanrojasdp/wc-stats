@@ -291,6 +291,84 @@ CROSSES_VALUE_XS = (734.0, 768.0, 801.0, 830.0, 861.0, 891.0)
 CROSSES_TOTAL_X = 925.0
 
 
+# --- Story 1.12: defensive-actions page synthesis constants --------------------------
+#
+# Deliberate literals like SHOTS_OUTCOME_RGB. The real section is a SINGLE page per team
+# carrying TWO stroked pitch panels of all-but-equal area, each titled just above its own
+# frame, plus a headline band whose values sit ~48 pt above their stacked labels, plus a
+# per-player "Total Possession Regains" table on the right. Markers are 8.87 pt filled
+# Bezier circles with a white stroke in ONE fill; the bullet swatches are 9.0 pt and
+# STROKELESS, sharing the markers' exact colour.
+
+DEFENSIVE_ACTIONS_PANELS = (
+    # (action type, panel rect) — the left panel is drawn FIRST and made very slightly
+    # SMALLER, mirroring the corpus: `detect_pitch_frame`'s `max` would discard it, which
+    # is exactly the regression the two-panel assertions guard.
+    ("forced-turnover", (40.0, 200.0, 240.0, 500.0)),
+    ("possession-regain", (300.0, 200.0, 500.3, 500.0)),
+)
+DEFENSIVE_ACTIONS_PANEL_TITLES = {
+    "forced-turnover": "Forced Turnovers",
+    "possession-regain": "Possession Regain",
+}
+# The headline label stacks under its value; the parser finds the value from the label.
+DEFENSIVE_ACTIONS_HEADLINE = {
+    "forced-turnover": ("Forced", "Turnovers"),
+    "possession-regain": ("Possession", "Regained"),
+}
+# Column CENTRES: the parser matches a headline value to its label by x-centre, so the
+# fixture must centre both like the real template does.
+DEFENSIVE_ACTIONS_HEADLINE_XS = {"forced-turnover": 85.0, "possession-regain": 200.0}
+DEFENSIVE_ACTIONS_VALUE_Y = 115.0
+DEFENSIVE_ACTIONS_LABEL_Y = (151.0, 163.0)
+DEFENSIVE_ACTIONS_TITLE_Y = 194.0
+
+DEFENSIVE_ACTIONS_MARKER_RADIUS = 4.4355  # 8.871 pt diameter, the real markers' size
+DEFENSIVE_ACTIONS_SWATCH_RADIUS = 4.5  # 9.0 pt strokeless bullet swatches
+DEFENSIVE_ACTIONS_RGB = (0.18, 0.30, 1.00)
+# The other bullet colours of the Possession-Contests list (outside both panels).
+DEFENSIVE_ACTIONS_SWATCH_RGBS = (
+    (0.18, 0.30, 1.00),
+    (1.00, 0.24, 0.00),
+    (0.70, 0.53, 1.00),
+    (0.36, 0.61, 0.84),
+)
+
+# (fx, fy) per family per side: fractions of that panel's rect.
+DEFAULT_DEFENSIVE_ACTIONS_MARKERS = {
+    "home": {
+        "forced-turnover": [(0.3, 0.7), (0.6, 0.8)],
+        "possession-regain": [(0.5, 0.75), (0.2, 0.6), (0.8, 0.9)],
+    },
+    "away": {
+        "forced-turnover": [(0.45, 0.65)],
+        "possession-regain": [(0.35, 0.85), (0.7, 0.55)],
+    },
+}
+
+# Each panel prints its own rotated DIRECTION label INSIDE its frame; `rotate=90` is the
+# insertion that reproduces the corpus' writing-direction vector (0.0, -1.0) exactly, and
+# `rotate=270` is the mirrored panel the parser must reject.
+DEFENSIVE_ACTIONS_DIRECTION_TEXT = "DIRECTION"
+DEFENSIVE_ACTIONS_DIRECTION_ROTATE = 90
+DEFENSIVE_ACTIONS_DIRECTION_DY = 160.0
+
+DEFENSIVE_ACTIONS_TABLE_COLUMNS = {"#": 730.0, "Player": 748.0, "Total": 909.0}
+DEFENSIVE_ACTIONS_TOTAL_X = 915.0
+# The stacked three-line header and the row band, kept clear of the headline band's
+# y-lines (`table_lines` clusters across the whole page width, not per column).
+DEFENSIVE_ACTIONS_TABLE_YS = {"total": 240.0, "header": 252.0, "regains": 261.0}
+DEFENSIVE_ACTIONS_ROW_Y0 = 282.0
+DEFENSIVE_ACTIONS_ROW_PITCH = 24.7
+
+
+def default_defensive_action_rows(markers):
+    """One per-player regains row per side. Deliberately NOT tied to the marker count:
+    the real page's regains table counts something the possession-regain map does not
+    plot (Task 1.2), and the parser must never check the map against it."""
+    return [{"shirt": 7, "name": "Test REGAINER", "total": 3}]
+
+
 def default_cross_rows(markers):
     """One aggregate player row whose Total Attempted equals the marker count.
 
@@ -603,6 +681,13 @@ def make_report():
     labels; `shots_label_text` / `shots_label_offset` corrupt, duplicate, suppress or
     displace individual labels; `shots_table_cells` overrides individual printed cells.
 
+    Story 1.12 (additive, default-on): the defensive-actions anchors emit the real
+    single-page section — TWO titled stroked pitch panels of all-but-equal area, markers
+    at the measured 8.871 pt size and single fill, the strokeless 9.0 pt bullet swatches
+    in that same fill, the headline band (value above its stacked label, centred) and the
+    per-player `Total Possession Regains` table at the real x-positions and ~7 pt font.
+    The `defensive_actions_*` kwargs are documented on the parameters themselves.
+
     `page_order` re-orders the anchor pages (the cover always stays first — `probe_report`
     reads it by position). `AC 4` says a shuffled or offset report must still resolve, so
     a fixture that can only ever emit registry order cannot demonstrate it.
@@ -672,6 +757,30 @@ def make_report():
         crosses_draw_pitch: bool = True,
         crosses_header_replace: "dict[str, dict[str, str | None]] | None" = None,
         crosses_decorate=None,
+        # Story 1.12 (additive, default-on): every report now carries a parseable
+        # single-page defensive-actions section per team — extract_report runs the parser
+        # on every report, so a text-only auto-generated page would die in
+        # `PitchFrameError`. `defensive_actions_markers` places markers per family as
+        # (fx, fy) fractions of that family's panel; `defensive_actions_headline`
+        # overrides the printed headline value per family (forcing a count mismatch);
+        # `defensive_actions_rows` overrides the per-player regains rows;
+        # `defensive_actions_titles` renames a panel title (None drops it);
+        # `defensive_actions_panels` replaces the (action_type, rect) panel list entirely
+        # (dropping, duplicating or adding a panel); `defensive_actions_draw_panels=False`
+        # omits the pitch frames; `defensive_actions_pages` emits extra anchored pages;
+        # `defensive_actions_decorate` draws extra content for collision tests;
+        # `defensive_actions_direction` overrides a panel's DIRECTION label rotation per
+        # side per family (`None` drops the label, 270 mirrors the panel).
+        defensive_actions_markers: "dict[str, dict[str, list[tuple[float, float]]]] | None" = None,
+        defensive_actions_headline: "dict[str, dict[str, object]] | None" = None,
+        defensive_actions_rows: "dict[str, list[dict]] | None" = None,
+        defensive_actions_titles: "dict[str, str | None] | None" = None,
+        defensive_actions_panels: "tuple | None" = None,
+        defensive_actions_draw_panels: bool = True,
+        defensive_actions_swatches: bool = True,
+        defensive_actions_pages: "dict[str, int] | None" = None,
+        defensive_actions_decorate=None,
+        defensive_actions_direction: "dict[str, dict[str, int | None]] | None" = None,
     ) -> Path:
         import pymupdf
 
@@ -864,6 +973,134 @@ def make_report():
                 extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
                 extra.insert_text((40, 60), anchor_text, fontsize=11)
 
+        def emit_defensive_actions_pages(side: str, anchor_text: str) -> None:
+            # Story 1.12: ONE page per team carrying TWO titled pitch panels, the
+            # headline band whose values sit above their stacked labels, the strokeless
+            # bullet swatches (outside both panels, in the markers' exact colour) and the
+            # per-player regains table.
+            panels = (
+                DEFENSIVE_ACTIONS_PANELS
+                if defensive_actions_panels is None
+                else defensive_actions_panels
+            )
+            markers = (
+                DEFAULT_DEFENSIVE_ACTIONS_MARKERS
+                if defensive_actions_markers is None
+                else defensive_actions_markers
+            ).get(side, DEFAULT_DEFENSIVE_ACTIONS_MARKERS[side])
+
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+
+            def centred(x_centre: float, y: float, text, fontsize: float) -> None:
+                text = str(text)
+                # Fullwidth digits need a font that can encode them (the shots tests'
+                # `fontname="japan"` precedent).
+                kwargs = {} if text.isascii() else {"fontname": "japan"}
+                width = pymupdf.get_text_length(
+                    text, fontsize=fontsize, fontname=kwargs.get("fontname", "helv")
+                )
+                page.insert_text((x_centre - width / 2, y), text, fontsize=fontsize, **kwargs)
+
+            def txt(x: float, y: float, text, fontsize: float = 7) -> None:
+                text = str(text)
+                kwargs = {} if text.isascii() else {"fontname": "japan"}
+                page.insert_text((x, y), text, fontsize=fontsize, **kwargs)
+
+            titles = defensive_actions_titles or {}
+            directions = (defensive_actions_direction or {}).get(side, {})
+            for action_type, rect in panels:
+                pitch = pymupdf.Rect(*rect)
+                if defensive_actions_draw_panels:
+                    page.draw_rect(pitch, color=(1, 1, 1))
+                # The panel's own rotated DIRECTION label, inside its frame and well
+                # clear of both the title band above it and the regains table's y-lines.
+                rotate = directions.get(action_type, DEFENSIVE_ACTIONS_DIRECTION_ROTATE)
+                if rotate is not None:
+                    page.insert_text(
+                        (
+                            (pitch.x0 + pitch.x1) / 2,
+                            pitch.y0 + DEFENSIVE_ACTIONS_DIRECTION_DY,
+                        ),
+                        DEFENSIVE_ACTIONS_DIRECTION_TEXT,
+                        fontsize=7,
+                        rotate=rotate,
+                    )
+                title = titles.get(
+                    action_type, DEFENSIVE_ACTIONS_PANEL_TITLES.get(action_type, action_type)
+                )
+                if title:
+                    centred(
+                        (pitch.x0 + pitch.x1) / 2, DEFENSIVE_ACTIONS_TITLE_Y, title, 10
+                    )
+                for fx, fy in markers.get(action_type, []):
+                    page.draw_circle(
+                        (pitch.x0 + fx * pitch.width, pitch.y0 + fy * pitch.height),
+                        DEFENSIVE_ACTIONS_MARKER_RADIUS,
+                        color=(1, 1, 1),
+                        fill=DEFENSIVE_ACTIONS_RGB,
+                        width=0.75,
+                    )
+
+            # The headline band: value above, two-line label below, both centred.
+            overrides = (defensive_actions_headline or {}).get(side, {})
+            for action_type, x_centre in DEFENSIVE_ACTIONS_HEADLINE_XS.items():
+                drawn = len(markers.get(action_type, []))
+                # The possession-regain headline deliberately differs from its marker
+                # count, as it does on every corpus page: the parser must not check it.
+                value = overrides.get(
+                    action_type, drawn if action_type == "forced-turnover" else drawn + 2
+                )
+                if value is not None:
+                    centred(x_centre, DEFENSIVE_ACTIONS_VALUE_Y, value, 14)
+                for label, label_y in zip(
+                    DEFENSIVE_ACTIONS_HEADLINE[action_type], DEFENSIVE_ACTIONS_LABEL_Y
+                ):
+                    centred(x_centre, label_y, label, 8)
+
+            if defensive_actions_swatches:
+                # The Possession-Contests bullet list: 9.0 pt STROKELESS swatches, one of
+                # them in the markers' exact fill, outside both panels.
+                for index, rgb in enumerate(DEFENSIVE_ACTIONS_SWATCH_RGBS):
+                    page.draw_circle(
+                        (622.5, 136.5 + index * 16.5),
+                        DEFENSIVE_ACTIONS_SWATCH_RADIUS,
+                        color=None,
+                        fill=rgb,
+                    )
+
+            txt(DEFENSIVE_ACTIONS_TABLE_COLUMNS["Total"], DEFENSIVE_ACTIONS_TABLE_YS["total"], "Total")
+            txt(DEFENSIVE_ACTIONS_TABLE_COLUMNS["#"], DEFENSIVE_ACTIONS_TABLE_YS["header"], "#")
+            txt(DEFENSIVE_ACTIONS_TABLE_COLUMNS["Player"], DEFENSIVE_ACTIONS_TABLE_YS["header"], "Player")
+            txt(897.0, DEFENSIVE_ACTIONS_TABLE_YS["header"], "Possession")
+            txt(904.0, DEFENSIVE_ACTIONS_TABLE_YS["regains"], "Regains")
+
+            side_rows = (
+                defensive_actions_rows[side]
+                if defensive_actions_rows is not None and side in defensive_actions_rows
+                else default_defensive_action_rows(markers)
+            )
+            y = DEFENSIVE_ACTIONS_ROW_Y0
+            for row in side_rows:
+                txt(DEFENSIVE_ACTIONS_TABLE_COLUMNS["#"], y, row["shirt"])
+                if row.get("name") is not None:
+                    # `name_dy` prints the name off the numeric row line, which is what a
+                    # two-line name does on the real page: the name then clusters on its
+                    # own `table_lines` row and only the name x-band reunites it.
+                    txt(
+                        DEFENSIVE_ACTIONS_TABLE_COLUMNS["Player"],
+                        y + row.get("name_dy", 0),
+                        row["name"],
+                    )
+                if row.get("total") is not None:
+                    txt(DEFENSIVE_ACTIONS_TOTAL_X, y, row["total"])
+                y += DEFENSIVE_ACTIONS_ROW_PITCH
+            if defensive_actions_decorate is not None:
+                defensive_actions_decorate(side, page, panels)
+            for _ in range((defensive_actions_pages or {}).get(side, 1) - 1):
+                extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+                extra.insert_text((40, 60), anchor_text, fontsize=11)
+
         stage = stage if stage is not None else f"Group A - Match {number}"
         lines = [f"{home} {home_score} - {away_score} {away}"]
         if shootout is not None:
@@ -930,6 +1167,9 @@ def make_report():
                 continue
             if anchor.anchor_id in ("crosses:home", "crosses:away"):
                 emit_crosses_pages(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            if anchor.anchor_id in ("defensive-actions:home", "defensive-actions:away"):
+                emit_defensive_actions_pages(anchor.anchor_id.split(":")[1], anchor.text)
                 continue
             page = doc.new_page(width=960, height=540)
             page.insert_text((40, 60), anchor.text, fontsize=11)

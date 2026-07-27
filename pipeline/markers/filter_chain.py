@@ -6,9 +6,12 @@ therefore a fixed order — pitch-frame detect, circle-geometry filter, legend-r
 exclusion, exact-RGB outcome keying — with geometry strictly before color. The order is
 an invariant, not a style choice; each stage is a separately testable function.
 
-Recipe vs tuning: the stages and their order are shared by every map parser (shots now;
-crosses, defensive actions, offers/movement in Stories 1.11-1.13), while the per-family
-values — marker size window, outcome palette — live in a frozen `MarkerSpec`.
+Recipe vs tuning: the stages and their order are shared by every map parser (shots,
+crosses and defensive actions today; offers/movement in Story 1.13), while the
+per-family values — marker size window, outcome palette — live in a frozen `MarkerSpec`.
+Defensive actions (Story 1.12) is the first multi-panel family and the first whose
+marker type is NOT keyed by colour, which is why stage 1 has both a single-rect and a
+list form.
 
 No dedup anywhere: two markers at the same point are two events (AD-8; six-yard-box
 pileups are real). Story 1.3 Task 1; ACs 1, 3.
@@ -82,15 +85,20 @@ class KeyedMarker:
     outcome: str
 
 
-def detect_pitch_frame(page: "pymupdf.Page", report_id: str | None = None) -> pymupdf.Rect:
-    """Stage 1: the largest *stroked* sub-page rectangle drawing — the AD-6 basis.
+def detect_pitch_frames(page: "pymupdf.Page", report_id: str | None = None) -> "list[pymupdf.Rect]":
+    """Stage 1, multi-panel form: EVERY qualifying stroked rectangle, in drawing order.
 
-    The pitch rect extends below the visible page clip on the real reports; that full
-    rectangle, not the visible part, is what marker positions are normalized against.
-    Stroked is part of the recipe (Dev Notes stage 1): the frame is drawn as an outline,
-    and a fill-only band — a chart background, a shaded panel — must never outcompete it
-    as the normalization basis. Raises `PitchFrameError` when no rectangle falls in the
-    area window: a map page without a pitch frame is a template revision, never a skip.
+    Added by Story 1.12, additively: the defensive-actions page carries TWO stroked pitch
+    panels of all-but-identical area (61,168.1435 and 61,168.1451 pt^2 on 208/208 corpus
+    pages), so `detect_pitch_frame`'s `max` silently discards one of the two maps. A
+    parser that must see every panel asks for the list; a single-map parser keeps asking
+    for the largest and gets byte-identically what it always got.
+
+    Drawing order, not area order or x order: it is the only ordering the page itself
+    fixes, and panel -> marker-family typing is text-anchored (the printed panel title),
+    never positional (AD-8). Raises `PitchFrameError` when nothing qualifies, on the same
+    terms as `detect_pitch_frame` — a map page without a pitch frame is a template
+    revision, never a skip.
     """
     page_area = page.rect.get_area()
     candidates: list[pymupdf.Rect] = []
@@ -111,7 +119,24 @@ def detect_pitch_frame(page: "pymupdf.Page", report_id: str | None = None) -> py
             report_id,
             page.number,
         )
-    return max(candidates, key=lambda rect: rect.get_area())
+    return candidates
+
+
+def detect_pitch_frame(page: "pymupdf.Page", report_id: str | None = None) -> pymupdf.Rect:
+    """Stage 1: the largest *stroked* sub-page rectangle drawing — the AD-6 basis.
+
+    The pitch rect extends below the visible page clip on the real reports; that full
+    rectangle, not the visible part, is what marker positions are normalized against.
+    Stroked is part of the recipe (Dev Notes stage 1): the frame is drawn as an outline,
+    and a fill-only band — a chart background, a shaded panel — must never outcompete it
+    as the normalization basis. Raises `PitchFrameError` when no rectangle falls in the
+    area window: a map page without a pitch frame is a template revision, never a skip.
+
+    Expressed over `detect_pitch_frames` (Story 1.12) with observable behavior unchanged:
+    same area window, same `max`, and `max` keeps the FIRST maximal element, so the
+    drawing-order tie-break the single-rect form always had is preserved exactly.
+    """
+    return max(detect_pitch_frames(page, report_id), key=lambda rect: rect.get_area())
 
 
 def collect_candidate_markers(

@@ -22,7 +22,8 @@ parser into `domains` and made `self_validation` real (marker count vs the attem
 table, exact and binary); Story 1.6 added Domain A (`domains["match_metadata"]`: the
 normalized cover block plus the lineup-page parse) and its six appended checks; Story
 1.7 added Domains B and C (`key_statistics`, `tactical_identity`) and their appended
-checks. Stories 1.8-1.14 keep plugging into the same two seams.
+checks; Story 1.11 the crosses map and Story 1.12 the defensive-actions maps. Stories
+1.8-1.14 keep plugging into the same two seams.
 """
 
 from __future__ import annotations
@@ -44,6 +45,10 @@ from pipeline.ingest.fingerprint import PIPELINE_ROOT, code_version, pdf_content
 from pipeline.ingest.identity import match_id_for, match_number_for
 from pipeline.ingest.records import RECORD_VERSION
 from pipeline.markers.crosses import crosses_self_validation_block, parse_crosses
+from pipeline.markers.defensive_actions import (
+    defensive_actions_self_validation_block,
+    parse_defensive_actions,
+)
 from pipeline.markers.linking import link_rate_checks
 from pipeline.markers.shots import parse_shots, self_validation_block
 
@@ -125,7 +130,9 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     required section is gone), the shots parser's typed errors (`PitchFrameError`,
     `UnknownRgbError`, `AttemptsTableError`, `ShotsPageLayoutError`), the crosses
     parser's (Story 1.11: `CrossesPageLayoutError`, `CrossesTableError`,
-    `UnknownLabelError`, `CrossesCoordinateError`, plus the shared-chain errors), Domain A's
+    `UnknownLabelError`, `CrossesCoordinateError`, plus the shared-chain errors), the
+    defensive-actions parser's (Story 1.12: `DefensiveActionsPageLayoutError`,
+    `DefensiveActionsTableError`, `DefensiveActionsCoordinateError`), Domain A's
     (`MissingFieldError`, `LineupParseError`, `LineupCountError`, `UnknownStageError`,
     `UnknownVenueError`, `UnknownPositionError`, `UnknownMinuteGlyphError`), Domain B's
     (`StatisticsParseError`, `UnknownStatisticError`, `MissingFieldError`,
@@ -181,6 +188,13 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         # themselves.
         crosses = parse_crosses(doc, anchors, meta.report_id, meta.home_team, meta.away_team)
 
+        # Story 1.12, same transparency rule: the defensive-actions parser's typed errors
+        # (DefensiveActionsPageLayoutError, DefensiveActionsTableError, UnknownRgbError,
+        # ...) travel as themselves.
+        defensive_actions = parse_defensive_actions(
+            doc, anchors, meta.report_id, meta.home_team, meta.away_team
+        )
+
         # Same transparency rule for Domain A (Story 1.6): its typed errors
         # (MissingFieldError, UnknownVenueError, LineupParseError, ...) travel as
         # themselves. The probed cover block goes in as-is and comes back normalized —
@@ -196,6 +210,11 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         tactical_identity = extract_domain_c(doc, anchors, report_id=meta.report_id)
 
     warnings.extend(f"probe note: {note}" for note in meta.probe_notes)
+    # Story 1.12: the documented absence of a printed counterpart for the
+    # possession-regain map travels as a per-report warning (never as a non-"pass" check,
+    # which the strictly binary aggregator would read as a failure). `batch.py` mirrors
+    # record warnings into the manifest entry.
+    warnings.extend(defensive_actions["warnings"])
 
     # Each domain APPENDS its checks and the result re-aggregates over whatever checks
     # are actually present, so domain stories compose without clobbering one another.
@@ -217,6 +236,12 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     # Story 1.11: the crosses marker-count checks append after every existing appender;
     # the counterpart is the crosses page's OWN table total, never Key Statistics.
     self_validation["checks"].extend(crosses_self_validation_block(crosses["counts"]))
+    # Story 1.12: appended after every existing appender. One check per team per marker
+    # family that HAS an established printed counterpart — the forced-turnover map only;
+    # the possession-regain map's absence is carried by the warning above (AC 2).
+    self_validation["checks"].extend(
+        defensive_actions_self_validation_block(defensive_actions["counts"])
+    )
     self_validation["result"] = aggregate_self_validation(self_validation["checks"])
 
     return {
@@ -238,6 +263,7 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             "key_statistics": key_statistics,
             "tactical_identity": tactical_identity,
             "crosses": crosses,
+            "defensive_actions": defensive_actions,
         },
         # Real from Story 1.3 on: once extractors run, the result is "pass" or "fail",
         # never left "not-applicable" (a failed consistency check is data, not an
