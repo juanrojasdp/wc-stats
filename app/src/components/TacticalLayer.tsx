@@ -8,12 +8,11 @@ import { TacticalSection } from "@/components/TacticalSection";
 import type { MatchBundle } from "@/lib/contract/contract-types";
 import { useT } from "@/lib/i18n-provider";
 import {
-  COLLAPSIBLE_SECTION_IDS,
   SECTION_IDS,
-  sectionDataState,
+  buildSectionPlans,
+  isCollapsibleId,
   sectionSummaryKey,
   sectionTitleKey,
-  type CollapsibleSectionId,
   type SectionId,
 } from "@/lib/tactical-sections";
 import { LG_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
@@ -28,12 +27,6 @@ import { LG_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
  * The mount-time hash read below is not belt-and-braces; it is the only thing
  * that makes anchors work at all.
  */
-
-const COLLAPSIBLE_IDS = new Set<SectionId>(COLLAPSIBLE_SECTION_IDS);
-
-function isCollapsibleId(id: SectionId): id is CollapsibleSectionId {
-  return COLLAPSIBLE_IDS.has(id);
-}
 
 /** Which section a hash names, or null for anything else (#main-content, #expert). */
 function sectionIdFromHash(hash: string): SectionId | null {
@@ -114,77 +107,56 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
   }
 
   /*
-   * Disclosure policy in precedence order (Task 4.3), resolved for every
-   * section before rendering:
-   *   1. empty  → never collapsible at any width (ruled decision 10 — an
-   *      absence you must tap to discover is still a silent absence, and a
-   *      summary line for data that is not there is nonsense);
-   *   2. key-stats / momentum → never collapsible (ruled decision 3);
-   *   3. everything else → collapsible, and only BELOW lg. At ≥lg the section
-   *      renders in the expanded presentation: a plain <h2>, no trigger and no
-   *      summary line, exactly as the desktop mockup draws it (AC 1 gives
-   *      Accordion semantics to the <lg presentation only).
+   * Disclosure policy and vertical rhythm both live in buildSectionPlans, in
+   * the pure registry module where they can be unit-tested — this loop used to
+   * sit inline here, which meant the logic AC 1 is actually about was the one
+   * part of the story with no test at all.
    *
-   * Rhythm (Task 4.4): expanded sections are separated by section-gap; the run
-   * of collapsed shells stacks directly on its own hairlines, with one
-   * section-gap before the first of the run. The Hero→Tactical layer-gap
-   * already lives on MatchBundleRegion's container. Computed in a straight
-   * loop here rather than by mutating across map callbacks.
+   * The Hero→Tactical layer-gap already lives on MatchBundleRegion's
+   * container; nothing here adds a second one.
    */
-  interface SectionPlan {
-    id: SectionId;
-    isEmpty: boolean;
-    collapsible: boolean;
-    open: boolean;
-    summary: string | null;
-    spacing: string | undefined;
-  }
+  const plans = buildSectionPlans(bundle, isLg, overrides);
 
-  const plans: SectionPlan[] = [];
-  let previousWasShell = false;
-  for (const [index, id] of SECTION_IDS.entries()) {
-    const isEmpty = sectionDataState(bundle, id) === "empty";
-    const collapsible = !isEmpty && !isLg && isCollapsibleId(id);
-    // Collapsible implies <lg, so the default is collapsed; a user or anchor
-    // override survives a trip out to ≥lg and back.
-    const open = collapsible ? (overrides[id] ?? false) : true;
-    const isShell = collapsible && !open;
-    plans.push({
-      id,
-      isEmpty,
-      collapsible,
-      open,
-      summary: collapsible && isCollapsibleId(id) ? t(sectionSummaryKey(id)) : null,
-      spacing: index > 0 && !(isShell && previousWasShell) ? "mt-section-gap" : undefined,
-    });
-    previousWasShell = isShell;
+  /*
+   * AC 3's copy names the section — "Sin datos de {sección} para este partido."
+   * t() has no interpolation, so the headline is composed here around the
+   * section's own resolved <h2> title. Built as a variable: a template literal
+   * as a JSX child, or as a prop value, trips the i18n gate.
+   */
+  function emptyHeadline(title: string): string {
+    return `${t("tactical.empty.headlineBefore")} ${title} ${t("tactical.empty.headlineAfter")}`;
   }
 
   return (
     <div>
-      {plans.map((plan) => (
-        <TacticalSection
-          key={plan.id}
-          id={plan.id}
-          title={t(sectionTitleKey(plan.id))}
-          summary={plan.summary}
-          collapsible={plan.collapsible}
-          open={plan.open}
-          onToggle={() => toggle(plan.id, !plan.open)}
-          focusNonce={focus?.id === plan.id ? focus.nonce : 0}
-          focusScroll={focus?.id === plan.id ? focus.scroll : false}
-          className={plan.spacing}
-        >
-          {plan.isEmpty ? (
-            <EmptyStatePanel
-              headline={t("tactical.empty.headline")}
-              explanation={t("tactical.empty.explanation")}
-            />
-          ) : (
-            sectionContent(plan.id)
-          )}
-        </TacticalSection>
-      ))}
+      {plans.map((plan) => {
+        const title = t(sectionTitleKey(plan.id));
+        return (
+          <TacticalSection
+            key={plan.id}
+            id={plan.id}
+            title={title}
+            summary={
+              plan.showSummary && isCollapsibleId(plan.id) ? t(sectionSummaryKey(plan.id)) : null
+            }
+            collapsible={plan.collapsible}
+            open={plan.open}
+            onToggle={() => toggle(plan.id, !plan.open)}
+            focusNonce={focus?.id === plan.id ? focus.nonce : 0}
+            focusScroll={focus?.id === plan.id ? focus.scroll : false}
+            className={plan.spacedFromPrevious ? "mt-section-gap" : undefined}
+          >
+            {plan.isEmpty ? (
+              <EmptyStatePanel
+                headline={emptyHeadline(title)}
+                explanation={t("tactical.empty.explanation")}
+              />
+            ) : (
+              sectionContent(plan.id)
+            )}
+          </TacticalSection>
+        );
+      })}
     </div>
   );
 }

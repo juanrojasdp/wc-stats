@@ -12,6 +12,7 @@ import {
   KEY_STAT_UNIT,
   SECTION_IDS,
   buildKeyStatRows,
+  buildSectionPlans,
   sectionDataState,
   sectionSummaryKey,
   sectionTitleKey,
@@ -101,11 +102,25 @@ describe("section copy (AC 1)", () => {
 
   it("resolves the empty-state and pending copy in both locales", () => {
     for (const locale of LOCALES) {
-      expect(t("tactical.empty.headline", locale)).not.toBe("");
+      expect(t("tactical.empty.headlineBefore", locale)).not.toBe("");
+      expect(t("tactical.empty.headlineAfter", locale)).not.toBe("");
       expect(t("tactical.empty.explanation", locale)).not.toBe("");
       expect(t("tactical.pending.headline", locale)).not.toBe("");
       expect(t("tactical.pending.explanation", locale)).not.toBe("");
     }
+    /*
+     * AC 3's headline names the section, composed around the resolved <h2>
+     * title (t() has no interpolation). Assert the composed shape here, since
+     * the fragments alone read as nonsense.
+     */
+    const composed = (locale: Locale, title: string) =>
+      `${t("tactical.empty.headlineBefore", locale)} ${title} ${t("tactical.empty.headlineAfter", locale)}`;
+    expect(composed("es", t(sectionTitleKey("momentum"), "es"))).toBe(
+      "Sin datos de Línea de momentum para este partido."
+    );
+    expect(composed("en", t(sectionTitleKey("momentum"), "en"))).toBe(
+      "No data for Momentum timeline in this match."
+    );
     // Ruled decision 9: a pending section must never claim the report omits it.
     expect(t("tactical.pending.explanation", "es")).not.toBe(t("tactical.empty.explanation", "es"));
   });
@@ -266,5 +281,101 @@ describe("buildKeyStatRows (AC 2)", () => {
       away: { ...m001.keyStatistics.away, shots: m001.keyStatistics.home.shots },
     });
     expect(tied.find((row) => row.field === "shots")?.leader).toBe("tie");
+  });
+});
+
+/*
+ * The disclosure/rhythm planner (2.5 review patch). This is the logic AC 1 is
+ * actually about — precedence, breakpoint defaults, override survival and the
+ * collapsed-run gap rule — and it previously lived inline in TacticalLayer,
+ * where the node-env harness could not reach it.
+ */
+describe("buildSectionPlans — disclosure precedence (AC 1)", () => {
+  const planFor = (plans: ReturnType<typeof buildSectionPlans>, id: SectionId) => {
+    const plan = plans.find((candidate) => candidate.id === id);
+    if (plan === undefined) {
+      throw new Error(`no plan for ${id}`);
+    }
+    return plan;
+  };
+
+  it("plans every section, in the registry's order", () => {
+    const plans = buildSectionPlans(m001, false, {});
+    expect(plans.map((plan) => plan.id)).toEqual([...SECTION_IDS]);
+  });
+
+  it("never collapses key-stats or momentum, at either width", () => {
+    for (const isLg of [false, true]) {
+      const plans = buildSectionPlans(m001, isLg, {});
+      for (const id of ALWAYS_EXPANDED_SECTION_IDS) {
+        expect(planFor(plans, id).collapsible, `${id} at isLg=${isLg}`).toBe(false);
+        expect(planFor(plans, id).open).toBe(true);
+        expect(planFor(plans, id).showSummary).toBe(false);
+      }
+    }
+  });
+
+  it("never collapses an EMPTY section, at either width (ruled decision 10)", () => {
+    // m002 is the one fixture with a null slice: momentum. Use a constructed
+    // bundle so an ALWAYS_EXPANDED id is not doing the work for us.
+    const noShots = {
+      ...m001,
+      events: { ...m001.events, shots: null },
+    } as MatchBundle;
+    for (const isLg of [false, true]) {
+      const plan = planFor(buildSectionPlans(noShots, isLg, {}), "shot-maps");
+      expect(plan.isEmpty).toBe(true);
+      expect(plan.collapsible).toBe(false);
+      expect(plan.open).toBe(true);
+      // A summary line describing data that is not there would be nonsense.
+      expect(plan.showSummary).toBe(false);
+    }
+    expect(planFor(buildSectionPlans(m002, false, {}), "momentum").isEmpty).toBe(true);
+  });
+
+  it("collapses the other nine below lg and opens them at or above it", () => {
+    const below = buildSectionPlans(m001, false, {});
+    const above = buildSectionPlans(m001, true, {});
+    for (const id of COLLAPSIBLE_SECTION_IDS) {
+      expect(planFor(below, id).collapsible, `${id} below lg`).toBe(true);
+      expect(planFor(below, id).open, `${id} below lg`).toBe(false);
+      // Ruled by the 2.5 review: still a real disclosure at >=lg, merely open.
+      expect(planFor(above, id).collapsible, `${id} at lg`).toBe(true);
+      expect(planFor(above, id).open, `${id} at lg`).toBe(true);
+      expect(planFor(above, id).showSummary, `${id} at lg`).toBe(true);
+    }
+  });
+
+  it("lets an explicit override beat the breakpoint default, both ways", () => {
+    const openedBelow = buildSectionPlans(m001, false, { "shot-maps": true });
+    expect(planFor(openedBelow, "shot-maps").open).toBe(true);
+    const closedAbove = buildSectionPlans(m001, true, { "shot-maps": false });
+    expect(planFor(closedAbove, "shot-maps").open).toBe(false);
+    // An override on a non-collapsible section is ignored, not honoured.
+    expect(planFor(buildSectionPlans(m001, false, { "key-stats": false }), "key-stats").open).toBe(
+      true
+    );
+  });
+
+  it("suppresses section-gap only between consecutive collapsed shells", () => {
+    const plans = buildSectionPlans(m001, false, {});
+    // First section never carries a leading gap.
+    expect(planFor(plans, "key-stats").spacedFromPrevious).toBe(false);
+    // momentum follows an expanded section → gap.
+    expect(planFor(plans, "momentum").spacedFromPrevious).toBe(true);
+    // shot-maps is the FIRST of the collapsed run → still gets its gap.
+    expect(planFor(plans, "shot-maps").spacedFromPrevious).toBe(true);
+    // The rest of the run stacks directly on its own hairlines.
+    for (const id of COLLAPSIBLE_SECTION_IDS.slice(1)) {
+      expect(planFor(plans, id).spacedFromPrevious, `${id} in the shell run`).toBe(false);
+    }
+  });
+
+  it("gives every section a gap at >=lg, where nothing is a shell", () => {
+    const plans = buildSectionPlans(m001, true, {});
+    expect(plans[0].spacedFromPrevious).toBe(false);
+    for (const plan of plans.slice(1)) {
+      expect(plan.spacedFromPrevious, `${plan.id} at lg`).toBe(true);
+    }
   });
 });

@@ -84,6 +84,10 @@ export const en: Dictionary = {
       error: "We could not load the data. Check your connection and try again.",
       retry: "Retry",
       loading: "Loading match data",
+      invalid: "This match's data does not match this version of the site.",
+      invalidExplanation: "We are aware of it. Please try again later.",
+      crashed: "We could not display the tactical analysis for this match.",
+      crashedExplanation: "The rest of the page is still available.",
     },
   },
   tactical: {
@@ -132,7 +136,8 @@ export const en: Dictionary = {
       },
     },
     empty: {
-      headline: "No data for this section in this match.",
+      headlineBefore: "No data for",
+      headlineAfter: "in this match.",
       explanation: "The official report does not include this section.",
     },
     pending: {

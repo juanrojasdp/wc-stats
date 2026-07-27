@@ -59,7 +59,33 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-07-24
+last_updated: 2026-07-26
+# 2026-07-25: story 1-10 implemented and moved to review — pipeline/extract/domain_g.py, the
+#             third instance of the 1.6/1.7 extractor convention and the FIRST extractor that
+#             joins to another domain's output. Four page families on one shared row reader
+#             over lines.py; ordinal column assignment guarded by the per-family exact-count
+#             assertion (14/8/15/9), deliberately NOT x-band classification (three families
+#             centre-aligned, physical right-aligned); raw locale-neutral typing with
+#             high_speed_runs/sprints asserted integral before narrowing, never rounded.
+#             The join is within-report VERBATIM name identity to Domain A's lineups with the
+#             shirt number as corroborating key, and it is asymmetric: a page row with no
+#             lineup player fails loud (PlayerJoinError), a lineup player WITH minutes and no
+#             row fails loud (MissingFieldError), an unused substitute has no row and that is
+#             correct — 2,103 such entries (= the story's 8,412 entry x family pairs; 3,289 +
+#             2,103 = 5,392 lineup entries, reconciled). Four recorded checks with tolerances
+#             derived from printed precision then corpus-verified, incl. the goals
+#             reconciliation carrying Story 1.6's own-goal term (naive form is corpus-FALSE on
+#             14 team-innings). Parser swept over all 104 reports BEFORE wiring in: 104/104,
+#             3,289 rows, 0 check failures, worst drifts 0.200 m / 0.0499 km / 0.500 — every
+#             story-pinned tolerance reproduced exactly. Batch 104/104 extracted, 0 failed, all
+#             four checks pass on every report (run result FAIL only from 1-12's two
+#             pre-existing ledgered discrepancies, not Domain G); gate PASS 0 deviations, both
+#             new ids in checks_run, two runs identical apart from run_timestamp. Suite
+#             811+1 -> 879+1 (+68 tests), ONE forced repair (the checks_run list, named by
+#             Task 6.4). Discovery: the committed m001 fixture's physical.totalDistance
+#             disagrees with the printed page on 30 of 31 players while its 8 sibling physical
+#             fields match EXACTLY — a fixture-data finding, AD-14 note filed and pinned by a
+#             dedicated test. Two further notes filed (playerId is 1.15's; hsr/sprints '.0').
 # 2026-07-24: story 2-4 (match route + Hero layer) started — status ready-for-dev -> in-progress.
 # 2026-07-24: story 2-4 code review — 16 patches applied, 7 decisions deferred to deferred-work.md; review -> done.
 # 2026-07-24: story 2-4 implemented and moved to review — first dynamic route /matches/[slug]
@@ -346,6 +372,16 @@ project_key: NOKEY
 #             gate PASS 0 deviations (neither report is in the 16-report sample; the
 #             count-mismatch path was proven directly on the anomalous pair). Re-run
 #             104/104 skipped-unchanged, records byte-identical.
+# 2026-07-26: story 1-12 code review complete and moved to done — 4 decisions ruled,
+#             15 patches applied, 2 items deferred to deferred-work.md. Production
+#             changes: per-panel DIRECTION-label orientation assertion, both printed
+#             headline totals staged as printed_total, panel-count check before title
+#             lookup, x-restricted player_x, two-line-name row floor, unambiguous
+#             headline column match. Suite green at 895 passed / 1 skipped (that
+#             figure includes in-flight 1-10). RULED: the full-corpus batch exits 1
+#             by design from 1-12 onward; the clean-run baseline is 104 extracted /
+#             0 failed / exactly 2 self-validation failures (M19, M58) — later
+#             stories must assert that baseline, never a zero exit code.
 # 2026-07-24: story 2-5 context created and moved to ready-for-dev (Tactical Layer shell +
 #             Key Statistics + the shared empty-state pattern 2.6-2.10 depend on. Builds
 #             ONTO 2.4's route without touching the AR-11 split: the layer mounts inside
@@ -410,9 +446,9 @@ development_status:
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
   1-8-momentum-series-extraction-oq-5-resolution: backlog
   1-9-domains-e-f-extraction-goalkeeping-set-plays: backlog
-  1-10-domain-g-extraction-per-player-performance-physical-data: in-progress
+  1-10-domain-g-extraction-per-player-performance-physical-data: review
   1-11-crosses-map-parser: done
-  1-12-defensive-actions-map-parser: review
+  1-12-defensive-actions-map-parser: done
   1-13-offers-movement-to-receive-parsers: backlog
   1-14-pass-network-extraction-nodes-edges: backlog
   1-15-cross-match-identity-resolution-normalized-spine: backlog
@@ -431,7 +467,7 @@ development_status:
   # AD-14 gate: sign-off before Epic 1 proceeds past the sample set
   2-3-contract-v1-per-surface-sign-off: done
   2-4-match-route-hero-layer: done
-  2-5-tactical-layer-shell-key-statistics-empty-state-pattern: review
+  2-5-tactical-layer-shell-key-statistics-empty-state-pattern: done
   2-6-momentum-timeline: backlog
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data
   2-7-pitch-panel-infrastructure-with-shot-cross-maps: backlog

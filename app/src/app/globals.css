@@ -354,9 +354,12 @@
     border-color: var(--border);
   }
 
-  /* Anchored headings must clear the sticky header (h-14 = 3.5rem) — without
-     this every #section deep link and every scrollIntoView() lands under the
-     bar. Also fixes the #main-content skip link. */
+  /* Anchored headings must clear the sticky header — without this every
+     #section deep link and every scrollIntoView() lands under the bar. Also
+     fixes the #main-content skip link.
+     4.5rem = the header's own 3.5rem (h-14) + 1rem of breathing room, so a
+     heading does not sit flush against the bar. The header height is the
+     load-bearing half: change h-14 and this must follow. */
   html {
     scroll-padding-top: 4.5rem;
   }

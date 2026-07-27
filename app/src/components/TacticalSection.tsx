@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
+import type { SectionId } from "@/lib/tactical-sections";
 import { cn } from "@/lib/utils";
 
 /*
@@ -36,7 +37,8 @@ export function TacticalSection({
   className,
   children,
 }: {
-  id: string;
+  /** The registry union, not `string` — a wrong id must not reach the DOM. */
+  id: SectionId;
   title: string;
   /** Rendered ONLY in the collapsible (<lg) presentation — the desktop mockup shows no summary lines. */
   summary: string | null;
@@ -51,18 +53,20 @@ export function TacticalSection({
   children: ReactNode;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   /*
-   * Ruled decision 7: focus goes to the revealed content REGION, not the
-   * heading. The heading sits inside the always-visible trigger, so focusing
-   * it would not move focus into what was revealed; the region carries
-   * role="region" + aria-labelledby the heading, so the announcement still
-   * names the section.
+   * AC 1 and UX-DR6 both say "focus to revealed heading", and that is what
+   * this does — matching LineupsDisclosure on the same route, so the page has
+   * ONE focus contract rather than two. (The story's ruled decision 7 argued
+   * for the content region instead, on the grounds that the heading sits
+   * inside the always-visible trigger; the 2.5 review overturned it in favour
+   * of the AC's own words. The heading placement is what lets a screen-reader
+   * user read forward into what was revealed.)
    *
    * Driven by an explicit nonce from the layer rather than by `open`, so this
-   * fires on a user toggle and on anchor auto-expand and NEVER on the ≥lg
-   * initial render or on a viewport change that opens every section.
+   * fires on a user toggle and on anchor auto-expand and NEVER on the initial
+   * render or on a viewport change that opens every section.
    */
   useEffect(() => {
     if (focusNonce === 0) {
@@ -74,7 +78,7 @@ export function TacticalSection({
     // preventScroll only when scrollIntoView already positioned the section:
     // the browser's own focus scroll would otherwise pull the heading off
     // the top of the viewport.
-    contentRef.current?.focus({ preventScroll: focusScroll });
+    headingRef.current?.focus({ preventScroll: focusScroll });
   }, [focusNonce, focusScroll]);
 
   const headingId = `${id}-heading`;
@@ -91,7 +95,12 @@ export function TacticalSection({
     >
       {collapsible ? (
         <>
-          <h2 id={headingId} className="type-headline text-ink-primary">
+          <h2
+            ref={headingRef}
+            id={headingId}
+            tabIndex={-1}
+            className="type-headline text-ink-primary"
+          >
             {/*
              * min-h-11 (≥44px) on the trigger ITSELF, not on a wrapper — the
              * 2.4 review patched exactly that mistake. No outline-none: the
@@ -100,7 +109,14 @@ export function TacticalSection({
             <button
               type="button"
               aria-expanded={open}
-              aria-controls={contentId}
+              /*
+               * Only while the target actually exists. The content is lazily
+               * mounted (UX-DR6), so a static aria-controls would point at an
+               * absent id in the collapsed state — which is the DEFAULT state
+               * below lg — leaving assistive tech a "jump to controlled
+               * element" affordance with nowhere to go.
+               */
+              aria-controls={open ? contentId : undefined}
               aria-describedby={showSummary ? summaryId : undefined}
               onClick={onToggle}
               className="flex min-h-11 w-full items-center justify-between gap-tile-gap text-left"
@@ -121,26 +137,27 @@ export function TacticalSection({
           ) : null}
         </>
       ) : (
-        <h2 id={headingId} className="type-headline text-ink-primary">
+        <h2
+          ref={headingRef}
+          id={headingId}
+          tabIndex={-1}
+          className="type-headline text-ink-primary"
+        >
           {title}
         </h2>
       )}
 
       {/*
-       * Rendered whenever the section is open, INCLUDING for always-expanded
-       * sections, so anchor navigation always has a focus target. No
-       * scroll-mt-*: the scroll-padding-top on the scrollport (Task 8) covers
-       * both fragment navigation and scrollIntoView().
+       * A plain wrapper, deliberately: the <section> above already carries
+       * aria-labelledby and is therefore a NAMED region landmark. Giving this
+       * div role="region" with the same aria-labelledby produced a second
+       * landmark of identical name inside the first — 22 landmarks for 11
+       * sections, and axe's landmark-unique fires on every one. Focus is
+       * handled at the heading (see above), so it needs no tabIndex either.
+       * The id survives because the trigger's aria-controls points at it.
        */}
       {open ? (
-        <div
-          ref={contentRef}
-          id={contentId}
-          role="region"
-          aria-labelledby={headingId}
-          tabIndex={-1}
-          className="mt-4"
-        >
+        <div id={contentId} className="mt-4">
           {children}
         </div>
       ) : null}

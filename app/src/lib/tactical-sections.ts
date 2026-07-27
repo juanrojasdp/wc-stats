@@ -98,8 +98,16 @@ export type SectionDataState = "ready" | "empty";
 export function sectionDataState(bundle: MatchBundle, id: SectionId): SectionDataState {
   const { events } = bundle;
   switch (id) {
+    /*
+     * The three required objects genuinely READ their field rather than
+     * returning a literal "ready". At contract v1 they cannot be absent, so
+     * this is unreachable by the types — but the bundle is `as`-cast
+     * unvalidated JSON, so a truncated payload that survived the matchId /
+     * schemaVersion gate would otherwise render an absent section as present,
+     * which is precisely the silent absence FR-22 forbids.
+     */
     case "key-stats":
-      return "ready";
+      return bundle.keyStatistics ? "ready" : "empty";
     case "momentum":
       return bundle.momentum !== null ? "ready" : "empty";
     case "shot-maps":
@@ -113,14 +121,17 @@ export function sectionDataState(bundle: MatchBundle, id: SectionId): SectionDat
       return events.defensiveActions !== null ? "ready" : "empty";
     case "phases":
     case "pressing":
+      return bundle.tacticalIdentity ? "ready" : "empty";
     case "set-plays":
-      return "ready";
+      return bundle.setPlays ? "ready" : "empty";
     case "goalkeeping":
       return bundle.goalkeeping !== null ? "ready" : "empty";
     default: {
-      // Bundles are `as`-cast unvalidated JSON and hashes come from the URL, so
-      // an out-of-union id can reach here at runtime. A silent fall-through
-      // would render an absent section as present; name the value instead.
+      // Unreachable through the app: TacticalLayer only ever iterates
+      // SECTION_IDS, and sectionIdFromHash filters a URL hash against that
+      // same array. Kept because a silent fall-through would render an absent
+      // section as present, and because this module is a public seam that
+      // 2.6-2.10 call — a wrong id must name itself, not return "ready".
       const unexpected: never = id;
       throw new Error(`tactical-sections: unknown section id ${JSON.stringify(unexpected)}`);
     }
@@ -159,8 +170,13 @@ export const KEY_STAT_FIELDS: readonly KeyStatField[] = [
 
 /**
  * The six rows shown at `<md` before the "view all statistics" disclosure
- * (ruled decision 4): the set both mockups lead with, minus `goals` (the Hero
- * scoreline already carries it). Nothing is deleted — the other thirteen are
+ * (ruled decision 4). Chosen deliberately, NOT copied from the mockup — the
+ * mobile mockup's six are possession, shots on target, completed passes, pass
+ * accuracy, forced turnovers and corners, and `corners` is not a
+ * `TeamKeyStatistics` field at all, so that set was never reproducible. What
+ * drives this six: `goals` is out because the Hero scoreline already carries
+ * it, and `expectedGoals` + `shots` are in because they are what Diego reads
+ * first (UJ-1's ~15-second story). Nothing is deleted — the other thirteen are
  * one tap away.
  */
 export const COMPACT_KEY_STAT_FIELDS: readonly KeyStatField[] = [
@@ -228,4 +244,67 @@ export function buildKeyStatRows(keyStatistics: KeyStatisticsBlock): KeyStatRow[
     away: away[field],
     leader: resolveLeader(home[field], away[field]),
   }));
+}
+
+const COLLAPSIBLE_ID_SET = new Set<SectionId>(COLLAPSIBLE_SECTION_IDS);
+
+/** Does this section collapse at all? (The complement of ALWAYS_EXPANDED.) */
+export function isCollapsibleId(id: SectionId): id is CollapsibleSectionId {
+  return COLLAPSIBLE_ID_SET.has(id);
+}
+
+/** One section's resolved presentation, before any locale or class binding. */
+export interface SectionPlan {
+  id: SectionId;
+  isEmpty: boolean;
+  collapsible: boolean;
+  open: boolean;
+  /** Summaries ride the collapsible presentation only — never an empty or always-expanded section. */
+  showSummary: boolean;
+  /** A `section-gap` separates this section from the previous one. */
+  spacedFromPrevious: boolean;
+}
+
+/**
+ * Resolve every section's disclosure state and vertical rhythm in one pass.
+ *
+ * Disclosure policy in precedence order (Task 4.3):
+ *   1. `empty` → never collapsible at any width (ruled decision 10 — an absence
+ *      you must tap to discover is still a silent absence, and a summary line
+ *      describing data that is not there is nonsense);
+ *   2. `key-stats` / `momentum` → never collapsible (ruled decision 3);
+ *   3. everything else → collapsible at every width, DEFAULTING to open at
+ *      `≥lg` and collapsed below it. An explicit user or anchor override wins
+ *      over the breakpoint default and survives a trip across it.
+ *
+ * Rhythm (Task 4.4): expanded sections are separated by `section-gap`; a run of
+ * collapsed shells stacks directly on its own hairlines, with one `section-gap`
+ * before the first of the run.
+ *
+ * Pure and exported so it is unit-testable: this is the logic AC 1 is really
+ * about, and it has no business being trapped in a client component.
+ */
+export function buildSectionPlans(
+  bundle: MatchBundle,
+  isLg: boolean,
+  overrides: Partial<Record<SectionId, boolean>>
+): SectionPlan[] {
+  const plans: SectionPlan[] = [];
+  let previousWasShell = false;
+  for (const [index, id] of SECTION_IDS.entries()) {
+    const isEmpty = sectionDataState(bundle, id) === "empty";
+    const collapsible = !isEmpty && isCollapsibleId(id);
+    const open = collapsible ? (overrides[id] ?? isLg) : true;
+    const isShell = collapsible && !open;
+    plans.push({
+      id,
+      isEmpty,
+      collapsible,
+      open,
+      showSummary: collapsible,
+      spacedFromPrevious: index > 0 && !(isShell && previousWasShell),
+    });
+    previousWasShell = isShell;
+  }
+  return plans;
 }

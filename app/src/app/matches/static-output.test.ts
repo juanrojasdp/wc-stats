@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { readMatchBundle, readTournament } from "@/lib/build-data";
+import { SECTION_IDS } from "@/lib/tactical-sections";
 import { es } from "@/locales/es";
 
 /*
@@ -173,14 +174,19 @@ describe.skipIf(!anyBuilt)("m074 Hero markup — own goal, shoot-out, knockout (
  * layer to the build-time path and broke the rendering split.
  */
 describe.skipIf(!anyBuilt)("the Tactical Layer stays off the build-time path (AR-11)", () => {
-  it("exports no Tactical section markup", () => {
+  it("exports no Tactical section markup — all eleven ids and titles", () => {
     for (const entity of readTournament().entities.matches) {
       const html = matchHtml(entity.matchId);
-      expect(html).not.toContain('id="key-stats"');
-      expect(html).not.toContain('id="momentum"');
-      // The pre-rendered document is Spanish canonical; the section titles are
-      // the copy that would appear if the layer were server-rendered.
-      expect(html).not.toContain(es.tactical.sections["key-stats"].title);
+      // Every id, not a sample: the point is that NO section escaped to the
+      // build-time path, and checking two of eleven would let the other nine
+      // regress green.
+      for (const id of SECTION_IDS) {
+        expect(html, `${entity.matchId} exports id="${id}"`).not.toContain(`id="${id}"`);
+        // The pre-rendered document is Spanish canonical; the section titles
+        // are the copy that would appear if the layer were server-rendered.
+        const { title } = es.tactical.sections[id];
+        expect(html, `${entity.matchId} exports the "${id}" title`).not.toContain(title);
+      }
     }
   });
 });

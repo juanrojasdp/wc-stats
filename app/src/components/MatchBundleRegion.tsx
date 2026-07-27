@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { EmptyStatePanel } from "@/components/EmptyStatePanel";
+import { TacticalErrorBoundary } from "@/components/TacticalErrorBoundary";
 import { TacticalLayer } from "@/components/TacticalLayer";
 import { Button } from "@/components/ui/button";
 import type { MatchBundle } from "@/lib/contract/contract-types";
@@ -24,7 +26,14 @@ import { useT } from "@/lib/i18n-provider";
  * without re-fetching.
  */
 
-type Status = "loading" | "loaded" | "error";
+/*
+ * "error" and "invalid" are deliberately distinct (2.5 review). A fetch that
+ * failed is a network problem the reader can retry; a payload that ARRIVED
+ * INTACT and then failed the matchId/schemaVersion gate is a data-integrity
+ * problem — telling that reader to "check your connection" misnames the cause,
+ * and a retry button re-fetches the identical bad artifact forever.
+ */
+type Status = "loading" | "loaded" | "error" | "invalid";
 
 export function MatchBundleRegion({ matchId }: { matchId: string }) {
   const t = useT();
@@ -59,7 +68,7 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
          * SCHEMA_VERSION comes from the generated module; never hardcoded.
          */
         if (payload.matchId !== matchId || payload.schemaVersion !== SCHEMA_VERSION) {
-          setStatus("error");
+          setStatus("invalid");
           return;
         }
         setBundle(payload);
@@ -86,6 +95,7 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
       <span aria-live="polite" className="sr-only">
         {status === "loaded" ? t("match.bundle.loaded") : null}
         {status === "error" ? t("match.bundle.error") : null}
+        {status === "invalid" ? t("match.bundle.invalid") : null}
       </span>
 
       {status === "loading" ? (
@@ -123,7 +133,29 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
         </div>
       ) : null}
 
-      {status === "loaded" && bundle !== null ? <TacticalLayer bundle={bundle} /> : null}
+      {/*
+       * A payload that arrived intact but is not this match's, or not this
+       * schema's. No retry: re-fetching the same artifact cannot change the
+       * answer, and a button that provably does nothing is worse than none.
+       */}
+      {status === "invalid" ? (
+        <EmptyStatePanel
+          headline={t("match.bundle.invalid")}
+          explanation={t("match.bundle.invalidExplanation")}
+        />
+      ) : null}
+
+      {/*
+       * The layer renders from an `as`-cast payload, and @/lib/format throws
+       * loudly on non-finite input by design. The boundary keeps that honesty
+       * from costing the reader the whole route — the Hero above is
+       * build-time markup and must survive a bad bundle.
+       */}
+      {status === "loaded" && bundle !== null ? (
+        <TacticalErrorBoundary>
+          <TacticalLayer bundle={bundle} />
+        </TacticalErrorBoundary>
+      ) : null}
     </div>
   );
 }

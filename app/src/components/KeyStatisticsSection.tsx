@@ -27,8 +27,11 @@ import { cn } from "@/lib/utils";
  * At <md six ruled rows show with the remaining thirteen behind "Ver todas las
  * estadísticas" (ruled decision 4): AC 2 demands both the FULL block and
  * enough compactness that UJ-1's single scroll still reaches the momentum
- * slot, and 19 rows at ~56px is ≈1.3 viewports. Nothing is deleted — the same
- * "declutter without deleting" grammar EXPERIENCE rules for pass networks.
+ * slot. A rendered tile measures ~79-94px including gap-tile-gap (this story's
+ * own browser pass: six rows plus the contested caption and the toggle occupy
+ * 661px), so nineteen of them run past 1500px — well over two 390px viewports.
+ * Nothing is deleted — the same "declutter without deleting" grammar
+ * EXPERIENCE rules for pass networks.
  *
  * No glossary underlines (ruled decision 8): a dotted-underline affordance
  * with no tooltip behind it is a broken promise. Story 2.18 marks terms across
@@ -212,7 +215,9 @@ export function KeyStatisticsSection({
           <button
             type="button"
             aria-expanded={showAll}
-            aria-controls={overflowId}
+            // Only while the rows are mounted — see TacticalSection: a static
+            // aria-controls dangles in the collapsed default state.
+            aria-controls={showAll ? overflowId : undefined}
             onClick={() => setShowAll((value) => !value)}
             className="mt-tile-gap flex min-h-11 w-full items-center justify-center rounded-md border border-hairline type-title text-ink-primary"
           >

@@ -107,6 +107,17 @@ export const es = {
       retry: "Reintentar",
       // aria-label for the aria-busy skeleton container (no visible text).
       loading: "Cargando datos del partido",
+      /*
+       * A payload that arrived intact but failed the matchId/schemaVersion
+       * gate is NOT a network failure: telling the reader to check their
+       * connection misnames the cause, and re-fetching the same artifact can
+       * never fix it, so this branch carries no retry.
+       */
+      invalid: "Los datos de este partido no coinciden con esta versión del sitio.",
+      invalidExplanation: "Estamos al tanto. Vuelve a intentarlo más tarde.",
+      // Fallback when the Tactical Layer itself throws while rendering.
+      crashed: "No pudimos mostrar el análisis táctico de este partido.",
+      crashedExplanation: "El resto de la página sigue disponible.",
     },
   },
   /*
@@ -167,8 +178,15 @@ export const es = {
      * interpolation by design; the section is named by the <h2> directly
      * above the panel.
      */
+    /*
+     * AC 3's copy names the section: "Sin datos de {sección} para este
+     * partido." t() carries no interpolation by design, so the caller composes
+     * the headline around the section's own resolved <h2> title, which
+     * TacticalLayer already holds — no per-section keys, no interpolation.
+     */
     empty: {
-      headline: "Sin datos de esta sección para este partido.",
+      headlineBefore: "Sin datos de",
+      headlineAfter: "para este partido.",
       explanation: "El informe oficial no incluye esta sección.",
     },
     /*
