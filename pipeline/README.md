@@ -75,7 +75,11 @@ receiving reconciliations, including the two cross-domain ones when Domain G is
 available; see the receiving section); and `goalkeeping-completeness` plus
 `goalkeeping-counts` / `set-plays-completeness` plus `set-plays-counts` from Story 1.9
 (see the Domains E & F section — an off-palette distribution marker is `unknown-rgb`, the
-same as shots, and every other typed failure is a `probe-failure` naming its class).
+same as shots, and every other typed failure is a `probe-failure` naming its class); and
+`pass-network-completeness` plus `pass-network-counts` from Story 1.14 (see the
+pass-network section — the completeness check is where matrix-endpoint join integrity
+lands, and where the page's two standing NEGATIVE assertions surface if the template ever
+starts drawing a pitch or markers).
 
 ## Batch ingestion
 
@@ -316,9 +320,11 @@ would otherwise enter the dataset as a phantom match.
 ```
 pipeline/
   discover/   text-anchored page discovery, anchor registry, corpus metadata probe
-  extract/    tabular per-domain extractors (Domains A, B, C and G today; the remaining
-              domains follow the same convention) + the committed venue -> UTC-offset
-              table
+  extract/    tabular per-domain extractors (Domains A, B, C, E, F and G, the momentum
+              series, and the pass network — which is a printed adjacency MATRIX rather
+              than a table of rows, and lives here because it joins Domain A's lineups and
+              the page has no pitch geometry at all; the remaining domains follow the same
+              convention) + the committed venue -> UTC-offset table
   ingest/     batch orchestration, run manifest, idempotence, per-report Extract, CLI
   markers/    shared pitch-map filter chain + the page-family parsers built on it (shots,
               crosses, defensive actions, and receiving — which turned out to draw no
@@ -1082,3 +1088,193 @@ other value on those pages is found *by name* — a template revision that ADDED
 number would otherwise stage a silently incomplete block. The set-plays census runs **after**
 the grammar, so a DROPPED value still fails with its own row's message rather than with a
 page-level word count that localizes nothing.
+
+## The pass-network domain (Story 1.14) — the nodes have no coordinates
+
+`Passing Networks {team}` is **not a pitch map**. It is a square **N×N directed adjacency
+matrix** printed as a table (rows = "Passes From", columns = "to"), plus a printed "Top 5
+Player to Player Passers" panel that reconciles against it. Two consequences run in
+opposite directions, and holding both at once is the point of this section:
+
+1. **The edge half is the cleanest extraction in Epic 1.** 23,597 edges over 208
+   team-innings, every endpoint joining to Domain A by verbatim name with the shirt number
+   corroborating on 3,289/3,289 rows, and a printed self-check that validates the matrix
+   total — and therefore every cell — to within a rounding half-ulp on 1,040/1,040
+   measurements.
+2. **The node half does not exist at all.** Not "hard to read", not "raster-only": the
+   coordinates are simply not on the page, and no page in the corpus carries them.
+
+`pipeline/extract/pass_network.py` therefore stages a matrix, not events — and the module
+opens by saying so, because the next reader will otherwise go looking for the marker
+parser that is not there.
+
+### The staged payload
+
+```
+domains.pass_network = {
+  "home": {
+    "players": [ {"name","shirt_number","passes_made","passes_received"}, ... ],   # printed row order
+    "edges":   [ {"from_name","from_shirt","to_name","to_shirt","volume"}, ... ],  # matrix reading order
+    "matrix_total": int,
+    "top_ranked_pairs": [ {"rank","percent_of_total"}, ... ],   # printed order, 5 rows
+    "node_positions": None,                                     # documented absence
+  },
+  "away": { ... },
+}
+```
+
+Snake_case throughout, no contract kebab codes as keys, and **no `player_id`** —
+cross-report identity is Story 1.15's. `passes_made` is the row sum and `passes_received`
+the column sum; their sum is the contract's `involvement`, and **Story 1.16 must derive
+`involvement` from this matrix, never from Domain G's `passes_completed + offers_received`**
+(the two disagree — see the bounds below).
+
+### Column assignment is GEOMETRIC, and that is the load-bearing rule
+
+Zeros **are** printed. The only cell absent from the text layer is the **blank diagonal** —
+one per row — and that single absence makes every row ragged: an ordinal read over the
+present values shifts every cell at or after position `i` in row `i`. With 25,217 zero
+cells corpus-wide a shifted value looks entirely plausible, and no aggregate check would
+see it. Each column's extent is therefore read from **its own blue header rectangle**
+(fill `(0.18, 0.30, 1.00)`, `85 < y0 < 95`, height > 20 — the height predicate is what
+excludes the Top-5 panel's own 13.5 pt header rect at the same y0), and every cell is
+assigned by x-containment in that rect. Never by nearest centre, never by ordinal.
+
+Two things a reader will be tempted to assume, both measured false:
+
+- **Widths are not uniform.** They range 27.75–58.5 pt and vary *within* the page on
+  **156 of 208** innings. The 52 uniform pages are all exactly 36.0 pt and occur at
+  N=15, 16 **and** 17 — not "N=16 only". 36.0 pt appears as at least one column width on
+  208/208, so it is the family minimum, not an N=16 artifact.
+- **The enclosing span is not fixed either**, so `span / N` is wrong too: the right edge is
+  748.5 on 204/208 (749.25 / 753.0 / 756.75 on the other four) and the left edge takes
+  **56 distinct values** from 126.75 to 255.75.
+
+The two leading header cells are identified by their **text** (`#`, then a cell beginning
+`Passes From`), never by index; anything else is a template revision and raises. The
+qualifying header cells are asserted contiguous, because a missing header cell would drop a
+whole column from the grid while every remaining column still parsed — the one failure the
+row census cannot see.
+
+The census is then asserted in full: exactly N columns, exactly N rows, exactly one blank
+per row, and that blank at position `i` in row `i`. Row order is asserted equal to column
+order (hyphen-normalized) on 208/208, which is what makes cell `[i][j]` mean "row-player i →
+column-player j" without a second name lookup per cell.
+
+**The hyphen wrap**: a hyphenated surname wraps inside the narrow column-header cell on
+**24 of 208** innings, so joining its two lines yields `'Ben GANNON- DOAK'` against the row
+label's `'Ben GANNON-DOAK'`. The canonical player list comes from the **row labels**, which
+also carry the shirt number the headers do not; the headers are read only to *place* the
+columns, and their text is compared hyphen-normalized and asserted — never silently
+repaired.
+
+### The join, and its one tolerated anomaly
+
+Identical in shape and in outcome to Domain G's, and deliberately so: the pass-network
+player set **is** Domain G's, including the same lone anomaly.
+
+| Measurement | Result |
+| --- | --- |
+| Matrix rows joining to the lineup by **verbatim name** | 3,289 / 3,289 |
+| Shirt number corroborates | 3,289 / 3,289 |
+| Unmatched endpoints | 0 |
+| Starters present in the matrix | 2,288 |
+| Substitutes who came on, present | 1,000 |
+| Substitute with **no** minutes, present | 1 — `PMSR-M92` away #14 Jordan HENDERSON |
+| Unused substitutes absent from the matrix | 2,103 — correct, not a finding |
+| Reconciliation | 3,289 + 2,103 = **5,392** lineup entries |
+
+The asymmetry is the easy thing to get backwards: a row that matches no lineup player
+raises `PlayerJoinError`; a lineup player **with** minutes and no row raises
+`MissingFieldError`; a lineup player **without** minutes and without a row is the normal
+case and is neither recorded nor warned about. HENDERSON was booked from the bench and the
+page prints an **all-zero** row for him — so an orphan row is admitted only when its row
+**and** its column are entirely zero. A row with any non-zero cell for a player the lineup
+says never played is a contradiction and raises, and so is a non-zero **column** — a
+teammate passing *to* someone who never played, the direction Domain G has no analogue for.
+
+### Matrix invariants (all 208/208)
+
+| Invariant | Result |
+| --- | --- |
+| Matrix is square N×N | 208/208 |
+| N distribution | 13:2, 14:11, 15:26, **16:154**, 17:15 |
+| Off-diagonal cells | **48,814** = Σ N(N−1) over that distribution |
+| Non-zero cells (= edges) | **23,597**; volumes **1–48** |
+| Zero cells (= absent edges) | **25,217** |
+| Reciprocal pairs | **9,151**, of which **6,835 asymmetric** |
+| Diagonal blank | 208/208 |
+
+The matrix is genuinely **directed**: a reciprocal pair is two edges, and 6,835 pairs print
+different volumes in the two directions. **Never symmetrize, never collapse a pair, never
+dedup.** A zero cell is an **absent** edge, never a zero-volume one — the contract's
+`volume` is `minimum: 1`.
+
+### Self-Validation
+
+Three checks, all recorded and never raised. These are **Self-Validation** ids; the FR-15
+gate's `pass-network-completeness` / `pass-network-counts` are a different registry and
+neither may be read as the other.
+
+| Check id | Relation | Verdict |
+| --- | --- | --- |
+| `pass-network-top5-pct` | printed Top-5 pct == `100 × cell / matrix_total`, tol `<= 0.05` | TRUE 1,040/1,040 |
+| `pass-network-row-bound` | `sum(row_i) <= Domain G passes_completed` | TRUE 3,289/3,289 |
+| `pass-network-total-bound` | `matrix_total <= Key Statistics passes_completed` | TRUE 208/208 |
+
+The tolerance is **derived, not tuned**: the panel prints one decimal, so a faithful value
+sits at most a half-ulp — 0.05 — from the computed one. Worst observed absolute delta over
+all 1,040 printed percentages is **exactly 0.05**, and the three worst cases evaluate to
+`0.04999999999999982` in float, which is why the comparison is `<=` and why the constant
+must not be tightened without re-measuring.
+
+The two cross-domain relations ship as **BOUNDS, not equalities** (the 1.8/1.9/1.12 rule),
+and both checks record the per-report delta in `specifics` on every report — passing or
+not — so the gap stays visible rather than being closed by making the numbers agree:
+
+- `sum(row_i) == Domain G passes_completed` is **corpus-FALSE on 1,290 of 3,289 rows**
+  (M01 home RANGEL 27 vs 29, REYES 40 vs 47, GALLARDO 32 vs 46 …). The matrix never
+  exceeds Domain G.
+- `matrix_total == Key Statistics passes_completed` is **corpus-FALSE on 208/208**, and
+  strictly less on all of them (M01 home 470 vs 495, away 278 vs 290).
+
+Both cross-domain checks are computed at the `extract_report.py` seam, where the sibling
+payloads are already in hand, and are **omitted entirely** rather than failed when a
+sibling is unavailable — one root cause, one finding.
+
+### Relations that are corpus-FALSE and are deliberately NOT shipped
+
+- **`sum(col_j)` vs Domain G's `offers_received`.** False in *both* directions:
+  **3,145 greater, 121 equal, 23 less** over 3,289 rows. There is no relation here, and a
+  "bound" in either direction would fire on thousands of rows. Named in a comment at the
+  would-be call site in `pass_network_checks`, and pinned by a test, so a later story
+  reaching for the obvious relation finds a red test rather than only prose.
+
+### Documented absences
+
+- **`node_positions` is `None` on every report, and always will be.** The page carries **0
+  pitch frames on 208/208** (measured with `filter_chain.detect_pitch_frames`' own
+  qualifying rule), **0 filled all-Bézier drawings at any size**, and one 36×36 pt
+  competition logo. A title scan over all **5,448** pages of the corpus finds **0** pages
+  titled with average positions. `PassNetworkNode.x`/`y` are therefore unfulfillable and are
+  filed as an AD-14 emission blocker; nothing here derives them from the edges, from the
+  formation string, or from the lineup positions. It is a **warning**, never a non-`pass`
+  check — the aggregator treats anything but the literal `"pass"` as a failure, and a
+  documented absence must not turn a complete report into a failing one.
+
+**The absence is asserted, not commented.** `_assert_no_pitch_and_no_markers` runs on every
+page on every run and requires `detect_pitch_frames` to raise `PitchFrameError` and the page
+to carry no filled all-Bézier drawing. This is what makes the AD-14 filing self-maintaining:
+the day the vendor starts printing coordinates, the corpus aborts loud instead of publishing
+`node_positions: null` forever. A test draws a pitch rect on a synthetic pass-network page
+and asserts the raise.
+
+### What the Top-5 panel does and does not give you
+
+The panel is present on 208/208 and prints five rows of `Player | Passed To | % of Total
+Team Passes`. Percentages print **with or without a decimal** — `3.8%` and `3%` both appear
+on the reference page — and are parsed with an explicit `re.ASCII` pattern accepting both.
+The panel's **player names are not staged and are not a check operand**: they wrap across
+lines on 12 of 208 innings and the percentages alone carry the whole reconciliation. A later
+story that wants the names owes the wrap recipe (the `crosses.py` / `defensive_actions.py`
+precedent), not a guess.

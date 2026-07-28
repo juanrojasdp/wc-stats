@@ -299,3 +299,28 @@ class PlayerJoinError(ExtractError):
     """
 
     what = "player row did not join to the lineup"
+
+
+class PassNetworkParseError(ExtractError):
+    """The Passing Networks page's structure does not match the matrix grammar (1.14).
+
+    One class for everything structural on this page: the anchor resolving to zero or
+    several pages, a header band whose two leading cells are not `#` and `Passes From`,
+    a column/row census that is not N x N, a row missing its blank or blanking a cell
+    that is not its own diagonal, a cell that is not a non-negative ASCII integer, row
+    order disagreeing with column order, a Top-5 panel that does not print exactly five
+    percentages — and the page's two standing NEGATIVE assertions: a qualifying pitch
+    rectangle or a filled all-Bezier drawing appearing where the corpus prints none.
+
+    That last pair is the point of the class as much as the first: the whole `x`/`y`
+    re-scope (AC 2, and the AD-14 filing it produced) rests on "this page carries no
+    coordinates". If the vendor ever starts printing them, the corpus must abort loud
+    rather than keep publishing `node_positions: null` forever.
+
+    Deliberately NOT this class: a row that matches no lineup player or whose shirt
+    number disagrees (`PlayerJoinError`), and a lineup player with minutes and no matrix
+    row (`MissingFieldError`). Those two name exactly these failure kinds already, and
+    the module rule above forbids overloading one class for two.
+    """
+
+    what = "pass-network page did not parse"

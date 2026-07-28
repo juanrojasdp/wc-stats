@@ -26,6 +26,7 @@ from pipeline.ingest.records import (
     write_record,
 )
 from pipeline.extract.domain_e import domain_e_warnings
+from pipeline.extract.pass_network import pass_network_warnings
 from pipeline.markers.defensive_actions import ABSENT_COUNTERPART_WARNING
 from pipeline.markers.errors import UnknownRgbError
 from pipeline.markers.receiving import (
@@ -95,20 +96,41 @@ def test_the_ground_truth_report_extracts_a_complete_record(mex_rsa_pdf, tmp_pat
     assert len(record["anchors"]) == len(
         resolve_anchors(ANCHOR_REGISTRY, home="Mexico", away="South Africa")
     )
-    # Story 1.12 forced repair, widened by Story 1.13 and again by Story 1.9: every record
-    # now carries exactly SIX warnings, all of them documented absences taking the absence
-    # branch (which must never be modelled as a non-"pass" check) — the possession-regain
-    # map's missing printed counterpart; the receiving family's raster-only donut slices
-    # and non-partitioned phase totals; and Domain E's three (the distribution technique
-    # breakdowns, goal prevention's intervention body type, and the aerial crosses-faced
-    # completed count). Asserted as the exact expected set, not a length, so a seventh
-    # unexplained warning still fails this test.
-    assert record["warnings"] == [
+    # Story 1.12 forced repair, widened by Story 1.13, again by Story 1.9 and again by
+    # Story 1.14: every record now carries exactly SEVEN warnings, all of them documented
+    # absences taking the absence branch (which must never be modelled as a non-"pass"
+    # check) — the possession-regain map's missing printed counterpart; the receiving
+    # family's raster-only donut slices and non-partitioned phase totals; Domain E's three
+    # (the distribution technique breakdowns, goal prevention's intervention body type,
+    # and the aerial crosses-faced completed count); and the pass network's node
+    # positions, which the corpus prints nowhere at all. Asserted as the exact expected
+    # set, not a length, so an eighth unexplained warning still fails this test.
+    #
+    # Domain E's three are named by FIELD here rather than spliced in from
+    # `domain_e_warnings()`. Sourcing the expectation from the module under test made this
+    # assertion unable to fail for Domain E at all: if `domain_e_warnings()` returned `[]`
+    # the comparison would still hold while AC 4's "per-report warning naming it" quietly
+    # vanished. The count and the field names are the part that must be pinned from
+    # outside; the prose after the em dash is the module's to word.
+    assert len(record["warnings"]) == 7
+    assert record["warnings"][:3] == [
         ABSENT_COUNTERPART_WARNING,
         DONUT_SLICES_ABSENT_WARNING,
         PHASE_PARTITION_ABSENT_WARNING,
-        *domain_e_warnings(),
     ]
+    assert [
+        warning.split(" is not extractable")[0] for warning in record["warnings"][3:]
+    ] == [
+        "goalkeeping: goalkeeping.distribution.*_techniques",
+        "goalkeeping: goalkeeping.goal_prevention.by_body_type",
+        "goalkeeping: goalkeeping.aerial_control.crosses_faced_completed",
+        "pass_network: node_positions",
+    ]
+    # And the modules still agree with the pinned set, so the two cannot drift apart
+    # silently either. `warnings` is an ordered LIST, not a set: Story 1.14 appends after
+    # Domain E's block, so its entry is last here too.
+    assert record["warnings"][3:6] == domain_e_warnings()
+    assert record["warnings"][6:] == pass_network_warnings()
     # AC 2 end-to-end: the full `extract_report` path — not just `parse_shots` — must
     # Self-Validate both teams against the ground truth (16/16 home, 3/3 away; the one
     # place hardcoding counts is correct, AR-16).
@@ -820,3 +842,33 @@ def test_a_record_written_under_an_older_record_version_does_not_license_a_skip(
     assert is_unchanged({"record_version": RECORD_VERSION, "idempotence": keys}, *keys.values())
     assert not is_unchanged({"record_version": RECORD_VERSION - 1, "idempotence": keys}, *keys.values())
     assert not is_unchanged({"idempotence": keys}, *keys.values())
+
+
+# --- Story 1.14: the pass network's three Self-Validation ids ---------------------
+
+
+def test_pass_network_checks_join_the_record_under_their_own_ids(tmp_path, make_report):
+    """Each id is filtered SEPARATELY here, never through a widened marker-count filter.
+
+    The three ids are Self-Validation ids; `pass-network-completeness` and
+    `pass-network-counts` are the FR-15 gate's, a different registry, and neither may be
+    read as the other.
+    """
+    record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
+
+    checks = record["self_validation"]["checks"]
+    for check_id in (
+        "pass-network-top5-pct",
+        "pass-network-row-bound",
+        "pass-network-total-bound",
+    ):
+        matching = [check for check in checks if check["check"] == check_id]
+        assert len(matching) == 1, check_id
+        assert matching[0]["result"] == "pass", matching[0]["specifics"]
+        assert matching[0]["specifics"]
+    assert not [
+        check
+        for check in checks
+        if check["check"] in ("pass-network-completeness", "pass-network-counts")
+    ]
+    assert record["self_validation"]["result"] == "pass"

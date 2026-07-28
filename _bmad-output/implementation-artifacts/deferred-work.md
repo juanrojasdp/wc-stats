@@ -2,6 +2,18 @@
 
 Items raised by reviews that were consciously deferred rather than fixed or dismissed.
 
+## Deferred from: code review of 2-8-pass-network-visualization (2026-07-27)
+
+- **One bad coordinate anywhere in the pass network kills all eleven Tactical sections.** `TacticalErrorBoundary` wraps `<TacticalLayer>` whole (`app/src/components/MatchBundleRegion.tsx:155-157`), so the fail-loud throws in `pass-network-model.ts` (`:262` unreadable node coordinate, `:336` unresolvable edge endpoint) take Key Statistics, Momentum, Shot Maps and every other section down with the pass network. The fail-loud posture itself is right and ruled; the blast radius is the problem. This is pre-existing architecture — `ShotMapsSection` and `marker-model.ts:130` both rely on the same whole-layer boundary — but 2.8 wires the **least-validated** data family to it: Story 1.14 has never probed the "Passing Networks" page, and `PassNetworkNode.x`/`y` are `required` with no extractor yet written. A per-section error boundary would contain each viz to its own panel. Route to whichever story next touches `MatchBundleRegion` / `TacticalSection`, or to 2.19.
+
+- **`pitchMarkings` draws goal furniture at one end only, so a full pitch has a bare defending third.** Independently re-confirmed by this review at `app/src/viz/pitch-geometry.ts:266-327`: `penaltyArea`, `sixYardBox`, `penaltySpot`, `penaltyArc` and `goal` are all built unconditionally at the attacked end, and the `isFullPitch` branch adds only the halfway line, centre circle and centre spot. Duplicate of the entry the 2.8 dev already filed above — recorded here only to note the review reached it independently and rated it user-visible on **every** pass-network figure (nodes sit at x≈20–25, inside the blank half). Deferred for the same reason: shipped, tested 2.7 code on 2.8's do-not-touch list, `aria-hidden` decoration with no data riding it, and no ruled reference for the second end. Whoever owns the next full-pitch surface (2.9) should rule it.
+
+- **A self-loop pass edge reads "1 conexión" but highlights nothing when isolated.** `app/src/viz/pass-network-model.ts:437` counts `from === to` once in `nodeDegree`, so the node's accessible name promises a connection, while `incidentPlayerIds` (`:419-433`) deletes the self id and returns an empty neighbour set — isolating the node therefore dims every teammate and lights no edge. The geometry emits a zero-length segment that `strokeLinecap="round"` paints as a stray dot. The contract does not forbid `fromPlayerId === toPlayerId` and all three fixtures carry zero; Task 3.8's actual requirement ("handled without a crash") is met. Deferred until 1.14 shows whether the source page can produce one. — **ANSWERED by Story 1.14 (2026-07-27): it cannot.** The pass matrix's diagonal is blank on **208/208** team-innings (asserted every run by the row census, which requires exactly one blank per row and that blank on the diagonal), so a self-loop edge is unreachable from this source **by construction**. The defect is real but not reachable from real data; see the Story 1.14 filing at the foot of this file.
+
+- **A selected marker forced to the front can outrank the cluster's described front member.** `app/src/components/PitchPanel.tsx:531-541` adds `selectedIndex` to `drawOrder`'s front set alongside the member `frontOfCluster` points at; the sort is stable on original index, so when both live in one cluster the marker painted on top may not be the one the popover describes. Same class as the 2.7 review's centroid-seeding finding (the drawn marker and the described marker disagreeing), but bounded: it needs a pinned node sharing a cluster with a fronted sibling, and in dialog mode every member is listed anyway. Deferred; revisit with whatever rules the selection/z-order interaction for 2.9.
+
+- **At `<md`, pinning a player whose incident edges are all in the lowest quintile highlights nothing.** `app/src/components/PassNetworksSection.tsx:263` hides the stop-1 band by default below `md`, and `:282` filters before the isolation opacity is applied — so for a low-volume player the pin dims every teammate and reveals no edges at all. Working exactly as decisions 4 and 6 rule it, and "Mostrar todos los pases" is one press away, but it is a dead-end state reachable without any cue as to why. Deferred: the fix (suppress the declutter while a pin is active, or disclose the interaction) is a UX ruling this story does not have.
+
 ## Deferred from: code review of 1-4-template-consistency-verification-across-the-venue-matchday-sample (2026-07-22)
 
 - **Cover-line reconstruction thresholds are unvalidated at the boundary** — `pipeline/discover/probe.py:41-43` hard-codes `_LINE_TOLERANCE_PT = 3.0` and `_SPACE_GAP_PT = 1.0` with no fallback. A scoreline whose team-name spans and score digits differ in font size by more than 3.0pt splits into separate lines and the report dies with `"cover page has no scoreline"`; at a gap of exactly 1.0pt (`>` not `>=`) no space is inserted and the away team becomes `"SouthAfrica"`, which then propagates into every away anchor as a wrong-but-plausible team name. No test exercises either boundary — all synthetic covers use a single `fontsize=18` `insert_text` per line. Deferred: validating the thresholds requires the real 104-report corpus.
@@ -259,6 +271,29 @@ Seven open decisions surfaced by the review and deferred at Juan's call, reason:
   EXPERIENCE.md itself was deliberately NOT edited — that is UX's and 2.6's call, not this
   story's.
 
+  **RESOLVED by Story 2.6 (2026-07-27).** 2.6 ruled it as its decision 1 and shipped it: the
+  slider **indexes samples, not minutes** — `aria-valuemin={0}`, `aria-valuemax={samples.length - 1}`,
+  `aria-valuenow={index}` — and `aria-valuetext` announces the composed clock label including the
+  stoppage offset. Verified live on both fixtures: m001 `aria-valuemax="100"` with index 45
+  announcing "Minuto 45+1′", m074 `aria-valuemax="137"` with End announcing "Minuto 120+3′";
+  m001's indices 44-48 announce five distinct values for the same minute 45. Arrow keys move
+  +/-1 SAMPLE, PageUp/PageDown +/-10, Home/End to the ends, no wrap (100 real ArrowRight presses
+  from index 0 land on exactly 100; 60 ArrowLeft back land on exactly 40). The uniqueness
+  property is pinned as a regression test in `app/src/viz/momentum-model.test.ts`
+  ("the index space — decision 1's teeth"), which fails if anyone re-indexes by minute.
+
+- **`EXPERIENCE.md:74` and `epics.md:737` still describe a MINUTE-indexed momentum slider and need
+  a UX sign-off.** Filed by Story 2.6 (ruled decision 22), which deliberately did NOT edit either
+  document. Both still say `aria-valuemin`/`aria-valuemax` run "over match minutes" and that
+  "arrow keys move +/-1 minute". The shipped control indexes samples (see the resolved note
+  above), so both sentences are now stale against the code AND against the contract, whose
+  `MomentumSample` description states "The slider must index samples, not minutes, and
+  aria-valuetext must announce the stoppage offset alongside the minute."
+  **Why 2.6 did not just fix them:** these are normative UX sentences in a spine document, and
+  Story 2.7's precedent for correcting a spine (the DESIGN.md light-theme note) was a ruled,
+  disclosed edit of a factual error. This is a design-intent change that UX should sign. Owner:
+  UX. Blocking nobody — the code, the contract and the tests already agree with each other.
+
 - **AD-14 note: the momentum series has no per-team totals anywhere in the report.** Unlike
   every other domain, nothing printed reconciles the per-team bar sums (tested against all 208
   team-innings of Domain B; best exact-match rate 2/208). If a future contract revision wants a
@@ -305,3 +340,112 @@ Seven open decisions surfaced by the review and deferred at Juan's call, reason:
 - **`extract_domain_e` takes the cover team names, which the story's stated signature omitted.** The involvement page carries BOTH teams' charts on ONE page and identifies them only by the printed title `'{team} GK Involvement Timeline'`. Without the cover names the home/away split could only be read from drawing order, which AD-8 forbids; every sibling parser facing the same problem takes the same two arguments (`parse_shots`, `parse_crosses`, `extract_momentum`). Recorded as a deliberate deviation, not an oversight.
 
 - **The "value above its label, centred on it" reader is now duplicated in two modules.** `domain_e._value_above` and `domain_f._kpi_value` are the same rule with different bands and value types, and the rule appears on five of this story's nine pages. The project's own extraction rule is that a helper moves to a shared seam at the **third** copy (the `check_entry` precedent); this is the second. Deferred rather than pre-emptively extracted — the natural home would be `pipeline/extract/lines.py`, a shared-contention file, and the two copies differ in whether they accept decimals.
+## Deferred from: code review of story-1.9 (2026-07-27)
+
+- **Value readers count spans, not printed numbers, while the label readers explicitly de-fragment.** `domain_e._numbers_in` (consumed by `_table_row_below`) and `domain_f._row_values` count band spans directly, but `_label_run`'s own docstring records that real pages fragment text per glyph run (`'D' 'eli' 'v' 'e' 'ry'`). A goal-prevention or delivery-types row whose two-digit value emits as two spans would fail as "carries 8 value(s), expected 7" — a template-revision message for a page the grammar could read. Deferred: it fails loud rather than silently, and the counts are corpus-clean at 208/208. The fix (joining adjacent numeric spans) risks fusing genuinely separate columns, so it needs its own corpus measurement.
+
+- **The lower involvement chart's y-band is unbounded below.** `_parse_involvement` sets `bottom = page_y1` for the last chart, so any text in the `x < 35` column beneath the second chart is read as a y-axis label — a non-integer raises, a bare integer breaks the descending-run assertion. Deferred because the natural fix is circular: the axis labels supply the unit that selects the value gridlines, so the gridline span is not available to bound the label search.
+
+- **Each involvement chart's band is delimited by the NEXT chart's title row.** Anything the away chart prints or draws above its own title falls inside the home chart's band. The fixture already exercises this (the away team header sits at y≈301, inside the home band 135–355) and survives only because it is text at x=60. A 2.5–3.5 pt filled circle there would be collected for the wrong chart and fail as "not evenly spaced" — a message pointing at the slot grid when the fault is elsewhere. Deferred: fails loud, corpus-clean.
+
+- **`_axis_labels` requires a step-1 descending run, hard-coupling the gridline count to the auto-scaled top label.** A chart forced to print `12 10 8 6 4 2 0` aborts the whole report. The story pins a corpus range for the slot count (95–111 / 129–145) but none for the axis step, so the one-gridline-per-unit assumption is asserted without the evidence every other constant in the module carries.
+
+- **`NUMERIC_WORD_COUNT = 24` counts bare integers over the WHOLE set-plays page.** Any venue, team or competition string printing a standalone number adds a 25th word and fails every report at that venue — and because the census runs inside `_extract_side`, the whole record fails, not just Domain F. Real FIFA venue names of the form `Stadium 974` exist. Corpus-invariant today; recorded so a future corpus does not surface it as a mystery.
+
+- **`domain_e._value_above` walks the band the page's own stray pitch-marker ordinals occupy.** The KPI search spans `[0, 460]` and up to 80 pt above the label, and the module's own comment documents a stray ordinal at x=275 on the goal-prevention page. If an ordinal lands within 3 pt of a KPI centre on a nearer row, it is returned as the KPI. `attempts_faced_printed` is protected by the KPI-vs-table cross-check in `goalkeeping-goal-prevention-sum`; `save_percentage` has no counterpart. The fixture draws its stray ordinal BELOW the labels, so the risk is structurally untestable as built.
+
+- **Story 1.9 has no commit of its own.** `git log -- pipeline/extract/domain_e.py pipeline/extract/domain_f.py` returns a single commit, `7306d7b` "Story 1.13: offers & movement to receive parsers, code review done", which also carries `errors.py`, `extract_report.py`, `checks.py`, `conftest.py`, the three new test files, both forced repairs, `pipeline/README.md` and this ledger. The content is identical to the tree the final green run verified and the co-commit is disclosed in the Completion Notes, but `git log` attributes 1.9's whole change set to another story. Not correctable without rewriting history; recorded so a later bisect or blame is not misread. See also the same PROCESS FINDING filed by story 1.8's review — three stories sharing one working tree is the root cause.
+
+- **The momentum data table ships PLAIN, not sortable — routed to Story 2.11.** Story 2.6 ruled
+  decision 14, taking the direct 2.8 precedent above ("The pass matrix ships PLAIN"). UX-DR12's
+  sort contract (`aria-sort`, `Intl.Collator('es',{sensitivity:'base'})`, polite live-region
+  announcements, sticky header, a stated default sort per table) is ONE cross-table contract that
+  2.11 implements once; a bespoke third copy is what 2.11 would then have to reconcile.
+  **The accessibility floor is met in full today** — UX-DR16/NFR-2 require a reachable table
+  carrying the same numbers, and 2.6 ships a real `<table>` of all 101 (m001) / 138 (m074) rows
+  stating its own order in its caption ("Ordenado por minuto de partido, incluido el tiempo
+  añadido."). Plug-in points: the `<th>` elements in the private `DataTable` in
+  `app/src/components/MomentumSection.tsx`, and the row array returned by `momentumTableRows` in
+  `app/src/viz/momentum-model.ts`, which already carries raw sortable values (`at`, `home`,
+  `away`, `hasGoal`) and is commented with this pointer in-file.
+
+- **`TacticalSection`'s `title` prop is a plain `string`, which blocks Story 2.18's glossary
+  tooltip on "momentum".** Filed by Story 2.6 (Task 10.2a). Both momentum mockups render the
+  heading as `<h2>Línea de <span class="gloss">momentum</span></h2>`, and `EXPERIENCE.md:259`
+  rules that the English term is kept and carries a glossary tooltip. `TacticalSection` takes
+  `title: string` and renders it as a text child, so there is no seam for marking up one word.
+  2.18 needs either that prop widened to `ReactNode` or a per-section term-marking hook — a
+  change to a shell component eleven sections share, which is why 2.6 deferred rather than
+  widened it unilaterally. **Same entry covers `review-i18n.md:62`'s `lang="en"` pronunciation
+  spot-check on "momentum"**: there is currently no element to hang `lang="en"` on either, and
+  both needs are discharged by the same seam. Owner: Story 2.18.
+
+- **`--shot-goal-canvas` was added by Story 2.6; the 2.7 deletion rationale is correct for the
+  PITCH but did not survive contact with a theme-aware canvas.** The 2.7 code review deleted all
+  five `--shot-*-light` overrides on the rationale that those hues "render only on the
+  theme-invariant pitch, so a light-canvas variant of them is unconditionally wrong". That is
+  true of `--shot-on-target`, `-off-target`, `-blocked` and `-incomplete`, and it was true of
+  `--shot-goal` until the Momentum Timeline shipped goal markers on `--surface-raised`, which
+  DESIGN.md:280 always named as a theme-aware canvas. Measured: `--shot-goal` `#3fdd85` on the
+  light card `#ffffff` computes **1.77:1**; the DESIGN.md:288 light value `#177245` computes
+  **5.95:1** (both reproduced live in the browser). 2.6 therefore added `--shot-goal-canvas`,
+  declared in **both** theme blocks (`#3fdd85` in `:root, .dark`, `#177245` in `.light`) and
+  registered as `--color-shot-goal-canvas` — **not** a `-light`-suffixed property, because this
+  codebase has none and one declared only in `.light` would be undefined in the dark theme.
+  Every pitch consumer keeps `--shot-goal` untouched (`shot-map-model.ts:33`). Both `globals.css`
+  comment blocks were amended to scope the old rationale to the pitch. **The remaining four
+  `--shot-*` hues still have NO off-pitch consumer** — recorded so the next story neither
+  re-deletes this token nor re-litigates the other four.
+
+- **The momentum midline measures 2.81:1 over team A's composited fill in the DARK theme, below
+  the 3:1 non-text floor. Needs a palette ruling, not an implementation fix.** Filed by Story 2.6
+  from the re-measurement its ruled decision 25 commissioned. DESIGN.md:288 publishes 15.8:1 for
+  this line, but that figure describes ink over the BARE CARD — the "reserved 2px axis gutter that
+  the area fills never enter" — and that geometry **is not expressible in recharts** (`baseValue`
+  is one number per Area, so opening a gap would render every 0/0 minute as a visible band, on the
+  30 m001 / 23 m074 samples decision 16 exists to protect). The shipped line is 2px
+  `--ink-primary` drawn OVER the fills. Measured live, both themes:
+  ink over fill A **2.81:1** (dark) / 7.32:1 (light); ink over fill B 3.53:1 (dark) / 6.97:1
+  (light); ink over the bare card 15.81:1 (dark) / 17.67:1 (light) — the last reproducing
+  DESIGN.md's published figure exactly, and confirming it is the wrong comparison for what ships.
+  The same 2.81:1 applies to the goal marker's `--ink-primary` ring where it crosses team A's fill.
+  **Why 2.6 did not fix it in-story:** the shortfall is a palette interaction, not a coding
+  choice. `--ink-primary` is already the lightest ink in the dark theme; substituting pure
+  `#ffffff` reaches only **3.06:1**, i.e. the floor is unreachable without either lowering the
+  ruled 60% fill opacity (decision 9 forbids re-opening a settled UX number) or minting a
+  dedicated midline token. Both are UX calls. Light theme passes comfortably; only dark team A
+  fails. Owner: UX / DESIGN.md. See also `review-accessibility.md:18`, which filed the related
+  `--viz-neutral` failure (1.03:1) that `--ink-primary` was chosen to fix.
+
+- **recharts' automatic y-axis ticks are non-uniform and omit zero on an "un-nice" domain.**
+  Found live by Story 2.6 on m074 (`peak` 17, domain `[-17, 17]`): recharts emitted
+  `+17, +1, -8, -17` — four ticks, unevenly spaced, **with no zero tick at all** on a chart whose
+  entire encoding is above-or-below the zero line. Because ruled decision 6 strips the sign for
+  display, those labels rendered as an unreadable `17 1 8 17`. m001 (`peak` 10) happened to come
+  out clean as `10 5 0 5 10`, which is exactly how this would have shipped unnoticed. Fixed in
+  2.6 by supplying explicit ticks from a pure `momentumYTicks(peak)` (symmetric, integer, always
+  includes 0), pinned by a property test over peaks 1-40 plus both fixture literals. **Recorded
+  because stories 2.10 / 2.13 / 2.15 / 2.16 all carry recharts statistical charts and will hit
+  the same default.** Do not rely on recharts' tick generation for any axis whose zero is
+  semantically load-bearing.
+
+## Filed by Story 1.14 implementation (pass-network extraction — nodes & edges, 2026-07-27)
+
+- **AD-14 emission blocker (headline): `PassNetworkNode.x`/`y` are unfulfillable — the corpus prints no pass-network coordinates anywhere.** `contract/match-bundle.schema.json:637-657` requires `["teamId","playerId","playerName","shirtNumber","x","y","involvement"]` with `additionalProperties: false`; `x`/`y` are `PitchX`/`PitchY` (0-100, 2 decimals) with **no null branch**. Re-measured over all 104 reports / **208 pass-network pages** (Story 1.14 Task 1, re-derived independently of the story-creation probe and reproduced **cell for cell — 52,103 cells, 0 mismatches** — by an independent prototype extractor run beside the shipped parser): **0 pitch frames on 208/208** using `filter_chain.detect_pitch_frames`' own qualifying rule; **0 filled all-Bezier drawings at any size** (the page's only curve content is two ~9-10 pt mixed `c`+`l` header sort-arrow glyphs); its single image is a **36x36 pt competition logo** at bbox `(912.0, 39.75, 948.0, 75.75)` on 208/208; and a title scan over **all 5,448 pages of the corpus** finds **0** pages titled with average/positions. This is the **third** Domain D family with an unfulfillable required field after 1.11's `CrossEvent` and 1.13's `ReceivingEvent` — and the **narrowest**: `ReceivingEvent` was unfulfillable in *every* field, whereas here **5 of `PassNetworkNode`'s 7 required fields are available today** and only `x`/`y` are missing. Candidate to ride CS-1's **successor** change-set, never CS-1 (already scoped). `/contract` was not edited by this story.
+
+- **AD-14 shape note: name the staged payload as the candidate replacement input.** The corpus is **poorer** than `PassNetworkNode` in one dimension and **richer** in another. Poorer: no `x`/`y`, anywhere, ever. Richer: the matrix carries **`passes_made` and `passes_received` separately** where the contract models only their sum, plus a per-team **`matrix_total`** and a printed **top-5 ranking** — none of which has a contracted destination. Stated plainly for whoever writes the successor change-set: a **coordinate-free node shape** (`playerName`, `shirtNumber`, `passesMade`, `passesReceived`, `involvement`) is **fully populatable from `domains.pass_network` today**, whereas the x/y shape can never be. `PassNetworkEdge` (`:658-677`, required `teamId`/`fromPlayerId`/`toPlayerId`/`volume`, `volume` `minimum: 1`) is by contrast **fully fulfillable** once Story 1.15 mints the player ids — 23,597 real edges, volumes 1-48, every endpoint joining to Domain A by verbatim name with the shirt corroborating on 3,289/3,289 rows.
+
+- **The three owners this blocker needs a decision from, each before Story 1.16 emits.**
+  **(1) Story 1.16** can emit `events.passNetworkEdges` in full but can only emit `events.passNetworkNodes: null` unless AD-14 relaxes `x`/`y`. The two tables are **independently nullable** (`match-bundle.schema.json:792-801`), so a null node table beside a populated edge table is *schema-legal today*. It nonetheless collides with `test_pass_network_edges_join_players_who_have_a_node` (`test_fixtures.py:497-503`), which builds its node set from `bundle["events"]["passNetworkNodes"]` with **no `or []` guard** — a `null` node table makes it raise `TypeError` rather than fail cleanly per edge. That test parametrizes over `data/fixtures/`, so the collision lands when the fixtures are refreshed with real data (1.18/1.19), **not** the moment 1.16 emits — but it must be ruled before either.
+  **(2) Story 2.8** has shipped a pass-network surface and it fails **closed** on this data, in two different ways 1.16 must be told apart — neither is a graceful degradation. `passNetworkNodes: **null**` + populated edges → `app/src/lib/tactical-sections.ts:124-125` requires **both** tables non-null (2.8 ruled decision 13, pinned by `tactical-sections.test.ts:193-199`), so `sectionDataState` returns `empty` and the **whole `#pass-networks` section renders `EmptyStatePanel`** — the fully-real pass matrix never reaches the reader. `passNetworkNodes: **[]**` + populated edges → `pass-network-model.ts:336` throws on every unresolvable endpoint inside `TacticalErrorBoundary`, which wraps the whole layer, so **all eleven Tactical sections die** (that blast radius is the open, unpatched 2.8 review finding at the head of this file). **Binding for 1.16: emit `null`, never `[]`.** Re-scoping the surface so the edge table renders without nodes is 2.8's or a successor's call, not 1.14's — but it must be surfaced before 1.16 emits, because until it is ruled the honest emission hides this story's own best data.
+  **(3) The Story 2.3 sign-off row for `#pass-networks` is stale.** `contract/README.md:509` records PASS, reached from schema line numbers and fixture counts, **never from a PDF** (`2-3-…md:209`). Story 1.13 recorded exactly this staleness for the offers/movement row; this entry supersedes the pass-network row the same way.
+
+- **AD-14 note: `involvement` will equal the incident-edge sum EXACTLY on real data — provided Story 1.16 derives it from the MATRIX.** `PassNetworkNode.involvement` is the contract's single "passes made + received" number, and the matrix supplies both terms directly (`passes_made` = row sum, `passes_received` = column sum). Under that derivation `involvement` is *identically* the sum of a node's incident edge volumes, so the fixture-derived invariant `node.involvement >= sum(incident edges)` (`test_fixtures.py:811-829`) **tightens from `>=` to `==` once real data lands** — the fixtures' edges being a hand-authored subset (2.8 measured 28 of 66 nodes at equality, the rest strictly greater). **The dependency is load-bearing:** if 1.16 instead sourced `involvement` from Domain G (`passes_completed + offers_received`) the equality would be FALSE, because the matrix row sum is strictly below Domain G's `passes_completed` on **1,290 of 3,289 rows** (re-measured; the bound itself holds 3,289/3,289 and ships as `pass-network-row-bound`). Flagged so 1.16 does not read the tightening as a bug, and so nobody "fixes" the fixture invariant in the wrong direction.
+
+- **AD-3 is not reachable from the epics alone.** The extract-never-derive rule ("node positions are extracted, never derived from edges") lives in `ARCHITECTURE-SPINE.md:62` and is restated in the schema description (`match-bundle.schema.json:640`), but `epics.md:84`'s AR-3 **drops the event-table clause entirely** — so a reader working from the epics finds the rule in neither AR-3 nor AR-6. Story 2.8 recorded the same numbering drift (`2-8-…md:334`). Recorded, not applied: `epics.md` was not edited. Note also that the epic's own Story 1.14 AC 2 cites **AD-6** for the frame and that citation is **correct** (AD-6 is the pitch frame); it should not be "fixed".
+
+- **CLOSED by measurement — the 2.8 self-loop question.** The 2.8 review entry at the head of this file ("A self-loop pass edge reads '1 conexión' but highlights nothing when isolated") is explicitly *"Deferred until 1.14 shows whether the source page can produce one."* **It cannot.** The matrix diagonal is **blank on 208/208 team-innings** — measured as part of the row census, which asserts exactly one blank per row and that blank on the diagonal — so `fromPlayerId === toPlayerId` is unreachable from this source **by construction**. The App-side defect is real but unreachable from real data, which lowers its priority to whatever a hand-authored or third-party bundle could introduce; it is not a blocker for 1.16, 1.18 or 1.19.
+
+- **A fourth family of absence warning now fires on every report, so the batch summary prints 104 more warning lines** — extends the Story 1.12 (`:171`) and Story 1.13 (`:205`) entries above with the same shape and the same cause: `format_summary`'s "Warnings (non-fatal)" block lists one line per report, and `node_positions`' absence is a property of the page family rather than of any one report. Note the ledgered arithmetic has moved on twice since 1.13 wrote "three warnings": Story 1.9 added three absence warnings of its own, so a record now carries **seven**, and the summary-level de-duplication first proposed in the 1.12 entry ("104 reports: <warning>") would now collapse **728 lines to seven**. Implemented as Task 5.3 specifies (one warning per report, mirrored into the manifest entry). Still deferred for the same reason: it touches `format_summary`'s shared rendering, which several stories' checks depend on.
+
+- **The one-slot per-document memo in `pipeline/validate/checks.py` is now at TWELVE copies.** Story 1.14 adds `_pass_network_memo` / `_pass_network_payload` / `_pass_network_uncached`, copied verbatim from the existing blocks as the story rules (copy-don't-extend), so the open entries this pattern carries — the strong document reference and the replayed cached exception — are inherited once more rather than fixed. Recorded only to keep the count honest: the runner-owned parse-handoff that retires all twelve is already ledgered as a single joint fix, and its value grows with every copy. Note also that **four older domains still carry the pre-2026-07-27 inlined `resolve_anchors` loop** rather than `_domain_anchor_pages`; 1.14 copied the patched `receiving` shape deliberately, but "copy a neighbour" remains a coin flip for the next story.

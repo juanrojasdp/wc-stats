@@ -31,6 +31,9 @@ not maps, so the payload is values rather than events) and its seven appended ch
 Story 1.9 Domains E and F (`goalkeeping`: the four goalkeeping page families — a table, a
 half-table, a marker MAP and a per-minute CHART — staged PER TEAM with Domain A's
 goalkeeper list carried beside each block, plus `set_plays`) and their seven appended
+checks; Story 1.14 the pass network (`pass_network`: the printed player-to-player pass
+MATRIX, joined to Domain A's lineups like Domain G, with `node_positions` staged as an
+explicit `None` because the page carries no coordinates at all) and its three appended
 checks. Stories 1.10-1.14 keep plugging into the same two seams.
 """
 
@@ -51,12 +54,18 @@ from pipeline.extract.domain_b import domain_b_checks, extract_domain_b
 from pipeline.extract.domain_c import domain_c_checks, extract_domain_c
 from pipeline.extract.domain_e import (
     domain_e_checks,
+    domain_e_goalkeeper_warnings,
     domain_e_warnings,
     extract_domain_e,
 )
 from pipeline.extract.domain_f import domain_f_checks, extract_domain_f
 from pipeline.extract.domain_g import domain_g_checks, extract_domain_g
 from pipeline.extract.momentum import extract_momentum, momentum_checks
+from pipeline.extract.pass_network import (
+    extract_pass_network,
+    pass_network_checks,
+    pass_network_warnings,
+)
 from pipeline.ingest.fingerprint import PIPELINE_ROOT, code_version, pdf_content_hash
 from pipeline.ingest.identity import match_id_for, match_number_for
 from pipeline.ingest.records import RECORD_VERSION
@@ -167,7 +176,9 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     `MomentumAxisError`, `MomentumClockError`), or Domains E and F's (Story 1.9:
     `GoalkeepingPageParseError`, `InvolvementChartError`, `SetPlaysParseError`,
     `MalformedFieldError`, `MissingFieldError`, plus the shared-chain errors on the
-    distribution map page). The batch runner turns each into a
+    distribution map page), or the pass-network parser's (Story 1.14:
+    `PassNetworkParseError`, `PlayerJoinError`, `MissingFieldError`). The batch runner
+    turns each into a
     `failed` manifest entry; nothing is caught here, because a partial record is worse
     than none.
 
@@ -290,6 +301,16 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         )
         set_plays = extract_domain_f(doc, anchors, report_id=meta.report_id)
 
+        # Story 1.14, same transparency rule: the pass-network parser's typed errors
+        # (`PassNetworkParseError`, `PlayerJoinError`, `MissingFieldError`) travel as
+        # themselves. It takes Domain A's lineups exactly as Domain G does — the page's
+        # every endpoint joins to a lineup player by verbatim name — and the page draws
+        # NO pitch and NO markers, so its `node_positions` stages an explicit `None`
+        # whose reason rides in `warnings` below.
+        pass_network = extract_pass_network(
+            doc, anchors, match_metadata["lineups"], report_id=meta.report_id
+        )
+
     warnings.extend(f"probe note: {note}" for note in meta.probe_notes)
     # Story 1.12: the documented absence of a printed counterpart for the
     # possession-regain map travels as a per-report warning (never as a non-"pass" check,
@@ -309,6 +330,17 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     # crosses-faced completed count. All three are `None` in the payload plus one warning
     # each — never a non-"pass" check.
     warnings.extend(domain_e_warnings())
+    # Story 1.9, ruled in code review: Domain A's lineups are needed only for the
+    # goalkeeper list carried beside each team block, so a Domain A failure costs that list
+    # and nothing else. On this path `goalkeepers` stages `None` and says so per side —
+    # empty on every corpus report, because Domain A extracts on all 104.
+    warnings.extend(domain_e_goalkeeper_warnings(goalkeeping))
+    # Story 1.14, the same rule again for AC 2's documented absence: `PassNetworkNode`'s
+    # `x`/`y` are unfulfillable — the Passing Networks page carries no pitch, no markers
+    # and no coordinates on 208/208 team-innings, and no page anywhere in the corpus
+    # prints average positions. `node_positions` stages `None` plus this one warning per
+    # report, never a non-"pass" check.
+    warnings.extend(pass_network_warnings())
 
     # Each domain APPENDS its checks and the result re-aggregates over whatever checks
     # are actually present, so domain stories compose without clobbering one another.
@@ -364,6 +396,18 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     # numbers, so neither needs a sibling payload at this seam.
     self_validation["checks"].extend(domain_e_checks(goalkeeping))
     self_validation["checks"].extend(domain_f_checks(set_plays))
+    # Story 1.14: appended after every existing appender. The page's own printed Top-5
+    # panel gives this family the tightest page-internal counterpart in the epic; the two
+    # cross-domain relations ship as BOUNDS (the 1.8/1.9/1.12 rule) and are computed HERE
+    # because Domain G's and Domain B's payloads are only in hand at this seam — the
+    # pass-network parser stays single-source, the 1.7/1.10/1.13 precedent.
+    self_validation["checks"].extend(
+        pass_network_checks(
+            pass_network,
+            player_stats=player_stats,
+            key_statistics=key_statistics,
+        )
+    )
     self_validation["result"] = aggregate_self_validation(self_validation["checks"])
 
     return {
@@ -378,7 +422,7 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         "metadata": metadata,
         "page_count": page_count,
         "anchors": anchors,
-        # Further domains filled by Stories 1.9-1.14.
+        # Domains A-G plus set plays are filled; the remaining ones land with 1.14-1.15.
         "domains": {
             "match_metadata": match_metadata,
             "shots": shots,
@@ -398,6 +442,11 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
             # block from Domain A rather than keying it.
             "goalkeeping": goalkeeping,
             "set_plays": set_plays,
+            # Story 1.14 (AC 2's re-scope): a MATRIX, not events. `node_positions` is
+            # ALWAYS present and is ALWAYS `None` — the page prints no coordinates
+            # anywhere in the corpus — so the absence is published rather than implied
+            # by a missing key, with the reason in `warnings`.
+            "pass_network": pass_network,
         },
         # Real from Story 1.3 on: once extractors run, the result is "pass" or "fail",
         # never left "not-applicable" (a failed consistency check is data, not an

@@ -1035,3 +1035,93 @@ def test_a_self_validation_failure_exits_one_and_is_named_in_the_summary(
     assert "Self-validation failures" in out
     assert "table lists 9" in out
     assert "RUN RESULT: FAIL" in out
+
+
+# --- Story 1.14: the pass network at the batch seam -------------------------------
+
+
+def test_the_default_fixture_keeps_every_pass_network_check_passing(tmp_path, make_report):
+    """Not optional: four tests above destructure `[check] = self_validation_failures`.
+
+    A second failing check on a deliberate-mismatch corpus would break all four, and the
+    breakage would look like a defect in whatever those tests are about (the 1.9/1.10
+    warning). This pins the precondition explicitly so a regression is attributed here.
+    """
+    directory = tmp_path / "corpus"
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(directory / "PMSR-M01-ALP-V-BRA.pdf", number=1, home="Alpha", away="Bravo")
+
+    manifest = _run(tmp_path, directory)
+
+    [entry] = manifest["reports"]
+    assert entry["self_validation"] == "pass"
+    assert entry["self_validation_failures"] == []
+    assert manifest["run"]["self_validation_fail_count"] == 0
+
+
+def test_the_node_positions_absence_reaches_the_manifest_as_a_warning(tmp_path, make_report):
+    """AC 2's absence branch end to end: `node_positions` records NO check at all and
+    travels as ONE per-report warning that `batch.py` mirrors and `format_summary`
+    prints — while the run still passes."""
+    from pipeline.extract.pass_network import pass_network_warnings
+    from pipeline.ingest.batch import format_summary
+
+    directory = tmp_path / "corpus"
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(directory / "PMSR-M01-ALP-V-BRA.pdf", number=1, home="Alpha", away="Bravo")
+
+    manifest = _run(tmp_path, directory)
+
+    (warning,) = pass_network_warnings()
+    [entry] = manifest["reports"]
+    assert entry["self_validation"] == "pass"
+    assert entry["warnings"].count(warning) == 1
+    assert manifest["run"]["result"] == "pass"
+    assert warning in format_summary(manifest)
+
+
+def test_a_pass_network_mismatch_renders_through_the_generic_specifics_fallback(
+    tmp_path, make_report
+):
+    """No `format_summary` branch is added for these ids: a `check_entry`-shaped check
+    carries a `specifics` string holding BOTH operands, which the existing fallback
+    renders — the marker-count template would print `None: None markers` over it."""
+    from pipeline.ingest.batch import format_summary
+    from pipeline.tests.conftest import (
+        default_key_statistics,
+        default_lineup_sides,
+        default_pass_network_block,
+        default_player_stats_rows,
+    )
+
+    stats = default_key_statistics()
+    rows = default_player_stats_rows(default_lineup_sides("Alpha", "Bravo", 2, 0), stats)
+    block = default_pass_network_block(rows["home"], stats["home"]["passes_completed"])
+    block["top5"] = [99.9] + block["top5"][1:]
+    directory = tmp_path / "corpus"
+    directory.mkdir(parents=True, exist_ok=True)
+    make_report(
+        directory / "PMSR-M01-ALP-V-BRA.pdf",
+        number=1,
+        home="Alpha",
+        away="Bravo",
+        pass_network_block={"home": block},
+    )
+
+    manifest = _run(tmp_path, directory)
+
+    [entry] = manifest["reports"]
+    assert entry["status"] == "extracted"
+    assert entry["self_validation"] == "fail"
+    [check] = entry["self_validation_failures"]
+    assert check["check"] == "pass-network-top5-pct"
+    assert manifest["run"]["failed_count"] == 0
+    assert manifest["run"]["self_validation_fail_count"] == 1
+    assert manifest["run"]["result"] == "fail"
+    total = sum(value for row in block["matrix"] for value in row if value is not None)
+    summary = format_summary(manifest)
+    assert "[pass-network-top5-pct]" in summary
+    # BOTH operands visible: the printed percentage, and the cell over the matrix total
+    # the page's own arithmetic says it should have been.
+    assert "printed 99.9%" in summary
+    assert f"/{total} =" in summary

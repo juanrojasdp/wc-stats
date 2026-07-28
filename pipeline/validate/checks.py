@@ -68,8 +68,18 @@ Registered here today:
                           deliberately NOT claimed by either pair — it is
                           test_checks_registry's unclaimed placeholder.
 
+  pass-network-completeness
+                          both teams' pass matrices parse and every endpoint joins to the
+                          lineup, typed (Story 1.14) — this is where AC 3's join integrity
+                          lands, and where the page's two standing NEGATIVE assertions (no
+                          pitch frame, no filled all-Bezier drawing) surface if the
+                          template ever starts printing coordinates
+  pass-network-counts     the pass network's Self-Validation checks (the printed Top-5
+                          reconciliation, plus the row and total BOUNDS against Domains G
+                          and B when those are available), as deviations (Story 1.14)
+
 Later stories add, for example:
-  1.10+ per-domain extractor checks
+  1.15 player identity resolution
 """
 
 from __future__ import annotations
@@ -108,6 +118,11 @@ from pipeline.extract.momentum import (
     MOMENTUM_ANCHOR_ID,
     extract_momentum,
     momentum_checks,
+)
+from pipeline.extract.pass_network import (
+    PASS_NETWORK_ANCHOR_STEM,
+    extract_pass_network,
+    pass_network_checks,
 )
 from pipeline.ingest.identity import team_slug
 from pipeline.markers.crosses import parse_crosses
@@ -1394,11 +1409,17 @@ _DOMAIN_F_ANCHOR_IDS: "tuple[str, ...]" = tuple(
 def _domain_e_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
     """Domain E's payload for one report, or `None` when it cannot be attempted.
 
-    `None` covers both skip paths: one of the seven goalkeeping anchors did not resolve
-    (anchor-coverage's finding), or Domain A did not extract, which leaves the lineups this
-    domain carries its goalkeeper list from unavailable. A Domain A failure is
-    `domain-a-completeness`'s finding, and re-reporting it under a `goalkeeping-*` id is
-    exactly the double attribution the 1.6 review patched out (Task 7.2).
+    `None` means one of the seven goalkeeping anchors did not resolve — anchor-coverage's
+    finding, never re-reported here.
+
+    A Domain A failure is NOT a skip. It leaves the lineups this domain carries its
+    goalkeeper list from unavailable, so `extract_domain_e` is called with `lineups=None`
+    and the four page families are read as normal: goal prevention, aerial control,
+    distribution and involvement are all page-internal and need no lineup. Returning
+    `None` here instead would hide a genuinely broken goalkeeping page behind
+    `domain-a-completeness`'s finding, which Task 7.2 forbids ("skip only the parts that
+    need it and run the rest"). The Domain A failure itself is still reported once, under
+    `domain-a-*`, and never re-attributed to a `goalkeeping-*` id.
     """
     if _domain_e_memo["doc"] is not doc:
         _domain_e_memo.update(doc=doc, result=None, error=None)
@@ -1415,17 +1436,17 @@ def _domain_e_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | Non
     anchors = _domain_anchor_pages(doc, meta, _DOMAIN_E_ANCHOR_IDS)
     if anchors is None:
         return None
-    # Reuse Domain A's memo rather than an eighth parse of the same document.
+    # Reuse Domain A's memo rather than an eighth parse of the same document. Its failure
+    # costs only the goalkeeper list (Task 7.2), so it becomes `lineups=None` rather than a
+    # skip of the whole domain — see `_domain_e_payload`.
     try:
         domain_a = _domain_a_payload(doc, meta)
     except PipelineError:
-        return None
-    if domain_a is None:
-        return None
+        domain_a = None
     return extract_domain_e(
         doc,
         anchors,
-        domain_a["lineups"],
+        None if domain_a is None else domain_a["lineups"],
         report_id=meta.report_id,
         home_team=meta.home_team,
         away_team=meta.away_team,
@@ -1556,5 +1577,132 @@ register_check(
         check_id="set-plays-counts",
         applies_to=lambda meta: True,
         run=_check_set_plays_counts,
+    )
+)
+
+
+# One-slot memo for `_pass_network_payload`, same shape and justification as the memos
+# above (Story 1.14): the runner hands the same open document to `pass-network-completeness`
+# and then `pass-network-counts`, and each uncached call rebuilds the full-text
+# `PageTextIndex` and re-parses both pass-network pages plus the Domain A lineups they
+# join to. Copied, not refactored — this is the TWELFTH instance, and the memo pattern
+# carries OPEN deferred-work entries (strong doc ref, replayed cached exceptions) that a
+# shared abstraction would have to inherit anyway; the runner-owned parse-handoff that
+# retires all twelve is ledgered as a single joint fix.
+_pass_network_memo: dict = {"doc": None, "result": None, "error": None}
+
+# Derived from the parser's own anchor-stem constant so the gate's anchor list and the
+# parser's can never drift (the `domain_e.py` precedent). `offers-*` and `movement-*` are
+# deliberately NOT the prefix here either: `offers-count-match` is test_checks_registry's
+# unclaimed placeholder and `register_check` raises on duplicates.
+_PASS_NETWORK_ANCHOR_IDS: "tuple[str, ...]" = tuple(
+    f"{PASS_NETWORK_ANCHOR_STEM}:{side}" for side in ("home", "away")
+)
+
+
+def _pass_network_payload(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    """The pass-network payload for one report, or `None` when it cannot be attempted.
+
+    `None` covers both skip paths, exactly as `_domain_g_payload` does: a pass-network
+    anchor did not resolve (anchor-coverage's finding), or Domain A did not extract,
+    which leaves the lineups every matrix endpoint joins to unavailable (a
+    `domain-a-completeness` finding). Re-reporting either under a `pass-network-*` id is
+    the double attribution the 1.6 review patched out.
+    """
+    if _pass_network_memo["doc"] is not doc:
+        _pass_network_memo.update(doc=doc, result=None, error=None)
+        try:
+            _pass_network_memo["result"] = _pass_network_uncached(doc, meta)
+        except Exception as exc:
+            _pass_network_memo["error"] = exc
+    if _pass_network_memo["error"] is not None:
+        raise _pass_network_memo["error"]
+    return _pass_network_memo["result"]
+
+
+def _pass_network_uncached(doc: "pymupdf.Document", meta: ReportMeta) -> "dict | None":
+    # `_domain_anchor_pages`, never a hand-rolled `resolve_anchors` loop: the 2026-07-27
+    # review patch removed exactly that inlined copy from `receiving`, where a registry
+    # that no longer carried a spec silently left the id OUT of the map and surfaced an
+    # authoring bug as report data on all 104 reports. Four older domains still carry the
+    # unpatched shape, so this one copies the PATCHED neighbour deliberately.
+    anchors = _domain_anchor_pages(doc, meta, _PASS_NETWORK_ANCHOR_IDS)
+    if anchors is None:
+        return None
+    try:
+        domain_a = _domain_a_payload(doc, meta)
+    except PipelineError:
+        return None
+    if domain_a is None:
+        return None
+    return extract_pass_network(doc, anchors, domain_a["lineups"], report_id=meta.report_id)
+
+
+def _check_pass_network_completeness(
+    doc: "pymupdf.Document", meta: ReportMeta
+) -> list[Deviation]:
+    """The matrix parses and every endpoint joins to the lineup, typed (AC 1, AC 3).
+
+    This is where AC 3's "join integrity" reaches the deviation summary: an endpoint that
+    matches no lineup player, or whose shirt number disagrees with the matched entry,
+    surfaces here as a `probe-failure` carrying `PlayerJoinError` and its message. So does
+    every structural failure of the matrix grammar (`PassNetworkParseError`) — including
+    the page's two standing NEGATIVE assertions, so a template that starts drawing a pitch
+    or markers aborts loud in the gate rather than publishing `node_positions: null`
+    forever. Same attribution rules and the same non-`PipelineError` caveat as
+    `domain-g-completeness`.
+    """
+    try:
+        _pass_network_payload(doc, meta)
+    except ExtractError as exc:
+        return _extract_failure_deviation("pass-network-completeness", meta, exc)
+    return []
+
+
+def _check_pass_network_counts(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """The pass network's Self-Validation checks, re-run as gate deviations (AC 3).
+
+    A report that does not extract yields no deviation *here* (completeness's,
+    domain-a-completeness's or anchor-coverage's finding). The two cross-domain BOUNDS
+    need Domain G's per-player rows and Domain B's Key Statistics, so they reuse those
+    memos rather than a third parse of the same pages; a report whose Domain G or Domain B
+    raises simply runs WITHOUT that bound, because a sibling parse failure is that
+    domain's finding. The page-internal Top-5 check needs neither and always runs.
+    """
+    try:
+        payload = _pass_network_payload(doc, meta)
+    except PipelineError:
+        return []
+    if payload is None:
+        return []
+    try:
+        player_stats = _domain_g_payload(doc, meta)
+    except PipelineError:
+        player_stats = None
+    try:
+        key_statistics = _domain_b_payload(doc, meta)
+    except PipelineError:
+        key_statistics = None
+    return _failed_check_deviations(
+        "pass-network-counts",
+        meta,
+        pass_network_checks(
+            payload, player_stats=player_stats, key_statistics=key_statistics
+        ),
+    )
+
+
+register_check(
+    Check(
+        check_id="pass-network-completeness",
+        applies_to=lambda meta: True,
+        run=_check_pass_network_completeness,
+    )
+)
+register_check(
+    Check(
+        check_id="pass-network-counts",
+        applies_to=lambda meta: True,
+        run=_check_pass_network_counts,
     )
 )

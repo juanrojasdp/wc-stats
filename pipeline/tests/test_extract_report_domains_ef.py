@@ -35,6 +35,14 @@ GATE_CHECK_IDS = (
 
 @pytest.fixture
 def clean_registry():
+    """Restore the global check registry after any test that runs a verification.
+
+    A LOCAL fixture, deliberately — `test_checks_registry.py` and `test_runner.py` each
+    carry their own copy, and a shared conftest one would let a registry mutation in any
+    file leak into every other. Every test below that calls `run_verification` requests
+    it; without that the four deviation-category tests ran against the live registry and
+    the fixture was dead code asserting nothing.
+    """
     snapshot = list(CHECK_REGISTRY)
     yield
     CHECK_REGISTRY[:] = snapshot
@@ -69,12 +77,24 @@ def test_the_goalkeeping_block_is_per_team_not_per_goalkeeper(tmp_path, make_rep
 
 
 def test_the_seven_checks_append_after_every_existing_appender(tmp_path, make_report):
+    """Task 6.1: this story's seven ids APPEND — never replacing the list, never
+    reordering another domain's entries.
+
+    Asserted as a contiguous block preceded by the pre-1.9 appenders, NOT as the list's
+    tail. Story 1.14 appends three `pass-network-*` ids after these, which is exactly what
+    "domain stories compose without clobbering one another" is supposed to allow; pinning
+    `ids[-7:]` made this test fail on a later story doing the right thing.
+    """
     record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
 
     ids = [check["check"] for check in record["self_validation"]["checks"]]
-    assert ids[-7:] == list(DOMAIN_E_CHECK_IDS) + list(DOMAIN_F_CHECK_IDS)
-    # Nothing else moved: the earlier domains' ids are still present, in order.
-    assert "shots-marker-count-home" in ids or ids[0].startswith("shots")
+    ours = list(DOMAIN_E_CHECK_IDS) + list(DOMAIN_F_CHECK_IDS)
+    start = ids.index(ours[0])
+    assert ids[start : start + len(ours)] == ours
+    # Everything before the block is another domain's, and every earlier appender ran.
+    assert start > 0
+    assert not set(ids[:start]) & set(ours)
+    assert ids[0].startswith("shots")
 
 
 def test_a_clean_synthetic_report_self_validates(tmp_path, make_report):
@@ -175,7 +195,7 @@ def test_a_clean_report_produces_no_ef_deviations(tmp_path, make_report):
         assert check_id in report["checks_run"]
 
 
-def test_a_parse_failure_lands_in_probe_failure(tmp_path, make_report):
+def test_a_parse_failure_lands_in_probe_failure(tmp_path, make_report, clean_registry):
     """Task 7.3's closed mapping: every typed parse/typing/completeness failure is a
     `probe-failure` naming the typed class."""
     make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7, goal_prevention_header=False)
@@ -188,7 +208,7 @@ def test_a_parse_failure_lands_in_probe_failure(tmp_path, make_report):
     assert ours[0]["specifics"].startswith("GoalkeepingPageParseError:")
 
 
-def test_a_set_plays_parse_failure_lands_in_probe_failure(tmp_path, make_report):
+def test_a_set_plays_parse_failure_lands_in_probe_failure(tmp_path, make_report, clean_registry):
     make_report(
         tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7, set_plays_omit_labels=("indirect",)
     )
@@ -201,7 +221,7 @@ def test_a_set_plays_parse_failure_lands_in_probe_failure(tmp_path, make_report)
     assert ours[0]["specifics"].startswith("SetPlaysParseError:")
 
 
-def test_an_off_palette_distribution_marker_lands_in_unknown_rgb(tmp_path, make_report):
+def test_an_off_palette_distribution_marker_lands_in_unknown_rgb(tmp_path, make_report, clean_registry):
     make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7, gk_distribution_off_palette=True)
 
     report = run_verification(tmp_path)
@@ -212,7 +232,7 @@ def test_an_off_palette_distribution_marker_lands_in_unknown_rgb(tmp_path, make_
     assert "goalkeeping palette" in ours[0]["specifics"]
 
 
-def test_a_failed_consistency_check_lands_in_count_mismatch(tmp_path, make_report):
+def test_a_failed_consistency_check_lands_in_count_mismatch(tmp_path, make_report, clean_registry):
     from pipeline.tests.conftest import default_set_plays_block
 
     block = default_set_plays_block("away")
@@ -229,7 +249,7 @@ def test_a_failed_consistency_check_lands_in_count_mismatch(tmp_path, make_repor
 
 
 def test_a_completeness_failure_is_not_double_reported_by_the_counts_check(
-    tmp_path, make_report
+    tmp_path, make_report, clean_registry
 ):
     """Task 7.4: the counts check swallows `PipelineError`, so one root cause is
     attributed once (the 1.6 review's single-attribution patch)."""
@@ -242,7 +262,7 @@ def test_a_completeness_failure_is_not_double_reported_by_the_counts_check(
     ]
 
 
-def test_a_missing_anchor_is_only_anchor_coverages_finding(tmp_path, make_report):
+def test_a_missing_anchor_is_only_anchor_coverages_finding(tmp_path, make_report, clean_registry):
     """Task 7.1: a missing section page returns `None`, never a second report of the same
     root cause under a domain id."""
     make_report(

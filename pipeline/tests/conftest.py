@@ -1795,8 +1795,11 @@ GK_DISTRIBUTION_SPOT_FYS = (0.11, 0.5, 0.89)
 GK_DISTRIBUTION_DONUT_TOP = 474.0
 GK_DISTRIBUTION_DONUT_XS = {"feet": 168.0, "hands": 410.0, "throw": 647.0}
 GK_DISTRIBUTION_LINE_BREAKS_LAYOUT = ("Goalkeeper Line Breaks", 840.0, 507.0, 470.0)
-# Technique labels the donuts carry — non-numeric furniture that shares the donut row, as
-# the corpus prints it ('30 From Hands 0 Under Arm 3').
+# Technique labels the donuts carry — non-numeric furniture that shares the donut row.
+# WORDS ONLY, deliberately: the numbers a corpus donut row carries are the three donut
+# CENTRES themselves, which the fixture already draws at `GK_DISTRIBUTION_DONUT_XS`, and
+# the four-number census below the panel band is what pins them. Drawing further numbers
+# beside these labels would make the fixture contradict the census it exists to prove.
 GK_DISTRIBUTION_TECHNIQUE_LABELS = ((274.5, "From Hands"), (514.5, "Under Arm"))
 
 # (fx, fy, outcome) per source panel. The Total Distributions panel is drawn as the exact
@@ -1846,6 +1849,7 @@ def draw_gk_distribution_page(
     titles=None,
     legend=True,
     spots=True,
+    donut_xs=None,
     off_palette=False,
     decorate=None,
 ):
@@ -1904,7 +1908,7 @@ def draw_gk_distribution_page(
     if off_palette and "feet" in rects:
         plot(rects["feet"], 0.5, 0.5, (0.0, 0.6, 0.2))
 
-    for key, centre_x in GK_DISTRIBUTION_DONUT_XS.items():
+    for key, centre_x in (GK_DISTRIBUTION_DONUT_XS if donut_xs is None else donut_xs).items():
         if key in block["printed"]:
             _ef_centred(page, centre_x, GK_DISTRIBUTION_DONUT_TOP, block["printed"][key], fontsize=12)
     for x, text in GK_DISTRIBUTION_TECHNIQUE_LABELS:
@@ -2102,6 +2106,295 @@ def default_goalkeeping_blocks(side):
     }
 
 
+# --- Story 1.14: the pass-network page (a MATRIX, no pitch, no markers) -------------
+#
+# Geometry mirrors the real 960x540 template verbatim (PMSR-M01 page 11): the header band
+# at y 90.75-117.75, the `#` cell at x 12-30, the `Passes From to` cell at 30-172.5, then
+# the player columns from 172.5 rightward, and the Top-5 panel from 760.5.
+PASS_NETWORK_HEADER_FILL = (0.1804, 0.302, 1.0)
+PASS_NETWORK_HEADER_Y0, PASS_NETWORK_HEADER_Y1 = 90.75, 117.75
+PASS_NETWORK_SHIRT_X0, PASS_NETWORK_SHIRT_X1 = 12.0, 30.0
+PASS_NETWORK_FIRST_COLUMN_X0 = 172.5
+PASS_NETWORK_PANEL_X0, PASS_NETWORK_PANEL_X1 = 760.5, 948.0
+PASS_NETWORK_ROW_Y0, PASS_NETWORK_ROW_PITCH = 125.34, 24.75
+PASS_NETWORK_FONTSIZE = 7.0
+# Every y quoted above and below is a span **y0**, which is what the corpus dump reports
+# and what the parser's header band is expressed in — but `insert_text` takes a BASELINE.
+# Converting here rather than eyeballing offsets is what keeps the fixture's header band
+# and first body row on the same side of y=117.75 as the real page's are; a fixture drawn
+# a few points high puts the first row's shirt number INSIDE the header band, where it
+# reads as part of the `#` cell's text.
+PASS_NETWORK_ASCENDER = 1.075  # pymupdf's Helvetica ascender, the default insert_text font
+
+
+def _pn_baseline(y0, fontsize=PASS_NETWORK_FONTSIZE):
+    return y0 + PASS_NETWORK_ASCENDER * fontsize
+# DELIBERATELY NON-UNIFORM, cycling: widths vary WITHIN the page on 156 of 208 corpus
+# innings (27.75-58.5 pt), and a uniform fixture would let a parser that hardcodes 36 pt
+# — wrong on 156 innings — pass every synthetic test in the suite.
+PASS_NETWORK_COLUMN_WIDTHS = (36.0, 30.0, 42.0, 27.75, 33.0)
+# The five spiked cells that give the Top-5 panel five DISTINCT descending values well
+# above every other cell (base values are 0-2), so the printed reconciliation is a real
+# ordering check rather than five ties.
+PASS_NETWORK_SPIKES = (12, 11, 10, 9, 8)
+
+
+def _pass_network_base(i, j):
+    """The background cell value: 0-2, asymmetric, and varied row to row.
+
+    Uniformity is the severe fixture risk here (the 1.13 review's theme): if every row
+    printed the same values, a parser that transposed its column assignment would be
+    undetectable by any test. This pattern makes `cell[i][j] != cell[j][i]` on 49 of the
+    66 default pairs.
+    """
+    return (i * 3 + j * 5 + (i * j) % 7) % 3
+
+
+def _pass_network_spike_cells(size):
+    """The five spiked (row, column) pairs for a matrix of `size` players."""
+    return {(k, (2 * k + 1) % size): value for k, value in enumerate(PASS_NETWORK_SPIKES)}
+
+
+def default_pass_network_block(rows, matrix_total_cap):
+    """One team's pass matrix, DERIVED from this report's own Domain G rows.
+
+    `rows` are the Domain G rows the factory already built for this side, so the matrix
+    names exactly the lineup players with minutes, with matching shirts, in the same
+    order — which is what keeps the join, its completeness half and the two cross-domain
+    bounds green when a caller changes the lineup.
+
+    The three relations Story 1.14 REJECTED on corpus evidence are made FALSE here by
+    construction, so no fixture can bless them (the 1.9/1.13 discipline):
+
+    - every row sum is STRICTLY LESS than that player's Domain G `passes_completed`
+      (equality is corpus-false on 1,290 of 3,289 rows, so the check ships as a bound);
+    - `matrix_total` is STRICTLY LESS than Key Statistics `passes_completed` (corpus-true
+      on 208/208);
+    - column sums fall on BOTH sides of `offers_received`, so no bound in either
+      direction could be blessed (that relation is corpus-false both ways and is
+      deliberately not shipped at all).
+
+    The first two caps are asserted rather than assumed: a caller who shrinks the lineup
+    or lowers the printed pass counts gets a loud factory error naming the offender,
+    never a report whose pass-network checks fail for a reason nothing on the page points
+    at. The third is not asserted here — see the comment at its would-be site below.
+    """
+    size = len(rows)
+    if size < 6:
+        raise ValueError(
+            f"default_pass_network_block: {size} players with minutes is too few to draw "
+            "a pass matrix with five distinct Top-5 cells; pass explicit "
+            "pass_network_block or give the side more players"
+        )
+    spikes = _pass_network_spike_cells(size)
+    matrix = [
+        [
+            None
+            if i == j
+            else spikes.get((i, j), _pass_network_base(i, j))
+            for j in range(size)
+        ]
+        for i in range(size)
+    ]
+    for index, row in enumerate(matrix):
+        made = sum(value for value in row if value is not None)
+        cap = rows[index]["distributions"][1]
+        if not isinstance(cap, int) or made >= cap:
+            raise ValueError(
+                f"default_pass_network_block: row {index} sums to {made}, which is not "
+                f"strictly less than its Domain G passes_completed {cap!r}"
+            )
+    # The column-sum vs `offers_received` relation is deliberately NOT asserted here.
+    # It is corpus-false in BOTH directions (3,145 greater, 121 equal, 23 less), so no
+    # check ships against it and a coincidental equality on one column breaks nothing —
+    # a factory raise would only break reports that have no interest in pass networks.
+    # The property that matters (both directions present, so no bound in either direction
+    # could be blessed) is asserted against the default report in
+    # `test_extract_report_pass_network.py`, where the lineup is known.
+    total = sum(value for row in matrix for value in row if value is not None)
+    if not isinstance(matrix_total_cap, int) or total >= matrix_total_cap:
+        raise ValueError(
+            f"default_pass_network_block: matrix_total {total} is not strictly less than "
+            f"Key Statistics passes_completed {matrix_total_cap!r}"
+        )
+    largest = sorted(
+        (value for row in matrix for value in row if value is not None), reverse=True
+    )[:5]
+    return {
+        "players": [{"shirt": row["shirt"], "name": row["name"]} for row in rows],
+        "matrix": matrix,
+        # Printed to one decimal, exactly as the corpus does — which is where the
+        # parser's 0.05 tolerance (the half-ulp of 1-dp rounding) comes from.
+        "top5": [round(100.0 * cell / total, 1) for cell in largest],
+    }
+
+
+def _pn_centred(page, centre, y0, text, fontsize=PASS_NETWORK_FONTSIZE):
+    """Print `text` horizontally centred on `centre`, with its span top at `y0`."""
+    import pymupdf
+
+    text = str(text)
+    width = pymupdf.get_text_length(text, fontsize=fontsize)
+    page.insert_text((centre - width / 2, _pn_baseline(y0, fontsize)), text, fontsize=fontsize)
+
+
+def _pn_text(page, x, y0, text, fontsize=PASS_NETWORK_FONTSIZE):
+    """Print `text` left-aligned at `x`, with its span top at `y0`."""
+    page.insert_text((x, _pn_baseline(y0, fontsize)), str(text), fontsize=fontsize)
+
+
+def _pn_right(page, x1, y0, text, fontsize=PASS_NETWORK_FONTSIZE):
+    """Print `text` right-aligned to `x1`, with its span top at `y0`."""
+    import pymupdf
+
+    text = str(text)
+    width = pymupdf.get_text_length(text, fontsize=fontsize)
+    _pn_text(page, x1 - width, y0, text, fontsize)
+
+
+def pass_network_columns(size, widths=PASS_NETWORK_COLUMN_WIDTHS):
+    """The (x0, x1) extent of each player column, non-uniform and contiguous."""
+    columns = []
+    x0 = PASS_NETWORK_FIRST_COLUMN_X0
+    for index in range(size):
+        x1 = x0 + widths[index % len(widths)]
+        columns.append((x0, x1))
+        x0 = x1
+    return columns
+
+
+def draw_pass_network_page(
+    page,
+    block,
+    *,
+    header=True,
+    lead_texts=("#", "Passes From to"),
+    column_widths=PASS_NETWORK_COLUMN_WIDTHS,
+    header_names=None,
+    omit_cells=(),
+    cell_text=None,
+    cell_fonts=None,
+    panel=True,
+    decorate=None,
+):
+    """Draw a parseable Passing Networks page: header band, N x N matrix, Top-5 panel.
+
+    **Every cell is printed with its OWN `insert_text` at its own x, inside its column's
+    own header rect.** This is load-bearing, not style: `pymupdf` merges adjacent
+    same-font inserts into a single span (the 1.10 landmine — `_g_row_head` printed each
+    name with one call, so every synthetic test saw one name span). If a row were emitted
+    as one string, the parser would see one span, x-containment would become meaningless,
+    and every test here would pass over a page that cannot exercise the column-geometry
+    rule they exist to prove. `test_a_drawn_row_yields_one_span_per_printed_cell` pins it.
+
+    The diagonal is NOT printed — that single absence per row is what makes the text
+    stream ragged and is the whole reason assignment must be geometric. Zeros ARE printed.
+
+    `header_names` overrides the printed column-header names (a hyphen-wrap case, a
+    renamed column); `omit_cells` drops `(row, column)` cells; `cell_text` overrides a
+    cell's printed text by `(row, column)`; `decorate(page)` draws extra content last,
+    following the family convention (a pitch rect there is Task 2.12's tripwire).
+    """
+    import pymupdf
+
+    matrix = block["matrix"]
+    size = len(matrix)
+    columns = pass_network_columns(size, column_widths)
+    names = [player["name"] for player in block["players"]]
+    printed_names = list(header_names) if header_names is not None else list(names)
+
+    if header:
+        cells = [(PASS_NETWORK_SHIRT_X0, PASS_NETWORK_SHIRT_X1),
+                 (PASS_NETWORK_SHIRT_X1, PASS_NETWORK_FIRST_COLUMN_X0)] + columns
+        for x0, x1 in cells:
+            page.draw_rect(
+                pymupdf.Rect(x0, PASS_NETWORK_HEADER_Y0, x1, PASS_NETWORK_HEADER_Y1),
+                color=None,
+                fill=PASS_NETWORK_HEADER_FILL,
+            )
+            # The 0.75 pt white separators the real page draws over the same band at the
+            # same height: they qualify on y and on height and are excluded by FILL
+            # alone, so the fixture proves the fill predicate is doing work.
+            page.draw_rect(
+                pymupdf.Rect(x0, PASS_NETWORK_HEADER_Y0, x0 + 0.75, PASS_NETWORK_HEADER_Y1 + 0.75),
+                color=None,
+                fill=(1.0, 1.0, 1.0),
+            )
+        # The Top-5 panel's own header rect: same y0, height 13.5, which is what the
+        # `height > 20` predicate exists to exclude.
+        page.draw_rect(
+            pymupdf.Rect(PASS_NETWORK_PANEL_X0, PASS_NETWORK_HEADER_Y0,
+                         PASS_NETWORK_PANEL_X1, PASS_NETWORK_HEADER_Y0 + 13.5),
+            color=None,
+            fill=PASS_NETWORK_HEADER_FILL,
+        )
+        shirt_text, row_text = lead_texts
+        if shirt_text is not None:
+            _pn_centred(page, (PASS_NETWORK_SHIRT_X0 + PASS_NETWORK_SHIRT_X1) / 2, 100.31,
+                        shirt_text)
+        if row_text is not None:
+            _pn_text(page, 36.8, 100.31, row_text)
+        # Column headers wrap onto two lines exactly as the corpus prints them (given
+        # names above, surnames below), so `_header_texts` must join per LINE and then
+        # join the lines — sorting a two-line cell's spans by x alone would interleave.
+        for (x0, x1), name in zip(columns, printed_names):
+            centre = (x0 + x1) / 2
+            head, _, tail = name.rpartition(" ")
+            if head:
+                _pn_centred(page, centre, 94.31, head)
+                _pn_centred(page, centre, 104.81, tail)
+            else:
+                _pn_centred(page, centre, 100.31, tail)
+
+    for index, player in enumerate(block["players"]):
+        y = PASS_NETWORK_ROW_Y0 + index * PASS_NETWORK_ROW_PITCH
+        _pn_right(page, PASS_NETWORK_SHIRT_X1 - 2.4, y, player["shirt"])
+        _pn_text(page, 33.0, y, player["name"])
+        for column, (x0, x1) in enumerate(columns):
+            if matrix[index][column] is None or (index, column) in omit_cells:
+                continue
+            text = (cell_text or {}).get((index, column), str(matrix[index][column]))
+            if text is None:
+                continue
+            # `cell_fonts` exists for exactly one case: a FULLWIDTH digit needs a font
+            # that can encode it (the 1.13 note). The base-14 fonts substitute U+FFFD,
+            # which would make the `re.ASCII` guard's test pass for the wrong reason.
+            font = (cell_fonts or {}).get((index, column))
+            if font is None:
+                _pn_centred(page, (x0 + x1) / 2, y, text)
+            else:
+                page.insert_text(
+                    ((x0 + x1) / 2 - 3.5, _pn_baseline(y)),
+                    str(text),
+                    fontsize=PASS_NETWORK_FONTSIZE,
+                    fontname=font,
+                )
+
+    if panel:
+        # The panel's own stacked header, INSIDE the header band's y range but outside
+        # every header cell's x range — so it must reach neither the column-name read nor
+        # the percentage read. It carries a bare `%`, which is exactly the token a lazy
+        # percentage regex would pick up as a sixth Top-5 row.
+        _pn_text(page, 893.0, 108.56, "% of Total Team")
+        _pn_text(page, 763.6, 112.31, "Player")
+        _pn_text(page, 824.3, 112.31, "Passed To")
+        _pn_text(page, 906.1, 116.06, "Passes")
+        for rank, percent in enumerate(block["top5"]):
+            y = 138.84 + rank * 30.0
+            text = percent if isinstance(percent, str) else f"{percent:g}%"
+            # Names share the percentage's visual row exactly as the corpus prints them,
+            # so the read must pull the percentage OUT of a mixed row rather than assume
+            # the panel prints numbers alone.
+            _pn_text(page, 763.6, y, names[rank % size].split(" ")[0])
+            _pn_text(page, 823.6, y, names[(rank + 1) % size].split(" ")[0])
+            _pn_right(page, 926.7, y, text)
+            _pn_text(page, 763.6, y + 6.0, names[rank % size].split(" ")[-1])
+            _pn_text(page, 823.6, y + 6.0, names[(rank + 1) % size].split(" ")[-1])
+
+    if decorate is not None:
+        decorate(page)
+
+
 @pytest.fixture(scope="session")
 def make_report():
     """Factory for a synthetic PMSR report whose every registered anchor resolves.
@@ -2175,6 +2468,16 @@ def make_report():
     relation by construction and make both corpus-refuted relations FALSE. The
     `set_plays_*` / `goalkeeping_*` / `gk_*` / `goal_prevention_*` / `aerial_*` kwargs are
     documented on the parameters themselves.
+
+    Story 1.14 (additive, default-on): the two `pass-network` anchors emit the real page —
+    a filled header band whose two leading cells are `#` and `Passes From to`, then N
+    NON-UNIFORM player columns with two-line wrapped names, an N x N matrix whose diagonal
+    is blank and whose zeros ARE printed, each cell drawn with its own `insert_text`
+    inside its own column rect, and the Top-5 panel with five distinct printed
+    percentages. The matrix is DERIVED from this report's own Domain G rows
+    (`default_pass_network_block`), so the join and both cross-domain bounds stay green —
+    and all three corpus-refuted relations are false by construction. The
+    `pass_network_*` kwargs are documented on the parameters themselves.
 
     `page_order` re-orders the anchor pages (the cover always stays first — `probe_report`
     reads it by position). `AC 4` says a shuffled or offset report must still resolve, so
@@ -2355,8 +2658,11 @@ def make_report():
         # drops printed labels by payload key; `gk_distribution_panels` /
         # `gk_distribution_titles` break the four-panel/title grammar;
         # `gk_distribution_off_palette` draws an unknown marker fill;
-        # `gk_involvement_dot_offsets` displaces a dot off the value grid;
-        # `gk_involvement_axis_rule=False` drops the extra rule; and the `*_extra_pages`
+        # `gk_distribution_legend=False` / `gk_distribution_spots=False` drop the two
+        # excluded-by-construction shapes, so a test can prove dropping them changes
+        # nothing; `gk_involvement_dot_offsets` displaces a dot off the value grid;
+        # `gk_involvement_axis_rule=False` drops the extra rule; the four `*_decorate`
+        # hooks draw extra content for collision tests; and the `*_extra_pages`
         # counts emit additional anchored pages so an anchor resolves to more than one.
         set_plays_block: "dict[str, dict] | None" = None,
         set_plays_date_strip: bool = True,
@@ -2367,6 +2673,8 @@ def make_report():
         gk_distribution_panels: "tuple | None" = None,
         gk_distribution_titles: "dict[str, str] | None" = None,
         gk_distribution_legend: bool = True,
+        gk_distribution_spots: bool = True,
+        gk_distribution_donut_xs: "dict[str, float] | None" = None,
         gk_distribution_off_palette: bool = False,
         gk_distribution_decorate=None,
         gk_distribution_extra_pages: "dict[str, int] | None" = None,
@@ -2380,6 +2688,37 @@ def make_report():
         goal_prevention_decorate=None,
         aerial_header: bool = True,
         aerial_decorate=None,
+        # Story 1.14 (additive, default-on): every report now carries a parseable
+        # Passing Networks page per team — extract_report runs the parser on every
+        # report, so the text-only auto-generated page this anchor used to emit would die
+        # in `PassNetworkParseError` and take the whole synthetic suite with it.
+        #
+        # The matrix DEFAULTS to a derivation of this report's own Domain G rows
+        # (`default_pass_network_block`), which is what keeps the join and both
+        # cross-domain bounds green when a caller changes the lineup — and which makes
+        # all three corpus-refuted relations false by construction.
+        #
+        # `pass_network_block` replaces the drawn matrix per side; `pass_network_header`
+        # drops the whole header band; `pass_network_lead_texts` rewrites the two leading
+        # header cells' text per side (a template revision); `pass_network_column_widths`
+        # changes the column grid (a uniform grid, a wider one);
+        # `pass_network_header_names` rewrites the printed column-header names (the
+        # hyphen-wrap case); `pass_network_omit_cells` drops `(row, column)` cells (a
+        # second blank in a row); `pass_network_cell_text` doctors a cell's printed text
+        # (a fullwidth digit, a non-integer); `pass_network_panel=False` drops the Top-5
+        # panel; `pass_network_decorate` draws extra content last (a pitch rect there is
+        # the no-coordinates tripwire); `pass_network_extra_pages` emits additional
+        # anchored pages so the anchor resolves to more than one.
+        pass_network_block: "dict[str, dict] | None" = None,
+        pass_network_header: bool = True,
+        pass_network_lead_texts: "dict[str, tuple] | None" = None,
+        pass_network_column_widths: "tuple | None" = None,
+        pass_network_header_names: "dict[str, list] | None" = None,
+        pass_network_omit_cells: "dict[str, tuple] | None" = None,
+        pass_network_cell_text: "dict[str, dict] | None" = None,
+        pass_network_panel: bool = True,
+        pass_network_decorate=None,
+        pass_network_extra_pages: "dict[str, int] | None" = None,
     ) -> Path:
         import pymupdf
 
@@ -3088,11 +3427,51 @@ def make_report():
         if goalkeeping_blocks is not None:
             gk_blocks = {**gk_blocks, **goalkeeping_blocks}
 
+        # Story 1.14: the pass matrix is derived from the Domain G rows resolved above,
+        # and from the Key Statistics block, so the join and both bounds hold whatever
+        # the caller changed. Resolved BEFORE the anchor loop for the same reason the
+        # Domain G blocks are: the pass-network page may be emitted ahead of the lineups.
+        pass_network_blocks = {
+            side: default_pass_network_block(
+                player_stats_blocks[side], stats_block[side]["passes_completed"]
+            )
+            for side in ("home", "away")
+        }
+        if pass_network_block is not None:
+            pass_network_blocks = {**pass_network_blocks, **pass_network_block}
+
         def emit_anchored_extras(anchor_text: str, count: int) -> None:
             """Extra pages carrying the same anchor text, so the anchor resolves to >1."""
             for _ in range(count):
                 extra = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
                 extra.insert_text((40, 60), anchor_text, fontsize=11)
+
+        def emit_pass_network_page(side: str, anchor_text: str) -> None:
+            page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
+            page.insert_text((40, 60), anchor_text, fontsize=11)
+            draw_pass_network_page(
+                page,
+                pass_network_blocks[side],
+                header=pass_network_header,
+                lead_texts=(pass_network_lead_texts or {}).get(
+                    side, ("#", "Passes From to")
+                ),
+                column_widths=(
+                    pass_network_column_widths
+                    if pass_network_column_widths is not None
+                    else PASS_NETWORK_COLUMN_WIDTHS
+                ),
+                header_names=(pass_network_header_names or {}).get(side),
+                omit_cells=(pass_network_omit_cells or {}).get(side, ()),
+                cell_text=(pass_network_cell_text or {}).get(side),
+                panel=pass_network_panel,
+                decorate=(
+                    None
+                    if pass_network_decorate is None
+                    else (lambda p, s=side: pass_network_decorate(s, p))
+                ),
+            )
+            emit_anchored_extras(anchor_text, (pass_network_extra_pages or {}).get(side, 0))
 
         def emit_set_plays_page(side: str, anchor_text: str) -> None:
             page = doc.new_page(width=PAGE_WIDTH, height=PAGE_HEIGHT)
@@ -3119,6 +3498,8 @@ def make_report():
                 ),
                 titles=gk_distribution_titles,
                 legend=gk_distribution_legend,
+                spots=gk_distribution_spots,
+                donut_xs=gk_distribution_donut_xs,
                 off_palette=gk_distribution_off_palette,
                 decorate=gk_distribution_decorate,
             )
@@ -3215,6 +3596,12 @@ def make_report():
                 continue
             if anchor.anchor_id in ("set-plays:home", "set-plays:away"):
                 emit_set_plays_page(anchor.anchor_id.split(":")[1], anchor.text)
+                continue
+            # Story 1.14: the pass-network family, per team — the SUFFIXED ids, like every
+            # per-team branch above. A bare-id branch would never fire and would leave the
+            # generic anchor-text-only page behind, which now fails the whole suite.
+            if anchor.anchor_id in ("pass-network:home", "pass-network:away"):
+                emit_pass_network_page(anchor.anchor_id.split(":")[1], anchor.text)
                 continue
             page = doc.new_page(width=960, height=540)
             page.insert_text((40, 60), anchor.text, fontsize=11)
