@@ -34,6 +34,7 @@ from pipeline.extract.domain_e import (
 from pipeline.extract.errors import (
     GoalkeepingPageParseError,
     InvolvementChartError,
+    InvolvementClockError,
     MalformedFieldError,
     MissingFieldError,
 )
@@ -41,6 +42,7 @@ from pipeline.markers.errors import PitchFrameError, UnknownRgbError
 
 from pipeline.tests.conftest import (
     AERIAL_TOTAL_LAYOUT,
+    DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT,
     DEFAULT_GK_INVOLVEMENT_TOP_LABEL,
     EF_LABEL_FONTSIZE,
     GK_DISTRIBUTION_DONUT_XS,
@@ -51,8 +53,10 @@ from pipeline.tests.conftest import (
     GK_INVOLVEMENT_PLOT_X1,
     GK_INVOLVEMENT_UNIT,
     _ef_centred,
+    default_gk_involvement_block,
     default_goalkeeping_blocks,
     default_lineup_sides,
+    gk_involvement_ticks,
     lineup_entry,
     lineup_side,
 )
@@ -131,6 +135,7 @@ def test_both_sides_carry_all_four_families(build):
             "goalkeepers",
             "total_involvements",
             "involvement_series",
+            "involvement_clock",
             "distribution",
             "goal_prevention",
             "aerial_control",
@@ -466,6 +471,423 @@ def test_a_dot_above_the_printed_axis_top_raises(build):
         _extract(build(gk_involvement_dot_offsets={("home", 19): -15.4403}))
 
 
+# --- the involvement chart's TIME axis (Decision 3) ---------------------------------------
+#
+# Every mapping below is derived from the chart's own printed x-ticks. The fixture's tick
+# row moves with the clock structure it is given, so a parser that ignored the ticks and
+# assumed a fixed layout would fail every extra-time case here.
+
+
+def _involvement_blocks(**clock):
+    """Both sides' goalkeeping blocks with one clock structure applied to both charts."""
+    blocks = {side: default_goalkeeping_blocks(side) for side in ("home", "away")}
+    for side in ("home", "away"):
+        blocks[side]["involvement"] = default_gk_involvement_block(side, **clock)
+    return blocks
+
+
+def test_the_clock_stamps_every_slot_from_the_printed_ticks(build):
+    """The default fixture is the reference report's own structure: 100 slots with match
+    minute 46 on slot 49, so 4 first-half and 6 second-half stoppage minutes."""
+    payload = _extract(build())
+
+    for side in ("home", "away"):
+        clock = payload[side]["involvement_clock"]
+        stamps = clock["stamps"]
+
+        assert clock["second_half_slot"] == DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT
+        assert clock["first_extra_slot"] is None
+        assert clock["second_extra_slot"] is None
+        assert len(stamps) == len(payload[side]["involvement_series"])
+        assert stamps[0] == {"minute": 1, "stoppage_minute": None}
+        assert stamps[44] == {"minute": 45, "stoppage_minute": None}
+        assert stamps[45] == {"minute": 45, "stoppage_minute": 1}
+        assert stamps[49] == {"minute": 46, "stoppage_minute": None}
+        assert stamps[93] == {"minute": 90, "stoppage_minute": None}
+        assert stamps[-1] == {"minute": 90, "stoppage_minute": 6}
+
+
+def test_the_clock_follows_this_reports_own_stoppage_rather_than_a_fixed_layout(build):
+    """The same chart with a different half-time boundary maps to different minutes.
+
+    This is the whole reason the mapping is derived: everything after half time shifts by
+    that report's own allotment, so a parser using a fixed formula would stage minute 46 on
+    slot 49 here too.
+    """
+    payload = _extract(build(goalkeeping_blocks=_involvement_blocks(second_half_slot=52)))
+
+    for side in ("home", "away"):
+        stamps = payload[side]["involvement_clock"]["stamps"]
+        assert payload[side]["involvement_clock"]["second_half_slot"] == 52
+        assert stamps[45] == {"minute": 45, "stoppage_minute": 1}
+        assert stamps[51] == {"minute": 45, "stoppage_minute": 7}
+        assert stamps[52] == {"minute": 46, "stoppage_minute": None}
+        assert stamps[-1] == {"minute": 90, "stoppage_minute": 3}
+
+
+def test_an_extra_time_chart_maps_both_extra_periods(build):
+    """A 138-slot extra-time chart, the shape of `PMSR-M104-ESP-V-ARG`: minute 91 on slot
+    102 and minute 106 on slot 118, with the grid running to `120+5`."""
+    payload = _extract(
+        build(
+            goalkeeping_blocks=_involvement_blocks(
+                slots=138, second_half_slot=49, first_extra_slot=102, second_extra_slot=118
+            )
+        )
+    )
+
+    for side in ("home", "away"):
+        clock = payload[side]["involvement_clock"]
+        stamps = clock["stamps"]
+
+        assert (clock["first_extra_slot"], clock["second_extra_slot"]) == (102, 118)
+        assert stamps[101] == {"minute": 90, "stoppage_minute": 8}
+        assert stamps[102] == {"minute": 91, "stoppage_minute": None}
+        assert stamps[116] == {"minute": 105, "stoppage_minute": None}
+        assert stamps[117] == {"minute": 105, "stoppage_minute": 1}
+        assert stamps[118] == {"minute": 106, "stoppage_minute": None}
+        assert stamps[132] == {"minute": 120, "stoppage_minute": None}
+        assert stamps[-1] == {"minute": 120, "stoppage_minute": 5}
+
+
+def test_a_first_extra_period_drawn_short_parses_and_is_recorded(build):
+    """`PMSR-M88-AUS-V-EGY`'s chart, pinned.
+
+    Both of its charts draw a 14-slot first extra period: no `105'` tick is printed and the
+    `110'` tick sits one slot earlier than a 15-minute ET1 would put it. The page is
+    internally consistent and simply says minute 105 has no slot, so it parses — asserting
+    football over the source would fail a report the source states plainly — and the short
+    period is recorded in the check's specifics on every report instead.
+    """
+    payload = _extract(
+        build(
+            goalkeeping_blocks=_involvement_blocks(
+                slots=131, second_half_slot=49, first_extra_slot=100, second_extra_slot=114
+            )
+        )
+    )
+
+    stamps = payload["home"]["involvement_clock"]["stamps"]
+    assert stamps[113] == {"minute": 104, "stoppage_minute": None}
+    assert stamps[114] == {"minute": 106, "stoppage_minute": None}  # minute 105 has no slot
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+    assert check["result"] == "pass"
+    assert "ET1 drawn SHORT at 14/15 slots" in check["specifics"]
+
+
+def test_the_clock_check_records_every_periods_stoppage(build):
+    check = _check(domain_e_checks(_extract(build())), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "pass"
+    for side in ("home", "away"):
+        assert f"{side}: 100 slots, 1..90+6, H1 +4, H2 +6" in check["specifics"]
+
+
+# --- the clock check's FAIL branches (Task 8.3) ------------------------------------------
+#
+# Every clock test above this point drives `InvolvementClockError` out of the PARSER, which
+# is a different code path: the parse aborts and `domain_e_checks` is never reached. So none
+# of them covers this check's predicate, and the predicate is the part that runs against a
+# STAGED record — where the parser's invariants no longer hold by construction. The
+# mutations below are the only way in, and each one targets a single clause.
+
+
+def test_the_clock_check_fails_when_the_series_does_not_open_at_kick_off(build):
+    payload = _extract(build())
+    payload["home"]["involvement_clock"]["stamps"][0] = {"minute": 2, "stoppage_minute": None}
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "home: series opens at 2, not kick-off" in check["specifics"]
+
+
+def test_the_clock_check_fails_when_the_clock_does_not_advance(build):
+    payload = _extract(build())
+    stamps = payload["away"]["involvement_clock"]["stamps"]
+    stamps[60] = dict(stamps[59])
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "away: clock does not advance at" in check["specifics"]
+
+
+def test_the_clock_check_fails_when_the_series_ends_outside_its_final_period(build):
+    payload = _extract(build())
+    # Past the closing period rather than before it, so the mutation still ADVANCES on the
+    # preceding stamp and this clause is reached rather than the monotonicity one.
+    payload["home"]["involvement_clock"]["stamps"][-1] = {
+        "minute": 121, "stoppage_minute": None
+    }
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "home: series ends at 121, outside the closing 46'-90' period" in check["specifics"]
+
+
+def test_a_short_second_extra_period_is_recorded_not_failed(build):
+    """The mirror of the ET1 case above, and the reason the predicate asks for the final
+    PERIOD rather than for minute 120 exactly.
+
+    An earlier form compared `stamps[-1]["minute"] != 120`, which passed a short ET1 (whose
+    last stamp is still minute 120) and FAILED a short ET2 — the same page shape judged two
+    ways, and the opposite of the policy the check's own comment states.
+    """
+    payload = _extract(
+        build(
+            goalkeeping_blocks=_involvement_blocks(
+                slots=129, second_half_slot=49, first_extra_slot=100, second_extra_slot=115
+            )
+        )
+    )
+
+    stamps = payload["home"]["involvement_clock"]["stamps"]
+    assert stamps[-1] == {"minute": 119, "stoppage_minute": None}  # ET2 one slot short
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+    assert check["result"] == "pass"
+    assert "ET2 drawn SHORT at 14/15 slots" in check["specifics"]
+
+
+def test_the_clock_check_fails_when_a_boundary_field_disagrees_with_its_own_stamps(build):
+    """The backstop's whole subject is corruption of the staged block between parse and
+    record — so a boundary field the predicate never reads is the one it most needs to.
+
+    Before this clause existed the mutation below PASSED, while `specifics` reported period
+    lengths derived from the wrong slot: a green check carrying visibly wrong numbers.
+    """
+    payload = _extract(build())
+    payload["home"]["involvement_clock"]["second_half_slot"] = 60
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "home: second_half_slot is slot 60, which the staged stamps put at 57" in (
+        check["specifics"]
+    )
+
+
+def test_the_clock_check_fails_when_a_boundary_field_lands_outside_the_stamps(build):
+    payload = _extract(build())
+    payload["away"]["involvement_clock"]["second_half_slot"] = 900
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "away: second_half_slot is slot 900, outside the 100 staged stamps" in (
+        check["specifics"]
+    )
+
+
+def test_the_clock_check_records_the_passing_sides_facts_when_the_other_side_fails(build):
+    """The delta-absorption shape this story's 2026-07-27 review patched twice, and which
+    the clock check reintroduced: a `continue` past `clock_facts.append` on the failing
+    side. The allotments are promised on EVERY report, passing or not."""
+    payload = _extract(build())
+    payload["home"]["involvement_clock"]["stamps"] = []
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "home: no clock stamps staged" in check["specifics"]
+    # The failing side still contributes a fact, and the passing side keeps its allotments.
+    assert "home: 0 slots, no clock" in check["specifics"]
+    assert "away: 100 slots, 1..90+6, H1 +4, H2 +6" in check["specifics"]
+    # No dangling separator on either end.
+    assert not check["specifics"].endswith(" | ")
+    assert " |  " not in check["specifics"]
+
+
+def test_the_clock_check_fails_rather_than_raising_on_an_empty_staged_block(build):
+    """`stamps == []` alongside an equally empty series passes a bare length-equality guard
+    and then indexes `stamps[0]`. An `IndexError` escaping here is a non-`PipelineError`
+    that neither gate handler is written for — a recordable failure turned into a crash."""
+    payload = _extract(build())
+    payload["home"]["involvement_clock"]["stamps"] = []
+    payload["home"]["involvement_series"] = []
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "home: no clock stamps staged" in check["specifics"]
+
+
+def test_the_clock_check_fails_when_only_one_extra_boundary_is_staged(build):
+    """`first_extra_slot` set with `second_extra_slot` `None` reaches a `None` subtraction
+    in `_period_notes` — a `TypeError` out of the check runner, not a recorded failure."""
+    payload = _extract(build())
+    payload["away"]["involvement_clock"]["first_extra_slot"] = 95
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "away: extra-time boundaries staged inconsistently" in check["specifics"]
+
+
+def test_the_clock_check_fails_when_the_stamps_do_not_cover_the_series(build):
+    payload = _extract(build())
+    payload["home"]["involvement_series"] = payload["home"]["involvement_series"][:-1]
+
+    check = _check(domain_e_checks(payload), "goalkeeping-involvement-clock")
+
+    assert check["result"] == "fail"
+    assert "home: 100 clock stamps against 99 plotted slots" in check["specifics"]
+
+
+def test_a_chart_with_no_x_ticks_raises(build):
+    with pytest.raises(InvolvementClockError, match="prints no x-tick labels"):
+        _extract(build(goalkeeping_blocks=_involvement_blocks(ticks=())))
+
+
+def test_a_tick_off_the_slot_grid_raises(build):
+    """A tick centred between two slots means the tick row and the dot grid were laid out
+    against different scales — the one thing that could shift a whole period by a minute
+    with nothing else disagreeing."""
+    ticks = [
+        (slot + 0.4, label) if label == "HT" else (slot, label)
+        for slot, label in gk_involvement_ticks(100, DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT)
+    ]
+
+    with pytest.raises(InvolvementClockError, match="is not a slot centre"):
+        _extract(build(goalkeeping_blocks=_involvement_blocks(ticks=ticks)))
+
+
+def test_an_unknown_tick_label_raises(build):
+    """Closed grammar, assert-on-unknown (AD-8). Ignoring a label this parser cannot read
+    would silently drop whichever boundary it was the only witness to."""
+    ticks = [
+        (slot, "FT" if label == "HT" else label)
+        for slot, label in gk_involvement_ticks(100, DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT)
+    ]
+
+    with pytest.raises(InvolvementClockError, match="is neither a minute"):
+        _extract(build(goalkeeping_blocks=_involvement_blocks(ticks=ticks)))
+
+
+def test_a_tick_printed_twice_raises(build):
+    """Whichever period it pins becomes ambiguous, and no printed counterpart on the page
+    could catch the wrong choice."""
+    ticks = list(gk_involvement_ticks(100, DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT))
+    ticks.append((60, "HT"))
+
+    with pytest.raises(InvolvementClockError, match="more than once"):
+        _extract(build(goalkeeping_blocks=_involvement_blocks(ticks=ticks)))
+
+
+def test_second_half_ticks_that_disagree_raise(build):
+    """Every second-half tick pins the same boundary; the redundancy is the assertion."""
+    ticks = [
+        (slot + 1, label) if label == "70" else (slot, label)
+        for slot, label in gk_involvement_ticks(100, DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT)
+    ]
+
+    with pytest.raises(InvolvementClockError, match="disagree on where the second half"):
+        _extract(build(goalkeeping_blocks=_involvement_blocks(ticks=ticks)))
+
+
+def test_a_missing_origin_tick_raises(build):
+    """Without the `0` tick the whole grid could be shifted and every later assertion
+    would still pass."""
+    ticks = [
+        (slot, label)
+        for slot, label in gk_involvement_ticks(100, DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT)
+        if label != "0"
+    ]
+
+    with pytest.raises(InvolvementClockError, match="origin tick"):
+        _extract(build(goalkeeping_blocks=_involvement_blocks(ticks=ticks)))
+
+
+def test_a_first_half_tick_on_the_wrong_slot_raises(build):
+    ticks = [
+        (slot + 2, label) if label == "30" else (slot, label)
+        for slot, label in gk_involvement_ticks(100, DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT)
+    ]
+
+    with pytest.raises(InvolvementClockError, match=r"first-half x-tick 30' sits at slot 31"):
+        _extract(build(goalkeeping_blocks=_involvement_blocks(ticks=ticks)))
+
+
+def test_a_stoppage_tick_on_the_wrong_slot_raises(build):
+    ticks = [
+        (slot + 1, label) if label == "90+5" else (slot, label)
+        for slot, label in gk_involvement_ticks(100, DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT)
+    ]
+
+    with pytest.raises(InvolvementClockError, match=r"x-tick '90\+5' sits at slot 99"):
+        _extract(build(goalkeeping_blocks=_involvement_blocks(ticks=ticks)))
+
+
+def test_ticks_for_only_one_extra_period_raise(build):
+    """Guessing the missing boundary from a 15-minute assumption is exactly what the
+    `PMSR-M88` chart shows to be wrong, so one period's ticks alone are refused."""
+    ticks = [
+        (slot, label)
+        for slot, label in gk_involvement_ticks(138, 49, 102, 118)
+        if label not in ("110", "115", "120", "120+5")
+    ]
+
+    with pytest.raises(InvolvementClockError, match="only one extra period"):
+        _extract(
+            build(
+                goalkeeping_blocks=_involvement_blocks(
+                    slots=138, second_half_slot=49, first_extra_slot=102,
+                    second_extra_slot=118, ticks=ticks,
+                )
+            )
+        )
+
+
+def test_a_first_half_stoppage_past_the_contract_bound_raises(build):
+    """A half-time boundary far down the grid stages `stoppage_minute` values the
+    contract's `StoppageMinute` cannot express, and nothing between here and Story 1.16's
+    emit boundary would notice.
+
+    The `M+N` stoppage ticks are dropped: at 140 slots the plot box gives each slot 5.2 pt,
+    so stoppage labels 5 slots apart overprint each other into one unreadable run. The
+    corpus never comes close (H1 stoppage measures 0-10, H2 1-19), which is the point —
+    this bound guards a state no real page reaches.
+    """
+    ticks = [
+        (slot, label) for slot, label in gk_involvement_ticks(140, 80) if "+" not in label
+    ]
+
+    with pytest.raises(InvolvementClockError, match="first-half stoppage minutes, past"):
+        _extract(
+            build(
+                goalkeeping_blocks=_involvement_blocks(
+                    slots=140, second_half_slot=80, ticks=ticks
+                )
+            )
+        )
+
+
+def test_the_tick_reader_splits_a_merged_45ht_span(tmp_path):
+    """pymupdf merges adjacent same-font inserts, and two corpus reports
+    (`PMSR-M86-ARG-V-CPV`, `PMSR-M100-ARG-V-SUI`) hand back a single `'45HT'` span whose
+    centre is neither tick's — read span-level those four charts fail on a page that is
+    perfectly well formed. The reader is character-level and splits on the digit-class
+    boundary, with `+` folded in WITH the digits so `90+5` stays one label.
+    """
+    from pipeline.extract.domain_e import _tick_runs
+
+    doc = pymupdf.open()
+    page = doc.new_page(width=960, height=540)
+    page.insert_text((100.0, 200.0), "45HT", fontsize=8)
+    page.insert_text((300.0, 200.0), "90+5", fontsize=8)
+
+    runs = _tick_runs(page, 0.0, 960.0, 150.0, 250.0, "involvement chart", None)
+    doc.close()
+
+    assert [label for label, _x in runs] == ["45", "HT", "90+5"]
+    # And the two halves keep their OWN centres — the whole point of splitting.
+    centres = dict(runs)
+    assert centres["45"] < centres["HT"] < centres["90+5"]
+
+
 def _anchors_for(path):
     """The nine Domain E/F anchors for a built report, resolved."""
     meta = probe_report(path)
@@ -598,7 +1020,7 @@ def test_each_absence_carries_exactly_one_warning():
 # --- the recorded checks -------------------------------------------------------------------
 
 
-def test_all_five_checks_pass_on_the_defaults(build):
+def test_all_six_checks_pass_on_the_defaults(build):
     checks = domain_e_checks(_extract(build()))
 
     assert [check["check"] for check in checks] == [
@@ -607,6 +1029,7 @@ def test_all_five_checks_pass_on_the_defaults(build):
         "goalkeeping-goal-prevention-sum",
         "goalkeeping-aerial-sum",
         "goalkeeping-involvement-bound",
+        "goalkeeping-involvement-clock",
     ]
     assert all(check["result"] == "pass" for check in checks)
 

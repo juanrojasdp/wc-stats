@@ -4,7 +4,7 @@ baseline_commit: 727963752706bf9a272fa1a35d6a229bf2921d23
 
 # Story 1.9: Domains E & F Extraction — Goalkeeping & Set Plays
 
-Status: in-progress
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -68,8 +68,9 @@ so that the Tactical Layer's goalkeeping and set-play sections have complete dat
     **The exact spec is corpus-verified — use it as given:** `marker_min_pt=5.0`, `marker_max_pt=6.5` (real dots are 5.83 pt filled circles with a white stroke), and **`pitch_margin_pt=0.0`** — the default strict containment, which is load-bearing here. Every panel frame ends at `y1 = 406.5` on all 832 corpus panels while the `Complete`/`Incomplete` legend swatches sit at y ≈ 411, so strict containment excludes the legend **by geometry alone**. Any positive margin would admit two swatches per panel and inflate every count by 2. Consequently `legend_min_colors` never fires (a two-colour palette can never reach four distinct fills at one y) and **no legend-row exclusion is needed** — do not add one. Verified: with this spec, **0 off-palette markers are admitted on 208/208 pages**.
   - [x] 3.9 The three donut centre numbers ARE reliable here and are the printed counterpart: exactly **4 real numbers** print on every distribution page (feet total, hands total, throw total, `Goalkeeper Line Breaks`) — 6 numeric words including the two date tokens, invariant on 208/208. Stage all four, and use the three totals as Task 5's printed cross-check against the marker counts.
   - [x] 3.10 **Goalkeeping Involvement** — ONE page, both charts, keyed by the home team's anchor. Per chart: read the y-axis labels (single-digit spans at x < 35; the axis auto-scales, top label ∈ {2,3,4,5,6}) and fit `value = (y_of_zero_label − y) / unit` from the label pair; read one 3.0 pt dot per slot (21,764 of 21,764 corpus dots are exactly 3.0 pt wide). **Derive the scale from the printed labels, never from gridline spacing** — the gridline set includes lines the axis does not label, and a spacing-derived unit is wrong (measured during the probe). Slot values must round to non-negative integers; a dot further than the tolerance from an integer → `InvolvementChartError`. Two of 208 charts sit outside a 0.15 tolerance on the probe's naive label-centre fit — resolve those two before shipping a tolerance, and record the resolved bound and its evidence.
-  - [ ] 3.11 Slot count is **per report** (95–111 regulation, 129–145 extra-time), exactly as Story 1.8 found for momentum — never hard-code 100. The x-tick labels (`0 5 … 45 HT 50 … 90 90+5`) print below each chart and are the only key to the slot → match-clock mapping. **Open question left to dev (Dev Notes §Open question).**
+  - [x] 3.11 Slot count is **per report** (95–111 regulation, 129–145 extra-time), exactly as Story 1.8 found for momentum — never hard-code 100. The x-tick labels (`0 5 … 45 HT 50 … 90 90+5`) print below each chart and are the only key to the slot → match-clock mapping. **Open question left to dev (Dev Notes §Open question).**
     *Re-opened in code review (2026-07-27). The slot COUNT half is done and correct — per report, nothing hard-coded, 95–145 measured across 208 charts. The slot → match-clock MAPPING half was never implemented: the x-tick labels are not read and no clock structure is staged, so Story 2.10 cannot place this timeline on the match clock. Ruled by Juan: implement it. The corpus probe is done and every relation is exact (see Review Findings, Decision 3); the remaining blocker is the extra-time tick collision on 9 reports.*
+    *Closed 2026-08-03. Implemented: `involvement_clock` stages `second_half_slot` / `first_extra_slot` / `second_extra_slot` plus one flat `{minute, stoppage_minute}` stamp per slot, derived from each chart's own printed x-ticks, with the typed `InvolvementClockError` and the recorded `goalkeeping-involvement-clock` check. The extra-time collision was measured away rather than resolved by assumption: it belongs to the naive reading, not to the data (see Completion Notes, Decision 3 closure). 17 new tests; 208/208 charts derive clean.*
   - [x] 3.12 `total_involvements` is printed per team (x > 780) on 104/104 — stage it verbatim. It is NOT the series sum (§Open question).
 
 - [x] Task 4: The goalkeeper attribution (AC: 1)
@@ -278,6 +279,13 @@ domains["goalkeeping"] = {
                                            # page families still parse — they need no lineup)
     "total_involvements": int,
     "involvement_series": [int, ...],      # one non-negative int per plotted slot
+    "involvement_clock": {                 # Decision 3: the slot -> match-clock mapping,
+                                           # derived from this chart's own printed x-ticks
+      "second_half_slot": int,             # the slot carrying match minute 46
+      "first_extra_slot": int|None,        # minute 91; None on the 95 regulation reports
+      "second_extra_slot": int|None,       # minute 106; None likewise
+      "stamps": [{"minute": int, "stoppage_minute": int|None}, ...],  # one per slot
+    },
     "distribution": {
       "feet":  {"complete": int, "incomplete": int, "total": int, "printed_total": int},
       "hands": {...}, "throw": {...}, "total": {...},
@@ -435,11 +443,79 @@ Every figure below is reproducible from `pmsr-corpus/` (104 PDFs) plus `spike/me
 - **Post-review**: the code review added 15 further tests, giving **105** across the three
   files (58 Domain E, 21 Domain F, 26 record/gate integration), all green.
 
+**Decision 3 (2026-08-03) — the involvement slot -> match-clock mapping.**
+
+- **Tick census over all 104 reports / 208 charts**, read character-level: `0`, `5`..`45`,
+  `50`..`90` on 208/208; `HT` on **122**; `45+5` on 108 and `45+10` on 2; `90+5` on 182,
+  `90+10` on 30, `90+15` on 2; `95`/`100`/`110`/`115`/`120` on 18 each, `105` on **16**,
+  `120+5` on 4. **No `FT` tick exists anywhere in the corpus.**
+- **Every clock relation exact, 0 deviations over 4,336 tick readings**: origin `0` on slot
+  0 (208/208); first-half `M` on `M-1` (1,872/1,872); `45+N` on `44+N` (110/110); one
+  unanimous minute-46 slot across every second-half tick (208/208), equal to `HT` where
+  printed (122/122); `90+N` on `m46+44+N` (214/214); both extra periods unanimous across
+  their own ticks (18/18 charts); `120+N` on `et2+14+N` (4/4). Worst tick-to-slot-centre
+  residual **0.0005 slots** over the whole corpus.
+- **Span-level vs character-level, measured**: a span-level prototype failed exactly **4
+  charts** — `PMSR-M86-ARG-V-CPV` and `PMSR-M100-ARG-V-SUI`, both sides — with "tick
+  '45HT' is not a slot centre", and 204/208 elsewhere. Character-level: **208/208**.
+- **Stoppage allotments derived**: H1 **0-10** minutes (modes 4 and 5, 48 charts each), H2
+  **1-19** (mode 6), ET1 **0-4** (plus M88's **-1**), ET2 **0-12** — all inside the
+  contract's `StoppageMinute`, and the parser's `MAX_STOPPAGE_MINUTE = 30` is never
+  approached.
+- **Extra-time collision, retired**: across all 18 extra-time charts the `95'` tick sits
+  **5-9 slots after** the last `90+N` tick, never on it. The collision the review recorded
+  belongs to the naive second-half extension, not to the source.
+- **ET1 period lengths**: 15 slots on 4 charts, 16 on 4, 17 on 4, 18 on 2, 19 on 2 — and
+  **14** on `PMSR-M88-AUS-V-EGY`'s two, the single short period in the corpus.
+- **Batch (Decision 3 re-run)**: `104 extracted / 0 failed / exactly 2 self-validation
+  failures` (PMSR-M19-ARG-V-ALG, PMSR-M58-TUN-V-NED — both 1.12's ledgered
+  `defensive-actions-marker-count`, neither from E or F), 0 corpus gaps, 0 orphans,
+  `RUN RESULT: FAIL` by design. All 208 charts stage a clock whose stamp count equals their
+  series length; 18 carry extra time; `goalkeeping-involvement-clock` passes **104/104**
+  with M88's short ET1 the only recorded period note.
+- **Gate (Decision 3 re-run)**: `GATE RESULT: PASS`, 0 deviations across 16 sampled reports,
+  0 corpus gaps, exit 0, with all four E/F ids in `checks_run` (27 ids now, 1.14's pair
+  having landed since). The sample happens to include `PMSR-M100-ARG-V-SUI` and
+  `PMSR-M104-ESP-V-ARG`, so the extra-time clock path is gate-exercised rather than only
+  unit-tested. Two consecutive runs
+  (`work/verification/gate-clock-{a,b}.json`) compared field by field: **identical apart
+  from `run_timestamp`**.
+- **Idempotence**: re-run on a stable tree gives **`0 extracted / 104 skipped-unchanged`**
+  with all 104 staged records **byte-identical** (SHA-256 compared against a snapshot) at an
+  unchanged `code_version`. Recorded honestly: the FIRST re-run attempt re-extracted all 104
+  instead of skipping, because `code_version` fingerprints `pipeline/**/*.py` and the tree
+  moved between the two runs — this story's own post-batch docstring rewrapping plus another
+  session's in-flight `pass_network.py` work. That is the fingerprint doing its job, not a
+  determinism fault, and the clean re-run above is the actual measurement.
+- **Suite**: **1,330 tests collected across 39 test files**, all run **green**. Story
+  1.9's own three files now collect **122** (74 Domain E, 21 Domain F, 27 record/gate
+  integration), up from 105 — Decision 3 added **17**: 16 clock tests in
+  `test_extract_domain_e.py` (one of which is a direct unit test of the tick reader, the
+  only honest way to pin the `45HT` split) and the M01 ground-truth clock assertion in
+  `test_extract_report_domains_ef.py`.
+  *Corrected in the 2026-08-03 code review: this bullet originally read "37 test files",
+  which cannot hold alongside 1,330 — `pipeline/tests/` holds 39 files, and the two
+  untracked Story 1.15 files (`test_precompute_identity.py`, `test_precompute_spine.py`)
+  contribute 72 of the 1,330, so the 37 files this story's tree owns collect 1,258. The
+  1,330 figure was right; the file count was not.*
+  The suite was run in **chunks rather than one invocation**, because two attempts at a
+  single full run were killed externally partway through; every file is covered exactly
+  once or more and no file was skipped. One transient failure is recorded rather than
+  hidden: `test_extract_report_domain_a.py::test_a_count_inconsistency_lands_in_the_count_mismatch_bucket`
+  failed mid-run inside `conftest.default_pass_network_block` — **Story 1.14's** fixture,
+  which another session was editing live (the raising guard does not exist in `HEAD`). It
+  passes on the settled file, and the same chunk was re-run green. Nothing in that path
+  touches Domains E or F.
+  *Also settled by the code review: the chunked-run caveat is retired. The reviewer ran
+  this story's three files in a SINGLE invocation — 122 passed, 0 failed, 0 skipped, exit
+  0 — so the assembled claim above is no longer the only evidence.*
+
 ### Completion Notes List
 
 **What shipped.** `pipeline/extract/domain_f.py` (Set Plays) and `domain_e.py` (the four
 goalkeeping page families), the fifth instance of the 1.6/1.7/1.10 extractor convention,
-plus seven recorded self-validation checks, four FR-15 gate checks, and nine synthetic page
+plus eight recorded self-validation checks (seven at first implementation, plus
+`goalkeeping-involvement-clock` with Decision 3), four FR-15 gate checks, and nine synthetic page
 drawers in `conftest.py`. No new `AnchorSpec`; `/contract` untouched; `pipeline/markers/`
 imported but never edited.
 
@@ -529,6 +605,47 @@ asserts the record's warnings as an EXACT set. That test is designed to fail whe
 adds a documented absence ("a fourth unexplained warning still fails this test"), so the
 repair is the intended one: the expected set widens from three warnings to six, sourced from
 `domain_e_warnings()` rather than re-typed.
+
+**Decision 3 shipped (2026-08-03), and its blocker turned out not to exist.** The
+involvement chart's TIME axis is now read alongside its value axis: `involvement_clock`
+stages `second_half_slot` / `first_extra_slot` / `second_extra_slot` plus one flat
+`{minute, stoppage_minute}` stamp per slot, derived from that chart's own printed x-ticks
+and never from a formula. Four things are worth carrying forward:
+
+1. **The "extra-time tick collision" was in the assumption, not the source.** The review
+   left this open because `90+5` and `95` both land on `m46+49` under the natural reading.
+   The chart does not use that reading: across all 18 extra-time charts the `95'` tick sits
+   **5-9 slots after** the last `90+N` tick, never on it. Nothing had to be ruled — the
+   printed ticks say where extra time starts, and the naive extension of the second-half
+   formula is simply not what the template does.
+2. **Every clock relation is exact, 0 deviations over 208 charts / 4,336 tick readings**:
+   origin `0` on slot 0 (208/208), first-half `M` on slot `M-1` (1,872/1,872), `45+N` on
+   `44+N` (110/110), one unanimous minute-46 slot across every second-half tick (208/208)
+   equal to `HT` where printed (122/122), `90+N` on `m46+44+N` (214/214), both extra
+   periods unanimous (18/18 charts). Each boundary is pinned by *every* tick that speaks
+   to it, so a dozen independent readings agree before one minute is staged.
+3. **The tick row must be read character-level** — measured, not assumed. A span-level
+   prototype failed exactly four charts (`PMSR-M86-ARG-V-CPV` and `PMSR-M100-ARG-V-SUI`,
+   both sides) and no others: their half-time tick sits one slot after the 45' tick, and
+   pymupdf merges the two inserts into a single `'45HT'` span whose centre is neither
+   tick's. Runs break on the digit-class boundary with `+` folded in *with* the digits, so
+   `45HT` splits while `90+5` stays whole. Story 1.7's merged-span lesson again.
+4. **`PMSR-M88-AUS-V-EGY` draws a 14-slot first extra period** on both charts — no `105'`
+   tick, and a `110'` tick one slot earlier than a 15-minute ET1 would put it. The page is
+   internally consistent and says minute 105 has no slot; every other extra-time chart runs
+   ET1 at 15-19 slots. The parser therefore does not assert a period's regular length. That
+   is deliberate on two grounds: asserting it would fail one report over football rather
+   than over the page, and it would move the ruled batch baseline. The short period is
+   recorded in `goalkeeping-involvement-clock`'s specifics on every report and ledgered.
+
+`InvolvementClockError` is a separate class from `InvolvementChartError` because the two
+axes are read from different sources and fail for different reasons, and a gate operator
+triaging deviations needs to tell "the values are unreadable" from "the values are readable
+but nobody knows which minute they are". The recorded check is an honest **backstop**, not
+a cross-check, and its docstring says so — every inconsistency it could describe is already
+a typed failure that aborts the report before a clock is staged. Its `specifics` carry the
+derived stoppage allotments and any short period on every report; neither is part of its
+pass/fail predicate.
 
 **Open questions reported, not closed.** The involvement series plots fewer involvements
 than the KPI counts (delta 0..5, never negative, exact on 59/208, mean 1.26) and the `feet`
@@ -628,26 +745,113 @@ Adversarial code review, 2026-07-27 — three layers (Blind Hunter, Edge Case Hu
 
 **Un-dismissed and patched (1)** — `_gridline_run` selecting a run shifted one gridline down was dismissed during triage on the reasoning that `goalkeeping-involvement-bound` catches a uniformly inflated series. Writing the regression test for it proved the dismissal wrong on the mechanism: an extra evenly-spaced gridline one unit below zero makes the top-anchored candidate `count + 1` long (rejected for being too long), leaving the shifted run as the *unique* survivor — so `len(runs) != 1` never fires and every value reads one unit high off a baseline that is not zero. The bound does eventually fail, but as a count mismatch blaming the printed total for a misread axis, and only after the series has staged wrong. `_gridline_run` now also asserts the selected run starts at the top of the grid. [`pipeline/extract/domain_e.py:_gridline_run`]
 
-**Applied (25 of 26).** All three ruled decisions and all 22 patches are implemented, plus the un-dismissed finding above. The one item NOT implemented is Decision 3 — see below.
+**Applied (26 of 26).** All three ruled decisions, all 22 patches and the un-dismissed finding above are implemented. Decision 3 was completed on 2026-08-03 — see below.
 
-**Decision 3 — corpus probe complete, implementation NOT done.** The ruling was "implement it now, mirroring Story 1.8's momentum". A corpus probe over all 104 reports / 208 charts run during the patch pass shows the involvement chart's tick grammar is materially different from momentum's, so the 1.8 precedent supplies the method but not the code:
+**Decision 3 — CLOSED (2026-08-03).** The ruling was "implement it now, mirroring Story 1.8's momentum". The 1.8 precedent supplies the method; the code is its own, because the tick grammar is materially different:
 
 | | momentum (1.8) | involvement (1.9) |
 | --- | --- | --- |
 | `FT` tick | 94/104 | **never printed** |
-| `HT` tick | 101/104 | **61/104** |
-| stoppage ticks | none | `45+N` (110 charts), `90+N` (214), `120+5` (4) |
+| `HT` tick | 101/104 | **122/208 charts** |
+| stoppage ticks | none | `45+N` (110 charts), `90+N` (214), `120+N` (4) |
 | last tick vs last slot | FT *is* the last slot, 94/94 | last tick is **0–7 slots before** the grid end |
 
-The clock relations themselves were measured and every one is exact, 0 deviations corpus-wide: first-half `slot(M) == M-1` (1868/1868 tick readings); `slot('45+N') == 44+N` (110/110); all second-half ticks agree on one minute-46 slot (208/208 charts) and the `HT` tick equals it where printed (118/118); `slot('90+N') == m46_slot+44+N` (214/214). So the mapping is derivable and self-checking — this is tractable work, not blocked work.
+Every clock relation is exact with 0 deviations corpus-wide (208 charts, 4,336 tick readings): the origin tick `0` on slot 0 (208/208); first-half `slot(M) == M-1` (1,872/1,872); `slot('45+N') == 44+N` (110/110); every second-half tick agreeing on one minute-46 slot (208/208) and equal to the `HT` tick where printed (122/122); `slot('90+N') == m46+44+N` (214/214); both extra periods unanimous across their own ticks (18/18 charts).
 
-One open question remains, and it is the reason this was not finished blind: on the 9 extra-time reports the second-half stoppage ticks and the extra-time minute ticks **collide** under the natural reading (`90+5` and `95` both land on `m46_slot+49`), and the ET semantics need a ruling before a mapping can be asserted rather than guessed. Remaining work: resolve that collision on the corpus, add the clock derivation with its typed errors, ~15 tests, then a 104-report sweep and a gate re-run.
+*The earlier count of 61/104 `HT` charts and 118/118 `HT` agreements was a per-**report** count read as a per-**chart** one, and 1,868 first-half readings was measured before the merged-span fix below recovered four charts' `45'` ticks. The figures above supersede them; the relations they describe are unchanged.*
+
+**The extra-time collision that blocked this does not exist in the data.** The blocker recorded above was that `90+5` and `95` both land on `m46+49`. That is true only of the *naive* reading — extending the second-half formula past minute 90 — and the chart does not use it. Measured across all 18 extra-time charts, the `95'` tick sits **5–9 slots after** the last `90+N` tick, never on it. The mapping reads the printed ticks, so no ET semantics had to be ruled: the collision was in the assumption, not the source.
+
+**Two things the corpus sweep forced out, neither anticipated.**
+
+1. **The tick row must be read character-level.** pymupdf merges adjacent same-font inserts, and the two reports whose half-time tick sits one slot after the 45' tick (`PMSR-M86-ARG-V-CPV`, `PMSR-M100-ARG-V-SUI`) hand back a single `'45HT'` span whose centre is neither tick's. A span-level reader fails all four of those charts with "tick '45HT' is not a slot centre" on pages that are perfectly well formed — measured, not hypothesised: the span-level prototype failed exactly those four and no others. Runs break on the digit-class boundary with `+` folded in *with* the digits, so `45HT` splits while `90+5` stays whole. Story 1.7's merged-span lesson, and where momentum's own `_tick_runs` already stands.
+2. **`PMSR-M88-AUS-V-EGY` draws a 14-slot first extra period** on both charts — no `105'` tick, and a `110'` tick one slot earlier than a 15-minute ET1 would put it. The page is internally consistent and says minute 105 has no slot. Every other extra-time chart runs ET1 at 15–19 slots. The parser therefore does **not** assert that a period ran its regular length: failing one report of 104 over an assertion about football rather than about the page would also move the ruled batch baseline. The short period is recorded in `goalkeeping-involvement-clock`'s specifics on every report and ledgered.
+
+**What shipped for it:** `involvement_clock` in each side's block (`second_half_slot` / `first_extra_slot` / `second_extra_slot` plus one flat `{minute, stoppage_minute}` stamp per slot); the typed `InvolvementClockError`, separated from `InvolvementChartError` because the two axes are read from different sources and fail for different reasons; the recorded `goalkeeping-involvement-clock` check (an honest **backstop**, like momentum's `momentum-coverage`, not a cross-check); a fixture tick row that moves with the clock structure it is given, so a parser ignoring the ticks fails every extra-time case; and **17 new tests** (105 → 122 across the story's three files).
 
 **Verified clean** — `/contract` untouched (only `c645cfe` touches it); `pipeline/markers/filter_chain.py` genuinely untouched, plural `detect_pitch_frames` used, `exclude_legend_rows` deliberately not called; Task 7.5's named repair exactly as specified with `offers-count-match` still unclaimed; Task 7.3's closed deviation mapping correct on all four paths; AC 1's re-scope, AC 2's checks, AC 4's absences and both corpus-refuted relations implemented as ruled, with the fixtures making the refuted relations FALSE by construction; the two-goalkeeper case pinned; ground truth matches M01 field for field including South Africa's asserted delta of 3; README and `deferred-work.md` both filed. Departures 3 and 5 audited and upheld.
+
+---
+
+### Review Findings — Decision 3 code review (2026-08-03)
+
+Adversarial code review of the Decision 3 delta only (the involvement slot → match-clock
+mapping) — three layers over the 1.9-scoped working-tree diff: Blind Hunter, Edge Case
+Hunter, Acceptance Auditor. 35 raw findings merged to 21 unique; 3 decisions ruled by Juan,
+15 patches, 0 deferred, 6 dismissed.
+
+**The substance is sound.** The Acceptance Auditor re-derived the corpus independently with
+its own character-level tick reader over all 104 PDFs — no sampling — and every clock
+relation reproduced with **0 deviations**: origin on slot 0 (208/208), first-half `M` on
+`M−1` (1,872/1,872), `45+N` on `44+N` (110/110), second-half unanimity (208/208), `HT` equal
+to the derived minute-46 slot (122/122), `90+N` on `m46+44+N` (214/214), both extra periods
+unanimous (18/18), `120+N` on `et2+14+N` (4/4), zero `FT` ticks, worst tick-to-slot-centre
+residual 0.000529. The `45HT` merged-span claim reproduced on exactly the four named charts
+and no others; M88's 14-slot ET1 reproduced exactly. Replaying the shipped `_involvement_clock`
+against those independent readings derives cleanly on 208/208 with 0 round-trip failures, and
+the resulting triples match all 208 staged records with 0 mismatches. **Task 3.11 is genuinely
+satisfied.** The suite caveat is also retired: Story 1.9's three files ran in a **single
+invocation — 122 passed, 0 failed, 0 skipped** (74 / 21 / 27), so the chunked-run caveat in
+the Completion Notes no longer applies.
+
+**Decisions ruled (3)**
+
+- [x] [Review][Decision] `extra_time_slot` collides semantically with momentum's key of the same name — in `domain_e.py` it names the slot carrying match minute 91; in `momentum.py:482` it names the printed 120' tick slot, with `second_extra_slot` derived from it at `:526`. Two clock structures in one pipeline, one key name, incompatible meanings, both consumed by 1.16 and 2.10. **Ruled: rename in `domain_e.py`** (the new, unreleased block) rather than touch shipped Story 1.8 — becomes a patch. Requires a 104-record re-run since the staged shape changes.
+- [x] [Review][Decision] Trailing slots past the last printed tick are stamped by extrapolation, bounded only by `MAX_STOPPAGE_MINUTE = 30` against a measured corpus maximum of 19. **Ruled: leave at 30 and keep recording** — the contract bound is the right ceiling, the check already records derived allotments in `specifics` on every report so drift is visible in gate output, and tightening to the measured band would assert football over the source and fail a legitimate long-stoppage match (the 1.8/1.9/1.12 bounds-not-equalities rule). Dismissed as designed.
+- [x] [Review][Decision] `involvement_series` and `involvement_clock["stamps"]` ship as two parallel lists whose equal length the check then polices, where momentum stages one list making the drift structurally impossible. **Ruled: keep two lists** — the shape is documented, already staged in all 104 records, and reshaping moves the ruled batch baseline for no correctness gain. Dismissed as designed.
+
+**Patches (15)**
+
+- [x] [Review][Patch] Task 8.3 violated — `goalkeeping-involvement-clock` has no fail-branch test; all 16 new clock tests assert `InvolvementClockError` at extraction time, a path that never reaches `domain_e_checks`, leaving all three predicate clauses uncovered [`pipeline/tests/test_extract_domain_e.py`]
+- [x] [Review][Patch] Short ET2 fails the check while an identically short ET1 passes — `final_minute` is unconditionally 120 whenever extra time exists, contradicting the "recorded, never failed" policy stated four lines above [`pipeline/extract/domain_e.py:2140`]
+- [x] [Review][Patch] The backstop never reconciles the three staged boundary fields against the staged stamps — the declared guard against "corruption of the staged block between parse and record" reads only `stamps`; mutating `second_half_slot` 49 → 60 leaves the check **passing** with visibly wrong specifics [`pipeline/extract/domain_e.py:2118-2145`]
+- [x] [Review][Patch] `clock_facts` discarded on a length mismatch — the `continue` skips `clock_facts.append`, so the failing side records a note but no facts, and a both-side mismatch leaves a dangling `" | "`. This is a recurrence of a shape filed and patched twice in the 2026-07-27 review [`pipeline/extract/domain_e.py:2123-2127`]
+- [x] [Review][Patch] The tick band is not clipped to the chart's own row band — `_involvement_series` is scoped to `band=(top, bottom)` but `_involvement_clock_block` receives only `grid` and reads an absolute 30 pt window that never consults `bottom`, on a page carrying both teams' charts [`pipeline/extract/domain_e.py:1341-1342`, call site `:1719-1724`]
+- [x] [Review][Patch] The one-line tick-band guard is blind to the splice it exists to catch — `lines_y` is built per **run**, after merging, so two lines that splice collapse to a single y and the spread reads 0.0; the guard fires only when a second line fails to splice (the harmless case) [`pipeline/extract/domain_e.py:1317-1324`]
+- [x] [Review][Patch] Overprinted glyphs concatenate — `cx0 - runs[-1][2] < 1.5` is satisfied by a negative gap, so a double-struck `45` yields the run `'4455'` and aborts a well-formed page [`pipeline/extract/domain_e.py:1303`]
+- [x] [Review][Patch] `_TICK_STOPPAGE_RE` puts no upper bound on `N`, so a merged numeric run parses as valid stoppage grammar and fails with a slot message rather than a merged-run one [`pipeline/extract/domain_e.py` `_TICK_STOPPAGE_RE`]
+- [x] [Review][Patch] The check raises bare `IndexError` / `TypeError` out of `domain_e_checks` on a malformed staged block — `stamps == []` with an equal-length series indexes `stamps[0]`; `extra_time_slot` set with `second_extra_slot` `None` reaches `second_extra - extra_time` in `_period_notes`. Both escape as non-`PipelineError` [`pipeline/extract/domain_e.py:2128`, `:2185`]
+- [x] [Review][Patch] `TICK_BAND_PT` and `TICK_X_MARGIN_PT` are exempt from `_assert_constant_integrity`, which the diff extends for the other four new constants — and they are precisely the two deciding which ticks get read at all [`pipeline/extract/domain_e.py:328`]
+- [x] [Review][Defer] `domain_e_checks` bare-subscripts `block["involvement_clock"]` while `RECORD_VERSION` stays at 1 [`pipeline/extract/domain_e.py`] — deferred, pre-existing. **Reclassified from patch during the patch pass**: the finding is true, but the whole function reads its own payload this way (`["distribution"]`, `["goal_prevention"]`, `["aerial"]` …), all predating Decision 3, so guarding one key of eight would be inconsistent noise. The 2026-07-27 precedent it cites is not the same case — that patch was about reading a SIBLING DOMAIN's payload (Domain A's lineups), which this is not. Filed to `deferred-work.md`; owner is whoever next touches the record-version contract.
+- [x] [Review][Patch] `_period_notes`' H1 and H2 "drawn SHORT" branches are unreachable — `_assert_clock_bounds` guarantees both periods are ≥ 45 slots — yet the docstring presents them as live policy [`pipeline/extract/domain_e.py:2170-2193`]
+- [x] [Review][Patch] Rename `extra_time_slot` in the staged `involvement_clock` block per the ruled decision above, and re-run the 104-record batch [`pipeline/extract/domain_e.py`]
+- [x] [Review][Patch] Five corpus figures are wrong in comments and docs — "4,336 tick readings" is **4,508** (the story's own per-label census sums to 4,508); "207 of 208 charts" is **206** (M88 contributes two charts, and 207+2 > 208); "`45+N` on 110 charts" conflates charts with readings (**108 charts / 110 readings**, and `90+N` is 182 charts / 214 readings); "the grid runs 0–7 slots PAST the last tick" is **false on 38 charts** where the last tick *is* the last slot, and contradicts the `TICK_X_MARGIN_PT` comment four lines below; "across all 18 extra-time charts the `95` tick sits 5–9 slots after the last `90+N`" is **16**, since `PMSR-M74-GER-V-PAR` (both sides) prints no `90+N` tick at all [`pipeline/extract/domain_e.py:294-296`, `:1381`, `:2111`, `pipeline/README.md`]
+- [x] [Review][Patch] Story-document drift — Completion Notes still say "seven recorded self-validation checks" (now eight, as `extract_report.py` and the README both correctly state); Task 3.11's closure line says "16 new tests" where the Completion Notes and Change Log say 17 (17 is right); "1,330 tests collected, every one of the 37 test files green" cannot hold — `pipeline/tests/` holds **39** files collecting 1,330, of which the two untracked Story 1.15 files contribute 72, so 37 files collect 1,258 [`_bmad-output/implementation-artifacts/1-9-domains-e-f-extraction-goalkeeping-set-plays.md`]
+
+**Patch pass verified (2026-08-03).** All 14 patches applied. Re-measured rather than
+asserted:
+
+- **Suite green on every file the change can reach**: this story's three files
+  **132 passed** in one invocation (122 → 132, the 10 new fail-branch tests), plus
+  **53 passed** (`domain_a`, `domain_g`, `domains_bc`) and **117 passed** (`momentum`,
+  `ingest_record`, `runner`, `checks_registry`) — the shared-`conftest` blast radius of the
+  fixture fix. **302 tests, 0 failures.**
+- **Batch re-run on the renamed record shape**: `104 extracted / 0 failed / 0 corpus gaps /
+  0 orphans`, with **exactly the ruled two self-validation failures** (PMSR-M19, PMSR-M58 —
+  both `defensive-actions-marker-count`, neither from E nor F). `RUN RESULT: FAIL` by design.
+- **The staged block re-verified across all 104 records**: `goalkeeping-involvement-clock`
+  passes **104/104**; the renamed `first_extra_slot` key is present on **208/208** charts
+  with no `extra_time_slot` survivor; stamp count equals series length on 208/208; 18 charts
+  carry extra time; and `PMSR-M88-AUS-V-EGY` is the **only** report carrying a short-period
+  note — each figure matching the Acceptance Auditor's independent corpus measurement.
+- **One fixture defect the patches forced out**, recorded because it made a shipped
+  asymmetry untestable: `gk_involvement_ticks` applied its own "print a tick only when its
+  slot exists" rule to the first extra period and not the second, so a short ET2 placed the
+  120' tick one slot past the grid and could not be drawn at all. The ET1/ET2 inconsistency
+  therefore had no reachable test by construction. Fixed alongside the predicate.
+
+**Dismissed (6)** — two ruled as-designed above; a README hunk rewriting Story 1.14's
+pass-network section (a mis-attribution in the reviewer's own diff scoping, not a defect in
+this story); prose reflow and line width (no linter configured in the tree); `MAX_STOPPAGE_MINUTE`
+duplicated between `momentum.py` and `domain_e.py` (deliberate and argued in the docstring);
+and a wrong-origin message misattribution on a path that dot-per-slot assertion at
+`domain_e.py:1211-1227` makes unreachable.
 
 ## Change Log
 
 | Date | Change |
 | --- | --- |
 | 2026-07-27 | Story 1.9 implemented: Domains E & F extraction (goalkeeping staged per team, set plays), 7 recorded checks, 4 FR-15 gate checks, 90 new tests. Batch 104/104 with the ruled 2-failure baseline; gate PASS, 0 deviations. Status in-progress → review. |
+| 2026-08-03 | Decision 3 implemented, closing the last open item: the involvement chart's slot → match-clock mapping. New `involvement_clock` block per side (`second_half_slot` / `first_extra_slot` / `second_extra_slot` plus one `{minute, stoppage_minute}` stamp per slot), derived from that chart's own printed x-ticks; new typed `InvolvementClockError`; new recorded check `goalkeeping-involvement-clock` (7 → 8 Domain E/F checks); `conftest`'s tick row now moves with the clock structure it is drawn for. The extra-time collision that blocked this was measured away — it belongs to the naive second-half extension, not to the source. Two corpus findings ledgered: the `45HT` merged span (4 charts) and `PMSR-M88-AUS-V-EGY`'s 14-slot first extra period. Batch 104/104 with the ruled 2-self-validation-failure baseline unchanged; gate PASS, 0 deviations. |
+| 2026-08-03 | Story 1.9 Decision 3 adversarial code review (3 layers over the 1.9-scoped working-tree diff): 35 raw findings merged to 21 — 3 decisions ruled, 14 patches applied, 1 deferred, 6 dismissed. **Substance upheld**: an independent full-corpus re-derivation reproduced every clock relation with 0 deviations and matched all 208 staged records, so Task 3.11 stands. Ruled: `extra_time_slot` renamed to `first_extra_slot` (it named minute 91 here and the printed 120' tick in `momentum.py` — one key, two meanings); `MAX_STOPPAGE_MINUTE` stays at 30 with allotments recorded rather than tightened to the measured band; the two parallel `series`/`stamps` lists stay as staged. Patched: the clock check gained fail-branch tests (Task 8.3 was violated — the check had none, and two of the defects found here lived in the uncovered clauses), the short-ET2/short-ET1 asymmetry, boundary-field reconciliation against the stamps, `clock_facts` recorded on failing sides, the tick band clipped to its own chart, the line-spread guard moved before grouping, overprint and merged-run bounds, and two constants added to the import-time integrity check. Five corpus figures corrected (4,336 → 4,508 readings; 207 → 206 charts; charts vs readings; the "0-7 slots past the last tick" claim, false on 38; "all 18" ET charts → 16). 302 tests green; batch 104/104 on the ruled 2-failure baseline; clock check 104/104. Status review → done. |
 | 2026-07-27 | Story 1.9 adversarial code review (3 layers over the 1.9-scoped diff of `7279637..7306d7b`): 39 raw findings merged to 33 unique — 3 decisions ruled, 22 patches applied, 7 deferred, 1 dismissed then un-dismissed and patched. Re-verified: 105 tests green across the three files (90 → 105), batch 104 records with the ruled 2-self-validation-failure baseline (M19, M58 — both defensive-actions, neither from E or F), all seven E/F checks pass 104/104, gate PASS 0 deviations with all four E/F ids in `checks_run`. Decision 3 (involvement slot → match-clock mapping) is probed and measured but NOT implemented — see Review Findings. |

@@ -29,7 +29,12 @@ family below is its own reader:
   position (AD-8). Markers are counted through the shared chain read-only.
 - **Goalkeeping Involvement** — a chart, and Story 1.8's momentum problem again: one page
   carries BOTH teams' timelines, the y-axis auto-scales, and the slot count is per report
-  (95-111 regulation, 129-145 extra time). Never hard-code 100.
+  (95-111 regulation, 129-145 extra time). Never hard-code 100. Both of its axes are read:
+  the VALUE axis from the printed y-labels and the drawn gridlines, and the TIME axis from
+  the printed x-ticks, which is the only key to what minute each slot is. The tick grammar
+  is NOT momentum's — no `FT` tick exists, `HT` is printed on barely half the charts, and
+  stoppage ticks (`45+N`, `90+N`, `120+N`) are printed here and nowhere else — so the
+  method is 1.8's and the code is its own.
 
 Two printed-layout rules recur across all four families and are worth naming once:
 
@@ -57,6 +62,7 @@ from pipeline.extract import check_entry
 from pipeline.extract.errors import (
     GoalkeepingPageParseError,
     InvolvementChartError,
+    InvolvementClockError,
     MalformedFieldError,
     MissingFieldError,
 )
@@ -272,6 +278,63 @@ SLOT_PITCH_TOL_PT = 0.05
 # absorb a systematic offset at all.
 INVOLVEMENT_INTEGRALITY_TOL = 0.01
 
+# --- the involvement chart's TIME axis (Story 1.9, Decision 3) -------------------------
+#
+# The slot COUNT is per report (95-111 regulation, 129-145 extra time). The slot ->
+# match-clock MAPPING is per report too, and for the same reason as momentum's: everything
+# after half time shifts by that report's own stoppage allotment. It is therefore derived
+# from this chart's own printed x-tick labels, never from a formula.
+#
+# The tick grammar is NOT momentum's, measured over all 208 charts:
+#
+#   * `FT` is **never printed** (momentum prints it on 94/104) and `HT` on only 122/208, so
+#     the second half is pinned by whichever of `HT` / `50` / ... / `90` the chart prints —
+#     they agree on one minute-46 slot on 208/208.
+#   * Stoppage ticks ARE printed, which momentum's axis has none of. Counted as CHARTS and
+#     as READINGS, which differ because a chart may print two of them: `45+N` on 108 charts
+#     / 110 readings, `90+N` on 182 / 214, `120+N` on 4 / 4.
+#   * The grid runs 0-7 slots past the last tick — but NOT always past it: the gap is 0 on
+#     38 charts, where the last tick IS the last slot. Distribution over 208:
+#     {0: 38, 1: 56, 2: 46, 3: 38, 4: 28, 7: 2}. So the tail past the last tick carries no
+#     printed witness and is stamped by the derived structure alone; do not read the last
+#     tick as the end of the series, and do not assume there is a tail either.
+#
+# Every relation below is exact with 0 deviations corpus-wide (208 charts, 4,508 tick
+# readings): tick `M` at slot `M-1` for the first half (1,872/1,872), `45+N` at slot `44+N`
+# (110/110), the minute-46 slot unanimous across every second-half tick (208/208) and equal
+# to the `HT` tick where printed (122/122), `90+N` at `m46+44+N` (214/214), and both extra
+# periods unanimous across their own ticks (18/18 charts).
+TICK_BAND_PT = 30.0
+# The tick row is read from a margin either side of the plot box. The origin tick `0` is
+# centred on slot 0 and so sits on the box's left edge, but the LAST tick is 0-7 slots short
+# of the right edge (see the distribution above), so the right-hand margin is there for the
+# glyph overhang of a wide label rather than for a tick centred on the edge.
+TICK_X_MARGIN_PT = 15.0
+# Every tick centres on a slot to well under a hundredth of a slot (worst observed residual
+# 0.000529 slots); this is a template-revision tripwire, not a fit.
+TICK_SLOT_SNAP_TOL = 0.05
+# How far one glyph may start INSIDE the previous one before the run reader calls it an
+# overprint rather than an adjacency. Kerning can close a gap to zero; only a double-struck
+# insert makes it meaningfully negative.
+TICK_GLYPH_OVERLAP_PT = 0.5
+HALF_TIME_TICK = "HT"
+_TICK_MINUTE_RE = re.compile(r"^\d+$", re.ASCII)
+_TICK_STOPPAGE_RE = re.compile(r"^(\d+)\+(\d+)$", re.ASCII)
+
+# Both halves run 45 regular minutes; both extra periods run 15. Slot 0 is match minute 1,
+# and the origin tick `0` marks it on 208/208.
+REGULATION_HALF = 45
+EXTRA_TIME_HALF = 15
+# The contract's `StoppageMinute` upper bound (`contract/common.schema.json`), derived here
+# rather than imported — `/contract` is an emit-time checklist for this pipeline, not an
+# import target. The corpus measures H1 0-10 and H2 1-19, so this is far above anything
+# real; a clock structure implying more would stage a record Story 1.16 could not emit, and
+# staging an unemittable record silently is what AD-8 forbids. Same value and same reasoning
+# as `momentum.MAX_STOPPAGE_MINUTE`, deliberately not shared: the two charts are different
+# pages with different grammars, and coupling them would make a momentum template revision
+# change what this parser accepts.
+MAX_STOPPAGE_MINUTE = 30
+
 
 def _assert_constant_integrity() -> None:
     """Module-constant integrity, checked once at import (the 1.2/1.4/1.10 rule).
@@ -343,6 +406,31 @@ def _assert_constant_integrity() -> None:
         raise ValueError(
             "domain_e: GOAL_PREVENTION_KPIS must stage `attempts_faced_printed` (the "
             "KPI-vs-table cross-check reads it) and `save_percentage`"
+        )
+    # The clock constants. A tick snap tolerance of half a slot or more would let a tick
+    # round to its neighbour's slot and shift a whole period by one minute with nothing
+    # failing — the mapping has no printed counterpart to catch that downstream.
+    if not 0 < TICK_SLOT_SNAP_TOL < 0.5:
+        raise ValueError(
+            "domain_e: TICK_SLOT_SNAP_TOL must stay inside half a slot, or a tick can "
+            "round onto its neighbour"
+        )
+    if REGULATION_HALF <= 0 or EXTRA_TIME_HALF <= 0:
+        raise ValueError("domain_e: both half lengths are positive minute counts")
+    if MAX_STOPPAGE_MINUTE <= 0:
+        raise ValueError("domain_e: MAX_STOPPAGE_MINUTE is a positive minute count")
+    # The two constants that decide which ticks are read AT ALL. A non-positive band or
+    # margin silently empties the read window, and every chart then fails with "prints no
+    # x-tick labels under its plot box" — pointing at the PDF for a fault in this file,
+    # which is the misattribution the 1.2/1.4/1.10 import-time rule exists to prevent.
+    if TICK_BAND_PT <= 0 or TICK_X_MARGIN_PT <= 0:
+        raise ValueError(
+            "domain_e: TICK_BAND_PT and TICK_X_MARGIN_PT are positive point extents; a "
+            "non-positive one empties the tick read window and blames the page"
+        )
+    if TICK_GLYPH_OVERLAP_PT < 0:
+        raise ValueError(
+            "domain_e: TICK_GLYPH_OVERLAP_PT is a non-negative overlap allowance"
         )
 
 
@@ -1095,8 +1183,13 @@ def _involvement_series(
     band: "tuple[float, float]",
     where: str,
     report_id: "str | None",
-) -> "list[int]":
-    """One chart's per-slot involvement counts, left to right.
+) -> "tuple[list[int], dict]":
+    """One chart's per-slot involvement counts, left to right, plus its slot grid.
+
+    The grid — `{plot_x0, plot_x1, zero_line, first_dot_x, pitch}` — travels back to the
+    caller because the TIME axis is read against exactly the same grid the VALUES are
+    read against: a tick's slot is `(tick_x - first_dot_x) / pitch`, so the two axes can
+    never be measured off two subtly different origins.
 
     The scale is established twice from two independent sources and the two must agree:
     the printed y-axis labels give the points-per-unit factor, and the drawn value
@@ -1183,7 +1276,478 @@ def _involvement_series(
                 report_id,
             )
         series.append(value)
-    return series
+    return series, {
+        "plot_x0": plot_x0,
+        "plot_x1": plot_x1,
+        "zero_line": zero_line,
+        "first_dot_x": xs[0],
+        "pitch": pitch,
+    }
+
+
+# --- the involvement chart's TIME axis ---------------------------------------------------
+
+
+def _tick_runs(
+    page: "pymupdf.Page", x0: float, x1: float, y0: float, y1: float, where: str,
+    report_id: "str | None",
+) -> "list[tuple[str, float]]":
+    """`(label, centre x)` for every x-tick under one chart's plot box.
+
+    Character-level and regrouped, not span-level — and that is not a stylistic choice.
+    pymupdf merges adjacent same-font inserts, so on the two corpus reports whose half-time
+    tick sits ONE slot after the 45' tick (`PMSR-M86-ARG-V-CPV` and `PMSR-M100-ARG-V-SUI`)
+    the page hands back a single `'45HT'` span whose centre is neither tick's. Read
+    span-level, those four charts fail with "tick '45HT' is not a slot centre" while the
+    page is perfectly well formed; read character-level they parse. This is Story 1.7's
+    merged-span lesson and momentum's `_tick_runs` reaching the same conclusion.
+
+    Runs break on the digit-class boundary, with `+` folded in WITH the digits so a
+    stoppage tick `90+5` stays one label while `45HT` still splits in two. Grouping is by
+    text line as well as by x, so a stray label on a second line in the band cannot splice
+    its characters into a tick.
+    """
+    chars: "list[tuple[float, float, float, str]]" = []
+    for block in page.get_text("rawdict")["blocks"]:
+        if block.get("type") != 0:  # image block
+            continue
+        for line in block["lines"]:
+            for span in line["spans"]:
+                for char in span["chars"]:
+                    cx0, cy0, cx1, cy1 = char["bbox"]
+                    if x0 <= cx0 and cx1 <= x1 and y0 <= cy0 and cy1 <= y1:
+                        chars.append(((cy0 + cy1) / 2.0, cx0, cx1, char["c"]))
+    chars.sort()
+    glyphs = [char for char in chars if not char[3].isspace()]
+    if not glyphs:
+        raise InvolvementClockError(
+            f"{where} prints no x-tick labels under its plot box; the slot -> match-clock "
+            "mapping has no source",
+            report_id,
+        )
+    # One text line, asserted over the CHARACTERS and BEFORE grouping. Asserting it over the
+    # runs cannot see the fault it exists to catch: two lines close enough in y to splice
+    # merge into a single run carrying a single y, so the spread reads 0.0 exactly when the
+    # splice happened, and the assertion fires only when a second line FAILS to splice — the
+    # harmless case. The band is 30 pt tall, with room for a second line of page furniture,
+    # and a character from another line carries a centre x that means nothing on this
+    # chart's slot grid.
+    lines_y = [glyph[0] for glyph in glyphs]
+    if max(lines_y) - min(lines_y) > 1.0:
+        raise InvolvementClockError(
+            f"{where} x-tick band holds text on more than one line "
+            f"({[round(y, 2) for y in sorted(set(round(y, 2) for y in lines_y))]}); the "
+            "tick row cannot be identified",
+            report_id,
+        )
+    runs: "list[list]" = []
+    for _centre_y, cx0, cx1, char in glyphs:
+        kind = "number" if (char.isdigit() or char == "+") else "other"
+        gap = cx0 - runs[-1][2] if runs else None
+        if gap is not None and gap < -TICK_GLYPH_OVERLAP_PT:
+            # Overlapping glyphs, not adjacent ones. A double-struck label (faux bold, a
+            # double-stroke insert) hands back each glyph twice at the same x, and a bare
+            # `gap < 1.5` merge is satisfied by a NEGATIVE gap — so `45` drawn twice would
+            # concatenate to the run `4455` and be read as a minute. Assert rather than
+            # absorb (AD-8): no corpus page overprints, so this can only be a revision.
+            raise InvolvementClockError(
+                f"{where} x-tick band draws overlapping glyphs "
+                f"({char!r} starts {abs(gap):.2f} pt inside the previous glyph); the tick "
+                "labels cannot be read as written",
+                report_id,
+            )
+        if runs and runs[-1][0] == kind and gap < 1.5:
+            runs[-1][2] = cx1
+            runs[-1][3] += char
+        else:
+            runs.append([kind, cx0, cx1, char])
+    return [(run[3], (run[1] + run[2]) / 2.0) for run in runs]
+
+
+def _involvement_ticks(
+    page: "pymupdf.Page", grid: dict, band_bottom: float, where: str,
+    report_id: "str | None",
+) -> "dict[str, int]":
+    """Every printed x-tick as `label -> slot index`, against this chart's own slot grid.
+
+    Each tick must land on a slot centre and each label may appear only once: a tick
+    printed twice makes whichever period it pins ambiguous, and there is no printed
+    counterpart anywhere on the page to catch the wrong choice (AD-8).
+
+    The read window is clipped to `band_bottom` — this chart's own band, the same bound
+    `_involvement_series` reads its dots inside. ONE page carries BOTH teams' charts, so an
+    unclipped `zero_line + TICK_BAND_PT` is a page coordinate that happens to fall short of
+    the next chart rather than a bound that cannot reach it, and the next chart's title
+    entering this chart's tick read would abort a well-formed report.
+    """
+    readings = _tick_runs(
+        page,
+        grid["plot_x0"] - TICK_X_MARGIN_PT,
+        grid["plot_x1"] + TICK_X_MARGIN_PT,
+        grid["zero_line"] + 0.5,
+        min(grid["zero_line"] + TICK_BAND_PT, band_bottom),
+        where,
+        report_id,
+    )
+    ticks: "dict[str, int]" = {}
+    for label, centre_x in readings:
+        fractional = (centre_x - grid["first_dot_x"]) / grid["pitch"]
+        slot = round(fractional)
+        if abs(fractional - slot) > TICK_SLOT_SNAP_TOL:
+            raise InvolvementClockError(
+                f"{where} x-tick {label!r} sits at slot {fractional:.4f}, which is not a "
+                "slot centre",
+                report_id,
+            )
+        if label in ticks:
+            raise InvolvementClockError(
+                f"{where} prints the x-tick {label!r} more than once", report_id
+            )
+        ticks[label] = slot
+    return ticks
+
+
+def _involvement_clock(
+    ticks: "dict[str, int]", slot_count: int, where: str, report_id: "str | None"
+) -> dict:
+    """The slot -> match-clock structure, derived from this chart's own printed ticks.
+
+    Returns `{second_half_slot, first_extra_slot, second_extra_slot}` — the slot carrying
+    match minute 46, minute 91 and minute 106 respectively, the last two `None` on the 95
+    regulation reports. Everything else follows from those three plus the slot count, so
+    they are the whole mapping.
+
+    Nothing here is assumed. Each boundary is pinned by EVERY tick that speaks to it and
+    the candidates must be unanimous; every tick the boundaries then determine is asserted
+    against its own printed position. The redundancy is the point — on a chart printing
+    `HT`, `50`, `55` ... `90` and `90+5`, twelve independent readings have to agree before
+    a single minute is staged.
+
+    One thing is deliberately NOT asserted: that each period ran its regular length. It is
+    true of every period on 206 of 208 charts, and `PMSR-M88-AUS-V-EGY` (both charts,
+    which is why the remainder is 206 and not 207)
+    prints a first extra period of 14 slots — its `105'` tick is absent and its `110'`
+    tick sits one slot earlier than a 15-minute ET1 would put it, so the page is
+    internally consistent and simply says that minute 105 has no slot. Failing that report
+    would be asserting football over the source; the short period is recorded in
+    `goalkeeping-involvement-clock`'s specifics on every report instead, and ledgered.
+    """
+    minutes: "dict[int, int]" = {}
+    stoppages: "dict[tuple[int, int], int]" = {}
+    half_time: "int | None" = None
+    full_time = 2 * (REGULATION_HALF + EXTRA_TIME_HALF)
+    for label, slot in ticks.items():
+        if label == HALF_TIME_TICK:
+            half_time = slot
+        elif _TICK_MINUTE_RE.match(label):
+            minute = int(label)
+            # Bounded, because the run grammar cannot tell one long label from two short
+            # ones spliced together: `45` and `90` merged by an overlapping glyph read as
+            # the single minute `4590`, which falls in NO period bucket below and would
+            # then be caught only by the round trip, blaming the derived clock for a
+            # misread label. A minute tick past full time is not a minute tick.
+            if not 0 <= minute <= full_time:
+                raise InvolvementClockError(
+                    f"{where} x-tick {label!r} reads as match minute {minute}, past full "
+                    f"time ({full_time}); the tick row is misread, most likely two labels "
+                    "merged into one run",
+                    report_id,
+                )
+            minutes[minute] = slot
+        else:
+            stoppage = _TICK_STOPPAGE_RE.match(label)
+            if stoppage is None:
+                # Closed grammar, assert-on-unknown (AD-8). A label this parser cannot
+                # read is a template revision, and quietly ignoring it would silently drop
+                # whichever boundary it was the only witness to.
+                raise InvolvementClockError(
+                    f"{where} x-tick {label!r} is neither a minute, a `M+N` stoppage "
+                    f"minute nor {HALF_TIME_TICK!r}",
+                    report_id,
+                )
+            base, added = int(stoppage.group(1)), int(stoppage.group(2))
+            # Same reasoning on the stoppage half, and the same merge is what makes it
+            # necessary: `90+5` followed by `95` splices to `90+595`, which this regex
+            # accepts as base 90 / added 595.
+            if not 0 <= added <= MAX_STOPPAGE_MINUTE:
+                raise InvolvementClockError(
+                    f"{where} x-tick {label!r} reads as {added} stoppage minutes, past the "
+                    f"contract's {MAX_STOPPAGE_MINUTE}; the tick row is misread, most "
+                    "likely two labels merged into one run",
+                    report_id,
+                )
+            stoppages[(base, added)] = slot
+
+    # The origin. Slot 0 is match minute 1 and the chart labels it `0` on 208/208; without
+    # it the whole grid could be shifted and every later assertion would still pass.
+    if minutes.get(0) != 0:
+        raise InvolvementClockError(
+            f"{where} does not print its origin tick '0' on slot 0 "
+            f"(found {minutes.get(0)})",
+            report_id,
+        )
+    for minute, slot in sorted(minutes.items()):
+        if 1 <= minute <= REGULATION_HALF and slot != minute - 1:
+            raise InvolvementClockError(
+                f"{where} first-half x-tick {minute}' sits at slot {slot}, expected "
+                f"{minute - 1}",
+                report_id,
+            )
+    for (base, added), slot in sorted(stoppages.items()):
+        if base == REGULATION_HALF and slot != REGULATION_HALF - 1 + added:
+            raise InvolvementClockError(
+                f"{where} x-tick '{base}+{added}' sits at slot {slot}, expected "
+                f"{REGULATION_HALF - 1 + added}",
+                report_id,
+            )
+
+    second_half_slot = _unanimous(
+        {
+            **({HALF_TIME_TICK: half_time} if half_time is not None else {}),
+            **{
+                str(minute): slot - (minute - REGULATION_HALF - 1)
+                for minute, slot in minutes.items()
+                if REGULATION_HALF < minute <= 2 * REGULATION_HALF
+            },
+        },
+        "second half",
+        where,
+        report_id,
+    )
+    for (base, added), slot in sorted(stoppages.items()):
+        if base == 2 * REGULATION_HALF and slot != second_half_slot + REGULATION_HALF - 1 + added:
+            raise InvolvementClockError(
+                f"{where} x-tick '{base}+{added}' sits at slot {slot}, expected "
+                f"{second_half_slot + REGULATION_HALF - 1 + added}",
+                report_id,
+            )
+
+    first_extra = {
+        str(minute): slot - (minute - 2 * REGULATION_HALF - 1)
+        for minute, slot in minutes.items()
+        if 2 * REGULATION_HALF < minute <= 2 * REGULATION_HALF + EXTRA_TIME_HALF
+    }
+    second_extra = {
+        str(minute): slot - (minute - 2 * REGULATION_HALF - EXTRA_TIME_HALF - 1)
+        for minute, slot in minutes.items()
+        if 2 * REGULATION_HALF + EXTRA_TIME_HALF < minute <= 2 * (REGULATION_HALF + EXTRA_TIME_HALF)
+    }
+    first_extra_slot: "int | None" = None
+    second_extra_slot: "int | None" = None
+    if first_extra or second_extra:
+        # Both or neither. One extra period's ticks alone cannot place the other, and
+        # guessing the missing boundary from a 15-minute assumption is exactly what the
+        # `PMSR-M88` chart shows to be wrong.
+        if not first_extra or not second_extra:
+            raise InvolvementClockError(
+                f"{where} prints ticks for only one extra period "
+                f"(first {sorted(first_extra)}, second {sorted(second_extra)}); the other "
+                "boundary cannot be placed",
+                report_id,
+            )
+        first_extra_slot = _unanimous(first_extra, "first extra period", where, report_id)
+        second_extra_slot = _unanimous(second_extra, "second extra period", where, report_id)
+        for (base, added), slot in sorted(stoppages.items()):
+            if base == 2 * (REGULATION_HALF + EXTRA_TIME_HALF) and (
+                slot != second_extra_slot + EXTRA_TIME_HALF - 1 + added
+            ):
+                raise InvolvementClockError(
+                    f"{where} x-tick '{base}+{added}' sits at slot {slot}, expected "
+                    f"{second_extra_slot + EXTRA_TIME_HALF - 1 + added}",
+                    report_id,
+                )
+    else:
+        for base, added in sorted(stoppages):
+            if base not in (REGULATION_HALF, 2 * REGULATION_HALF):
+                raise InvolvementClockError(
+                    f"{where} prints the stoppage tick '{base}+{added}' but no extra-time "
+                    "minute tick to place the period it belongs to",
+                    report_id,
+                )
+
+    _assert_clock_bounds(
+        second_half_slot, first_extra_slot, second_extra_slot, slot_count, where, report_id
+    )
+    return {
+        "second_half_slot": second_half_slot,
+        "first_extra_slot": first_extra_slot,
+        "second_extra_slot": second_extra_slot,
+    }
+
+
+def _unanimous(
+    candidates: "dict[str, int]", what: str, where: str, report_id: "str | None"
+) -> int:
+    """The one slot every witness agrees on, or a loud failure naming the disagreement."""
+    if not candidates:
+        raise InvolvementClockError(
+            f"{where} prints no x-tick that places the {what}", report_id
+        )
+    agreed = set(candidates.values())
+    if len(agreed) != 1:
+        raise InvolvementClockError(
+            f"{where} x-ticks disagree on where the {what} starts: "
+            f"{dict(sorted(candidates.items()))}",
+            report_id,
+        )
+    return agreed.pop()
+
+
+def _assert_clock_bounds(
+    second_half_slot: int,
+    first_extra_slot: "int | None",
+    second_extra_slot: "int | None",
+    slot_count: int,
+    where: str,
+    report_id: "str | None",
+) -> None:
+    """Every derived boundary lands inside the drawn grid, in order, within the contract.
+
+    The stoppage bounds are the reason this is not merely tidiness: every slot between the
+    45' tick and the half-time boundary is a first-half stoppage minute, so a boundary far
+    down the grid does not just look odd — it stages `stoppage_minute` values the
+    contract's `StoppageMinute` cannot express, and nothing between here and Story 1.16's
+    emit boundary would notice.
+    """
+    if second_half_slot < REGULATION_HALF:
+        raise InvolvementClockError(
+            f"{where} places match minute 46 on slot {second_half_slot}, before the first "
+            f"half's {REGULATION_HALF} regular minutes",
+            report_id,
+        )
+    first_half_stoppage = second_half_slot - REGULATION_HALF
+    if first_half_stoppage > MAX_STOPPAGE_MINUTE:
+        raise InvolvementClockError(
+            f"{where} implies {first_half_stoppage} first-half stoppage minutes, past the "
+            f"contract's {MAX_STOPPAGE_MINUTE}",
+            report_id,
+        )
+    regulation_end = slot_count - 1 if first_extra_slot is None else first_extra_slot - 1
+    if regulation_end < second_half_slot + REGULATION_HALF - 1:
+        raise InvolvementClockError(
+            f"{where} regulation ends at slot {regulation_end}, before the second half's "
+            f"{REGULATION_HALF} regular minutes are drawn",
+            report_id,
+        )
+    second_half_stoppage = regulation_end - (second_half_slot + REGULATION_HALF - 1)
+    if second_half_stoppage > MAX_STOPPAGE_MINUTE:
+        raise InvolvementClockError(
+            f"{where} implies {second_half_stoppage} second-half stoppage minutes, past "
+            f"the contract's {MAX_STOPPAGE_MINUTE}",
+            report_id,
+        )
+    if first_extra_slot is None:
+        return
+    if second_extra_slot <= first_extra_slot:
+        raise InvolvementClockError(
+            f"{where} places the second extra period on slot {second_extra_slot}, at or "
+            f"before the first's slot {first_extra_slot}",
+            report_id,
+        )
+    if second_extra_slot > slot_count - 1:
+        raise InvolvementClockError(
+            f"{where} places match minute 106 on slot {second_extra_slot}, outside the "
+            f"chart's {slot_count} slots",
+            report_id,
+        )
+    first_extra_stoppage = (second_extra_slot - first_extra_slot) - EXTRA_TIME_HALF
+    if first_extra_stoppage > MAX_STOPPAGE_MINUTE:
+        raise InvolvementClockError(
+            f"{where} implies {first_extra_stoppage} first-extra-period stoppage minutes, "
+            f"past the contract's {MAX_STOPPAGE_MINUTE}",
+            report_id,
+        )
+    second_extra_stoppage = (slot_count - 1 - second_extra_slot) - (EXTRA_TIME_HALF - 1)
+    if second_extra_stoppage > MAX_STOPPAGE_MINUTE:
+        raise InvolvementClockError(
+            f"{where} implies {second_extra_stoppage} second-extra-period stoppage "
+            f"minutes, past the contract's {MAX_STOPPAGE_MINUTE}",
+            report_id,
+        )
+
+
+def _involvement_stamp(slot: int, structure: dict, slot_count: int) -> "dict":
+    """`{minute, stoppage_minute}` for one slot, from the derived clock structure.
+
+    Raw and flat (AD-7): two integers, `stoppage_minute` `None` on a regular minute. The
+    contract's `MinuteStamp` composite is Story 1.16's emit-time shape, not this one.
+    """
+    second_half = structure["second_half_slot"]
+    first_extra = structure["first_extra_slot"]
+    second_extra = structure["second_extra_slot"]
+
+    def stamp(minute: int, stoppage: "int | None") -> dict:
+        return {"minute": minute, "stoppage_minute": stoppage}
+
+    if slot < REGULATION_HALF:
+        return stamp(slot + 1, None)
+    if slot < second_half:
+        return stamp(REGULATION_HALF, slot - (REGULATION_HALF - 1))
+    regulation_end = slot_count - 1 if first_extra is None else first_extra - 1
+    if slot <= regulation_end:
+        offset = slot - second_half
+        if offset < REGULATION_HALF:
+            return stamp(REGULATION_HALF + 1 + offset, None)
+        return stamp(2 * REGULATION_HALF, offset - (REGULATION_HALF - 1))
+    if slot < second_extra:
+        offset = slot - first_extra
+        if offset < EXTRA_TIME_HALF:
+            return stamp(2 * REGULATION_HALF + 1 + offset, None)
+        return stamp(2 * REGULATION_HALF + EXTRA_TIME_HALF, offset - (EXTRA_TIME_HALF - 1))
+    offset = slot - second_extra
+    if offset < EXTRA_TIME_HALF:
+        return stamp(2 * REGULATION_HALF + EXTRA_TIME_HALF + 1 + offset, None)
+    return stamp(2 * (REGULATION_HALF + EXTRA_TIME_HALF), offset - (EXTRA_TIME_HALF - 1))
+
+
+def _involvement_clock_block(
+    page: "pymupdf.Page", grid: dict, slot_count: int, band_bottom: float, where: str,
+    report_id: "str | None",
+) -> dict:
+    """One chart's staged clock block: the three boundaries plus one stamp per slot.
+
+    The stamps are staged rather than left to be re-derived downstream for the reason
+    momentum stages its samples' stamps: a derivation that lives only in code cannot be
+    read back off the record, and Story 2.10 places this timeline on the match clock from
+    the record alone.
+
+    Every printed tick is then round-tripped through the staged stamps. That is NOT
+    redundant with the assertions in `_involvement_clock`: those check tick positions
+    against the derived boundaries, this checks the STAMPS the boundaries produce, so a
+    fault in `_involvement_stamp` — the one piece of this reader nothing else constrains —
+    surfaces here rather than as a wrong minute in the record.
+    """
+    ticks = _involvement_ticks(page, grid, band_bottom, where, report_id)
+    structure = _involvement_clock(ticks, slot_count, where, report_id)
+    stamps = [_involvement_stamp(slot, structure, slot_count) for slot in range(slot_count)]
+    for label, slot in sorted(ticks.items()):
+        if label == "0":  # the origin marker, not a minute label
+            continue
+        if label == HALF_TIME_TICK:
+            expected = {"minute": REGULATION_HALF + 1, "stoppage_minute": None}
+        elif _TICK_MINUTE_RE.match(label):
+            expected = {"minute": int(label), "stoppage_minute": None}
+        else:
+            base, added = _TICK_STOPPAGE_RE.match(label).groups()
+            expected = {"minute": int(base), "stoppage_minute": int(added)}
+        if not 0 <= slot < slot_count:
+            raise InvolvementClockError(
+                f"{where} x-tick {label!r} lands on slot {slot}, outside the chart's "
+                f"{slot_count} slots",
+                report_id,
+            )
+        if stamps[slot] != expected:
+            raise InvolvementClockError(
+                f"{where} x-tick {label!r} lands on slot {slot}, which the derived clock "
+                f"stamps {stamps[slot]}",
+                report_id,
+            )
+    return {
+        "second_half_slot": structure["second_half_slot"],
+        "first_extra_slot": structure["first_extra_slot"],
+        "second_extra_slot": structure["second_extra_slot"],
+        "stamps": stamps,
+    }
 
 
 def _parse_involvement(
@@ -1227,7 +1791,10 @@ def _parse_involvement(
         top = rows[index].y
         bottom = rows[ordered[position + 1][1]].y if position + 1 < len(ordered) else page_y1
         chart_where = f"{side} goalkeeping involvement chart"
-        series = _involvement_series(page, rows, (top, bottom), chart_where, report_id)
+        series, grid = _involvement_series(page, rows, (top, bottom), chart_where, report_id)
+        clock = _involvement_clock_block(
+            page, grid, len(series), bottom, chart_where, report_id
+        )
 
         # BOTH the label lookup and the value walk run over this chart's own rows only.
         # `Total Involvements` is printed once per chart, so searching the whole page
@@ -1248,6 +1815,7 @@ def _parse_involvement(
                 raw, f"{side}.goalkeeping.total_involvements", report_id
             ),
             "involvement_series": series,
+            "involvement_clock": clock,
         }
     return payload
 
@@ -1354,7 +1922,8 @@ def extract_domain_e(
 
     Pages are located through the already-resolved `anchors` map, never by page index
     (AD-8). Raises `GoalkeepingPageParseError`, `InvolvementChartError`,
-    `MalformedFieldError` or `MissingFieldError`, and lets the shared chain's
+    `InvolvementClockError`, `MalformedFieldError` or `MissingFieldError`, and lets the
+    shared chain's
     `PitchFrameError` / `UnknownRgbError` travel as themselves (the 1.11/1.12 precedent);
     the batch turns each into a `failed` manifest entry for this report alone. The payload
     is all-or-nothing: no partial goalkeeping block ever stages.
@@ -1374,6 +1943,7 @@ def extract_domain_e(
             ),
             "total_involvements": involvement[side]["total_involvements"],
             "involvement_series": involvement[side]["involvement_series"],
+            "involvement_clock": involvement[side]["involvement_clock"],
             "distribution": _parse_distribution(doc, anchors, side, report_id),
             "goal_prevention": _parse_goal_prevention(doc, anchors, side, report_id),
             "aerial_control": _parse_aerial_control(doc, anchors, side, report_id),
@@ -1600,4 +2170,158 @@ def domain_e_checks(payload: dict) -> "list[dict]":
         )
     )
 
+    # The staged slot -> match-clock mapping, recorded (Decision 3). This is a BACKSTOP,
+    # not a cross-check, and the distinction matters as much as it does for momentum's
+    # `momentum-coverage`: every clock inconsistency it could describe is already a typed
+    # `InvolvementClockError` — the tick grammar, the boundary unanimity, the period order,
+    # the stoppage bounds and the tick-to-stamp round trip all abort the report before a
+    # clock is staged at all. What remains worth recording is corruption of the staged
+    # block between parse and record, and the two per-period observations below, which are
+    # NOT part of the predicate:
+    #
+    #   * the derived stoppage allotments, so the numbers this parser inferred stay visible
+    #     rather than being absorbed into a bare "pass";
+    #   * a period drawn SHORTER than its regular length. True of no period on 206 of 208
+    #     corpus charts, and of `PMSR-M88-AUS-V-EGY`'s first extra period on BOTH of its own
+    #     charts (206 + 2 = 208), which print 14 slots and no 105' tick — the page is
+    #     self-consistent and says minute 105 has no slot. Making that a failure would
+    #     assert football over the source and would move the ruled batch baseline; it is
+    #     recorded and ledgered. That tolerance is applied to EVERY period, not just ET1:
+    #     the predicate below asks whether the series ends inside its final PERIOD, never
+    #     whether it reaches that period's regular last minute. An earlier form compared
+    #     against minute 120 exactly, which failed a short ET2 while passing the short ET1
+    #     this comment exists to permit — the same page shape judged two ways.
+    clock_notes: list[str] = []
+    clock_facts: list[str] = []
+    for side in ("home", "away"):
+        block = payload[side]
+        clock = block["involvement_clock"]
+        stamps = clock["stamps"]
+        series = block["involvement_series"]
+        second_half = clock["second_half_slot"]
+        first_extra = clock["first_extra_slot"]
+        second_extra = clock["second_extra_slot"]
+
+        # Shape first, and every later clause behind it. This check reads a STAGED record
+        # rather than a freshly parsed one, so it cannot assume the parser's invariants
+        # still hold — and an `IndexError` or a `None` comparison escaping here would leave
+        # `domain_e_checks` raising a non-`PipelineError` that neither gate handler is
+        # written for, turning a recordable failure into a crash.
+        if not stamps:
+            clock_notes.append(f"{side}: no clock stamps staged")
+            clock_facts.append(f"{side}: 0 slots, no clock")
+            continue
+        if len(stamps) != len(series):
+            clock_notes.append(
+                f"{side}: {len(stamps)} clock stamps against {len(series)} plotted slots"
+            )
+        if (first_extra is None) != (second_extra is None):
+            clock_notes.append(
+                f"{side}: extra-time boundaries staged inconsistently "
+                f"(first {first_extra}, second {second_extra})"
+            )
+            clock_facts.append(f"{side}: {len(stamps)} slots, extra-time boundaries broken")
+            continue
+
+        if stamps[0] != {"minute": 1, "stoppage_minute": None}:
+            clock_notes.append(f"{side}: series opens at {_format_stamp(stamps[0])}, not kick-off")
+        previous: "tuple[int, int] | None" = None
+        for stamp in stamps:
+            key = (stamp["minute"], stamp["stoppage_minute"] or 0)
+            if previous is not None and key <= previous:
+                clock_notes.append(
+                    f"{side}: clock does not advance at {_format_stamp(stamp)}"
+                )
+                break
+            previous = key
+
+        # The three staged boundary fields, reconciled against the staged stamps. Without
+        # this the check reads `stamps` alone and the boundaries ride along unexamined —
+        # so a block whose `second_half_slot` no longer agrees with its own stamps passes
+        # while `specifics` reports period lengths derived from the wrong number. Since
+        # corruption of the staged block is the one thing this backstop is FOR, the fields
+        # it does not read are the ones it most needs to.
+        for name, slot, minute in (
+            ("second_half_slot", second_half, REGULATION_HALF + 1),
+            ("first_extra_slot", first_extra, 2 * REGULATION_HALF + 1),
+            ("second_extra_slot", second_extra, 2 * REGULATION_HALF + EXTRA_TIME_HALF + 1),
+        ):
+            if slot is None:
+                continue
+            if not 0 <= slot < len(stamps):
+                clock_notes.append(
+                    f"{side}: {name} is slot {slot}, outside the {len(stamps)} staged stamps"
+                )
+            elif stamps[slot] != {"minute": minute, "stoppage_minute": None}:
+                clock_notes.append(
+                    f"{side}: {name} is slot {slot}, which the staged stamps put at "
+                    f"{_format_stamp(stamps[slot])} rather than {minute}'"
+                )
+
+        # The series must END inside its final period — not AT that period's regular last
+        # minute, which is what a short period legitimately falls short of.
+        if first_extra is None:
+            final_first, final_last = REGULATION_HALF + 1, 2 * REGULATION_HALF
+        else:
+            final_first = 2 * REGULATION_HALF + EXTRA_TIME_HALF + 1
+            final_last = 2 * (REGULATION_HALF + EXTRA_TIME_HALF)
+        if not final_first <= stamps[-1]["minute"] <= final_last:
+            clock_notes.append(
+                f"{side}: series ends at {_format_stamp(stamps[-1])}, outside the closing "
+                f"{final_first}'-{final_last}' period"
+            )
+        clock_facts.append(
+            f"{side}: {len(stamps)} slots, {_format_stamp(stamps[0])}"
+            f"..{_format_stamp(stamps[-1])}, "
+            + ", ".join(_period_notes(clock, len(stamps)))
+        )
+    checks.append(
+        _check(
+            "goalkeeping-involvement-clock",
+            not clock_notes,
+            " | ".join(part for part in ("; ".join(clock_notes), "; ".join(clock_facts)) if part),
+        )
+    )
+
     return checks
+
+
+def _format_stamp(stamp: dict) -> str:
+    """A clock stamp for check specifics only — never for the record (AD-7)."""
+    if stamp["stoppage_minute"]:
+        return f"{stamp['minute']}+{stamp['stoppage_minute']}"
+    return str(stamp["minute"])
+
+
+def _period_notes(clock: dict, slot_count: int) -> "list[str]":
+    """Each derived period's stoppage allotment, and any period drawn short.
+
+    Reported in `specifics` on every report, passing or not — see the check above for why
+    a short period is recorded rather than failed.
+
+    The four period rows are not equally reachable, and saying so is the point. On a
+    freshly parsed chart only ET1 and ET2 can be short: `_assert_clock_bounds` raises
+    before staging if either regulation half is drawn under its 45 slots, so `H1 drawn
+    SHORT` and `H2 drawn SHORT` cannot describe a parsed report. They are retained because
+    this runs over a STAGED record, where the boundaries may no longer agree with the
+    stamps — exactly the corruption the check reconciles for — and a period row that
+    silently reported `H1 +0` on a broken block would hide it.
+    """
+    second_half = clock["second_half_slot"]
+    first_extra = clock["first_extra_slot"]
+    second_extra = clock["second_extra_slot"]
+    regulation_end = slot_count - 1 if first_extra is None else first_extra - 1
+    periods = [
+        ("H1", REGULATION_HALF, second_half),
+        ("H2", REGULATION_HALF, regulation_end + 1 - second_half),
+    ]
+    if first_extra is not None:
+        periods.append(("ET1", EXTRA_TIME_HALF, second_extra - first_extra))
+        periods.append(("ET2", EXTRA_TIME_HALF, slot_count - second_extra))
+    notes: "list[str]" = []
+    for name, regular, drawn in periods:
+        if drawn < regular:
+            notes.append(f"{name} drawn SHORT at {drawn}/{regular} slots")
+        else:
+            notes.append(f"{name} +{drawn - regular}")
+    return notes

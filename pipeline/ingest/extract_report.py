@@ -30,8 +30,10 @@ the two receiving page families (`receiving`: offers & movement to receive — d
 not maps, so the payload is values rather than events) and its seven appended check ids;
 Story 1.9 Domains E and F (`goalkeeping`: the four goalkeeping page families — a table, a
 half-table, a marker MAP and a per-minute CHART — staged PER TEAM with Domain A's
-goalkeeper list carried beside each block, plus `set_plays`) and their seven appended
-checks; Story 1.14 the pass network (`pass_network`: the printed player-to-player pass
+goalkeeper list carried beside each block, plus `set_plays`) and their eight appended
+checks — the involvement timeline's slot -> match-clock mapping among them, derived from
+that chart's own printed x-ticks the way Story 1.8's momentum derives its own;
+Story 1.14 the pass network (`pass_network`: the printed player-to-player pass
 MATRIX, joined to Domain A's lineups like Domain G, with `node_positions` staged as an
 explicit `None` because the page carries no coordinates at all) and its three appended
 checks. Stories 1.10-1.14 keep plugging into the same two seams.
@@ -174,10 +176,10 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
     `MissingFieldError`), or the momentum parser's (Story 1.8:
     `MomentumChartError`, `MomentumFillError`, `MomentumScaleError`,
     `MomentumAxisError`, `MomentumClockError`), or Domains E and F's (Story 1.9:
-    `GoalkeepingPageParseError`, `InvolvementChartError`, `SetPlaysParseError`,
-    `MalformedFieldError`, `MissingFieldError`, plus the shared-chain errors on the
-    distribution map page), or the pass-network parser's (Story 1.14:
-    `PassNetworkParseError`, `PlayerJoinError`, `MissingFieldError`). The batch runner
+    `GoalkeepingPageParseError`, `InvolvementChartError`, `InvolvementClockError`,
+    `SetPlaysParseError`, `MalformedFieldError`, `MissingFieldError`, plus the
+    shared-chain errors on the distribution map page), or the pass-network parser's
+    (Story 1.14: `PassNetworkParseError`, `PlayerJoinError`, `MissingFieldError`). The batch runner
     turns each into a
     `failed` manifest entry; nothing is caught here, because a partial record is worse
     than none.
@@ -281,9 +283,9 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         )
 
         # Domains E and F (Story 1.9), same transparency rule: their typed errors
-        # (`GoalkeepingPageParseError`, `InvolvementChartError`, `SetPlaysParseError`,
-        # `MalformedFieldError`, `MissingFieldError`) and the shared marker chain's
-        # `PitchFrameError` / `UnknownRgbError` all travel as themselves.
+        # (`GoalkeepingPageParseError`, `InvolvementChartError`, `InvolvementClockError`,
+        # `SetPlaysParseError`, `MalformedFieldError`, `MissingFieldError`) and the shared
+        # marker chain's `PitchFrameError` / `UnknownRgbError` all travel as themselves.
         #
         # Domain E takes Domain A's lineups like Domain G does — but only to carry the
         # goalkeeper(s) with minutes BESIDE the team block; no page data is joined to

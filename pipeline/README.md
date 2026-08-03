@@ -1040,10 +1040,10 @@ own, because the tick grammar is materially different:
 | --- | --- | --- |
 | `FT` tick | 94/104 | **never printed** |
 | `HT` tick | 101/104 | **122/208** |
-| stoppage ticks | none | `45+N` (110 charts), `90+N` (214), `120+N` (4) |
-| last tick vs last slot | FT *is* the last slot | last tick is **0–7 slots before** the grid end |
+| stoppage ticks | none | `45+N` (108 charts / 110 readings), `90+N` (182 / 214), `120+N` (4 / 4) |
+| last tick vs last slot | FT *is* the last slot | last tick is **0–7 slots before** the grid end — 0 on 38 charts, so sometimes it *is* the last slot |
 
-Every relation below was measured over all 208 charts / 4,336 tick readings with **0
+Every relation below was measured over all 208 charts / 4,508 tick readings with **0
 deviations**: the origin tick `0` on slot 0 (208/208); first-half tick `M` on slot `M-1`
 (1,872/1,872); `45+N` on slot `44+N` (110/110); every second-half tick agreeing on one
 minute-46 slot (208/208) and equal to the `HT` tick wherever it is printed (122/122);
@@ -1069,8 +1069,10 @@ Two measured findings shape the reader:
 
 This also retires the "extra-time tick collision" left open at code review. The collision
 was in the *naive* reading — extending the second-half formula to minute 95 puts it on the
-same slot as `90+5` — not in the data: across all 18 extra-time charts the `95'` tick sits
-5–9 slots after the last `90+N` tick, and the printed ticks are what the mapping reads.
+same slot as `90+5` — not in the data. Of the 18 extra-time charts, 16 print a `90+N` tick
+at all (`PMSR-M74-GER-V-PAR` prints none on either side, so there is nothing to collide
+with), and on every one of those 16 the `95'` tick sits 5–9 slots after the last `90+N`
+tick. The printed ticks are what the mapping reads.
 
 ### Recorded Self-Validation checks
 

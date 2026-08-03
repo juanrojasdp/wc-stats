@@ -23,6 +23,7 @@ DOMAIN_E_CHECK_IDS = (
     "goalkeeping-goal-prevention-sum",
     "goalkeeping-aerial-sum",
     "goalkeeping-involvement-bound",
+    "goalkeeping-involvement-clock",
 )
 DOMAIN_F_CHECK_IDS = ("set-plays-corner-sides", "set-plays-totals")
 GATE_CHECK_IDS = (
@@ -473,6 +474,39 @@ def test_ground_truth_involvement_and_the_honest_delta(m01_record):
         series = goalkeeping[side]["involvement_series"]
         assert len(series) == 100
         assert all(isinstance(value, int) and value >= 0 for value in series)
+
+
+def test_ground_truth_involvement_clock(m01_record):
+    """M01's printed x-ticks put match minute 46 on slot 49 for both charts.
+
+    Ground truth, read off the reference PDF: `45'` on slot 44, `HT` on slot 49, `90'` on
+    slot 93 and `90+5` on slot 98, over a 100-slot grid — so the first half carries 4
+    stoppage minutes, the second 6, and the grid runs one slot past its last tick. Every
+    figure below is a RELATION on the staged structure rather than a re-typed constant,
+    except the two the page itself prints.
+    """
+    goalkeeping = m01_record["domains"]["goalkeeping"]
+
+    for side in ("home", "away"):
+        clock = goalkeeping[side]["involvement_clock"]
+        stamps = clock["stamps"]
+
+        assert clock["second_half_slot"] == 49
+        assert clock["first_extra_slot"] is None  # M01 is a regulation report
+        assert clock["second_extra_slot"] is None
+        assert len(stamps) == len(goalkeeping[side]["involvement_series"])
+
+        assert stamps[0] == {"minute": 1, "stoppage_minute": None}
+        assert stamps[44] == {"minute": 45, "stoppage_minute": None}
+        assert stamps[45] == {"minute": 45, "stoppage_minute": 1}
+        assert stamps[clock["second_half_slot"]] == {"minute": 46, "stoppage_minute": None}
+        assert stamps[clock["second_half_slot"] + 44] == {"minute": 90, "stoppage_minute": None}
+        assert stamps[-1] == {"minute": 90, "stoppage_minute": 6}
+
+        # The whole grid is stamped, strictly advancing, with no gap and no repeat.
+        keys = [(stamp["minute"], stamp["stoppage_minute"] or 0) for stamp in stamps]
+        assert keys == sorted(keys)
+        assert len(set(keys)) == len(keys)
 
 
 def test_ground_truth_goalkeepers(m01_record):

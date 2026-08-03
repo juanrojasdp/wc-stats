@@ -286,6 +286,28 @@ class InvolvementChartError(ExtractError):
     what = "goalkeeping involvement chart did not parse"
 
 
+class InvolvementClockError(ExtractError):
+    """The GK involvement timeline's slot -> match-clock mapping cannot be pinned (1.9).
+
+    Separate from `InvolvementChartError` by the module rule above: that class is the
+    chart's VALUE axis — the points-per-unit factor, the dots and their integrality —
+    while this one is its TIME axis, read from a different source (the printed x-tick
+    labels) and failing for entirely different reasons. A gate operator triaging a
+    deviation histogram must be able to tell "the series values are unreadable" from
+    "the series is readable but nobody knows which minute each slot is".
+
+    Raised when a tick label is not one the template's grammar admits, when a tick does
+    not land on a slot centre, when the ticks that pin a period boundary disagree with
+    each other, when the derived periods are out of order or fall outside the drawn grid,
+    or when a derived stoppage allotment exceeds what the contract's `StoppageMinute` can
+    express. Every one of those is a mapping this parser must not guess: unlike the value
+    axis there is no printed counterpart to reconcile a wrong clock against, so a silent
+    off-by-one would place Story 2.10's whole timeline on the wrong minutes.
+    """
+
+    what = "goalkeeping involvement match-clock mapping unresolvable"
+
+
 class PlayerJoinError(ExtractError):
     """A Domain G page row cannot be joined to this report's Domain A lineup (AC 2).
 

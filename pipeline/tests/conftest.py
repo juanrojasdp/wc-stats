@@ -1938,12 +1938,81 @@ GK_INVOLVEMENT_DOT_RADIUS = 1.5  # 3.0 pt on 21,764 of 21,764 corpus dots
 GK_INVOLVEMENT_DOT_RGB = (0.18, 0.30, 1.00)
 GK_INVOLVEMENT_TOTAL_LABEL = "Total Involvements"
 GK_INVOLVEMENT_TOTAL_CENTRE_X = 861.0
-GK_INVOLVEMENT_TICK_LABELS = (
-    "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "HT",
-    "50", "55", "60", "65", "70", "75", "80", "85", "90", "90+5",
-)
 DEFAULT_GK_INVOLVEMENT_SLOTS = 100
 DEFAULT_GK_INVOLVEMENT_TOP_LABEL = 4
+# The match-clock structure the ticks describe. The defaults reproduce the reference
+# report exactly: 100 slots with match minute 46 on slot 49, so the first half carries 4
+# stoppage minutes, the second 6, and the last printed tick is `90+5` on slot 98 with the
+# grid running one slot past it (the corpus runs 0-7 slots past its last tick).
+DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT = 49
+GK_REGULATION_HALF = 45
+GK_EXTRA_TIME_HALF = 15
+
+
+def gk_involvement_ticks(
+    slots, second_half_slot, first_extra_slot=None, second_extra_slot=None
+):
+    """`(slot, label)` for every x-tick the template prints, at its true slot.
+
+    Generated from the clock structure rather than laid out evenly, because evenly spaced
+    ticks describe a mapping no report has: everything after half time shifts by that
+    report's own stoppage allotment, and a fixture whose ticks did not move with it would
+    let a parser that ignored them entirely still pass.
+
+    A tick is printed only when its slot exists. That is the corpus's own policy and it is
+    load-bearing rather than cosmetic — `PMSR-M88-AUS-V-EGY` draws a 14-slot first extra
+    period and, exactly consistently, prints no `105'` tick.
+    """
+    ticks = [(0, "0")]
+    for minute in range(5, GK_REGULATION_HALF + 1, 5):
+        ticks.append((minute - 1, str(minute)))
+    for added in range(5, second_half_slot - GK_REGULATION_HALF + 1, 5):
+        ticks.append((GK_REGULATION_HALF - 1 + added, f"{GK_REGULATION_HALF}+{added}"))
+    ticks.append((second_half_slot, "HT"))
+    for minute in range(50, 2 * GK_REGULATION_HALF + 1, 5):
+        ticks.append((second_half_slot + minute - GK_REGULATION_HALF - 1, str(minute)))
+    regulation_end = slots - 1 if first_extra_slot is None else first_extra_slot - 1
+    for added in range(
+        5, regulation_end - (second_half_slot + GK_REGULATION_HALF - 1) + 1, 5
+    ):
+        ticks.append(
+            (
+                second_half_slot + GK_REGULATION_HALF - 1 + added,
+                f"{2 * GK_REGULATION_HALF}+{added}",
+            )
+        )
+    if first_extra_slot is not None:
+        for minute in range(95, 2 * GK_REGULATION_HALF + GK_EXTRA_TIME_HALF + 1, 5):
+            slot = first_extra_slot + minute - 2 * GK_REGULATION_HALF - 1
+            if slot < second_extra_slot:
+                ticks.append((slot, str(minute)))
+        for minute in range(110, 2 * (GK_REGULATION_HALF + GK_EXTRA_TIME_HALF) + 1, 5):
+            slot = (
+                second_extra_slot
+                + minute
+                - 2 * GK_REGULATION_HALF
+                - GK_EXTRA_TIME_HALF
+                - 1
+            )
+            # Same "only when its slot exists" rule as the first extra period above. It was
+            # applied there and not here, which made a SHORT SECOND extra period
+            # undrawable: the 120' tick landed one slot past the grid. M88 is the corpus's
+            # short-ET1 case; nothing says the mirror cannot print, and the check that
+            # tolerates one has to be testable against the other.
+            if slot < slots:
+                ticks.append((slot, str(minute)))
+        for added in range(
+            5, slots - 1 - second_extra_slot - (GK_EXTRA_TIME_HALF - 1) + 1, 5
+        ):
+            ticks.append(
+                (
+                    second_extra_slot + GK_EXTRA_TIME_HALF - 1 + added,
+                    f"{2 * (GK_REGULATION_HALF + GK_EXTRA_TIME_HALF)}+{added}",
+                )
+            )
+    return ticks
+
+
 # slot -> value. Every listed value is distinct enough that an off-by-one slot assignment
 # cannot pass, and the peak equals the printed top label, as the auto-scale requires.
 DEFAULT_GK_INVOLVEMENT_VALUES = {
@@ -1956,14 +2025,34 @@ DEFAULT_GK_INVOLVEMENT_VALUES = {
 DEFAULT_GK_INVOLVEMENT_DELTA = {"home": 0, "away": 1}
 
 
-def default_gk_involvement_block(side, slots=DEFAULT_GK_INVOLVEMENT_SLOTS):
-    """One chart's series and printed total, derived so the shipped bound holds."""
+def default_gk_involvement_block(
+    side,
+    slots=DEFAULT_GK_INVOLVEMENT_SLOTS,
+    second_half_slot=DEFAULT_GK_INVOLVEMENT_SECOND_HALF_SLOT,
+    first_extra_slot=None,
+    second_extra_slot=None,
+    ticks=None,
+):
+    """One chart's series, printed total and match-clock structure.
+
+    The values are derived so the shipped bound holds; the clock defaults reproduce the
+    reference report. `ticks` overrides the generated `(slot, label)` list outright, which
+    is how a test draws a tick row the parser must reject.
+    """
     values = DEFAULT_GK_INVOLVEMENT_VALUES[side]
     series = [values.get(slot, 0) for slot in range(slots)]
     return {
         "series": series,
         "total_involvements": sum(series) + DEFAULT_GK_INVOLVEMENT_DELTA[side],
         "top_label": DEFAULT_GK_INVOLVEMENT_TOP_LABEL,
+        "second_half_slot": second_half_slot,
+        "first_extra_slot": first_extra_slot,
+        "second_extra_slot": second_extra_slot,
+        "ticks": (
+            gk_involvement_ticks(slots, second_half_slot, first_extra_slot, second_extra_slot)
+            if ticks is None
+            else ticks
+        ),
     }
 
 
@@ -2036,15 +2125,13 @@ def draw_gk_involvement_page(
             GK_INVOLVEMENT_TOTAL_LABEL, fontsize=EF_LABEL_FONTSIZE,
         )
 
-        # The x-axis ticks. The first label is centred on the plot box's left edge, which
-        # puts its right edge past the axis-label column bound — the real page's own
-        # geometry, and what keeps a tick out of the y-axis label read.
-        tick_pitch = (GK_INVOLVEMENT_PLOT_X1 - GK_INVOLVEMENT_PLOT_X0) / (
-            len(GK_INVOLVEMENT_TICK_LABELS) - 1
-        )
-        for index, text in enumerate(GK_INVOLVEMENT_TICK_LABELS):
+        # The x-axis ticks, each centred on ITS OWN slot — the slot -> match-clock mapping
+        # is read from exactly these positions. The `0` label is centred on the plot box's
+        # left edge, which puts its right edge past the y-axis label column bound: the real
+        # page's own geometry, and what keeps a tick out of the y-axis label read.
+        for slot, text in block["ticks"]:
             _ef_centred(
-                page, GK_INVOLVEMENT_PLOT_X0 + index * tick_pitch, zero_line + 10.6, text,
+                page, GK_INVOLVEMENT_PLOT_X0 + slot * pitch, zero_line + 10.6, text,
                 fontsize=EF_FONTSIZE,
             )
     if decorate is not None:
