@@ -13,9 +13,13 @@ import { MIN_HIT_PX } from "@/viz/marker-layout";
 import {
   GOAL_MARKER_RADIUS_PX,
   MOMENTUM_FILL_OPACITY,
+  MOMENTUM_MARGIN,
+  MOMENTUM_Y_AXIS_WIDTH,
   clampIndex,
+  goalMarkerHitHalfWidths,
   goalMarkers,
   indexAtOffset,
+  momentumPlotBox,
   momentumFigureCounts,
   momentumPeak,
   momentumRows,
@@ -436,7 +440,7 @@ describe("momentumYTicks — symmetric, integer, always includes zero", () => {
    * sign they render as "17 1 8 17". These assertions fail if anyone drops the
    * explicit `ticks` prop and lets recharts choose again.
    */
-  it("always contains 0 and is symmetric, across every corpus-plausible peak", () => {
+  it("always contains 0 AND the peak, and is symmetric, across every corpus-plausible peak", () => {
     for (let peak = 1; peak <= 40; peak += 1) {
       const ticks = momentumYTicks(peak);
       expect(ticks).toContain(0);
@@ -444,18 +448,32 @@ describe("momentumYTicks — symmetric, integer, always includes zero", () => {
       expect(ticks.map((t) => -t + 0).reverse()).toEqual(ticks);
       expect(ticks.every((t) => Number.isInteger(t))).toBe(true);
       expect(ticks.every((t) => Math.abs(t) <= peak)).toBe(true);
-      // Uniformly spaced: every gap identical.
-      const gaps = ticks.slice(1).map((t, i) => t - ticks[i]);
-      expect(new Set(gaps).size).toBe(1);
       expect(ticks.length).toBeGreaterThanOrEqual(3);
+      // Strictly ascending, so no two labels can land on the same position.
+      expect(ticks.slice(1).every((t, i) => t > ticks[i])).toBe(true);
+      /*
+       * THE PEAK IS ALWAYS LABELLED (ruled by code review, 2026-08-03). The
+       * round steps alone left m074's peak of 17 unlabelled under a top tick of
+       * 10 — the tallest label covered 59% of the domain, and with no axis line,
+       * no tick line and no grid, the curve's maximum simply could not be read.
+       * Gaps are deliberately NOT uniform any more; that is the trade.
+       */
+      expect(ticks).toContain(peak);
+      expect(ticks).toContain(-peak);
     }
   });
 
   it("pins the two real fixture peaks as literals", () => {
-    // m001, peak 10 — the case recharts happened to get right.
+    // m001, peak 10 — the round step already lands exactly on the peak.
     expect(momentumYTicks(momentumPeak(rows001))).toEqual([-10, -5, 0, 5, 10]);
-    // m074, peak 17 — the case recharts got wrong.
-    expect(momentumYTicks(momentumPeak(rows074))).toEqual([-10, 0, 10]);
+    // m074, peak 17 — the peak is APPENDED beyond the round tick it clears.
+    expect(momentumYTicks(momentumPeak(rows074))).toEqual([-17, -10, 0, 10, 17]);
+  });
+
+  it("replaces the outer tick instead of crowding it when the peak is close", () => {
+    // 11 sits one unit above the round tick 10; two labels a unit apart would
+    // collide, so the peak REPLACES it rather than being appended.
+    expect(momentumYTicks(11)).toEqual([-11, 0, 11]);
   });
 
   it("degrades sanely at the all-zeros floor", () => {
@@ -515,8 +533,83 @@ describe("clampIndex / indexAtOffset — the slider's arithmetic", () => {
     // Off the plot on both sides clamps rather than throwing or wrapping.
     expect(indexAtOffset(-500, 40, 400, length)).toBe(0);
     expect(indexAtOffset(5000, 40, 400, length)).toBe(100);
-    expect(indexAtOffset(100, 40, 0, length)).toBe(0);
     expect(indexAtOffset(100, 40, 400, 1)).toBe(0);
+  });
+
+  it("returns null rather than 0 on a degenerate plot box", () => {
+    /*
+     * A display:none ancestor, a collapsed flex parent and a print stylesheet
+     * all give width 0. Returning index 0 there silently reset the reader's
+     * cursor to minute 1 on any tap; null is the no-op signal the caller needs.
+     */
+    expect(indexAtOffset(100, 40, 0, 101)).toBeNull();
+    expect(indexAtOffset(100, 40, -20, 101)).toBeNull();
+  });
+
+  it("derives the plot box from the margin AND the y-axis width, not the margin alone", () => {
+    /*
+     * THE REGRESSION THIS PINS (code review, 2026-08-03). recharts computes
+     * offset.left = margin.left + leftAxesOffset, and leftAxesOffset is the
+     * y-axis's own width. The chart previously passed MARGIN.left alone as the
+     * origin, which lands a left-edge tap a full axis width late — ~17 samples
+     * on a 138-sample mobile chart — while staying exact at the right edge,
+     * which is exactly why manual verification passed it. This test fails if
+     * anyone reverts the origin to the bare margin.
+     */
+    expect(MOMENTUM_Y_AXIS_WIDTH).toBeGreaterThan(0);
+    const box = momentumPlotBox(600);
+    expect(box.left).toBe(MOMENTUM_MARGIN.left + MOMENTUM_Y_AXIS_WIDTH);
+    expect(box.left).not.toBe(MOMENTUM_MARGIN.left);
+    expect(box.width).toBe(600 - box.left - MOMENTUM_MARGIN.right);
+
+    // End to end: a tap at the true plot origin is sample 0, not sample 6.
+    expect(indexAtOffset(box.left, box.left, box.width, 101)).toBe(0);
+    expect(indexAtOffset(box.left + box.width, box.left, box.width, 101)).toBe(100);
+
+    // A degenerate container yields a non-positive width, hence the null no-op.
+    expect(momentumPlotBox(20).width).toBeLessThanOrEqual(0);
+  });
+});
+
+describe("goalMarkerHitHalfWidths — decision 26 without a paint-order fight", () => {
+  const marker = (index: number) => ({
+    index,
+    teamId: "mexico",
+    scorerName: "X",
+    ownGoal: false,
+    penalty: false,
+    at: { minute: index + 1, stoppageMinute: null },
+    exact: true,
+  });
+
+  it("gives well-separated markers the full 44px target", () => {
+    const halves = goalMarkerHitHalfWidths([marker(7), marker(69)], 100, 1000);
+    expect(halves).toEqual([MIN_HIT_PX / 2, MIN_HIT_PX / 2]);
+  });
+
+  it("caps both markers at half the gap when they would overlap", () => {
+    /*
+     * The reachable case: at <md a 138-sample chart is ~2.4px per sample, so any
+     * two goals within ~9 minutes collide. Decision 26 ruled the earlier marker
+     * wins; SVG hit-testing gives it to whichever paints LAST, and DOM order
+     * cannot be reversed without also reversing the decision-20 tab order.
+     * Removing the overlap satisfies both: the nearer goal always wins.
+     */
+    const plotWidth = 300;
+    const lastIndex = 137;
+    const halves = goalMarkerHitHalfWidths([marker(40), marker(44)], lastIndex, plotWidth);
+    const gapPx = 4 * (plotWidth / lastIndex);
+    expect(halves[0]).toBeCloseTo(gapPx / 2, 10);
+    expect(halves[1]).toBeCloseTo(gapPx / 2, 10);
+    // The boxes now abut rather than overlap.
+    expect(halves[0] + halves[1]).toBeCloseTo(gapPx, 10);
+    expect(halves[0]).toBeLessThan(MIN_HIT_PX / 2);
+  });
+
+  it("degrades safely on empty input and a degenerate box", () => {
+    expect(goalMarkerHitHalfWidths([], 100, 500)).toEqual([]);
+    expect(goalMarkerHitHalfWidths([marker(0)], 0, 500)).toEqual([MIN_HIT_PX / 2]);
+    expect(goalMarkerHitHalfWidths([marker(0)], 100, 0)).toEqual([MIN_HIT_PX / 2]);
   });
 });
 

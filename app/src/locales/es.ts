@@ -384,6 +384,10 @@ export const es = {
       goalPrefix: "Gol de",
       ownGoal: "en propia puerta",
       penalty: "de penal",
+      // Spoken when a goal's stamp is not on the sample grid and its marker was
+      // placed on the nearest minute instead. Without it the chart, the table
+      // and the marker's own name each claim a different position, silently.
+      approximate: "posición aproximada",
       // This table states ITS OWN order — deliberately not viz.table.caption,
       // whose "Ordenado por minuto." is a different claim on a grid whose
       // minute is not unique.

@@ -250,6 +250,7 @@ export const en: Dictionary = {
       goalPrefix: "Goal by",
       ownGoal: "own goal",
       penalty: "penalty",
+      approximate: "approximate position",
       tableCaption: "Ordered by match minute, stoppage time included.",
       tableGoal: "Goal",
     },

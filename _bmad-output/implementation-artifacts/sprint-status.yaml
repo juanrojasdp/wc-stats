@@ -59,7 +59,7 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-07-27
+last_updated: 2026-08-03
 # 2026-07-27: story 1-9 adversarial code review (3 layers over the 1.9-scoped diff of
 #             7279637..7306d7b): 39 raw findings merged to 33 — 3 decisions ruled, 22
 #             patches applied, 7 deferred, 1 dismissed then UN-dismissed and patched.
@@ -1385,7 +1385,7 @@ development_status:
   2-3-contract-v1-per-surface-sign-off: done
   2-4-match-route-hero-layer: done
   2-5-tactical-layer-shell-key-statistics-empty-state-pattern: done
-  2-6-momentum-timeline: review
+  2-6-momentum-timeline: done
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data
   2-7-pitch-panel-infrastructure-with-shot-cross-maps: done
   2-8-pass-network-visualization: done

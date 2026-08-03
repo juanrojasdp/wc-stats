@@ -4,6 +4,7 @@ import type { KeyboardEvent, PointerEvent, ReactNode } from "react";
 import {
   Area,
   AreaChart,
+  Label,
   ReferenceDot,
   ReferenceLine,
   ResponsiveContainer,
@@ -14,15 +15,20 @@ import {
 import { useElementWidth } from "@/lib/use-element-width";
 import { cn } from "@/lib/utils";
 import {
+  CHART_HEIGHT_CLASS,
   GOAL_MARKER_RADIUS_PX,
   GOAL_MARKER_RING_PX,
   MIDLINE_STROKE_PX,
   MIN_HIT_PX,
   MOMENTUM_FILL_OPACITY,
+  MOMENTUM_MARGIN,
   MOMENTUM_STROKE_PX,
+  MOMENTUM_Y_AXIS_WIDTH,
   TEAM_B_DASH_ARRAY,
   clampIndex,
+  goalMarkerHitHalfWidths,
   indexAtOffset,
+  momentumPlotBox,
   momentumYTicks,
   type MomentumGoalMarker,
   type MomentumRow,
@@ -53,24 +59,36 @@ import {
  *   cursor chip    ReferenceDot x={index} y={peak}  -> cy = plot top
  *   the midline    ReferenceLine y={0}, DECLARED LAST
  *
- * Declaration order is the only lever left for paint order (v3 removed
- * `isFront`) and it is also the TAB ORDER — hence goal markers before the
- * cursor (decision 20), and the midline last so it paints over the fills
- * (decision 25).
+ * PAINT ORDER IS NOT DECLARATION ORDER — the story's decisions 24 and 25 reason
+ * from a premise that is FALSE for the installed recharts, and a code review
+ * corrected it here rather than leave the next maintainer the opposite of how it
+ * works. recharts 3.4+ reintroduced explicit layering: every ReferenceDot and
+ * ReferenceLine is portalled out of its declared position into a z-indexed <g>
+ * (`zIndex/ZIndexLayer.js`), and `DefaultZIndexes` fixes area=100, line=400,
+ * axis=500, scatter(=ReferenceDot)=600. So:
+ *
+ *   - the midline paints over the fills because 400 > 100, NOT because it is
+ *     declared last. Declaring it first would look identical.
+ *   - every ReferenceDot paints over the midline regardless of declaration.
+ *   - DECLARATION ORDER STILL DECIDES *WITHIN* ONE z LAYER, and it is still DOM
+ *     order and therefore TAB ORDER. The decision-20 tab sequence holds only
+ *     because every focusable node here happens to be a ReferenceDot (z 600).
+ *     Adding a focusable ReferenceLine or Customized layer would silently
+ *     reorder the tab sequence — pass an explicit `zIndex` if that day comes.
  */
-
-/** Heights from the mockups: 170px at >=md (desktop), 122px below (mobile). */
-export const CHART_HEIGHT_CLASS = "h-[122px] md:h-[170px]";
-
-/*
- * A FIXED margin object, so the one piece of arithmetic that does need pixels
- * (tap-to-position) has a known origin. `left` clears the y-axis ticks; the
- * chip sits inside `top`.
- */
-const MARGIN = { top: 18, right: 10, bottom: 18, left: 34 } as const;
 
 /** Fallback width before the ResizeObserver reports — a mid-range phone. */
 const FALLBACK_WIDTH_PX = 326;
+
+/**
+ * A conservative rendered width for the cursor chip ("45+2′ · MEX 10 · RSA 6" at
+ * caption size), used to keep it inside the viewport. Measured rather than
+ * guessed at a fraction of the chart: the previous `cx > width * 0.65` flip was
+ * unrelated to the chip's actual extent and left a band where a start-anchored
+ * chip was clipped by the SVG edge, plus a first-frame flash where the fallback
+ * width made every position "near right" and ran the text off the LEFT edge.
+ */
+const CHIP_WIDTH_PX = 150;
 
 /** Series labels sit at 60% of the domain: inside the plot, clear of the axis. */
 const SERIES_LABEL_FRACTION = 0.6;
@@ -135,12 +153,14 @@ function GoalMarkerShape(props: {
   cx?: number;
   cy?: number;
   name?: string;
+  hitHalfWidth?: number;
   onActivate?: () => void;
 }) {
-  const { cx, cy, name, onActivate } = props;
+  const { cx, cy, name, hitHalfWidth, onActivate } = props;
   if (cx === undefined || cy === undefined) {
     return null;
   }
+  const halfWidth = hitHalfWidth ?? MIN_HIT_PX / 2;
   return (
     <g
       role="button"
@@ -154,6 +174,17 @@ function GoalMarkerShape(props: {
         }
       }}
       /*
+       * A role="button" MUST answer a real click: assistive technologies
+       * activate a button by synthesizing a `click` event, not a keydown and not
+       * a pointerdown. Without this, NVDA/JAWS/VoiceOver activation was a no-op
+       * — precisely the user the "markers move the cursor" departure was written
+       * to serve. Found by code review, 2026-08-03.
+       */
+      onClick={(event) => {
+        event.stopPropagation();
+        onActivate?.();
+      }}
+      /*
        * Decision 26: the plot area's own tap-to-position handler occupies these
        * same pixels and pointer events bubble, so activating a marker must not
        * ALSO move the cursor.
@@ -164,11 +195,21 @@ function GoalMarkerShape(props: {
       }}
       className="cursor-pointer"
     >
-      {/* Invisible >=44x44 hit target (UX-DR15), centred on the mark. */}
+      {/*
+       * Invisible hit target (UX-DR15), centred on the mark. Its half-width is
+       * capped at half the gap to the nearest neighbouring marker, so two goals
+       * closer than 44px apart CANNOT overlap. Decision 26 ruled that the
+       * first-in-DOM (chronologically earlier) marker wins such a collision, but
+       * SVG hit-testing hands the pointer to whatever paints LAST — the opposite
+       * — and DOM order cannot be reversed without also reversing the decision-20
+       * tab order. Removing the overlap resolves it for both: the visually nearer
+       * goal always wins, and where two goals are closer than 44px no arrangement
+       * could give both a full target anyway.
+       */}
       <rect
-        x={cx - MIN_HIT_PX / 2}
+        x={cx - halfWidth}
         y={cy - MIN_HIT_PX / 2}
-        width={MIN_HIT_PX}
+        width={halfWidth * 2}
         height={MIN_HIT_PX}
         fill="transparent"
       />
@@ -237,14 +278,19 @@ function CursorHandleShape(props: {
       onKeyDown={onKeyDown}
       className="cursor-ew-resize"
     >
-      {/* The handle's own >=44px target, so the slider is grabbable by touch. */}
-      <rect
-        x={cx - MIN_HIT_PX / 2}
-        y={cy - MIN_HIT_PX / 2}
-        width={MIN_HIT_PX}
-        height={MIN_HIT_PX}
-        fill="transparent"
-      />
+      {/*
+       * NO transparent 44x44 hit rect here, deliberately. The handle used to
+       * carry one, and because it is a ReferenceDot declared AFTER the goal
+       * markers — same z layer, so declaration order decides — that rect painted
+       * on top of them: every marker within 22px of the cursor became
+       * pointer-dead, and since activating a marker moves the cursor onto it,
+       * the marker you just tapped could never be tapped again.
+       *
+       * The handle does not need a pointer target of its own. The slider is
+       * driven by the keyboard, and pointer users position it by tapping the
+       * plot area, whose own >=44px-tall target (decision 19) covers every pixel
+       * this rect did. Found by code review, 2026-08-03.
+       */}
       <circle cx={cx} cy={cy} r={4} fill="var(--ink-primary)" />
     </g>
   );
@@ -269,8 +315,17 @@ function CursorChipShape(props: {
   if (cx === undefined || cy === undefined) {
     return null;
   }
-  // Flip the anchor near the right edge so a long chip never clips.
-  const nearRight = chartWidth !== undefined && cx > chartWidth * 0.65;
+  /*
+   * Flip the anchor only when the chip would ACTUALLY overrun the right edge,
+   * and only once a real measurement exists — and having flipped, make sure the
+   * end-anchored chip does not then run off the LEFT edge, which is what the old
+   * fraction-based flip did on the first frame, before the ResizeObserver
+   * reported and while `chartWidth` was still the 326px phone fallback.
+   */
+  const measured = chartWidth !== undefined && chartWidth > 0;
+  const overrunsRight = measured && cx + SERIES_LABEL_INSET_PX + CHIP_WIDTH_PX > chartWidth;
+  const fitsLeftFlipped = cx - SERIES_LABEL_INSET_PX - CHIP_WIDTH_PX >= 0;
+  const nearRight = overrunsRight && fitsLeftFlipped;
   return (
     <text
       x={cx + (nearRight ? -SERIES_LABEL_INSET_PX : SERIES_LABEL_INSET_PX)}
@@ -327,6 +382,15 @@ export function MomentumChart({
   }
 
   function onKeyDown(event: KeyboardEvent<SVGGElement>) {
+    /*
+     * Never claim a modifier chord. Matching on `event.key` alone and calling
+     * preventDefault() unconditionally swallowed Alt+Left (browser Back),
+     * macOS Cmd+Left/Right (line start/end) and screen-reader pass-through
+     * combinations, reinterpreting all of them as +/-1 sample.
+     */
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
     let next: number | ((previous: number) => number);
     switch (event.key) {
       case "ArrowRight":
@@ -364,11 +428,30 @@ export function MomentumChart({
    * by a flag someone can flip.
    */
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
+    /*
+     * Only a primary-button press positions the cursor. Without this a
+     * right-click, a second simultaneous touch point, or the pointerdown that
+     * merely BEGINS a vertical page scroll over this full-width 122-170px target
+     * all threw the reader's position away with no undo.
+     */
+    if (!event.isPrimary || event.button !== 0) {
+      return;
+    }
     const rect = event.currentTarget.getBoundingClientRect();
-    const plotWidth = rect.width - MARGIN.left - MARGIN.right;
-    onIndexChange(
-      indexAtOffset(event.clientX - rect.left, MARGIN.left, plotWidth, rows.length)
-    );
+    /*
+     * The plot box comes from the model, NOT from `rect.width - margin`. recharts
+     * adds each visible left y-axis's own `width` on top of `margin.left`, so the
+     * true origin is 68 here, not 34 — the old arithmetic landed a left-edge tap
+     * ~17 samples late on a 138-sample mobile chart while remaining exact at the
+     * right edge, which is why verification passed it.
+     */
+    const box = momentumPlotBox(rect.width);
+    const next = indexAtOffset(event.clientX - rect.left, box.left, box.width, rows.length);
+    // `null` means the box is degenerate — a no-op, never a reset to minute 1.
+    if (next === null) {
+      return;
+    }
+    onIndexChange(next);
   }
 
   function formatXTick(value: number): string {
@@ -378,6 +461,17 @@ export function MomentumChart({
 
   const chipText = `${chipClock}${CHIP_SEPARATOR}${chipHome}${CHIP_SEPARATOR}${chipAway}`;
   const tickStyle = { className: "type-caption tabular-nums", fill: "var(--ink-secondary)" };
+
+  /*
+   * Per-marker hit half-widths, capped so adjacent markers never overlap
+   * (see GoalMarkerShape). Computed from the same plot box tap-to-position uses,
+   * against the linear [0, lastIndex] x domain.
+   */
+  const markerHitHalfWidths = goalMarkerHitHalfWidths(
+    markers,
+    lastIndex,
+    momentumPlotBox(width).width
+  );
 
   /*
    * `type-caption` deliberately does NOT carry font-variant-numeric, because
@@ -394,7 +488,7 @@ export function MomentumChart({
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={rows}
-          margin={MARGIN}
+          margin={MOMENTUM_MARGIN}
           /*
            * Decision 4. recharts' accessibilityLayer defaults to TRUE in v3 and
            * installs role="application" on the container, its own tabIndex and
@@ -408,15 +502,30 @@ export function MomentumChart({
           <XAxis
             dataKey="index"
             type="number"
-            domain={[0, lastIndex]}
+            /*
+             * `Math.max(1, lastIndex)`: a single-sample series is contract-legal
+             * (@minItems 1) and would otherwise give the degenerate domain
+             * [0, 0], which recharts cannot scale — every mark then resolves to
+             * the same or a NaN cx. momentumPeak floors the Y domain for exactly
+             * this reason; the X domain had no equivalent.
+             */
+            domain={[0, Math.max(1, lastIndex)]}
             ticks={tickIndices}
             tickFormatter={formatXTick}
             tick={tickStyle}
             interval={0}
             axisLine={{ stroke: "var(--border-hairline)" }}
             tickLine={{ stroke: "var(--border-hairline)" }}
-            name={axisMinuteLabel}
-          />
+          >
+            {/*
+             * <Label>, not `name`. recharts' `name` prop feeds the tooltip and
+             * legend payloads ONLY — and decision 23 bans the <Tooltip> outright
+             * — so the axis titles previously reached no surface at all: not the
+             * screen, not the accessibility tree. The y title is what names the
+             * metric beside the numbers, which decision 13 requires.
+             */}
+            <Label value={axisMinuteLabel} position="insideBottom" className="type-caption" fill="var(--ink-secondary)" />
+          </XAxis>
           <YAxis
             type="number"
             /*
@@ -441,9 +550,15 @@ export function MomentumChart({
             tick={tickStyle}
             axisLine={false}
             tickLine={false}
-            width={MARGIN.left}
-            name={axisEntriesLabel}
-          />
+            /*
+             * Pinned, and pinned to the SAME constant momentumPlotBox reads, so
+             * the tap-to-position origin stays derivable. Changing one without
+             * the other silently reintroduces the left-edge offset defect.
+             */
+            width={MOMENTUM_Y_AXIS_WIDTH}
+          >
+            <Label value={axisEntriesLabel} angle={-90} position="insideLeft" className="type-caption" fill="var(--ink-secondary)" />
+          </YAxis>
 
           {/*
            * type="linear", never monotone: the mockup draws straight segments
@@ -512,7 +627,13 @@ export function MomentumChart({
               y={0}
               shape={
                 <GoalMarkerShape
-                  name={markerNames[position]}
+                  /*
+                   * `?? ""` for the same reason the x ticks have one: the two
+                   * props carry no length invariant, and an undefined name
+                   * renders a focusable role="button" with NO accessible name.
+                   */
+                  name={markerNames[position] ?? ""}
+                  hitHalfWidth={markerHitHalfWidths[position]}
                   onActivate={() => onIndexChange(marker.index)}
                 />
               }

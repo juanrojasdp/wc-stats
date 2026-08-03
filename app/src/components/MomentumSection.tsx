@@ -1,9 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
-import { CHART_HEIGHT_CLASS, type MomentumChartSide } from "@/components/MomentumChart";
+/*
+ * TYPE-ONLY. A value import from this module — it used to bring in
+ * CHART_HEIGHT_CLASS — creates a static module-graph edge into the very module
+ * next/dynamic exists to defer, linking recharts back onto the critical path and
+ * quietly defeating decision 21. `import type` is erased at compile time and
+ * carries no such edge; the height class now lives in the pure model module.
+ */
+import type { MomentumChartSide } from "@/components/MomentumChart";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { Goals, Momentum } from "@/lib/contract/contract-types";
 import { formatInteger } from "@/lib/format";
@@ -13,6 +20,7 @@ import { formatGoalMinute } from "@/lib/match-hero";
 import { MD_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 import {
+  CHART_HEIGHT_CLASS,
   clampIndex,
   goalMarkers,
   momentumFigureCounts,
@@ -162,29 +170,58 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
   }
 
   /*
+   * MEMOISED, and that is not a micro-optimisation. The cursor lives in this
+   * component's state, so EVERY arrow keypress re-rendered it — and this
+   * pipeline re-validated and re-allocated all 138 of m074's samples through the
+   * read guards, re-resolved the goal markers (O(goals x rows) plus a sort), and
+   * built another 138 table rows, per keystroke. The chart's own key handler
+   * notes that repeats outrun React commits; this is why. A fresh `rows`
+   * identity also forced recharts to recompute both area paths every time.
+   *
+   * Still built EAGERLY (decision 8): the throw happens on LOAD inside
+   * TacticalErrorBoundary, not when a reader opens the table.
+   *
+   * `== null`, not `=== null`: a truncated `as`-cast bundle can carry an ABSENT
+   * `momentum` key rather than an explicit null. `sectionDataState` classifies
+   * that as "ready", so it reaches this component, and a `=== null` test let it
+   * fall through to momentumRows and crash — the "a crash instead of an absence
+   * is strictly worse" outcome this guard exists to prevent. (The matching
+   * predicate in tactical-sections.ts has the same gap, but that file is on this
+   * story's do-not-touch list and is filed to the ledger instead.)
+   */
+  const model = useMemo(() => {
+    if (momentum == null) {
+      return null;
+    }
+    const rows = momentumRows(momentum);
+    const markers = goalMarkers(goals, rows);
+    return {
+      rows,
+      markers,
+      peak: momentumPeak(rows),
+      tableRows: momentumTableRows(rows, markers),
+      counts: momentumFigureCounts(rows, markers),
+    };
+  }, [momentum, goals]);
+
+  const tickIndices = useMemo(
+    () => (model === null ? [] : momentumTickIndices(model.rows, isMd ? TICK_STEP_MD : TICK_STEP_SM)),
+    [model, isMd]
+  );
+
+  /*
    * The section-level branch in TacticalLayer already renders the dedicated
    * empty state ABOVE this component, so this is unreachable through the app.
    * It reads the field anyway for the same reason sectionDataState does: the
-   * bundle is unvalidated `as`-cast JSON, and a crash instead of an absence is
-   * strictly worse. `momentum: null` is the ONLY absence state — an empty
-   * `samples` array is a contract violation and momentumRows throws on it.
+   * bundle is unvalidated `as`-cast JSON. `momentum: null` is the ONLY absence
+   * state — an empty `samples` array is a contract violation and momentumRows
+   * throws on it. Placed AFTER every hook, so no hook is ever conditional.
    */
-  if (momentum === null) {
+  if (model === null) {
     return null;
   }
 
-  /*
-   * Built EAGERLY, not inside the lazily-mounted disclosure, so decision 8's
-   * throw happens on LOAD inside TacticalErrorBoundary rather than when a
-   * reader opens the table.
-   */
-  const rows = momentumRows(momentum);
-  const peak = momentumPeak(rows);
-  const markers = goalMarkers(goals, rows);
-  const tableRows = momentumTableRows(rows, markers);
-  const counts = momentumFigureCounts(rows, markers);
-  const tickIndices = momentumTickIndices(rows, isMd ? TICK_STEP_MD : TICK_STEP_SM);
-
+  const { rows, peak, markers, tableRows, counts } = model;
   const index = clampIndex(rawIndex, rows.length);
   const current = rows[index];
 
@@ -252,6 +289,8 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
   const minutePrefix = t("viz.momentum.minutePrefix");
   const ownGoalQualifier = t("viz.momentum.ownGoal");
   const penaltyQualifier = t("viz.momentum.penalty");
+  const approximateQualifier = t("viz.momentum.approximate");
+  const unknownPlayer = t("viz.marker.unknownPlayer");
   const markerNames = markers.map((marker) => {
     const qualifiers: string[] = [];
     if (marker.ownGoal) {
@@ -260,14 +299,35 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
     if (marker.penalty) {
       qualifiers.push(penaltyQualifier);
     }
+    /*
+     * `exact: false` means the goal's (minute, stoppageMinute) is NOT on the
+     * sample grid and the dot was placed on the nearest row instead. The flag was
+     * computed, documented and tested — and then read by nobody, so the chart,
+     * the table and this spoken name each asserted a different position with no
+     * qualifier. That is the silent data lie the flag's own docblock says it
+     * exists to prevent. No fixture exercises it; it is latent, not dead.
+     */
+    if (!marker.exact) {
+      qualifiers.push(approximateQualifier);
+    }
+    // An absent scorerName is coerced to "" by the model, which would otherwise
+    // speak "Gol de , minuto 8" — a double separator with no subject.
+    const scorer = marker.scorerName === "" ? unknownPlayer : marker.scorerName;
     const tail =
       qualifiers.length === 0 ? PERIOD : `${PAREN_OPEN}${qualifiers.join(CLAUSE_SEPARATOR)}${PAREN_CLOSE}${PERIOD}`;
-    return `${goalPrefix} ${marker.scorerName}${CLAUSE_SEPARATOR}${minutePrefix} ${formatGoalMinute(marker.at)}${tail}`;
+    return `${goalPrefix} ${scorer}${CLAUSE_SEPARATOR}${minutePrefix} ${formatGoalMinute(marker.at)}${tail}`;
   });
 
   /* ------------------------------- The table -------------------------------- */
 
-  const tableCaption = `${title}${CAPTION_SEPARATOR}${t("viz.momentum.tableCaption")}`;
+  /*
+   * The caption NAMES THE METRIC (decision 13's final enumerated site). Without
+   * it the numeric columns are headed bare team codes under a "Línea de
+   * momentum" caption, so "MEX 4" reads as a momentum index — exactly what the
+   * contract forbids the App's copy from implying.
+   */
+  const tableCaption =
+    `${title}${CAPTION_SEPARATOR}${metricNote}${SPACE}${t("viz.momentum.tableCaption")}`;
   const headers = [
     { key: "minute", label: t("viz.table.minute"), numeric: false },
     { key: "home", label: home.teamCode, numeric: true },
@@ -275,7 +335,13 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
     { key: "goal", label: t("viz.momentum.tableGoal"), numeric: false },
   ];
   const yes = t("viz.table.yes");
-  const unknown = t("viz.table.unknown");
+  /*
+   * "No", not viz.table.unknown's em dash. Whether a goal fell on a sample is
+   * KNOWN for every row, and it is "no" on 99 of m001's 101. The em dash is this
+   * codebase's missing-data glyph and asserted absence of information where the
+   * information exists — on the data-table surface UX-DR16/NFR-2 exist for.
+   */
+  const no = t("viz.table.no");
   const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
   const textCell = "px-2 py-1.5 type-caption text-ink-primary";
 
@@ -287,7 +353,7 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
           <td className={cn(textCell, "tabular-nums")}>{formatGoalMinute(row.at)}</td>
           <td className={numericCell}>{formatInteger(row.home, locale)}</td>
           <td className={numericCell}>{formatInteger(row.away, locale)}</td>
-          <td className={textCell}>{row.hasGoal ? yes : unknown}</td>
+          <td className={textCell}>{row.hasGoal ? yes : no}</td>
         </tr>
       ))}
     </DataTable>

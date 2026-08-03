@@ -52,6 +52,46 @@ export const MIDLINE_STROKE_PX = 2;
 export const GOAL_MARKER_RADIUS_PX = 5;
 export const GOAL_MARKER_RING_PX = 1.5;
 
+/*
+ * Chart box geometry. These live HERE, not in the component, for two reasons.
+ *
+ * 1. `CHART_HEIGHT_CLASS` was previously exported from MomentumChart and
+ *    imported as a VALUE by MomentumSection — a static module-graph edge into
+ *    the very module `next/dynamic` exists to defer (decision 21), which pulls
+ *    recharts back onto the critical path. Only the TYPE may cross that
+ *    boundary now.
+ * 2. The plot-box arithmetic below is the one piece of pixel math in this story,
+ *    and it belongs where it can be unit-tested without a DOM.
+ *
+ * Decision 27's heights: ~170px at >=md (desktop.html's 1056x170 viewBox),
+ * ~122px below (mobile.html's 326x122). At 122px the plot still clears
+ * decision 19's 44px pointer floor.
+ */
+export const CHART_HEIGHT_CLASS = "h-[122px] md:h-[170px]";
+
+/** The fixed `margin` object handed to `<AreaChart>` (decision 24). */
+export const MOMENTUM_MARGIN = { top: 18, right: 10, bottom: 18, left: 34 } as const;
+
+/** The explicit `width` handed to `<YAxis>`. Pinned so the plot box is derivable. */
+export const MOMENTUM_Y_AXIS_WIDTH = 34;
+
+/**
+ * The recharts plot area's own box, in container-relative CSS px.
+ *
+ * THE TRAP THIS EXISTS FOR: the plot does NOT start at `margin.left`. recharts
+ * computes `offset.left = margin.left + leftAxesOffset`
+ * (`selectChartOffsetInternal.js`), and `selectLeftAxesOffset` adds each visible
+ * left-oriented y-axis's own `width`. With both at 34 the true origin is 68, not
+ * 34 — and a tap handler that assumes 34 is wrong by a full axis width at the
+ * left edge, decaying to exactly zero at the right edge. That decay is why a
+ * right-edge spot-check passes while the left edge is off by ~17 samples on a
+ * 138-sample mobile chart. Found by code review, 2026-08-03.
+ */
+export function momentumPlotBox(containerWidth: number): { left: number; width: number } {
+  const left = MOMENTUM_MARGIN.left + MOMENTUM_Y_AXIS_WIDTH;
+  return { left, width: containerWidth - left - MOMENTUM_MARGIN.right };
+}
+
 /** One plot row. `index` is the slider's address space and the x dataKey. */
 export interface MomentumRow {
   /** Position in the series: unique, contiguous 0…n-1. The slider's value. */
@@ -108,16 +148,25 @@ export interface MomentumFigureCounts {
 }
 
 /**
+ * The packing base for `stampRank`. `readStamp` ENFORCES `stoppageMinute` below
+ * this, so the collapse below is collision-free by construction rather than by
+ * assertion — the contract's own bound is 1-30, and a review found the previous
+ * code merely commented the bound while accepting any number, which let
+ * `45+100` rank identically to minute 46 and silently reorder both the markers
+ * and (because that order IS the tab order) the keyboard sequence.
+ */
+const STOPPAGE_RANK_BASE = 100;
+
+/**
  * Lexicographic (minute, stoppageMinute ?? 0) collapsed into one monotone
- * scalar, so "nearest by that ordering" is a plain subtraction. Safe because
- * StoppageMinute is bounded 1-30 by the contract and 100 > 30 — the ordering
+ * scalar, so "nearest by that ordering" is a plain subtraction. The ordering
  * this produces is identical to `orderByMinute`'s.
  *
  * A null stoppageMinute sorts BEFORE 45+1, which is correct: `45/null` is the
  * 45th regulation minute and the stoppage slots follow it.
  */
 function stampRank(at: MinuteStamp): number {
-  return at.minute * 100 + (at.stoppageMinute ?? 0);
+  return at.minute * STOPPAGE_RANK_BASE + (at.stoppageMinute ?? 0);
 }
 
 function sameStamp(a: MinuteStamp, b: MinuteStamp): boolean {
@@ -129,26 +178,53 @@ function readStamp(value: unknown, field: string): MinuteStamp {
     throw new Error(`${field}: expected a MinuteStamp object, got ${JSON.stringify(value)}`);
   }
   const at = value as { minute?: unknown; stoppageMinute?: unknown };
-  if (typeof at.minute !== "number" || !Number.isFinite(at.minute)) {
-    throw new Error(`${field}.minute: expected a finite number, got ${JSON.stringify(at.minute)}`);
-  }
-  const stoppage = at.stoppageMinute;
-  if (stoppage !== null && stoppage !== undefined && typeof stoppage !== "number") {
+  if (!Number.isInteger(at.minute) || (at.minute as number) < 0) {
     throw new Error(
-      `${field}.stoppageMinute: expected a number or null, got ${JSON.stringify(stoppage)}`
+      `${field}.minute: expected a non-negative integer, got ${JSON.stringify(at.minute)}`
     );
   }
+  const stoppage = at.stoppageMinute;
+  /*
+   * `stoppageMinute` is checked as strictly as `minute`, and bounded. The
+   * previous guard tested only `typeof stoppage !== "number"`, which NaN and
+   * Infinity both pass (`typeof NaN === "number"`) — a NaN rank makes every
+   * `distance < bestDistance` comparison false, collapsing every off-grid goal
+   * onto row 0, and renders "45+NaN" into the cursor chip, aria-valuetext and
+   * the table. The upper bound is what makes STOPPAGE_RANK_BASE collision-free.
+   */
+  if (stoppage !== null && stoppage !== undefined) {
+    if (!Number.isInteger(stoppage) || (stoppage as number) < 0) {
+      throw new Error(
+        `${field}.stoppageMinute: expected a non-negative integer or null, got ${JSON.stringify(stoppage)}`
+      );
+    }
+    if ((stoppage as number) >= STOPPAGE_RANK_BASE) {
+      throw new Error(
+        `${field}.stoppageMinute: expected below ${STOPPAGE_RANK_BASE} (the contract bounds it 1-30), got ${JSON.stringify(stoppage)}`
+      );
+    }
+  }
   return {
-    minute: at.minute,
+    minute: at.minute as number,
     stoppageMinute: typeof stoppage === "number" ? stoppage : null,
   };
 }
 
+/*
+ * Counts are NON-NEGATIVE INTEGERS by contract, and this guard now says so.
+ * Finiteness alone was not enough: a negative `away` is turned POSITIVE by the
+ * `away === 0 ? 0 : -away` projection, drawing team B's area above the midline
+ * inside team A's half and escaping the `[-peak, peak]` domain; and a
+ * fractional count renders through `formatInteger` as "1" while failing
+ * `count === 1`, producing "1 entradas".
+ */
 function readCount(value: unknown, field: string): number {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    throw new Error(`${field}: expected a finite number, got ${JSON.stringify(value)}`);
+  if (!Number.isInteger(value) || (value as number) < 0) {
+    throw new Error(
+      `${field}: expected a non-negative integer, got ${JSON.stringify(value)}`
+    );
   }
-  return value;
+  return value as number;
 }
 
 /**
@@ -282,6 +358,50 @@ export function goalMarkers(goals: Goals, rows: readonly MomentumRow[]): Momentu
 }
 
 /**
+ * Per-marker pointer hit half-widths in CSS px, index-aligned to `markers`.
+ *
+ * Each is `MIN_HIT_PX / 2` (UX-DR15's touch floor) capped at HALF the pixel gap
+ * to the nearest neighbouring marker, so two markers' hit boxes can never
+ * overlap.
+ *
+ * Why this exists: ruled decision 26 says that when two goals' hit boxes overlap
+ * the first-in-DOM (chronologically earlier) marker wins. SVG hit-testing gives
+ * the pointer to whatever paints LAST, which is the opposite — and the markers
+ * cannot simply be reversed, because their DOM order is also the decision-20 tab
+ * order. Removing the overlap satisfies both contracts at once: the visually
+ * nearer goal always wins, deterministically. Where two goals are closer than
+ * MIN_HIT_PX apart no arrangement could give both a full-size target anyway.
+ *
+ * Reachable on real data: at `<md` a 138-sample chart puts samples ~2.4px apart,
+ * so any two goals within ~9 minutes of each other collide.
+ */
+export function goalMarkerHitHalfWidths(
+  markers: readonly MomentumGoalMarker[],
+  lastIndex: number,
+  plotWidth: number
+): number[] {
+  const fullHalf = MIN_HIT_PX / 2;
+  if (markers.length === 0) {
+    return [];
+  }
+  if (lastIndex <= 0 || plotWidth <= 0) {
+    return markers.map(() => fullHalf);
+  }
+  const pxPerIndex = plotWidth / lastIndex;
+  return markers.map((marker, position) => {
+    let half = fullHalf;
+    for (const neighbour of [markers[position - 1], markers[position + 1]]) {
+      if (neighbour === undefined) {
+        continue;
+      }
+      const gapPx = Math.abs(neighbour.index - marker.index) * pxPerIndex;
+      half = Math.min(half, gapPx / 2);
+    }
+    return half;
+  });
+}
+
+/**
  * The data-table rows (Task 3.5). RAW values only — never `awayPlotted`, never
  * a negative number, because this is the surface UX-DR16/NFR-2 exist for.
  *
@@ -360,11 +480,33 @@ export function momentumYTicks(peak: number): number[] {
   }
   step = Math.max(1, Math.round(step));
   const count = Math.floor(safePeak / step);
-  const ticks: number[] = [];
-  for (let k = -count; k <= count; k += 1) {
-    ticks.push(k * step);
+  const positives: number[] = [];
+  for (let k = 1; k <= count; k += 1) {
+    positives.push(k * step);
   }
-  return ticks;
+
+  /*
+   * THE PEAK IS ALWAYS LABELLED (ruled by code review, 2026-08-03). The round
+   * steps alone left m074's peak of 17 unlabelled above a top tick of 10 — the
+   * tallest label covered 59% of the domain, so the curve's maximum could not be
+   * read off the axis at all. With no axis line, no tick line and no grid, three
+   * floating numbers are the entire y scale.
+   *
+   * If the peak is at least half a step clear of the outermost round tick it is
+   * APPENDED (17 -> -17 -10 0 10 17); if it crowds that tick it REPLACES it
+   * (11 -> -11 0 11), so two labels never collide. Gaps are therefore no longer
+   * uniform, which is the deliberate trade — an unlabelled maximum is worse.
+   */
+  const outer = positives.length > 0 ? positives[positives.length - 1] : 0;
+  if (safePeak > outer) {
+    if (safePeak - outer >= step / 2) {
+      positives.push(safePeak);
+    } else {
+      positives[positives.length - 1] = safePeak;
+    }
+  }
+
+  return [...positives.map((t) => -t).reverse(), 0, ...positives];
 }
 
 /**
@@ -384,8 +526,20 @@ export function momentumTickIndices(
   if (rows.length === 0 || stepMinutes <= 0) {
     return [];
   }
+  /*
+   * Index 0 always anchors the axis — it is the series' start and the mockup
+   * labels it. Its minute is seeded into `seen` when it is a regulation slot, so
+   * a later row carrying the SAME minute cannot emit a second tick at the same
+   * clock label (reachable whenever minute 0 or the step minute repeats across
+   * stoppage). Previously index 0 was pushed without any of the tests every
+   * other tick must pass, and its minute was never recorded.
+   */
   const ticks: number[] = [0];
   const seen = new Set<number>();
+  const firstStoppage = rows[0].at.stoppageMinute;
+  if (firstStoppage === null || firstStoppage === undefined) {
+    seen.add(rows[0].at.minute);
+  }
   for (const row of rows) {
     if (row.at.stoppageMinute !== null && row.at.stoppageMinute !== undefined) {
       continue;
@@ -417,18 +571,26 @@ export function clampIndex(index: number, length: number): number {
  * clientX -> nearest row index for tap-to-position (decision 19). Pure so the
  * one piece of pointer arithmetic in the story is testable without a DOM.
  *
- * `plotLeft`/`plotWidth` are the recharts plot area's own box, i.e. the
- * container minus the fixed `margin` object — which is why decision 24 pins a
- * fixed margin rather than trusting a default.
+ * `plotLeft`/`plotWidth` are the recharts plot area's own box — get them from
+ * `momentumPlotBox`, NEVER by subtracting the margin alone, which omits the
+ * y-axis width and lands the cursor a full axis width late at the left edge.
+ *
+ * Returns `null` when the box is degenerate (a `display:none` ancestor, a
+ * collapsed flex parent, a print stylesheet all give `width <= 0`). That is a
+ * NO-OP signal, not index 0: silently resetting a reader's cursor to minute 1
+ * because the container happened to be unmeasurable is a defect, not a default.
  */
 export function indexAtOffset(
   offsetX: number,
   plotLeft: number,
   plotWidth: number,
   length: number
-): number {
-  if (length <= 1 || plotWidth <= 0) {
+): number | null {
+  if (length <= 1) {
     return 0;
+  }
+  if (plotWidth <= 0) {
+    return null;
   }
   const fraction = (offsetX - plotLeft) / plotWidth;
   return clampIndex(Math.round(fraction * (length - 1)), length);
