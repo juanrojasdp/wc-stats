@@ -27,6 +27,24 @@ put wrong ids into `/data` where AD-3 promises they never change. So precompute
 **aborts**. One typed exception per failure kind (`errors.py`), never a bare `ValueError`,
 always with the offending values in `repr()`.
 
+**There is no first-seen-shirt tiebreak, and none is faked.** AD-3 describes one for two
+players who normalize to the same name within one team; measured over 5,392 lineup
+entries this corpus holds 0 such collisions, 0 players wearing two shirts and 0 non-ASCII
+characters in any name. On that corpus a tiebreak can only ever fire on a defect, and
+quietly minting two ids out of one printed name is the unfalsifiable failure mode this
+package aborts to prevent — every id unique, every pattern satisfied, and one route
+naming the wrong person. So `resolve_players` raises `IdentityCollisionError` naming both
+parties instead. AC 1's binding block rules exactly this; AC 4 rows 2-3 and Task 3.4
+describe the tiebreak, and that contradiction was resolved in favour of raising by Story
+1.15's code review (Decision 1). "First seen wins" is true here only in the sense that a
+key seen in several matches takes the first record's answer, which canonical order makes
+well defined.
+
+**Precompute runs over the COMPLETE corpus.** `matchdayRound` is derivable only for a
+group holding all 6 of its fixtures and is `required` by both bundle schemas, so a
+partial manifest cannot be precomputed and is refused rather than staged with the field
+missing or guessed (Decision 3, same review).
+
 Modules:
   `records.py`       load the Extraction Records the run manifest names, in canonical order
   `identity.py`      team codes, the player slug rule, resolution, and the pinning checks

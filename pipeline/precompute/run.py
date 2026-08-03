@@ -28,6 +28,7 @@ from pathlib import Path
 from pipeline.errors import PipelineError
 from pipeline.ingest.records import DEFAULT_EXTRACTED_DIR
 from pipeline.precompute import slug_registry
+from pipeline.precompute.errors import ManifestUnreadableError, SlugRegistryError
 from pipeline.precompute.identity import (
     build_pins,
     check_committed_data,
@@ -107,14 +108,18 @@ def main(argv: "list[str] | None" = None) -> int:
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(errors="replace")
 
+    # A manifest that cannot be READ is a broken harness (2). A manifest that reads fine
+    # but says something wrong — a match id named twice, an unrecognized status, a record
+    # the manifest names but that is missing — is a FINDING (1): the data or the rule is
+    # wrong and someone must rule on it. Only `OSError` is the harness.
     try:
         records = load_records(args.manifest, args.extracted_dir)
+    except (ManifestUnreadableError, OSError) as exc:
+        print(f"precompute could not run: {exc}", file=sys.stderr)
+        return 2
     except PipelineError as exc:
-        print(f"precompute could not run: {exc}", file=sys.stderr)
-        return 2
-    except OSError as exc:
-        print(f"precompute could not run: {exc}", file=sys.stderr)
-        return 2
+        print(f"FAIL: {exc}", file=sys.stderr)
+        return 1
 
     print("")
     print("Cross-match identity resolution")
@@ -130,6 +135,17 @@ def main(argv: "list[str] | None" = None) -> int:
         )
         return 1
 
+    # An empty corpus must never read green. Every check below is a loop over records, so
+    # all of them pass vacuously: the run would print PASS, stage an empty entities.json,
+    # and with --write-registry replace 1,400 pinned ids with nothing.
+    if not records:
+        print(
+            "FAIL: the manifest names no consumable record, so there is nothing to "
+            "resolve; an empty run is never a pass",
+            file=sys.stderr,
+        )
+        return 1
+
     try:
         codes = team_codes(records)
         resolved = resolve_players(records, codes, slug_registry)
@@ -141,12 +157,30 @@ def main(argv: "list[str] | None" = None) -> int:
         print(f"matches         : {len(pins['matches'])}")
         print(f"teams           : {len(pins['teams'])}")
 
+        check_overrides(pins["players"], slug_registry.OVERRIDES)
+
         if args.write_registry:
+            # Regeneration is the deliberate escape hatch for a ruled id change, but it
+            # must not be a way to LOSE ids. `render_registry` writes only what this run
+            # minted, so a run over a partial corpus would silently drop every pin for an
+            # entity it did not see — and AD-3's guarantee would be gone with no failure
+            # anywhere. Changing a pin stays allowed; dropping one does not.
+            dropped: list[str] = []
+            for kind in ("matches", "players", "teams"):
+                gone = set(slug_registry.PINS.get(kind, {})) - set(pins[kind])
+                dropped.extend(f"{kind} {key!r}" for key in sorted(gone))
+            if dropped:
+                shown = ", ".join(dropped[:10])
+                raise SlugRegistryError(
+                    f"regenerating would drop {len(dropped)} already-pinned id(s) that "
+                    f"this run did not mint: {shown}{' …' if len(dropped) > 10 else ''}. "
+                    f"An id, once emitted, never changes — and it never silently "
+                    f"disappears either. Re-run over the complete corpus."
+                )
             text = render_registry(codes, pins, dict(slug_registry.OVERRIDES))
             write_registry(text, REGISTRY_PATH)
             print(f"registry        : REGENERATED at {REGISTRY_PATH.as_posix()}")
         else:
-            check_overrides(pins["players"], slug_registry.OVERRIDES)
             for kind in ("matches", "players", "teams"):
                 check_pins(pins[kind], slug_registry.PINS.get(kind, {}), kind)
             pinned_total = sum(len(v) for v in slug_registry.PINS.values())
@@ -155,13 +189,26 @@ def main(argv: "list[str] | None" = None) -> int:
         for note in check_committed_data(slug_registry.PINS, args.data_dir):
             print(f"data baseline   : {note}")
 
-        spine = build_spine(records, resolved, codes, rounds, registry=slug_registry)
+        spine = build_spine(
+            records,
+            resolved,
+            codes,
+            rounds,
+            registry=slug_registry,
+            source_manifest=Path(args.manifest).as_posix(),
+        )
         written = write_spine(spine, args.spine_dir)
         print(f"spine           : {len(written)} file(s) under {Path(args.spine_dir).as_posix()}")
     except PipelineError as exc:
         print("")
         print(f"FAIL: {exc}", file=sys.stderr)
         return 1
+    except OSError as exc:
+        # The documented cause of exit 2 that could not previously produce it: the writes
+        # sit outside the PipelineError handler and raise bare OSError.
+        print("")
+        print(f"precompute could not run: {exc}", file=sys.stderr)
+        return 2
 
     print("")
     print("PRECOMPUTE RESULT: PASS")

@@ -1464,10 +1464,16 @@ Measured over 5,392 lineup entries / 1,248 distinct players:
 | players wearing more than one shirt | **0** (distribution exactly `{1 shirt: 1248}`) |
 | `(team, shirt)` pairs worn by two players | **0** |
 
-So `(team_id, shirt_number)` is by itself a globally unique key, and the AD-3 first-seen
-tiebreak is **dead code on this corpus**. It is implemented anyway because AD-3 mandates it
-and a future corpus could exercise it, but it is reached only by constructed unit tests and
-no fixture pretends it is corpus-real. The NFKD accent fold is kept because the three
+So `(team_id, shirt_number)` is by itself a globally unique key, and **the AD-3 first-seen
+tiebreak is not implemented — deliberately, and this is the one place that says so.** Two
+players on one team whose printed names mint one slug raise `IdentityCollisionError`
+naming both parties, both shirts and both match ids; they are not silently separated by
+shirt order. On a corpus measuring 0 such collisions a tiebreak could only ever fire on a
+defect, and quietly minting two ids from one printed name is unfalsifiable downstream:
+every id unique, every pattern satisfied, and one route naming the wrong person. AC 1's
+binding block rules exactly this; AC 4 rows 2-3 and Task 3.4 describe the tiebreak
+instead, and Story 1.15's code review resolved that contradiction in favour of raising
+(Decision 1). The NFKD accent fold is kept because the three
 *team* names `Curaçao`, `Türkiye` and `Côte d'Ivoire` genuinely need it; no check asserts a
 non-zero accent-strip count on player names, because that count is zero.
 

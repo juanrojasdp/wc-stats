@@ -33,6 +33,7 @@ from pipeline.precompute.identity import (
     team_codes,
     write_registry,
 )
+from pipeline.ingest.identity import team_slug
 from pipeline.precompute.records import CONSUMABLE_STATUSES, load_records
 from pipeline.precompute.spine import (
     assert_every_name_resolved,
@@ -138,6 +139,57 @@ def test_the_committed_registry_pins_the_whole_corpus_namespace():
     assert len(slug_registry.PINS["teams"]) == 48
     assert len(slug_registry.PINS["matches"]) == 104
     assert len(slug_registry.PINS["players"]) == 1248
+
+
+def test_the_three_accented_team_names_are_pinned_with_their_accents_folded():
+    """AC 4 row 1's REAL half.
+
+    The player half of that row is corpus-empty — 0 non-ASCII characters in 1,247 names —
+    and is covered by a visibly constructed test. But the NFKD fold is not decoration:
+    three real team names need it, they are why the fold is kept at all, and their ids are
+    committed. Previously they appeared only inside a docstring, so nothing would have
+    caught a fold that stopped working on the one input that genuinely exercises it.
+    """
+    for printed, expected in (
+        ("Curaçao", "curacao"),
+        ("Türkiye", "turkiye"),
+        ("Côte d'Ivoire", "cote-d-ivoire"),
+    ):
+        assert team_slug(printed) == expected
+        assert slug_registry.PINS["teams"][expected] == expected
+        assert expected in slug_registry.TEAM_CODES
+
+
+REGISTRY_SOURCE = Path(slug_registry.__file__)
+STAGED_RECORDS = Path("work") / "extracted"
+
+
+@pytest.mark.skipif(
+    not (Path("work") / "run-manifest.json").is_file(),
+    reason="needs the staged corpus; `work/` is gitignored and absent on a fresh clone",
+)
+def test_regenerating_the_registry_from_the_corpus_reproduces_the_COMMITTED_bytes():
+    """Task 4.5's pin, against the artifact that actually ships.
+
+    The two determinism tests below render a one-match synthetic corpus and compare two
+    writes of the same text — which proves `render_registry` is a pure function, and
+    nothing about the 1,400 ids in the committed module. A change to `_kebab`,
+    `team_slug` or the caps-run rule that re-slugged hundreds of players passed the whole
+    suite: the counts stay 48/48/104/1248 and the 155-id fixture reproduction is
+    unaffected if the change touches only multi-token names.
+
+    Skipped rather than absent when `work/` is unavailable, because the input is
+    gitignored staging — but it runs on any tree that has actually executed the batch,
+    which is every tree that could regenerate the registry in the first place.
+    """
+    records = load_records(Path("work") / "run-manifest.json", STAGED_RECORDS)
+    codes = team_codes(records)
+    pins = build_pins(records, codes, slug_registry)
+    rendered = render_registry(codes, pins, dict(slug_registry.OVERRIDES))
+    assert rendered.encode("utf-8") == REGISTRY_SOURCE.read_bytes(), (
+        "regenerating the registry from the staged corpus does not reproduce the "
+        "committed bytes — an id has changed, which AD-3 forbids"
+    )
 
 
 def test_the_committed_override_map_ships_empty():
@@ -269,6 +321,43 @@ def test_an_override_naming_a_real_key_passes():
                     {"argentina#23": "martinez-emi-arg"})
 
 
+def test_an_override_whose_VALUE_is_malformed_fails_loud():
+    """The override replaces a minted slug, so it must be gated as hard as one.
+
+    `PlayerId` is a strict superset shape of `TeamId`, so even a two-segment override
+    validates clean against the schema and produces a dead route — and the minted path's
+    pattern gate does not cover the override, because the override is what replaces its
+    result. An ungated override is pinned, committed, and staged into every spine file
+    that names the player, surfacing only in Story 1.16 at schema validation.
+    """
+    for bad in ("Gabriel Magalhaes", "magalhaes-gabriel", "magalhaes-gabriel-brazil", ""):
+        with pytest.raises(SlugRegistryError) as excinfo:
+            check_overrides({"brazil#4": "gabriel-magalhaes-bra"}, {"brazil#4": bad})
+        assert "PlayerId" in str(excinfo.value)
+
+
+def test_the_committed_registry_maps_survive_a_test_that_mutates_them(clean_registry):
+    """`clean_registry` earns its docstring here.
+
+    `slug_registry.PINS` and `OVERRIDES` are module-level mutables imported directly by
+    `pipeline/validate/checks.py` as `SLUG_REGISTRY`, so a leaked mutation would corrupt
+    every later test in the session in a way that looks like a real defect. The fixture
+    was defined with that rationale and requested by no test at all, which made the guard
+    inert; this exercises it against the live maps.
+    """
+    slug_registry.OVERRIDES["mexico#1"] = "rangel-r-mex"
+    slug_registry.PINS["players"]["mexico#1"] = "rangel-r-mex"
+    check_overrides({"mexico#1": "rangel-raul-mex"}, slug_registry.OVERRIDES)
+    assert slug_registry.PINS["players"]["mexico#1"] == "rangel-r-mex"
+
+
+def test_the_committed_maps_were_restored_after_the_mutating_test():
+    """The other half of the fixture's contract — ordering-dependent by nature, and the
+    reason the snapshot exists at all."""
+    assert slug_registry.OVERRIDES == {}
+    assert slug_registry.PINS["players"]["mexico#1"] == "rangel-raul-mex"
+
+
 # --- AC 3's second source ----------------------------------------------------------
 
 
@@ -340,29 +429,54 @@ def test_a_committed_id_the_registry_does_not_pin_fails(tmp_path):
 
 
 def test_the_spine_adds_ids_beside_every_name_and_removes_nothing():
-    """`playerName` is required in eight contract $defs — the spine ADDS, never replaces."""
+    """`playerName` is required in eight contract $defs — the spine ADDS, never replaces.
+
+    Asserted by STRIPPING the added id keys and requiring the result to equal the original
+    `domains` block exactly. A `(path, key)` set comparison — the earlier form — collapses
+    every list into one `[]` segment and records no values, no list lengths and no
+    ordering, so it passed unchanged against a spine that reordered rows, deduped them, or
+    rewrote every value. The module docstring promises "no key removed, no list reordered,
+    nothing deduped"; equality is the only assertion that covers all three.
+
+    Pruning the 43 all-zero pass-network nodes is the concrete forbidden edit this now
+    catches: it leaves the key set identical and shortens a list.
+    """
     record = make_full_record()
     _codes, resolved, rounds = resolve([record])
     spine = build_match_spine(record, resolved, rounds)
 
-    def keys_at(node, path=""):
-        """Every (path, key) in the original, so nothing can be silently dropped."""
+    added_keys = {"player_id", "from_player_id", "to_player_id"}
+
+    def strip(node):
+        """The staged node with only the keys the spine is allowed to add removed."""
+        if isinstance(node, list):
+            return [strip(item) for item in node]
+        if not isinstance(node, dict):
+            return node
+        return {
+            key: strip(value)
+            for key, value in node.items()
+            if key not in added_keys and not key.endswith("_team_id")
+        }
+
+    assert strip(spine["domains"]) == record["domains"], (
+        "the spine changed something other than adding id fields"
+    )
+
+    # And it really did add them — otherwise the equality above is satisfied by a no-op.
+    def id_keys(node):
         out = set()
         if isinstance(node, dict):
             for key, value in node.items():
-                out.add((path, key))
-                out |= keys_at(value, f"{path}.{key}")
+                if key in added_keys or key.endswith("_team_id"):
+                    out.add(key)
+                out |= id_keys(value)
         elif isinstance(node, list):
             for item in node:
-                out |= keys_at(item, f"{path}[]")
+                out |= id_keys(item)
         return out
 
-    original = keys_at(record["domains"], "domains")
-    staged = keys_at(spine["domains"], "domains")
-    assert original <= staged, f"the spine dropped {sorted(original - staged)}"
-    added = {key for _path, key in staged - original}
-    assert added <= {"player_id", "from_player_id", "to_player_id",
-                     "home_team_id", "away_team_id"}, added
+    assert id_keys(spine["domains"]) >= {"player_id", "from_player_id", "to_player_id"}
 
 
 def test_the_spine_resolves_every_shape_of_name_path():
@@ -494,12 +608,37 @@ def test_a_player_appearing_in_two_matches_gets_one_id_and_two_match_ids():
 # --- record loading ----------------------------------------------------------------
 
 
+def test_writing_the_spine_removes_match_files_the_run_no_longer_names(tmp_path):
+    """A stale spine file is a phantom match one layer down.
+
+    `work/spine/` is the staging Story 1.16 emits from, so a file left behind by a
+    superseded run would enter the dataset exactly as an orphan record would — the hazard
+    `load_records` refuses the directory listing to prevent. Leaving them put it back.
+    """
+    corpus = [make_full_record()]
+    codes, resolved, rounds = resolve(corpus)
+    write_spine(build_spine(corpus, resolved, codes, rounds), tmp_path)
+
+    orphan = tmp_path / "matches" / "m999-ghost-team.json"
+    orphan.write_text("{}", encoding="utf-8")
+    write_spine(build_spine(corpus, resolved, codes, rounds), tmp_path)
+
+    assert not orphan.exists(), "a superseded match file survived into the staged spine"
+    assert (tmp_path / "matches" / "m001-mexico-south-africa.json").is_file()
+
+
 def test_the_pinned_public_api_is_callable_exactly_as_the_story_declares_it():
     """Story 1.15 pins its entry points, following the `extract_domain_g` precedent.
 
-    `build_spine` grew one OPTIONAL trailing parameter (`registry`, which supplies the
-    diagnostic `slug_source`); it must still be callable with the four positional
-    arguments the story names, or a later story following the pinned signature breaks.
+    `build_spine` grew two OPTIONAL trailing parameters (`registry`, supplying `OVERRIDES`
+    for the diagnostic `slug_source`, and `source_manifest` for the provenance field); it
+    must still be callable with the four positional arguments the story names, or a later
+    story following the pinned signature breaks.
+
+    And the four-positional call must produce a COMPLETE `entities.json`. `slug_source` is
+    `required` shape per Task 5.1 and Task 7.3's filing is defined as a query over it, so
+    a pinned API that silently emitted `null` for all 1,248 players would make the story's
+    own deferred-work filing unanswerable.
     """
     import inspect
 
@@ -519,11 +658,13 @@ def test_the_pinned_public_api_is_callable_exactly_as_the_story_declares_it():
     for name in ("TEAM_CODES", "PINS", "OVERRIDES"):
         assert hasattr(slug_registry, name)
 
-    # And the four-positional-argument call really works.
+    # And the four-positional-argument call really works — with a populated diagnostic.
     corpus = [make_full_record()]
     codes, resolved, rounds = resolve(corpus)
     built = spine.build_spine(corpus, resolved, codes, rounds)
-    assert built["entities"]["players"][0]["slug_source"] is None
+    sources = {player["slug_source"] for player in built["entities"]["players"]}
+    assert sources <= {"caps-run", "as-listed", "override"}, sources
+    assert None not in sources, "the pinned four-argument API dropped slug_source"
 
 
 def test_records_are_taken_from_the_manifest_and_never_from_the_directory_listing(

@@ -4,7 +4,7 @@ baseline_commit: eec2397
 
 # Story 1.15: Cross-Match Identity Resolution & Normalized Spine
 
-Status: review
+Status: done
 
 ## Story
 
@@ -337,6 +337,56 @@ The epic prints **three** Given/When/Then blocks (`epics.md:508-519`; `:506` is 
   - [x] 9.3 FR-15 gate twice; both new ids in `checks_run`; two runs identical apart from `run_timestamp`.
   - [x] 9.4 Full suite green, with attribution for anything you did not cause.
   - [x] 9.5 Update `pipeline/README.md` (add the precompute phase, the CLI and the registry) and `sprint-status.yaml`. **Commit only this story's files. Never `git add -A`.** Commit directly to `main` (solo repo).
+
+### Review Findings
+
+Adversarial code review 2026-08-03 over `dd3dfc3..32fc131` (3 layers: Blind Hunter, Edge Case Hunter, Acceptance Auditor). Diffed from `dd3dfc3` rather than the frontmatter's `eec2397`, because Story 1.14's review patches landed in between and `dd3dfc3..HEAD` matches this story's File List exactly. 56 raw findings deduped to 38; 15 merged, 3 dismissed on verification. Every finding below was re-read against the code before rating — the reviewers' own severities were discarded.
+
+**DECISION 1 — RULED: keep the raise, correct the documentation.** A tiebreak on a corpus measuring 0 name+team collisions can only ever fire on a defect, and quietly minting two ids out of one printed name is the unfalsifiable failure this package aborts to prevent — every id unique, every pattern satisfied, one route naming the wrong person. AC 1's BINDING block is the measurement-driven ruling and it wins; AC 4 rows 2–3 and Task 3.4 are re-scoped accordingly. Corrected in `identity.py`'s `resolve_players` docstring, `precompute/__init__.py`, `pipeline/README.md:1467`, and both test names (`..._is_broken_by_first_seen_shirt` → `..._raises_rather_than_tiebreaking`). The finding as filed: `resolve_players`' docstring says *"first seen wins … That is AD-3's tiebreak for two players who normalize to the same name within one team"* (`identity.py:256-258`), and the commit message, `__init__.py`, `pipeline/README.md` and two test **names** repeat it. The code does the opposite: two players on one team whose names mint one slug hit `by_slug` and raise `IdentityCollisionError` (`identity.py:298-310`). `test_CONSTRUCTED_a_duplicate_normalized_name_is_broken_by_first_seen_shirt` asserts `pytest.raises(IdentityCollisionError)`; so does `..._a_squad_number_change_across_matches_is_reported_not_merged`. AC 1's BINDING block demands exactly this raise (*"An assertion that the count is 0, raising if it ever is not — **not** a first-seen-shirt tiebreak"*), while AC 4 rows 2–3 and Task 3.4 demand the tiebreak (*"first-seen shirt wins"*, *"resolves to one ID"*, *"**First-seen wins** for the AD-3 tiebreak"*). Both cannot hold. Raising is the safer behaviour and is what shipped; what is not defensible is four documents and two test names asserting a mechanism that does not exist.
+
+**DECISION 2 — RULED, then OVERTAKEN BY EVENTS; final state `done`.** Ruled: revert `1-9-…` to `in-progress`, because the board must describe committed reality and 1.9's `domain_e.py` (+602) was uncommitted. That was correct when ruled — `work/extracted/` was observed being re-staged by a concurrent batch mid-review (m048, m049, m056 rewritten between two precompute runs as 1.9's `involvement_clock` rename landed). **Story 1.9 then committed at `325dc2b` (2026-08-03 14:54:46), 14 seconds before this review's verification run began, and its story file is `Status: done`.** So the status is set to `done` here, matching 1.9's own file and its committed code.
+
+**A real hazard surfaced by this, worth recording:** the `in-progress` value ended up committed by a *different* session — Story 2.9's `3cf4237`/`2018885` staged `sprint-status.yaml` from the working tree while this review's uncommitted edit sat in it. **An uncommitted edit to a shared-contention file is not private; a concurrent session's `git add` will carry it.** The story's Coordination section already names `sprint-status.yaml` as shared-contention and requires append-only edits; this is the mechanism by which a non-append edit escapes its author. The finding as filed: `32fc131` changes `sprint-status.yaml:232-233` from `1-9-…: in-progress` to `1-9-…: review`, but `pipeline/extract/domain_e.py` (+602 lines), `conftest.py`, `test_extract_domain_e.py` and `errors.py` remain dirty in the working tree. The commit message's `COMMIT SCOPE` note declares the `checks.py`/`README.md` seam contamination — it does **not** mention the status transition. The sprint board now says a story is ready for review when the code under review is not committed.
+
+**DECISION 3 — RULED: refuse subset runs early and plainly.** Making `matchday_rounds` tolerant would stage a spine with `matchdayRound` missing or guessed, and that field is `required` by both bundle schemas — the failure would simply move into Story 1.16, later and further from its cause. Precompute is corpus-complete by construction and now says so: the error leads with "matchday rounds are not derivable for N of M record(s). Precompute runs over the COMPLETE corpus … a partial manifest cannot be precomputed", and points at `--expect-records` for an earlier, plainer failure. The finding as filed: `matchday_rounds` is called unconditionally (`run.py:136`) and `assign_matchday_rounds` emits a problem for every member of any group not holding all 6 fixtures; `identity.py:565` turns any non-empty `problems` into a `PrecomputeError`. A partial re-extract or a spike-sized corpus therefore dies with a wall of `group A holds 3 of 6 matches` rather than a record-count message, and `--expect-records` defaults to `None` so nothing catches it first. No test covers the group path — `make_record` hardcodes `"group": None, "stage_text": "Final - Match 104"`. Whether subset runs should be supported at all, or explicitly refused early, is a scoping call.
+
+- [x] [Review][Patch] `identity-pinning` fires a false `count-mismatch` on every sampled report the moment a single `OVERRIDES` entry exists — the gate re-mints from the PDF and never consults `OVERRIDES`, while `resolve_players` applies it before pinning, so the pin is by definition not what the gate mints [pipeline/validate/checks.py:1873-1886]
+- [x] [Review][Patch] An `OVERRIDES` value is never validated against `PlayerId` — the pattern gate runs inside `_player_slug_with_source` on the *derived* slug and the override replaces it afterwards; `check_overrides` validates only the key, so a malformed override is pinned, committed and staged into 104 spine files [pipeline/precompute/identity.py:296, :419-430]
+- [x] [Review][Patch] Both new FR-15 gate checks ship with zero behavioural tests — only the `checks_run` id literal references them; nothing exercises the registry/report code disagreement, the in-report duplicate-slug branch, the `probe-failure` mapping or Task 4.2's absent-pin rule, against Task 6 and Task 8.1 [pipeline/validate/checks.py:1758-1897, pipeline/tests/test_runner.py:158-159]
+- [x] [Review][Patch] `--write-registry` skips `check_pins` and `check_overrides` entirely and rewrites only the current run's pins, so regenerating over a shrunken corpus silently DELETES pins for absent entities — AD-3 immutability lost with no failure [pipeline/precompute/run.py:144-153]
+- [x] [Review][Patch] A manifest naming zero consumable records prints `PRECOMPUTE RESULT: PASS`, stages an empty `entities.json`, and with `--write-registry` wipes the registry — `--expect-records` is the only guard and defaults to `None` [pipeline/precompute/run.py:125-133]
+- [x] [Review][Patch] The documented exit-code contract is not implemented: every `load_records` failure maps to 2, so a genuine dataset finding (`manifest names match id … twice`) reads as "nothing was learned"; and `write_registry`/`write_spine` sit outside the `PipelineError` handler, so an unwritable staging directory — the docstring's own example of exit 2 — produces an uncaught `OSError` traceback instead [pipeline/precompute/run.py:110-117, :159-165, pipeline/precompute/records.py:95-99]
+- [x] [Review][Patch] `run.main()` has zero tests — 173 lines covering three exit codes, the always-printed baseline note, the `--expect-records` gate and the write-vs-check branch, none of it verified; no test module imports `pipeline.precompute.run` [pipeline/precompute/run.py:100-169]
+- [x] [Review][Patch] Task 4.5's byte-identity pin never covers the committed registry — both determinism tests render from a one-match synthetic corpus and compare two writes of the same text, so a change to `_kebab`/`team_slug` re-slugging hundreds of players passes the whole suite [pipeline/tests/test_precompute_spine.py:190-208]
+- [x] [Review][Patch] The pinned four-argument `build_spine` emits `slug_source: null` for every player, and the API test pins that rather than flagging it — Task 5.1 requires `caps-run|as-listed|override` and Task 7.3's filing is defined as a query over it [pipeline/precompute/spine.py:286, :328, pipeline/tests/test_precompute_spine.py:527]
+- [x] [Review][Patch] An override cannot rescue the one failure it exists to fix: `resolve_players` raises `PlayerSlugError` *before* the override lookup while `slug_sources` checks the override *first* — two functions, two orderings, one wrong [pipeline/precompute/identity.py:295-296 vs :337]
+- [x] [Review][Patch] `write_registry` is not atomic despite its docstring's "atomically enough" — no temp file, no `os.replace`, while `pipeline/ingest/records.py:51` does it properly; an interrupted regeneration leaves an unparseable module that `checks.py` imports at load [pipeline/precompute/identity.py:662-675]
+- [x] [Review][Patch] Untyped `KeyError`s leak from four call sites whose package rule is "one typed exception per failure kind" — `codes[team_id]` in `slug_sources` and `build_spine`, `resolved[(team_id, shirt)]` before `_match_index`'s typed guard, `rounds[match_id]`, and the unguarded `metadata[…]`/`mm[…]` reads; `run.py` catches only `PipelineError`, so each surfaces as a broken harness for what is a dataset finding [pipeline/precompute/identity.py:340, :550-559, pipeline/precompute/spine.py:306, :316, :342, :335-349]
+- [x] [Review][Patch] `write_spine` never removes stale match files, so a second run over a shrunken corpus leaves orphan spine files behind — the exact phantom-match hazard `load_records` exists to prevent [pipeline/precompute/spine.py:370-378]
+- [x] [Review][Patch] The team half of the exhaustiveness assertion is gated on `key in SIDES` in both the producer and the checker, so a display team name under any key other than literal `home`/`away` gets no `team_id` and raises nothing — the self-maintaining property holds only for player names [pipeline/precompute/spine.py:154, :261-267]
+- [x] [Review][Patch] `_identity_team_context` does not gate the parsed code against `TEAM_CODE_RE` the way `team_codes` does, and `REPORT_ID_RE` accepts `[A-Z0-9]+`, so one malformed report id (`PMSR-M01-MEXX-V-RSA`) floods the localization histogram with ~52 identical `probe-failure` deviations [pipeline/validate/checks.py:1754 vs pipeline/precompute/identity.py:207]
+- [x] [Review][Patch] `known_names` is accumulated corpus-wide and then applied to every match's spine — over-sensitive (any non-player string equal to one of 1,247 printed names raises on a sound record) and under-sensitive (a name path spelled differently from the lineup passes silently); the per-match lineup index `_match_index` already builds is the correct set [pipeline/precompute/spine.py:291, :355]
+- [x] [Review][Patch] The relative-`record_path` fallback resolves to a nonexistent path — `Path(extracted_dir).parent / record_path` yields `work/work/extracted/…` for the `work/extracted/…` paths `batch.py:310` actually writes; the branch is reachable from any cwd but the repo root and both loader tests stage absolute paths, so it is never exercised [pipeline/precompute/records.py:103-104]
+- [x] [Review][Patch] Manifest entries carrying a status outside `CONSUMABLE_STATUSES` are silently dropped, so matches can leave the corpus with only the optional `--expect-records` noticing [pipeline/precompute/records.py:76-80]
+- [x] [Review][Patch] The acceptance check reads the team code out of the expected id (`player_id.rsplit("-", 1)[1]`), so it cannot detect a wrong `teamCode` — the component the story calls "on the critical path" and "not derivable"; separately `_fixture_player_ids` keys on `playerId`, so a second spelling of the same id's name is silently overwritten while the count stays 155 [pipeline/tests/test_precompute_identity.py:164-183, :215-218]
+- [x] [Review][Patch] `test_CONSTRUCTED_resolution_is_deterministic_under_either_input_order` cannot fail — `resolve_players` returns `dict(sorted(...))` so equality is order-insensitive by construction, and both records carry the identical single entry, so first-seen has nothing to choose between [pipeline/tests/test_precompute_identity.py:507-518]
+- [x] [Review][Patch] `test_the_spine_adds_ids_beside_every_name_and_removes_nothing` compares `(path, key)` sets only — no values, no list lengths, no ordering — so a future edit pruning the 43 all-zero pass-network nodes (explicitly forbidden) passes it unchanged, against the module docstring's "no list reordered, nothing deduped" [pipeline/tests/test_precompute_spine.py:342-365]
+- [x] [Review][Patch] `entities.json` hardcodes `"source_manifest": "work/run-manifest.json"` while `--manifest` is a first-class flag and `build_spine` is never passed the path — Story 1.16 emits from this block [pipeline/precompute/spine.py:362]
+- [x] [Review][Patch] The `clean_registry` fixture is defined with a docstring justifying it as load-bearing and is requested by zero tests, while `slug_registry.PINS`/`OVERRIDES` are module-level mutables imported directly by `checks.py` [pipeline/tests/test_precompute_spine.py:48-68]
+- [x] [Review][Patch] AC 4 row 1's *real* half — the three accented team names `Curaçao`, `Türkiye`, `Côte d'Ivoire`, which the row says "are real and must be pinned" — has no assertion; they appear only inside a docstring [pipeline/tests/test_precompute_identity.py:480]
+- [x] [Review][Patch] A `shirt_number` present but null or a string silently downgrades a shirt-bearing path to name-only resolution, skipping the name/shirt corroboration the 23-path rule exists for [pipeline/precompute/spine.py:177-178]
+- [x] [Review][Patch] `bool` passes every `isinstance(shirt, int)` guard, so `True` aliases shirt 1 in the tuple key but pins as `team#True`; and the docstring's declared point (b) — an uncased token landing in the given name — is stated but not guarded, so `Raul RANGEL 7` would mint `rangel-raul-7-mex` and pass `PlayerId` [pipeline/precompute/identity.py:167-172, :288]
+- [x] [Review][Patch] `check_committed_data` skips non-string id values, so a committed `playerId: null` or numeric is uncounted and the run reports "all pinned" [pipeline/precompute/identity.py:478]
+- [x] [Review][Patch] `_check_identity_pinning` builds `pin_key(team_id, None)` for a non-integer shirt, the lookup misses, and the check passes vacuously [pipeline/validate/checks.py:1878-1881]
+- [x] [Review][Patch] `REPORT_ID_RE` terminates with `$`, the exact laxity the module's own four ID gates use `\Z` to avoid [pipeline/precompute/identity.py:98]
+- [x] [Review][Patch] Task 3.5's `has_minutes` import was never made though the task is marked `[x]` — the section is carried but `spine.py:333` is a no-op `_ = section` comment and nothing consumes it [pipeline/precompute/spine.py:333, pipeline/precompute/identity.py:236]
+- [x] [Review][Patch] Task 7.1's per-entry format is not met and the File List miscounts: of the 8 appended `deferred-work.md` bullets, **3 carry no `Owner:` and 6 no `Deferred:` reason** (measured — the reviewer's 4/5 was wrong), while the File List declares 7 entries [_bmad-output/implementation-artifacts/deferred-work.md]
+- [x] [Review][Patch] Task 7.3 filed per-team aggregates and a "queryable from the spine" pointer instead of the required full list of the 219 as-listed players, and the substitution is not recorded under "Deviations from the story" [_bmad-output/implementation-artifacts/deferred-work.md]
+- [x] [Review][Patch] An object carrying both `name` and `player_name` would have its `player_id` silently overwritten by whichever `NAME_TO_ID_KEY` entry is applied last, with the exhaustiveness check still passing [pipeline/precompute/spine.py:139-150]
+- [x] [Review][Patch] `_check_identity_completeness` skips the team-code agreement assertion entirely when a team is absent from the committed `TEAM_CODES`, rather than reporting the absence [pipeline/validate/checks.py:1799-1800]
+- [x] [Review][Patch] The File List understates the commit: it describes `checks.py` and `pipeline/README.md` as carrying only this story's additions, omitting the ~6 lines of Story 1.9 goalkeeping-docstring text and ~50 lines of 1.9 README prose the commit message's `COMMIT SCOPE` note does declare [_bmad-output/implementation-artifacts/1-15-cross-match-identity-resolution-normalized-spine.md]
+
+- [x] [Review][Defer] `pipeline/README.md` in this commit documents Story 1.9's involvement-clock work, including an eighth Self-Validation id `goalkeeping-involvement-clock` whose registering code (`pipeline/extract/domain_e.py`) is not committed [pipeline/README.md:1031-1108] — deferred: knowingly declared in the commit message's `COMMIT SCOPE` note as the lesser evil (omitting `checks.py` would have committed a 29-check registry against a file registering 27), and it resolves the moment Story 1.9 lands. **RESOLVED during this review: Story 1.9 committed at `325dc2b` (2026-08-03 14:54), registering the check in code. Ledger entry struck and closed.**
 
 ## Dev Notes
 
@@ -677,6 +727,27 @@ plainly that they cover only the sampled reports. `offers-count-match` was **not
   live there. Their tests live in `test_precompute_spine.py` per Task 8.1's grouping.
 - **`build_spine` takes an optional trailing `registry`** (see above).
 
+#### Deviations found by code review and declared retroactively (2026-08-03)
+
+The three above were declared at implementation time. Story 1.15's code review found three
+more that were not, and they are recorded here rather than left implicit:
+
+- **The AD-3 first-seen tiebreak is NOT implemented.** `resolve_players` raises
+  `IdentityCollisionError` on two players who mint one slug, which is what AC 1's binding
+  block demands and the opposite of what AC 4 rows 2-3 and Task 3.4 describe. The
+  Completion Notes above, the commit message, `__init__.py`, `pipeline/README.md` and two
+  test names all said the tiebreak shipped. Ruled in favour of raising (Decision 1); every
+  one of those statements is now corrected.
+- **Task 7.3 filed per-team aggregates and a `slug_source` query pointer, not the full
+  list of 219 players** the task asks for. Kept — the per-team residue counts plus a
+  reproducible query are a better artifact for a UX ruling than 219 inlined slugs, and the
+  list is one query away — but it is a substitution from the instruction and was not
+  declared.
+- **Task 3.5's `has_minutes` import was never made.** The section IS carried through
+  `lineup_entries` as the task requires, but nothing in this story consumes it: no 1.15
+  deliverable asks "did this player take the field". The dead `_ = section` line has been
+  removed; the section remains available on every entry for the story that needs it.
+
 #### AC 2's "and aggregates" clause — deferred to Story 1.17 as a ruling, not an omission
 
 No aggregate exists yet to reference an id, and building one here would smuggle 1.17's work
@@ -760,17 +831,37 @@ in the suite broke, exactly as the story's regression sweep predicted.
 - `pipeline/tests/test_precompute_identity.py` (40 tests)
 - `pipeline/tests/test_precompute_spine.py` (32 tests)
 
+**New — tests added by code review (2026-08-03), closing two zero-coverage gaps:**
+- `pipeline/tests/test_precompute_run.py` — the CLI. `run.py` shipped with 173 lines of
+  documented behaviour (three exit codes, the always-printed baseline note, the
+  `--expect-records` gate, the write-vs-check branch) and no test module importing it.
+- `pipeline/tests/test_checks_identity.py` — both FR-15 gate checks at their branches.
+  Only the sorted `checks_run` id literal in `test_runner.py` referenced them, so nothing
+  exercised the registry/report code disagreement, the in-report duplicate-slug branch,
+  the `probe-failure` mapping or Task 4.2's absent-pin rule.
+
 **Modified — additive / append-only, per the shared-contention rule:**
 - `pipeline/validate/checks.py` — 6 imports, 2 check functions + 1 helper, 2 `register_check`
   calls appended at the end, and the reserved 1.15 docstring inventory slot filled in
-  registration order (never interleaved)
+  registration order (never interleaved). **Also carries ~6 lines of in-flight Story 1.9's
+  goalkeeping docstring** (Decision 3's `InvolvementChartError` vs `InvolvementClockError`
+  wording) — declared in the commit message's `COMMIT SCOPE` note but omitted from this list
+  until Story 1.15's code review corrected it. Committing the file was unavoidable:
+  omitting it would have committed a `checks_run` registry of 29 ids against a file
+  registering 27.
 - `pipeline/tests/test_runner.py` — the forced repair: the exact `checks_run` literal goes
   27 → 29, with both new ids in sorted position between `goalkeeping-counts` and
   `marker-event-link-rate` (not tail-pinned)
 - `pipeline/README.md` — `precompute/` added to the Layout block, plus a new
-  "Cross-match identity and the normalized spine — precompute (Story 1.15)" section
+  "Cross-match identity and the normalized spine — precompute (Story 1.15)" section.
+  **Also carries ~50 lines of in-flight Story 1.9's involvement-clock prose**, including a
+  `goalkeeping-involvement-clock` row that takes the Self-Validation inventory from seven
+  ids to eight — an id the committed code does not register, because `domain_e.py` is not
+  in this commit. Same `COMMIT SCOPE` declaration and same correction as `checks.py` above;
+  filed to `deferred-work.md` by the code review, and it resolves when Story 1.9 lands.
 - `_bmad-output/implementation-artifacts/deferred-work.md` — a new 1.15 section appended at
-  the END (7 entries), and Story 1.10's `PlayerRecord.playerId` filing struck and closed
+  the END (**8** entries, not 7 as this list originally said), and Story 1.10's
+  `PlayerRecord.playerId` filing struck and closed
 - `_bmad-output/implementation-artifacts/sprint-status.yaml` — status transitions + note
 - `_bmad-output/implementation-artifacts/1-15-cross-match-identity-resolution-normalized-spine.md`
   — this file (frontmatter `baseline_commit` preserved, checkboxes, Dev Agent Record,
@@ -792,3 +883,4 @@ and `pipeline/extract/pass_network.py` was not edited (in-flight Story 1.14).
 | 2026-08-03 | Story 1.15 implemented. New `pipeline/precompute/` package — AD-9's second phase and the first pipeline module that reads no PDF. Cross-match identity resolution over all 104 Extraction Records: 48 team codes parsed from `report_id` and asserted 1:1, 1,248 player ids minted by the ruled caps-run rule with 0 collisions, 104 match ids and 48 team ids re-gated rather than re-minted. Committed `slug_registry.py` as Python (AD-8 fingerprinting) with **1,400 pinned ids** and an empty `OVERRIDES`. Two-source pinning: `PINS` from run one, plus a `/data` diff that prints "baseline unavailable — NOT a pass" until Story 1.16 emits. Normalized spine staged to `work/spine/`, adding **73,065 ids across exactly 25 name paths** without removing a single name. Two FR-15 gate checks registered (`identity-completeness`, `identity-pinning`); `checks_run` repaired 27 → 29. 72 new tests. |
 | 2026-08-03 | Task 1 re-derived every pinned Dev Notes figure independently. The acceptance check passes: **155/155 committed fixture player ids reproduced, 0 mismatches**. All three OQ-4 ambiguous cases re-confirmed corpus-EMPTY (0 non-ASCII characters, 0 name+team collisions, 0 multi-shirt players). Three Dev Notes figures corrected: the non-derivable team-code count is 6 not "≥8" and its `RSA`/`COD` examples are wrong (ruling unaffected); the 416 display names require counting the top-level `metadata` block; and `metadata` carries neither `report_id` nor `source_path`. All three filed to `deferred-work.md`. |
 | 2026-08-03 | Closed Story 1.10's `PlayerRecord.playerId` deferred-work filing — the cross-match namespace it was waiting on now exists, and the extract layer is unchanged. |
+| 2026-08-03 | **Code review: 3 decisions ruled, 34 patches applied, 1 deferred.** The AD-3 first-seen tiebreak was claimed by four documents and two test names and implemented by none — ruled in favour of the raise the code actually does (AC 1's binding block), and every claim corrected. The commit's flip of Story 1.9 to `review` was reverted: 1.9's implementation is still uncommitted, and a concurrent batch was observed re-staging `work/extracted/` mid-review. Precompute now refuses partial corpora plainly instead of dying on group arithmetic. **Highest-severity patch: `identity-pinning` re-minted from the PDF and never consulted `OVERRIDES`, while `resolve_players` applies `OVERRIDES` before pinning — so the story's own advertised data-only fix for 219 as-listed players would have turned the gate red on every sampled report against a correct registry.** Also: `OVERRIDES` values are gated against `PlayerId` and applied before the gate so they can rescue an unsluggable name; `--write-registry` refuses to drop a pin; an empty manifest is a finding, not a PASS; exit 1 (finding) and exit 2 (broken harness) are now distinguished in both directions via a new `ManifestUnreadableError`; the spine's team-name exhaustiveness no longer skips every key but `home`/`away`; `known_names` is per-match rather than corpus-global; `write_spine` removes stale match files; `write_registry` is atomic. Two new test modules (`test_precompute_run.py`, `test_checks_identity.py`) close the CLI's and the gate checks' zero coverage, the committed registry is pinned by a regenerate-and-compare against its real bytes, and three tests that could not fail were rewritten. Re-verified: precompute PASS over a frozen 104-record snapshot, **105 files byte-identical across two runs**, `slug_source` 1,029 caps-run + 219 as-listed, FR-15 gate PASS with 0 deviations and `checks_run` 29 sorted. |

@@ -161,24 +161,44 @@ def test_the_runtime_gates_reject_a_trailing_newline_that_the_schema_literal_acc
 # --- THE ACCEPTANCE CHECK ---------------------------------------------------------
 
 
-def _fixture_player_ids() -> dict[str, str]:
-    """`{playerId: printed name}` from every committed match bundle.
+def _fixture_player_ids() -> "set[tuple[str, str, str]]":
+    """`{(playerId, printed name, teamCode)}` from every committed match bundle.
 
     Walks BOTH `players[]` and `metadata.lineups.*[]`. That is load-bearing: 59 of the
     155 ids are reachable ONLY through the lineups, including the 2-token-surname case
     `romero-gamarra-alejandro-par`, which appears in exactly one substitutes list. A
     `players[]`-only walk sees 96 ids and silently never tests the hardest one.
+
+    A SET of triples rather than `{playerId: name}`. Keying on the id meant a second
+    printed spelling of the same player — `"Raul RANGEL"` in `players[]` against
+    `"Raul  RANGEL"` with a doubled space in the lineups — silently overwrote the first
+    while the count stayed at 155, so one of the two spellings was never tested. That is
+    exactly the `repr()`-invisible defect `PlayerSlugError` exists to localize.
+
+    The `teamCode` comes from the bundle's own `metadata.{home,away}Team.teamCode`, NOT
+    from the trailing segment of the expected id. Slicing it off the answer
+    (`player_id.rsplit("-", 1)[1]`) made the acceptance check structurally unable to
+    detect a wrong team code — the one component the story calls "on the critical path"
+    and "not derivable from the printed name". Now the id's last segment is genuinely
+    being predicted rather than supplied.
     """
-    found: dict[str, str] = {}
+    found: set[tuple[str, str, str]] = set()
     for path in MATCH_FIXTURES:
         doc = json.loads(path.read_text(encoding="utf-8"))
+        sides = {
+            side: doc["metadata"][f"{side}Team"] for side in ("home", "away")
+        }
+        code_by_team_id = {team["teamId"]: team["teamCode"] for team in sides.values()}
         for row in doc.get("players", []):
             if isinstance(row, dict) and "playerId" in row and "playerName" in row:
-                found[row["playerId"]] = row["playerName"]
+                found.add(
+                    (row["playerId"], row["playerName"], code_by_team_id[row["teamId"]])
+                )
         for side in ("home", "away"):
+            code = sides[side]["teamCode"]
             for section in ("starters", "substitutes"):
                 for entry in doc["metadata"]["lineups"][side][section]:
-                    found[entry["playerId"]] = entry["name"]
+                    found.add((entry["playerId"], entry["name"], code))
     return found
 
 
@@ -208,13 +228,16 @@ def test_the_caps_run_rule_reproduces_every_committed_fixture_player_id():
     on even one id, the rule is wrong and the fixtures are ground truth.
     """
     fixture_ids = _fixture_player_ids()
-    assert len(fixture_ids) == 155, (
-        f"expected 155 distinct fixture player ids, found {len(fixture_ids)}"
+    assert len({player_id for player_id, _name, _code in fixture_ids}) == 155, (
+        f"expected 155 distinct fixture player ids, found "
+        f"{len({p for p, _n, _c in fixture_ids})}"
     )
+    # Every (id, name, code) triple, so a second printed spelling of one id is tested too
+    # rather than silently overwriting the first.
     mismatches = [
-        (player_id, name, player_slug(name, player_id.rsplit("-", 1)[1]))
-        for player_id, name in sorted(fixture_ids.items())
-        if player_slug(name, player_id.rsplit("-", 1)[1]) != player_id
+        (player_id, name, code, player_slug(name, code))
+        for player_id, name, code in sorted(fixture_ids)
+        if player_slug(name, code) != player_id
     ]
     assert mismatches == [], f"{len(mismatches)} fixture id(s) not reproduced: {mismatches}"
 
@@ -248,8 +271,8 @@ def test_the_rejected_last_token_rule_fails_the_fixture_reproduction():
     fixture_ids = _fixture_player_ids()
     mismatches = [
         player_id
-        for player_id, name in fixture_ids.items()
-        if _last_token_slug(name, player_id.rsplit("-", 1)[1]) != player_id
+        for player_id, name, code in fixture_ids
+        if _last_token_slug(name, code) != player_id
     ]
     assert len(mismatches) >= 26, (
         "the last-token rule reproduces the fixtures, so this mutation check proves "
@@ -265,10 +288,11 @@ def test_a_collision_count_cannot_discriminate_between_the_two_candidate_rules()
     asserted only "no collisions" would have shipped either one.
     """
     fixture_ids = _fixture_player_ids()
-    caps = {player_slug(n, pid.rsplit("-", 1)[1]) for pid, n in fixture_ids.items()}
-    last = {_last_token_slug(n, pid.rsplit("-", 1)[1]) for pid, n in fixture_ids.items()}
-    assert len(caps) == len(fixture_ids)
-    assert len(last) == len(fixture_ids), (
+    expected = {player_id for player_id, _name, _code in fixture_ids}
+    caps = {player_slug(name, code) for _pid, name, code in fixture_ids}
+    last = {_last_token_slug(name, code) for _pid, name, code in fixture_ids}
+    assert len(caps) == len(expected)
+    assert len(last) == len(expected), (
         "the rejected rule collides on the fixtures, which would make uniqueness "
         "discriminating; it is not, and that is the point of this test"
     )
@@ -485,12 +509,19 @@ def test_CONSTRUCTED_an_accent_folds_away_because_the_corpus_has_none():
     assert player_slug("Édouard MENDY", "sen") == "mendy-edouard-sen"
 
 
-def test_CONSTRUCTED_a_duplicate_normalized_name_is_broken_by_first_seen_shirt():
+def test_CONSTRUCTED_a_duplicate_normalized_name_within_a_team_raises_rather_than_tiebreaking():
     """OQ-4 case 2 — CORPUS-EMPTY (0 normalized name+team collisions over 5,392 entries).
 
-    Constructed. Two players, one team, the same normalized name, different shirts. They
-    key on `(team_id, shirt_number)`, so they resolve to distinct entries and the
-    first-seen-shirt tiebreak decides ordering deterministically.
+    Constructed. Two players, one team, the same normalized name, different shirts.
+
+    **There is no first-seen-shirt tiebreak, and this test is the statement of that.**
+    AC 1's binding block rules it out — "an assertion that the count is 0, raising if it
+    ever is not, NOT a first-seen-shirt tiebreak" — because on a corpus with zero such
+    collisions a tiebreak could only ever fire on a defect, and quietly minting two ids
+    out of one printed name is unfalsifiable downstream: every id unique, every pattern
+    satisfied, and one of the two routes naming the wrong person. AC 4 row 2 and Task 3.4
+    describe the tiebreak instead; that contradiction was ruled in favour of raising by
+    Story 1.15's code review (Decision 1).
     """
     record = make_record(
         "m001-mexico-south-africa", "PMSR-M01-MEX-V-RSA", "Mexico", "South Africa",
@@ -504,18 +535,49 @@ def test_CONSTRUCTED_a_duplicate_normalized_name_is_broken_by_first_seen_shirt()
     assert "shirt 1" in message and "shirt 12" in message
 
 
-def test_CONSTRUCTED_resolution_is_deterministic_under_either_input_order():
-    """First-seen wins, and canonical order is what makes "first" well defined."""
+def test_CONSTRUCTED_one_key_naming_two_players_raises_under_EITHER_input_order():
+    """Resolution never silently picks a winner for a contested `(team_id, shirt)` key.
+
+    Stated precisely, because the original form of this test could not fail: asserting
+    `resolve_players(forward) == resolve_players(reversed)` proves nothing, since the
+    function returns `dict(sorted(...))` and dict equality ignores insertion order —
+    it passed against an implementation with no ordering discipline at all.
+
+    The property that IS worth pinning is that a key claimed by two different names is a
+    collision in both directions rather than a last-write-wins, so the answer can never
+    depend on the order records happen to arrive in. Both parties are named either way.
+    """
+    forward = [
+        make_record("m001-mexico-south-africa", "PMSR-M01-MEX-V-RSA", "Mexico",
+                    "South Africa", ([("Raul RANGEL", 1)], []), ([("B NAME", 1)], [])),
+        make_record("m002-mexico-canada", "PMSR-M02-MEX-V-CAN", "Mexico", "Canada",
+                    ([("Luis HERNANDEZ", 1)], []), ([("D NAME", 1)], [])),
+    ]
+    for ordering in (forward, list(reversed(forward))):
+        with pytest.raises(IdentityCollisionError) as excinfo:
+            resolve_players(ordering, team_codes(ordering), EMPTY_REGISTRY)
+        message = str(excinfo.value)
+        assert "rangel-raul-mex" in message and "hernandez-luis-mex" in message
+        assert "m001-mexico-south-africa" in message and "m002-mexico-canada" in message
+
+
+def test_CONSTRUCTED_the_same_player_across_two_matches_resolves_once_in_either_order():
+    """The one sense in which "first seen wins" is true here: idempotence across records.
+
+    One person, one shirt, two matches — one id, and the map is identical whichever order
+    the records arrive in. This is FR-17's whole claim at its smallest scale.
+    """
     forward = [
         make_record("m001-mexico-south-africa", "PMSR-M01-MEX-V-RSA", "Mexico",
                     "South Africa", ([("Raul RANGEL", 1)], []), ([("B NAME", 1)], [])),
         make_record("m002-mexico-canada", "PMSR-M02-MEX-V-CAN", "Mexico", "Canada",
                     ([("Raul RANGEL", 1)], []), ([("D NAME", 1)], [])),
     ]
-    codes = team_codes(forward)
-    assert resolve_players(forward, codes, EMPTY_REGISTRY) == resolve_players(
-        list(reversed(forward)), codes, EMPTY_REGISTRY
-    )
+    reverse = list(reversed(forward))
+    resolved = resolve_players(forward, team_codes(forward), EMPTY_REGISTRY)
+    assert resolved[("mexico", 1)] == "rangel-raul-mex"
+    assert sum(1 for key in resolved if key[0] == "mexico") == 1
+    assert resolved == resolve_players(reverse, team_codes(reverse), EMPTY_REGISTRY)
 
 
 def test_CONSTRUCTED_a_squad_number_change_across_matches_is_reported_not_merged():

@@ -60,6 +60,52 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-03
+# 2026-08-03: story 2-10 context created and moved to ready-for-dev — the LAST four Tactical
+#             sections (#phases, #pressing, #set-plays, #goalkeeping) and the four remaining
+#             PendingSectionPanel fall-throughs, so 2.10 CLOSES the Tactical Layer at eleven of
+#             eleven. app/ ONLY; no predicate change is needed or authorised in
+#             tactical-sections.ts, which already answers all four ids correctly.
+#             THE EPIC'S #goalkeeping AC IS OVERTURNED, and by MORE than AD-14 (d) recorded. Beyond
+#             the per-keeper/per-team mismatch 1.9 proved, FIVE contract-REQUIRED sub-blocks are
+#             null on 208/208 team-innings — distribution.{feet,hands,throw}Techniques,
+#             goalPrevention.byBodyType, aerialControl.crossesFacedCompleted — while the fixtures
+#             populate all five (data/fixtures/README.md files Domain E goalkeeping as synthetic
+#             "in full"). Juan RULED: team-grouped blocks with the keeper list as CONTEXT, both
+#             names on the 7 two-keeper innings with neither record summed (AD-5), and the five
+#             dead panels behind PRESENCE GATES on the shipped FD-1 showXg / 2.9 anyContestType
+#             precedent — plus one ruled sentence when a gate closes, because silent panel-level
+#             absence is what FR-22 exists to forbid.
+#             A SECOND CONTRACT GAP NOBODY HAD FILED: GoalkeeperInvolvementSample.minute is a bare
+#             Minute (0-120, no stoppage field), but the corpus draws 95-145 slots per team-inning
+#             with 2,506 of 21,764 in stoppage — so minutes are NOT unique on real data. Exactly
+#             what 1.8's schemaVersion 2 bump fixed for MomentumSample.at and what invalidated
+#             2.6's slider AC. Ruled: index by SAMPLE, never by minute (2.6 decision 1 repeated);
+#             filed as a BLOCKER for 2.19's cutover, not an open note.
+#             THE FIXTURES LIE IN THREE SEPARATE DIRECTIONS, all measured: free-kick nesting
+#             (direct == on+off) is corpus-FALSE on 208/208 yet fixture-TRUE on 3/3, because the
+#             fixture README says the splits were "synthesised so that they add up to those
+#             totals"; corner delivery STYLE is a partition on only 96/208 (112 under, 0 over);
+#             and every goalkeeping timeline is a 5-minute bucket series summing exactly to its
+#             total, against a corpus delta of 0-5 that is exact on only 59/208. Corner delivery
+#             TYPE (208/208), corner SIDE (208/208, and read from the PRECOMPUTED cornersBySide per
+#             README section 14) and direct+indirect==totalFreeKicks (208/208) are the relations
+#             that DO hold. Juan ruled: use the true ones, bar the false ones, and drop the
+#             indentation that would smuggle the banned claim back in visually.
+#             Domain C: the 8+9 phases and defensiveBlockDistribution are REAL (they match the
+#             staged records exactly); lineHeight/teamLength are the ONLY synthetic part — the
+#             corpus prints THREE panels per possession state with three measures each including an
+#             unmodelled team_width, and m001's fixture 44.4 matches no panel and no mean. Juan
+#             ruled: render them, invent no aggregation, file the gap to 1.16. Phases sums run
+#             84-149 in possession and 73-97 out, so NOTHING may normalize or pie them.
+#             AMENDED AFTER VALIDATION: #pressing takes the four press rates as well as the blocks
+#             and the metres. A blocks-only #pressing would have shipped false copy on its own
+#             frozen summary ("...e intensidad de la presion."), which is also the <lg
+#             collapsed-shell line a phone reader reaches first.
+#             VALIDATED BY THREE FRESH-CONTEXT SUBAGENTS before ready-for-dev: ~180 factual claims
+#             audited (3 corrected, 8 tightened), 17 implementability gaps closed of which 4 were
+#             build-breaking, and 11 adversarial findings ruled. COORDINATION CHANGED MID-CREATION:
+#             a 2.9 CODE-REVIEW session began writing app/ (nine files, including both locale files
+#             and i18n.test.ts), so `git add app/` is now unsafe and the story says so.
 # 2026-08-03: story 2-9 implemented and moved to review — and the story's premise overturn HELD, so
 #             Epic 2 shipped its FIRST in-story re-scope: ONE pitch map (#defensive-actions) plus TWO
 #             AGGREGATE CARD SURFACES (#offers-to-receive, #movement-to-receive), not three maps.
@@ -1794,13 +1840,13 @@ development_status:
   1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
   1-8-momentum-series-extraction-oq-5-resolution: done
-  1-9-domains-e-f-extraction-goalkeeping-set-plays: in-progress
+  1-9-domains-e-f-extraction-goalkeeping-set-plays: done
   1-10-domain-g-extraction-per-player-performance-physical-data: done
   1-11-crosses-map-parser: done
   1-12-defensive-actions-map-parser: done
   1-13-offers-movement-to-receive-parsers: done
   1-14-pass-network-extraction-nodes-edges: done
-  1-15-cross-match-identity-resolution-normalized-spine: review
+  1-15-cross-match-identity-resolution-normalized-spine: done
   # BLOCKED-pending CS-1 (Story 2.3 sign-off change-set: ShotOutcomeDetail enum + map +
   # pipeline constant/test updates — see deferred-work.md "Filed by Story 2.3 sign-off").
   # Do NOT start 1-16 before CS-1 lands as its atomic AD-14 bump commit.
@@ -1822,7 +1868,7 @@ development_status:
   2-7-pitch-panel-infrastructure-with-shot-cross-maps: done
   2-8-pass-network-visualization: done
   2-9-receiving-defensive-action-maps-heatmap-decision: done
-  2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: backlog
+  2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: ready-for-dev
   2-11-expert-layer-per-player-tables-event-logs: backlog
   2-12-tournament-hub-results-standings: backlog
   2-13-tournament-leaderboards: backlog

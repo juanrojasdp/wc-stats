@@ -147,6 +147,8 @@ from pipeline.markers.shots import parse_shots
 from pipeline.precompute import slug_registry as SLUG_REGISTRY
 from pipeline.precompute.errors import PrecomputeError
 from pipeline.precompute.identity import REPORT_ID_RE as PRECOMPUTE_REPORT_ID_RE
+from pipeline.precompute.identity import TEAM_CODE_RE as PRECOMPUTE_TEAM_CODE_RE
+from pipeline.precompute.identity import gate_override as precompute_gate_override
 from pipeline.precompute.identity import pin_key as precompute_pin_key
 from pipeline.precompute.identity import player_slug as precompute_player_slug
 from pipeline.validate.deviations import Deviation, DeviationCategory
@@ -1752,6 +1754,17 @@ def _identity_team_context(meta: ReportMeta) -> "tuple[dict[str, str], dict[str,
         )
     team_ids = {"home": team_slug(meta.home_team), "away": team_slug(meta.away_team)}
     codes = {"home": matched.group(1).lower(), "away": matched.group(2).lower()}
+    # Gated exactly as `pipeline.precompute.identity.team_codes` gates it. `REPORT_ID_RE`
+    # accepts `[A-Z0-9]+`, so a four-letter segment parses fine and then fails inside
+    # `player_slug` once per lineup entry — ~52 identical probe-failure deviations for a
+    # single malformed report id, flooding the localization histogram.
+    for side, code in codes.items():
+        if not PRECOMPUTE_TEAM_CODE_RE.match(code):
+            raise PrecomputeError(
+                f"{side} team code {code!r} from report id {meta.report_id!r} does not "
+                f"satisfy the contract TeamCode pattern",
+                meta.report_id,
+            )
     return team_ids, codes
 
 
@@ -1797,7 +1810,22 @@ def _check_identity_completeness(
     for side in ("home", "away"):
         team_id, code = team_ids[side], codes[side]
         pinned_code = SLUG_REGISTRY.TEAM_CODES.get(team_id)
-        if pinned_code is not None and pinned_code != code:
+        if pinned_code is None:
+            # Reported rather than skipped. A team the committed registry has never seen
+            # is either a new entrant or a slug that has drifted, and silently passing the
+            # code-agreement assertion for it is how the second one goes unnoticed.
+            deviations.append(
+                Deviation(
+                    report_id=meta.report_id,
+                    check="identity-completeness",
+                    category=DeviationCategory.COUNT_MISMATCH,
+                    specifics=(
+                        f"{side} team {team_id!r} carries code {code!r} on this report "
+                        f"but is in no committed registry entry"
+                    ),
+                )
+            )
+        elif pinned_code != code:
             deviations.append(
                 Deviation(
                     report_id=meta.report_id,
@@ -1856,6 +1884,14 @@ def _check_identity_pinning(doc: "pymupdf.Document", meta: ReportMeta) -> list[D
     nothing. What is reported is a pin that DISAGREES with the freshly minted id, naming
     both, because that is an id changing after it was emitted.
 
+    **`OVERRIDES` is consulted first, exactly as `resolve_players` consults it**, and that
+    is load-bearing rather than tidy. Precompute applies an override BEFORE pinning, so an
+    overridden player's pinned id is by construction NOT what the caps-run rule mints from
+    the PDF. A gate that re-minted and compared would therefore report a `count-mismatch`
+    on every sampled report naming that player — and the story advertises 219 as-listed
+    players as override candidates whose fix is "a data edit, not a code change". The
+    first such edit would have turned the gate red.
+
     A slug this report cannot mint at all is `identity-completeness`'s finding and is
     swallowed here, so one bad name is not counted under two ids.
     """
@@ -1871,18 +1907,50 @@ def _check_identity_pinning(doc: "pymupdf.Document", meta: ReportMeta) -> list[D
         return []
 
     pins = SLUG_REGISTRY.PINS.get("players", {})
+    overrides = SLUG_REGISTRY.OVERRIDES
     deviations: list[Deviation] = []
     for side in ("home", "away"):
         for section in ("starters", "substitutes"):
             for entry in domain_a["lineups"][side][section]:
-                key = precompute_pin_key(team_ids[side], entry["shirt_number"])
+                shirt = entry["shirt_number"]
+                if not isinstance(shirt, int) or isinstance(shirt, bool):
+                    # `pin_key(team, None)` builds `team#None`, which matches no pin, and
+                    # the check would pass vacuously on a report it never actually tested.
+                    deviations.append(
+                        Deviation(
+                            report_id=meta.report_id,
+                            check="identity-pinning",
+                            category=DeviationCategory.PROBE_FAILURE,
+                            specifics=(
+                                f"lineup entry {entry['name']!r} carries a non-integer "
+                                f"shirt number {shirt!r}, so no pin can be looked up"
+                            ),
+                        )
+                    )
+                    continue
+                key = precompute_pin_key(team_ids[side], shirt)
                 pinned = pins.get(key)
                 if pinned is None:
                     continue
-                try:
-                    slug = precompute_player_slug(entry["name"], codes[side])
-                except PrecomputeError:
-                    continue
+                override = overrides.get(key)
+                if override is not None:
+                    try:
+                        slug = precompute_gate_override(override, key)
+                    except PrecomputeError as exc:
+                        deviations.append(
+                            Deviation(
+                                report_id=meta.report_id,
+                                check="identity-pinning",
+                                category=DeviationCategory.PROBE_FAILURE,
+                                specifics=f"{type(exc).__name__}: {exc.reason}",
+                            )
+                        )
+                        continue
+                else:
+                    try:
+                        slug = precompute_player_slug(entry["name"], codes[side])
+                    except PrecomputeError:
+                        continue
                 if slug != pinned:
                     deviations.append(
                         Deviation(

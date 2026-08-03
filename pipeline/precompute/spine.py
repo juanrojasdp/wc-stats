@@ -46,7 +46,7 @@ from pipeline.ingest.identity import team_slug
 from pipeline.ingest.records import write_canonical
 from pipeline.precompute.errors import SpineError
 from pipeline.precompute.identity import SIDES, lineup_entries, slug_sources
-from pipeline.precompute.records import DEFAULT_SPINE_DIR
+from pipeline.precompute.records import DEFAULT_MANIFEST_PATH, DEFAULT_SPINE_DIR
 
 SPINE_VERSION = 1
 GENERATED_BY = "pipeline.precompute.spine"
@@ -68,6 +68,34 @@ SHIRT_KEY_FOR_NAME: dict[str, str] = {
     "from_name": "from_shirt",
     "to_name": "to_shirt",
 }
+
+
+def team_id_key_for(name_key: str) -> str:
+    """The `*_team_id` sibling key for a display-team-name key.
+
+    `home` -> `home_team_id`, `winner` -> `winner_team_id`, and a key that already ends in
+    `_name` swaps that suffix (`team_name` -> `team_id`). One function so the producer in
+    `_add_ids` and the checker in `assert_every_name_resolved` can never drift apart —
+    when they did, a team name under any key but `home`/`away` got no id and raised
+    nothing.
+    """
+    if name_key.endswith("_name"):
+        return f"{name_key[: -len('_name')]}_team_id"
+    return f"{name_key}_team_id"
+
+
+def _code_for(codes: "dict[str, str]", team_id: str, record: dict) -> str:
+    """`codes[team_id]`, typed. A bare `KeyError` here would surface as exit 2 — a broken
+    harness — for what is a dataset finding, which is exactly the distinction
+    `errors.py` exists to preserve."""
+    code = codes.get(team_id)
+    if code is None:
+        raise SpineError(
+            f"team {team_id!r} has no team code; it appears in "
+            f"{record.get('match_id')!r} but in no report id",
+            record.get("report_id"),
+        )
+    return code
 
 
 def _match_index(record: dict, resolved: "dict[tuple[str, int], str]") -> dict:
@@ -136,10 +164,21 @@ def _add_ids(node, path: str, index: dict, team_ids_by_name: dict, record: dict)
     }
 
     side = _side_of(path)
+    # Two name keys map to `player_id` (`name` and `player_name`). An object carrying
+    # both would have the second silently overwrite the first, so it is refused rather
+    # than resolved — measured 0 such objects, and a future one is a shape question for
+    # whoever adds it, not something to guess at.
+    written_by: dict[str, str] = {}
     for name_key, id_key in NAME_TO_ID_KEY.items():
         value = node.get(name_key)
         if not isinstance(value, str):
             continue
+        if id_key in written_by:
+            raise SpineError(
+                f"{path} carries both {written_by[id_key]!r} and {name_key!r}, which both "
+                f"resolve to {id_key!r}; one would silently overwrite the other",
+                record.get("report_id"),
+            )
         # A team name under a `name` key is a TEAM reference, not a player one, and gets
         # its id from the team branch below. Measured 0 overlap between the 48 printed
         # team names and the 1,247 printed player names — and if that ever stopped being
@@ -147,12 +186,18 @@ def _add_ids(node, path: str, index: dict, team_ids_by_name: dict, record: dict)
         # letting the name through silently.
         if value in team_ids_by_name:
             continue
+        written_by[id_key] = name_key
         result[id_key] = _resolve_name(node, name_key, value, side, path, index, record)
 
-    # Display team names -> team_id, added beside rather than replacing.
+    # Display team names -> team_id, added beside rather than replacing. The id key is
+    # derived from whatever key the name sits under — NOT restricted to `home`/`away`.
+    # Gating on `key in SIDES` would leave a team name under `winner`, `team_name` or
+    # `opponent` with no id AND no failure, because `assert_every_name_resolved` skipped
+    # exactly the same keys; the team half of the exhaustiveness guarantee was vacuous
+    # everywhere but the two side keys.
     for key, value in node.items():
-        if isinstance(value, str) and value in team_ids_by_name and key in SIDES:
-            result[f"{key}_team_id"] = team_ids_by_name[value]
+        if isinstance(value, str) and value in team_ids_by_name:
+            result[team_id_key_for(key)] = team_ids_by_name[value]
     return result
 
 
@@ -175,7 +220,17 @@ def _resolve_name(
 
     shirt_key = SHIRT_KEY_FOR_NAME[name_key]
     shirt = node.get(shirt_key)
-    if isinstance(shirt, int):
+    if shirt_key in node and (not isinstance(shirt, int) or isinstance(shirt, bool)):
+        # Present but unusable is a defect, not an invitation to fall through to the
+        # name-only branch: that branch is for the two `most_offers` paths, which carry no
+        # shirt key at all, and silently taking it here would skip the corroboration the
+        # 23 shirt-bearing paths exist to get.
+        raise SpineError(
+            f"{path}.{shirt_key} = {shirt!r} is not an integer, so {value!r} cannot be "
+            f"resolved on its shirt number",
+            record.get("report_id"),
+        )
+    if isinstance(shirt, int) and not isinstance(shirt, bool):
         player_id = index["by_shirt"].get((side, shirt))
         if player_id is None:
             raise SpineError(
@@ -217,15 +272,22 @@ def build_match_spine(
     index = _match_index(record, resolved)
     teams = record["domains"]["match_metadata"]["teams"]
     team_ids_by_name = {name: team_slug(name) for name in teams.values()}
+    match_id = record["match_id"]
+    if match_id not in rounds:
+        raise SpineError(
+            f"record {match_id!r} has no derived matchday round, which is required by "
+            f"both bundle schemas",
+            record.get("report_id"),
+        )
 
     domains = _add_ids(record["domains"], "domains", index, team_ids_by_name, record)
     return {
         "spine": {
-            "match_id": record["match_id"],
+            "match_id": match_id,
             "report_id": record["report_id"],
             "home_team_id": team_slug(teams["home"]),
             "away_team_id": team_slug(teams["away"]),
-            "matchday_round": rounds[record["match_id"]],
+            "matchday_round": rounds[match_id],
         },
         "domains": domains,
     }
@@ -237,8 +299,15 @@ def assert_every_name_resolved(
     """The inverse exhaustiveness check (see the module docstring).
 
     Every string equal to a known player name must have a resolved id sibling on the same
-    object; every display team name must have a `team_id` sibling. This is what makes the
-    inventory self-maintaining: a name path a future story adds fails here.
+    object; every display team name must have a `*_team_id` sibling. This is what makes
+    the inventory self-maintaining: a name path a future story adds fails here.
+
+    `known_names` is **this match's own lineup names**, not the corpus's. A corpus-wide
+    set is wrong in both directions: it raises on a sound record that happens to print a
+    non-player string (a coach, an official) equal to one of 1,247 names from other
+    matches, and it still misses a name path whose spelling differs from the lineup. The
+    question this check asks is per-match by nature — "does every player name in THIS
+    match's spine resolve against THIS match's lineup".
     """
 
     def walk(node, path: str) -> None:
@@ -259,10 +328,11 @@ def assert_every_name_resolved(
                         report_id,
                     )
             elif isinstance(value, str) and value in team_names:
-                if key in SIDES and f"{key}_team_id" not in node:
+                team_id_key = team_id_key_for(key)
+                if team_id_key not in node:
                     raise SpineError(
                         f"{path}.{key} = {value!r} is a display team name with no "
-                        f"{key}_team_id sibling",
+                        f"{team_id_key} sibling",
                         report_id,
                     )
             walk(value, f"{path}.{key}")
@@ -276,26 +346,36 @@ def build_spine(
     codes: "dict[str, str]",
     rounds: "dict[str, str]",
     registry=None,
+    source_manifest: str = str(DEFAULT_MANIFEST_PATH.as_posix()),
 ) -> dict:
     """The whole spine: `entities` plus one entry per match.
 
     Entities are sorted by id; per-match rows keep their printed order and are never
     deduped (AD-8). Nothing here reads the clock or an absolute path, so two runs over an
     unchanged corpus produce identical bytes.
+
+    `registry` supplies `OVERRIDES` for the diagnostic `slug_source`. It is optional so
+    the four-positional call the story pins keeps working — but `slug_source` is populated
+    either way: `slug_sources` reads overrides with `getattr(registry, "OVERRIDES", {})`,
+    so `None` simply means "no overrides", not "no diagnostic". Returning `None` for every
+    player here would have made Task 7.3's filing — defined as a query over `slug_source`
+    — unanswerable from a spine built through the pinned API.
     """
-    sources = slug_sources(records, codes, registry) if registry is not None else {}
+    sources = slug_sources(records, codes, registry)
 
     teams: dict[str, dict] = {}
     players: dict[str, dict] = {}
     matches: list[dict] = []
-    known_names: set[str] = set()
-    team_names: set[str] = set()
+    # Per match, not corpus-wide — see `assert_every_name_resolved`.
+    names_by_match: dict[str, set[str]] = {}
+    team_names_by_match: dict[str, set[str]] = {}
 
     for record in records:
         match_id = record["match_id"]
         mm = record["domains"]["match_metadata"]
         printed = mm["teams"]
-        team_names.update(printed.values())
+        team_names_by_match.setdefault(match_id, set()).update(printed.values())
+        known_names = names_by_match.setdefault(match_id, set())
 
         for side in SIDES:
             team_id = team_slug(printed[side])
@@ -303,7 +383,7 @@ def build_spine(
                 team_id,
                 {
                     "team_id": team_id,
-                    "team_code": codes[team_id],
+                    "team_code": _code_for(codes, team_id, record),
                     "name": printed[side],
                     "group": mm.get("group"),
                     "match_ids": [],
@@ -311,9 +391,15 @@ def build_spine(
             )
             entry["match_ids"].append(match_id)
 
-        for side, section, team_id, lineup in lineup_entries(record):
+        for _side, _section, team_id, lineup in lineup_entries(record):
             shirt = lineup["shirt_number"]
-            player_id = resolved[(team_id, shirt)]
+            player_id = resolved.get((team_id, shirt))
+            if player_id is None:
+                raise SpineError(
+                    f"lineup entry {lineup['name']!r} (team {team_id!r} shirt {shirt}) "
+                    f"has no resolved player id",
+                    record.get("report_id"),
+                )
             known_names.add(lineup["name"])
             player = players.setdefault(
                 player_id,
@@ -321,7 +407,7 @@ def build_spine(
                     "player_id": player_id,
                     "name": lineup["name"],
                     "team_id": team_id,
-                    "team_code": codes[team_id],
+                    "team_code": _code_for(codes, team_id, record),
                     "shirt_number": shirt,
                     "position": lineup.get("position"),
                     "match_ids": [],
@@ -330,7 +416,21 @@ def build_spine(
             )
             if match_id not in player["match_ids"]:
                 player["match_ids"].append(match_id)
-            _ = section  # carried by `lineup_entries` for `has_minutes`; unused here
+
+        absent = [key for key in ("stage", "venue", "date", "kickoff", "score") if key not in mm]
+        if absent or "match_number" not in record.get("metadata", {}):
+            raise SpineError(
+                f"record {match_id!r} cannot describe its match: match_metadata lacks "
+                f"{absent!r}" + ("" if "match_number" in record.get("metadata", {})
+                                 else " and metadata lacks 'match_number'"),
+                record.get("report_id"),
+            )
+        if match_id not in rounds:
+            raise SpineError(
+                f"record {match_id!r} has no derived matchday round, which is required "
+                f"by both bundle schemas",
+                record.get("report_id"),
+            )
 
         matches.append(
             {
@@ -351,15 +451,21 @@ def build_spine(
 
     match_spines = {}
     for record in records:
+        match_id = record["match_id"]
         spine = build_match_spine(record, resolved, rounds)
-        assert_every_name_resolved(spine, known_names, team_names, record.get("report_id"))
-        match_spines[record["match_id"]] = spine
+        assert_every_name_resolved(
+            spine,
+            names_by_match[match_id],
+            team_names_by_match[match_id],
+            record.get("report_id"),
+        )
+        match_spines[match_id] = spine
 
     entities = {
         "spine_version": SPINE_VERSION,
         "generated_by": GENERATED_BY,
         "code_version": code_version(),
-        "source_manifest": "work/run-manifest.json",
+        "source_manifest": source_manifest,
         "teams": [teams[team_id] for team_id in sorted(teams)],
         "players": [players[player_id] for player_id in sorted(players)],
         "matches": sorted(matches, key=lambda m: m["match_id"]),
@@ -368,11 +474,24 @@ def build_spine(
 
 
 def write_spine(spine: dict, spine_dir: "str | Path" = DEFAULT_SPINE_DIR) -> list[Path]:
-    """Write `entities.json` and one file per match. Canonical serialization, reused."""
+    """Write `entities.json` and one file per match. Canonical serialization, reused.
+
+    Match files this spine does not name are **removed**, not left behind. `work/spine/`
+    is staging that Story 1.16 emits from, and a stale file from a superseded run would
+    enter the dataset as a phantom match — the exact hazard `load_records` refuses the
+    directory listing to prevent. Leaving them would put the hazard back one layer down.
+    """
     spine_dir = Path(spine_dir)
     written = [write_canonical(spine["entities"], spine_dir / "entities.json")]
     for match_id in sorted(spine["matches"]):
         written.append(
             write_canonical(spine["matches"][match_id], spine_dir / "matches" / f"{match_id}.json")
         )
+
+    matches_dir = spine_dir / "matches"
+    if matches_dir.is_dir():
+        current = set(spine["matches"])
+        for stale in sorted(matches_dir.glob("*.json")):
+            if stale.stem not in current:
+                stale.unlink()
     return written

@@ -27,7 +27,7 @@ import json
 from pathlib import Path
 
 from pipeline.ingest.records import DEFAULT_EXTRACTED_DIR, read_record
-from pipeline.precompute.errors import PrecomputeError
+from pipeline.precompute.errors import ManifestUnreadableError, PrecomputeError
 
 DEFAULT_MANIFEST_PATH = Path("work") / "run-manifest.json"
 DEFAULT_SPINE_DIR = Path("work") / "spine"
@@ -56,12 +56,19 @@ def load_records(
     before a record is written. It is never precompute's.
     """
     manifest_path = Path(manifest_path)
+    # `ManifestUnreadableError` rather than a plain `PrecomputeError`: a manifest that
+    # cannot be read at all is a broken harness (exit 2), while a manifest that reads
+    # fine and says something wrong is a finding (exit 1).
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except OSError as exc:
-        raise PrecomputeError(f"run manifest {manifest_path.as_posix()!r} is unreadable: {exc}")
+        raise ManifestUnreadableError(
+            f"run manifest {manifest_path.as_posix()!r} is unreadable: {exc}"
+        )
     except json.JSONDecodeError as exc:
-        raise PrecomputeError(f"run manifest {manifest_path.as_posix()!r} is not JSON: {exc}")
+        raise ManifestUnreadableError(
+            f"run manifest {manifest_path.as_posix()!r} is not JSON: {exc}"
+        )
     if not isinstance(manifest, dict):
         raise PrecomputeError(
             f"run manifest {manifest_path.as_posix()!r} is not a JSON object"
@@ -71,6 +78,27 @@ def load_records(
     if not isinstance(entries, list):
         raise PrecomputeError(
             f"run manifest {manifest_path.as_posix()!r} has no 'reports' list"
+        )
+
+    # A status this module was not written against is NOT silently dropped: a match
+    # leaving the corpus that way is invisible to every downstream count, and only the
+    # optional `--expect-records` would ever notice. `failed` is the one known
+    # non-consumable status — it has no record to read at all.
+    unknown = sorted(
+        {
+            entry.get("status")
+            for entry in entries
+            if isinstance(entry, dict)
+            and entry.get("status") not in CONSUMABLE_STATUSES
+            and entry.get("status") != "failed"
+        },
+        key=repr,
+    )
+    if unknown:
+        raise PrecomputeError(
+            f"run manifest {manifest_path.as_posix()!r} carries unrecognized report "
+            f"status(es) {unknown!r}; precompute consumes {sorted(CONSUMABLE_STATUSES)!r} "
+            f"and knows 'failed' has no record — it must not guess at a fourth"
         )
 
     consumable = [
@@ -99,9 +127,15 @@ def load_records(
             )
         seen[match_id] = report_id if isinstance(report_id, str) else "<unknown>"
 
+        # `batch.py` writes `record_path` as a repo-root-relative posix path
+        # (`work/extracted/m001-….json`), so it resolves directly when precompute runs
+        # from the repo root. When it does not — a run from another cwd, or a test corpus
+        # staged elsewhere — fall back to `extracted_dir` joined with the FILENAME only.
+        # Joining `extracted_dir.parent` with the whole relative path yields
+        # `work/work/extracted/…` and reports a missing file at a path that exists.
         path = Path(record_path)
         if not path.is_absolute() and not path.exists():
-            path = Path(extracted_dir).parent / record_path
+            path = Path(extracted_dir) / Path(record_path).name
         record = read_record(path)
         if record is None:
             raise PrecomputeError(

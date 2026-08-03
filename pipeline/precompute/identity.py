@@ -57,6 +57,7 @@ fix is a data edit rather than a code change.
 from __future__ import annotations
 
 import json
+import os
 import re
 import unicodedata
 from collections import defaultdict
@@ -95,7 +96,10 @@ PLAYER_ID_RE = re.compile(SCHEMA_PATTERNS["PlayerId"][:-1] + r"\Z")
 
 # `re.ASCII` for the same reason `pipeline/ingest/identity.py` uses it: without it `\d`
 # also matches fullwidth and Arabic-Indic digits. Matched on 104/104 report ids.
-REPORT_ID_RE = re.compile(r"^PMSR-M\d+-([A-Z0-9]+)-V-([A-Z0-9]+)$", re.ASCII)
+# `\Z` rather than `$` for the same reason the four id gates above use it: `$` would also
+# accept a report id carrying a trailing newline, and this pattern is what the team codes
+# — the trailing segment of every PlayerId — are parsed out of.
+REPORT_ID_RE = re.compile(r"^PMSR-M\d+-([A-Z0-9]+)-V-([A-Z0-9]+)\Z", re.ASCII)
 
 SIDES: tuple[str, str] = ("home", "away")
 LINEUP_SECTIONS: tuple[str, str] = ("starters", "substitutes")
@@ -148,7 +152,9 @@ def player_slug(name: str, team_code: str) -> str:
     (b) `str.isupper()` is `False` for a token with no cased characters — a bare `"2"`,
         a bare `"-"` — which would silently land in the given name. Measured 0 such
         tokens; the character inventory of every player name is `A-Z`, `a-z`, space,
-        `-` and one `.`.
+        `-` and one `.`. **Guarded rather than merely declared**, because the resulting
+        slug is well formed: `"Raul RANGEL 7"` would mint `rangel-raul-7-mex`, which
+        passes `PlayerId` cleanly and pins a mis-parsed column as a permanent id.
     (c) `_kebab` collapses the hyphen, so `WAN-BISSAKA` -> `wan-bissaka` and joining the
         caps tokens with `" "`, `"-"` or `""` is indistinguishable here. `" "` is ruled.
 
@@ -164,6 +170,14 @@ def player_slug(name: str, team_code: str) -> str:
 def _player_slug_with_source(name: str, team_code: str) -> tuple[str, str]:
     """`player_slug`, plus which branch produced it. See `SLUG_SOURCE_*`."""
     tokens = name.split()  # whitespace runs; no other separator exists in this corpus
+    uncased = [token for token in tokens if not any(c.isalpha() for c in token)]
+    if uncased:
+        # Point (b) above. Such a token is `isupper() == False`, so it would join the
+        # given name and mint a valid-looking id out of a parse defect.
+        raise PlayerSlugError(
+            f"player name {name!r} carries token(s) {uncased!r} with no cased character; "
+            f"the caps-run rule cannot place them and the corpus contains none"
+        )
     caps = [token for token in tokens if token.isupper()]  # True "ST.", False "McKENNIE"
     rest = [token for token in tokens if not token.isupper()]
     if not caps or not rest:  # mononym, all caps, or no caps at all -> as listed
@@ -179,6 +193,25 @@ def _player_slug_with_source(name: str, team_code: str) -> tuple[str, str]:
             f"{SCHEMA_PATTERNS['PlayerId']}"
         )
     return slug, source
+
+
+def gate_override(override: str, key: str) -> str:
+    """An `OVERRIDES` value, gated exactly as hard as a minted one.
+
+    `OVERRIDES` is the only map in the registry a human hand-edits, which makes it the
+    last place to trust an unchecked string — and it is applied BEFORE pinning, so an
+    ungated override is pinned, committed, and staged into every spine file that names the
+    player. The minted path is gated inside `_player_slug_with_source`; an override that
+    replaced the result afterwards would bypass that gate entirely, and `PlayerId` is a
+    strict superset shape of `TeamId`, so even a two-segment override would validate clean
+    against the schema and produce a dead route.
+    """
+    if not PLAYER_ID_RE.match(override):
+        raise SlugRegistryError(
+            f"OVERRIDES names {key!r} -> {override!r}, which does not satisfy the "
+            f"contract PlayerId pattern {SCHEMA_PATTERNS['PlayerId']}"
+        )
+    return override
 
 
 def team_codes(records: "list[dict]") -> dict[str, str]:
@@ -253,18 +286,23 @@ def resolve_players(
 ) -> dict[tuple[str, int], str]:
     """`{(team_id, shirt_number): player_id}` over the whole corpus.
 
-    Records are walked in canonical order, so **first seen wins** — which is what the
-    padded, sortable match id was bought for. That is AD-3's tiebreak for two players who
-    normalize to the same name within one team.
+    Records are walked in canonical order, so for one `(team_id, shirt_number)` key seen
+    in several matches **the first record wins** — which is what the padded, sortable
+    match id was bought for. That is idempotence across records, and it is the only sense
+    in which "first seen wins" is true here.
 
-    That tiebreak is **dead code on this corpus** and is implemented anyway. Measured over
-    5,392 lineup entries: 0 normalized name+team collisions, 0 players wearing more than
-    one shirt, and 0 non-ASCII characters in any player name — all three of OQ-4's named
-    ambiguous cases are corpus-empty. AD-3 mandates the tiebreak and a future corpus could
-    exercise it, so it ships, reached by a constructed unit test. No fixture pretends it
-    is corpus-real.
+    **There is no first-seen-shirt TIEBREAK, and that is deliberate — see AC 1's binding
+    block.** Two players on one team whose printed names mint one slug do not get
+    silently separated by shirt order: they raise `IdentityCollisionError` naming both.
+    Measured over 5,392 lineup entries, all three of OQ-4's named ambiguous cases are
+    corpus-empty — 0 normalized name+team collisions, 0 players wearing more than one
+    shirt, 0 non-ASCII characters in any player name — so a tiebreak here could only ever
+    fire on a defect, and quietly minting two ids out of one printed name is exactly the
+    unfalsifiable failure this package aborts to prevent. AD-3's tiebreak is recorded as
+    unimplemented rather than faked; Story 1.15's code review ruled it (Decision 1).
 
-    `OVERRIDES` is applied **before** pinning, so an override is what gets pinned.
+    `OVERRIDES` is applied **before** the `PlayerId` gate and before pinning, so an
+    override is what gets pinned and can rescue a name that mints nothing valid.
     """
     resolved: dict[tuple[str, int], str] = {}
     # Provenance for the error messages. A collision naming only ids localizes nothing.
@@ -285,15 +323,23 @@ def resolve_players(
                 )
             name = entry["name"]
             shirt = entry["shirt_number"]
-            if not isinstance(shirt, int):
+            # `isinstance(True, int)` is True, so bool is excluded explicitly: it would
+            # alias shirt 1 in the tuple key while pinning as `team#True`.
+            if not isinstance(shirt, int) or isinstance(shirt, bool):
                 raise PrecomputeError(
                     f"lineup entry {name!r} in {match_id!r} carries a non-integer "
                     f"shirt number {shirt!r}",
                     report_id,
                 )
             key = (team_id, shirt)
-            slug, _source = _player_slug_with_source(name, code)
-            slug = overrides.get(pin_key(team_id, shirt), slug)
+            # The override is resolved FIRST, not layered over a minted slug: minting
+            # raises on a name that produces nothing valid, and that is precisely the
+            # failure an override exists to fix. Gated as hard as a minted slug.
+            override = overrides.get(pin_key(team_id, shirt))
+            if override is not None:
+                slug = gate_override(override, pin_key(team_id, shirt))
+            else:
+                slug, _source = _player_slug_with_source(name, code)
 
             known = resolved.get(key)
             if known is None:
@@ -337,7 +383,14 @@ def slug_sources(
             if pin_key(team_id, shirt) in overrides:
                 sources[key] = SLUG_SOURCE_OVERRIDE
                 continue
-            _slug, source = _player_slug_with_source(entry["name"], codes[team_id])
+            code = codes.get(team_id)
+            if code is None:
+                raise PrecomputeError(
+                    f"team {team_id!r} has no team code; "
+                    f"it appears in {record.get('match_id')!r} but in no report id",
+                    record.get("report_id"),
+                )
+            _slug, source = _player_slug_with_source(entry["name"], code)
             sources[key] = source
     return sources
 
@@ -417,12 +470,17 @@ def check_pins(resolved: "dict[str, str]", pinned: "dict[str, str]", kind: str) 
 
 
 def check_overrides(resolved_players: "dict[str, str]", overrides: "dict[str, str]") -> None:
-    """An override naming a key that resolves to nobody is fatal.
+    """An override naming a key that resolves to nobody — or naming a malformed id — is fatal.
 
     A stale override is how a registry rots silently: it sits there looking authoritative
     while naming a player who left the corpus three runs ago.
+
+    The value is gated too, and not only where it is applied. `OVERRIDES` is the one map a
+    human hand-edits, and an entry whose key resolves to nobody would otherwise be
+    reported while an entry whose *value* is malformed sailed through into `PINS`.
     """
     for key in sorted(overrides):
+        gate_override(overrides[key], key)
         if key not in resolved_players:
             raise SlugRegistryError(
                 f"OVERRIDES names {key!r} -> {overrides[key]!r}, but no player resolves "
@@ -475,9 +533,15 @@ def check_committed_data(pins: "dict[str, dict[str, str]]", data_dir: "str | Pat
         if isinstance(node, dict):
             for key, value in node.items():
                 kind = COMMITTED_ID_KEYS.get(key)
-                if kind is not None and isinstance(value, str):
+                if kind is not None:
                     seen += 1
-                    if value not in pinned_by_kind.get(kind, set()):
+                    if not isinstance(value, str):
+                        # Reported, not skipped: a bundle carrying `playerId: null` would
+                        # otherwise go uncounted and the run would print "all pinned".
+                        unpinned.append(
+                            f"{bundle}{path}.{key} = {value!r} (non-string {kind} id)"
+                        )
+                    elif value not in pinned_by_kind.get(kind, set()):
                         unpinned.append(f"{bundle}{path}.{key} = {value!r} ({kind})")
                 walk(value, f"{path}.{key}", bundle)
         elif isinstance(node, list):
@@ -534,7 +598,25 @@ def matchday_rounds(records: "list[dict]") -> dict[str, str]:
 
     metas = []
     for record in records:
-        metadata = record["metadata"]
+        metadata = record.get("metadata")
+        if not isinstance(metadata, dict):
+            raise PrecomputeError(
+                f"record {record.get('match_id')!r} carries no top-level metadata block, "
+                f"which is the only source of stage_text, an uppercase group and the "
+                f"'H:MM' kickoff the round derivation needs",
+                record.get("report_id"),
+            )
+        required = (
+            "home_team", "away_team", "home_score", "away_score",
+            "stage_text", "group", "kickoff", "venue",
+        )
+        absent = [key for key in required if key not in metadata]
+        if absent:
+            raise PrecomputeError(
+                f"record {record.get('match_id')!r} metadata lacks {absent!r}; "
+                f"a ReportMeta cannot be reconstructed from it",
+                record.get("report_id"),
+            )
         try:
             match_date = dt.date.fromisoformat(metadata["match_date"])
         except (KeyError, TypeError, ValueError) as exc:
@@ -564,9 +646,21 @@ def matchday_rounds(records: "list[dict]") -> dict[str, str]:
     assigned, problems = assign_matchday_rounds(metas)
     if problems:
         detail = "; ".join(f"{report_id}: {reason}" for report_id, reason in problems)
+        # Lead with the corpus-completeness diagnosis, because that is almost always the
+        # real cause and the group-arithmetic detail reads as an unrelated defect.
+        # `assign_matchday_rounds` derives a group's rounds only when it holds all 6 of
+        # its fixtures, so ANY partial corpus lands here — a spike run, a re-extract of
+        # one match, a manifest filtered by hand. Precompute is corpus-complete by
+        # construction: it resolves a namespace over the whole tournament, and
+        # `matchdayRound` is `required` by both bundle schemas, so staging a spine with
+        # the field missing or guessed would only move this failure into Story 1.16.
+        # Ruled by Story 1.15's code review (Decision 3): refuse, do not soften.
         raise PrecomputeError(
-            f"{len(problems)} report(s) have no derivable matchday round, and "
-            f"matchdayRound is required by both bundle schemas: {detail}"
+            f"matchday rounds are not derivable for {len(problems)} of {len(records)} "
+            f"record(s). Precompute runs over the COMPLETE corpus — a group's rounds are "
+            f"derivable only when all 6 of its fixtures are present — so a partial "
+            f"manifest cannot be precomputed. Re-run the batch over the full corpus, or "
+            f"pass --expect-records to fail earlier and more plainly. Detail: {detail}"
         )
 
     by_report = {record["report_id"]: record["match_id"] for record in records}
@@ -660,17 +754,25 @@ def render_registry(
 
 
 def write_registry(text: str, path: "str | Path") -> Path:
-    """Write the registry source with LF endings and a trailing newline, atomically enough.
+    """Write the registry source with LF endings and a trailing newline, atomically.
 
     `newline=""` for the same reason `pipeline/ingest/records.py` uses it: without it
     Windows translates `\\n` to CRLF and two hosts regenerating the same registry would
     produce different bytes, which is precisely what the determinism test forbids.
+
+    Written to a sibling temp file and moved into place with `os.replace`, following
+    `pipeline/ingest/records.py`'s canonical writer. Not a nicety: this module is imported
+    at load by `pipeline/validate/checks.py`, so a regeneration interrupted mid-write
+    would otherwise leave a truncated, unparseable registry that takes the whole validate
+    CLI down with an `ImportError` rather than a typed failure.
     """
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     if not text.endswith("\n"):
         text += "\n"
-    target.write_text(text, encoding="utf-8", newline="")
+    temporary = target.with_name(target.name + ".tmp")
+    temporary.write_text(text, encoding="utf-8", newline="")
+    os.replace(temporary, target)
     return target
 
 

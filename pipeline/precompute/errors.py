@@ -32,6 +32,20 @@ class PrecomputeError(PipelineError):
     what = "precompute failed"
 
 
+class ManifestUnreadableError(PrecomputeError):
+    """The run manifest could not be read or parsed at all.
+
+    The one precompute failure that is a HARNESS problem rather than a finding, and it
+    has its own class for exactly that reason: the CLI maps it to exit 2 ("nothing was
+    learned") while every other `PrecomputeError` is exit 1 ("the data or the rule is
+    wrong and someone must rule on it"). A missing manifest and a manifest naming one
+    match twice are not the same news, and reporting them under one code loses the
+    difference in both directions.
+    """
+
+    what = "run manifest is unreadable"
+
+
 class PlayerSlugError(PrecomputeError):
     """A player name produced no slug, or one the contract's `PlayerId` rejects.
 
