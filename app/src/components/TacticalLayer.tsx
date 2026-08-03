@@ -2,9 +2,12 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+import { DefensiveActionsSection } from "@/components/DefensiveActionsSection";
 import { EmptyStatePanel, PendingSectionPanel, useEmptyHeadline } from "@/components/EmptyStatePanel";
 import { KeyStatisticsSection } from "@/components/KeyStatisticsSection";
 import { MomentumSection } from "@/components/MomentumSection";
+import { MovementToReceiveSection } from "@/components/MovementToReceiveSection";
+import { OffersToReceiveSection } from "@/components/OffersToReceiveSection";
 import { PassNetworksSection } from "@/components/PassNetworksSection";
 import { ShotMapsSection } from "@/components/ShotMapsSection";
 import { TacticalSection } from "@/components/TacticalSection";
@@ -51,6 +54,28 @@ function sectionIdFromHash(hash: string): SectionId | null {
  */
 const EMPTY_HEADLINE_OVERRIDE: Partial<Record<SectionId, DictionaryKey>> = {
   momentum: "tactical.empty.momentumHeadline",
+  /*
+   * Story 2.9 ruled decision 4. These two sections are "empty" when
+   * `bundle.players === null` (ruled decision 3) — a DOMAIN G absence, not a
+   * receiving-section absence. The report's receiving pages may be perfectly
+   * present, so the generic headline would name the wrong thing.
+   */
+  "offers-to-receive": "tactical.empty.receivingHeadline",
+  "movement-to-receive": "tactical.empty.receivingHeadline",
+};
+
+/*
+ * The EXPLANATION half of the same override (Story 2.9 ruled decision 4).
+ *
+ * The generic explanation is literally "El informe oficial no incluye esta
+ * sección." Shipping that over a Domain G absence would be a FALSE STATEMENT —
+ * the same dishonesty EmptyStatePanel's own docblock exists to prevent, and the
+ * mirror of the FR-22 inversion decision 3 cites as its own justification. This
+ * mechanism is additive: the other nine sections keep the generic sentence.
+ */
+const EMPTY_EXPLANATION_OVERRIDE: Partial<Record<SectionId, DictionaryKey>> = {
+  "offers-to-receive": "tactical.empty.receivingExplanation",
+  "movement-to-receive": "tactical.empty.receivingExplanation",
 };
 
 interface FocusRequest {
@@ -165,9 +190,63 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
             }}
           />
         );
+      /*
+       * Story 2.9's three sections. Narrow, explicit props — never the whole
+       * bundle (Story 2.5 Task 5.1's precedent).
+       *
+       * The two receiving sections take `bundle.players`, NOT
+       * `bundle.events.receiving`: `ReceivingEvent` is unfulfillable in every
+       * one of its eight required fields (Story 1.13), so that table can only
+       * ever be null. See ruled decisions 1 and 2.
+       */
       case "offers-to-receive":
+        return (
+          <OffersToReceiveSection
+            players={bundle.players}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
       case "movement-to-receive":
+        return (
+          <MovementToReceiveSection
+            players={bundle.players}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
       case "defensive-actions":
+        return (
+          <DefensiveActionsSection
+            defensiveActions={bundle.events.defensiveActions}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
       case "phases":
       case "pressing":
       case "set-plays":
@@ -201,6 +280,10 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
          */
         const overrideKey = EMPTY_HEADLINE_OVERRIDE[plan.id];
         const emptyCopy = overrideKey === undefined ? emptyHeadline(title) : t(overrideKey);
+        // Same hoist, same reason: a ternary inside `explanation=` trips the
+        // i18n gate, which requires a plain identifier there.
+        const explanationKey = EMPTY_EXPLANATION_OVERRIDE[plan.id] ?? "tactical.empty.explanation";
+        const emptyExplanation = t(explanationKey);
         return (
           <TacticalSection
             key={plan.id}
@@ -217,10 +300,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
             className={plan.spacedFromPrevious ? "mt-section-gap" : undefined}
           >
             {plan.isEmpty ? (
-              <EmptyStatePanel
-                headline={emptyCopy}
-                explanation={t("tactical.empty.explanation")}
-              />
+              <EmptyStatePanel headline={emptyCopy} explanation={emptyExplanation} />
             ) : (
               sectionContent(plan.id)
             )}

@@ -203,6 +203,20 @@ export const es = {
        * NOT forked. Quoted verbatim from UX-DR13.
        */
       momentumHeadline: "La línea de momentum no está disponible para este partido.",
+      /*
+       * Story 2.9 ruled decision 4. The two receiving sections are "empty" when
+       * `bundle.players === null` (ruled decision 3), and the generic
+       * explanation — "El informe oficial no incluye esta sección." — would be
+       * a FALSE STATEMENT there: a Domain G absence is not a receiving-section
+       * absence, and the report's receiving pages may be perfectly present.
+       * Shipping that sentence would be the same dishonesty EmptyStatePanel's
+       * own docblock exists to prevent, and the mirror of the FR-22 inversion
+       * decision 3 cites as its own justification. So BOTH halves are
+       * overridden, and the copy names the real absence: the per-player data.
+       */
+      receivingHeadline: "Sin datos por jugador para este partido.",
+      receivingExplanation:
+        "Esta sección se arma con las tablas por jugador del informe, y este informe no las trae.",
     },
     /*
      * Ruled decision 9: a section whose data IS in the bundle but whose
@@ -269,6 +283,15 @@ export const es = {
        */
       captionNodes: "Ordenado por equipo y dorsal.",
       captionEdges: "Ordenado por equipo y número de pases, de mayor a menor.",
+      // Story 2.9 columns, shared by the defensive popover, the defensive log
+      // and the two receiving tables.
+      actionType: "Tipo de acción",
+      contestType: "Tipo de disputa",
+      offersMade: "Ofrecimientos",
+      offersReceived: "Recibidos",
+      receivedPct: "% recibido",
+      players: "Jugadores",
+      total: "Total",
     },
     cluster: {
       dialogLabel: "Eventos en este punto",
@@ -394,6 +417,75 @@ export const es = {
       tableCaption: "Ordenado por minuto de partido, incluido el tiempo añadido.",
       tableGoal: "Gol",
     },
+    /*
+     * STORY 2.9 — the three sections FR-22 promises and the corpus reshaped.
+     *
+     * `#defensive-actions` is a real pitch map. `#offers-to-receive` and
+     * `#movement-to-receive` are NOT maps and their copy must never imply they
+     * are: Story 1.13 measured `ReceivingEvent` unfulfillable in every one of
+     * its eight required fields, so there is no per-event receiving data of any
+     * kind. Both read Domain G's whole-match per-player aggregates, and every
+     * string below is written for aggregates — no minute, no position, no
+     * "where".
+     */
+    offers: {
+      title: "Ofrecimientos para recibir",
+      figurePrefix: "Ofrecimientos para recibir:",
+      // Tile labels. Short, because they sit under a large number at 320 px.
+      madeLabel: "Ofrecimientos",
+      receivedLabel: "Recibidos",
+      receivedPctLabel: "% recibido",
+      // Counters carry a singular AND a plural: t() has no plural machinery,
+      // and "1 ofrecimientos" is a visible copy defect in both languages.
+      offers: "ofrecimientos",
+      offersOne: "ofrecimiento",
+      received: "recibidos",
+      receivedOne: "recibido",
+      players: "jugadores",
+      playersOne: "jugador",
+      // The share is null when a team made no offers — never 0%, which would
+      // claim every offer went unreceived.
+      noShare: "sin ofrecimientos",
+      zero: "El informe no registra ofrecimientos para este equipo.",
+      // Names the metric beside the numbers, as the momentum subtitle does.
+      note: "Totales del partido, sumados sobre los jugadores del equipo.",
+      // Each table STATES ITS OWN ORDER. Deliberately not viz.table.caption,
+      // whose "Ordenado por minuto." is false on rows that carry no clock.
+      totalsCaption: "Totales por equipo.",
+      tableCaption: "Ordenado por equipo y dorsal.",
+    },
+    movement: {
+      title: "Desmarques",
+      figurePrefix: "Desmarques:",
+      offers: "ofrecimientos",
+      offersOne: "ofrecimiento",
+      shareLabel: "Proporción",
+      countLabel: "Ofrecimientos",
+      typeLabel: "Tipo de desmarque",
+      // The bar's segments carry no in-segment labels (the two smallest corpus
+      // categories are 2.3% and 3.1%, ~7–9 px at 320 px, below DESIGN's 11 px
+      // type floor), so this names the channel the value list decodes.
+      barNote: "Cada barra reparte los ofrecimientos del equipo entre los seis tipos de desmarque.",
+      zero: "El informe no registra ofrecimientos para este equipo.",
+      totalsCaption: "Totales por equipo y tipo de desmarque.",
+      tableCaption: "Ordenado por equipo y dorsal.",
+    },
+    defensiveActions: {
+      title: "Acciones defensivas",
+      markerPrefix: "Acción defensiva de",
+      minutePrefix: "minuto",
+      figurePrefix: "Acciones defensivas:",
+      actions: "acciones",
+      actionsOne: "acción",
+      /*
+       * The legend is ONE ENTRY PER TEAM (ruled decision 19): one shape, one
+       * colour per team, so the two plottable action types are visually
+       * identical and a per-type legend would claim a distinction the map does
+       * not draw. This noun completes "MEX · acciones defensivas".
+       */
+      legendNoun: "acciones defensivas",
+      zero: "El informe no registra acciones defensivas para este equipo.",
+    },
   },
   enums: {
     // Tournament stage labels, keyed by the Stage enum codes (AD-7).
@@ -442,6 +534,53 @@ export const es = {
       lofted: "Bombeado",
       cutback: "Atrás",
       "push-cross": "Empujado",
+    },
+    /*
+     * The six OfferMovementType codes (Story 2.9 Task 7.3), keyed by contract
+     * code per AD-7. LatAm register (UX-DR19): "desmarque" is the regional term
+     * for the movement itself, so the enum labels name the DIRECTION and the
+     * section title carries the noun. Short forms, because they head a
+     * six-column table and label the bar's value list at 320 px, where Spanish
+     * already runs 20-30% longer than English.
+     *
+     * `no-movement` is labelled like the other five. It is 24.9% of all corpus
+     * offers — the movement PAGE prints only five types, but Domain G, the
+     * source these sections actually read, carries the sixth.
+     */
+    offerMovement: {
+      "in-front": "Por delante",
+      "in-between": "Entre líneas",
+      "out-to-in": "De fuera a dentro",
+      "in-to-out": "De dentro a fuera",
+      "in-behind": "A la espalda",
+      "no-movement": "Sin desmarque",
+    },
+    /*
+     * All FOUR DefensiveActionType codes are labelled even though only two can
+     * ever be plotted: `block` and `possession-contest` are aggregate panels
+     * with no coordinates anywhere in the corpus, but the log table and any
+     * future emission may carry them, and an unlabelled row is worse than an
+     * unreachable label. Singular forms — each labels ONE event.
+     */
+    defensiveAction: {
+      "forced-turnover": "Recuperación forzada",
+      "possession-regain": "Recuperación de balón",
+      block: "Bloqueo",
+      "possession-contest": "Disputa de balón",
+    },
+    /*
+     * The six PossessionContestType codes, for the log column that appears only
+     * when some row carries a value (ruled decision 20 — on corpus-real data
+     * the column is absent entirely, since contest_type is null on
+     * 20,169/20,169).
+     */
+    possessionContest: {
+      pass: "Pase",
+      "attempt-at-goal": "Tiro",
+      cross: "Centro",
+      clearance: "Despeje",
+      "physical-duel": "Duelo físico",
+      "aerial-duel": "Duelo aéreo",
     },
     /*
      * Metric labels keyed by the artifact FIELD name. MetricCode is

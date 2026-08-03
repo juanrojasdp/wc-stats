@@ -123,9 +123,37 @@ export function sectionDataState(bundle: MatchBundle, id: SectionId): SectionDat
       return events.shots !== null || events.crosses !== null ? "ready" : "empty";
     case "pass-networks":
       return events.passNetworkNodes !== null && events.passNetworkEdges !== null ? "ready" : "empty";
+    /*
+     * STORY 2.9 RULED DECISION 3 — a ruled exception to the standing
+     * do-not-touch on this file, and the ONLY predicate 2.9 changes.
+     *
+     * These two sections read `bundle.players`, NOT `events.receiving`. Story
+     * 1.13 measured `ReceivingEvent` unfulfillable in every one of its EIGHT
+     * required fields over 104 reports / 416 pages, so `events.receiving` can
+     * only ever be null: there is no receiving marker to draw and none may be
+     * fabricated. What the two sections actually render is Domain G —
+     * `players[].inPossession`'s `totalOffers`, `offersReceived` and the
+     * six-value `offersByMovementType` split, all three `required` in the
+     * contract and extracted for real by Story 1.10.
+     *
+     * The old predicate was wrong in BOTH directions: "ready" when `receiving`
+     * was populated but `players` was null (the component mounts and throws,
+     * taking all eleven Tactical sections down through the single shared error
+     * boundary), and "empty" when `receiving` was null but `players` was
+     * populated — hiding data sitting in the bundle, which is the FR-22 failure
+     * mode inverted and exactly what Story 2.7's ruled decision 2 exists to
+     * prevent. Pinned by a four-way truth table in this module's test.
+     *
+     * `players` is `PlayerRecords | null`, so the empty branch is reachable —
+     * and when it fires, TacticalLayer overrides BOTH halves of the empty-state
+     * copy (ruled decision 4): a Domain G absence is not a receiving-section
+     * absence, and the generic "El informe oficial no incluye esta sección."
+     * would be a false statement over a report whose receiving pages are
+     * present.
+     */
     case "offers-to-receive":
     case "movement-to-receive":
-      return events.receiving !== null ? "ready" : "empty";
+      return bundle.players !== null ? "ready" : "empty";
     case "defensive-actions":
       return events.defensiveActions !== null ? "ready" : "empty";
     case "phases":

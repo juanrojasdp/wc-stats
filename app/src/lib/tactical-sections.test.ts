@@ -181,13 +181,75 @@ describe("sectionDataState: null vs [] (AC 3)", () => {
     expect(sectionDataState(withEvents({ defensiveActions: null }), "defensive-actions")).toBe("empty");
   });
 
-  it("flips both receiving sections together", () => {
-    const emptyArray = withEvents({ receiving: [] });
-    const nulled = withEvents({ receiving: null });
-    for (const id of ["offers-to-receive", "movement-to-receive"] as const) {
-      expect(sectionDataState(emptyArray, id)).toBe("ready");
-      expect(sectionDataState(nulled, id)).toBe("empty");
+  /*
+   * STORY 2.9 RULED DECISION 3 — the two receiving predicates read
+   * `bundle.players`, NOT `events.receiving`.
+   *
+   * `ReceivingEvent` is unfulfillable in every one of its eight required fields
+   * (Story 1.13, 104 reports / 416 pages), so `events.receiving` can only ever
+   * be null and the old predicate was wrong in BOTH directions: it returned
+   * "ready" when `receiving` was populated but `players` was null (the
+   * component mounts and throws — a whole-layer outage), and "empty" when
+   * `receiving` was null but `players` was populated — hiding data sitting in
+   * the bundle, the FR-22 failure mode inverted.
+   *
+   * The four-way truth table replaces the old "flips both together" assertion,
+   * on the model of the shot-maps table above (Story 2.7's precedent).
+   */
+  function withPlayers(players: MatchBundle["players"]): MatchBundle {
+    return { ...m001, players };
+  }
+
+  it("reads bundle.players for BOTH receiving sections, never events.receiving", () => {
+    const populatedPlayers = m001.players;
+    expect(populatedPlayers).not.toBeNull();
+    const table: {
+      players: MatchBundle["players"];
+      receiving: MatchBundle["events"]["receiving"];
+      expected: "ready" | "empty";
+    }[] = [
+      // players populated → ready, WHATEVER receiving says.
+      { players: populatedPlayers, receiving: null, expected: "ready" },
+      { players: populatedPlayers, receiving: [], expected: "ready" },
+      // `[]` is "the pages were present and listed nobody" — ready, and the
+      // component renders its own zero line.
+      { players: [], receiving: null, expected: "ready" },
+      { players: [], receiving: [], expected: "ready" },
+      // players null → empty, even when receiving is populated: there is no
+      // per-event receiving data these sections could render.
+      { players: null, receiving: null, expected: "empty" },
+      { players: null, receiving: [], expected: "empty" },
+    ];
+    for (const row of table) {
+      const bundle: MatchBundle = {
+        ...m001,
+        players: row.players,
+        events: { ...m001.events, receiving: row.receiving },
+      };
+      for (const id of ["offers-to-receive", "movement-to-receive"] as const) {
+        expect(
+          sectionDataState(bundle, id),
+          `${id} / players=${row.players === null ? "null" : row.players.length} / receiving=${
+            row.receiving === null ? "null" : row.receiving.length
+          }`
+        ).toBe(row.expected);
+      }
     }
+  });
+
+  it("does not hide present Domain G data behind an absent receiving table", () => {
+    // The FR-22 inversion, stated as its own case: a section-wide "the official
+    // report does not include this section" over per-player rows sitting in the
+    // bundle. This is the exact defect Story 2.7's ruled decision 2 exists for.
+    const noReceiving = withEvents({ receiving: null });
+    expect(noReceiving.players).not.toBeNull();
+    expect(sectionDataState(noReceiving, "offers-to-receive")).toBe("ready");
+  });
+
+  it("leaves #defensive-actions on events.defensiveActions, unchanged", () => {
+    const noPlayers = withPlayers(null);
+    expect(sectionDataState(noPlayers, "defensive-actions")).toBe("ready");
+    expect(sectionDataState(withPlayers([]), "defensive-actions")).toBe("ready");
   });
 
   it("needs BOTH pass-network tables to call the section ready", () => {

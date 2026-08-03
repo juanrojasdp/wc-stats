@@ -2,9 +2,16 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { en } from "@/locales/en";
 import { es } from "@/locales/es";
+import type { PossessionContestType } from "@/lib/contract/contract-types";
 import { t, type Locale } from "@/lib/i18n";
 import { KEY_STAT_FIELDS } from "@/lib/tactical-sections";
 import { CROSS_DELIVERY_TYPES, crossDeliveryKey } from "@/viz/cross-map-model";
+import {
+  DEFENSIVE_ACTION_TYPES,
+  defensiveActionKey,
+  possessionContestKey,
+} from "@/viz/defensive-actions-model";
+import { OFFER_MOVEMENT_TYPES, offerMovementKey } from "@/viz/receiving-model";
 import { SHOT_OUTCOMES, shotOutcomeKey } from "@/viz/shot-map-model";
 
 describe("t()", () => {
@@ -156,6 +163,101 @@ describe("enums.shotOutcome / enums.crossDelivery (AD-7)", () => {
     // extension is CS-1's payload and belongs to Stories 2.11/2.13/2.18.
     expect(Object.keys(es.enums.shotOutcome)).toHaveLength(5);
     expect(Object.keys(es.enums)).not.toContain("shotOutcomeDetail");
+  });
+});
+
+/*
+ * Story 2.9 Task 7.5, on the same template. Three enums land at once:
+ * OfferMovementType (six — the proportion bar's segments AND the movement
+ * table's column heads), DefensiveActionType (four) and PossessionContestType
+ * (six, for the log column that appears only when a row carries a value).
+ *
+ * Driven by the frozen ordered lists the models export, so a contract enum
+ * change is caught here as well as at compile time.
+ */
+describe("enums.offerMovement / defensiveAction / possessionContest (AD-7)", () => {
+  const locales: Locale[] = ["es", "en"];
+  const CONTEST_TYPES: PossessionContestType[] = [
+    "pass",
+    "attempt-at-goal",
+    "cross",
+    "clearance",
+    "physical-duel",
+    "aerial-duel",
+  ];
+
+  it("has exactly one entry per OfferMovementType value", () => {
+    expect(Object.keys(es.enums.offerMovement).sort()).toEqual([...OFFER_MOVEMENT_TYPES].sort());
+  });
+
+  it("labels ALL FOUR DefensiveActionType values", () => {
+    // Two of the four (block, possession-contest) can never be plotted — they
+    // are aggregate panels with no coordinates anywhere in the corpus — but the
+    // log table and any future emission may carry them, and an unlabelled row
+    // is worse than an unreachable label (ruled decision 5).
+    expect(Object.keys(es.enums.defensiveAction).sort()).toEqual([...DEFENSIVE_ACTION_TYPES].sort());
+  });
+
+  it("has exactly one entry per PossessionContestType value", () => {
+    expect(Object.keys(es.enums.possessionContest).sort()).toEqual([...CONTEST_TYPES].sort());
+  });
+
+  it("resolves every movement label in both locales", () => {
+    for (const code of OFFER_MOVEMENT_TYPES) {
+      for (const locale of locales) {
+        const label = t(offerMovementKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label).not.toContain("enums.offerMovement");
+      }
+    }
+  });
+
+  it("resolves every defensive-action and contest label in both locales", () => {
+    for (const locale of locales) {
+      for (const code of DEFENSIVE_ACTION_TYPES) {
+        const label = t(defensiveActionKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label).not.toContain("enums.defensiveAction");
+      }
+      for (const code of CONTEST_TYPES) {
+        const label = t(possessionContestKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label).not.toContain("enums.possessionContest");
+      }
+    }
+  });
+
+  it("keeps `no-movement` labelled — 24.9% of all corpus offers ride it", () => {
+    // The ledger's "the movement map prints exactly FIVE types" constrains the
+    // movement PAGE's grid, not Domain G. Dropping the sixth would hide a
+    // quarter of the data behind a label that does not exist.
+    for (const locale of locales) {
+      expect(t("enums.offerMovement.no-movement", locale)).not.toBe("");
+    }
+  });
+});
+
+/*
+ * Story 2.9 ruled decision 4: the two receiving sections must NOT ship the
+ * generic empty-state explanation. Their absence trigger is `bundle.players ===
+ * null` — a Domain G absence, not a receiving-section absence — so
+ * "El informe oficial no incluye esta sección." would be a false statement.
+ */
+describe("the receiving empty-state override (ruled decision 4)", () => {
+  it("differs from the generic copy in BOTH halves and BOTH locales", () => {
+    for (const locale of ["es", "en"] as Locale[]) {
+      expect(t("tactical.empty.receivingHeadline", locale)).not.toBe(
+        t("tactical.empty.headlineBefore", locale)
+      );
+      expect(t("tactical.empty.receivingExplanation", locale)).not.toBe(
+        t("tactical.empty.explanation", locale)
+      );
+    }
+  });
+
+  it("names the per-player data rather than the section", () => {
+    expect(es.tactical.empty.receivingExplanation).toMatch(/jugador/);
+    expect(en.tactical.empty.receivingExplanation).toMatch(/per-player/);
   });
 });
 

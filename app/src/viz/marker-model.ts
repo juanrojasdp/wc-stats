@@ -11,13 +11,30 @@ import type { DictionaryKey } from "@/lib/i18n";
  * joined the client-import seam in Task 1.3.
  */
 
-/** UX-DR10's shape half of the dual encoding. Colour alone is never enough. */
+/**
+ * UX-DR10's shape half of the dual encoding. Colour alone is never enough.
+ *
+ * Story 2.9 adds EXACTLY ONE member, `triangle-filled` (ruled decision 6): the
+ * defensive-action family. The two DIAMOND shapes UX-DR10 also names —
+ * hollow = offer to receive, filled = movement to receive — are deliberately
+ * ABSENT, because they have no surface: Story 1.13 measured `ReceivingEvent`
+ * unfulfillable in every one of its eight required fields, so no receiving
+ * marker is producible and an unused member of a closed union (carrying a
+ * legend swatch nobody renders) would be dead code. DESIGN.md:282 carries its
+ * own flag on exactly this — "[ASSUMPTION: shape assignments proposed…]" —
+ * and 1.13 falsified it. Filed as superseded-pending-UX.
+ *
+ * Adding them later is trivially safe: MarkerShapeGlyph's `default` branch
+ * assigns to `const unexpected: never`, so a future member without a case is a
+ * COMPILE ERROR rather than a silently invisible marker.
+ */
 export type MarkerShape =
   | "circle-filled-ring"
   | "circle-filled"
   | "circle-hollow"
   | "square-filled"
-  | "square-hollow";
+  | "square-hollow"
+  | "triangle-filled";
 
 /**
  * A popover / accessible-name field. Numbers carry their format tag; the
@@ -93,6 +110,45 @@ export const MARKER_RADIUS_PX = 6;
 export const SQUARE_SIDE_PX = 11;
 export const HOLLOW_STROKE_PX = 2;
 export const GOAL_RING_STROKE_PX = 1.5;
+
+/**
+ * Triangle circumradius as a multiple of the nominal marker radius (Story 2.9
+ * ruled decision 7, which specifies this geometry BECAUSE DESIGN specifies
+ * none — it gives only the ~8–14 px band and the shot family's precedent).
+ *
+ * The rule is EQUAL EXTENT with the circle, not equal area: an equilateral
+ * triangle's height is 1.5·R, so `R = 4r/3` gives height exactly `2r` — the
+ * circle's own diameter. At r = 6 the bounding box is 13.86 × 12.00 px, both
+ * axes inside DESIGN's band.
+ *
+ * The rejected equal-AREA form needs `R = r·√(4π/(3√3)) = 1.55512·r` and yields
+ * a 16.16 × 14.00 px glyph — outside the band and visibly the largest marker in
+ * the project. The ruled form is 74% of the circle's area (83.1 vs 113.1 px²),
+ * deliberately: an apex-up triangle reads heavier than its area at equal extent.
+ */
+export const TRIANGLE_CIRCUMRADIUS_RATIO = 4 / 3;
+
+/**
+ * The three vertices of the apex-up equilateral triangle, around the origin.
+ *
+ * PURE and exported so it is testable: the harness has no jsdom and vertices
+ * buried in JSX cannot be asserted. Vertices sit at −90°, 30° and 150°, so the
+ * centroid IS the origin and the glyph anchors on the marker position like
+ * every other shape.
+ *
+ * THE APEX POINTS UP IN BOTH ORIENTATIONS. It is an event-family glyph, not a
+ * direction cue; rotating it with the pitch would invent a semantics the source
+ * does not have.
+ */
+export function trianglePoints(radius: number): [number, number][] {
+  const r = radius * TRIANGLE_CIRCUMRADIUS_RATIO;
+  const halfWidth = (r * Math.sqrt(3)) / 2;
+  return [
+    [0, -r],
+    [halfWidth, r / 2],
+    [-halfWidth, r / 2],
+  ];
+}
 
 /*
  * Selection rendering, PANEL-GENERIC (2.8 code review).

@@ -17,6 +17,7 @@ import {
   SELECTION_RING_OFFSET_PX,
   SELECTION_RING_STROKE_PX,
   SQUARE_SIDE_PX,
+  trianglePoints,
   type MarkerShape,
   type MarkerValue,
   type PitchMarker,
@@ -67,6 +68,8 @@ const POPOVER_MIN_HEIGHT_PX = 96;
 const DOT_SEPARATOR = " · ";
 const ROW_SEPARATOR = ": ";
 const NAME_SEPARATOR = ", ";
+/** SVG `points` separator — a geometry token, not user-facing copy. */
+const POINT_SEPARATOR = " ";
 
 export interface PitchPanelSide {
   /** Uppercased team code — the direct label (UX-DR11). */
@@ -184,6 +187,22 @@ export function MarkerShapeGlyph({
       );
     case "square-filled":
       return <rect x={-side / 2} y={-side / 2} width={side} height={side} fill={color} />;
+    case "triangle-filled":
+      /*
+       * Story 2.9's defensive-action family (ruled decisions 6 and 7). Filled,
+       * no stroke, apex UP in both orientations — it is an event-family glyph,
+       * not a direction cue. The vertices come from the pure `trianglePoints`
+       * so they can be property-tested in a harness with no jsdom; `radius`
+       * already carries the caller's scale, so no second scale factor applies.
+       */
+      return (
+        <polygon
+          points={trianglePoints(radius)
+            .map(([x, y]) => `${x},${y}`)
+            .join(POINT_SEPARATOR)}
+          fill={color}
+        />
+      );
     case "square-hollow": {
       const inner = side - hollowStroke;
       return (

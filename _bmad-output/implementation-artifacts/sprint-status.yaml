@@ -60,6 +60,137 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-03
+# 2026-08-03: story 2-9 implemented and moved to review — and the story's premise overturn HELD, so
+#             Epic 2 shipped its FIRST in-story re-scope: ONE pitch map (#defensive-actions) plus TWO
+#             AGGREGATE CARD SURFACES (#offers-to-receive, #movement-to-receive), not three maps.
+#             `events.receiving` is read by nothing in app/ any more; both receiving predicates in
+#             tactical-sections.ts now read `bundle.players` (the one ruled exception to that file's
+#             do-not-touch), and their empty-state copy is overridden in BOTH halves because a Domain
+#             G absence is not a receiving-section absence — shipping "El informe oficial no incluye
+#             esta seccion." there would have been a false statement.
+#             RE-DERIVED BEFORE BUILDING, exactly as the story demands: sum(offersByMovementType) ==
+#             totalOffers on 96/96 fixture player rows, 0 mismatches, shipped as a test with the row
+#             count asserted — so the proportion bar states something true, unlike 1.13's by_phase
+#             totals and Domain C's "never normalize" phases. The AD-5 roll-up reproduces the source
+#             page's own headline (MEX 390/196/50.26%, RSA 396/162/40.91%) and its docblock carries
+#             the DECLARED reading of "exactly one surface" plus the binding to DELETE the derivation
+#             if 1.16 ever emits a team-level offers block.
+#             HEATMAP: DEFERRED with the rationale logged (AC 2's second branch), routed to 1.16 BY
+#             NAME. Evaluated not skipped — the ramp's measured luminances and pitch ratios reproduce
+#             DESIGN.md:286 exactly and it has zero consumers; what is missing is an INPUT, not a
+#             ramp. /contract untouched, no AD-14 change request filed.
+#             VERIFIED LIVE, NOT ASSERTED. Triangle renders at exactly 13.86 x 12.00 px with vertices
+#             (0,-8) (6.928,4) (-6.928,4) — decision 7's ruled numbers, measured in the browser beside
+#             a 10x10 hollow circle and an 11x11 square. Contrast method validated FIRST by
+#             reproducing the published 9.56 / 7.26 on-pitch figures exactly, then measured on the
+#             card: team accents 13.56/10.30 dark and 4.99/5.36 light, bar hairline separators
+#             10.31/7.84 dark and 3.79/4.07 light, canvas "Ver los datos" 17.30/16.44 — every value
+#             clears its floor in both themes. Real key presses: Home lands on minute 2', Enter opens
+#             the 15-item cluster dialog focused on that marker's own item, arrows rove, Escape
+#             returns focus — and ZERO aria-pressed anywhere, confirming decision 18. EN toggle and
+#             theme toggle after load clean on all three fixtures, 0 console messages.
+#             THE 320px OVERFLOW IS PROVEN PRE-EXISTING rather than assumed: the two offending
+#             elements are Key Statistics' tile, OUTSIDE all three new sections, and none of the three
+#             appears in the offender list at 320 or 390. At 390 scrollWidth == clientWidth exactly.
+#             <md confirmed in a same-origin iframe: both card sections render two figures with ZERO
+#             team tabs (decision 17's declared departure from EXPERIENCE.md:130), while
+#             #defensive-actions keeps PitchPanel's shipped tabs untouched.
+#             MEASURED FINDING WORTH THE LEDGER: the dialog path DOMINATES at every shipped width
+#             below 1920 (singleton share 0-42% at 320/386), the >=44px hit floor is never breached
+#             (~59-131px across), and at CORPUS density (153 markers, vs the fixtures' 30-59) the
+#             whole figure collapses to ONE cluster at 320px with zero singletons at any width — so
+#             on a phone with real data the map is effectively a 153-item dialog. Filed for 2.19.
+#             Suite 364/16 -> 439/19, full chain green. NINE ledger entries, every one APPENDED and
+#             the append-only property verified programmatically. Task 8.7's "correct in place" was
+#             served by an appended correction rather than rewriting another story's paragraph.
+#             Staged exactly app/ + this story + deferred-work.md + sprint-status.yaml; pipeline/**
+#             never touched, so NO in-flight 1.9 / 1.15 lines are carried and there is no co-commit.
+# 2026-08-03: story 2-9 context created and moved to ready-for-dev — and the story-creation probe
+#             OVERTURNED THE EPIC'S PREMISE, ruled by Juan as an IN-STORY re-scope on the 1.9/1.13
+#             precedent (the first time that precedent is applied inside Epic 2). The epic asks for
+#             THREE marker maps; the corpus supports ONE. `ReceivingEvent` is unfulfillable in all
+#             EIGHT required fields (1.13, 104 reports / 416 pages), so `events.receiving` can only
+#             ever be null and #offers-to-receive / #movement-to-receive have no event data at all.
+#             THE FIND THAT MADE THE RE-SCOPE BUILDABLE TODAY, and which the brief's option space
+#             did not contain: the receiving surfaces do NOT need 1.13's staged `domains.receiving`
+#             aggregates (which are gitignored under work/, have NO contracted destination, and are
+#             read by nothing in app/). They read `bundle.players[].inPossession` — `totalOffers`,
+#             `offersReceived` and the six-value `offersByMovementType` split — all three `required`
+#             in the contract, present in all three fixtures, and extracted for real by Story 1.10
+#             (done). Zero contract change, zero pipeline dependency, and unlike events.receiving it
+#             survives the 2.19 cutover as REAL data.
+#             MEASURED, NOT ASSERTED, and re-measured independently by a fresh-context validator:
+#             `sum(offers_by_movement_type) == total_offers` on 3,289/3,289 staged player rows with
+#             a delta histogram of exactly {0: 3289} — so a proportion bar states something true,
+#             unlike 1.13's by_phase totals (-48..+314) and Domain C's "never normalize" phases.
+#             And the AD-5 roll-up is validated rather than merely legal: per-team offers made
+#             69/333/634 and received 20/119.5/247 reproduce `domains.receiving.offers.*` — the
+#             receiving page's OWN PRINTED HEADLINE — with 0 mismatches and max absolute difference
+#             0, record by record over all 208 team-innings.
+#             HEATMAP: DEFERRED with the rationale logged (AC 2's second branch), ruled by Juan.
+#             Evaluated, not skipped: --heat-1..5 already ship theme-invariant and on-pitch with
+#             ZERO consumers, and the measured luminances (0.2668->0.8857, strictly monotonic) and
+#             pitch ratios (3.68/4.83/5.95/8.08/10.87) reproduce DESIGN.md:286 EXACTLY. What is
+#             missing is an INPUT, not a ramp — every candidate Domain D family is under an
+#             unresolved AD-14 emission blocker, so a heatmap built now would bin synthetic fixture
+#             coordinates and have no real input at cutover. Routed to 1.16 by name.
+#             THE FIXTURES ACTIVELY CONTRADICT THE CORPUS and the story is written to stop the dev
+#             building to them: they populate `at` and `playerName` on 100% of defensive rows and
+#             make block+possession-contest 44/47/55% of markers, while the corpus has contest_type
+#             null on 20,169/20,169, no player/clock carrier at all, and only TWO of four action
+#             types with any coordinates. They also under-state density 2-3x (fixtures 30-59 per
+#             figure; corpus min 62 / median 97 / max 153).
+#             VALIDATION PASS (2 fresh-context agents) found 16 must-fix gaps and 14 numeric or
+#             citation defects in the first draft, all fixed. Headline: (a) the mirrored goal
+#             furniture — routed to 2.9 BY NAME twice in the ledger — was drafted as an
+#             implementation task that CANNOT be executed inside the story's own scope boundary
+#             (pitchMarkings returns a flat record rendered BY NAME in PitchDrawing, so it needs
+#             PitchMarkings interface fields AND new PitchPanel elements, plus two non-projective
+#             steps); it is now RULED here ("yes, mirror") and its implementation routed onward,
+#             which is what both ledger entries actually ask for. (b) Decisions 5/6/8 contradicted:
+#             one shape + team-only colour makes the two plottable action types VISUALLY IDENTICAL,
+#             so the drafted per-type "derived legend" would have claimed a distinction the map does
+#             not draw — the legend is now one entry per team. (c) The triangle constant was wrong
+#             AND would have failed the story's own test (1.5570 vs 1.55512), and equal-area sizing
+#             yields a 16.16px glyph outside DESIGN's 8-14px band; re-ruled to R = 4r/3 (13.86 x
+#             12.00, height == the circle's diameter). Also fixed: the two receiving sections would
+#             have shipped the generic empty-state sentence "El informe oficial no incluye esta
+#             sección" over a Domain G absence (a false statement, and the mirror of the FR-22
+#             inversion the predicate change exists to prevent); no role="figure" for the two
+#             non-PitchPanel surfaces; data tables that did not carry the numbers the tiles print;
+#             an unruled six-category palette that does not exist in DESIGN; the camelCase-vs-kebab
+#             enum mapping; and a constructed test event that is not type-constructible without an
+#             authorised `as unknown as` cast.
+#             Touches app/ + locales + the ledger only — coordinates around in-flight 1-9 and 1-15,
+#             which hold pipeline/ dirty; every shared-artifact edit APPEND-ONLY; never
+#             `git add -A`. Baseline dd3dfc3, app/ clean, suite 364 passed / 16 files.
+# 2026-08-03: story 1-15 CODE REVIEW — 3 decisions ruled, 34 patches applied, status done.
+#             DECISION 1: the AD-3 first-seen tiebreak was claimed by four documents and two
+#             test NAMES and implemented by none of them — the code raises IdentityCollisionError,
+#             which is what AC 1's binding block demands while AC 4 rows 2-3 and Task 3.4 demand
+#             the tiebreak. Ruled in favour of RAISING (a tiebreak on a corpus with 0 such
+#             collisions can only fire on a defect, and silently minting two ids from one printed
+#             name is unfalsifiable downstream); the docstrings, README and test names now say so.
+#             DECISION 2: commit 32fc131 flipped story 1-9 from in-progress to REVIEW while 1.9's
+#             implementation (domain_e.py +602) was still uncommitted in the working tree — the
+#             commit message's COMMIT SCOPE note declared the checks.py/README seam but not this.
+#             Reverted to in-progress; the board describes committed reality.
+#             DECISION 3: precompute over a partial corpus died with a wall of group-arithmetic
+#             errors. Ruled: refuse subset runs early and plainly — matchdayRound is required by
+#             both bundle schemas, so staging a spine without it only moves the failure into 1.16.
+#             Highest-severity patch: identity-pinning re-minted from the PDF and never consulted
+#             OVERRIDES, while resolve_players applies OVERRIDES BEFORE pinning — so the very
+#             first override (the story's advertised data-only fix for 219 as-listed players)
+#             would have reported a count-mismatch on every sampled report against a correct
+#             registry. Also: OVERRIDES values are now gated against PlayerId; --write-registry
+#             refuses to DROP a pin; an empty manifest is a finding, not a PASS; the exit-code
+#             contract now distinguishes findings (1) from a broken harness (2) in both
+#             directions; the spine's team-name exhaustiveness no longer skips every key but
+#             home/away; write_spine removes stale match files; write_registry is atomic. New
+#             test modules test_precompute_run.py and test_checks_identity.py close the two zero-
+#             coverage gaps (the CLI, and both FR-15 gate checks), and the committed registry is
+#             now pinned by a regenerate-and-compare against its real bytes rather than a
+#             one-match synthetic corpus.
 # 2026-08-03: story 1-15 implemented and moved to review — pipeline/precompute/, AD-9's SECOND
 #             phase and the FIRST module in the pipeline that reads NO PDF at all. The story's
 #             premise inversion HELD and was re-derived independently rather than copied forward:
@@ -191,6 +322,82 @@ last_updated: 2026-08-03
 #             NOTE FOR 1.15: the gate's checks_run now carries identity-completeness and
 #             identity-pinning, registered by a concurrent session mid-review — test_runner.py
 #             pins that list exactly and owes the same forced repair 1.14 made.
+# 2026-08-03: story 1-9 Decision 3 code review (3 layers over the 1.9-scoped working-tree
+#             diff): 35 raw findings merged to 21 — 3 decisions ruled, 14 patches applied,
+#             1 deferred, 6 dismissed. Status -> DONE. (Housekeeping: the development_status
+#             field still read `in-progress` while the note below already said `review`, an
+#             inconsistency left by the concurrent 1.14/1.15 commits; corrected here.)
+#             THE SUBSTANCE HELD UNDER INDEPENDENT RE-DERIVATION. The Acceptance Auditor
+#             wrote its OWN character-level tick reader and swept all 104 PDFs with no
+#             sampling: every clock relation reproduced with 0 deviations (208/208,
+#             1,872/1,872, 110/110, 122/122, 214/214, 18/18, 4/4), zero `FT` ticks, worst
+#             residual 0.000529 slots, the `45HT` merged span on exactly the 4 named charts,
+#             M88's 14-slot ET1 exact — and replaying the shipped parser against those
+#             independent readings derived clean on 208/208 and matched all 208 staged
+#             records with 0 mismatches. Task 3.11 is genuinely satisfied. It also RETIRED
+#             the story's own chunked-run caveat: the three files ran in ONE invocation,
+#             122 passed / 0 failed / 0 skipped.
+#             THE HEADLINE DEFECT WAS A TEST GAP THAT HID TWO REAL ONES. Task 8.3 requires
+#             pass AND fail branch tests per recorded check; `goalkeeping-involvement-clock`
+#             had only pass assertions, because all 16 clock tests assert
+#             `InvolvementClockError` at EXTRACTION time — a path that never reaches
+#             `domain_e_checks`. Both behavioural defects found lived in those uncovered
+#             clauses: (a) `final_minute` was unconditionally 120 whenever extra time
+#             existed, so a short ET2 FAILED the check while the identically short ET1 that
+#             the comment four lines above exists to permit PASSED — the same page shape
+#             judged two ways; (b) the backstop declared itself a guard against corruption
+#             of the staged block but its predicate read only `stamps`, so mutating
+#             `second_half_slot` 49 -> 60 left the check PASSING while its own specifics
+#             reported visibly wrong period lengths. Ten fail-branch tests now cover every
+#             clause.
+#             A FIXTURE DEFECT MADE THE ET1/ET2 ASYMMETRY UNTESTABLE BY CONSTRUCTION:
+#             `gk_involvement_ticks` applied its own "print a tick only when its slot exists"
+#             rule to the FIRST extra period and not the second, so a short ET2 put the 120'
+#             tick one slot past the grid and could not be drawn at all. Fixed alongside the
+#             predicate.
+#             ALSO PATCHED: a RECURRENCE of the delta-absorption shape this story's own
+#             2026-07-27 review filed and patched TWICE (`clock_facts` skipped by a
+#             `continue` on the failing side, plus a dangling separator); the tick band read
+#             from an absolute 30 pt page window that never consulted the chart's own
+#             `bottom`, on a page carrying BOTH teams' charts; the one-line guard computed
+#             over RUNS after merging, so it read 0.0 spread exactly when a splice happened
+#             and fired only when a second line FAILED to splice (the harmless case);
+#             overprinted glyphs concatenating through a negative x-gap; unbounded `N` in the
+#             stoppage grammar; and two constants exempt from the import-time integrity rule.
+#             ONE DECISION WITH A RECORD-SHAPE COST, ruled by Juan: `extra_time_slot` named
+#             match minute 91 here but the printed 120' tick slot in `momentum.py:482` — one
+#             key, two incompatible meanings, both consumed by 1.16 and 2.10. Renamed to
+#             `first_extra_slot` in domain_e ONLY; momentum untouched; 104-record batch
+#             re-run. Two decisions ruled AS-DESIGNED and dismissed: MAX_STOPPAGE_MINUTE
+#             stays at 30 (the check already records the allotments, and tightening to the
+#             measured 19 would fail a legitimate long-stoppage match — the 1.8/1.9/1.12
+#             bounds-not-equalities rule), and the parallel `series`/`stamps` lists stay
+#             (reshaping moves the ruled baseline for no correctness gain).
+#             FIVE CORPUS FIGURES WERE WRONG IN COMMENTS AND DOCS, all corrected: 4,336 tick
+#             readings is 4,508 (the story's OWN per-label census sums to 4,508); "207 of
+#             208 charts" is 206 (M88 contributes TWO charts, and 207+2 > 208); "`45+N` on
+#             110 charts" conflated charts with readings (108 charts / 110 readings; `90+N`
+#             182 / 214); "the grid runs 0-7 slots PAST the last tick" is FALSE on 38 charts
+#             where the last tick IS the last slot, and contradicted the comment four lines
+#             below it; and "across all 18 extra-time charts" is 16, since PMSR-M74-GER-V-PAR
+#             prints no `90+N` tick on either side. Story-doc drift also fixed (seven ->
+#             eight recorded checks; 16 -> 17 new tests; "1,330 across 37 files", which
+#             cannot hold — 39 files collect 1,330 and the two 1.15 files contribute 72).
+#             ONE ITEM DEFERRED: `domain_e_checks` bare-subscripts its own payload throughout
+#             (all eight keys, all predating Decision 3), so a record from an older checkout
+#             raises KeyError rather than failing typed. RECLASSIFIED from patch mid-pass —
+#             guarding one key of eight would be inconsistent noise, and the cited
+#             2026-07-27 precedent was a different case (a SIBLING domain's payload). The
+#             real fix is a record-version ruling. Owner: Story 1.16.
+#             VERIFIED: 302 tests green across the 10 affected files (132 + 53 + 117, 0
+#             failures); batch 104 extracted / 0 failed / 0 corpus gaps / 0 orphans with
+#             exactly the ruled M19 + M58 defensive-actions baseline; the clock check passes
+#             104/104; `first_extra_slot` staged on 208/208 with NO `extra_time_slot`
+#             survivor; stamp count == series length on 208/208; 18 charts carry extra time;
+#             M88 the only short-period note. NOTE: two long runs were KILLED EXTERNALLY
+#             mid-flight — the same failure this story's own Completion Notes recorded — and
+#             both were resumed to completion; every figure above comes from a run that
+#             finished.
 # 2026-08-03: story 1-9 in-progress -> review. Decision 3, the last open code-review item,
 #             is implemented: the GK involvement chart's slot -> match-clock mapping, derived
 #             from that chart's own printed x-ticks (Story 1.8's method, its own code — no FT
@@ -1575,7 +1782,7 @@ development_status:
   1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
   1-8-momentum-series-extraction-oq-5-resolution: done
-  1-9-domains-e-f-extraction-goalkeeping-set-plays: review
+  1-9-domains-e-f-extraction-goalkeeping-set-plays: done
   1-10-domain-g-extraction-per-player-performance-physical-data: done
   1-11-crosses-map-parser: done
   1-12-defensive-actions-map-parser: done
@@ -1602,7 +1809,7 @@ development_status:
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data
   2-7-pitch-panel-infrastructure-with-shot-cross-maps: done
   2-8-pass-network-visualization: done
-  2-9-receiving-defensive-action-maps-heatmap-decision: backlog
+  2-9-receiving-defensive-action-maps-heatmap-decision: review
   2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: backlog
   2-11-expert-layer-per-player-tables-event-logs: backlog
   2-12-tournament-hub-results-standings: backlog
