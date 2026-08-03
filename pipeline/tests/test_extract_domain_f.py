@@ -261,3 +261,49 @@ def test_the_corpus_refuted_relations_are_not_shipped(build):
         )
         assert sum(block["corners_by_delivery_style"].values()) != block["total_corners"]
     assert all(check["result"] == "pass" for check in domain_f_checks(payload))
+
+
+# --- malformed vs missing, and the import-time label guard (code-review additions) --------
+
+
+def test_a_decimal_kpi_is_MALFORMED_not_missing(build):
+    """`errors.py`'s rule: "a gate operator triaging deviations must not read 'field
+    missing' for a field whose value is printed right there".
+
+    The candidate filter used to be `_INTEGER_RE`, so a KPI printed `12.5` was invisible
+    to the upward walk and the failure surfaced as `MissingFieldError` — an absence
+    message for a malformation. `domain_e._value_above` always got this right; the two
+    modules now split malformed-from-missing identically.
+    """
+    block = default_set_plays_block("home")
+    block["total_throw_ins"] = "12.5"
+
+    with pytest.raises(MalformedFieldError, match=r"is not a non-negative integer: '12\.5'"):
+        _extract(build(set_plays_block={"home": block}))
+
+
+def test_a_kpi_label_that_is_an_INTERIOR_word_run_of_another_fails_at_import():
+    """The guard has to match what `_label_run` actually matches.
+
+    `_label_run` accepts any contiguous span run, so the real hazard is a label equal to an
+    interior run of another — `'Set Plays'` inside `'Total Set Plays'` passes a `startswith`
+    test cleanly and then matches inside the longer label whenever the spans split on that
+    boundary, turning one authoring bug into 208 identical failures blaming the corpus.
+    """
+    from pipeline.extract import domain_f
+
+    assert domain_f._is_word_subrun("Set Plays", "Total Set Plays")
+    assert domain_f._is_word_subrun("Total", "Total Corners")
+    # Whole words only — `_label_run` joins spans, so a mid-word collision is impossible.
+    assert not domain_f._is_word_subrun("Corner", "Total Corners")
+    assert not domain_f._is_word_subrun("Total Penalties", "Total Corners")
+
+    original = domain_f.KPI_LABELS
+    try:
+        domain_f.KPI_LABELS = original + (("set_plays_short", "Set Plays"),)
+        with pytest.raises(ValueError, match="contiguous word run inside"):
+            domain_f._assert_label_integrity()
+    finally:
+        domain_f.KPI_LABELS = original
+    # And the shipped constants still pass their own guard.
+    domain_f._assert_label_integrity()

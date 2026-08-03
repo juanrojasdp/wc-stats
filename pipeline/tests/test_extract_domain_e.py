@@ -22,10 +22,12 @@ from pipeline.extract.domain_a import extract_domain_a
 from pipeline.extract.domain_e import (
     AERIAL_DELIVERY_TYPES,
     DISTRIBUTION_MARKER_SPEC,
+    DISTRIBUTION_PRINTED_MAX_OVERSHOOT,
     DISTRIBUTION_PRINTED_PANELS,
     DOCUMENTED_ABSENCES,
     INTERVENTION_TYPES,
     domain_e_checks,
+    domain_e_goalkeeper_warnings,
     domain_e_warnings,
     extract_domain_e,
 )
@@ -38,7 +40,17 @@ from pipeline.extract.errors import (
 from pipeline.markers.errors import PitchFrameError, UnknownRgbError
 
 from pipeline.tests.conftest import (
+    AERIAL_TOTAL_LAYOUT,
+    DEFAULT_GK_INVOLVEMENT_TOP_LABEL,
+    EF_LABEL_FONTSIZE,
+    GK_DISTRIBUTION_DONUT_XS,
     GK_DISTRIBUTION_PANELS,
+    GK_INVOLVEMENT_CHART_TOPS,
+    GK_INVOLVEMENT_GRID_STROKE,
+    GK_INVOLVEMENT_PLOT_X0,
+    GK_INVOLVEMENT_PLOT_X1,
+    GK_INVOLVEMENT_UNIT,
+    _ef_centred,
     default_goalkeeping_blocks,
     default_lineup_sides,
     lineup_entry,
@@ -209,11 +221,19 @@ def test_distribution_counts_markers_per_titled_panel(build):
 def test_the_distribution_legend_and_pitch_spots_are_never_counted(build):
     """The 9.0 pt legend swatches sit 10.5 pt below every frame and the white penalty and
     centre spots sit inside it. Both are excluded — the swatches twice over, by the size
-    window and by the pitch margin — so dropping them must change nothing."""
-    with_furniture = _extract(build())
-    without = _extract(build(gk_distribution_legend=False))
+    window and by the pitch margin — so dropping EITHER must change nothing.
 
-    assert with_furniture == without
+    Both halves are exercised. Dropping only the legend left the spots drawn on every run,
+    so the docstring's second claim went untested while reading as if it were covered.
+    """
+    with_furniture = _extract(build())
+
+    assert _extract(build(gk_distribution_legend=False)) == with_furniture
+    assert _extract(build(gk_distribution_spots=False)) == with_furniture
+    assert (
+        _extract(build(gk_distribution_legend=False, gk_distribution_spots=False))
+        == with_furniture
+    )
 
 
 def test_the_pitch_margin_admits_a_marker_that_overshoots_its_frame(build):
@@ -365,12 +385,28 @@ def test_a_table_row_with_the_wrong_value_count_raises(build):
         _extract(build(goalkeeping_blocks={"home": blocks}))
 
 
-def test_a_non_numeric_token_in_a_table_raises(build):
+def test_a_non_numeric_token_in_a_table_is_MALFORMED_not_a_count_error(build):
+    """A `-` where a value belongs names the malformed token, not a short row.
+
+    The pre-filter used to drop the token before it could be typed, so the row failed the
+    COUNT assertion ("carries 6 value(s)") and pointed a gate operator at a template
+    revision instead of at the unreadable value printed right there. `errors.py`'s
+    malformed-vs-missing rule is the reason this distinction is load-bearing.
+    """
     blocks = default_goalkeeping_blocks("away")
     blocks["aerial_control"]["delivery_types_faced"]["driven"] = "-"
 
-    with pytest.raises(GoalkeepingPageParseError, match=r"carries 6 value\(s\)"):
+    with pytest.raises(MalformedFieldError, match=r"is not a non-negative integer: '-'"):
         _extract(build(goalkeeping_blocks={"away": blocks}))
+
+
+def test_a_decimal_token_in_a_table_is_also_malformed(build):
+    """The other half of the same rule: a decimal is present-but-wrong-type, not absent."""
+    blocks = default_goalkeeping_blocks("home")
+    blocks["goal_prevention"]["by_intervention_type"]["save_attempt"] = "1.5"
+
+    with pytest.raises(MalformedFieldError, match=r"is not a non-negative integer: '1\.5'"):
+        _extract(build(goalkeeping_blocks={"home": blocks}))
 
 
 def test_a_non_numeric_kpi_value_raises(build):
@@ -430,22 +466,107 @@ def test_a_dot_above_the_printed_axis_top_raises(build):
         _extract(build(gk_involvement_dot_offsets={("home", 19): -15.4403}))
 
 
+def _anchors_for(path):
+    """The nine Domain E/F anchors for a built report, resolved."""
+    meta = probe_report(path)
+    doc = pymupdf.open(path)
+    index = PageTextIndex(doc, meta.report_id)
+    anchors = {
+        anchor.anchor_id: index.find_all(anchor.text, at_start=anchor.at_page_start)
+        for anchor in resolve_anchors(
+            ANCHOR_REGISTRY, home=meta.home_team, away=meta.away_team
+        )
+        if anchor.anchor_id in ANCHOR_IDS
+    }
+    return doc, meta, anchors
+
+
 def test_the_missing_team_names_are_refused(build):
     """The involvement page carries BOTH charts and names them only in their titles, so
-    the cover names are required rather than optional."""
-    path = build()
-    meta = probe_report(path)
-    with pymupdf.open(path) as doc:
-        index = PageTextIndex(doc, meta.report_id)
-        anchors = {
-            anchor.anchor_id: index.find_all(anchor.text, at_start=anchor.at_page_start)
-            for anchor in resolve_anchors(
-                ANCHOR_REGISTRY, home=meta.home_team, away=meta.away_team
-            )
-            if anchor.anchor_id in ANCHOR_IDS
-        }
-        with pytest.raises(GoalkeepingPageParseError, match="cover team names"):
+    the cover names are required rather than optional.
+
+    Two layers, and both are asserted: omitting them is a `TypeError` from the signature
+    (they are keyword-only and carry no default, so the requirement is structural rather
+    than only a runtime guard), and passing them empty still hits the typed guard.
+    """
+    doc, meta, anchors = _anchors_for(build())
+    with doc:
+        with pytest.raises(TypeError, match="home_team"):
             extract_domain_e(doc, anchors, {}, report_id=meta.report_id)
+        with pytest.raises(GoalkeepingPageParseError, match="cover team names"):
+            extract_domain_e(
+                doc, anchors, {}, report_id=meta.report_id, home_team="", away_team=""
+            )
+
+
+def test_a_lineups_shape_change_is_typed_not_a_bare_keyerror(build):
+    """Domain E reads a SIBLING domain's payload, so its shape is guarded.
+
+    A bare `KeyError` here is neither an `ExtractError` nor a `PipelineError`, so it
+    escapes both gate handlers and records one root cause under two check ids. Typed, it
+    is one `MalformedFieldError` naming the key that went missing.
+    """
+    doc, meta, anchors = _anchors_for(build())
+    with doc:
+        with pytest.raises(MalformedFieldError, match="no 'home'.'starters' section"):
+            extract_domain_e(
+                doc,
+                anchors,
+                {"home": {}, "away": {}},
+                report_id=meta.report_id,
+                home_team=meta.home_team,
+                away_team=meta.away_team,
+            )
+        with pytest.raises(MalformedFieldError, match="is missing"):
+            extract_domain_e(
+                doc,
+                anchors,
+                {
+                    side: {"starters": [{"position": "gk"}], "substitutes": []}
+                    for side in ("home", "away")
+                },
+                report_id=meta.report_id,
+                home_team=meta.home_team,
+                away_team=meta.away_team,
+            )
+
+
+def test_absent_lineups_stage_goalkeepers_none_and_still_parse_every_page(build):
+    """Task 7.2, ruled in code review: a Domain A failure costs the goalkeeper list ONLY.
+
+    Goal prevention, aerial control, distribution and involvement are all page-internal,
+    so failing the whole domain would hide a genuinely broken goalkeeping page behind
+    `domain-a-completeness`'s finding. `lineups=None` stages `goalkeepers: None` per side
+    and everything else parses byte-identically to the normal path.
+    """
+    path = build()
+    doc, meta, anchors = _anchors_for(path)
+    with doc:
+        without = extract_domain_e(
+            doc,
+            anchors,
+            None,
+            report_id=meta.report_id,
+            home_team=meta.home_team,
+            away_team=meta.away_team,
+        )
+    full = _extract(path)
+
+    for side in ("home", "away"):
+        assert without[side]["goalkeepers"] is None
+        assert full[side]["goalkeepers"] is not None
+        # Every other key is untouched by the absent lineup.
+        for key in ("total_involvements", "involvement_series", "distribution",
+                    "goal_prevention", "aerial_control"):
+            assert without[side][key] == full[side][key]
+    # And the absence is recorded, not merely nulled.
+    assert domain_e_goalkeeper_warnings(without) == [
+        w for w in domain_e_goalkeeper_warnings(without) if "did not extract" in w
+    ]
+    assert len(domain_e_goalkeeper_warnings(without)) == 2
+    assert domain_e_goalkeeper_warnings(full) == []
+    # The checks are unaffected — none of them reads the goalkeeper list.
+    assert domain_e_checks(without) == domain_e_checks(full)
 
 
 # --- AC 4: the documented absences --------------------------------------------------------
@@ -506,13 +627,19 @@ def test_distribution_sum_check_fails_when_the_total_panel_disagrees(build):
     assert check["specifics"].startswith("home")
 
 
-def test_distribution_printed_check_fails_only_when_markers_fall_SHORT(build):
-    """A BOUND, not an equality, and the direction is the finding: over all 208 corpus
-    team-innings x 3 printed panels the marker count COVERS the donut centre on 624/624
-    while equality holds on only 604/624, every residual in the `feet` panel. Drawing
-    more than the donut counts must pass; drawing fewer must fail."""
+def test_distribution_printed_check_is_a_TWO_sided_bound(build):
+    """A BOUND, not an equality, and TWO-SIDED — ruled in the 1.9 code review.
+
+    Over all 208 corpus team-innings x 3 printed panels the marker count COVERS the donut
+    centre on 624/624 while equality holds on only 604/624, every residual in the `feet`
+    panel (+1 on 18, +2 on 2). So an overshoot within the corpus maximum must pass and a
+    short count must fail — but an overshoot PAST that maximum must fail too. A one-sided
+    check left the whole overshoot direction open, and `pitch_margin_pt` 0.0 -> 0.5 can
+    only push counts up: between them, a mapping slip assigning the `total` panel's
+    markers to `feet` used to pass outright.
+    """
     payload = _extract(build())
-    payload["home"]["distribution"]["feet"]["total"] += 2
+    payload["home"]["distribution"]["feet"]["total"] += DISTRIBUTION_PRINTED_MAX_OVERSHOOT
     assert _check(domain_e_checks(payload), "goalkeeping-distribution-printed")["result"] == "pass"
 
     payload = _extract(build())
@@ -521,13 +648,33 @@ def test_distribution_printed_check_fails_only_when_markers_fall_SHORT(build):
     assert check["result"] == "fail"
     assert "away throw" in check["specifics"]
 
+    payload = _extract(build())
+    payload["home"]["distribution"]["feet"]["total"] += DISTRIBUTION_PRINTED_MAX_OVERSHOOT + 1
+    check = _check(domain_e_checks(payload), "goalkeeping-distribution-printed")
+    assert check["result"] == "fail"
+    assert "overshoot" in check["specifics"]
 
-def test_the_printed_delta_is_recorded_on_a_passing_report(build):
-    """Task 5.6's discipline: the residual stays visible rather than being absorbed."""
+
+def test_the_printed_delta_is_recorded_on_EVERY_report_passing_or_failing(build):
+    """Task 5.6's discipline: the residual stays visible rather than being absorbed.
+
+    Including on a FAILING report. The original ternary put the delta census in the
+    passing branch alone, so a report failing on one side silently dropped the other
+    side's honest residual — the exact absorption the check's own comment forbids.
+    """
     check = _check(domain_e_checks(_extract(build())), "goalkeeping-distribution-printed")
-
     assert check["result"] == "pass"
     assert "home feet:" in check["specifics"]
+
+    payload = _extract(build())
+    payload["away"]["distribution"]["throw"]["printed_total"] += 1
+    check = _check(domain_e_checks(payload), "goalkeeping-distribution-printed")
+    assert check["result"] == "fail"
+    # The failure is named AND every panel's delta still travels, both sides.
+    assert "away throw:" in check["specifics"]
+    for side in ("home", "away"):
+        for key in DISTRIBUTION_PRINTED_PANELS:
+            assert f"{side} {key}:" in check["specifics"]
 
 
 def test_goal_prevention_check_fails_when_the_types_miss_the_attempts(build):
@@ -580,6 +727,10 @@ def test_involvement_bound_fails_when_the_series_overshoots(build):
 
     assert check["result"] == "fail"
     assert "above the printed total" in check["specifics"]
+    # The passing side's delta survives the other side's failure — the residual gap is
+    # recorded on EVERY report, which the original ternary did only on passing ones.
+    assert "away:" in check["specifics"]
+    assert "delta" in check["specifics"]
 
 
 def test_the_corpus_refuted_relations_are_not_shipped(build):
@@ -605,3 +756,171 @@ def test_the_aerial_delivery_types_are_the_six_that_sum_to_the_total(build):
         delivery = payload[side]["aerial_control"]["delivery_types_faced"]
         assert set(delivery) == set(AERIAL_DELIVERY_TYPES) | {"total"}
         assert sum(delivery[key] for key in AERIAL_DELIVERY_TYPES) == delivery["total"]
+
+
+# --- tripwires the grammar structurally cannot see (code-review additions) ----------------
+#
+# Everything above is found by NAME, so a printed number nobody reads would stage silently.
+# The four `*_decorate` hooks exist to draw exactly that, and until this review none of
+# them was used by any test.
+
+
+def test_an_extra_number_below_the_panels_trips_the_distribution_census(build):
+    """The distribution page's four-number census is the only read that sees the WHOLE
+    page rather than the parts the grammar names — Domain F's identical tripwire had two
+    tests from the start and this one had none."""
+
+    def decorate(page):
+        page.insert_text((300.0, 520.0), "7", fontsize=12)
+
+    with pytest.raises(GoalkeepingPageParseError, match="below the panel band, expected 4"):
+        _extract(build(gk_distribution_decorate=decorate))
+
+
+def test_two_donut_centres_under_one_panel_raises(build):
+    """The page-level census counts four numbers; this is the per-PANEL half of the same
+    grammar. Moving the `hands` centre under the `feet` panel keeps the census at four and
+    still has to fail: a panel with two centres cannot be read unambiguously (AD-8)."""
+    moved = dict(GK_DISTRIBUTION_DONUT_XS)
+    moved["hands"] = GK_DISTRIBUTION_DONUT_XS["feet"] + 20.0
+
+    with pytest.raises(GoalkeepingPageParseError, match=r"printed donut centre\(s\)"):
+        _extract(build(gk_distribution_donut_xs=moved))
+
+
+def test_a_label_printed_TWICE_ON_ONE_ROW_is_ambiguous(build):
+    """`_find_label`'s duplicate guard has to be per-PAGE, not per-row.
+
+    A first-match run accessor made it per-row, and the rows this parser keys on are
+    precisely the ones carrying several labels each — the four distribution panel titles
+    share one row, so do the aerial `Complete / <type> / Incomplete` columns. A label
+    repeated inside ONE row therefore bound silently to whichever tile sat left, which is
+    the plausible-wrong-value outcome AD-8 forbids outright. This draws the duplicate on
+    the label's own visual row, so only a per-page count can see it.
+    """
+    _label, _centre_x, label_top, _value_top = AERIAL_TOTAL_LAYOUT
+
+    def decorate(page):
+        _ef_centred(page, 400.0, label_top, "Total Interventions", fontsize=EF_LABEL_FONTSIZE)
+
+    with pytest.raises(
+        GoalkeepingPageParseError, match="prints the label 'Total Interventions' 2 times"
+    ):
+        _extract(build(aerial_decorate=decorate))
+
+
+def test_an_extra_evenly_spaced_gridline_run_is_refused(build):
+    """The printed axis and the drawn grid are two independent sources and their agreement
+    IS the assertion: the labels give the unit, the grid gives the baseline.
+
+    An extra gridline exactly one unit BELOW zero does NOT make two candidate runs — it
+    makes the top-anchored one too long (`count + 1`) and therefore rejected, leaving the
+    run shifted a whole unit down as the unique survivor. Every value then reads one unit
+    high off a baseline that is not zero. Uniqueness alone is not the assertion; the run
+    also has to reach the bottom of the grid.
+
+    This case was raised in review, dismissed on the reasoning that
+    `goalkeeping-involvement-bound` would catch the inflation, and then reproduced by this
+    test: the bound does fire, but as a count mismatch blaming the printed total for a
+    misread axis, and only after the series has already been staged wrong.
+    """
+    top_gridline = GK_INVOLVEMENT_CHART_TOPS[0][1]
+    zero = top_gridline + DEFAULT_GK_INVOLVEMENT_TOP_LABEL * GK_INVOLVEMENT_UNIT
+
+    def decorate(page):
+        page.draw_line(
+            (GK_INVOLVEMENT_PLOT_X0, zero + GK_INVOLVEMENT_UNIT),
+            (GK_INVOLVEMENT_PLOT_X1, zero + GK_INVOLVEMENT_UNIT),
+            color=GK_INVOLVEMENT_GRID_STROKE, width=0.5,
+        )
+
+    with pytest.raises(
+        InvolvementChartError, match="does not start at the top of the grid"
+    ):
+        _extract(build(gk_involvement_decorate=decorate))
+
+
+def test_a_stray_dot_above_the_away_title_lands_in_the_away_chart_band(build):
+    """Each chart's band runs from its own title to the NEXT title, so a dot drawn in the
+    lower chart's band is read there. Deliberately loud rather than silently absorbed."""
+
+    def decorate(page):
+        # A 3.0 pt dot inside the away plot box but off the value grid.
+        page.draw_circle((400.0, 470.0), 1.5, color=None, fill=(0.18, 0.30, 1.00))
+
+    with pytest.raises(InvolvementChartError):
+        _extract(build(gk_involvement_decorate=decorate))
+
+
+def test_an_extra_number_in_the_aerial_kpi_band_is_caught(build):
+    """The aerial page repeats three tiles at identical x centres, so a number centred on
+    a tile label is exactly what the bounded upward walk exists to disambiguate."""
+
+    def decorate(page):
+        page.insert_text((100.0, 200.0), "Total Interventions", fontsize=9)
+
+    with pytest.raises(GoalkeepingPageParseError, match="prints the label 'Total Interventions' 2 times"):
+        _extract(build(aerial_decorate=decorate))
+
+
+# --- import-time constant integrity (the 1.2/1.4/1.10 rule) -------------------------------
+#
+# An authoring bug in these tables must fail the run at IMPORT, not surface as 208
+# identical per-report failures blaming the corpus. Three of the tables the parser `zip`s
+# over were unguarded, and `zip` truncates silently.
+
+
+def test_a_truncating_aerial_triple_fails_at_import():
+    """`zip(AERIAL_TRIPLE_KEYS, centres)` would stage fewer values per tile with nothing
+    failing anywhere — no check reads those keys, so 208 reports would go out short."""
+    from pipeline.extract import domain_e as de
+
+    original = de.AERIAL_TRIPLE_KEYS
+    try:
+        de.AERIAL_TRIPLE_KEYS = original + ("fourth",)
+        with pytest.raises(ValueError, match="zip would truncate"):
+            de._assert_constant_integrity()
+    finally:
+        de.AERIAL_TRIPLE_KEYS = original
+
+    original = de.AERIAL_TRIPLE_LABELS
+    try:
+        de.AERIAL_TRIPLE_LABELS = ("Complete", "Incomplete", "Extra")
+        with pytest.raises(ValueError, match="exactly one aerial triple column"):
+            de._assert_constant_integrity()
+    finally:
+        de.AERIAL_TRIPLE_LABELS = original
+
+
+def test_a_renamed_aerial_total_column_fails_at_import():
+    """`crosses_faced_attempted` reads `delivery['total']` by name; a rename would be a
+    bare `KeyError` mid-parse instead of an authoring bug caught once."""
+    from pipeline.extract import domain_e as de
+
+    original = de.AERIAL_DELIVERY_COLUMNS
+    try:
+        de.AERIAL_DELIVERY_COLUMNS = ("grand_total",) + original[1:]
+        with pytest.raises(ValueError, match="reads it by that name"):
+            de._assert_constant_integrity()
+    finally:
+        de.AERIAL_DELIVERY_COLUMNS = original
+
+
+def test_a_goal_prevention_kpi_table_missing_its_cross_check_key_fails_at_import():
+    """`goalkeeping-goal-prevention-sum` reads `attempts_faced_printed`; dropping the KPI
+    that stages it would make the check raise per report rather than fail once here."""
+    from pipeline.extract import domain_e as de
+
+    original = de.GOAL_PREVENTION_KPIS
+    try:
+        de.GOAL_PREVENTION_KPIS = (("save_percentage", "Save %"),)
+        with pytest.raises(ValueError, match="attempts_faced_printed"):
+            de._assert_constant_integrity()
+    finally:
+        de.GOAL_PREVENTION_KPIS = original
+
+
+def test_the_shipped_constants_pass_their_own_integrity_guard():
+    from pipeline.extract import domain_e as de
+
+    de._assert_constant_integrity()

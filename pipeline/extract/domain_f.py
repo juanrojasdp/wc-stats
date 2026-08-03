@@ -82,6 +82,12 @@ CORNERS_VALUE_X_MIN = 700.0
 NUMERIC_WORD_COUNT = 24
 
 _INTEGER_RE = re.compile(r"^\d+$", re.ASCII)
+# Candidate KPI tokens are matched on this, then narrowed by `_parse_int`. Matching on
+# `_INTEGER_RE` instead would make a KPI printed as `12.5` invisible to the walk, and the
+# failure would surface as `MissingFieldError` — "prints no value" for a value printed
+# right there, which `errors.py` forbids outright. `domain_e._value_above` already reads
+# its candidates this way; this keeps the two modules' malformed-vs-missing split identical.
+_NUMBER_RE = re.compile(r"^\d+(?:\.\d+)?$", re.ASCII)
 
 
 # --- the closed label sets (AD-8: assert on unknown, never fuzzy-match) -------------
@@ -122,6 +128,19 @@ CORNER_STYLE_ROWS: "tuple[tuple[str, str], ...]" = (
 )
 
 
+def _is_word_subrun(needle: str, haystack: str) -> bool:
+    """Whether `needle` is a contiguous run of whole words inside `haystack`.
+
+    Word-level, not character-level: `_label_run` joins whole spans, so `'Corners'` can
+    only collide with `'Total Corners'` on a word boundary, never mid-word.
+    """
+    words, whole = needle.split(), haystack.split()
+    return any(
+        whole[start : start + len(words)] == words
+        for start in range(len(whole) - len(words) + 1)
+    )
+
+
 def _assert_label_integrity() -> None:
     """Module-constant integrity, checked once at import (the 1.2/1.4/1.10 rule).
 
@@ -152,15 +171,21 @@ def _assert_label_integrity() -> None:
             f"x band and must be disjoint; both carry {sorted(type_labels & style_labels)}"
         )
     # The KPI tiles are the one table matched on contiguous sub-runs (two of them share a
-    # visual row), so no KPI label may be a prefix of another — that is precisely the
+    # visual row), so no KPI label may be a sub-run of another — that is precisely the
     # ambiguity whole-band matching exists to avoid everywhere else.
+    #
+    # A PREFIX test is too narrow for what `_label_run` actually matches. It matches any
+    # contiguous span run, so the real hazard is a label equal to an INTERIOR run of
+    # another: `'Set Plays'` alongside `'Total Set Plays'` passes `startswith` cleanly and
+    # then matches inside the longer label whenever the spans split on that boundary,
+    # turning an authoring bug into 208 identical `SetPlaysParseError`s blaming the corpus.
     kpi_labels = [label for _key, label in KPI_LABELS]
     for label in kpi_labels:
         for other in kpi_labels:
-            if label is not other and other.startswith(label):
+            if label is not other and _is_word_subrun(label, other):
                 raise ValueError(
-                    f"domain_f: KPI label {label!r} is a prefix of {other!r}; the run "
-                    "matcher could not tell the two apart"
+                    f"domain_f: KPI label {label!r} is a contiguous word run inside "
+                    f"{other!r}; the run matcher could not tell the two apart"
                 )
     printed_values = (
         len(KPI_LABELS)
@@ -298,7 +323,7 @@ def _kpi_value(
         matches = [
             span
             for span in _band(rows[index], 0.0, KPI_X_MAX)
-            if _INTEGER_RE.match(span.text.strip())
+            if _NUMBER_RE.match(span.text.strip())
             and abs(span.center_x - centre_x) <= KPI_CENTRE_TOL_PT
         ]
         if not matches:

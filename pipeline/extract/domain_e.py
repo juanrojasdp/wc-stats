@@ -90,7 +90,11 @@ KPI_CENTRE_TOL_PT = 3.0
 # so an unbounded upward walk past a missing value would silently adopt the tile above's
 # number rather than failing — a plausible wrong value, the one outcome AD-8 forbids
 # outright. Measured on the corpus, every KPI value sits 37-43 pt above its label; 80 pt is
-# ~1.9x that and comfortably below the ~110 pt between two tiles in the same column.
+# ~1.9x that and comfortably below the ~149 pt from a label to the VALUE of the tile above
+# it in the same column. That last quantity is the one the bound has to clear, not the
+# ~110 pt label-to-label pitch: the walk stops at the first row carrying a centred *value*,
+# so what it must never reach is the neighbouring tile's value row, which sits a further
+# tile-height above that tile's own label.
 KPI_MAX_RISE_PT = 80.0
 
 
@@ -186,11 +190,18 @@ DISTRIBUTION_PANEL_TITLES: "dict[str, str]" = {
 # donut centre of its own — the three that do are Task 5's printed cross-check.
 DISTRIBUTION_PRINTED_PANELS: "tuple[str, ...]" = ("feet", "hands", "throw")
 DISTRIBUTION_PANEL_COUNT = 4
+# The largest honest gap between a panel's drawn markers and its printed donut centre.
+# Measured over 208 team-innings x 3 printed panels: equality on 604/624, +1 on 18 and +2
+# on 2, every residual in the `feet` panel, and never negative. `goalkeeping-distribution-
+# printed` bounds the overshoot at this rather than leaving it open — see the check.
+DISTRIBUTION_PRINTED_MAX_OVERSHOOT = 2
 
 LINE_BREAKS_LABEL = "Goalkeeper Line Breaks"
-# The line-breaks tile sits under the rightmost panel; bounding the search keeps the three
-# donut centres (all left of it) out of the centred-value walk.
-LINE_BREAKS_X_MIN = 700.0
+# The line-breaks tile sits under the `Total Distributions` panel; bounding the search keeps
+# the three donut centres (all left of it) out of the centred-value walk. The bound is taken
+# from that panel's own resolved `x0` rather than a page coordinate: panel identity is
+# already title-anchored here (AD-8), and a hard-coded x would silently change which numbers
+# fall inside the band if a template revision shifted the panel row.
 
 # Real dots are 5.83 pt filled circles with a white stroke, in exactly two fills. The size
 # window and the palette are the story's corpus-verified values; `pitch_margin_pt` is a
@@ -305,6 +316,34 @@ def _assert_constant_integrity() -> None:
         raise ValueError(
             "domain_e: the marker size window must exclude the 9.0 pt legend swatches"
         )
+    # The aerial triple is read by `zip`ping labels to keys, and `zip` truncates silently:
+    # a fourth key with no fourth label would stage fewer values per tile on all 208
+    # innings with nothing failing anywhere. The same for the goal-prevention KPI table,
+    # whose keys must exist in the payload the checks read.
+    if len(AERIAL_TRIPLE_LABELS) != len(AERIAL_TRIPLE_KEYS):
+        raise ValueError(
+            f"domain_e: the aerial triple has {len(AERIAL_TRIPLE_LABELS)} column labels "
+            f"and {len(AERIAL_TRIPLE_KEYS)} payload keys; zip would truncate"
+        )
+    if len(set(AERIAL_TRIPLE_KEYS)) != len(AERIAL_TRIPLE_KEYS):
+        raise ValueError("domain_e: duplicate payload key in AERIAL_TRIPLE_KEYS")
+    if AERIAL_TRIPLE_LABELS.count(None) != 1:
+        raise ValueError(
+            "domain_e: exactly one aerial triple column is the tile's own type label"
+        )
+    if AERIAL_DELIVERY_COLUMNS[0] != "total":
+        raise ValueError(
+            "domain_e: the aerial delivery table's first column is the printed total, and "
+            "`crosses_faced_attempted` reads it by that name"
+        )
+    kpi_keys = [key for key, _label in GOAL_PREVENTION_KPIS]
+    if len(set(kpi_keys)) != len(kpi_keys):
+        raise ValueError("domain_e: duplicate payload key in GOAL_PREVENTION_KPIS")
+    if "attempts_faced_printed" not in kpi_keys or "save_percentage" not in kpi_keys:
+        raise ValueError(
+            "domain_e: GOAL_PREVENTION_KPIS must stage `attempts_faced_printed` (the "
+            "KPI-vs-table cross-check reads it) and `save_percentage`"
+        )
 
 
 _assert_constant_integrity()
@@ -323,24 +362,38 @@ def _band_text(row: "VisualRow", x_min: float, x_max: float) -> str:
     return join_spans(_band(row, x_min, x_max))
 
 
-def _label_run(
+def _label_runs(
     row: "VisualRow", label: str, x_min: float, x_max: float
-) -> "tuple[float, float] | None":
-    """`(x0, x1)` of the contiguous span run inside the band joining to `label` exactly.
+) -> "list[tuple[float, float]]":
+    """`(x0, x1)` of EVERY contiguous span run inside the band joining to `label` exactly.
 
     Real pages fragment a label per glyph run (`'D' 'eli' 'v' 'e' 'ry'`); the synthetic
     fixtures print it as one span. Matching over contiguous runs joined by `join_spans`
     accepts both by construction. Exact equality, never a prefix or substring.
+
+    ALL runs, not the leftmost: returning the first match would make every caller's
+    "printed twice is ambiguous" guard a per-ROW guard, and the rows this parser keys on
+    are precisely the ones that carry several labels each — the four distribution panel
+    titles share one row, so do the aerial `Complete / <type> / Incomplete` columns. A
+    label repeated inside one row would then bind silently to whichever tile sits left.
+    Matches are non-overlapping: a run that matches is consumed before the scan resumes.
     """
     spans = _band(row, x_min, x_max)
-    for start in range(len(spans)):
+    runs: "list[tuple[float, float]]" = []
+    start = 0
+    while start < len(spans):
         for end in range(start, len(spans)):
             joined = join_spans(spans[start : end + 1])
             if joined == label:
-                return spans[start].x0, spans[end].x1
-            if len(joined) >= len(label):
+                runs.append((spans[start].x0, spans[end].x1))
+                start = end + 1
                 break
-    return None
+            if len(joined) >= len(label):
+                start += 1
+                break
+        else:
+            start += 1
+    return runs
 
 
 def _find_label(
@@ -354,12 +407,13 @@ def _find_label(
     """`(row index, label centre x)` of the one row printing `label` inside the band.
 
     Exactly one, asserted: a label the page does not print is a template revision, and a
-    label printed twice makes every read keyed on it ambiguous (AD-8).
+    label printed twice makes every read keyed on it ambiguous (AD-8). Twice on ONE row
+    counts, which is why this walks `_label_runs` rather than a first-match accessor.
     """
     hits = [
         (index, run)
         for index, row in enumerate(rows)
-        if (run := _label_run(row, label, x_min, x_max)) is not None
+        for run in _label_runs(row, label, x_min, x_max)
     ]
     if not hits:
         raise GoalkeepingPageParseError(
@@ -368,9 +422,9 @@ def _find_label(
         )
     if len(hits) > 1:
         raise GoalkeepingPageParseError(
-            f"{where} prints the label {label!r} {len(hits)} times (rows "
-            f"y={[round(rows[index].y, 2) for index, _run in hits]}); the value it keys "
-            "cannot be read unambiguously",
+            f"{where} prints the label {label!r} {len(hits)} times (at "
+            f"{[(round(rows[index].y, 2), round((run[0] + run[1]) / 2.0, 2)) for index, run in hits]} "
+            "as (row y, centre x)); the value it keys cannot be read unambiguously",
             report_id,
         )
     index, (x0, x1) = hits[0]
@@ -490,14 +544,29 @@ def _table_row_below(
     """The first row below the header carrying exactly `expected` integers in the band.
 
     Header-anchored AND x-bounded, and both halves were earned on the corpus (see
-    `GOAL_PREVENTION_TABLE_X_MIN`). Rows with a different count are skipped rather than
-    raised on: between a header and its values the template prints a second header line
-    whose band holds no numbers at all. A page with no qualifying row raises.
+    `GOAL_PREVENTION_TABLE_X_MIN`). Only rows carrying NO numbers at all are skipped —
+    between a header and its values the template prints a second header line whose band
+    holds none. The first row that carries any number is the value row, so a count other
+    than `expected` there RAISES rather than being skipped past: a template revision that
+    changed the column count must fail loud, never silently fall through to some later row
+    that happens to hold the right number of integers. A page with no numeric row at all
+    raises `MissingFieldError`.
     """
     for index in range(header_index + 1, len(rows)):
+        band = _band(rows[index], x_min, x_max)
         numbers = _numbers_in(rows[index], x_min, x_max)
+        if not band:
+            continue
+        # A value row is one that carries a number. Once found, EVERY token in its band
+        # must be one: a row reading `3 3 - 0 0 0 1` is a malformed value, not a six-column
+        # table, and `_numbers_in`'s pre-filter would otherwise drop the `-` silently and
+        # report a count error naming the wrong fault (`errors.py`'s malformed-vs-missing
+        # rule). Rows with no number at all are still skipped — the template prints a
+        # second header line between a header and its values.
         if not numbers:
             continue
+        for span in band:
+            _parse_int(span.text.strip(), f"{where}[x={span.x0:.1f}]", report_id)
         if len(numbers) != expected:
             raise GoalkeepingPageParseError(
                 f"{where} table row at y={rows[index].y:.2f} carries "
@@ -632,13 +701,14 @@ def _parse_aerial_control(
             if column_label is None:
                 centres.append(type_centre)
                 continue
-            run = _label_run(rows[label_index], column_label, 0.0, AERIAL_KPI_X_MAX)
-            if run is None:
+            runs = _label_runs(rows[label_index], column_label, 0.0, AERIAL_KPI_X_MAX)
+            if len(runs) != 1:
                 raise GoalkeepingPageParseError(
-                    f"{where} {label!r} row does not print a {column_label!r} column label",
+                    f"{where} {label!r} row prints the {column_label!r} column label "
+                    f"{len(runs)} times, expected exactly once",
                     report_id,
                 )
-            centres.append((run[0] + run[1]) / 2.0)
+            centres.append((runs[0][0] + runs[0][1]) / 2.0)
         value_rows: "set[int]" = set()
         triple: "list[int]" = []
         for column, centre in zip(AERIAL_TRIPLE_KEYS, centres):
@@ -732,9 +802,7 @@ def _parse_distribution(
     panel_keys: "dict[int, str]" = {}
     for title, key in DISTRIBUTION_PANEL_TITLES.items():
         hits = [
-            run
-            for row in title_rows
-            if (run := _label_run(row, title, 0.0, page_x1)) is not None
+            run for row in title_rows for run in _label_runs(row, title, 0.0, page_x1)
         ]
         if len(hits) != 1:
             raise GoalkeepingPageParseError(
@@ -799,14 +867,20 @@ def _parse_distribution(
             report_id,
         )
 
+    # The band comes from the `Total Distributions` panel's own resolved rect, not a page
+    # coordinate: that panel is already identified by its printed title, so the bound moves
+    # with the layout instead of silently changing which numbers it admits (AD-8).
+    total_panel = panels[
+        next(index for index, key in panel_keys.items() if key == "total")
+    ]
     label_index, centre_x = _find_label(
-        rows, LINE_BREAKS_LABEL, LINE_BREAKS_X_MIN, page_x1, where, report_id
+        rows, LINE_BREAKS_LABEL, total_panel.x0, page_x1, where, report_id
     )
     _row, raw = _value_above(
         rows,
         label_index,
         centre_x,
-        LINE_BREAKS_X_MIN,
+        total_panel.x0,
         page_x1,
         "line_breaks",
         where,
@@ -912,16 +986,28 @@ def _value_gridlines(
             continue
         if not y0 <= rect.y0 <= y1:
             continue
-        lines.append((round(rect.y0, 3), round(rect.x0, 3), round(rect.x1, 3)))
+        lines.append((round(rect.y0, 3), rect.x0, rect.x1))
     if not lines:
         raise InvolvementChartError(f"{where} draws no value gridlines", report_id)
-    extents = {(x0, x1) for _y, x0, x1 in lines}
-    if len(extents) != 1:
+    # Compared within `GEOMETRY_TOL_PT`, not by equality on the rounded values. Rounding to
+    # three decimals and then demanding an exact match is a 0.001 pt tripwire in a module
+    # that everywhere else allows 0.05 pt of float noise; two lines drawn under slightly
+    # different transforms would abort the whole report over drawing noise, not a template
+    # revision. The bound is still tight: the plot box is ~500 pt wide.
+    plot_x0 = min(x0 for _y, x0, _x1 in lines)
+    plot_x1 = max(x1 for _y, _x0, x1 in lines)
+    ragged = [
+        (round(x0, 3), round(x1, 3))
+        for _y, x0, x1 in lines
+        if abs(x0 - plot_x0) > GEOMETRY_TOL_PT or abs(x1 - plot_x1) > GEOMETRY_TOL_PT
+    ]
+    if ragged:
         raise InvolvementChartError(
-            f"{where} gridlines do not share one horizontal extent: {sorted(extents)}",
+            f"{where} gridlines do not share one horizontal extent within "
+            f"{GEOMETRY_TOL_PT} pt of {(round(plot_x0, 3), round(plot_x1, 3))}: "
+            f"{sorted(set(ragged))}",
             report_id,
         )
-    plot_x0, plot_x1 = extents.pop()
     if plot_x1 - plot_x0 <= 0:
         raise InvolvementChartError(
             f"{where} plot box has no width: {plot_x0}..{plot_x1}", report_id
@@ -954,7 +1040,24 @@ def _gridline_run(
             f"apart among {ys}; the printed axis and the drawn grid disagree",
             report_id,
         )
-    return runs[0]
+    run = runs[0]
+    # The selected run must START at the top of the grid, and uniqueness alone does not
+    # give that. A chart drawing ONE extra evenly-spaced line below zero makes the
+    # top-anchored candidate `count + 1` long — rejected for being too long — while the
+    # candidate starting one line down is exactly `count`, so it is uniquely selected and
+    # every value then reads one unit high off a baseline that is not zero. Caught here
+    # rather than downstream: the range guard only fires if some dot happens to reach the
+    # top label, and the involvement bound would report it as a count mismatch, blaming
+    # the printed total for a misread axis.
+    stragglers = [y for y in ys if run[0] - y > unit / 2.0]
+    if stragglers:
+        raise InvolvementChartError(
+            f"{where} draws {len(stragglers)} gridline(s) {[round(y, 3) for y in stragglers]} "
+            f"a full unit or more ABOVE the run's top line {run[0]:.3f}; the run does not "
+            "start at the top of the grid, so its last line is not the axis zero",
+            report_id,
+        )
+    return run
 
 
 def _chart_dots(
@@ -1152,6 +1255,42 @@ def _parse_involvement(
 # --- the goalkeeper attribution (Task 4) ------------------------------------------------
 
 
+GOALKEEPER_FIELDS: "tuple[str, ...]" = (
+    "name",
+    "shirt_number",
+    "substituted_on",
+    "substituted_off",
+)
+
+
+def _lineup_entries(lineups: dict, side: str, section: str, report_id: "str | None"):
+    """One lineup section, with every key this reader needs asserted present.
+
+    Bare subscripting into a SIBLING domain's payload is the failure mode this guards: a
+    Domain A shape change would otherwise raise `KeyError`, which is neither an
+    `ExtractError` nor a `PipelineError`, so it escapes both gate handlers and lands the
+    same root cause under two check ids (`errors.py`'s "never raise a bare error for
+    report data" rule). Typed here, it is one `MalformedFieldError` naming the key.
+    """
+    side_block = lineups.get(side)
+    if not isinstance(side_block, dict) or section not in side_block:
+        raise MalformedFieldError(
+            f"Domain A lineups carry no {side!r}.{section!r} section for the goalkeeper "
+            f"list; got keys {sorted(side_block) if isinstance(side_block, dict) else type(side_block).__name__}",
+            report_id,
+        )
+    entries = side_block[section]
+    for entry in entries:
+        missing = [key for key in ("position", *GOALKEEPER_FIELDS) if key not in entry]
+        if missing:
+            raise MalformedFieldError(
+                f"Domain A lineup entry in {side!r}.{section!r} is missing {missing}; the "
+                "goalkeeper list cannot be built from it",
+                report_id,
+            )
+    return entries
+
+
 def _goalkeepers(lineups: dict, side: str, report_id: "str | None") -> "list[dict]":
     """The keeper(s) who took the field, from Domain A's lineups — context, never a key.
 
@@ -1164,19 +1303,12 @@ def _goalkeepers(lineups: dict, side: str, report_id: "str | None") -> "list[dic
     """
     keepers: "list[dict]" = []
     for section in ("starters", "substitutes"):
-        for entry in lineups[side][section]:
+        for entry in _lineup_entries(lineups, side, section, report_id):
             if entry["position"] != "gk":
                 continue
             if section != "starters" and entry["substituted_on"] is None:
                 continue
-            keepers.append(
-                {
-                    "name": entry["name"],
-                    "shirt_number": entry["shirt_number"],
-                    "substituted_on": entry["substituted_on"],
-                    "substituted_off": entry["substituted_off"],
-                }
-            )
+            keepers.append({key: entry[key] for key in GOALKEEPER_FIELDS})
     if not keepers:
         # 208/208 corpus team-innings field at least one. Deliberately NOT "exactly one":
         # that is corpus-false on 7 (M21, M41, M53, M62, M66, M88, M98).
@@ -1192,10 +1324,11 @@ def _goalkeepers(lineups: dict, side: str, report_id: "str | None") -> "list[dic
 def extract_domain_e(
     doc: "pymupdf.Document",
     anchors: "dict[str, list[int]]",
-    lineups: dict,
+    lineups: "dict | None",
     report_id: "str | None" = None,
-    home_team: "str | None" = None,
-    away_team: "str | None" = None,
+    *,
+    home_team: str,
+    away_team: str,
 ) -> dict:
     """Extract the Domain E payload for one report, PER TEAM (AC 1, AC 4).
 
@@ -1203,13 +1336,21 @@ def extract_domain_e(
     the record seam (the Story 1.10 precedent) — the lineup page is never re-parsed here.
     It supplies the `goalkeepers` list only; no page data is joined to it.
 
+    `lineups=None` means Domain A did not extract for this report. The four page families
+    are read as normal and `goalkeepers` stages `None` plus a warning, because none of
+    them needs a lineup: goal prevention, aerial control, distribution and involvement are
+    all page-internal. Failing the whole domain on a sibling's failure would hide a
+    genuinely broken goalkeeping page behind `domain-a-completeness`'s finding — Task 7.2
+    says skip only the parts that need it and run the rest.
+
     `home_team` / `away_team` are this report's own cover names, and they are REQUIRED —
     a recorded departure from the story's stated signature, for the reason Task 3.10 makes
     unavoidable. The involvement page carries BOTH teams' charts and identifies them only
     by the printed title `'{team} GK Involvement Timeline'`, so without the cover names the
     home/away split could only be read from drawing order, which AD-8 forbids. Every
     sibling parser that faces the same problem takes the same two arguments
-    (`parse_shots`, `parse_crosses`, `extract_momentum`).
+    (`parse_shots`, `parse_crosses`, `extract_momentum`). They are keyword-only and
+    without defaults, so the requirement is in the signature rather than only at runtime.
 
     Pages are located through the already-resolved `anchors` map, never by page index
     (AD-8). Raises `GoalkeepingPageParseError`, `InvolvementChartError`,
@@ -1228,7 +1369,9 @@ def extract_domain_e(
     payload: dict = {}
     for side in ("home", "away"):
         payload[side] = {
-            "goalkeepers": _goalkeepers(lineups, side, report_id),
+            "goalkeepers": (
+                None if lineups is None else _goalkeepers(lineups, side, report_id)
+            ),
             "total_involvements": involvement[side]["total_involvements"],
             "involvement_series": involvement[side]["involvement_series"],
             "distribution": _parse_distribution(doc, anchors, side, report_id),
@@ -1272,6 +1415,23 @@ def domain_e_warnings() -> "list[str]":
     return [f"goalkeeping: {field} is not extractable — {reason}" for field, reason in DOCUMENTED_ABSENCES]
 
 
+def domain_e_goalkeeper_warnings(payload: dict) -> "list[str]":
+    """The per-report warning for a team block staged with no goalkeeper list.
+
+    Empty on every report where Domain A extracted, which is the whole corpus. It fires
+    only on the `lineups=None` path, so the absence is recorded rather than inferred from
+    a `null` in the payload — the same documented-absence discipline as AC 4's three,
+    except that this one is conditional on a sibling domain rather than on the source page.
+    """
+    return [
+        f"goalkeeping: {side} goalkeepers is not staged — Domain A's lineups did not "
+        "extract for this report, so the keeper(s) who took the field cannot be recorded "
+        "beside the team block"
+        for side in ("home", "away")
+        if payload[side]["goalkeepers"] is None
+    ]
+
+
 # --- Self-Validation checks (SM-C1: binary, within-report, never loosened) ------------
 #
 # Every relation below was measured EXACT on all 208 corpus team-innings at story creation
@@ -1312,6 +1472,12 @@ def domain_e_checks(payload: dict) -> "list[dict]":
                 printed_notes.append(
                     f"{side} {key}: {drawn} markers drawn, page prints {printed}"
                 )
+            elif drawn - printed > DISTRIBUTION_PRINTED_MAX_OVERSHOOT:
+                printed_notes.append(
+                    f"{side} {key}: {drawn} markers drawn against a printed "
+                    f"{printed}, an overshoot of {drawn - printed} past the corpus "
+                    f"maximum of {DISTRIBUTION_PRINTED_MAX_OVERSHOOT}"
+                )
     checks.append(
         _check(
             "goalkeeping-distribution-sum",
@@ -1332,17 +1498,27 @@ def domain_e_checks(payload: dict) -> "list[dict]":
     # other three on every case examined, so the drawn set is self-consistent and the map
     # simply plots more feet distributions than the technique donut counts. Shipping the
     # equality would fail 20 innings for a relation the source does not hold to, which is
-    # the inversion SM-C1 forbids in the other direction; shipping `drawn < printed` as the
-    # failure keeps the check binary AND true, and the per-panel delta is recorded in
-    # `specifics` on EVERY report so the gap stays visible rather than being absorbed.
-    # This is Task 5.6's involvement-bound reasoning applied to the same kind of evidence.
+    # the inversion SM-C1 forbids in the other direction.
+    #
+    # TWO-SIDED, ruled in the 1.9 code review. A one-sided `drawn < printed` failure left
+    # the overshoot unbounded, and `pitch_margin_pt` 0.0 -> 0.5 can only push counts UP:
+    # between them, nothing shipped could detect the margin admitting a non-marker
+    # (`goalkeeping-distribution-sum` is blind to it too, because the Total panel is the
+    # union and absorbs the same extras). A mapping slip assigning the `total` panel's
+    # markers to `feet` reads 33 against a printed 30 and used to pass outright. The
+    # corpus bounds the honest overshoot at 2, so the check is now `0 <= drawn - printed
+    # <= 2` — still binary, still true on 624/624, and it constrains the direction the
+    # widened margin opened. The per-panel delta is recorded in `specifics` on EVERY
+    # report, passing or failing, so the residual gap stays visible rather than absorbed.
     checks.append(
         _check(
             "goalkeeping-distribution-printed",
             not printed_notes,
-            "; ".join(printed_notes)
-            if printed_notes
-            else "every panel's marker count covers its printed donut centre — "
+            (
+                ("; ".join(printed_notes) + " | ") if printed_notes else
+                "every panel's marker count covers its printed donut centre without "
+                f"overshooting it by more than {DISTRIBUTION_PRINTED_MAX_OVERSHOOT} — "
+            )
             + "; ".join(printed_deltas),
         )
     )
@@ -1398,8 +1574,8 @@ def domain_e_checks(payload: dict) -> "list[dict]":
     # total_involvements` is corpus-FALSE on 149/208, while `<=` is TRUE on 208/208 (the
     # delta is 0..5, never negative, mean 1.26). Manufacturing the equality would be
     # exactly the fake reconciliation Stories 1.8 and 1.12 refused; the observed delta is
-    # recorded in `specifics` on EVERY report, passing or not, so the residual gap stays
-    # visible rather than being absorbed.
+    # recorded in `specifics` on EVERY report, passing or not — including the side that
+    # passed on a report where the other side failed, which the original ternary dropped.
     involvement_notes: list[str] = []
     deltas: list[str] = []
     for side in ("home", "away"):
@@ -1415,9 +1591,12 @@ def domain_e_checks(payload: dict) -> "list[dict]":
         _check(
             "goalkeeping-involvement-bound",
             not involvement_notes,
-            "; ".join(involvement_notes)
-            if involvement_notes
-            else "series sum within the printed total — " + "; ".join(deltas),
+            (
+                ("; ".join(involvement_notes) + " | ")
+                if involvement_notes
+                else "series sum within the printed total — "
+            )
+            + "; ".join(deltas),
         )
     )
 
