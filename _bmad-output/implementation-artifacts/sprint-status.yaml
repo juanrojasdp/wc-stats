@@ -60,6 +60,63 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-03
+# 2026-08-03: story 1-15 implemented and moved to review — pipeline/precompute/, AD-9's SECOND
+#             phase and the FIRST module in the pipeline that reads NO PDF at all. The story's
+#             premise inversion HELD and was re-derived independently rather than copied forward:
+#             all three of OQ-4's named ambiguous cases are corpus-EMPTY (0 non-ASCII characters in
+#             1,247 distinct player names — the full inventory is A-Z, a-z, space, 55 hyphens and 5
+#             periods in ONE name, no apostrophe; 0 normalized name+team collisions; 0 players
+#             wearing >1 shirt, distribution exactly {1: 1248}), so (team_id, shirt_number) is by
+#             itself a globally unique key and the AD-3 first-seen tiebreak is DEAD CODE on this
+#             corpus — implemented anyway, reached only by constructed tests, with no fixture
+#             pretending it is corpus-real.
+#             THE ACCEPTANCE CHECK PASSES: the ruled CAPS-RUN rule reproduces 155/155 committed
+#             fixture player ids with 0 mismatches. The story's warning about the walk was hit
+#             LIVE and is worth repeating: keying on objects carrying both playerId AND playerName
+#             finds only 96 ids, because fixture LINEUP entries key the name as `name` — walking
+#             metadata.lineups.* as well yields 155, of which 59 are unreachable from players[],
+#             including romero-gamarra-alejandro-par which exists in exactly ONE substitutes list.
+#             The discrimination claim was re-verified: the rejected LAST-TOKEN rule also yields
+#             1,248 collision-free slugs, differs on 1,009 entries, inverts 26/26 Korea Republic
+#             players and fails the fixtures on 27 ids — while TRAILING-CAPS differs on 0/5,392 and
+#             is useless as a mutation target. So collision count cannot discriminate and only the
+#             fixture reproduction can, exactly as the story rules.
+#             SHIPPED: 1,400 pinned ids in a committed PYTHON registry (48 team codes, 48 teams,
+#             104 matches, 1,248 players; OVERRIDES ships EMPTY). Python because code_version()
+#             fingerprints pipeline/**/*.py — proven live: committing it moved code_version
+#             f417cd0d -> e0296b63 and invalidated all 104 records, which is why the re-extract is
+#             ordered AFTER the registry. Two-source pinning, because data/matches/ DOES NOT EXIST:
+#             the run PRINTS 'committed /data baseline unavailable ... This is NOT a pass' and a
+#             test asserts that branch does not report success, plus a test that goes RED by design
+#             when 1.16 lands. The spine ADDS ids and never removes names (playerName is required
+#             in eight $defs): 73,065 ids added across EXACTLY 25 name paths, matching the
+#             independently measured 73,065 name occurrences one for one. Its exhaustiveness check
+#             is the INVERSE of a path list and is pinned NON-VACUOUS by a test that plants an
+#             unresolved name — an exhaustiveness check that has never failed is not evidence.
+#             THREE DEV NOTES FIGURES CORRECTED, all filed: (a) the 'at least eight non-derivable
+#             team codes' count is SIX by that test, and the RSA/COD parentheticals are factually
+#             wrong (South Africa DOES contain an r) — the ruling survives over-determined, since
+#             no first-three-letters rule yields rsa (sou) or cod (con) either; (b) the 416 display
+#             names require counting the top-level metadata block (208 in domains + 208 there);
+#             (c) the metadata block carries NEITHER report_id NOR source_path, contrary to the
+#             Dev Notes, and it is on the matchday-round critical path. Also filed: the 219
+#             as-listed players / 856 entries are a PER-TEAM printing convention, not scatter —
+#             eight teams print all 26 of their squad in caps and contribute 208 of the 219 — so
+#             Juan can rule per TEAM rather than per player, and 20 mononyms need no ruling at all.
+#             VERIFIED: batch 104 extracted / 0 failed / 0 gaps / 0 orphans with exactly the two
+#             ledgered self-validation failures (M19, M58), exit 1 by design; precompute twice with
+#             the spine 105/105 BYTE-IDENTICAL and the registry byte-identical on regeneration;
+#             gate PASS twice, 0 deviations, checks_run 27 -> 29 with both ids in sorted position,
+#             the two manifests differing in run_timestamp ALONE. Full suite 1,258 -> 1,330
+#             collected, FULLY GREEN at 1,329 passed / 1 skipped / 0 failed. The only forced repair
+#             was the one the story named (test_runner's exact checks_run literal).
+#             AC 2's 'and aggregates' clause is DEFERRED to 1.17 as a ruling, not an omission.
+#             COORDINATION: implemented in a shared dirty tree with 1.9 and 1.14 in flight; every
+#             shared-file edit is append-only, /contract, app/, spike/, data/ and every other
+#             pipeline subpackage are import-only, and never . The pre-change suite
+#             baseline was RETIRED after 2h30m/~46min CPU because at least three OTHER pytest runs
+#             were active in this tree concurrently; the pre-change count is established as 1,258
+#             by collection instead, matching the story's own recorded figure.
 # 2026-08-03: story 1-14 adversarial code review (3 layers over c645cfe..5344fac, 15 files /
 #             ~4,225 lines): 32 raw findings deduped to 22 — 2 decisions ruled, 19 patches
 #             applied, 2 deferred, 12 dismissed. Status review -> done. All three acceptance
@@ -134,6 +191,88 @@ last_updated: 2026-08-03
 #             NOTE FOR 1.15: the gate's checks_run now carries identity-completeness and
 #             identity-pinning, registered by a concurrent session mid-review — test_runner.py
 #             pins that list exactly and owes the same forced repair 1.14 made.
+# 2026-08-03: story 1-9 in-progress -> review. Decision 3, the last open code-review item,
+#             is implemented: the GK involvement chart's slot -> match-clock mapping, derived
+#             from that chart's own printed x-ticks (Story 1.8's method, its own code — no FT
+#             tick exists, HT prints on 122/208 charts, and stoppage ticks are printed here
+#             and nowhere else). The ledgered blocker — an extra-time tick collision — was
+#             measured away: it belongs to the naive second-half extension, not to the
+#             source. New staged block `involvement_clock`, new typed InvolvementClockError,
+#             new recorded check goalkeeping-involvement-clock (7 -> 8 E/F checks); NO new
+#             gate id, so no runner/registry churn. Two corpus findings ledgered: pymupdf
+#             merges `45`+`HT` into one span on 4 charts (the tick row must be read
+#             character-level), and PMSR-M88-AUS-V-EGY draws a 14-slot first extra period,
+#             recorded rather than failed so the ruled batch baseline is untouched.
+#             Batch 104 extracted / 0 failed / exactly 2 self-validation failures (M19, M58 —
+#             both defensive-actions); gate PASS, 0 deviations, two runs identical apart from
+#             run_timestamp; idempotent re-run 0 extracted / 104 skipped, records
+#             byte-identical. Suite 1,330 collected, all 37 files green.
+# 2026-08-03: story 1-15 context created and moved to ready-for-dev — cross-match identity
+#             resolution, the FIRST module of AD-9's second phase and the first Epic 1 story
+#             that reads NO PDF. The story-creation probe INVERTED the epic's premise over all
+#             104 records / 5,392 lineup entries / 1,248 players: OQ-4's three named ambiguous
+#             cases are ALL corpus-EMPTY — 0 non-ASCII characters in any player name (accent-
+#             stripping is a literal no-op; the full inventory is A-Z, a-z, space, 55 hyphens
+#             and ONE period, no apostrophe), 0 normalized name+team collisions (the first-seen-
+#             shirt tiebreak is never exercised), and 0 players wearing more than one shirt. So
+#             `(team_id, shirt_number)` is by itself a globally unique key on all 104 reports.
+#             THE REAL AMBIGUITY IS ONE THE EPIC NEVER NAMES: no record carries surname and
+#             given name separately, and the corpus prints four incompatible grammars — given-
+#             first `Raul RANGEL` (4,191), all-caps `GABRIEL MAGALHAES` where the boundary is
+#             unknowable (707), SURNAME-FIRST `KIM Seunggyu` (78 — every Korea Republic player),
+#             and mononyms `ALISSON` (107). RULED: the CAPS-RUN rule (all-caps tokens are the
+#             surname wherever they sit; remainder is the given name in printed order; no caps
+#             run or no remainder -> slug as listed). VALIDATED NOT ASSERTED: it reproduces
+#             155/155 committed fixture player IDs with 0 mismatches and yields 1,248/1,248
+#             collision-free corpus slugs. Declared residual: 856 entries / 219 players slug in
+#             given-name-first order — unique and deterministic, cosmetic only, and every one is
+#             a candidate OVERRIDES entry rather than a code change. Filed for Juan.
+#             TWO-THIRDS OF THE WORK IS ALREADY SHIPPED and the story's main job is to stop the
+#             dev rebuilding it: `pipeline/ingest/identity.py` already provides `team_slug`
+#             (48 teams -> 48 slugs, 0 collisions) and `match_id_for`, every record already
+#             carries its padded `match_id`, and canonical order is therefore a plain sorted().
+#             The zero-padding question AD-3 leaves open was ALREADY RULED by contract/README's
+#             logged decision 1 (m073, not m73) — cited, not reopened. What is genuinely missing:
+#             `teamCode` has NO producer anywhere in the pipeline, exists only inside `report_id`,
+#             and is the trailing segment of every PlayerId — so it is on the critical path, and
+#             at least eight codes (KSA, CUW, CPV, RSA, ESP, SUI, MAR, COD) are not derivable
+#             from the printed name, which proves a committed lookup is mandatory.
+#             VALIDATION PASS (2 fresh-context agents, ~130 claims re-measured) caught NINE
+#             CRITICAL defects in the first draft, all fixed. Headline: the draft's Task 5.3 told
+#             the dev to STRIP player names from the spine, but `playerName` is `required` in
+#             EIGHT contract $defs and every committed fixture carries playerId AND playerName
+#             side by side — a name-stripping spine is unemittable; the assertion is now the
+#             inverse (every known name must have a resolved id sibling). Also: the rejected
+#             alternative was WRONG — trailing-caps is behaviourally IDENTICAL to the ruled rule
+#             on 5,392/5,392 (because 'Seunggyu'.isupper() is False), so the mutation check could
+#             not have failed; the rule that actually differs is LAST-TOKEN (1,009 entries, all 26
+#             Korean players inverted) and that is now the mutation target. Critically, last-token
+#             ALSO yields 1,248 collision-free slugs — so collision count cannot discriminate
+#             between rules and only the fixture reproduction can, which is now stated as the
+#             acceptance check. Further fixes: `most_offers` has NO shirt_number (23 of 25 name
+#             paths carry one, not 25); the pin key was stated three different ways and is now
+#             ruled `(team_id, shirt_number)` everywhere; the slug fallback dropped the team code
+#             (minting a two-segment slug that validates clean as a TeamId and produces a dead
+#             route — the exact defect test_fixtures.py:120-160 exists for); no CLI entry point
+#             or public API was pinned; the batch command omitted its required --input-dir; and
+#             the Dev Notes rule "use domains.match_metadata, not metadata" is FATAL for the
+#             matchday-round derivation, which needs stage_text (absent there), uppercase group
+#             and a "H:MM" kickoff — the ISO form raises ValueError in kickoff_sort_key.
+#             Also corrected: 839 -> 856 as-listed entries (the UUU bucket was omitted); four ->
+#             at least eight non-derivable team codes; 96 -> 155 fixture IDs (the draft walked
+#             players[] only, missing the 2-token-surname case which lives in lineups); and four
+#             stale file:line citations. M19/M58 are RULED CONSUMED (status "extracted" with
+#             self_validation "fail"; their one failing check touches no identity input).
+#             THE REGISTRY IS RULED A PYTHON MODULE, on the instruction fingerprint.py:35-39
+#             addresses to this story by name: a .json registry falls outside the source glob, so
+#             AD-8's "code version includes the committed slug registry" would silently stop
+#             holding. Two-source pinning design, because `data/matches/` DOES NOT EXIST yet and
+#             a check with no baseline that returns "passed" is a gate that cannot fail.
+#             CORRECTION TO THE BRIEF: the working tree is NOT clean and HEAD is eec2397, not
+#             7f9b959 — ~1,551 uncommitted insertions across 12 files at creation, growing to
+#             ~1,750 across 13 within hours (1.9's Decision-3 work and 1.14's review patches).
+#             Touches pipeline/precompute/ (all new) + the checks/test_runner/README seams only;
+#             /contract, app/, spike/ and every other pipeline subpackage are import-only.
 # 2026-07-27: story 1-9 adversarial code review (3 layers over the 1.9-scoped diff of
 #             7279637..7306d7b): 39 raw findings merged to 33 — 3 decisions ruled, 22
 #             patches applied, 7 deferred, 1 dismissed then UN-dismissed and patched.
@@ -1436,13 +1575,13 @@ development_status:
   1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
   1-8-momentum-series-extraction-oq-5-resolution: done
-  1-9-domains-e-f-extraction-goalkeeping-set-plays: in-progress
+  1-9-domains-e-f-extraction-goalkeeping-set-plays: review
   1-10-domain-g-extraction-per-player-performance-physical-data: done
   1-11-crosses-map-parser: done
   1-12-defensive-actions-map-parser: done
   1-13-offers-movement-to-receive-parsers: done
   1-14-pass-network-extraction-nodes-edges: done
-  1-15-cross-match-identity-resolution-normalized-spine: backlog
+  1-15-cross-match-identity-resolution-normalized-spine: review
   # BLOCKED-pending CS-1 (Story 2.3 sign-off change-set: ShotOutcomeDetail enum + map +
   # pipeline constant/test updates — see deferred-work.md "Filed by Story 2.3 sign-off").
   # Do NOT start 1-16 before CS-1 lands as its atomic AD-14 bump commit.

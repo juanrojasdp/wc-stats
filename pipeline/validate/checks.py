@@ -78,8 +78,17 @@ Registered here today:
                           reconciliation, plus the row and total BOUNDS against Domains G
                           and B when those are available), as deviations (Story 1.14)
 
+  identity-completeness   every lineup entry mints a player slug satisfying the contract
+                          PlayerId, no two entries on this report collide, and both
+                          (team_id, team_code) pairs agree with the committed slug
+                          registry (Story 1.15)
+  identity-pinning        every lineup entry already pinned in the committed registry
+                          still mints its pinned id — AD-3's "an id, once emitted, never
+                          changes", sampled (Story 1.15). An ABSENT pin is a new entity
+                          and emits nothing.
+
 Later stories add, for example:
-  1.15 player identity resolution
+  1.16 bundle emission
 """
 
 from __future__ import annotations
@@ -135,6 +144,11 @@ from pipeline.markers.receiving import (
     receiving_self_validation_block,
 )
 from pipeline.markers.shots import parse_shots
+from pipeline.precompute import slug_registry as SLUG_REGISTRY
+from pipeline.precompute.errors import PrecomputeError
+from pipeline.precompute.identity import REPORT_ID_RE as PRECOMPUTE_REPORT_ID_RE
+from pipeline.precompute.identity import pin_key as precompute_pin_key
+from pipeline.precompute.identity import player_slug as precompute_player_slug
 from pipeline.validate.deviations import Deviation, DeviationCategory
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -1480,10 +1494,12 @@ def _check_goalkeeping_completeness(
 
     An off-palette distribution marker is the same phenomenon as an off-palette shots
     marker and lands in the same `unknown-rgb` bucket. Every other typed extract failure —
-    a page that resists its family's grammar, a chart whose scale cannot be established, a
-    value that fails its expected type, a team with no goalkeeper in the lineup — is a
+    a page that resists its family's grammar, a chart whose value scale cannot be
+    established, a chart whose x-ticks cannot pin the slot -> match-clock mapping, a value
+    that fails its expected type, a team with no goalkeeper in the lineup — is a
     `probe-failure` finding naming the typed class, so the localization histogram can
-    separate the four families' failure modes.
+    separate the four families' failure modes, and the involvement chart's two axes from
+    each other (`InvolvementChartError` vs `InvolvementClockError`).
 
     A raising `PipelineError` bug propagates once and is recorded against this check's id
     while `goalkeeping-counts` swallows it (Task 7.4). The same non-`PipelineError` caveat
@@ -1704,5 +1720,195 @@ register_check(
         check_id="pass-network-counts",
         applies_to=lambda meta: True,
         run=_check_pass_network_counts,
+    )
+)
+
+
+# --------------------------------------------------------------------------- Story 1.15
+#
+# Identity resolution is a CORPUS-level phase (`pipeline/precompute/`), and these two
+# checks are not it. They are per-report by the gate's own contract, and they read the
+# lineup page of each SAMPLED report only.
+#
+# Neither check reads an Extraction Record or the staged spine. They re-mint slugs
+# straight from the lineup page and compare them against the committed registry, which is
+# what makes them a genuine cross-check of the registry rather than a restatement of it:
+# a registry regenerated from stale records would still have to agree with the PDF.
+
+
+def _identity_team_context(meta: ReportMeta) -> "tuple[dict[str, str], dict[str, str]]":
+    """`({side: team_id}, {side: team_code})` for one report.
+
+    Team codes come from `report_id` by the same pattern `pipeline.precompute.identity`
+    uses — the codes have no other producer anywhere in the pipeline — and team ids from
+    `team_slug`, so both agree with precompute by construction rather than by convention.
+    """
+    matched = PRECOMPUTE_REPORT_ID_RE.match(meta.report_id)
+    if matched is None:
+        raise PrecomputeError(
+            f"report id {meta.report_id!r} does not match "
+            f"{PRECOMPUTE_REPORT_ID_RE.pattern!r}, so its team codes cannot be read",
+            meta.report_id,
+        )
+    team_ids = {"home": team_slug(meta.home_team), "away": team_slug(meta.away_team)}
+    codes = {"home": matched.group(1).lower(), "away": matched.group(2).lower()}
+    return team_ids, codes
+
+
+def _check_identity_completeness(
+    doc: "pymupdf.Document", meta: ReportMeta
+) -> list[Deviation]:
+    """Every lineup entry mints a valid, unique player id on this report (Story 1.15).
+
+    **This check covers only the SAMPLED reports.** The corpus-wide guarantee — that all
+    1,248 players across all 104 reports resolve without collision — is `resolve_players`
+    inside the precompute CLI, not this gate. A reviewer reading "identity-completeness
+    passed" as "the whole tournament resolves" is reading it wrong.
+
+    A typed precompute failure (`PlayerSlugError` for a name that mints nothing valid,
+    `PrecomputeError` for an unreadable report id) is a `probe-failure` naming the class.
+    An in-report collision — two lineup entries minting one id — is a `count-mismatch`,
+    because it is a statement about counts of distinct entities, not about a page that
+    failed to parse.
+
+    A Domain A failure is NOT re-reported here: it is `domain-a-completeness`'s finding,
+    and counting one root cause under two ids is what the memo convention exists to avoid.
+    """
+    try:
+        domain_a = _domain_a_payload(doc, meta)
+    except PipelineError:
+        return []
+    if domain_a is None:
+        return []
+
+    try:
+        team_ids, codes = _identity_team_context(meta)
+    except PrecomputeError as exc:
+        return [
+            Deviation(
+                report_id=meta.report_id,
+                check="identity-completeness",
+                category=DeviationCategory.PROBE_FAILURE,
+                specifics=f"{type(exc).__name__}: {exc.reason}",
+            )
+        ]
+
+    deviations: list[Deviation] = []
+    for side in ("home", "away"):
+        team_id, code = team_ids[side], codes[side]
+        pinned_code = SLUG_REGISTRY.TEAM_CODES.get(team_id)
+        if pinned_code is not None and pinned_code != code:
+            deviations.append(
+                Deviation(
+                    report_id=meta.report_id,
+                    check="identity-completeness",
+                    category=DeviationCategory.COUNT_MISMATCH,
+                    specifics=(
+                        f"{side} team {team_id!r} carries code {code!r} on this report "
+                        f"but the committed registry pins {pinned_code!r}"
+                    ),
+                )
+            )
+
+    minted: dict[str, tuple[str, int]] = {}
+    for side in ("home", "away"):
+        for section in ("starters", "substitutes"):
+            for entry in domain_a["lineups"][side][section]:
+                try:
+                    slug = precompute_player_slug(entry["name"], codes[side])
+                except PrecomputeError as exc:
+                    deviations.append(
+                        Deviation(
+                            report_id=meta.report_id,
+                            check="identity-completeness",
+                            category=DeviationCategory.PROBE_FAILURE,
+                            specifics=f"{type(exc).__name__}: {exc.reason}",
+                        )
+                    )
+                    continue
+                owner = minted.get(slug)
+                if owner is not None:
+                    deviations.append(
+                        Deviation(
+                            report_id=meta.report_id,
+                            check="identity-completeness",
+                            category=DeviationCategory.COUNT_MISMATCH,
+                            specifics=(
+                                f"player id {slug!r} is minted twice on this report: "
+                                f"{owner[0]!r} (shirt {owner[1]}) and "
+                                f"{entry['name']!r} (shirt {entry['shirt_number']})"
+                            ),
+                        )
+                    )
+                    continue
+                minted[slug] = (entry["name"], entry["shirt_number"])
+    return deviations
+
+
+def _check_identity_pinning(doc: "pymupdf.Document", meta: ReportMeta) -> list[Deviation]:
+    """A pinned player id must still be what this report mints (AD-3, Story 1.15).
+
+    **This check covers only the SAMPLED reports**, like its sibling — see
+    `_check_identity_completeness`. The corpus-wide pinning guarantee is `check_pins`
+    inside the precompute CLI.
+
+    An **absent** pin is a new entity, which is normal on a growing corpus and emits
+    nothing. What is reported is a pin that DISAGREES with the freshly minted id, naming
+    both, because that is an id changing after it was emitted.
+
+    A slug this report cannot mint at all is `identity-completeness`'s finding and is
+    swallowed here, so one bad name is not counted under two ids.
+    """
+    try:
+        domain_a = _domain_a_payload(doc, meta)
+    except PipelineError:
+        return []
+    if domain_a is None:
+        return []
+    try:
+        team_ids, codes = _identity_team_context(meta)
+    except PrecomputeError:
+        return []
+
+    pins = SLUG_REGISTRY.PINS.get("players", {})
+    deviations: list[Deviation] = []
+    for side in ("home", "away"):
+        for section in ("starters", "substitutes"):
+            for entry in domain_a["lineups"][side][section]:
+                key = precompute_pin_key(team_ids[side], entry["shirt_number"])
+                pinned = pins.get(key)
+                if pinned is None:
+                    continue
+                try:
+                    slug = precompute_player_slug(entry["name"], codes[side])
+                except PrecomputeError:
+                    continue
+                if slug != pinned:
+                    deviations.append(
+                        Deviation(
+                            report_id=meta.report_id,
+                            check="identity-pinning",
+                            category=DeviationCategory.COUNT_MISMATCH,
+                            specifics=(
+                                f"{key} is pinned to {pinned!r} but {entry['name']!r} "
+                                f"on this report mints {slug!r}"
+                            ),
+                        )
+                    )
+    return deviations
+
+
+register_check(
+    Check(
+        check_id="identity-completeness",
+        applies_to=lambda meta: True,
+        run=_check_identity_completeness,
+    )
+)
+register_check(
+    Check(
+        check_id="identity-pinning",
+        applies_to=lambda meta: True,
+        run=_check_identity_pinning,
     )
 )

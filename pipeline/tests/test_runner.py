@@ -136,7 +136,8 @@ def test_checks_run_are_recorded(spike_corpus):
     # defensive-actions pair and Story 1.10 the domain-g pair, both in sorted position,
     # for the same reason; Story 1.13 the receiving pair and Story 1.8 the momentum pair,
     # likewise. Story 1.9 adds the goalkeeping and set-plays pairs, in sorted position;
-    # Story 1.14 the pass-network pair, likewise.
+    # Story 1.14 the pass-network pair, likewise. Story 1.15 adds the identity pair, also
+    # in sorted position — between `goalkeeping-counts` and `marker-event-link-rate`.
     report = run_verification(spike_corpus)
     assert report["checks_run"] == [
         "anchor-coverage",
@@ -154,6 +155,8 @@ def test_checks_run_are_recorded(spike_corpus):
         "domain-g-counts",
         "goalkeeping-completeness",
         "goalkeeping-counts",
+        "identity-completeness",
+        "identity-pinning",
         "marker-event-link-rate",
         "metadata-probe",
         "momentum-axis-scale",

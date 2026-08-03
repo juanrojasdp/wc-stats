@@ -330,6 +330,9 @@ pipeline/
               crosses, defensive actions, and receiving — which turned out to draw no
               markers at all and stages values, but composes the chain as its
               template-revision tripwire; see "The receiving domain")
+  precompute/ AD-9's SECOND phase — cross-match identity resolution, the committed slug
+              registry, and the normalized spine. The only phase that is global rather
+              than per-report, and the only one that reads no PDF at all
   validate/   check registry, sample selection, verification runner, CLI
   tests/      pytest suite
 ```
@@ -1025,9 +1028,53 @@ fit entirely: over all 208 charts / **21,764 dots** the worst deviation from an 
 Slot counts are **per report** — 95–111 regulation and 129–145 extra time, measured — and
 are never hard-coded.
 
+#### The chart's TIME axis — slot → match clock
+
+The slot count alone does not tell Story 2.10 what minute a slot is, so the mapping is
+derived from the chart's own printed x-ticks and staged as `involvement_clock`
+(`second_half_slot` / `first_extra_slot` / `second_extra_slot`, plus one flat
+`{minute, stoppage_minute}` stamp per slot). The method is Story 1.8's; the code is its
+own, because the tick grammar is materially different:
+
+| | momentum (1.8) | involvement (1.9) |
+| --- | --- | --- |
+| `FT` tick | 94/104 | **never printed** |
+| `HT` tick | 101/104 | **122/208** |
+| stoppage ticks | none | `45+N` (110 charts), `90+N` (214), `120+N` (4) |
+| last tick vs last slot | FT *is* the last slot | last tick is **0–7 slots before** the grid end |
+
+Every relation below was measured over all 208 charts / 4,336 tick readings with **0
+deviations**: the origin tick `0` on slot 0 (208/208); first-half tick `M` on slot `M-1`
+(1,872/1,872); `45+N` on slot `44+N` (110/110); every second-half tick agreeing on one
+minute-46 slot (208/208) and equal to the `HT` tick wherever it is printed (122/122);
+`90+N` on `m46+44+N` (214/214); and both extra periods unanimous across their own ticks
+(18/18 charts). Each boundary is pinned by **every** tick that speaks to it and the
+candidates must agree, so on a typical chart a dozen independent readings have to line up
+before one minute is staged.
+
+Two measured findings shape the reader:
+
+- **The tick row must be read character-level, not span-level.** pymupdf merges adjacent
+  same-font inserts, and the two reports whose half-time tick sits one slot after the 45'
+  tick (`PMSR-M86-ARG-V-CPV`, `PMSR-M100-ARG-V-SUI`) hand back a single `'45HT'` span whose
+  centre is neither tick's. Runs break on the digit-class boundary with `+` folded in
+  *with* the digits, so `45HT` splits while `90+5` stays whole. This is Story 1.7's
+  merged-span lesson and momentum's `_tick_runs` arriving at the same place.
+- **`PMSR-M88-AUS-V-EGY` draws a 14-slot first extra period** on both charts — it prints
+  no `105'` tick, and its `110'` tick sits one slot earlier than a 15-minute ET1 would put
+  it. The page is internally consistent and simply says minute 105 has no slot, so the
+  parser does **not** assert that a period ran its regular length; the short period is
+  recorded in `goalkeeping-involvement-clock`'s specifics and filed in `deferred-work.md`.
+  Failing that report would be asserting football over the source.
+
+This also retires the "extra-time tick collision" left open at code review. The collision
+was in the *naive* reading — extending the second-half formula to minute 95 puts it on the
+same slot as `90+5` — not in the data: across all 18 extra-time charts the `95'` tick sits
+5–9 slots after the last `90+N` tick, and the printed ticks are what the mapping reads.
+
 ### Recorded Self-Validation checks
 
-Seven ids, all binary, all appended after every existing appender:
+Eight ids, all binary, all appended after every existing appender:
 
 | id | relation | corpus |
 | --- | --- | --- |
@@ -1036,6 +1083,7 @@ Seven ids, all binary, all appended after every existing appender:
 | `goalkeeping-goal-prevention-sum` | Σ(5 intervention types) `==` attempts faced, and the KPI tile agrees with the table | exact 208/208 |
 | `goalkeeping-aerial-sum` | Σ(6 delivery types) `==` printed total | exact 208/208 |
 | `goalkeeping-involvement-bound` | Σ(series) **<=** printed total | true 208/208 |
+| `goalkeeping-involvement-clock` | the staged clock opens at kick-off, advances strictly and ends in the final period | true 208/208 |
 | `set-plays-corner-sides` | Σleft + Σright `==` total corners, and per row `total == left + right` | exact 208/208 |
 | `set-plays-totals` | FK + PEN + COR + THR `==` total set plays; `direct + indirect == total free kicks`; Σ(delivery-type row totals) `==` total corners | exact 208/208 |
 
@@ -1054,6 +1102,13 @@ Seven ids, all binary, all appended after every existing appender:
   the **exact union** of the other three on every case examined, so the drawn set is
   self-consistent and the map simply plots more feet distributions than the technique donut
   counts. Every panel's delta is recorded in `specifics`.
+
+`goalkeeping-involvement-clock` is a **backstop, not a cross-check**, and the distinction
+is the same one momentum's `momentum-coverage` docstring draws: every clock inconsistency it
+could describe is already a typed `InvolvementClockError` that aborts the report before a
+clock is staged. What it adds is a record of the derived stoppage allotments and of any
+period drawn short, written into `specifics` on **every** report — neither is part of its
+pass/fail predicate.
 
 ### Relations that are corpus-FALSE and are deliberately NOT shipped
 
@@ -1299,3 +1354,226 @@ The panel's **player names are not staged and are not a check operand**: they wr
 lines on 12 of 208 innings and the percentages alone carry the whole reconciliation. A later
 story that wants the names owes the wrap recipe (the `crosses.py` / `defensive_actions.py`
 precedent), not a guess.
+
+## Cross-match identity and the normalized spine — precompute (Story 1.15)
+
+Everything above this section is **per-report and pure**: one PDF in, one Extraction
+Record out. `pipeline/precompute/` is the opposite by construction. It is AD-9's **second
+phase**: global, consuming all 104 records in canonical order, and the only phase that
+resolves identity. It is also the first module in the pipeline that reads **no PDF at
+all** — `pymupdf` appears in its production path only through the two FR-15 gate checks,
+which are per-report by the gate's own contract.
+
+```
+pipeline\venv\Scripts\python.exe -m pipeline.precompute.run --expect-records 104
+```
+
+| flag | meaning |
+|---|---|
+| `--manifest` | run manifest to consume (default `work/run-manifest.json`) |
+| `--extracted-dir` | where records are staged (default `work/extracted`) |
+| `--spine-dir` | where the spine is staged (default `work/spine`) |
+| `--data-dir` | committed bundles for the second pinning source (default `data`) |
+| `--write-registry` | regenerate `slug_registry.py` instead of checking against it |
+| `--expect-records N` | assert the manifest names exactly N consumable records |
+
+Exit codes follow the house contract: `0` clean, `1` a finding (a pin would change, an
+override names nobody, a collision, an unresolved reference, a record count that does not
+match `--expect-records`), `2` the harness could not run.
+
+### The manifest is the input, not the directory listing
+
+`load_records` walks `manifest["reports"]` and reads each entry's own `record_path`. It
+never rebuilds a path from `extracted_dir` + `match_id`. `work/extracted/` may hold an
+orphan left by a superseded run, and a directory listing would let it enter the dataset as
+a phantom match.
+
+The filter is on `status` alone — `extracted` or `skipped-unchanged` — and **never on
+`self_validation`**. `PMSR-M19-ARG-V-ALG` and `PMSR-M58-TUN-V-NED` carry
+`self_validation: "fail"`, but their single failing check is
+`defensive-actions-marker-count`, which touches no lineup entry, no name path and no shirt
+number. Excluding them would drop two matches from the tournament over a source defect in
+an unrelated domain. They are ruled consumed.
+
+Canonical order is free: every match id is `m{NNN}-…` with three-digit padding (Story
+1.1's logged decision, bought for exactly this), so lexicographic order **is** ascending
+numeric order and a plain `sorted()` is canonical.
+
+### The player slug rule — the caps-run rule
+
+No record carries surname and given name separately; `name` is one printed string, and the
+corpus prints at least four incompatible grammars over its 5,392 lineup entries:
+
+| signature | entries | example | |
+|---|---|---|---|
+| `uU` | 4,191 | `Raul RANGEL` | given first, surname in caps |
+| `UU` | 707 | `GABRIEL MAGALHAES` | all caps — the boundary is unknowable |
+| `uUU` | 168 | `Luc DE FOUGEROLLES` | multi-token surname |
+| `U` | 107 | `ALISSON` | mononym — no split exists |
+| `uuU` | 81 | `Juan Jose CACERES` | multi-token given name |
+| `Uu` | 78 | `KIM Seunggyu` | **surname FIRST** — every Korea Republic player |
+| `uu` | 25 | `Weston McKENNIE` | no all-caps token at all |
+| `UUU` / `uuUU` / `uUUU` / `uuuU` | 35 | `Micky VAN DE VEN` | |
+
+**The rule:** the all-caps tokens are the surname, *wherever in the string they sit*; the
+remaining tokens are the given name in printed order; if there are no caps tokens **or** no
+remainder, the name slugs **as listed**. Then `{surname}-{givenName}-{teamCode}`, or
+`{name}-{teamCode}` in the fallback. Both branches append the team code — a two-segment
+slug validates clean as a `TeamId` and produces a dead route, a defect that shipped once.
+
+**The rule is validated, not asserted, and only one check can validate it.** It reproduces
+**155 of 155** distinct player ids in the committed `data/fixtures/matches/*.json` bundles
+with 0 mismatches, and yields 1,248 collision-free slugs over the corpus. The rejected
+"last token is the surname" rule **also** yields 1,248 unique collision-free slugs — it
+differs on 1,009 entries and inverts all 26 Korea Republic players — so **a collision count
+cannot discriminate between the two rules and only the fixture reproduction can.** That is
+why `test_the_caps_run_rule_reproduces_every_committed_fixture_player_id` is the acceptance
+check, and why the mutation check mutates to *last-token* rather than to trailing-caps
+(trailing-caps is behaviourally identical on 5,392/5,392, because `'Seunggyu'.isupper()` is
+`False`).
+
+Walk **both** `players[]` and `metadata.lineups.*[]` when reading the fixtures: 59 of the
+155 ids are reachable only through the lineups, including the two-token-surname case
+`romero-gamarra-alejandro-par`, which appears in exactly one substitutes list.
+
+**Declared residual:** 219 players / 856 entries take the as-listed fallback and therefore
+slug given-name-first. Every one is unique, stable and pattern-valid; the cost is cosmetic
+URL ordering, not correctness. It is a **per-team printing convention** — eight teams print
+all 26 of their players in caps and contribute 208 of the 219 — so it is filed for a
+per-team ruling, and `OVERRIDES` exists so the ruling lands as data rather than code.
+
+### Team codes have no other producer
+
+`teamCode` is the trailing segment of every `PlayerId` and exists nowhere in the pipeline
+except inside `report_id` (`PMSR-M01-MEX-V-RSA`). It is parsed out, asserted **1:1 in both
+directions over 48 teams and 48 codes**, and committed. It is not derivable: `cpv`, `cuw`,
+`mar`, `ksa`, `esp` and `sui` each carry a letter their team's slug does not contain, and
+no first-three-letters rule produces `rsa` (South Africa) or `cod` (Congo DR) either. A
+code serving two teams would silently merge two squads into one namespace, so it raises.
+
+### OQ-4's three named ambiguous cases are all corpus-EMPTY
+
+Measured over 5,392 lineup entries / 1,248 distinct players:
+
+| case | corpus count |
+|---|---|
+| non-ASCII character in any player name | **0** of 1,247 distinct names |
+| normalized name + team collisions | **0** |
+| players wearing more than one shirt | **0** (distribution exactly `{1 shirt: 1248}`) |
+| `(team, shirt)` pairs worn by two players | **0** |
+
+So `(team_id, shirt_number)` is by itself a globally unique key, and the AD-3 first-seen
+tiebreak is **dead code on this corpus**. It is implemented anyway because AD-3 mandates it
+and a future corpus could exercise it, but it is reached only by constructed unit tests and
+no fixture pretends it is corpus-real. The NFKD accent fold is kept because the three
+*team* names `Curaçao`, `Türkiye` and `Côte d'Ivoire` genuinely need it; no check asserts a
+non-zero accent-strip count on player names, because that count is zero.
+
+The one real ambiguity the epic never named is the surname/given-name split. The one real
+cross-team repeat is `Emiliano MARTINEZ` — Argentina #23 and Uruguay #15, two different
+people. Team code is part of the id, so they separate; drop the code and
+`martinez-emiliano` is the corpus's only slug collision.
+
+### The slug registry is Python, and that is load-bearing
+
+`pipeline/precompute/slug_registry.py` is **generated** (`--write-registry`) and holds
+`TEAM_CODES` (48), `PINS` (`matches` 104, `players` 1,248, `teams` 48) and `OVERRIDES`
+(empty). All maps sorted by key, so a `git diff` of a regeneration reads as exactly the
+entities that changed. Regeneration is byte-identical: fixed formatting, LF endings,
+trailing newline, nothing read from the clock or the environment.
+
+It is Python because AD-8 requires the code version to include the committed slug registry
+and `code_version()` fingerprints `pipeline/**/*.py`. A `.json` registry falls outside that
+glob, so the guarantee would silently stop holding — moving it would also require widening
+`EXTRA_FINGERPRINTED_FILES` in `pipeline/ingest/fingerprint.py`, a step whose omission is
+silent. **Committing the registry changes `code_version()` and invalidates all 104 staged
+records, forcing one full re-extract. That is the fingerprint working as designed.**
+
+The pin key is `(team_id, shirt_number)`, serialized `f"{team_id}#{shirt_number}"` — one
+form everywhere. `OVERRIDES` is applied **before** pinning, so an override is what gets
+pinned; an override naming a key that resolves to nobody fails loud, because a stale
+override is how a registry rots silently.
+
+### Pinning has two sources, and the second one does not exist yet
+
+- **`PINS`** is the immutability baseline from run one. A later run minting a *different*
+  id for an already-pinned key fails loud. An **absent** pin is a new entity — normal on a
+  growing corpus — and does not fail.
+- **The `/data` diff** reads every `matchId` / `teamId` / `winnerTeamId` / `playerId` /
+  `scorerPlayerId` / `fromPlayerId` / `toPlayerId` in `data/matches/*.json` and asserts
+  set-containment against `PINS`.
+
+`data/matches/` **does not exist** and will not until Story 1.16 emits. So the run prints
+`committed /data baseline unavailable … This is NOT a pass` and never reports success on a
+baseline it never had — a check that returned green there would be a gate that cannot fail.
+
+### The spine ADDS ids; it never removes names
+
+`work/spine/entities.json` carries `teams` / `players` / `matches`, modelled on the
+committed `data/fixtures/index/tournament.json` `entities` block so Story 1.16 emits from
+it without a reshape. Each player carries a diagnostic `slug_source`
+(`caps-run` | `as-listed` | `override`) — not identity, but what makes "which players slug
+given-name-first?" a query rather than a re-derivation.
+
+`work/spine/matches/{match_id}.json` is the record's `domains` block **structurally
+unchanged, with an `*_id` field added beside every name field**, plus a `spine` header. No
+key removed, no list reordered, nothing deduped: diffing a record against its spine file
+shows only additions. That is not a style choice — `playerName` is `required` in eight
+`$defs` of `match-bundle.schema.json`, and every committed fixture row carries `playerId`
+**and** `playerName` side by side, so a name-stripping spine could not be emitted from.
+
+Measured on the real corpus: **73,065 ids added across exactly 25 name paths**, matching
+the independently measured 73,065 player-name occurrences one for one, plus the display
+team names.
+
+**23 of the 25 paths carry a shirt companion** and resolve on `(side, shirt_number)` with
+the name as the *corroborating* key — the inverse of the extract layer's convention, and
+correct here because this phase has a cross-report anchor the extract layer did not. A name
+disagreeing with its shirt raises, with the name in `repr()` (a mis-inserted space breaks a
+join on a name that looks right). **The two `receiving.offers.{side}.most_offers` paths
+carry no shirt at all** — 208 occurrences — and resolve by verbatim name against that
+match's lineup index. They are a required 1.16 input and are never skipped.
+
+Because the spine only adds, the exhaustiveness assertion is the **inverse** of a coverage
+list: walk the staged spine and assert every string equal to a known player name has a
+resolved id sibling on the same object. That is what makes the 25-path inventory
+self-maintaining — a 26th path added by a future story fails loudly instead of passing
+through unresolved, and a hardcoded list would silently stop being complete. The negative is
+pinned directly (`test_the_exhaustiveness_assertion_is_not_vacuous`), because an
+exhaustiveness check that has never failed is not evidence.
+
+Goals, own goals, cards and `substituted_on` / `substituted_off` are nested **inside** the
+owning lineup entry and carry only a minute, so resolving the entry resolves them — nothing
+is restructured. `goalkeeping.{side}.goalkeepers[]` duplicates name + shirt from Domain A
+and is reconciled to the **same** id rather than resolved independently. All-zero
+pass-network nodes are **not** pruned: 43 exist corpus-wide and every one keeps a resolved
+id.
+
+`matchdayRound` is required by both bundle schemas and no extractor produces it, so it is
+derived here with `pipeline.discover.rounds.assign_matchday_rounds`. **This is the one place
+the record's top-level `metadata` block is authoritative over `domains.match_metadata`**:
+`domains` has no `stage_text`, lowercases `group`, and carries a full ISO `kickoff` that
+raises `ValueError` inside `ReportMeta.kickoff_sort_key`. Note that `metadata` carries
+neither `report_id` nor `source_path` — both come from the record's top level. Any
+unresolved round is a failure, never a guess.
+
+### Two FR-15 gate checks, and what they do NOT cover
+
+`identity-completeness` (every lineup entry mints a valid, unique id; both team codes agree
+with the registry) and `identity-pinning` (a pinned id still mints as pinned; an absent pin
+emits nothing). Both are per-report, re-mint straight from the lineup page, and read
+neither a record nor the spine — which makes them a real cross-check of the registry rather
+than a restatement of it.
+
+**Both cover only the sampled reports.** The corpus-wide guarantee is `check_pins` inside
+the precompute CLI, not the gate. Reading "identity-pinning passed" as "all 104 reports are
+pinned" is reading it wrong.
+
+### Out of scope, deliberately
+
+The camelCase mapping, `schemaVersion` stamping, budget measurement, the knockout score
+shape, `storyStats`, aggregation, leaderboards and profiles are all Story 1.16's and
+1.17's. **AC 2's "and aggregates" clause is explicitly deferred to Story 1.17**: no
+aggregate exists yet to reference an id, and building one here would smuggle 1.17's work
+into a story whose deliverable is the namespace. What 1.15 owes that clause is the
+guarantee that makes it cheap — one id per entity, minted once, pinned.
