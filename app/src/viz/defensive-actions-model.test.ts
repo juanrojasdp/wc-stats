@@ -11,6 +11,8 @@ import type {
 import {
   DEFENSIVE_ACTION_TYPES,
   anyContestType,
+  anyMinute,
+  anyPlayerName,
   defensiveActionKey,
   defensiveFigureCount,
   defensiveLegend,
@@ -99,9 +101,27 @@ describe("DEFENSIVE_ACTION_TYPES (ruled decision 16)", () => {
      * encoding table would assert a visual treatment for two values that can
      * never appear on the map. This module exports no such table.
      */
+    /*
+     * REVIEW PATCH: this used to assert `typeof asRecord.length === "number"`
+     * and `Array.isArray(...)` — both true for ANY array, and neither bearing
+     * on the property claimed. What actually distinguishes an ordered code list
+     * from an encoding table is that its entries are bare enum CODES carrying
+     * no visual treatment, and that the order is the schema's.
+     */
+    expect(DEFENSIVE_ACTION_TYPES).toEqual([
+      "forced-turnover",
+      "possession-regain",
+      "block",
+      "possession-contest",
+    ]);
+    for (const entry of DEFENSIVE_ACTION_TYPES) {
+      expect(typeof entry).toBe("string");
+    }
+    // An encoding table would map each code to a shape/colour. Nothing here does.
     const asRecord = DEFENSIVE_ACTION_TYPES as unknown as Record<string, unknown>;
-    expect(typeof asRecord.length).toBe("number");
-    expect(Array.isArray(DEFENSIVE_ACTION_TYPES)).toBe(true);
+    for (const code of DEFENSIVE_ACTION_TYPES) {
+      expect(asRecord[code]).toBeUndefined();
+    }
   });
 });
 
@@ -282,8 +302,20 @@ describe("defensiveRows (Task 3.6)", () => {
       const events = eventsOf(bundle);
       const rows = defensiveRows(events, home, away);
       expect(rows).toHaveLength(events.length);
+      /*
+       * `minute` is `number | null` — null when the event carries no clock,
+       * never a fabricated 0 (see the row interface). Clock-less rows sort
+       * LAST, so the invariant is: every non-null minute is non-decreasing, and
+       * no null appears before a non-null.
+       */
       let previous = -1;
+      let seenNull = false;
       for (const row of rows) {
+        if (row.minute === null) {
+          seenNull = true;
+          continue;
+        }
+        expect(seenNull, "a clock-less row must never precede a clocked one").toBe(false);
         expect(row.minute).toBeGreaterThanOrEqual(previous);
         previous = row.minute;
       }
@@ -331,23 +363,23 @@ describe("defensiveRows (Task 3.6)", () => {
 });
 
 describe("defensiveFigureCount", () => {
-  it("counts only the types actually present, never a fixed four (decision 5)", () => {
+  /*
+   * RULED at code review, amending decision 5: the chip carries THE TOTAL and
+   * nothing else, and `byType` is deleted. Decision 19 deliberately refuses to
+   * distinguish forced-turnover from possession-regain on the map — one shape,
+   * one colour per team — so a chip enumerating them beside that legend would
+   * claim a distinction the map does not draw. The per-type breakdown still
+   * reaches the reader through the accessible name, the popover and the log's
+   * action-type column.
+   */
+  it("returns the total and nothing else", () => {
     const { home, away } = sides(m001);
     const markers = defensiveMarkers(eventsOf(m001), home, away);
-    const counts = defensiveFigureCount(markers.home);
-    expect(counts.total).toBe(markers.home.length);
-    for (const entry of counts.byType) {
-      expect(entry.count).toBeGreaterThan(0);
-    }
-    expect(counts.byType.map((entry) => entry.code)).toEqual(
-      DEFENSIVE_ACTION_TYPES.filter((code) =>
-        counts.byType.some((entry) => entry.code === code)
-      )
-    );
+    expect(defensiveFigureCount(markers.home)).toEqual({ total: markers.home.length });
   });
 
-  it("enumerates NOTHING for an empty side", () => {
-    expect(defensiveFigureCount([])).toEqual({ total: 0, byType: [] });
+  it("counts nothing for an empty side", () => {
+    expect(defensiveFigureCount([])).toEqual({ total: 0 });
   });
 });
 
@@ -426,11 +458,61 @@ describe("the corpus-real event shape (Task 3.7)", () => {
     expect(rows.every((row) => row.minuteLabel === null)).toBe(true);
   });
 
-  it("counts only the ONE type present, never a fixed four", () => {
+  it("counts the total only — the chip never enumerates types (ruled at review)", () => {
     const markers = defensiveMarkers([CORPUS_SHAPED_EVENT], HOME, AWAY);
-    expect(defensiveFigureCount(markers.home)).toEqual({
-      total: 1,
-      byType: [{ code: "possession-regain", count: 1 }],
-    });
+    expect(defensiveFigureCount(markers.home)).toEqual({ total: 1 });
+  });
+
+  /*
+   * THE FD-1 WHOLE-COLUMN GATE ON ALL THREE ABSENT-ON-CORPUS FIELDS (ruled at
+   * code review, extending decision 20). This is the shape that matters: on
+   * real data the log keeps team, x, y and action type, and drops player,
+   * minute and contest type entirely rather than shipping three columns of em
+   * dashes. No fixture can produce it.
+   */
+  it("gates the player, minute AND contest columns away on corpus-real rows", () => {
+    const rows = defensiveRows([CORPUS_SHAPED_EVENT], HOME, AWAY);
+    expect(anyPlayerName(rows)).toBe(false);
+    expect(anyMinute(rows)).toBe(false);
+    expect(anyContestType(rows)).toBe(false);
+  });
+
+  it("keeps each column the moment ONE row carries that field", () => {
+    const withClock = {
+      ...CORPUS_SHAPED_EVENT,
+      at: { minute: 12, stoppageMinute: null },
+    } as unknown as DefensiveActionEvent;
+    const withPlayer = {
+      ...CORPUS_SHAPED_EVENT,
+      playerName: "Someone",
+    } as unknown as DefensiveActionEvent;
+    expect(anyMinute(defensiveRows([CORPUS_SHAPED_EVENT, withClock], HOME, AWAY))).toBe(true);
+    expect(anyPlayerName(defensiveRows([CORPUS_SHAPED_EVENT, withPlayer], HOME, AWAY))).toBe(true);
+  });
+
+  /*
+   * `minute` is NULL, never a fabricated 0. Story 2.11's sort plug-in attaches
+   * to this field; a `?? 0` would have ordered the whole corpus log as minute 0
+   * while `orderByMinute` sorted those same rows last.
+   */
+  it("leaves minute and stoppageMinute NULL on a clock-less row", () => {
+    const [row] = defensiveRows([CORPUS_SHAPED_EVENT], HOME, AWAY);
+    expect(row.minute).toBeNull();
+    expect(row.stoppageMinute).toBeNull();
+    expect(row.minuteLabel).toBeNull();
+  });
+
+  /*
+   * `x`/`y` were the only fields read without a guard, and a non-finite
+   * coordinate reached formatDecimal's assertFinite INSIDE the lazily mounted
+   * disclosure — so the throw landed when a reader opened "Ver los datos",
+   * taking all eleven Tactical sections down. It now fails loud at model entry,
+   * on load, naming itself — the resolveSide precedent.
+   */
+  it("fails LOUD at load on a non-finite coordinate, not lazily in the table", () => {
+    const noCoords = { ...CORPUS_SHAPED_EVENT, x: undefined } as unknown as DefensiveActionEvent;
+    expect(() => defensiveMarkers([noCoords], HOME, AWAY)).toThrow(/non-finite coordinate/);
+    expect(() => defensiveRows([noCoords], HOME, AWAY)).toThrow(/non-finite coordinate/);
+    expect(() => defensiveRows([noCoords], HOME, AWAY)).toThrow(/artifact index 0/);
   });
 });

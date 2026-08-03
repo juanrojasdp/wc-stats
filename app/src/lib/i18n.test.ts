@@ -4,10 +4,11 @@ import { en } from "@/locales/en";
 import { es } from "@/locales/es";
 import type { PossessionContestType } from "@/lib/contract/contract-types";
 import { t, type Locale } from "@/lib/i18n";
-import { KEY_STAT_FIELDS } from "@/lib/tactical-sections";
+import { KEY_STAT_FIELDS, sectionTitleKey } from "@/lib/tactical-sections";
 import { CROSS_DELIVERY_TYPES, crossDeliveryKey } from "@/viz/cross-map-model";
 import {
   DEFENSIVE_ACTION_TYPES,
+  POSSESSION_CONTEST_TYPES,
   defensiveActionKey,
   possessionContestKey,
 } from "@/viz/defensive-actions-model";
@@ -177,14 +178,14 @@ describe("enums.shotOutcome / enums.crossDelivery (AD-7)", () => {
  */
 describe("enums.offerMovement / defensiveAction / possessionContest (AD-7)", () => {
   const locales: Locale[] = ["es", "en"];
-  const CONTEST_TYPES: PossessionContestType[] = [
-    "pass",
-    "attempt-at-goal",
-    "cross",
-    "clearance",
-    "physical-duel",
-    "aerial-duel",
-  ];
+  /*
+   * REVIEW PATCH: this list used to be hand-copied here while its two siblings
+   * were imported, contradicting the docblock above ("driven by the frozen
+   * ordered lists the models export"). A seventh contest code would have needed
+   * two files edited to be caught, and the label-resolution loop below would
+   * simply never have visited it. Now imported like the others.
+   */
+  const CONTEST_TYPES: readonly PossessionContestType[] = POSSESSION_CONTEST_TYPES;
 
   it("has exactly one entry per OfferMovementType value", () => {
     expect(Object.keys(es.enums.offerMovement).sort()).toEqual([...OFFER_MOVEMENT_TYPES].sort());
@@ -246,6 +247,23 @@ describe("enums.offerMovement / defensiveAction / possessionContest (AD-7)", () 
 describe("the receiving empty-state override (ruled decision 4)", () => {
   it("differs from the generic copy in BOTH halves and BOTH locales", () => {
     for (const locale of ["es", "en"] as Locale[]) {
+      /*
+       * REVIEW PATCH: this compared the override against
+       * `tactical.empty.headlineBefore` — a FRAGMENT ("Sin datos de") that
+       * `EmptyStatePanel` composes with the section title. A full sentence is
+       * trivially unequal to a fragment, so the assertion passed no matter
+       * what, and would still have passed if the override had been set to the
+       * composed generic headline — which is the exact regression ruled
+       * decision 4 exists to prevent. Compare against the COMPOSED string, for
+       * both receiving sections.
+       */
+      const composedGeneric = (title: string) =>
+        `${t("tactical.empty.headlineBefore", locale)} ${title} ${t("tactical.empty.headlineAfter", locale)}`;
+      for (const id of ["offers-to-receive", "movement-to-receive"] as const) {
+        expect(t("tactical.empty.receivingHeadline", locale)).not.toBe(
+          composedGeneric(t(sectionTitleKey(id), locale))
+        );
+      }
       expect(t("tactical.empty.receivingHeadline", locale)).not.toBe(
         t("tactical.empty.headlineBefore", locale)
       );

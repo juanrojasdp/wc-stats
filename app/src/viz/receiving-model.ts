@@ -41,17 +41,28 @@ import { resolveSide, type LogSide } from "@/viz/marker-model";
  * is the one source carrying the sixth value — and it is 24.9% of all corpus
  * offers. Rendering five would hide a quarter of the data.
  *
- * Typed over the GENERATED union, so a contract enum change is a compile error
- * here rather than a silently missing segment.
+ * DERIVED FROM A RECORD KEYED BY THE GENERATED UNION, so a contract enum change
+ * is a compile error here rather than a silently missing segment.
+ *
+ * REVIEW PATCH: this was a bare `readonly OfferMovementType[]` literal, which
+ * does NOT deliver that guarantee — an array stays assignable however many
+ * members the union gains, and the i18n exhaustiveness suite compares locale
+ * keys against this very array, so a widened enum would have slipped past both.
+ * `Object.keys` preserves insertion order for non-numeric string keys, so the
+ * schema's declaration order is intact.
  */
-export const OFFER_MOVEMENT_TYPES: readonly OfferMovementType[] = [
-  "in-front",
-  "in-between",
-  "out-to-in",
-  "in-to-out",
-  "in-behind",
-  "no-movement",
-];
+const OFFER_MOVEMENT_ORDER: Record<OfferMovementType, true> = {
+  "in-front": true,
+  "in-between": true,
+  "out-to-in": true,
+  "in-to-out": true,
+  "in-behind": true,
+  "no-movement": true,
+};
+
+export const OFFER_MOVEMENT_TYPES: readonly OfferMovementType[] = Object.keys(
+  OFFER_MOVEMENT_ORDER
+) as OfferMovementType[];
 
 /**
  * Kebab enum code -> camelCase counts property. Mandatory rather than
@@ -282,6 +293,17 @@ export interface MovementTeamSplit {
   total: number;
   /** The team made no offers at all — the component renders its zero line, not a bar. */
   isZero: boolean;
+  /**
+   * The six categories do NOT sum to `sum(totalOffers)` for this team.
+   *
+   * Decision 14's declared fallback, implemented rather than assumed: when this
+   * is true the component renders the labelled value list WITHOUT the bar,
+   * because a proportion is only legitimate over a genuine partition. Measured
+   * 0 mismatches on 3,289/3,289 corpus player rows and 96/96 fixture rows, so
+   * this branch is unreachable from any shipped input — which is exactly why it
+   * needs a constructed test rather than a fixture one.
+   */
+  partitionMismatch: boolean;
   /** Always six entries, in OFFER_MOVEMENT_TYPES order. */
   categories: MovementCategory[];
 }
@@ -296,6 +318,7 @@ function splitTeam(players: readonly PlayerRecord[], side: LogSide): MovementTea
     OFFER_MOVEMENT_TYPES.map((code) => [code, 0])
   );
   let total = 0;
+  let declaredTotal = 0;
   for (const player of players) {
     const movement = player.inPossession.offersByMovementType;
     for (const code of OFFER_MOVEMENT_TYPES) {
@@ -303,21 +326,33 @@ function splitTeam(players: readonly PlayerRecord[], side: LogSide): MovementTea
       counts.set(code, (counts.get(code) ?? 0) + value);
       total += value;
     }
+    declaredTotal += player.inPossession.totalOffers;
   }
   /*
-   * `total` is the SUM OF THE SIX CATEGORIES, deliberately not
-   * `sum(totalOffers)`. They are equal — measured on 3,289/3,289 corpus player
-   * rows with a delta histogram of exactly {0: 3289}, and re-derived over all
-   * three fixtures in this module's own test — and taking it from the six
-   * guarantees the rendered shares sum to 100% even if that ever stopped
-   * holding. A bar whose segments do not fill it is the visible failure; a
-   * silently mis-scaled bar is not.
+   * `total` is the SUM OF THE SIX CATEGORIES, so the rendered shares always sum
+   * to 100%. `declaredTotal` is the independent `sum(totalOffers)` — the same
+   * quantity `offersSummary` prints one section above on the same page.
+   *
+   * REVIEW PATCH — THE ORIGINAL REASONING HERE WAS BACKWARDS and is replaced.
+   * It argued that taking `total` from the six was safer because "a bar whose
+   * segments do not fill it is the visible failure; a silently mis-scaled bar
+   * is not". But taking it from the six is precisely what GUARANTEES the bar
+   * always fills, so a broken partition would have been the silent option, not
+   * the visible one — and the two sections would have printed two different
+   * totals for "ofrecimientos" side by side with nothing flagging it.
+   *
+   * Decision 14's declared fallback is now real: the two derivations are
+   * compared, and `partitionMismatch` makes the component drop the bar and keep
+   * the labelled value list — six paired absolute values, never a normalized
+   * bar over a non-partition. Measured 0 mismatches on 3,289/3,289 corpus rows
+   * and 96/96 fixture rows; the branch exists for the day that stops holding.
    */
   return {
     teamId: side.teamId,
     teamCode: side.teamCode,
     total,
-    isZero: total === 0,
+    isZero: total === 0 && declaredTotal === 0,
+    partitionMismatch: total !== declaredTotal,
     categories: OFFER_MOVEMENT_TYPES.map((code) => {
       const count = counts.get(code) ?? 0;
       return { code, count, share: total === 0 ? 0 : (count / total) * 100 };
@@ -333,8 +368,11 @@ function splitTeam(players: readonly PlayerRecord[], side: LogSide): MovementTea
  * === totalOffers` on 3,289/3,289 corpus player rows. This is deliberately
  * unlike two ledgered traps: Story 1.13's `by_phase` totals are INDEPENDENT
  * rates rather than slices (−48..+314), and Domain C's phases carry a "never
- * normalize, never pie" $comment. If the partition ever fails, the surface must
- * fall back to six paired absolute values and never a normalized bar.
+ * normalize, never pie" $comment.
+ *
+ * If the partition ever fails, `partitionMismatch` goes true on that team and
+ * the surface falls back to six paired absolute values with no normalized bar.
+ * That fallback is IMPLEMENTED, not merely declared (see `splitTeam`).
  */
 export function movementSplit(
   players: readonly PlayerRecord[] | null,

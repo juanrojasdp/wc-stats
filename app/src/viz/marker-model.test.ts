@@ -102,18 +102,27 @@ describe("MarkerShape (ruled decision 6)", () => {
      * MarkerShapeGlyph's `default` branch assigns to `const unexpected: never`,
      * so a future member without a case is a COMPILE ERROR, not a silent gap.
      *
-     * This assertion is a type-level one: the two lines below stop compiling
-     * the day someone adds a diamond without a surface to put it on.
+     * REVIEW PATCH: this used to declare `const shipped: MarkerShape[] = [...]`
+     * and assert its length, with a comment claiming "the two lines below stop
+     * compiling the day someone adds a diamond". They did not — an array
+     * literal stays assignable however many members the union gains, and
+     * `toHaveLength(6)` only measured a hand-written literal, so adding
+     * "diamond-hollow" left this test GREEN. Keying a Record by the union is
+     * the assertion the comment described: a new member without an entry here
+     * is a compile error.
      */
-    const shipped: MarkerShape[] = [
-      "circle-filled-ring",
-      "circle-filled",
-      "circle-hollow",
-      "square-filled",
-      "square-hollow",
-      "triangle-filled",
-    ];
-    expect(shipped).toHaveLength(6);
-    expect(shipped).toContain("triangle-filled");
+    const shipped: Record<MarkerShape, true> = {
+      "circle-filled-ring": true,
+      "circle-filled": true,
+      "circle-hollow": true,
+      "square-filled": true,
+      "square-hollow": true,
+      "triangle-filled": true,
+    };
+    const members = Object.keys(shipped);
+    expect(members).toHaveLength(6);
+    expect(members).toContain("triangle-filled");
+    expect(members).not.toContain("diamond-hollow");
+    expect(members).not.toContain("diamond-filled");
   });
 });

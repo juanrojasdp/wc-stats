@@ -104,7 +104,19 @@ last_updated: 2026-08-03
 #             the append-only property verified programmatically. Task 8.7's "correct in place" was
 #             served by an appended correction rather than rewriting another story's paragraph.
 #             Staged exactly app/ + this story + deferred-work.md + sprint-status.yaml; pipeline/**
-#             never touched, so NO in-flight 1.9 / 1.15 lines are carried and there is no co-commit.
+#             never touched, so no in-flight 1.9 / 1.15 PIPELINE lines are carried.
+# 2026-08-03: CODE REVIEW CORRECTION to the two lines above. The original claim ("there is no
+#             co-commit") was FALSE and contradicted story 2-9's own Completion Notes, which
+#             disclose that the commit DOES carry other sessions' lines in the two SHARED
+#             ARTIFACTS. It carries ~164 lines of story 1-15's status note here, plus six
+#             deferred-work.md entries belonging to 1-15's review. No pipeline/** file is in the
+#             commit, which is the narrower true statement. Corrected so a reader of the board and
+#             a reader of the story file get the same fact.
+# 2026-08-03: CODE REVIEW CORRECTION — story 1-9 was flipped to `done` by story 2-9's commit. That
+#             was wrong twice over: it is not 2-9's status to set, and 1-9 is NOT done — its own
+#             last commit is titled "Story 1.9: Domains E & F code-review patches (IN PROGRESS —
+#             Decision 3 open)". Restored to `in-progress`, which is what 2-9's Completion Notes
+#             said the flip had been.
 # 2026-08-03: story 2-9 context created and moved to ready-for-dev — and the story-creation probe
 #             OVERTURNED THE EPIC'S PREMISE, ruled by Juan as an IN-STORY re-scope on the 1.9/1.13
 #             precedent (the first time that precedent is applied inside Epic 2). The epic asks for
@@ -1782,7 +1794,7 @@ development_status:
   1-6-domain-a-extraction-metadata-lineups-formations: done
   1-7-domains-b-c-extraction-key-statistics-tactical-identity: done
   1-8-momentum-series-extraction-oq-5-resolution: done
-  1-9-domains-e-f-extraction-goalkeeping-set-plays: done
+  1-9-domains-e-f-extraction-goalkeeping-set-plays: in-progress
   1-10-domain-g-extraction-per-player-performance-physical-data: done
   1-11-crosses-map-parser: done
   1-12-defensive-actions-map-parser: done
@@ -1809,7 +1821,7 @@ development_status:
   # Spatial surfaces from here need 1-5 (marker–event linking) semantics in fixtures/data
   2-7-pitch-panel-infrastructure-with-shot-cross-maps: done
   2-8-pass-network-visualization: done
-  2-9-receiving-defensive-action-maps-heatmap-decision: review
+  2-9-receiving-defensive-action-maps-heatmap-decision: done
   2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: backlog
   2-11-expert-layer-per-player-tables-event-logs: backlog
   2-12-tournament-hub-results-standings: backlog

@@ -45,17 +45,56 @@ import {
  *      fixed four.
  */
 
+/*
+ * The frozen ordered code lists (ruled decision 16), each DERIVED FROM A RECORD
+ * KEYED BY THE GENERATED UNION rather than written as a bare array.
+ *
+ * REVIEW PATCH: the bare `readonly T[]` form the story asked for does NOT
+ * deliver the compile-error guarantee its docblock claimed. An array literal
+ * stays assignable however many members the contract enum gains, so widening
+ * `DefensiveActionType` would compile silently — and the i18n exhaustiveness
+ * suite compares locale keys against this very array, so it would not catch the
+ * gap either. Keying a record by the union makes a contract change a COMPILE
+ * ERROR here, which is what decision 16 actually wants.
+ *
+ * `Object.keys` returns non-numeric string keys in insertion order, so the
+ * schema's declaration order is preserved.
+ */
+const DEFENSIVE_ACTION_ORDER: Record<DefensiveActionType, true> = {
+  "forced-turnover": true,
+  "possession-regain": true,
+  block: true,
+  "possession-contest": true,
+};
+
 /**
  * The four DefensiveActionType codes in the schema's declaration order — the
- * label and sort order, NOT an encoding (ruled decisions 5 and 16). Typed over
- * the generated union so a contract enum change is a compile error.
+ * label and sort order, NOT an encoding (ruled decisions 5 and 16).
  */
-export const DEFENSIVE_ACTION_TYPES: readonly DefensiveActionType[] = [
-  "forced-turnover",
-  "possession-regain",
-  "block",
-  "possession-contest",
-];
+export const DEFENSIVE_ACTION_TYPES: readonly DefensiveActionType[] = Object.keys(
+  DEFENSIVE_ACTION_ORDER
+) as DefensiveActionType[];
+
+const POSSESSION_CONTEST_ORDER: Record<PossessionContestType, true> = {
+  pass: true,
+  "attempt-at-goal": true,
+  cross: true,
+  clearance: true,
+  "physical-duel": true,
+  "aerial-duel": true,
+};
+
+/**
+ * The six PossessionContestType codes in the schema's declaration order.
+ *
+ * REVIEW PATCH: previously hand-copied into `i18n.test.ts` while its two
+ * siblings were imported, so a seventh contest code would have needed two files
+ * edited to be caught and the label-resolution loop would never have visited
+ * it. Exported here so the suite is driven by the union everywhere.
+ */
+export const POSSESSION_CONTEST_TYPES: readonly PossessionContestType[] = Object.keys(
+  POSSESSION_CONTEST_ORDER
+) as PossessionContestType[];
 
 /** Dictionary key for an action-type label — `enums.defensiveAction.<code>` (AD-7). */
 export function defensiveActionKey(code: DefensiveActionType): DictionaryKey {
@@ -90,6 +129,32 @@ function minuteLabelOf(event: DefensiveActionEvent): string | null {
 function playerNameOf(event: DefensiveActionEvent): string | null {
   const name = event.playerName;
   return name == null || name === "" ? null : name;
+}
+
+/**
+ * `x`/`y` must be finite, and this fails LOUD AT LOAD if they are not.
+ *
+ * REVIEW PATCH: `x` and `y` were the only fields in this module read without a
+ * guard, while `at`, `playerName` and `contestType` were all read defensively
+ * for the same stated reason — bundles reach the App as `as`-cast unvalidated
+ * JSON. An absent coordinate reached `formatDecimal(row.x, …)`, whose
+ * `assertFinite` throws; and because the log table lives inside the lazily
+ * mounted `ViewDataDisclosure`, that throw fired when a READER OPENED "Ver los
+ * datos" — the deferred throw the eager-build convention (ruled decision 10)
+ * exists to prevent, taking all eleven Tactical sections down with it.
+ *
+ * Throwing here instead puts the failure at mount, inside the boundary, naming
+ * itself — exactly what `resolveSide` already does for a stray `teamId`. The
+ * values themselves are still passed through VERBATIM: this validates, it never
+ * clamps or adjusts (AR-6 / AD-6).
+ */
+function assertPlottable(event: DefensiveActionEvent, index: number, table: string): void {
+  if (!Number.isFinite(event.x) || !Number.isFinite(event.y)) {
+    throw new Error(
+      `${table}: defensive action at artifact index ${index} has a non-finite coordinate ` +
+        `(x=${JSON.stringify(event.x)}, y=${JSON.stringify(event.y)})`
+    );
+  }
 }
 
 /**
@@ -163,11 +228,14 @@ export function defensiveMarkers(
   if (events === null || events.length === 0) {
     return buckets;
   }
-  const decorated = events.map((event, index) => ({
-    event,
-    index,
-    side: resolveSide(event.teamId, home, away, "defensive-actions-model"),
-  }));
+  const decorated = events.map((event, index) => {
+    assertPlottable(event, index, "defensive-actions-model");
+    return {
+      event,
+      index,
+      side: resolveSide(event.teamId, home, away, "defensive-actions-model"),
+    };
+  });
   for (const entry of orderByMinute(decorated.map((item) => ({ ...item, at: item.event.at })))) {
     const { event, index, side } = entry;
     const colorVar = side.teamId === home.teamId ? home.colorVar : away.colorVar;
@@ -179,9 +247,25 @@ export function defensiveMarkers(
       colorVar,
       /*
        * The three-clause accessible name (PitchPanel's `markerName` contract):
-       * "Acción defensiva de <player>, minuto <clock>, <action type>". Unlike
-       * Story 2.8, these events DO carry a real clock in the contract, so the
-       * middle clause is used for its actual purpose — no positional overload.
+       * "Acción defensiva de <player>, minuto <clock>, <action type>".
+       *
+       * REVIEW PATCH — THE ORIGINAL JUSTIFICATION HERE WAS FALSE and is
+       * corrected rather than quietly dropped. It read: "Unlike Story 2.8,
+       * these events DO carry a real clock in the contract, so the middle
+       * clause is used for its actual purpose — no positional overload." The
+       * contract DECLARES a clock; the corpus carries none — `at` has no
+       * carrier at all, which is precisely why `minuteLabelOf` above exists.
+       *
+       * The measured consequence, ruled and accepted rather than hidden: on
+       * corpus-real data `subjectName` and `minuteLabel` are both null on every
+       * row, so all ~97 markers per side announce the SAME sentence
+       * ("Acción defensiva de jugador desconocido, minuto desconocido, <type>")
+       * and a keyboard reader roving the tabindex cannot tell one triangle from
+       * another. Story 2.8's positional overload is still declined — it would
+       * repeat the naming drift the ledger already routes for a rename, and a
+       * disambiguator is a UX call this story does not have. Filed to the
+       * ledger against Story 1.16, whose emission decides whether these fields
+       * ever get a carrier.
        *
        * `qualifierKey` is the action type's ONLY visual-free carrier under
        * ruled decision 19: the map draws one shape in one colour per team, so
@@ -252,8 +336,21 @@ export interface DefensiveLogRow {
   teamCode: string;
   playerName: string | null;
   minuteLabel: string | null;
-  minute: number;
-  stoppageMinute: number;
+  /*
+   * NULL when the event carries no clock — never 0.
+   *
+   * REVIEW PATCH: these were `event.at?.minute ?? 0`, which stamped minute 0 on
+   * every clock-less row while `minuteLabel` stayed null and `orderByMinute`
+   * sorted the row LAST. On corpus-real data, where `at` has no carrier at all,
+   * that meant every row claimed minute 0. Nothing renders these fields today,
+   * but the section's own comment names this row array as Story 2.11's sort
+   * plug-in point, so an `aria-sort` reading `.minute` would have ordered the
+   * whole log as minute 0 — silently, and pinned green by fixtures that
+   * populate `at` on 100% of rows. This is the same `?? 0` defect the story
+   * routes to 2.11 as a known-open item; it is not re-introduced here.
+   */
+  minute: number | null;
+  stoppageMinute: number | null;
   x: number;
   y: number;
   actionTypeKey: DictionaryKey;
@@ -278,11 +375,14 @@ export function defensiveRows(
   if (events === null || events.length === 0) {
     return [];
   }
-  const decorated = events.map((event, index) => ({
-    event,
-    index,
-    side: resolveSide(event.teamId, home, away, "defensive-actions-model"),
-  }));
+  const decorated = events.map((event, index) => {
+    assertPlottable(event, index, "defensive-actions-model");
+    return {
+      event,
+      index,
+      side: resolveSide(event.teamId, home, away, "defensive-actions-model"),
+    };
+  });
   const bySide = [...decorated].sort(
     (a, b) => sideRank(a.event.teamId, home) - sideRank(b.event.teamId, home)
   );
@@ -292,8 +392,8 @@ export function defensiveRows(
       teamCode: side.teamCode,
       playerName: playerNameOf(event),
       minuteLabel: minuteLabelOf(event),
-      minute: event.at?.minute ?? 0,
-      stoppageMinute: event.at?.stoppageMinute ?? 0,
+      minute: event.at?.minute ?? null,
+      stoppageMinute: event.at?.stoppageMinute ?? null,
       x: event.x,
       y: event.y,
       actionTypeKey: defensiveActionKey(event.actionType),
@@ -318,29 +418,43 @@ export function anyContestType(rows: readonly { contestTypeKey: DictionaryKey | 
 }
 
 /**
- * Counts for the panel's chip and the figure summary.
+ * Does the log need a player column at all?
  *
- * `byType` enumerates ONLY the types actually present, in the frozen order —
- * never a fixed four (ruled decision 5). Two of the four can never be plotted,
- * so a chip listing all four would advertise categories the map cannot contain.
+ * REVIEW PATCH (ruled): the FD-1 whole-column gate now covers all three
+ * absent-on-corpus fields, not just `contestType`. `playerId`, `playerName` and
+ * `at` have NO CARRIER AT ALL in the corpus by the same measurement that
+ * justified decision 20 — so on real data these columns were in exactly the
+ * condition decision 20 removes the contest column for, and shipped 2 × 20,169
+ * em-dash cells. The fixtures populate both on 100% of rows, so nothing visibly
+ * changes until the 2.19 cutover.
  */
-export function defensiveFigureCount(markers: readonly PitchMarker[]): {
-  total: number;
-  byType: { code: DefensiveActionType; count: number }[];
-} {
-  const counts = new Map<DefensiveActionType, number>();
-  for (const marker of markers) {
-    for (const code of DEFENSIVE_ACTION_TYPES) {
-      if (marker.qualifierKey === defensiveActionKey(code)) {
-        counts.set(code, (counts.get(code) ?? 0) + 1);
-      }
-    }
-  }
-  return {
-    total: markers.length,
-    byType: DEFENSIVE_ACTION_TYPES.filter((code) => (counts.get(code) ?? 0) > 0).map((code) => ({
-      code,
-      count: counts.get(code) ?? 0,
-    })),
-  };
+export function anyPlayerName(rows: readonly { playerName: string | null }[]): boolean {
+  return rows.some((row) => row.playerName !== null);
+}
+
+/** Does the log need a minute column at all? See `anyPlayerName`. */
+export function anyMinute(rows: readonly { minuteLabel: string | null }[]): boolean {
+  return rows.some((row) => row.minuteLabel !== null);
+}
+
+/**
+ * The count for the panel's chip and the figure summary — THE TOTAL, and
+ * nothing else.
+ *
+ * RULED at code review, as an amendment to decision 5's "any count chip
+ * enumerates only the types actually present". Decision 19 deliberately refuses
+ * to distinguish `forced-turnover` from `possession-regain` on the map — one
+ * shape, one colour per team — so a chip enumerating them beside that legend
+ * would re-introduce exactly the distinction the map does not draw. The
+ * coherence with decision 19 wins; the per-type breakdown still reaches the
+ * reader through three non-visual carriers (the marker's accessible name, the
+ * popover, and the log table's action-type column).
+ *
+ * The `byType` field this function used to return is DELETED with that ruling:
+ * it had no consumer in the render path, and rebuilding four template-literal
+ * keys per marker per render (~776 discarded allocations at corpus density) to
+ * recover an enum code `PitchMarker` had already discarded went with it.
+ */
+export function defensiveFigureCount(markers: readonly PitchMarker[]): { total: number } {
+  return { total: markers.length };
 }

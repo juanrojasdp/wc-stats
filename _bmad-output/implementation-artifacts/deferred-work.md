@@ -535,3 +535,80 @@ Findings section; only the deferred items are recorded here.
 - **`#defensive-actions` legends are ONE PER TEAM, not one per type — so 1.16's emission must not be read as incomplete when only two action types appear.** Two of the four `DefensiveActionType` values are unpopulatable from the source (grep `"only two of four"`): `block` and `possession-contest` are aggregate panels with **no coordinates anywhere in the corpus**, so `events.defensiveActions` can only ever carry `forced-turnover` and `possession-regain`. All four codes are nonetheless **labelled** in both locales (`enums.defensiveAction.*`) because the log table and any future emission may carry them, and an unlabelled row is worse than an unreachable label. The count chip carries the **total only** — a declared reading of 2.9 ruled decision 5's "enumerate only the types actually present": enumerating them beside a legend that deliberately refuses to distinguish them (decision 19) would re-introduce the very distinction the map does not draw. **Recorded so a reviewer of 1.16's output does not read a two-type corpus as a truncated extraction.**
 
 - **MEASURED, and it changes how `#defensive-actions` behaves at real density: at corpus scale the map collapses into a single cluster on a phone.** 2.9 Task 9.1 ran the shipped pure functions over all three fixtures at 320 / 386 / 527 / 768 / 1920 px. **The dialog path dominates at every shipped width below 1920** — singleton share 0-42% at 320/386, 41-74% at 527, 31-70% at 768, and only 90-100% at 1920 — which is the opposite of Story 2.8's decision-6a premise and consistent with that premise having been falsified. **The 44 px hit floor is never breached**: the smallest cluster hit-union measures ~59-131 px across at every width and fixture. **At corpus density it degenerates:** re-run at 153 markers (the corpus max per team-inning; fixtures carry only 30-59), the whole figure resolves to **ONE cluster at 320 px**, 5 clusters at 386, 8-9 at 527/768 and 31 at 1920, with **zero singletons at any width**. So on a phone at real data the surface is effectively a 153-item cluster dialog rather than a map. It remains usable — `ClusterPopover` clamps its height to the space available and scrolls internally — but nobody should be surprised by it, and a density treatment (declutter control, zoom, or per-type filtering) is a UX call. **Owner:** Story 2.19 (real-data swap) is where this first becomes visible with real coordinates.
+
+## Deferred from: code review of 2-9-receiving-defensive-action-maps-heatmap-decision (2026-08-03)
+
+Four items surfaced by the 2.9 adversarial review and triaged as pre-existing rather than
+introduced by this story. All four are consequences the story either already ruled or already
+measured; they are re-filed here with the added blast radius `#defensive-actions` contributes.
+
+- **The full pitch has no goal furniture at the end where every marker lands.** `pitchMarkings`
+  (`app/src/viz/pitch-geometry.ts:266-307`) builds `penaltyArea`, `sixYardBox`, `penaltySpot`,
+  `penaltyArc` and `goal` unconditionally at the **x=100** end only; the `isFullPitch` branch
+  (`:322-326`) adds only halfway line, centre circle and centre spot. Defensive actions concentrate
+  in the acting team's own half — measured x span 8.3–64.3 — so effectively the **entire** marker
+  population sits in a bare striped rectangle with no goal, no box and no spot to read position
+  against. This is a sharper consequence than Story 2.8's pass networks, whose nodes span 20–80 so
+  half the data still lands on marked geometry. **Already ruled by 2.9's decision 9 ("yes, mirror
+  it") and routed onward by Task 8.4** with its three implementation notes; this entry records that
+  `#defensive-actions` is now the surface where the omission bites hardest.
+  **Owner:** whichever story next owns `pitch-geometry.ts` and `PitchPanel.tsx` together, or 2.19.
+
+- **Clustering collapses at corpus marker density, and `PitchPanel`'s documented budget is now
+  exceeded.** `clusterMarkers` (`app/src/viz/marker-layout.ts:115-180`) is single-link at
+  `MIN_HIT_PX = 44`. `#defensive-actions` carries 62 / 97 / 153 markers per team figure (min /
+  median / max over 208 corpus team-innings) against the fixtures' 30–59, while
+  `PitchPanel.tsx:376-379` explicitly budgets for "at most ~120 markers per panel (m074's 72
+  crosses is the fixture worst case)". Task 9.1 measured the consequence and it is already filed:
+  the dialog path dominates at every shipped width below 1920, and at 153 markers the figure
+  collapses to **one cluster at 320 px** with zero singletons anywhere. Re-filed here because the
+  ceiling in `PitchPanel`'s own comment is now stale and should be corrected when someone next
+  touches that file.
+  **Deferred:** the cluster algorithm is shared by three shipped surfaces; changing it is not a
+  2.9-scoped change. **Owner:** 2.19 (real-data cutover), where corpus density arrives for real.
+
+- **Cluster popover copy over-claims at high density.** `PitchPanel.tsx:966,972` render "Punto con
+  N eventos" and an accessible name of "Eventos en este punto". A cluster produced by a transitive
+  44 px chain can span most of the pitch, and its popover anchors at the arithmetic centroid of its
+  members — typically a location where no event occurred. So both strings describe a point that is
+  not where the events are. Pre-existing `PitchPanel` copy, not introduced by 2.9, but 2.9 is the
+  first surface dense enough to make it routinely false.
+  **Owner:** same as the clustering entry above.
+
+- **Marker and row models are rebuilt on every render, forcing a full re-cluster.**
+  `DefensiveActionsSection.tsx:129-140` computes `defensiveMarkers` and `defensiveRows` eagerly with
+  no `useMemo`, and the `sides` array literal is fresh each render, so `PitchPanel`'s extent memo
+  (`:1078-1081`, keyed on `[sides]`) and `PitchFigure`'s layout memo (`:380-409`, keyed on
+  `markers`) both invalidate on every `TacticalLayer` state change — re-running an O(n²) pairwise
+  cluster pass plus a Delaunay build, twice. `ShotMapsSection` and `PassNetworksSection` skip
+  memoisation the same way, so this is a **house-wide convention**, not a 2.9 defect — but
+  `#defensive-actions` is the first consumer sitting near the documented marker ceiling while doing
+  the work most often. Note the interaction with the eager-build rule (decision 10): eager
+  construction is required and correct; memoising it does not conflict with that.
+  **Deferred:** fixing it in one section only would make the three PitchPanel consumers diverge.
+  **Owner:** whoever standardises memoisation across the three PitchPanel sections, or 2.11.
+
+### Filed by the Story 2.9 code review — the defensive-marker announcement collapse
+
+- **On corpus-real data every `#defensive-actions` marker announces the SAME sentence.** The
+  three-clause accessible name (`PitchPanel`'s `markerName` contract) is
+  "Acción defensiva de {player}, minuto {clock}, {action type}". `playerId`, `playerName` and `at`
+  have **no carrier at all** in the corpus (open AD-14 emission blocker), so `subjectName` and
+  `minuteLabel` are both null on every row and the name degrades to
+  **"Acción defensiva de jugador desconocido, minuto desconocido, Recuperación de balón"** — the
+  same string for every marker of a given type. At corpus density that is **~97 identical
+  announcements per team figure** (median; 153 at the max), so a keyboard reader roving the tabindex
+  has nothing to tell one triangle from another, and every popover shows the same four rows.
+  Only two of the four `DefensiveActionType` values are plottable, so in practice there are **two**
+  distinct announcements on a whole figure.
+  **Ruled at code review:** accept the degradation and do NOT adopt Story 2.8's positional overload
+  of `minutePrefixKey`/`minuteLabel`. The announcement is *honest* — it states exactly the absence
+  that is real — and inventing a positional disambiguator is a UX call Story 2.9 does not have; it
+  would also repeat the naming drift this ledger already routes for a rename. Story 2.9's Task 3.3
+  comment justifying the middle clause ("these events **do** carry a real clock in the contract")
+  was **false** and has been corrected in place at `defensive-actions-model.ts` — the contract
+  declares a clock, the corpus carries none, which is why `minuteLabelOf` exists.
+  **Owner: Story 1.16**, whose emission decides whether `playerName` and `at` ever get a carrier. If
+  they do, this resolves itself with no code change. If they do not, the disambiguator becomes a
+  real UX question and should be ruled alongside the diamond/second-visual-channel question already
+  filed by Task 8.1.

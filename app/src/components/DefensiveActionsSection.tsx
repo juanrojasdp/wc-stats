@@ -15,6 +15,8 @@ import { useLocale, useT } from "@/lib/i18n-provider";
 import { cn } from "@/lib/utils";
 import {
   anyContestType,
+  anyMinute,
+  anyPlayerName,
   defensiveFigureCount,
   defensiveLegend,
   defensiveMarkers,
@@ -132,7 +134,18 @@ export function DefensiveActionsSection({
     { ...away, colorVar: ACCENT_VAR.b }
   );
   const rows: DefensiveLogRow[] = defensiveRows(defensiveActions, home, away);
+  /*
+   * THE FD-1 WHOLE-COLUMN GATE, applied to all three absent-on-corpus fields
+   * (ruled at code review, extending decision 20). `contestType` is null on
+   * 20,169/20,169 corpus events and `playerName` / `at` have no carrier at all,
+   * so each of these columns would otherwise ship as a full column of em
+   * dashes — the exact condition decision 20 removes the contest column for.
+   * Today's fixtures populate player and minute on 100% of rows, so nothing
+   * visibly changes until the 2.19 cutover.
+   */
   const showContestType = anyContestType(rows);
+  const showPlayer = anyPlayerName(rows);
+  const showMinute = anyMinute(rows);
 
   function side(ref: SideRef, accent: "a" | "b", mine: typeof markers.home): PitchPanelSide {
     const counts = defensiveFigureCount(mine);
@@ -183,8 +196,8 @@ export function DefensiveActionsSection({
 
   const headers = [
     { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "player", label: t("viz.table.player"), numeric: false },
-    { key: "minute", label: t("viz.table.minute"), numeric: true },
+    ...(showPlayer ? [{ key: "player", label: t("viz.table.player"), numeric: false }] : []),
+    ...(showMinute ? [{ key: "minute", label: t("viz.table.minute"), numeric: true }] : []),
     { key: "x", label: t("viz.table.x"), numeric: true },
     { key: "y", label: t("viz.table.y"), numeric: true },
     { key: "actionType", label: t("viz.table.actionType"), numeric: false },
@@ -202,24 +215,33 @@ export function DefensiveActionsSection({
   const textCell = "px-2 py-1.5 type-caption text-ink-on-pitch";
 
   /*
-   * viz.table.caption ("Ordenado por minuto.") is legitimate HERE — unlike the
-   * two receiving tables, these rows carry a real clock in the contract — and
-   * the caption names its own panel so a reader listing the page's tables gets
-   * distinguishable entries.
+   * THE CAPTION MUST STATE THE ORDER THE TABLE ACTUALLY HAS.
+   *
+   * REVIEW PATCH: this shipped `viz.table.caption` unconditionally — literally
+   * "Ordenado por minuto." — justified by "these rows carry a real clock in the
+   * contract". The contract declares one; the corpus carries none. With every
+   * `at` absent, `orderByMinute` sorts all rows last and stably, so the real
+   * order is home block then away block in artifact order, above a minute
+   * column that is now gated away entirely. The caption asserted an ordering
+   * the table did not have — the same false claim the two receiving tables
+   * minted their own caption keys to avoid.
    *
    * Not sortable in this story: Story 2.11 owns aria-sort, the
    * Intl.Collator('es') sort and the Expert-layer instance of this same log. It
    * plugs in at the <th> elements above and at the row array below.
    */
-  const caption = `${title}${CAPTION_SEPARATOR}${t("viz.table.caption")}`;
+  const orderKey: DictionaryKey = showMinute
+    ? "viz.table.caption"
+    : "viz.defensiveActions.tableCaptionNoClock";
+  const caption = `${title}${CAPTION_SEPARATOR}${t(orderKey)}`;
 
   const dataTable = (
     <DataTable caption={caption} headers={headers}>
       {rows.map((row) => (
         <tr key={row.key} className="border-b border-pitch-line/40">
           <td className={textCell}>{row.teamCode}</td>
-          <td className={textCell}>{row.playerName ?? unknown}</td>
-          <td className={numericCell}>{row.minuteLabel ?? unknown}</td>
+          {showPlayer ? <td className={textCell}>{row.playerName ?? unknown}</td> : null}
+          {showMinute ? <td className={numericCell}>{row.minuteLabel ?? unknown}</td> : null}
           <td className={numericCell}>{formatDecimal(row.x, locale, 2)}</td>
           <td className={numericCell}>{formatDecimal(row.y, locale, 2)}</td>
           <td className={textCell}>{t(row.actionTypeKey)}</td>

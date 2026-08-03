@@ -7,7 +7,6 @@ import type { Players } from "@/lib/contract/contract-types";
 import { formatInteger, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
-import type { TileLeader } from "@/lib/match-hero";
 import { cn } from "@/lib/utils";
 import { offersRows, offersSummary, offersTotalsRows } from "@/viz/receiving-model";
 
@@ -159,6 +158,15 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
   const rows = offersRows(players, home, away);
   const totals = offersTotalsRows(summary);
 
+  /*
+   * UX-DR7's leader treatment is a HEAD-TO-HEAD comparison, so it needs two
+   * real values. With one team carrying no player rows there is no opponent
+   * value to lead against, and `resolveLeader(390, 0)` would otherwise award
+   * the accent, the ▲ and the spoken "líder" against a number that does not
+   * exist. No rows on either side ⇒ no leader cue anywhere.
+   */
+  const bothHaveRows = summary.home.playerCount > 0 && summary.away.playerCount > 0;
+
   const noShare = t("viz.offers.noShare");
   /** null is "this team made no offers", never 0% — a different fact entirely. */
   function shareText(pct: number | null): string {
@@ -185,11 +193,52 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
      * house naming — `label`, `title`, `caption`, `description`, `text` and
      * `heading` are all gated prop names.
      */
-    const figureSummary =
-      `${t("viz.offers.figurePrefix")} ${ref.name}${CLAUSE_SEPARATOR}${madePhrase}` +
-      `${CLAUSE_SEPARATOR}${receivedPhrase}${CLAUSE_SEPARATOR}` +
-      `${t("viz.offers.receivedPctLabel")} ${shareText(team.receivedPct)}`;
+    /*
+     * "NO ROWS FOR THIS TEAM" IS NOT "THIS TEAM MADE ZERO OFFERS".
+     *
+     * REVIEW PATCH: with the other team populated, the section-level zero
+     * branch does not fire, so an empty team's figure used to assert
+     * "0 ofrecimientos, 0 recibidos" — a positive claim that the report
+     * recorded zero — when the truth is that no player rows exist for it at
+     * all. `resolveLeader(390, 0)` then handed the populated team the accent,
+     * the ▲ glyph and the spoken "líder" against a value that does not exist.
+     * `playerCount` is the one signal that separates the two states, and it was
+     * visible only in the totals table behind the disclosure. The model tests
+     * this state explicitly ("survives a team with no rows at all"); the
+     * component now distinguishes it too.
+     */
+    const hasRows = team.playerCount > 0;
     const accentClass = ACCENT_CLASS[accent];
+    const figureSummary = hasRows
+      ? `${t("viz.offers.figurePrefix")} ${ref.name}${CLAUSE_SEPARATOR}${madePhrase}` +
+        `${CLAUSE_SEPARATOR}${receivedPhrase}${CLAUSE_SEPARATOR}` +
+        `${t("viz.offers.receivedPctLabel")} ${shareText(team.receivedPct)}`
+      : `${t("viz.offers.figurePrefix")} ${ref.name}${CLAUSE_SEPARATOR}${t("viz.offers.noRows")}`;
+    /*
+     * The per-team zero line lives INSIDE the figure, where "este equipo"
+     * actually resolves to a team.
+     *
+     * REVIEW PATCH: this section used to short-circuit BOTH figures at section
+     * level and render one `viz.offers.zero` — "El informe no registra
+     * ofrecimientos para este equipo." — with no team in scope at all, naming a
+     * referent the render had just removed. MovementToReceiveSection gets this
+     * right by keeping its zero line per figure; both sections now do.
+     */
+    const isZero = team.offersMade === 0;
+    if (!hasRows || isZero) {
+      return (
+        <figure
+          role="figure"
+          aria-label={figureSummary}
+          className="min-w-0 rounded-md bg-surface-raised p-tile-gap"
+        >
+          <span className={cn("type-label-caps", accentClass)}>{ref.teamCode}</span>
+          <p className="mt-2 type-caption text-ink-secondary">
+            {hasRows ? t("viz.offers.zero") : t("viz.offers.noRows")}
+          </p>
+        </figure>
+      );
+    }
     return (
       <figure role="figure" aria-label={figureSummary} className="min-w-0 rounded-md bg-surface-raised p-tile-gap">
         {/* A team code is a LABEL, never a heading: promoting it would put a
@@ -199,21 +248,21 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
           <FigureValue
             valueText={formatInteger(team.offersMade, locale)}
             labelText={t("viz.offers.madeLabel")}
-            leads={summary.leaders.made === side}
+            leads={bothHaveRows && summary.leaders.made === side}
             accentClass={accentClass}
             leaderWord={leaderWord}
           />
           <FigureValue
             valueText={formatInteger(team.offersReceived, locale)}
             labelText={t("viz.offers.receivedLabel")}
-            leads={summary.leaders.received === side}
+            leads={bothHaveRows && summary.leaders.received === side}
             accentClass={accentClass}
             leaderWord={leaderWord}
           />
           <FigureValue
             valueText={shareText(team.receivedPct)}
             labelText={t("viz.offers.receivedPctLabel")}
-            leads={summary.leaders.receivedPct === side}
+            leads={bothHaveRows && summary.leaders.receivedPct === side}
             accentClass={accentClass}
             leaderWord={leaderWord}
           />
@@ -289,19 +338,17 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
   );
 
   /*
-   * The zero-content view (Task 6.5): the slice is PRESENT and lists nothing.
-   * Never an EmptyStatePanel — that belongs to the `null` branch and is
-   * rendered by TacticalLayer above this component.
+   * The zero-content view (Task 6.5) is now PER TEAM, inside each figure —
+   * see `teamBlock`. The slice being present and listing nothing is a fact
+   * about a team, and the copy says "este equipo", so it belongs where a team
+   * is in scope. Never an EmptyStatePanel either way: that belongs to the
+   * `null` branch and is rendered by TacticalLayer above this component.
    */
-  const isZero = summary.home.offersMade === 0 && summary.away.offersMade === 0;
-
   return (
     <div className="flex flex-col gap-tile-gap">
       {/* A subtitle, not a heading: TacticalSection owns the <h2>. */}
       <p className="type-stat-label text-ink-secondary">{t("viz.offers.note")}</p>
-      {isZero ? (
-        <p className="type-caption text-ink-secondary">{t("viz.offers.zero")}</p>
-      ) : (
+      {(
         /*
          * Ruled decision 17, a DECLARED departure from EXPERIENCE.md:130 /
          * UX-DR17: at <md both teams stack VERTICALLY, both visible, no tabs.

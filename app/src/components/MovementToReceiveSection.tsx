@@ -187,27 +187,61 @@ export function MovementToReceiveSection({ players, home, away }: MovementToRece
              * the figure's own summary carries the headline. recharts is
              * installed but deliberately unused here.
              */}
+            {/*
+             * DECISION 14'S FALLBACK, implemented at code review: when the six
+             * categories do not sum to sum(totalOffers) the bar is DROPPED and
+             * only the labelled value list renders — six paired absolute values,
+             * never a normalized bar over a non-partition. A proportion is
+             * legitimate here for exactly one reason (the partition holds on
+             * 3,289/3,289 corpus rows); when that reason stops being true, the
+             * proportion stops being drawn.
+             */}
+            {team.partitionMismatch ? null : (
             <div
               aria-hidden="true"
               className="mt-2 flex w-full overflow-hidden rounded-sm"
               style={{ height: BAR_HEIGHT_PX }}
             >
-              {team.categories
-                .map((category, index) => ({ category, index }))
-                .filter(({ category }) => category.count > 0)
-                .map(({ category }, position) => (
+              {/*
+               * INDEX PARITY WITH THE VALUE LIST IS THE POINT.
+               *
+               * REVIEW PATCH: this used to `.filter(count > 0)` before mapping,
+               * so a single zero category shifted every later segment by one
+               * against the <dl> below. Every segment is painted the same
+               * accent and carries no in-segment label, so decision 15's stated
+               * mechanism — "categories carried by order" — is the ONLY link
+               * between a segment and its name, and the frozen order puts the
+               * two smallest corpus categories (out-to-in 2.3%, in-to-out 3.1%)
+               * in the middle where a shift is least detectable.
+               *
+               * All six now render in order. A zero category collapses to zero
+               * width and takes no separator, so it is invisible without
+               * displacing anything; the MIN_SEGMENT_PX floor applies only to
+               * categories that actually have a count.
+               */}
+              {team.categories.map((category, index) => {
+                const isEmpty = category.count === 0;
+                const isFirstDrawn = team.categories.every(
+                  (other, position) => position >= index || other.count === 0
+                );
+                return (
                   <div
                     key={category.code}
-                    className={cn("h-full", position > 0 ? "border-l border-hairline" : null)}
+                    className={cn(
+                      "h-full",
+                      !isEmpty && !isFirstDrawn ? "border-l border-hairline" : null
+                    )}
                     style={{
                       flexGrow: category.share,
                       flexBasis: 0,
-                      minWidth: MIN_SEGMENT_PX,
+                      minWidth: isEmpty ? 0 : MIN_SEGMENT_PX,
                       backgroundColor: `var(${ACCENT_VAR[accent]})`,
                     }}
                   />
-                ))}
+                );
+              })}
             </div>
+            )}
             {/*
              * The labelled value list: category name + count + share, in the
              * frozen order. Category identity is carried HERE, never by hue and
@@ -303,9 +337,21 @@ export function MovementToReceiveSection({ players, home, away }: MovementToRece
     </div>
   );
 
+  /*
+   * REVIEW PATCH: `barNote` ("Cada barra reparte los ofrecimientos del equipo
+   * entre los seis tipos de desmarque.") rendered unconditionally, describing a
+   * bar that is not drawn when both teams are at zero or when the partition
+   * fails. It is shown only when at least one bar actually renders.
+   */
+  const anyBar =
+    (!split.home.isZero && !split.home.partitionMismatch) ||
+    (!split.away.isZero && !split.away.partitionMismatch);
+
   return (
     <div className="flex flex-col gap-tile-gap">
-      <p className="type-stat-label text-ink-secondary">{t("viz.movement.barNote")}</p>
+      {anyBar ? (
+        <p className="type-stat-label text-ink-secondary">{t("viz.movement.barNote")}</p>
+      ) : null}
       {/* Ruled decision 17: stacked at <md, both visible, no tabs. */}
       <div className="grid grid-cols-1 gap-tile-gap md:grid-cols-2">
         {teamBlock(home, "a", split.home)}

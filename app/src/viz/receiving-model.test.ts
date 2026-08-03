@@ -497,5 +497,67 @@ describe("m002 is covered by every entry point (all three fixtures, every time)"
   });
 });
 
+/* ------------------------------------------------------------------------- */
+
+/*
+ * DECISION 14'S FALLBACK, implemented at code review rather than merely
+ * declared.
+ *
+ * The six categories are a genuine partition of `totalOffers` on 3,289/3,289
+ * corpus player rows and 96/96 fixture rows, which is the ONLY reason a
+ * proportion may be drawn at all. Because no shipped input can break it, the
+ * mismatch branch is unreachable from any fixture and needs constructed rows —
+ * exactly like Task 2.8's `totalOffers: 0` case.
+ *
+ * Note what the original code did NOT do: `total` was taken from the sum of the
+ * six, which guaranteed the bar always filled, so a broken partition would have
+ * rendered a silently mis-scaled bar while the adjacent #offers-to-receive
+ * section printed a different total for the same quantity.
+ */
+describe("the partition guard (ruled decision 14, implemented at code review)", () => {
+  it("reports NO mismatch when the six sum to totalOffers", () => {
+    const players = [
+      playerRow("home-team", 7, 10, 4, { inFront: 6, inBehind: 4 }),
+      playerRow("away-team", 9, 5, 2, { noMovement: 5 }),
+    ];
+    const split = movementSplit(players, HOME, AWAY);
+    expect(split.home.partitionMismatch).toBe(false);
+    expect(split.away.partitionMismatch).toBe(false);
+    expect(split.home.total).toBe(10);
+  });
+
+  it("flags a mismatch when they do not, per team and independently", () => {
+    const players = [
+      // 6 + 4 = 10, but the row DECLARES 12 offers: not a partition.
+      playerRow("home-team", 7, 12, 4, { inFront: 6, inBehind: 4 }),
+      playerRow("away-team", 9, 5, 2, { noMovement: 5 }),
+    ];
+    const split = movementSplit(players, HOME, AWAY);
+    expect(split.home.partitionMismatch).toBe(true);
+    expect(split.away.partitionMismatch).toBe(false);
+  });
+
+  it("does not read a mismatched zero team as a zero team", () => {
+    // No movement counts at all, but 12 declared offers: the surface must not
+    // claim "the report records no offers" for a team that made twelve.
+    const players = [playerRow("home-team", 7, 12, 4)];
+    const split = movementSplit(players, HOME, AWAY);
+    expect(split.home.isZero).toBe(false);
+    expect(split.home.partitionMismatch).toBe(true);
+    // A team with genuinely nothing stays zero and unflagged.
+    expect(split.away.isZero).toBe(true);
+    expect(split.away.partitionMismatch).toBe(false);
+  });
+
+  it("holds across all three fixtures — the partition is real", () => {
+    for (const bundle of ALL) {
+      const { home, away } = sides(bundle);
+      const split = movementSplit(playersOf(bundle), home, away);
+      expect(split.home.partitionMismatch).toBe(false);
+      expect(split.away.partitionMismatch).toBe(false);
+    }
+  });
+});
+
 const TYPE_GUARD: readonly OfferMovementType[] = OFFER_MOVEMENT_TYPES;
 void TYPE_GUARD;

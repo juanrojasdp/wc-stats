@@ -441,12 +441,14 @@ export const es = {
       offersOne: "ofrecimiento",
       received: "recibidos",
       receivedOne: "recibido",
-      players: "jugadores",
-      playersOne: "jugador",
       // The share is null when a team made no offers — never 0%, which would
       // claim every offer went unreceived.
       noShare: "sin ofrecimientos",
       zero: "El informe no registra ofrecimientos para este equipo.",
+      // "No rows for this team" is NOT "this team made zero offers": the first
+      // is an absence of Domain G data, the second a fact about the match.
+      // Rendering the second for the first is the FR-22 failure mode inverted.
+      noRows: "El informe no incluye datos por jugador de este equipo.",
       // Names the metric beside the numbers, as the momentum subtitle does.
       note: "Totales del partido, sumados sobre los jugadores del equipo.",
       // Each table STATES ITS OWN ORDER. Deliberately not viz.table.caption,
@@ -459,9 +461,6 @@ export const es = {
       figurePrefix: "Desmarques:",
       offers: "ofrecimientos",
       offersOne: "ofrecimiento",
-      shareLabel: "Proporción",
-      countLabel: "Ofrecimientos",
-      typeLabel: "Tipo de desmarque",
       // The bar's segments carry no in-segment labels (the two smallest corpus
       // categories are 2.3% and 3.1%, ~7–9 px at 320 px, below DESIGN's 11 px
       // type floor), so this names the channel the value list decodes.
@@ -485,6 +484,13 @@ export const es = {
        */
       legendNoun: "acciones defensivas",
       zero: "El informe no registra acciones defensivas para este equipo.",
+      /*
+       * The log's caption when NO row carries a clock — the corpus case, where
+       * `at` has no carrier at all and the minute column is gated away
+       * entirely. viz.table.caption ("Ordenado por minuto.") would assert an
+       * ordering the table does not have.
+       */
+      tableCaptionNoClock: "Ordenado por equipo; el informe no registra el minuto.",
     },
   },
   enums: {
