@@ -1099,10 +1099,25 @@ opposite directions, and holding both at once is the point of this section:
 1. **The edge half is the cleanest extraction in Epic 1.** 23,597 edges over 208
    team-innings, every endpoint joining to Domain A by verbatim name with the shirt number
    corroborating on 3,289/3,289 rows, and a printed self-check that validates the matrix
-   total — and therefore every cell — to within a rounding half-ulp on 1,040/1,040
+   **total** and its five largest cells to within a rounding half-ulp on 1,040/1,040
    measurements.
 2. **The node half does not exist at all.** Not "hard to read", not "raster-only": the
    coordinates are simply not on the page, and no page in the corpus carries them.
+
+**What the printed self-check does NOT prove, stated plainly** (1.14 code review — the
+first draft of this section claimed the Top-5 panel validated "therefore every cell", and
+it does not). All three shipped checks are **invariant under any permutation of the
+matrix's off-diagonal cells**: `pass-network-top5-pct` compares printed percentages against
+the sorted multiset of cell values, `pass-network-total-bound` against their sum, and
+`pass-network-row-bound` against per-row sums. None of them carries a positional operand,
+so **no shipped check can detect a column-assignment slip** — the single failure mode this
+family's whole parsing rule exists to prevent. What guards it instead is structural: the
+header-rect grid with its contiguity assertion, the N×N census with one blank per row on
+the diagonal, row order == column order, the Domain A join in both directions, and
+`test_every_ground_truth_cell_agrees_with_an_independent_read`, which re-reads both
+`spike/mex_rsa.pdf` matrices by a decomposition the parser does not share and compares all
+496 off-diagonal cells. Do not add a check here and describe it as cell-level coverage
+unless it actually reads a cell's position.
 
 `pipeline/extract/pass_network.py` therefore stages a matrix, not events — and the module
 opens by saying so, because the next reader will otherwise go looking for the marker
@@ -1226,7 +1241,13 @@ The tolerance is **derived, not tuned**: the panel prints one decimal, so a fait
 sits at most a half-ulp — 0.05 — from the computed one. Worst observed absolute delta over
 all 1,040 printed percentages is **exactly 0.05**, and the three worst cases evaluate to
 `0.04999999999999982` in float, which is why the comparison is `<=` and why the constant
-must not be tightened without re-measuring.
+must not be tightened without re-measuring. It is compared as `delta > TOLERANCE +
+TOP_RANKED_PCT_EPSILON` (1e-9): the sign of that last-bit error is an accident of the
+operands, so a page printed correctly can just as easily land at `0.050000000000000044`
+and be failed for float representation alone (1.14 code review). The epsilon is eleven
+orders of magnitude below the printed precision and does not widen the tolerance;
+`test_the_tolerance_admits_exactly_the_printed_half_ulp_and_nothing_beyond` pins both
+edges to within 0.0001.
 
 The two cross-domain relations ship as **BOUNDS, not equalities** (the 1.8/1.9/1.12 rule),
 and both checks record the per-report delta in `specifics` on every report — passing or

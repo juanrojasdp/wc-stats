@@ -60,6 +60,80 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-03
+# 2026-08-03: story 1-14 adversarial code review (3 layers over c645cfe..5344fac, 15 files /
+#             ~4,225 lines): 32 raw findings deduped to 22 — 2 decisions ruled, 19 patches
+#             applied, 2 deferred, 12 dismissed. Status review -> done. All three acceptance
+#             runs REPEATED after the patches (they had to be: the specifics patch changes
+#             every staged record's content and every pipeline/*.py edit moves code_version):
+#             batch 104 extracted / 0 failed / exactly 2 SV failures (M19, M58 — the ledgered
+#             pair, NO third, and ZERO pass-network failures), re-run 104/104
+#             skipped-unchanged, gate PASS 0 deviations with both new ids in checks_run.
+#             647 tests re-run green across every module the patches can reach.
+#             THE HEADLINE IS THAT THE PARSER IS SOUND AND THE EVIDENCE FOR IT WAS NOT.
+#             Three layers hunted a column-assignment defect and none found one — the header
+#             grid, the census, row-order==column-order and the two-way lineup join are all
+#             real and all reachable. But NO SHIPPED CHECK CAN DETECT A COLUMN SLIP: all three
+#             self-validation checks are invariant under any permutation of the matrix's
+#             off-diagonal cells (top5 compares the SORTED multiset of volumes, total-bound
+#             their sum, row-bound per-row sums), and pipeline/README.md claimed the printed
+#             Top-5 panel validated "the matrix total — and therefore every cell". It does
+#             not; the claim is corrected and the real guards are named in its place. Task
+#             1.4's actual proof — the independent prototype agreeing on 52,103 cells — lived
+#             ONLY in an uncommitted scratchpad script, so nothing in the repo could reproduce
+#             it. It is now a committed test that re-reads BOTH spike/mex_rsa.pdf matrices by
+#             a decomposition the parser does not share (get_text("words") grouped by y and
+#             sorted by x, blank inserted at the diagonal) and compares all 496 off-diagonal
+#             cells; the method was validated by reproducing the already-pinned RANGEL_ROW
+#             exactly before being trusted. Ground truth went from 1 row of 16 with no away
+#             cell to both matrices in full, plus two transcribed anchor rows.
+#             THE FIXTURE WAS DEGENERATE IN THE ONE WAY ITS OWN DOCSTRING FORBIDS:
+#             _pass_network_base collapsed to (3i)%3 == 0 for every i at j==0, so column 0
+#             summed to EXACTLY ZERO at every size — the first player's passes_received was
+#             always 0 and the column was indistinguishable from a parser writing zeros into
+#             it. Worse, the "column sums fall on both sides of offers_received" property that
+#             test_..._refuted_relations_false_by_construction asserts was resting on that
+#             same defect. Now i*4 (column 0 reads i%3) with ONE deliberately damped, non-zero
+#             quiet column, asserted in the factory. The first fix was itself wrong and the
+#             suite caught it: picking size-1 as the quiet column collides with a Top-5 spike
+#             at size 10 ((2k+1)%10 == 9), which broke a Domain A report test; it now picks
+#             the rightmost column the spikes do not occupy, verified at every size 6..17.
+#             TWO DECISIONS RULED BY JUAN. (1) Commit 5344fac DOES NOT IMPORT — it captured
+#             the caller half of an in-flight Story 1.9 patch (extract_report.py:57,337 call
+#             domain_e_goalkeeper_warnings, whose definition lands two commits later at
+#             7f9b959), so any checkout of or bisect through it fails at collection; it also
+#             carries a non-additive checks.py behaviour change plus conftest and E/F-test
+#             edits, none disclosed against Task 9.6. Resolved at HEAD, so it is a
+#             history-integrity defect only. RULED: record it, do not repair history.
+#             (2) pass-network-row-bound failing when a matrix player has no Domain G row is
+#             INTENDED — a genuine cross-domain inconsistency worth failing on — so the
+#             double-attribution finding was dismissed rather than patched.
+#             Other substantive patches: both BOUND checks discarded their delta census on
+#             FAILING reports, the exact absorption Tasks 4.3/4.4 forbid (and for total-bound
+#             one side's failure discarded the other side's passing delta); sibling payloads
+#             were read with bare subscripting, so a Domain G or B shape change raised an
+#             UNTYPED KeyError — the same defect 1.9's review patched out of _goalkeepers —
+#             now routed through a _side_blocks reader that omits the check instead; the
+#             half-ulp comparison gained a 1e-9 epsilon because the sign of the last-bit error
+#             is an accident of the operands and a correctly-printed page can land at
+#             0.050000000000000044; and Task 2.12's tripwire accepted a non-raising empty
+#             return where the task says detect_pitch_frames is REQUIRED to raise — an
+#             UNDECLARED LOOSENING, now the raise itself, alongside a fourth undeclared
+#             deviation (Task 2.6's y-6..y+12 row-label band was never implemented; the
+#             shipped header-bucket form is better and is left, but is now declared).
+#             The tolerance test did not exercise the tolerance: it moved the printed value
+#             TOWARDS the computed one (delta 0.0071, not 0.05), leaving the constant free
+#             anywhere in ~[0.043, 7.85]; it now pins both edges to within 0.0001. Eight typed
+#             raises had NO test, including the story's own declared header-contiguity
+#             departure. The tail-pinning anti-pattern this very commit repaired in
+#             test_extract_report_domains_ef.py was reintroduced in its own tests (ids[-3:],
+#             warnings[-1]) and is now index-located. The do-not-ship test was a substring
+#             filter that a future `pass-network-received-bound` would have passed green.
+#             Two items deferred: _parse_rows silently skipping a body row with neither shirt
+#             nor name span, and _filled_bezier_rects being narrower than the no-coordinates
+#             negative the whole AD-14 filing rests on.
+#             NOTE FOR 1.15: the gate's checks_run now carries identity-completeness and
+#             identity-pinning, registered by a concurrent session mid-review — test_runner.py
+#             pins that list exactly and owes the same forced repair 1.14 made.
 # 2026-07-27: story 1-9 adversarial code review (3 layers over the 1.9-scoped diff of
 #             7279637..7306d7b): 39 raw findings merged to 33 — 3 decisions ruled, 22
 #             patches applied, 7 deferred, 1 dismissed then UN-dismissed and patched.
@@ -1367,7 +1441,7 @@ development_status:
   1-11-crosses-map-parser: done
   1-12-defensive-actions-map-parser: done
   1-13-offers-movement-to-receive-parsers: done
-  1-14-pass-network-extraction-nodes-edges: review
+  1-14-pass-network-extraction-nodes-edges: done
   1-15-cross-match-identity-resolution-normalized-spine: backlog
   # BLOCKED-pending CS-1 (Story 2.3 sign-off change-set: ShotOutcomeDetail enum + map +
   # pipeline constant/test updates — see deferred-work.md "Filed by Story 2.3 sign-off").

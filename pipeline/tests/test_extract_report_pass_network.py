@@ -20,6 +20,7 @@ from pipeline.discover.anchors import ANCHOR_REGISTRY, resolve_anchors
 from pipeline.discover.probe import probe_report
 from pipeline.discover.text import PageTextIndex
 from pipeline.extract.domain_a import extract_domain_a
+from pipeline.extract.domain_e import domain_e_warnings
 from pipeline.extract.pass_network import extract_pass_network, pass_network_warnings
 from pipeline.ingest.extract_report import extract_report
 from pipeline.ingest.records import serialize_record
@@ -160,14 +161,31 @@ def test_the_absence_warning_is_appended_last_in_the_warnings_block(
     record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
 
     (warning,) = pass_network_warnings()
-    assert record["warnings"][-1] == warning
+    # Located by INDEX, never pinned as the list's tail. `[-1]` breaks the moment a later
+    # story appends a warning of its own, which is exactly what this commit had to repair
+    # in `test_extract_report_domains_ef.py`'s `ids[-7:]` — the same anti-pattern, and it
+    # would have been the same wasted debugging session for the next author.
+    warnings = record["warnings"]
+    assert warnings.count(warning) == 1
+    position = warnings.index(warning)
+    # Story 1.9's Domain E absences append immediately before it, and nothing this story
+    # owns may be reordered around them.
+    assert warnings[position - 3 : position] == domain_e_warnings()
 
 
 def test_the_three_self_validation_checks_are_appended_and_pass(tmp_path, make_report):
     record = extract_report(make_report(tmp_path / "PMSR-M07-AAA-V-BBB.pdf", number=7))
 
     ids = [check["check"] for check in record["self_validation"]["checks"]]
-    assert ids[-3:] == list(PASS_NETWORK_CHECK_IDS)
+    # A contiguous block located by index, not the list's TAIL. `ids[-3:]` is the assertion
+    # this very commit had to repair in `test_extract_report_domains_ef.py`, where it made
+    # an earlier story's test fail on a later story doing exactly the right thing.
+    ours = list(PASS_NETWORK_CHECK_IDS)
+    start = ids.index(ours[0])
+    assert ids[start : start + len(ours)] == ours
+    # Every earlier appender still ran, and none of its ids moved into our block.
+    assert start > 0
+    assert not set(ids[:start]) & set(ours)
     for check_id in PASS_NETWORK_CHECK_IDS:
         (check,) = _checks(record, check_id)
         assert check["result"] == "pass", check["specifics"]
@@ -457,6 +475,72 @@ MEXICO_ROW_ORDER = (
 # `1 Raul RANGEL`'s printed row, read off page 11 of spike/mex_rsa.pdf. The blank
 # diagonal is the first cell.
 RANGEL_ROW = (None, 6, 8, 4, 0, 2, 2, 1, 3, 1, 0, 0, 0, 0, 0, 0)
+# A SECOND home row, and one AWAY row. Added by the 1.14 code review: pinning row 0 alone
+# left 15 of 16 home rows and the entire away matrix verified only through `matrix_total`,
+# which is invariant under any permutation of the cells — so a column-assignment slip
+# anywhere below row 0 had no ground-truth coverage at all. Row 1 is the densest home row
+# (its 18 is the page's largest cell) and away row 0 is the away page's own first row.
+MONTES_ROW = (4, None, 18, 6, 2, 2, 11, 1, 3, 0, 6, 1, 1, 0, 2, 3)
+WILLIAMS_ROW = (None, 3, 1, 0, 2, 4, 0, 5, 1, 13, 1, 1, 0, 0, 1)
+SOUTH_AFRICA_ROW_ORDER = (
+    (1, "Ronwen WILLIAMS"),
+    (4, "Teboho MOKOENA"),
+    (6, "Aubrey MODIBA"),
+    (9, "Lyle FOSTER"),
+    (13, "Sphephelo SITHOLE"),
+    (14, "Mbekezeli MBOKAZI"),
+    (15, "Iqraam RAYNERS"),
+    (19, "Nkosinathi SIBISI"),
+    (20, "Khuliso MUDAU"),
+    (21, "Ime OKON"),
+    (23, "Jayden ADAMS"),
+    (5, "Thalente MBATHA"),
+    (7, "Oswin APPOLLIS"),
+    (11, "Themba ZWANE"),
+    (17, "Evidence MAKGOPA"),
+)
+
+
+def _independent_matrices(path):
+    """Both printed matrices, read by a decomposition the parser does not share.
+
+    `page.get_text("words")` grouped by rounded y and sorted by x, with the blank inserted
+    at the row's own diagonal — no header rectangles, no spans, no `lines.py`. The shipped
+    parser assigns every cell by x-containment in its column's OWN header rect; this reads
+    the printed values in x ORDER and relies only on two facts asserted independently
+    elsewhere: every off-diagonal cell is printed (zeros included) and the one blank per
+    row sits on the diagonal.
+
+    This is Story 1.14 Task 1.4's proof — an independent extractor compared cell by cell —
+    made permanent. The story ran that comparison over all 104 reports from a scratchpad
+    script that was never committed, so nothing in the repository could reproduce it; a
+    column-assignment slip is invisible to every aggregate check and to all three shipped
+    self-validation checks, every one of which is permutation-invariant.
+    """
+    import re
+
+    doc = pymupdf.open(path)
+    matrices = []
+    for page in doc:
+        text = page.get_text().strip().splitlines()
+        if not text or not text[0].startswith("Passing Networks"):
+            continue
+        bands: dict[int, list] = {}
+        for x0, y0, _x1, _y1, word, *_ in page.get_text("words"):
+            # Left of the Top-5 panel and below the header band: the matrix body only.
+            if x0 >= 760.0 or y0 <= 118.0:
+                continue
+            bands.setdefault(round(y0), []).append((x0, word))
+        rows = []
+        for position, (_y, cells) in enumerate(sorted(bands.items())):
+            numbers = [
+                word for _x, word in sorted(cells) if re.fullmatch(r"\d+", word)
+            ]
+            values = [int(value) for value in numbers[1:]]
+            rows.append(values[:position] + [None] + values[position:])
+        matrices.append(rows)
+    doc.close()
+    return matrices
 
 
 def test_the_ground_truth_matrix_is_16x16_in_printed_row_order(mex_rsa_pdf):
@@ -484,6 +568,57 @@ def test_the_ground_truth_first_row_matches_the_printed_page(mex_rsa_pdf):
         None if index == 0 else by_target.get(names[index], 0)
         for index in range(len(names))
     ] == list(RANGEL_ROW)
+
+
+def _parsed_grid(block):
+    """The parser's payload back as a dense N x N grid, blanks included."""
+    names = [player["name"] for player in block["players"]]
+    volumes = {
+        (edge["from_name"], edge["to_name"]): edge["volume"] for edge in block["edges"]
+    }
+    return [
+        [
+            None if i == j else volumes.get((names[i], names[j]), 0)
+            for j in range(len(names))
+        ]
+        for i in range(len(names))
+    ]
+
+
+def test_the_ground_truth_away_row_order_matches_the_printed_page(mex_rsa_pdf):
+    payload = _ground_truth_payload(mex_rsa_pdf)
+
+    assert [
+        (player["shirt_number"], player["name"]) for player in payload["away"]["players"]
+    ] == list(SOUTH_AFRICA_ROW_ORDER)
+
+
+def test_a_second_home_row_and_an_away_row_match_the_printed_page(mex_rsa_pdf):
+    """Transcribed literals, not the parser's own output — see MONTES_ROW's comment."""
+    payload = _ground_truth_payload(mex_rsa_pdf)
+
+    assert tuple(_parsed_grid(payload["home"])[1]) == MONTES_ROW
+    assert tuple(_parsed_grid(payload["away"])[0]) == WILLIAMS_ROW
+
+
+def test_every_ground_truth_cell_agrees_with_an_independent_read(mex_rsa_pdf):
+    """All 496 off-diagonal cells of both matrices, by a decomposition the parser lacks.
+
+    The single check that a column-assignment slip cannot survive: the three shipped
+    self-validation checks are all invariant under a permutation of the cells, and
+    `matrix_total` verifies only their sum.
+    """
+    payload = _ground_truth_payload(mex_rsa_pdf)
+    home, away = _independent_matrices(mex_rsa_pdf)
+
+    parsed_home = _parsed_grid(payload["home"])
+    parsed_away = _parsed_grid(payload["away"])
+    assert (len(parsed_home), len(parsed_away)) == (16, 15)
+    assert parsed_home == home
+    assert parsed_away == away
+    # And the comparison is not vacuous: an asymmetric matrix is what makes a transposed
+    # assignment detectable at all.
+    assert parsed_home != [list(column) for column in zip(*parsed_home)]
 
 
 def test_the_ground_truth_diagonal_is_blank(mex_rsa_pdf):

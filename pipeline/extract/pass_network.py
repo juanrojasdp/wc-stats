@@ -159,8 +159,12 @@ def _assert_no_pitch_and_no_markers(
     try:
         rects = detect_pitch_frames(page, report_id)
     except PitchFrameError:
-        rects = []
-    if rects:
+        rects = None
+    # The RAISE is the assertion, exactly as Task 2.12 words it — not "an empty list is
+    # also fine". `detect_pitch_frames` never returns empty (it raises on 0 qualifying
+    # rects), so a return of ANY kind means the page now carries something this parser's
+    # whole `node_positions` re-scope says it does not.
+    if rects is not None:
         raise PassNetworkParseError(
             f"{side} pass-network page {page.number} carries {len(rects)} qualifying "
             "pitch rectangle(s) where the corpus prints none on 208/208 — the page may "
@@ -361,6 +365,10 @@ def _matrix(
         )
     grid: list[list[int | None]] = []
     for position, (shirt, name, values) in enumerate(rows):
+        # Unreachable by construction and kept as an internal invariant, not as a data
+        # guard: `_parse_rows` builds these keys as `index - 2` for `2 <= index <
+        # len(cells)`, and the caller passes `column_count = len(cells) - 2`, so the key
+        # range is exactly `0..column_count-1`. It fires only if the two ever drift apart.
         unknown = sorted(index for index in values if not 0 <= index < column_count)
         if unknown:
             raise PassNetworkParseError(
@@ -633,8 +641,43 @@ def extract_pass_network(
 # three worst cases evaluate to 0.04999999999999982 in float. Compare with `<=`; do not
 # tighten this constant or restructure the arithmetic without re-measuring.
 TOP_RANKED_PCT_TOLERANCE = 0.05
+# Compared as `delta > TOLERANCE + EPSILON` so that a faithful page sitting EXACTLY at the
+# half-ulp cannot fail on float representation alone. The three worst corpus cases happen
+# to evaluate to 0.04999999999999982 — BELOW 0.05 — but the sign of that last-bit error is
+# an accident of the operands: `abs(value - 100.0 * cell / matrix_total)` can just as
+# easily land at 0.050000000000000044 for a page that is printed correctly. This does not
+# loosen the tolerance (1e-9 is eleven orders of magnitude below the 1-dp printed
+# precision); it stops the constant from meaning "0.05, unless the rounding goes the other
+# way". Do not raise it, and do not change TOP_RANKED_PCT_TOLERANCE without re-measuring.
+TOP_RANKED_PCT_EPSILON = 1e-9
 
 _check = check_entry
+
+
+def _side_blocks(payload: "dict | None", *keys: str) -> "dict | None":
+    """A sibling payload's per-side blocks, or `None` when it is not that shape.
+
+    Sibling payloads are read through this rather than subscripted bare. A shape change in
+    Domain G or Domain B is that domain's finding, and reading it with `payload[side]` /
+    `block["in_possession"]["passes_completed"]` would surface it here as an UNTYPED
+    `KeyError` — which escapes `extract_report` as a non-typed failure and reaches the gate
+    only because `runner.py` catches broad `Exception`. That is exactly the defect the
+    Story 1.9 review patched out of `domain_e._goalkeepers`. `None` here means the check is
+    OMITTED, the same "one root cause, one finding" branch as an absent payload.
+    """
+    if not isinstance(payload, dict):
+        return None
+    blocks: dict = {}
+    for side in ("home", "away"):
+        block = payload.get(side)
+        for key in keys:
+            if not isinstance(block, dict):
+                return None
+            block = block.get(key)
+        if block is None:
+            return None
+        blocks[side] = block
+    return blocks
 
 
 def pass_network_checks(
@@ -675,24 +718,42 @@ def pass_network_checks(
                 f"{side}: matrix carries only {len(largest)} non-zero cells against "
                 f"{len(printed)} printed Top-5 rows"
             )
+            top5_totals.append(f"{side} 0/{len(printed)} (total {matrix_total})")
             continue
+        verified = 0
+        worst = 0.0
         for rank, (value, cell) in enumerate(zip(printed, largest), start=1):
             computed = 100.0 * cell / matrix_total if matrix_total else 0.0
             delta = abs(value - computed)
-            if delta > TOP_RANKED_PCT_TOLERANCE:
+            worst = max(worst, delta)
+            if delta > TOP_RANKED_PCT_TOLERANCE + TOP_RANKED_PCT_EPSILON:
                 top5_notes.append(
                     f"{side} rank {rank}: printed {value}% vs {cell}/{matrix_total} = "
                     f"{round(computed, 4)}% (delta {round(delta, 4)})"
                 )
-        top5_totals.append(f"{side} {len(printed)}/{len(printed)} (total {matrix_total})")
+            else:
+                verified += 1
+        # The count is VERIFIED-of-printed, not printed-of-printed: the old form compared
+        # `len(printed)` with itself and could only ever read `5/5`, which reads like a
+        # tally but cannot report a partial. The worst delta rides along so the margin to
+        # the tolerance is visible on every report rather than only when it is exceeded.
+        top5_totals.append(
+            f"{side} {verified}/{len(printed)} within tol (worst delta "
+            f"{round(worst, 4)}, total {matrix_total})"
+        )
+    # The census is recorded whether the check passes or FAILS. Dropping it on failure was
+    # the same absorption Tasks 4.3/4.4 forbid one level down: the offending rank is the
+    # finding, but the other four ranks' margin is the context that says how close the rest
+    # of the page sits to the bound.
+    top5_census = "; ".join(top5_totals)
     checks.append(
         _check(
             "pass-network-top5-pct",
             not top5_notes,
-            "; ".join(top5_notes)
+            f"{'; '.join(top5_notes)} | {top5_census}"
             if top5_notes
             else "every printed Top-5 percentage equals 100 x cell / matrix_total "
-            f"(tol {TOP_RANKED_PCT_TOLERANCE}): " + ", ".join(top5_totals),
+            f"(tol {TOP_RANKED_PCT_TOLERANCE}): " + top5_census,
         )
     )
 
@@ -703,12 +764,19 @@ def pass_network_checks(
     # BOTH directions — 3,145 greater, 121 equal, 23 less over 3,289 rows. There is no
     # relation to check, and a "bound" in either direction would fire on thousands of
     # rows. (The `domain_g.py` do-not-ship comment shape.)
-    if player_stats is not None:
+    domain_g_rows = _side_blocks(player_stats)
+    if domain_g_rows is not None and all(
+        isinstance(rows, list) for rows in domain_g_rows.values()
+    ):
         row_notes: list[str] = []
         shortfalls: list[int] = []
         rows_seen = 0
         for side in ("home", "away"):
-            by_name = {player["name"]: player for player in player_stats[side]}
+            by_name = {
+                row["name"]: row
+                for row in domain_g_rows[side]
+                if isinstance(row, dict) and "name" in row
+            }
             for player in payload[side]["players"]:
                 stats = by_name.get(player["name"])
                 if stats is None:
@@ -716,8 +784,19 @@ def pass_network_checks(
                         f"{side} #{player['shirt_number']} {player['name']}: no Domain G row"
                     )
                     continue
+                in_possession = stats.get("in_possession")
+                completed = (
+                    in_possession.get("passes_completed")
+                    if isinstance(in_possession, dict)
+                    else None
+                )
+                if not isinstance(completed, int):
+                    row_notes.append(
+                        f"{side} #{player['shirt_number']} {player['name']}: Domain G row "
+                        f"carries passes_completed {completed!r}, not an integer"
+                    )
+                    continue
                 rows_seen += 1
-                completed = stats["in_possession"]["passes_completed"]
                 made = player["passes_made"]
                 if made > completed:
                     row_notes.append(
@@ -726,28 +805,36 @@ def pass_network_checks(
                     )
                 elif made < completed:
                     shortfalls.append(completed - made)
+        # The delta is recorded on EVERY report, passing OR FAILING: equality is
+        # corpus-FALSE on 1,290 of 3,289 rows and the gap must stay visible rather than be
+        # closed by making the numbers agree. Emitting it only on the passing branch was
+        # the absorption this comment already forbade.
+        row_census = (
+            f"{rows_seen} rows within bound; {len(shortfalls)} print fewer matrix passes "
+            f"than Domain G (total shortfall {sum(shortfalls)}, "
+            f"worst {max(shortfalls) if shortfalls else 0})"
+        )
         checks.append(
             _check(
                 "pass-network-row-bound",
                 not row_notes,
-                "; ".join(row_notes)
-                if row_notes
-                # The delta is recorded on EVERY report, passing or not: equality is
-                # corpus-FALSE on 1,290 of 3,289 rows and the gap must stay visible
-                # rather than be closed by making the numbers agree.
-                else f"{rows_seen} rows within bound; {len(shortfalls)} print fewer "
-                f"matrix passes than Domain G (total shortfall {sum(shortfalls)}, "
-                f"worst {max(shortfalls) if shortfalls else 0})",
+                f"{'; '.join(row_notes)} | {row_census}" if row_notes else row_census,
             )
         )
 
-    if key_statistics is not None:
+    key_totals = _side_blocks(key_statistics, "passes_completed")
+    if key_totals is not None:
         total_notes: list[str] = []
         deltas: list[str] = []
         for side in ("home", "away"):
             matrix_total = payload[side]["matrix_total"]
-            completed = key_statistics[side]["passes_completed"]
-            if matrix_total > completed:
+            completed = key_totals[side]
+            if not isinstance(completed, int):
+                total_notes.append(
+                    f"{side}: Key Statistics carries passes_completed {completed!r}, "
+                    "not an integer"
+                )
+            elif matrix_total > completed:
                 total_notes.append(
                     f"{side}: matrix_total {matrix_total} > Key Statistics "
                     f"passes_completed {completed}"
@@ -756,11 +843,18 @@ def pass_network_checks(
                 deltas.append(
                     f"{side} {matrix_total} <= {completed} (delta {completed - matrix_total})"
                 )
+        # Same rule, and the same defect it had: one side exceeding its Key Statistics total
+        # used to discard the OTHER side's delta entirely.
+        total_census = ", ".join(deltas)
         checks.append(
             _check(
                 "pass-network-total-bound",
                 not total_notes,
-                "; ".join(total_notes) if total_notes else ", ".join(deltas),
+                f"{'; '.join(total_notes)} | {total_census}"
+                if total_notes and total_census
+                else "; ".join(total_notes)
+                if total_notes
+                else total_census,
             )
         )
 

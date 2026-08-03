@@ -2144,15 +2144,31 @@ def _pass_network_base(i, j):
 
     Uniformity is the severe fixture risk here (the 1.13 review's theme): if every row
     printed the same values, a parser that transposed its column assignment would be
-    undetectable by any test. This pattern makes `cell[i][j] != cell[j][i]` on 49 of the
-    66 default pairs.
+    undetectable by any test. This pattern makes `cell[i][j] != cell[j][i]` on 86 of the
+    120 default pairs at N=16, and on a comparable majority at every other size.
+
+    The `i * 4` term is load-bearing and was `i * 3` until the 1.14 code review: at `i * 3`
+    the whole expression collapsed to `(3i) % 3 == 0` for EVERY `i` when `j == 0`, so
+    column 0 summed to exactly zero at every size and the first player's `passes_received`
+    was always 0 — a column indistinguishable from a parser that wrote zeros into it, in
+    the one function whose docstring exists to prevent exactly that. At `i * 4` column 0
+    reads `i % 3` and varies like every other column.
     """
-    return (i * 3 + j * 5 + (i * j) % 7) % 3
+    return (i * 4 + j * 5 + (i * j) % 7) % 3
 
 
 def _pass_network_spike_cells(size):
     """The five spiked (row, column) pairs for a matrix of `size` players."""
     return {(k, (2 * k + 1) % size): value for k, value in enumerate(PASS_NETWORK_SPIKES)}
+
+
+# The ONE deliberately quiet column: the last one, whose sum must land strictly BELOW the
+# per-player `offers_received` so that the column-sum relation Story 1.14 refuted is false
+# in BOTH directions (Task 8.3). This used to be an accident — column 0 summed to zero
+# because of the arithmetic above — which meant the property the fixture advertises rested
+# on the same defect that made column 0 untestable. It is now constructed on purpose, on a
+# column the spikes never touch, and asserted below rather than left to luck.
+PASS_NETWORK_QUIET_CELLS = {1: 1, 2: 2}
 
 
 def default_pass_network_block(rows, matrix_total_cap):
@@ -2196,6 +2212,26 @@ def default_pass_network_block(rows, matrix_total_cap):
         ]
         for i in range(size)
     ]
+    # The quiet column, damped on purpose (see `PASS_NETWORK_QUIET_CELLS`). It stays
+    # NON-ZERO — a column of zeros is exactly what this fixture must not print — but sums
+    # far below `offers_received`, which is what makes the refuted relation false in the
+    # `<` direction while every other column makes it false in the `>` direction.
+    #
+    # Chosen as the RIGHTMOST column the spikes do not already occupy, never `size - 1`
+    # outright: the spike columns are `(2k + 1) % size`, which lands ON `size - 1` at
+    # size 10 and wraps onto even columns at the small odd sizes. The `size >= 6` floor
+    # above guarantees at least one free column, since there are only five spikes.
+    spiked_columns = {column for _row, column in spikes}
+    free = [j for j in range(size) if j not in spiked_columns]
+    if not free:
+        raise ValueError(
+            f"default_pass_network_block: every column at size {size} carries a Top-5 "
+            "spike, so no column can be damped below offers_received"
+        )
+    quiet = free[-1]
+    for i in range(size):
+        if i != quiet:
+            matrix[i][quiet] = PASS_NETWORK_QUIET_CELLS.get(i, 0)
     for index, row in enumerate(matrix):
         made = sum(value for value in row if value is not None)
         cap = rows[index]["distributions"][1]
@@ -2204,13 +2240,28 @@ def default_pass_network_block(rows, matrix_total_cap):
                 f"default_pass_network_block: row {index} sums to {made}, which is not "
                 f"strictly less than its Domain G passes_completed {cap!r}"
             )
-    # The column-sum vs `offers_received` relation is deliberately NOT asserted here.
-    # It is corpus-false in BOTH directions (3,145 greater, 121 equal, 23 less), so no
-    # check ships against it and a coincidental equality on one column breaks nothing —
-    # a factory raise would only break reports that have no interest in pass networks.
-    # The property that matters (both directions present, so no bound in either direction
-    # could be blessed) is asserted against the default report in
-    # `test_extract_report_pass_network.py`, where the lineup is known.
+    # The column-sum vs `offers_received` relation: a coincidental EQUALITY on one column
+    # is deliberately not a factory error. It is corpus-false in both directions (3,145
+    # greater, 121 equal, 23 less), no check ships against it, and raising on a
+    # coincidence would only break reports that have no interest in pass networks.
+    #
+    # What IS asserted is the property the fixture advertises: column sums fall on BOTH
+    # sides of `offers_received`, so no bound in either direction could ever be blessed.
+    # Before the 1.14 review this held only because column 0 summed to zero by accident of
+    # `_pass_network_base`'s arithmetic, and `test_the_fixture_makes_all_three_refuted_
+    # relations_false_by_construction`'s `any(delta < 0)` rested entirely on that.
+    received = [
+        sum(matrix[i][j] for i in range(size) if i != j) for j in range(size)
+    ]
+    offers = [row["offers"][7] for row in rows]
+    if not any(a < b for a, b in zip(received, offers)) or not any(
+        a > b for a, b in zip(received, offers)
+    ):
+        raise ValueError(
+            f"default_pass_network_block: column sums {received} do not fall on both "
+            f"sides of offers_received {offers}; the refuted relation would be blessable "
+            "in one direction"
+        )
     total = sum(value for row in matrix for value in row if value is not None)
     if not isinstance(matrix_total_cap, int) or total >= matrix_total_cap:
         raise ValueError(
@@ -2260,6 +2311,18 @@ def pass_network_columns(size, widths=PASS_NETWORK_COLUMN_WIDTHS):
         x1 = x0 + widths[index % len(widths)]
         columns.append((x0, x1))
         x0 = x1
+    # The symmetric partner of `default_pass_network_block`'s `size < 6` guard, added by
+    # the 1.14 review: the cycling widths average 33.75 pt, so a large enough `size` walks
+    # the grid past the Top-5 panel's own x0. The parser then reads panel text as matrix
+    # cells (`_top_ranked_percentages` filters on `span.x0 >= cells[-1].x1`, `_parse_rows`
+    # on `center_x <= body_limit`) and the caller gets an opaque parse failure instead of a
+    # message naming the cause. The corpus tops out at N=17, which clears this by 15.75 pt.
+    if x0 > PASS_NETWORK_PANEL_X0:
+        raise ValueError(
+            f"pass_network_columns: {size} columns of these widths end at x={x0}, past "
+            f"the Top-5 panel's x0 {PASS_NETWORK_PANEL_X0}; narrow the widths or draw "
+            "fewer columns"
+        )
     return columns
 
 
@@ -2271,6 +2334,8 @@ def draw_pass_network_page(
     lead_texts=("#", "Passes From to"),
     column_widths=PASS_NETWORK_COLUMN_WIDTHS,
     header_names=None,
+    omit_header_cells=(),
+    rows=None,
     omit_cells=(),
     cell_text=None,
     cell_fonts=None,
@@ -2291,8 +2356,16 @@ def draw_pass_network_page(
     stream ragged and is the whole reason assignment must be geometric. Zeros ARE printed.
 
     `header_names` overrides the printed column-header names (a hyphen-wrap case, a
-    renamed column); `omit_cells` drops `(row, column)` cells; `cell_text` overrides a
-    cell's printed text by `(row, column)`; `decorate(page)` draws extra content last,
+    renamed column); `omit_header_cells` drops individual header RECTANGLES by index over
+    the full `[shirt, row-label, *players]` band, leaving a gap where a cell should butt
+    against its neighbour — the one failure the row census cannot see, because the row then
+    simply carries one fewer value while every remaining column still parses; `rows`
+    restricts which matrix ROWS are drawn at all (`()` draws none — a header with no body;
+    a short tuple makes the matrix non-square, which the census must catch); `omit_cells`
+    drops `(row, column)` cells; `cell_text` overrides a cell's printed text by
+    `(row, column)`, and additionally by `(row, "shirt")` / `(row, "name")` for the two
+    leading columns; `cell_fonts` sets a cell's font by `(row, column)`, which a fullwidth
+    digit needs to reach the text layer at all; `decorate(page)` draws extra content last,
     following the family convention (a pitch rect there is Task 2.12's tripwire).
     """
     import pymupdf
@@ -2306,7 +2379,9 @@ def draw_pass_network_page(
     if header:
         cells = [(PASS_NETWORK_SHIRT_X0, PASS_NETWORK_SHIRT_X1),
                  (PASS_NETWORK_SHIRT_X1, PASS_NETWORK_FIRST_COLUMN_X0)] + columns
-        for x0, x1 in cells:
+        for index, (x0, x1) in enumerate(cells):
+            if index in tuple(omit_header_cells):
+                continue
             page.draw_rect(
                 pymupdf.Rect(x0, PASS_NETWORK_HEADER_Y0, x1, PASS_NETWORK_HEADER_Y1),
                 color=None,
@@ -2346,10 +2421,20 @@ def draw_pass_network_page(
             else:
                 _pn_centred(page, centre, 100.31, tail)
 
+    drawn_rows = range(size) if rows is None else tuple(rows or ())
     for index, player in enumerate(block["players"]):
+        if index not in drawn_rows:
+            continue
         y = PASS_NETWORK_ROW_Y0 + index * PASS_NETWORK_ROW_PITCH
-        _pn_right(page, PASS_NETWORK_SHIRT_X1 - 2.4, y, player["shirt"])
-        _pn_text(page, 33.0, y, player["name"])
+        # The two leading columns take their overrides under the string keys `"shirt"` and
+        # `"name"`, so a test can print a non-numeric shirt or an empty name without
+        # reaching for a second hook.
+        shirt = (cell_text or {}).get((index, "shirt"), player["shirt"])
+        name = (cell_text or {}).get((index, "name"), player["name"])
+        if shirt is not None and str(shirt) != "":
+            _pn_right(page, PASS_NETWORK_SHIRT_X1 - 2.4, y, shirt)
+        if name is not None and str(name) != "":
+            _pn_text(page, 33.0, y, name)
         for column, (x0, x1) in enumerate(columns):
             if matrix[index][column] is None or (index, column) in omit_cells:
                 continue
@@ -2703,19 +2788,26 @@ def make_report():
         # header cells' text per side (a template revision); `pass_network_column_widths`
         # changes the column grid (a uniform grid, a wider one);
         # `pass_network_header_names` rewrites the printed column-header names (the
-        # hyphen-wrap case); `pass_network_omit_cells` drops `(row, column)` cells (a
-        # second blank in a row); `pass_network_cell_text` doctors a cell's printed text
-        # (a fullwidth digit, a non-integer); `pass_network_panel=False` drops the Top-5
-        # panel; `pass_network_decorate` draws extra content last (a pitch rect there is
-        # the no-coordinates tripwire); `pass_network_extra_pages` emits additional
-        # anchored pages so the anchor resolves to more than one.
+        # hyphen-wrap case); `pass_network_omit_header_cells` drops individual header
+        # RECTANGLES by band index, leaving the gap the contiguity assertion exists to
+        # catch; `pass_network_omit_cells` drops `(row, column)` cells (a second blank in a
+        # row); `pass_network_cell_text` doctors a cell's printed text (a non-integer, a
+        # negative) and `pass_network_cell_fonts` sets that cell's font, which a FULLWIDTH
+        # digit needs to reach the text layer at all — without it the base-14 fonts
+        # substitute U+FFFD and the test passes for the wrong reason;
+        # `pass_network_panel=False` drops the Top-5 panel; `pass_network_decorate` draws
+        # extra content last (a pitch rect there is the no-coordinates tripwire);
+        # `pass_network_extra_pages` emits additional anchored pages so the anchor resolves
+        # to more than one.
         pass_network_block: "dict[str, dict] | None" = None,
         pass_network_header: bool = True,
         pass_network_lead_texts: "dict[str, tuple] | None" = None,
         pass_network_column_widths: "tuple | None" = None,
         pass_network_header_names: "dict[str, list] | None" = None,
+        pass_network_omit_header_cells: "dict[str, tuple] | None" = None,
         pass_network_omit_cells: "dict[str, tuple] | None" = None,
         pass_network_cell_text: "dict[str, dict] | None" = None,
+        pass_network_cell_fonts: "dict[str, dict] | None" = None,
         pass_network_panel: bool = True,
         pass_network_decorate=None,
         pass_network_extra_pages: "dict[str, int] | None" = None,
@@ -3462,8 +3554,10 @@ def make_report():
                     else PASS_NETWORK_COLUMN_WIDTHS
                 ),
                 header_names=(pass_network_header_names or {}).get(side),
+                omit_header_cells=(pass_network_omit_header_cells or {}).get(side, ()),
                 omit_cells=(pass_network_omit_cells or {}).get(side, ()),
                 cell_text=(pass_network_cell_text or {}).get(side),
+                cell_fonts=(pass_network_cell_fonts or {}).get(side),
                 panel=pass_network_panel,
                 decorate=(
                     None

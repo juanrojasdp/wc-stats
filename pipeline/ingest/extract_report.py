@@ -422,7 +422,8 @@ def extract_report(path: "str | Path", content_hash: str | None = None) -> dict:
         "metadata": metadata,
         "page_count": page_count,
         "anchors": anchors,
-        # Domains A-G plus set plays are filled; the remaining ones land with 1.14-1.15.
+        # Domains A-G, set plays and the pass network are filled. Story 1.15 (cross-match
+        # identity) and 1.16 (bundle emission) consume this dict rather than adding to it.
         "domains": {
             "match_metadata": match_metadata,
             "shots": shots,

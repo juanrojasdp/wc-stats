@@ -21,6 +21,9 @@ from pipeline.extract.errors import (
     PlayerJoinError,
 )
 from pipeline.extract.pass_network import (
+    HEADER_BAND_Y0_MAX,
+    HEADER_BAND_Y0_MIN,
+    HEADER_MIN_HEIGHT_PT,
     PASS_NETWORK_ANCHOR_STEM,
     TOP_RANKED_PCT_TOLERANCE,
     extract_pass_network,
@@ -30,7 +33,6 @@ from pipeline.extract.pass_network import (
 from pipeline.tests.conftest import (
     PAGE_HEIGHT,
     PAGE_WIDTH,
-    PASS_NETWORK_FIRST_COLUMN_X0,
     PASS_NETWORK_HEADER_Y0,
     draw_pass_network_page,
     pass_network_columns,
@@ -439,6 +441,79 @@ def test_row_order_must_match_column_order():
         )
 
 
+# --- the remaining typed raises on the hot path (1.14 review: all untested) -------------
+#
+# Every branch below raises `PassNetworkParseError` on the page's grammar, and none of them
+# had a test until the code review. They are grouped rather than scattered because they
+# share one construction: draw a normal page, then break exactly one thing.
+
+
+def _decorate_span(text, x, y, fontsize=7.5):
+    """A `decorate` hook that prints one stray span at an absolute position."""
+
+    def draw(page):
+        page.insert_text((x, y), text, fontsize=fontsize)
+
+    return draw
+
+
+def test_a_span_outside_every_header_cell_fails_rather_than_being_dropped():
+    """Assert-on-unknown: a body span left of the shirt column belongs to no column."""
+    with pytest.raises(PassNetworkParseError, match="outside every header cell"):
+        extract(BASIC, BASIC_LINEUPS, decorate=_decorate_span("9", 4.0, 200.0))
+
+
+def test_a_row_label_line_with_no_shirt_number_is_the_wrap_case_and_raises():
+    """Max 1 line per row label on 208/208 — but 1.13's three-line name says guard it.
+
+    A name-column span on its own line below the last matrix row: bucket 1 with no bucket
+    0, which is exactly what a wrapped label's continuation line looks like.
+    """
+    with pytest.raises(PassNetworkParseError, match="wrapped row label"):
+        extract(
+            BASIC, BASIC_LINEUPS, decorate=_decorate_span("VAN DER BERG", 40.0, 500.0)
+        )
+
+
+def test_a_shirt_column_carrying_something_other_than_a_number_fails_loud():
+    with pytest.raises(PassNetworkParseError, match="not a 1-2 digit number"):
+        extract(BASIC, BASIC_LINEUPS, cell_text={"home": {(0, "shirt"): "GK"}})
+
+
+def test_a_row_whose_name_assembles_empty_fails_loud():
+    with pytest.raises(PassNetworkParseError, match="assembled an empty player name"):
+        extract(BASIC, BASIC_LINEUPS, cell_text={"home": {(1, "name"): ""}})
+
+
+def test_a_page_with_a_header_but_no_matrix_rows_fails_loud():
+    with pytest.raises(PassNetworkParseError, match="carries no matrix rows"):
+        extract(BASIC, BASIC_LINEUPS, rows=False)
+
+
+def test_a_matrix_that_is_not_square_fails_the_census():
+    """Fewer rows than columns: the census is what makes cell [i][j] mean anything."""
+    with pytest.raises(PassNetworkParseError, match="rows against"):
+        extract(BASIC, BASIC_LINEUPS, rows=(0, 1))
+
+
+def test_fewer_non_zero_cells_than_printed_top5_rows_is_a_check_failure_not_a_crash():
+    """`zip` would silently compare four ranks against five printed rows."""
+    matrix = [[None, 1, 0], [0, None, 0], [0, 0, None]]
+    payload = extract(
+        {"home": block(NAMES, matrix, top5=[100.0, 0.0, 0.0, 0.0, 0.0]),
+         "away": block(AWAY_NAMES, AWAY_MATRIX)},
+        BASIC_LINEUPS,
+    )
+
+    (check,) = [
+        entry
+        for entry in pass_network_checks(payload)
+        if entry["check"] == "pass-network-top5-pct"
+    ]
+    assert check["result"] == "fail"
+    assert "only 1 non-zero cells against 5 printed Top-5 rows" in check["specifics"]
+
+
 # --- the hyphen wrap (Task 2.7) --------------------------------------------------------
 
 
@@ -697,19 +772,39 @@ def test_a_printed_percentage_outside_the_tolerance_fails_the_check():
     assert "home rank 1" in check["specifics"]
 
 
-def test_the_tolerance_is_the_printed_half_ulp_and_admits_exactly_it():
-    """Worst observed corpus delta is EXACTLY 0.05 over all 1,040 printed percentages."""
-    assert TOP_RANKED_PCT_TOLERANCE == 0.05
-
-    payload = extract(BASIC, BASIC_LINEUPS)
-    payload["home"]["top_ranked_pairs"][0]["percent_of_total"] = 32.1 + 0.05
-
+def _top5_result(payload, printed):
+    payload["home"]["top_ranked_pairs"][0]["percent_of_total"] = printed
     (check,) = [
         entry
         for entry in pass_network_checks(payload)
         if entry["check"] == "pass-network-top5-pct"
     ]
-    assert check["result"] == "pass"
+    return check
+
+
+def test_the_tolerance_admits_exactly_the_printed_half_ulp_and_nothing_beyond():
+    """Worst observed corpus delta is EXACTLY 0.05 over all 1,040 printed percentages.
+
+    Pinned at BOTH edges and measured from the COMPUTED value, which is what the check
+    compares against. The previous form set the printed value to `32.1 + 0.05` against a
+    computed 32.1428…, i.e. it moved the printed value 0.0071 TOWARDS the computed one —
+    the tolerance was never exercised at all, and between this test and the clean fixture
+    the constant could have been set anywhere in roughly [0.043, 7.85] with the suite
+    green. It is now pinned to within 0.0001 on the failing side.
+    """
+    assert TOP_RANKED_PCT_TOLERANCE == 0.05
+
+    payload = extract(BASIC, BASIC_LINEUPS)
+    computed = 100.0 * 9 / payload["home"]["matrix_total"]
+
+    # Exactly at the bound, on both sides of it — `abs()` makes the check symmetric, and
+    # `computed + 0.05` is precisely the case that fails on float representation alone
+    # without TOP_RANKED_PCT_EPSILON.
+    assert _top5_result(payload, computed + 0.05)["result"] == "pass"
+    assert _top5_result(payload, computed - 0.05)["result"] == "pass"
+    # And a hair beyond it, in both directions: the epsilon must not swallow a real miss.
+    assert _top5_result(payload, computed + 0.0501)["result"] == "fail"
+    assert _top5_result(payload, computed - 0.0501)["result"] == "fail"
 
 
 def test_the_row_relation_ships_as_a_bound_and_records_the_delta():
@@ -794,7 +889,14 @@ def test_the_column_sum_versus_offers_received_relation_is_not_shipped():
         )
     ]
 
-    assert not [check_id for check_id in ids if "offer" in check_id or "col" in check_id]
+    # The EXACT shipped set, not a substring filter. The previous form asked only that no
+    # id contained "offer" or "col", which a future `pass-network-received-bound` shipping
+    # exactly this relation would have passed green — the opposite of what the test is for.
+    assert ids == [
+        "pass-network-top5-pct",
+        "pass-network-row-bound",
+        "pass-network-total-bound",
+    ]
 
 
 # --- determinism (Task 8.12) -------------------------------------------------------------
@@ -810,10 +912,31 @@ def test_re_extraction_is_byte_identical():
     assert first == second
 
 
-def test_the_header_band_geometry_matches_the_corpus_template():
-    """A guard on the fixture itself: drawn where the real page draws."""
-    columns = pass_network_columns(3)
+def test_the_parsers_header_window_brackets_the_corpus_band_and_excludes_the_panel():
+    """The PARSER's window against the corpus's measured geometry, not against itself.
 
-    assert columns[0][0] == PASS_NETWORK_FIRST_COLUMN_X0
-    assert PASS_NETWORK_HEADER_Y0 == 90.75
-    assert [round(x1 - x0, 2) for x0, x1 in columns] == [36.0, 30.0, 42.0]
+    The previous form asserted `columns[0][0] == PASS_NETWORK_FIRST_COLUMN_X0` (which
+    `pass_network_columns` returns by construction from that same constant) and
+    `PASS_NETWORK_HEADER_Y0 == 90.75` (a constant against its own literal), so nothing in
+    it was derived from anything. What is worth pinning is that the parser's window admits
+    the band the corpus actually prints and rejects the one rect that sits at the same y0
+    — the Top-5 panel's, at height 13.5. Corpus literals: band y0 90.75, y1 117.75 (height
+    27.0) on 208/208; panel header height 13.5.
+    """
+    assert HEADER_BAND_Y0_MIN < 90.75 < HEADER_BAND_Y0_MAX
+    # Strictly between the panel's height and the band's, which is the whole job of the
+    # predicate: too low admits the panel rect, too high rejects the band.
+    assert 13.5 < HEADER_MIN_HEIGHT_PT < 27.0
+    # And the fixture draws inside that window rather than merely near it.
+    assert HEADER_BAND_Y0_MIN < PASS_NETWORK_HEADER_Y0 < HEADER_BAND_Y0_MAX
+
+
+def test_a_missing_header_cell_is_caught_by_contiguity_not_by_the_row_census():
+    """The one failure the row census cannot see (the story's declared departure).
+
+    A dropped header rect removes a whole column from the grid while every remaining
+    column still parses and every row still carries exactly one blank — so the census is
+    blind to it and only the contiguity assertion fires. Untested until the 1.14 review.
+    """
+    with pytest.raises(PassNetworkParseError, match="not contiguous"):
+        extract(BASIC, BASIC_LINEUPS, omit_header_cells=(3,))
