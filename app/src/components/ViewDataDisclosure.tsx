@@ -4,6 +4,7 @@ import { useId, useState, type ReactNode } from "react";
 
 import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
+import { cn } from "@/lib/utils";
 
 /** Separator glyphs are module consts, never bare JSX literals (i18n gate). */
 const LABEL_SEPARATOR = ": ";
@@ -26,8 +27,27 @@ export function ViewDataDisclosure({
   children,
   trailing,
   panelTitle,
+  surface = "pitch",
 }: {
   children: ReactNode;
+  /**
+   * Which canvas this disclosure sits on (Story 2.6 ruled decision 11).
+   *
+   * `"pitch"` (the default, so the one pre-existing call site is untouched)
+   * keeps `text-ink-on-pitch` — theme-invariant near-white, correct on the
+   * deep-green pitch and justified in the class comment below.
+   *
+   * `"canvas"` is for a THEME-AWARE surface: the Momentum Timeline's
+   * --surface-raised card, where that same near-white #f2f5f7 on #ffffff
+   * computes 1.10:1 — an invisible control. It swaps the ink to
+   * --ink-primary and changes nothing else; the underline stays, because the
+   * control must still read as interactive without a second hue.
+   *
+   * A private copy of this component was the rejected alternative: it exists
+   * precisely so the aria-controls-only-while-mounted fix below is not
+   * re-broken a third time.
+   */
+  surface?: "pitch" | "canvas";
   /**
    * The owning panel's already-resolved title. It does NOT change the visible
    * label — every panel still reads "Ver los datos", which is the one canonical
@@ -65,7 +85,10 @@ export function ViewDataDisclosure({
            * the light --accent-cyan computes 2.28:1. Underlined so the control
            * still reads as interactive without a second hue on the green.
            */
-          className="flex min-h-11 items-center underline underline-offset-4 type-title text-ink-on-pitch"
+          className={cn(
+            "flex min-h-11 items-center underline underline-offset-4 type-title",
+            surface === "canvas" ? "text-ink-primary" : "text-ink-on-pitch"
+          )}
         >
           {t(labelKey)}
         </button>

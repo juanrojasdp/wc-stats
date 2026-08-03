@@ -195,6 +195,14 @@ export const es = {
       headlineBefore: "Sin datos de",
       headlineAfter: "para este partido.",
       explanation: "El informe oficial no incluye esta sección.",
+      /*
+       * UX-DR13 / EXPERIENCE.md:92 require a DEDICATED sentence for this one
+       * section, not the generic composition above (Story 2.6 decision 12).
+       * Applied through a per-section override at TacticalLayer's `headline=`
+       * prop; useEmptyHeadline() stays the default for the other ten and is
+       * NOT forked. Quoted verbatim from UX-DR13.
+       */
+      momentumHeadline: "La línea de momentum no está disponible para este partido.",
     },
     /*
      * Ruled decision 9: a section whose data IS in the bundle but whose
@@ -247,6 +255,20 @@ export const es = {
       unknown: "—",
       yes: "Sí",
       no: "No",
+      // Pass-network columns, shared by the node popover rows and both tables.
+      shirt: "Dorsal",
+      involvement: "Participación",
+      connections: "Conexiones",
+      from: "Desde",
+      to: "Hacia",
+      passes: "Pases",
+      /*
+       * Each pass-network table STATES ITS OWN ORDER (UX-DR12 requires one).
+       * Deliberately NOT viz.table.caption, whose value is "Ordenado por
+       * minuto." — a false statement on rows that have no clock.
+       */
+      captionNodes: "Ordenado por equipo y dorsal.",
+      captionEdges: "Ordenado por equipo y número de pases, de mayor a menor.",
     },
     cluster: {
       dialogLabel: "Eventos en este punto",
@@ -260,6 +282,13 @@ export const es = {
     marker: {
       unknownPlayer: "jugador desconocido",
       unknownMinute: "minuto desconocido",
+      /*
+       * Spoken pinned state for markers that carry no aria-pressed — clustered
+       * ones, which open a dialog instead of toggling (2.8 review). Appended to
+       * the accessible name so the pin has a non-visual carrier on the majority
+       * of nodes, without claiming the element is a toggle button.
+       */
+      pinned: "aislado",
     },
     shotMap: {
       title: "Mapa de tiros",
@@ -289,6 +318,77 @@ export const es = {
       completedCountOne: "completado",
       figurePrefix: "Mapa de centros:",
       zero: "El informe no registra centros para este equipo.",
+    },
+    passNetwork: {
+      title: "Red de pases",
+      figurePrefix: "Red de pases:",
+      /*
+       * The accessible name is a name / role / VALUE triple (UX-DR16), and the
+       * marker's middle clause carries the value: "Jugador Raul RANGEL,
+       * participación 80 pases y 6 conexiones, nodo de la red de pases". The
+       * connection count lives in the NAME because edges are aria-hidden by
+       * construction and the detail panel is aria-hidden too — it is the sole
+       * non-visual handle on what isolating this node would highlight.
+       */
+      markerPrefix: "Jugador",
+      involvementPrefix: "participación",
+      nameJoin: "y",
+      nodeRole: "nodo de la red de pases",
+      players: "jugadores",
+      playersOne: "jugador",
+      connectionsCount: "conexiones",
+      connectionsCountOne: "conexión",
+      passes: "pases",
+      passesOne: "pase",
+      zero: "El informe no registra una red de pases para este equipo.",
+      // No on-pitch text labels exist (an 11 px numeral does not fit a 10-20 px
+      // circle at 390 px), so the note is what explains the size channel.
+      nodeNote: "Nodo: jugador · el tamaño indica la participación.",
+      /*
+       * The legend labels its five bands with bare integers ("1–4", "5–7", …)
+       * and every swatch is aria-hidden, so without this the panel stated five
+       * naked numbers with no unit anywhere — and nodeNote explains the SIZE
+       * channel only, never the ramp (2.8 review). Decision 4's whole case for
+       * labelled bands is that stating the numbers makes a ramp whose adjacent
+       * stops separate by ~1.3:1 legible; numbers without a unit state nothing.
+       */
+      edgeNote: "Línea: pases entre dos jugadores · el grosor y el color indican cuántos.",
+      // EXPERIENCE's ruled <md declutter control, verbatim. Same "declutter
+      // without deleting" grammar as tactical.keyStats.showAll.
+      showAll: "Mostrar todos los pases",
+      showLess: "Mostrar menos pases",
+    },
+    /*
+     * Momentum Timeline (Story 2.6). The section TITLE stays "Línea de
+     * momentum" — a ruled product concept with a ruled i18n treatment
+     * (EXPERIENCE.md:259 keeps the English term) — but the contract is emphatic
+     * that the series is a per-minute count of FINAL-THIRD DISTRIBUTIONS, "NOT
+     * a possession percentage and not an abstract momentum index; the App's own
+     * copy must not imply otherwise". So the real metric is named everywhere a
+     * number is: the subtitle, the y-axis, the figure label, the aria-valuetext
+     * and the table column heads (decision 13).
+     */
+    momentum: {
+      figurePrefix: "Línea de momentum:",
+      metricNote: "Entradas al último tercio por minuto, por equipo.",
+      axisMinute: "Minuto",
+      axisEntries: "Entradas al último tercio",
+      cursorLabel: "Cursor de minuto: mueve con las flechas para leer cada minuto.",
+      minutePrefix: "Minuto",
+      entries: "entradas",
+      entriesOne: "entrada",
+      goals: "goles",
+      goalsOne: "gol",
+      minutes: "minutos",
+      minutesOne: "minuto",
+      goalPrefix: "Gol de",
+      ownGoal: "en propia puerta",
+      penalty: "de penal",
+      // This table states ITS OWN order — deliberately not viz.table.caption,
+      // whose "Ordenado por minuto." is a different claim on a grid whose
+      // minute is not unique.
+      tableCaption: "Ordenado por minuto de partido, incluido el tiempo añadido.",
+      tableGoal: "Gol",
     },
   },
   enums: {

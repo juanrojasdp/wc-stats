@@ -4,9 +4,12 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { EmptyStatePanel, PendingSectionPanel, useEmptyHeadline } from "@/components/EmptyStatePanel";
 import { KeyStatisticsSection } from "@/components/KeyStatisticsSection";
+import { MomentumSection } from "@/components/MomentumSection";
+import { PassNetworksSection } from "@/components/PassNetworksSection";
 import { ShotMapsSection } from "@/components/ShotMapsSection";
 import { TacticalSection } from "@/components/TacticalSection";
 import type { MatchBundle } from "@/lib/contract/contract-types";
+import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
 import {
   SECTION_IDS,
@@ -34,6 +37,21 @@ function sectionIdFromHash(hash: string): SectionId | null {
   const raw = hash.startsWith("#") ? hash.slice(1) : hash;
   return SECTION_IDS.find((id) => id === raw) ?? null;
 }
+
+/*
+ * Per-section DEDICATED empty-state copy (Story 2.6 ruled decision 12).
+ *
+ * UX-DR13 and EXPERIENCE.md:92 require one specific sentence for the momentum
+ * section — "La línea de momentum no está disponible para este partido." — not
+ * the generic "Sin datos de {sección} para este partido." composition. The
+ * override is a LOOKUP applied at the `headline=` prop below, never a
+ * conditional hook call: useEmptyHeadline() takes no argument, stays called
+ * unconditionally, and remains the default for the other ten sections. The hook
+ * is not forked.
+ */
+const EMPTY_HEADLINE_OVERRIDE: Partial<Record<SectionId, DictionaryKey>> = {
+  momentum: "tactical.empty.momentumHeadline",
+};
 
 interface FocusRequest {
   id: SectionId;
@@ -113,8 +131,40 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
             }}
           />
         );
-      case "momentum":
       case "pass-networks":
+        return (
+          <PassNetworksSection
+            nodes={bundle.events.passNetworkNodes}
+            edges={bundle.events.passNetworkEdges}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
+      case "momentum":
+        return (
+          <MomentumSection
+            momentum={bundle.momentum}
+            goals={bundle.metadata.goals}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
       case "offers-to-receive":
       case "movement-to-receive":
       case "defensive-actions":
@@ -145,6 +195,12 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
     <div>
       {plans.map((plan) => {
         const title = t(sectionTitleKey(plan.id));
+        /*
+         * Hoisted into an identifier: the ternary form inside the `headline=`
+         * prop trips the i18n gate, which requires a plain identifier there.
+         */
+        const overrideKey = EMPTY_HEADLINE_OVERRIDE[plan.id];
+        const emptyCopy = overrideKey === undefined ? emptyHeadline(title) : t(overrideKey);
         return (
           <TacticalSection
             key={plan.id}
@@ -162,7 +218,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
           >
             {plan.isEmpty ? (
               <EmptyStatePanel
-                headline={emptyHeadline(title)}
+                headline={emptyCopy}
                 explanation={t("tactical.empty.explanation")}
               />
             ) : (

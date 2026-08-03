@@ -13,6 +13,9 @@ import {
   GOAL_RING_STROKE_PX,
   HOLLOW_STROKE_PX,
   MARKER_RADIUS_PX,
+  NODE_DIM_OPACITY,
+  SELECTION_RING_OFFSET_PX,
+  SELECTION_RING_STROKE_PX,
   SQUARE_SIDE_PX,
   type MarkerShape,
   type MarkerValue,
@@ -80,10 +83,27 @@ export interface PitchPanelSide {
   zeroLine: string;
 }
 
-export interface PitchPanelLegendEntry {
-  shape: MarkerShape;
-  colorVar: string;
-  label: string;
+/**
+ * A legend row. The discriminant is OPTIONAL so every existing `{shape,
+ * colorVar, label}` call site stays valid: absent means "mark".
+ */
+export type PitchPanelLegendEntry =
+  | { kind?: "mark"; shape: MarkerShape; colorVar: string; label: string }
+  /** A stroke swatch — Story 2.8's edge-weight ramp, where width is load-bearing. */
+  | { kind: "stroke"; colorVar: string; widthPx: number; label: string };
+
+/**
+ * Pinned selection, owned by the CONSUMER (Story 2.8 ruled decision 5): the
+ * panel reports activations and renders state, but only the consumer can dim
+ * what lives in its own `underlay`. Keys are marker keys — stable identities,
+ * never array indices.
+ */
+export interface PitchPanelSelection {
+  selectedKey: string | null;
+  /** Marker keys to render at NODE_DIM_OPACITY. Empty ⇒ nothing dims. */
+  dimmedKeys: ReadonlySet<string>;
+  onToggle: (markerKey: string) => void;
+  onClear: () => void;
 }
 
 export interface PitchPanelProps {
@@ -95,8 +115,17 @@ export interface PitchPanelProps {
   note?: string | null;
   /** The "Ver los datos" region content. */
   dataTable: ReactNode;
-  /** One-line forward seam for Story 2.8's pass-network edges. Unused here. */
-  underlay?: (projection: Projection, size: Size) => ReactNode;
+  /**
+   * Decorative geometry drawn UNDER the hit layer and the markers, inside the
+   * aria-hidden group — Story 2.8's pass-network edges. `sideIndex` is the
+   * third parameter because the prop is called once per figure and a single
+   * closure otherwise cannot tell team A's edges from team B's.
+   */
+  underlay?: (projection: Projection, size: Size, sideIndex: number) => ReactNode;
+  /** Absent ⇒ no aria-pressed, no dimming, no selection ring (byte-identical). */
+  selection?: PitchPanelSelection;
+  /** Extra controls rendered in the legend row, e.g. Story 2.8's <md toggle. */
+  controls?: ReactNode;
 }
 
 /** Which popover is open, panel-wide: UX-DR15 bans a stack deeper than one. */
@@ -196,11 +225,13 @@ function PitchDrawing({
   layout,
   extentIsFull,
   underlay,
+  sideIndex,
 }: {
   orientation: PitchOrientation;
   layout: FigureLayout;
   extentIsFull: boolean;
-  underlay?: (projection: Projection, size: Size) => ReactNode;
+  underlay?: (projection: Projection, size: Size, sideIndex: number) => ReactNode;
+  sideIndex: number;
 }) {
   const markings = useMemo(
     () =>
@@ -237,7 +268,7 @@ function PitchDrawing({
       {markings.centreSpot === null ? null : (
         <circle {...markings.centreSpot} fill="var(--pitch-line)" />
       )}
-      {underlay?.(layout.projection, layout.size)}
+      {underlay?.(layout.projection, layout.size, sideIndex)}
     </g>
   );
 }
@@ -289,6 +320,7 @@ function PitchFigure({
   onOpen,
   onClose,
   underlay,
+  selection,
 }: {
   side: PitchPanelSide;
   sideIndex: number;
@@ -305,7 +337,8 @@ function PitchFigure({
   open: OpenPopover | null;
   onOpen: (next: OpenPopover) => void;
   onClose: () => void;
-  underlay?: (projection: Projection, size: Size) => ReactNode;
+  underlay?: (projection: Projection, size: Size, sideIndex: number) => ReactNode;
+  selection?: PitchPanelSelection;
 }) {
   const t = useT();
   const [measureRef, width] = useElementWidth(FALLBACK_WIDTH_PX);
@@ -415,10 +448,28 @@ function PitchFigure({
         focusMarker(markers.length - 1);
         return;
       case "Enter":
-      case " ":
+      case " ": {
         event.preventDefault();
-        openClusterOf(index, layout.clusters[layout.clusterOfMarker[index]].length > 1 ? "dialog" : "hover");
+        const clustered = layout.clusters[layout.clusterOfMarker[index]].length > 1;
+        /*
+         * Three ways, and the split is ruled (Story 2.8 decision 6a). Blindly
+         * overwriting this branch would silently break shot- and cross-map
+         * cluster opening, which no test can catch in a jsdom-less harness.
+         *
+         * - No `selection`: the existing call, VERBATIM.
+         * - Singleton + selection: toggle isolation and nothing else. The
+         *   hover panel is already open, because focus opened it, so the old
+         *   openClusterOf(index, "hover") was already a no-op here.
+         * - Clustered: still opens the dialog and does NOT toggle. Isolation
+         *   for a clustered node is reached through the dialog's list items.
+         */
+        if (selection === undefined || clustered) {
+          openClusterOf(index, clustered ? "dialog" : "hover");
+          return;
+        }
+        selection.onToggle(markers[index].key);
         return;
+      }
       case "Escape":
         if (isOpenHere) {
           event.preventDefault();
@@ -447,6 +498,23 @@ function PitchFigure({
       onOpen({ sideIndex, clusterIndex, markerIndex: next, mode: "dialog" });
       return;
     }
+    /*
+     * TAP TOGGLES ISOLATION on a singleton cluster (2.8 code review, ruled by
+     * Juan). AC 1 and ruled decision 6 both name tap as a toggle trigger, but
+     * every pointer event lands here — the marker layer is
+     * pointerEvents="none" — and this function never called onToggle, while a
+     * singleton's hover popover is an aria-hidden <dl> with no buttons. So a
+     * singleton node could not be pinned by pointer at all, and on touch, where
+     * a marker can never take focus, it had NO isolation affordance by any
+     * input. Clustered nodes are untouched: they still open the dialog and pin
+     * from its list items (decision 6a), which is the only path that can
+     * identify WHICH member was meant.
+     *
+     * `selection?.` keeps shot and cross maps byte-identical.
+     */
+    if (cluster.length === 1) {
+      selection?.onToggle(markers[front].key);
+    }
     onOpen({
       sideIndex,
       clusterIndex,
@@ -466,6 +534,7 @@ function PitchFigure({
    * marker indices left over from a previous clustering, so after a resize the
    * marker drawn on top was not the one the popover described.
    */
+  const selectedKey = selection?.selectedKey ?? null;
   const drawOrder = useMemo(() => {
     const order = markers.map((_, index) => index);
     const fronts = new Set(
@@ -474,8 +543,19 @@ function PitchFigure({
         return stored !== undefined && cluster.includes(stored) ? stored : cluster[0];
       })
     );
+    /*
+     * The SELECTED marker joins the front set: a selected node inside a
+     * multi-member cluster would otherwise paint under a cluster-mate with its
+     * own selection ring occluded — the ring is the state's only visual half.
+     */
+    if (selectedKey !== null) {
+      const selectedIndex = markers.findIndex((marker) => marker.key === selectedKey);
+      if (selectedIndex !== -1) {
+        fronts.add(selectedIndex);
+      }
+    }
     return order.sort((a, b) => Number(fronts.has(a)) - Number(fronts.has(b)));
-  }, [markers, frontOfCluster, layout]);
+  }, [markers, frontOfCluster, layout, selectedKey]);
 
   function markerName(marker: PitchMarker): string {
     /*
@@ -554,6 +634,7 @@ function PitchFigure({
               layout={layout}
               extentIsFull={extent.xMin === 0}
               underlay={underlay}
+              sideIndex={sideIndex}
             />
           </g>
           {/*
@@ -617,6 +698,30 @@ function PitchFigure({
               const point = layout.points[index];
               const cluster = layout.clusters[layout.clusterOfMarker[index]];
               const inMultiCluster = cluster.length > 1;
+              /*
+               * The pinned state needs a non-visual carrier on markers that
+               * DON'T get aria-pressed (2.8 code review, ruled by Juan).
+               *
+               * Decision 6a renders aria-pressed only on singleton clusters,
+               * because a clustered marker opens a dialog rather than toggling
+               * and must not announce a toggle state it cannot set. But the
+               * story's premise for that rule — "most clusters are singletons"
+               * — is false at every shipped width (18 of 22 nodes clustered at
+               * >=lg, 10 of 11 at the <md fallback), so for the majority of
+               * nodes the pin had no accessible counterpart on the pitch at
+               * all: it lived only inside a dialog the reader must open first.
+               *
+               * Putting aria-pressed on them anyway would be the exact defect
+               * 6a exists to prevent, and would collide with the
+               * aria-haspopup="dialog" / aria-expanded they already carry. The
+               * name is the honest channel: it states the fact without claiming
+               * the element is a toggle button.
+               */
+              const isPinnedWithoutPressed =
+                selection !== undefined && inMultiCluster && selection.selectedKey === marker.key;
+              const baseName = markerName(marker);
+              const pinnedName = `${baseName}${NAME_SEPARATOR}${t("viz.marker.pinned")}`;
+              const accessibleName = isPinnedWithoutPressed ? pinnedName : baseName;
               return (
                 <g
                   key={marker.key}
@@ -625,7 +730,7 @@ function PitchFigure({
                   }}
                   role="button"
                   tabIndex={index === activeIndex ? 0 : -1}
-                  aria-label={markerName(marker)}
+                  aria-label={accessibleName}
                   /*
                    * aria-haspopup/aria-expanded ONLY on markers that open a real
                    * dialog. A single marker's popover is aria-hidden (its
@@ -633,6 +738,25 @@ function PitchFigure({
                    * advertising expanded state for content assistive tech
                    * cannot reach is worse than saying nothing.
                    */
+                  /*
+                   * aria-pressed ONLY where Enter actually toggles — singleton
+                   * clusters (decision 6a). A marker that opens a dialog
+                   * instead must not announce a pressed state it cannot set.
+                   * And it reflects PINNED isolation only: announcing it on
+                   * mere focus would report a state the reader never set, the
+                   * exact defect review-accessibility.md:29 filed against this
+                   * interaction.
+                   */
+                  aria-pressed={
+                    selection !== undefined && !inMultiCluster
+                      ? selection.selectedKey === marker.key
+                      : undefined
+                  }
+                  opacity={
+                    selection !== undefined && selection.dimmedKeys.has(marker.key)
+                      ? NODE_DIM_OPACITY
+                      : undefined
+                  }
                   aria-haspopup={inMultiCluster ? "dialog" : undefined}
                   aria-expanded={
                     inMultiCluster
@@ -671,7 +795,30 @@ function PitchFigure({
                     openClusterOf(index, "hover");
                   }}
                 >
-                  <MarkerShapeGlyph shape={marker.shape} colorVar={marker.colorVar} />
+                  <MarkerShapeGlyph
+                    shape={marker.shape}
+                    colorVar={marker.colorVar}
+                    radius={marker.radius}
+                  />
+                  {/*
+                   * The selection ring, drawn AFTER the glyph so it is never
+                   * painted under its own node. It shares --focus-ring-on-pitch
+                   * with the focus indicator — DESIGN offers no second on-pitch
+                   * ring token, and a selected node is very often the focused
+                   * one, so two hues would be indistinguishable in the common
+                   * case anyway. They are distinguished by GEOMETRY instead:
+                   * focus stays the browser's rectangular outline (the
+                   * focus-on-pitch utility), selection is this circle. Never
+                   * `outline: none` — that regression cost a patch twice.
+                   */}
+                  {selection !== undefined && selection.selectedKey === marker.key ? (
+                    <circle
+                      r={(marker.radius ?? MARKER_RADIUS_PX) + SELECTION_RING_OFFSET_PX}
+                      fill="none"
+                      stroke="var(--focus-ring-on-pitch)"
+                      strokeWidth={SELECTION_RING_STROKE_PX}
+                    />
+                  ) : null}
                 </g>
               );
             })}
@@ -697,6 +844,7 @@ function PitchFigure({
               focusMarker(open.markerIndex);
             }}
             markerName={markerName}
+            selection={selection}
           />
         ) : null}
       </div>
@@ -722,6 +870,7 @@ function ClusterPopover({
   onFront,
   onDismiss,
   markerName,
+  selection,
 }: {
   id: string;
   mode: OpenPopover["mode"];
@@ -735,6 +884,7 @@ function ClusterPopover({
   onFront: (markerIndex: number) => void;
   onDismiss: () => void;
   markerName: (marker: PitchMarker) => string;
+  selection?: PitchPanelSelection;
 }) {
   const t = useT();
   const isDialog = mode === "dialog" && markers.length > 1;
@@ -828,12 +978,24 @@ function ClusterPopover({
                * than where the reader actually was.
                */
               tabIndex={position === rovingPosition ? 0 : -1}
+              /*
+               * Isolation for a CLUSTERED node is reached here, not from the
+               * marker: Enter on a clustered marker opens this dialog and does
+               * not toggle (decision 6a). Arrow roving and Esc are untouched,
+               * and the list is not duplicated.
+               */
+              aria-pressed={
+                selection === undefined ? undefined : selection.selectedKey === marker.key
+              }
               className="flex min-h-11 w-full shrink-0 flex-col items-start rounded-sm px-2 py-1 text-left"
               onFocus={() => {
                 setRovingPosition(position);
                 onFront(memberIndices[position]);
               }}
-              onClick={() => onFront(memberIndices[position])}
+              onClick={() => {
+                onFront(memberIndices[position]);
+                selection?.onToggle(marker.key);
+              }}
               onKeyDown={(event) => {
                 if (event.key === "ArrowDown" || event.key === "ArrowUp") {
                   event.preventDefault();
@@ -855,7 +1017,16 @@ function ClusterPopover({
   );
 }
 
-export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: PitchPanelProps) {
+export function PitchPanel({
+  title,
+  sides,
+  legend,
+  note,
+  dataTable,
+  underlay,
+  selection,
+  controls,
+}: PitchPanelProps) {
   const t = useT();
   /*
    * Ruled decision 6: the side-by-side / tabs split lands at `md`, not `lg`.
@@ -936,6 +1107,35 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
        */}
       <div
         ref={panelRef}
+        /*
+         * Esc is LAYERED, one press per layer (UX-DR15: "closes the topmost").
+         * The marker handler cannot honour a panel-wide clear: its Escape
+         * branch is guarded by `isOpenHere`, and because focus opens the hover
+         * popover that guard is true whenever a marker is focused. So the
+         * popover is closed there, and the PIN is cleared here.
+         *
+         * ACCEPTED CONSEQUENCE, corrected by the 2.8 code review: clearing a
+         * pin by keyboard takes TWO Escapes from a singleton and THREE from the
+         * dialog path — `onDismiss` calls focusMarker(), whose onFocus re-opens
+         * the hover popover, so the dialog's Escape spends a press and hands
+         * back a marker with a panel open. The dialog is the primary path at
+         * every shipped width (18 of 22 nodes clustered at >=lg, 10 of 11 at
+         * the <md fallback), so three is the COMMON case, not the exception.
+         */
+        onKeyDown={(event) => {
+          if (event.key !== "Escape") {
+            return;
+          }
+          if (open !== null) {
+            setOpen(null);
+            event.stopPropagation();
+            return;
+          }
+          if (selection !== undefined && selection.selectedKey !== null) {
+            selection.onClear();
+            event.stopPropagation();
+          }
+        }}
         className="mt-2 rounded-lg border border-transparent bg-pitch-surface p-tile-gap dark:border-hairline"
       >
         {isMd ? null : (
@@ -947,8 +1147,11 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
               // active team cannot be deselected.
               if (value !== "") {
                 setSelectedCode(value);
-                // Never carry a popover across a team switch.
+                // Never carry a popover — or a pin — across a team switch.
+                // This is the only place a team switch is observable; the
+                // consuming section cannot see it.
                 setOpen(null);
+                selection?.onClear();
               }
             }}
             aria-label={t("viz.teamSelector")}
@@ -977,20 +1180,47 @@ export function PitchPanel({ title, sides, legend, note, dataTable, underlay }: 
               onOpen={setOpen}
               onClose={closePopover}
               underlay={underlay}
+              selection={selection}
             />
           ))}
         </div>
         <div className="mt-tile-gap flex flex-wrap items-center gap-x-4 gap-y-1.5">
-          {legend.map((entry) => (
-            <span key={entry.label} className="flex items-center gap-1.5 type-caption text-ink-on-pitch">
-              <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true">
-                <g transform="translate(7 7)">
-                  <MarkerShapeGlyph shape={entry.shape} colorVar={entry.colorVar} radius={4.6} />
-                </g>
-              </svg>
+          {/*
+           * Keyed by INDEX, not by label: quintile band labels are not unique
+           * when the weight distribution is narrow ("1–4" can legitimately
+           * appear twice), and a duplicate React key silently drops an entry
+           * from the legend that explains the ramp.
+           */}
+          {legend.map((entry, index) => (
+            <span key={index} className="flex items-center gap-1.5 type-caption text-ink-on-pitch">
+              {entry.kind === "stroke" ? (
+                /*
+                 * 24 px long, matching the mockup's ramp bars, so the thinnest
+                 * and thickest stops are comparable side by side — the width IS
+                 * the encoding (adjacent hues separate by only ~1.3:1).
+                 */
+                <svg width={24} height={14} viewBox="0 0 24 14" aria-hidden="true">
+                  <line
+                    x1={1}
+                    y1={7}
+                    x2={23}
+                    y2={7}
+                    stroke={`var(${entry.colorVar})`}
+                    strokeWidth={entry.widthPx}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ) : (
+                <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true">
+                  <g transform="translate(7 7)">
+                    <MarkerShapeGlyph shape={entry.shape} colorVar={entry.colorVar} radius={4.6} />
+                  </g>
+                </svg>
+              )}
               {entry.label}
             </span>
           ))}
+          {controls}
         </div>
         {note ? <p className="mt-2 type-caption text-ink-on-pitch-secondary">{note}</p> : null}
         <div className="mt-tile-gap border-t border-pitch-line/40 pt-2.5">

@@ -39,12 +39,24 @@ export interface MarkerDetailRow {
 }
 
 export interface PitchMarker {
-  /** Stable React key: `${kind}-${artifactIndex}`. */
+  /**
+   * Stable React key AND the identity `selection` matches on — never an array
+   * index. A stored index into a width-derived array reads `undefined` after a
+   * reflow and passes an `!== null` guard (Story 2.7's stale-index defect);
+   * a stable identity sidesteps that whole class. Shots and crosses key on
+   * `${kind}-${artifactIndex}` into the ARTIFACT array, which is data, not
+   * layout; pass-network nodes key on the playerId itself.
+   */
   key: string;
   /** AD-6 0-100, VERBATIM from the artifact — never adjusted, never clamped. */
   x: number;
   y: number;
   shape: MarkerShape;
+  /**
+   * Absent ⇒ MARKER_RADIUS_PX. Set only by size-encoding vizzes (Story 2.8's
+   * pass-network nodes, sized by the contract's `involvement` field).
+   */
+  radius?: number;
   /** A CSS custom property NAME, e.g. "--shot-goal" — never a resolved colour. */
   colorVar: string;
   /**
@@ -81,6 +93,30 @@ export const MARKER_RADIUS_PX = 6;
 export const SQUARE_SIDE_PX = 11;
 export const HOLLOW_STROKE_PX = 2;
 export const GOAL_RING_STROKE_PX = 1.5;
+
+/*
+ * Selection rendering, PANEL-GENERIC (2.8 code review).
+ *
+ * These three live here rather than in a viz model because a selection ring and
+ * a dim opacity are not pass-network concepts — PitchPanel renders both for any
+ * consumer that passes `selection`, and 2.9 will be the second. Importing them
+ * from pass-network-model inverted the layering the panel's own header
+ * promises ("every shot- or cross-specific decision is kept OUT of it").
+ *
+ * The ring sits OUTSIDE the glyph, offset from `marker.radius ?? MARKER_RADIUS_PX`,
+ * and is distinguished from the focus indicator by geometry: focus stays the
+ * browser's rectangular outline, selection is this circle.
+ */
+export const SELECTION_RING_OFFSET_PX = 3;
+export const SELECTION_RING_STROKE_PX = 2;
+
+/*
+ * Dimmed marker opacity, measured by alpha-blending over --pitch-surface
+ * #0b3d2e: team A 4.02:1, team B 3.34:1 — both clear of the 3:1 non-text floor,
+ * which they MUST be because dimmed markers stay focusable, tabbable, hittable
+ * interactive targets. 0.45 would drop team B to 2.73:1 and fail.
+ */
+export const NODE_DIM_OPACITY = 0.55;
 
 /**
  * Which state a whole event table is in, for the panel-level branch (Task 8.2).

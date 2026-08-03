@@ -67,6 +67,20 @@
   /* Deliberate alias of viz-team-a; single-series only */
   --viz-single: var(--viz-team-a);
   --shot-goal: #3fdd85;
+  /*
+   * The goal hue for THEME-AWARE CANVASES — the Momentum Timeline's goal
+   * markers, which sit on --surface-raised, not on the pitch (Story 2.6,
+   * DESIGN.md:280/288). Re-declared in `.light` below, following this file's
+   * own pattern (declare the base name, re-declare it inside `.light`) rather
+   * than a `-light` suffix, which does not exist anywhere in this codebase and
+   * would leave the token UNDEFINED in the dark theme.
+   *
+   * Measured: --shot-goal #3fdd85 on the light card #ffffff computes 1.77:1;
+   * the light value #177245 computes 5.95:1, reproducing DESIGN.md:288 exactly.
+   * --shot-goal itself is deliberately UNCHANGED — the pitch keeps the emerald
+   * in both themes (shot-map-model.ts carries colorVar: "--shot-goal").
+   */
+  --shot-goal-canvas: #3fdd85;
   --shot-on-target: #63c8f5;
   --shot-off-target: #f5b63c;
   --shot-blocked: #c9a1f5;
@@ -96,6 +110,16 @@
  * The -on-pitch ink and team accents below exist because --ink-* and
  * --viz-team-* DO have legitimate light-canvas uses elsewhere (Key Statistics,
  * the stat tiles) and so cannot simply be frozen.
+ *
+ * SCOPE CORRECTION (Story 2.6). "They render on the pitch and nowhere else" is
+ * true of --shot-on-target / -off-target / -blocked / -incomplete, and it was
+ * true of --shot-goal until the Momentum Timeline shipped. Momentum's goal
+ * markers sit on --surface-raised — a THEME-AWARE canvas, the case DESIGN.md:280
+ * always named — where the dark emerald computes 1.77:1. That canvas is served
+ * by a SEPARATE token, --shot-goal-canvas, declared in BOTH theme blocks; every
+ * pitch consumer keeps --shot-goal untouched in both themes, so the rationale
+ * above still holds for the five pitch hues exactly as written. The remaining
+ * four --shot-* hues still have NO off-pitch consumer.
  */
 :root {
   --pitch-surface: #0b3d2e;
@@ -165,14 +189,27 @@
   /*
    * Data-viz light-canvas variants. The five --shot-* hues are deliberately
    * ABSENT: they render only on the theme-invariant pitch, so a light-canvas
-   * variant of them is unconditionally wrong (Story 2.7 code review — the
+   * variant OF THEM is unconditionally wrong (Story 2.7 code review — the
    * light values computed 1.62–2.05:1 on the green against a 3:1 floor).
    * --viz-team-a/-b keep their light variants because Key Statistics and the
    * stat tiles paint them on the CANVAS; on the pitch, use the -on-pitch pair.
+   *
+   * SCOPE CORRECTION (Story 2.6): that rationale is about the PITCH consumers
+   * and stays correct for all five. It does not extend to a goal mark drawn on
+   * a theme-aware canvas, which DESIGN.md:280 always contemplated — the
+   * Momentum Timeline's markers sit on --surface-raised, where #3fdd85 is
+   * 1.77:1. They read --shot-goal-canvas, declared in BOTH theme blocks
+   * (5.95:1 here), so no consumer ever branches on theme in JS and no --shot-*
+   * pitch token moves.
    */
   --viz-team-a: #4d7c0f;
   --viz-team-b: #0e7490;
   --viz-neutral: #5f6970;
+  /*
+   * The one canvas-scoped goal hue — see the `:root, .dark` declaration and the
+   * scoping note above. 1.77:1 in the dark value vs 5.95:1 here, on #ffffff.
+   */
+  --shot-goal-canvas: #177245;
   --result-win: #1e7a43;
   --result-draw: #5f6970;
   --result-loss: #c22d50;
@@ -234,6 +271,8 @@
   --color-viz-neutral: var(--viz-neutral);
   --color-viz-single: var(--viz-single);
   --color-shot-goal: var(--shot-goal);
+  /* Theme-aware canvases only (momentum goal markers) — never the pitch. */
+  --color-shot-goal-canvas: var(--shot-goal-canvas);
   --color-shot-on-target: var(--shot-on-target);
   --color-shot-off-target: var(--shot-off-target);
   --color-shot-blocked: var(--shot-blocked);
