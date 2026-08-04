@@ -42,7 +42,7 @@ import { MIN_HIT_PX } from "@/viz/marker-layout";
  * scrollport equals its content height and it never scrolls vertically.
  * `position: sticky; top: 0` inside it NEVER OFFSETS: it would ship green, pass
  * a suite with no jsdom, and silently not stick. The Expert Layer supplies its
- * own HEIGHT-BOUNDED wrapper (`max-h-[70vh] overflow-auto scroll-pt-11`) and
+ * own HEIGHT-BOUNDED wrapper (its `SCROLLPORT` const, a focusable region) and
  * passes `sticky`, which is the one place the rule actually does something.
  * This component still renders NO scroll container of its own.
  *
@@ -341,6 +341,13 @@ export function DataTable<Row extends { key: string }>({
    * 1.00:1 — byte-identical tokens in both themes — and a single hairline is
    * 1.31:1. The doubled border is the carrier; the fill is what keeps the
    * scrolled-under rows from showing through.
+   *
+   * NOTE (2.11b code review): the only caller passing `sticky` is the Expert
+   * Layer, whose table is NOT on a card — its backdrop is --surface-base, and
+   * its sticky column run is filled to match. The head-to-body step there is
+   * --surface-overlay against --surface-base, which is wider than the figures
+   * above, so decision 8's conclusion holds a fortiori. Restate these numbers
+   * against the actual backdrop if a card-mounted table ever opts in.
    */
   const tableClass = sticky
     ? "w-full border-separate border-spacing-0 text-left"

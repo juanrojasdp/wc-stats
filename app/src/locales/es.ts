@@ -526,10 +526,19 @@ export const es = {
        * boundary and its own copy: `crashed` above literally says "el análisis
        * táctico de este partido", which would be a FALSE STATEMENT over an
        * Expert crash while eleven healthy Tactical sections render above it.
-       * The explanation names what survives, for the same reason.
+       *
+       * REVIEW PATCH (2.11b code review). The explanation used to say "El
+       * análisis táctico y el resto de la página siguen disponibles." — which
+       * this boundary CANNOT KNOW. The two boundaries are siblings over the
+       * SAME bundle and the expected throw source is @/lib/format on a
+       * non-finite numeric, a fault class that can throw in both layers; the
+       * two fallbacks then stack and the lower one asserts the upper one is
+       * fine. It now names the reader's actual recourse and claims nothing
+       * about a sibling it cannot observe. Still distinct from
+       * `crashedExplanation`, which i18n.test.ts pins.
        */
       crashedExpert: "No pudimos mostrar los datos por jugador de este partido.",
-      crashedExpertExplanation: "El análisis táctico y el resto de la página siguen disponibles.",
+      crashedExpertExplanation: "Puedes recargar la página para volver a intentarlo.",
     },
   },
   /*
@@ -1563,9 +1572,21 @@ export const es = {
      * this leaf when it lands.
      */
     summary: "En posesión · Sin posesión · Físico — tablas por jugador",
-    // UX-DR12 requires every table to STATE its default order, and this one
-    // never mutates on sort (2.11a decision 7).
-    tableCaption: "Ordenado por equipo local y dorsal.",
+    /*
+     * UX-DR12 requires every table to STATE its default order, and this one
+     * never mutates on sort (2.11a decision 7).
+     *
+     * REVIEW PATCH (2.11b code review): "equipo LOCAL y dorsal" was false in
+     * half the story. Below md the rows are filtered to one side, so with the
+     * away team selected no "equipo local" ordering is observable at all — and
+     * the caption is this table's accessible name and its one durable
+     * statement of canonical order, so it cannot be allowed to drift. "por
+     * equipo y dorsal" is true in BOTH layouts: the wide table is ordered by
+     * team then shirt, and the narrow one shows a contiguous slice of exactly
+     * that order. Reworded rather than made conditional, because decision 7
+     * forbids a caption that mutates.
+     */
+    tableCaption: "Ordenado por equipo y dorsal.",
     // Names the table in the ONE polite sort announcement the page owns.
     tableName: "Tabla de datos por jugador",
     group: {
@@ -1587,6 +1608,24 @@ export const es = {
        */
       headline: "Sin datos por jugador para este partido.",
       explanation: "El informe oficial de este partido no incluye las páginas por jugador.",
+    },
+    /*
+     * REVIEW PATCH (2.11b code review). A SECOND, DISTINCT absence — the
+     * report DOES carry the per-player pages, but the current view has no rows
+     * to show. `empty` above cannot serve it: "el informe oficial no incluye
+     * las páginas por jugador" is a false statement here.
+     *
+     * Three triggers reach it. `players: []`, which the contract sanctions
+     * explicitly ("Empty array and null are distinct states",
+     * match-bundle.schema.json) and which used to render 50 sortable headers
+     * over an empty body with no explanation at all; a Domain G page carrying
+     * only one team's records at <md; and the reader selecting the side that
+     * has no rows. The team ToggleGroup stays mounted alongside this panel, so
+     * the third case is always one tap from recovery.
+     */
+    emptyRows: {
+      headline: "Sin filas por jugador para mostrar.",
+      explanation: "El informe incluye las páginas por jugador, pero no hay filas que mostrar aquí.",
     },
     /*
      * The 40 keyed column heads, in the contract's required[] order.
@@ -1664,7 +1703,16 @@ export const es = {
       // VEL."
       highSpeedRuns: "CARR. ALTA VEL.",
       sprints: "Sprints",
-      topSpeed: "Velocidad máxima",
+      /*
+       * REVIEW PATCH (2.11b code review). Shipped as "Velocidad máxima", the
+       * widest head in the physical group — while `enums.metric.topSpeed`
+       * already carries "Vel. máx." as RULED copy, and EXPERIENCE.md:139 names
+       * this exact term as the table-abbreviation precedent ("VEL. MÁX." for
+       * "Velocidad máxima", full term in the tooltip, ellipsis truncation never
+       * the first resort). This reuses the existing ruled abbreviation rather
+       * than minting a second one; the full term is in `fieldTitle.topSpeed`.
+       */
+      topSpeed: "Vel. máx.",
     },
     /*
      * `headTitle` for the six ABBREVIATED heads only — TableColumn's contract
@@ -1678,6 +1726,7 @@ export const es = {
       distanceZone4: "20-25 km/h",
       distanceZone5: "25 km/h o más",
       highSpeedRuns: "Carreras a alta velocidad",
+      topSpeed: "Velocidad máxima",
     },
   },
 };

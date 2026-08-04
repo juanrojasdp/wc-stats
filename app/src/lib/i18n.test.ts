@@ -1042,11 +1042,73 @@ describe("the expert.* namespace (Story 2.11b, AD-7)", () => {
 
   it("resolves the full term behind every abbreviated head", () => {
     const titled = EXPERT_FIELDS.map(expertFieldTitleKey).filter((key) => key !== null);
-    expect(titled).toHaveLength(6);
+    // Five zone bands + highSpeedRuns + topSpeed (the last added by the 2.11b
+    // code review, which abbreviated the ES head to the ruled "Vel. máx.").
+    expect(titled).toHaveLength(7);
     for (const key of titled) {
       for (const locale of locales) {
         expect(t(key, locale), `${key} in ${locale}`).not.toBe("");
       }
+    }
+  });
+
+  it("reuses the ruled Vel. máx. abbreviation for the topSpeed head", () => {
+    /*
+     * 2.11b CODE REVIEW. The head shipped as "Velocidad máxima", the widest in
+     * the physical group, while `enums.metric.topSpeed` already carried the
+     * ruled abbreviation and EXPERIENCE.md:139 names this exact term as the
+     * table-abbreviation precedent. Pinned to the SAME string as the existing
+     * ruled copy, so a second mint cannot drift in beside it. The existing
+     * entry lives on the Hero's stat tiles, NOT under enums.metric — Story
+     * 2.18 records why (`topSpeed` is absent from KEY_STAT_FIELDS, so an
+     * enums.metric entry turns the "one per Key Statistics field" assertion
+     * red). Same ruled string, different namespace, and this pins them equal.
+     */
+    expect(es.expert.field.topSpeed).toBe(es.match.hero.tiles.topSpeed);
+    expect(es.expert.fieldTitle.topSpeed).toBe("Velocidad máxima");
+  });
+
+  it("ships no invented English abbreviation for high-speed runs", () => {
+    /*
+     * 2.11b CODE REVIEW. "HIGH-SPD RUNS" was a mint with no glossary entry, no
+     * ruling and no record in the Completion Notes — unlike its Spanish
+     * counterpart, which the glossary rules verbatim. Nothing else in the EN
+     * block is abbreviated, so it was retired rather than recorded.
+     */
+    expect(en.expert.field.highSpeedRuns).toBe("High-speed runs");
+    expect(en.expert.field.highSpeedRuns).not.toContain("SPD");
+  });
+
+  it("states a default order that is true in BOTH layouts", () => {
+    /*
+     * 2.11b CODE REVIEW. The caption is this table's accessible name and its
+     * one durable statement of canonical order (2.11a decision 7 forbids it
+     * mutating). "equipo LOCAL y dorsal" was false below md, where the rows are
+     * filtered to one side — with the away team selected no home-team ordering
+     * is observable at all.
+     */
+    expect(es.expert.tableCaption).not.toContain("local");
+    expect(en.expert.tableCaption).not.toContain("home");
+    for (const dictionary of [es, en]) {
+      expect(dictionary.expert.tableCaption).not.toBe("");
+    }
+  });
+
+  it("distinguishes an absent Domain G from a present one with no rows", () => {
+    /*
+     * 2.11b CODE REVIEW. `players: []` used to fall through the null gate and
+     * render 50 sortable headers over an empty body with no explanation — and
+     * the contract states verbatim that "Empty array and null are distinct
+     * states". `expert.empty.*` cannot serve it: it says the report does not
+     * include the per-player pages, which is false when the pages are there.
+     */
+    for (const dictionary of [es, en]) {
+      expect(dictionary.expert.emptyRows.headline).not.toBe(dictionary.expert.empty.headline);
+      expect(dictionary.expert.emptyRows.explanation).not.toBe(
+        dictionary.expert.empty.explanation
+      );
+      expect(dictionary.expert.emptyRows.headline).not.toBe("");
+      expect(dictionary.expert.emptyRows.explanation).not.toBe("");
     }
   });
 
@@ -1130,6 +1192,16 @@ describe("the expert.* namespace (Story 2.11b, AD-7)", () => {
         dictionary.tactical.empty.sectionCrashed
       );
     }
+    /*
+     * 2.11b CODE REVIEW. The explanation used to assert the Tactical Layer was
+     * healthy — which this boundary cannot know. Both boundaries are siblings
+     * over the SAME bundle and the expected throw source is @/lib/format on a
+     * non-finite numeric, a fault class that can throw in both; the fallbacks
+     * then stack and the lower one states the upper one is fine. It must name
+     * no sibling it cannot observe.
+     */
+    expect(es.match.bundle.crashedExpertExplanation).not.toContain("táctico");
+    expect(en.match.bundle.crashedExpertExplanation).not.toContain("tactical");
   });
 
   it("describes the tables ONLY in the summary — 2.11c's logs are not shipped", () => {

@@ -4,7 +4,7 @@ baseline_commit: 3d27ed0
 
 # Story 2.11b: Expert Layer Shell & Domain G Per-Player Tables
 
-Status: review
+Status: done
 
 ## Story
 
@@ -310,6 +310,138 @@ existing call sites renders exactly what it renders today.
   announcement mechanism; the carried-forward open question on Expert-altitude tables; and close
   the sticky-header departure at `:1124-1137` and the `rowHeader` no-consumer entry at `:1158-1162`.
 - [x] **9.4** Update `sprint-status.yaml`: `2-11b-expert-layer-per-player-tables: review`.
+
+### Review Findings
+
+Code review 2026-08-04 — three adversarial layers (Blind Hunter, Edge Case Hunter, Acceptance
+Auditor) over `23a2c00..d06f222` plus the `expert.*` locale blocks swept into `23a2c00`. 32 raw
+findings; 8 dismissed after reading the code at each location.
+
+- [x] [Review][Decision] **The sticky column run is painted with the wrong surface token** — The
+  Expert table has no card ancestor. The chain is `page.tsx:67` (width/padding only) →
+  `MatchBundleRegion.tsx:97` (bare `mt-layer-gap`) → `ExpertLayer.tsx:419` (`border-t` only) →
+  the content div → the scrollport at `:534`; none sets a background, so the table sits on
+  `body`'s `--background`, which is `--surface-base`. The run is filled `bg-surface-raised`
+  (`ExpertLayer.tsx:125-129`) — `#ffffff` on `#f5f7f8` in light, `#171b1f` on `#0e1114` in dark.
+  That is a permanently visible lighter band on 2-3 identity columns, in both themes, at all
+  widths, whether or not the table is scrolled. Every sibling data block on this route *is* on a
+  card (`MomentumSection.tsx:62`, `PhasesSection.tsx:75`, `PressingSection.tsx:64`,
+  `GoalkeepingSection.tsx:63`, `KeyStatisticsSection.tsx:96` — all `rounded-lg bg-surface-raised
+  p-tile-gap`). Two valid fixes and they are a design ruling, not a mechanical one: (a) put the
+  Expert table on a card like its siblings, which makes the shipped token correct and the layer
+  visually consistent; or (b) keep it off-card and change the fill to `bg-surface-base`. Note
+  ruled decision 8's contrast figures ("head fill against body fill: 1.12 dark / 1.14 light")
+  measure `--surface-overlay` against `--surface-raised` and would need restating under (b).
+- [x] [Review][Decision] **`players: []` renders 50 sortable headers, zero rows and no
+  explanation** — `ExpertLayer.tsx:410` gates the empty state on `bundle.players === null` only.
+  `[]` is not a hypothetical: `contract/match-bundle.schema.json:47` states verbatim that "Empty
+  array and null are distinct states", and `PlayerRecords` carries no `minItems`. The module
+  comment at `:403-405` calls `[]` "ready, with zero rows", but nothing renders that state — the
+  reader gets a header-only table. The same blank outcome arrives by a second route at `<md`: if
+  Domain G carries records for only one team, `side` seeds unconditionally to the home code
+  (`:303-307`) and `visibleRows` (`:308`) is empty with both pills showing. Needs a copy ruling —
+  one message for both, or a distinct "carries Domain G, no players" string, plus whether `side`
+  should fall back to the side that has rows.
+- [x] [Review][Decision] **The active sort silently vanishes when the column group or the
+  breakpoint changes** — `ExpertLayer.tsx:397-400` rebuilds `columns` per group/breakpoint;
+  `table-sort.ts:195-198` falls back to artifact order when the active `columnKey` is no longer
+  present. So sorting by *Pases intentados* and then tapping **Físico** — or sorting by **Equipo**
+  at `≥md` and then narrowing below `md`, where `team` is dropped at `:388-390` — visibly
+  re-orders every row with no polite announcement (`announce()` fires only from `handleSort`,
+  `DataTable.tsx:316`) and reverts every `aria-sort` to `none`. `sortState` is retained inside
+  `DataTable`, so the sort then silently re-applies the moment the reader switches back. Three
+  materially different fixes: remount the table on group change via `key`, clear `sortState` in
+  `DataTable` when the active column disappears, or announce the fallback and keep the state.
+- [x] [Review][Decision] **`expert.tableCaption` states an ordering the `<md` view does not have**
+  — `es.ts:1568` "Ordenado por equipo local y dorsal." is the table's accessible name and, per
+  `DataTable.tsx:128-133`, "the one durable statement of canonical order". At `<md` the rows are
+  one team's, so with the away side selected the table is ordered by shirt number alone and no
+  "equipo local" ordering is observable. Ruled decision 7 says the caption never mutates, so this
+  is a genuine conflict between two rulings rather than an oversight.
+- [x] [Review][Patch] **The bounded scrollport is not keyboard-operable (WCAG 2.1.1)**
+  [app/src/components/ExpertLayer.tsx:534] — `max-h-[70vh] overflow-auto` with no `tabIndex`, no
+  `role` and no accessible name. 34 rows against a 70vh cap overflows; the only focusable
+  descendants are the 46 header buttons, all pinned at `top: 0`, so tabbing never scrolls the
+  container vertically, and `DataTable.tsx:220-226` states no body-row content in any table is
+  focusable. Chrome's keyboard-focusable-scrollers behaviour does not rescue this — it excludes
+  scrollers that contain focusable children. Rows below the fold are unreachable by keyboard. Fix:
+  `tabIndex={0}` + `role="region"` + an `aria-label`.
+- [x] [Review][Patch] **No horizontal scroll-padding — Shift+Tab parks the focused header under
+  the opaque sticky run** [app/src/components/ExpertLayer.tsx:534] — `scroll-pt-11` bounds the
+  vertical axis only. Tabbing backwards through the 46 header buttons aligns the focused element
+  to the scrollport's left edge, which is exactly where the sticky run sits; the run's head cells
+  are `z-30` (`STICKY_CORNER`) against the focused data head's `z-20` (`stickyHeadClass`,
+  `DataTable.tsx:351`), so the focused control is painted over while it holds focus (WCAG 2.4.11).
+  Fix: `scroll-pl-[12.5rem] md:scroll-pl-[23rem]` — the run measures 5.5 + 7rem below `md` and
+  5.5 + 5.5 + 12rem at `≥md`.
+- [x] [Review][Patch] **The Expert crash copy asserts the Tactical Layer is healthy**
+  [app/src/locales/es.ts:532, app/src/locales/en.ts:385] — `crashedExpertExplanation` says "El
+  análisis táctico y el resto de la página siguen disponibles." The two boundaries
+  (`MatchBundleRegion.tsx:197-206`) are siblings over the *same* bundle, and
+  `TacticalErrorBoundary.tsx:12-16` records the expected throw source as `@/lib/format` on a
+  non-finite numeric — a fault class that can throw in both layers, stacking the two fallbacks so
+  the lower one states as fact that the upper one is fine. `i18n.test.ts` pins only that the two
+  pairs differ, never that either is true. Fix: drop the claim about the Tactical Layer.
+- [x] [Review][Patch] **`es.expert.field.topSpeed` ships unabbreviated although the ruled
+  abbreviation already exists in the codebase** [app/src/locales/es.ts:1667] — "Velocidad máxima"
+  against `enums.metric.topSpeed` = "Vel. máx." at `es.ts:488`. `EXPERIENCE.md:139` is normative
+  and names this exact term as the abbreviation precedent ("VEL. MÁX." for "Velocidad máxima"),
+  with the full term in `title`/`aria-label`. This also undercuts the `<md` escape hatch's filed
+  justification at `deferred-work.md:1470-1473` — "a copy ruling this story does not have" is not
+  accurate; the ruling exists and was applied to `high-speed-run` in the same block.
+- [x] [Review][Patch] **The `<md` escape hatch filters rows to one team; Task 5.1 forbids it and
+  the ledger does not record it** [app/src/components/ExpertLayer.tsx:308] — Task 5.1 is explicit:
+  "Rows are always all players, both teams." Task 5.4 pre-authorises only the *dropped column*.
+  Row filtering is arguably forced once the column is gone (the PitchPanel precedent filters), so
+  this is under-filed rather than undeclared — but `deferred-work.md:1465-1473` records only the
+  column, the 88px it returns and the resulting widths. A ledger reader learns nothing about the
+  table showing 17 rows instead of 34. Fix: amend the ledger entry.
+- [x] [Review][Patch] **The offer/desmarque i18n departure is in the Completion Notes and a source
+  comment but not in the ledger at all** [_bmad-output/implementation-artifacts/deferred-work.md]
+  — verified absent from the "Declared departures filed by this story" block. The departure itself
+  is *correct*: Task 3.8's clause was wrong, `EXPERIENCE.md` rules *offers to receive →
+  ofrecimientos* FINAL and `es.ts:740` already ships `viz.table.offersMade: "Ofrecimientos"` from
+  Story 2.9. But the Change Log says "three measured departures" and this is the fourth — and the
+  only one that changes user-visible ruled terminology.
+- [x] [Review][Patch] **`en.expert.field.highSpeedRuns` = "HIGH-SPD RUNS" is an unrecorded mint**
+  [app/src/locales/en.ts:969] — Task 3.8 requires minted terms be recorded in Completion Notes;
+  the notes record six Spanish mints and no English one. The Spanish "CARR. ALTA VEL." is ruled
+  copy (`EXPERIENCE.md:250`); its English mirror has nothing behind it, no glossary entry and no
+  pinning test, and its only expansion is the mouse-only `title` band.
+- [x] [Review][Patch] **`formatValue` and `unitSuffix` have no `never` exhaustiveness guard over
+  `FieldUnit`** [app/src/components/ExpertLayer.tsx:226-243] — both end in an unguarded
+  fallthrough, so a fifth `FieldUnit` member silently formats as a one-decimal number and renders
+  with no unit suffix in its head. The compiler will not flag it and nothing on screen looks
+  wrong. `sectionDataState`'s `never` check is the house precedent for exactly this.
+- [x] [Review][Patch] **`scroll-pt-11` is 44px; the sticky header is 44px plus `border-b-2`**
+  [app/src/components/ExpertLayer.tsx:534] — Task 4.3 ruled `scroll-pt-11` explicitly so the code
+  complies with the spec, but AC 2's wording is "equal to the sticky-header height" and the head
+  button's `MIN_HIT_PX` floor (`DataTable.tsx:444`) sits inside a `<th>` that adds a doubled
+  bottom border.
+- [x] [Review][Patch] **`buildExpertRows` and all 50 column objects rebuild on every render,
+  including while collapsed** [app/src/components/ExpertLayer.tsx:215] — unguarded by any
+  `useMemo`, as are `:310`, `:324-377`, `:379-389` and `:397-400`. The section is collapsed by
+  default at every width (`useState(false)`, `:146`), so the row build is paid on every
+  `MatchBundleRegion` re-render for output nobody renders. `useMemo(() => buildExpertRows(bundle),
+  [bundle])` preserves the eager fail-loud property the comment at `:208-214` defends.
+- [x] [Review][Defer] **`scope="row"` sits on the third column, so `team` and `shirt` get no row
+  header** [app/src/components/ExpertLayer.tsx:361] — deferred, low impact. HTML's header-
+  assignment algorithm has a data cell scan *leftward* for its row headers, so the two cells that
+  precede `player` in DOM order are never assigned it. `identityColumns` (`:324-327`) puts them
+  there deliberately as part of the ruled sticky run order, so this is structural. Both cells
+  still carry their `scope="col"` headers, so what is lost is the player-name prefix only.
+- [x] [Review][Defer] **A duplicate `playerId` would collide as a React key and misdirect the
+  focus restore** [app/src/viz/expert-model.ts:250] — deferred, data-integrity precondition.
+  `contract/match-bundle.schema.json` declares `players` with no `uniqueItems` and no uniqueness
+  constraint on `PlayerId`; `expert-model.test.ts` asserts uniqueness only over the three
+  fixtures. A duplicate ships duplicate React keys (`DataTable.tsx:475`) and makes the focus
+  restore's `querySelector('tr[data-row-key=…]')` (`DataTable.tsx:245`) resolve to the wrong row.
+- [x] [Review][Defer] **A locale switch re-orders a text-sorted table with no announcement**
+  [app/src/components/DataTable.tsx:327] — deferred, pre-existing from 2.11a. Sorting by
+  **Posición** and toggling ES→EN re-collates all 34 rows (`ExpertLayer.tsx:375` sorts on the
+  resolved label, deliberately), but `announce()` fires only from `handleSort`, so the polite
+  region still holds the previous announcement in the old language. The re-order is correct; the
+  missing announcement applies to every table with a dictionary-key text column, not just this one.
 
 ---
 
@@ -735,3 +867,42 @@ export against another session's `/about` copy edit, not this work; a rebuild cl
   consumer, half) and half-closed the announcement-ambiguity entry (mechanism ships, identifiers
   re-filed). Filed the fixture zone-sum divergence, the `PendingSectionPanel` re-file, the unseen
   empty-state branch, the carried-forward Expert-altitude question and three measured departures.
+- 2026-08-04 — **Code review: 4 decisions ruled, 14 patches applied, 3 deferred, 8 dismissed.**
+  Three adversarial layers over `23a2c00..d06f222` plus the `expert.*` locale blocks that a
+  concurrent session had swept into `23a2c00`. The four that mattered:
+  **(1) THE STICKY RUN WAS PAINTED WITH THE WRONG SURFACE.** `bg-surface-raised` was chosen as "the
+  surface these tables sit on" — but this is the one data block on the match route that is NOT on a
+  card, and no ancestor from `page.tsx` down to the scrollport sets a background, so the real
+  backdrop is `--surface-base`. The run rendered as a permanently visible lighter band down the
+  identity columns in both themes, scrolled or not. Ruled the minimal fix (fill → `bg-surface-base`)
+  over card-mounting the table, because it is what the code's own comment already intended — an
+  INVISIBLE opaque fill — and it adds no visual element the mockup does not specify. Decision 8's
+  head/body contrast improves rather than degrades: `--surface-overlay` against `--surface-base` is
+  a wider step than against `--surface-raised`.
+  **(2) THE BOUNDED SCROLLPORT WAS NOT KEYBOARD-OPERABLE.** 34 rows against a 70vh cap overflows,
+  and every focusable descendant is a header button pinned at `top: 0` — so no tab path scrolled it
+  vertically and the rows below the fold were unreachable by keyboard entirely (WCAG 2.1.1).
+  Chrome's keyboard-focusable-scrollers behaviour does not cover it: that excludes scrollers with
+  focusable children, and this one has 46. Now `tabIndex={0}` + `role="region"` + a name. The same
+  patch adds the MISSING HORIZONTAL scroll-padding — `scroll-pt-11` bounded one axis, and tabbing
+  BACKWARDS through the heads parked the focused button under the opaque `z-30` run (WCAG 2.4.11).
+  **(3) `players: []` RENDERED 50 HEADERS OVER NOTHING.** The empty state gated on `null` only,
+  while the contract states verbatim that "Empty array and null are distinct states". Gating on the
+  VISIBLE row count catches that plus two narrow-layout routes to the same blank table (a one-team
+  Domain G page; the reader selecting the side with no rows), with one new honest string —
+  `expert.empty.*` says the report lacks the pages, false in all three. `side` now seeds from the
+  rows rather than unconditionally from the home code.
+  **(4) THE ACTIVE SORT VANISHED SILENTLY** on a group-tab switch or an `md` crossover: `sortRows`
+  fell back to artifact order while `sortState` lived on inside `DataTable`, so the rows re-ordered
+  with no announcement, every `aria-sort` reverted to "none", and the sort re-applied itself on the
+  way back. Ruled a `key` on `DataTable` over touching the shared component — local, deterministic,
+  and it leaves the other 26 tables alone. `side` is deliberately out of the key so a team switch
+  preserves the sort. Also: the caption said "equipo **local**", false below `md`, reworded to be
+  true in both layouts without mutating (2.11a decision 7); the Expert crash copy asserted the
+  Tactical Layer was healthy, which that boundary cannot know; `es.expert.field.topSpeed` now reuses
+  the ruled "Vel. máx." that `EXPERIENCE.md:139` names as the abbreviation precedent; the invented
+  EN mint "HIGH-SPD RUNS" is retired; `formatValue`/`unitSuffix` gained `never` guards; and
+  `buildExpertRows` is memoised on the bundle. Ledger: the `<md` escape-hatch entry AMENDED (it
+  filed the dropped column but not the row filtering, and its "no copy ruling exists" defence was
+  wrong), and the fourth departure — offer → *ofrecimientos* — filed at last. Four regression pins
+  added. Full chain green: lint, typecheck, build, **707/707** tests.

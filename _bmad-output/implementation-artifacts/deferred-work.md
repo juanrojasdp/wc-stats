@@ -1472,6 +1472,35 @@ convention. All three are claim-accuracy defects in what 2.18 filed, not new def
   if two columns is a real requirement, the lever is short ruled abbreviations for `viz.table.shirt`
   and `viz.table.player` with the full term in `headTitle`, not more width.
 
+  **AMENDED by the 2.11b code review — this entry recorded only half of what the escape hatch
+  does.** The hatch does not merely drop a COLUMN: `ExpertLayer.tsx` filters the ROW SET to the
+  selected side, so below `md` the table shows 17 rows, not 34. Task 5.1 is explicit the other way
+  ("Rows are always all players, both teams") and Task 5.4 pre-authorises only the dropped column,
+  so the row filtering is a second departure that was taken but never filed. It is *forced* once
+  the column is gone — repeating one team code down all 17 rows would be the alternative, and the
+  PitchPanel precedent this entry cites filters too — so it is under-filing, not a wrong call. A
+  ledger reader now learns both halves. **Also corrected: "a copy ruling this story does not have"
+  was not accurate.** `EXPERIENCE.md:139` is normative and rules exactly this mechanism ("table
+  column heads use ruled abbreviations from the i18n table (e.g. **"VEL. MÁX." for "Velocidad
+  máxima"**) with the full term in the header's tooltip and `aria-label`. Ellipsis truncation is
+  never the first resort.") — it even names `topSpeed`, one of this table's own heads, as the
+  worked example. The review applied it: `es.expert.field.topSpeed` now ships the ruled
+  "Vel. máx." from `match.hero.tiles.topSpeed` with the full term in `fieldTitle`. The measurement
+  above blamed the *data* heads and is unaffected, but the lever named in the Owner line is
+  available today, not blocked on a ruling.
+
+- **A FOURTH declared departure the story did not file: `offer` ships as *ofrecimientos*, not
+  *desmarque*.** Filed by the 2.11b code review. Task 3.8 instructs `totalOffers` /
+  `offersReceived` to follow *desmarque*; `es.ts` ships `"Ofrecimientos"` /
+  `"Ofrecimientos recibidos"`. **The departure is CORRECT and needs no action** — `EXPERIENCE.md`
+  rules *offers to receive → ofrecimientos* FINAL, and `es.ts` already shipped
+  `viz.table.offersMade: "Ofrecimientos"` from Story 2.9, so Task 3.8's clause was itself wrong and
+  the code followed the ruling over the task. It is filed only because the story's Change Log says
+  "three measured departures" and this is the fourth — and the only one of the four that changes
+  **user-visible ruled terminology**, which is exactly the class of change the terminology gate
+  (Story 2.18) exists to keep visible. Recorded so a later reader of Task 3.8 does not "fix" the
+  code back to the wrong term. **No owner: closed on filing.**
+
 - **`sectionContent()` is still evaluated eagerly, so a throw during PROP CONSTRUCTION escapes the
   per-section boundary to the outer one.** Re-filed unchanged from the 2.11a/2.18 boundary work:
   2.11b adds a second sibling boundary around `<ExpertLayer>` (per-instance `state`, no

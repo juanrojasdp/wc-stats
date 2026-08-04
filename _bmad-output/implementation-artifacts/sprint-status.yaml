@@ -60,6 +60,43 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-04
+# 2026-08-04: story 2-11b CODE REVIEW — 3 layers, 32 raw findings triaged to 4 decisions (all ruled
+#             by Juan's delegation), 14 patches applied, 3 deferred, 8 dismissed. Status -> DONE.
+#             THE HEADLINE FINDING WAS A SURFACE TOKEN THAT NO TEST COULD SEE: the sticky column run
+#             was filled `bg-surface-raised`, justified in a comment as "the surface these tables sit
+#             on" — but the Expert table is the ONE data block on the match route that is not on a
+#             card, and nothing from page.tsx down to the scrollport sets a background, so the real
+#             backdrop is --surface-base. It shipped a permanently visible lighter band down the
+#             identity columns in both themes, scrolled or not. Ruled the minimal fix (fill ->
+#             bg-surface-base) over card-mounting, because an INVISIBLE opaque fill is what the
+#             code already intended; decision 8's head/body contrast improves under it.
+#             SECOND: the bounded scrollport was not keyboard-operable at all. Every focusable
+#             descendant is a header button pinned at top:0, so no tab path scrolled it vertically
+#             and the rows below the 70vh fold were unreachable (WCAG 2.1.1) — Chrome's
+#             keyboard-focusable-scrollers behaviour excludes scrollers with focusable children, and
+#             this one has 46. The same patch added the missing HORIZONTAL scroll-padding: tabbing
+#             backwards parked the focused head under the opaque z-30 run (WCAG 2.4.11).
+#             THIRD: `players: []` rendered 50 sortable headers over an empty body with no
+#             explanation, although the contract states verbatim that "Empty array and null are
+#             distinct states". Now gated on the VISIBLE row count, which also catches a one-team
+#             Domain G page and a reader-selected empty side; `side` seeds from the rows.
+#             FOURTH: the active sort vanished silently on a group-tab switch or an md crossover —
+#             rows re-ordered with no announcement, aria-sort reverted, and the sort re-applied
+#             itself on the way back. Fixed with a key on DataTable rather than by touching the
+#             shared component, so the other 26 tables are untouched.
+#             Also: the caption claimed "equipo LOCAL", false below md; the Expert crash copy
+#             asserted the Tactical Layer was healthy, which that boundary cannot know; topSpeed now
+#             reuses the ruled "Vel. máx." that EXPERIENCE.md:139 names as the abbreviation
+#             precedent — which also CORRECTS the escape hatch's filed defence that "a copy ruling
+#             this story does not have"; and the invented EN mint "HIGH-SPD RUNS" is retired.
+#             LEDGER CORRECTIONS: the <md escape-hatch entry filed the dropped COLUMN but not the
+#             ROW FILTERING (17 rows, not 34 — Task 5.1 says the opposite), and the fourth departure
+#             (offer -> ofrecimientos, the only one touching ruled terminology) was never filed at
+#             all. Both amended. 8 dismissals held up under code reading: the sticky-offset desync
+#             is unobservable without horizontal overflow, the `side` staleness is unreachable
+#             (retry unmounts the loaded branch and no in-app link goes match -> match), and the
+#             #expert listener is live forward-compat, not dead code.
+#             Full chain green: lint, typecheck, build, 707/707 tests (703 + 4 new regression pins).
 # 2026-08-04: story 2-11b implemented and moved to review — the Expert Layer shell and the Domain G
 #             per-player tables. 50 rendered columns (46 data + 4 identity) over 34 rows, one
 #             DataTable instance serving both layouts, collapsed by default at every width.
@@ -2242,7 +2279,7 @@ development_status:
   # Epic story 2.11 is SPLIT three ways (ruled by Juan 2026-08-04 at story creation) — see the
   # 2026-08-04 note above. 2.11b depends on 2.11a; 2.11c depends on both. epics.md is NOT edited.
   2-11a-sortable-data-table-contract: done
-  2-11b-expert-layer-per-player-tables: review
+  2-11b-expert-layer-per-player-tables: done
   2-11c-expert-layer-event-logs: backlog
   2-12-tournament-hub-results-standings: backlog
   2-13-tournament-leaderboards: backlog

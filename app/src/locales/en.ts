@@ -382,7 +382,9 @@ export const en: Dictionary = {
       crashed: "We could not display the tactical analysis for this match.",
       crashedExplanation: "The rest of the page is still available.",
       crashedExpert: "We could not display the per-player data for this match.",
-      crashedExpertExplanation: "The tactical analysis and the rest of the page are still available.",
+      // Review patch (2.11b): claimed the sibling Tactical boundary was healthy,
+      // which this boundary cannot know. See the es.ts note.
+      crashedExpertExplanation: "You can reload the page to try again.",
     },
   },
   tactical: {
@@ -916,7 +918,9 @@ export const en: Dictionary = {
     heading: "Per-player data",
     // Tables only — the "full logs" half of the mockup's copy is Story 2.11c's.
     summary: "In possession · Out of possession · Physical — per-player tables",
-    tableCaption: "Sorted by home team and shirt number.",
+    // Review patch (2.11b): "home team" was false below md, where the rows are
+    // filtered to one side. See the es.ts note.
+    tableCaption: "Sorted by team and shirt number.",
     tableName: "Per-player data table",
     group: {
       inPossession: "In possession",
@@ -927,6 +931,12 @@ export const en: Dictionary = {
     empty: {
       headline: "No per-player data for this match.",
       explanation: "The official report for this match does not include the per-player pages.",
+    },
+    // Review patch (2.11b): the report DOES carry the pages, but this view has
+    // no rows. `empty` above would be a false statement here. See the es.ts note.
+    emptyRows: {
+      headline: "No per-player rows to show.",
+      explanation: "The report includes the per-player pages, but there are no rows to show here.",
     },
     field: {
       passesAttempted: "Passes attempted",
@@ -966,7 +976,16 @@ export const en: Dictionary = {
       distanceZone3: "Zone 3",
       distanceZone4: "Zone 4",
       distanceZone5: "Zone 5",
-      highSpeedRuns: "HIGH-SPD RUNS",
+      /*
+       * REVIEW PATCH (2.11b code review). Shipped as "HIGH-SPD RUNS" — an
+       * invented contraction with no glossary entry and no pinning test, unlike
+       * the Spanish "CARR. ALTA VEL.", which the high-speed-run definition
+       * rules verbatim. Nothing in EN is abbreviated in this block ("Possession
+       * interrupted" is longer and ships whole), so the mint is retired rather
+       * than recorded: there is no EN copy ruling to reuse and this story does
+       * not have one to make.
+       */
+      highSpeedRuns: "High-speed runs",
       sprints: "Sprints",
       topSpeed: "Top speed",
     },
@@ -977,6 +996,10 @@ export const en: Dictionary = {
       distanceZone4: "20-25 km/h",
       distanceZone5: "25 km/h and above",
       highSpeedRuns: "High-speed runs",
+      // Mirrors es.expert.fieldTitle.topSpeed, which expands "Vel. máx.". The
+      // EN head is unabbreviated, so this title restates it — TITLED_FIELDS is
+      // keyed per FIELD, not per locale, and parity is the compile-time rule.
+      topSpeed: "Top speed",
     },
   },
 };

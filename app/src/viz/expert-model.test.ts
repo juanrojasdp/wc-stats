@@ -204,8 +204,10 @@ describe("the key builders", () => {
   });
 
   it("carries a full-term title for exactly the abbreviated heads", () => {
-    // The five speed-zone bands (the page's own km/h ranges) and the one ruled
-    // table abbreviation, "CARR. ALTA VEL." (glossary term high-speed-run).
+    // The five speed-zone bands (the page's own km/h ranges) and the two ruled
+    // table abbreviations: "CARR. ALTA VEL." (glossary term high-speed-run) and
+    // "Vel. máx." (enums.metric.topSpeed, added by the 2.11b code review —
+    // EXPERIENCE.md:139 names topSpeed as the abbreviation precedent itself).
     const titled = EXPERT_FIELDS.filter((field) => expertFieldTitleKey(field) !== null);
     expect([...titled]).toEqual([
       "distanceZone1",
@@ -214,6 +216,7 @@ describe("the key builders", () => {
       "distanceZone4",
       "distanceZone5",
       "highSpeedRuns",
+      "topSpeed",
     ]);
     expect(expertFieldTitleKey("distanceZone3")).toBe("expert.fieldTitle.distanceZone3");
     expect(expertFieldTitleKey("goals")).toBeNull();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { DataTable } from "@/components/DataTable";
 import { EmptyStatePanel } from "@/components/EmptyStatePanel";
@@ -79,8 +79,24 @@ const GROUP_LABEL_KEY: Record<ColumnGroup, DictionaryKey> = {
  * from its neighbours' class strings. The offsets are the running sum of the
  * widths above them: 0 → 3.5rem → 3.5 + 2.75 = 6.25rem.
  *
- * THE FILL MUST BE OPAQUE. `bg-surface-raised` is the surface these tables sit
- * on; without it the scrolled columns show straight through the sticky ones.
+ * THE FILL MUST BE OPAQUE, or the scrolled columns show straight through the
+ * sticky ones.
+ *
+ * IT MUST ALSO BE THE SURFACE THIS TABLE ACTUALLY SITS ON, which is
+ * --surface-base, NOT --surface-raised (review patch, 2.11b code review). This
+ * is the one data block on the match route that is not on a card: the chain is
+ * page.tsx's width wrapper -> MatchBundleRegion's bare `mt-layer-gap` div ->
+ * this section's `border-t` -> the content div -> the scrollport, and not one
+ * of them sets a background, so the backdrop is <body>'s --background, which
+ * globals.css defines as --surface-base in both themes. Filling the run with
+ * --surface-raised painted #ffffff on #f5f7f8 (light) and #171b1f on #0e1114
+ * (dark) — a permanently visible lighter band down the identity columns,
+ * whether or not the table was ever scrolled.
+ *
+ * The head keeps --surface-overlay (ruled decision 8): against --surface-base
+ * the head-to-body step is now LARGER than the 1.12/1.14 the story measured
+ * against --surface-raised, so the delimiter reads at least as well, and the
+ * doubled bottom border is still the carrier.
  *
  * `headClass: z-30` is the top of the ladder (Task 1.4): body sticky cells sit
  * at z-10, header cells at z-20, and the CORNER cells — header AND sticky
@@ -122,13 +138,40 @@ const GROUP_LABEL_KEY: Record<ColumnGroup, DictionaryKey> = {
  * pair would be wrong in exactly the half of the story that needs it most.
  */
 const STICKY_CORNER = "z-30 bg-surface-overlay";
-const STICKY_TEAM = "sticky left-0 z-10 min-w-[5.5rem] bg-surface-raised";
-const STICKY_SHIRT_WIDE = "sticky left-[5.5rem] z-10 min-w-[5.5rem] bg-surface-raised";
-const STICKY_SHIRT_NARROW = "sticky left-0 z-10 min-w-[5.5rem] bg-surface-raised";
-const STICKY_PLAYER_WIDE = "sticky left-[11rem] z-10 min-w-[12rem] bg-surface-raised";
-const STICKY_PLAYER_NARROW = "sticky left-[5.5rem] z-10 min-w-[7rem] bg-surface-raised";
+const STICKY_TEAM = "sticky left-0 z-10 min-w-[5.5rem] bg-surface-base";
+const STICKY_SHIRT_WIDE = "sticky left-[5.5rem] z-10 min-w-[5.5rem] bg-surface-base";
+const STICKY_SHIRT_NARROW = "sticky left-0 z-10 min-w-[5.5rem] bg-surface-base";
+const STICKY_PLAYER_WIDE = "sticky left-[11rem] z-10 min-w-[12rem] bg-surface-base";
+const STICKY_PLAYER_NARROW = "sticky left-[5.5rem] z-10 min-w-[7rem] bg-surface-base";
 const PLAYER_TRUNCATE_WIDE = "block w-[11rem] truncate";
 const PLAYER_TRUNCATE_NARROW = "block w-[6rem] truncate";
+
+/*
+ * THE SCROLLPORT'S OWN CLASSES (review patch, 2.11b code review).
+ *
+ * `tabIndex={0}` is not decoration: 34 rows against a 70vh cap overflows, every
+ * focusable descendant is a header button pinned at `top: 0`, and DataTable
+ * records that NO body-row content in any table is focusable — so before this,
+ * tabbing could never scroll the container vertically and the rows below the
+ * fold were unreachable by keyboard entirely (WCAG 2.1.1). Chrome's
+ * keyboard-focusable-scrollers behaviour does not rescue it, because that
+ * explicitly excludes scrollers containing focusable children, which this one
+ * has 46 of.
+ *
+ * BOTH AXES NEED SCROLL PADDING, and only the vertical one had it.
+ * `scroll-pl-*` is the horizontal counterpart: tabbing BACKWARDS through the
+ * header buttons aligns the focused element to the scrollport's LEFT edge,
+ * which is exactly where the opaque sticky run sits — and the run's head cells
+ * are z-30 against a data head's z-20, so the focused control was painted over
+ * while it held focus (WCAG 2.4.11). The values are the run's own width: 5.5 +
+ * 7rem below md, 5.5 + 5.5 + 12rem at >=md.
+ *
+ * `scroll-pt-[46px]` replaces `scroll-pt-11`: the sticky header is MIN_HIT_PX
+ * (44) PLUS the `border-b-2` DataTable's sticky mode adds, and AC 2's wording
+ * is "equal to the sticky-header height".
+ */
+const SCROLLPORT =
+  "max-h-[70vh] overflow-auto scroll-pt-[46px] scroll-pl-[12.5rem] md:scroll-pl-[23rem]";
 
 export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
   /*
@@ -212,7 +255,21 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
    * the sibling TacticalErrorBoundary contains it. A silent drop is the class
    * of finding prior reviews flagged on groupScorers and composeMatchTitle.
    */
-  const rows = buildExpertRows(bundle);
+  /*
+   * REVIEW PATCH (2.11b code review): MEMOISED ON THE BUNDLE. The build was
+   * unguarded, and this section is collapsed by default at every width — so
+   * 34 x 46 field reads were paid on every MatchBundleRegion re-render, for
+   * output nobody had asked to see. `useMemo` keyed on `bundle` preserves the
+   * eager fail-loud property the comment above defends exactly: the throw still
+   * happens during the same render, on load rather than on expand, and the
+   * sibling boundary still contains it.
+   *
+   * The 50 column objects below are deliberately NOT memoised. They close over
+   * `t` and `locale` and must rebuild when either changes — that is what makes
+   * a sorted text column re-collate under the EN toggle — and 50 object
+   * literals is not the cost that mattered here.
+   */
+  const rows = useMemo(() => buildExpertRows(bundle), [bundle]);
 
   function formatValue(value: number, unit: FieldUnit): string {
     /*
@@ -229,7 +286,18 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
     if (unit === "count") {
       return formatInteger(value, locale);
     }
-    return formatDecimal(value, locale, 1);
+    if (unit === "metres" || unit === "kmh") {
+      return formatDecimal(value, locale, 1);
+    }
+    /*
+     * REVIEW PATCH (2.11b code review): both this and `unitSuffix` ended in an
+     * unguarded fallthrough, so a fifth FieldUnit member would silently format
+     * as a one-decimal number and render with no unit in its head — the
+     * compiler would not flag it and nothing on screen would look wrong.
+     * `sectionDataState`'s `never` check is the house precedent.
+     */
+    const unexpected: never = unit;
+    throw new Error(`Unhandled FieldUnit: ${String(unexpected)}`);
   }
 
   function unitSuffix(unit: FieldUnit): string {
@@ -239,7 +307,13 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
     if (unit === "kmh") {
       return `${UNIT_OPEN}${t("enums.unit.kmh")}${UNIT_CLOSE}`;
     }
-    return "";
+    // Count and percentage carry no suffix — the unit rides the head, and
+    // neither has one. Exhaustive by the same `never` discipline as above.
+    if (unit === "count" || unit === "percentage") {
+      return "";
+    }
+    const unexpected: never = unit;
+    throw new Error(`Unhandled FieldUnit: ${String(unexpected)}`);
   }
 
   /** One keyed Domain G column. The unit rides the HEAD, never the cell. */
@@ -304,7 +378,15 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
     bundle.metadata.homeTeam.teamCode.toUpperCase(),
     bundle.metadata.awayTeam.teamCode.toUpperCase(),
   ];
-  const [side, setSide] = useState(sideCodes[0]);
+  /*
+   * SEEDED FROM THE ROWS, not unconditionally from the home code (review patch,
+   * 2.11b code review). A Domain G page carrying only the away team's records
+   * is contract-legal, and the old seed opened the narrow layout on a side with
+   * nothing in it — both pills lit, an empty table, and no hint that the other
+   * pill has the data. `rows[0]` is the artifact's own first row, so on a
+   * complete bundle this still resolves to the home side.
+   */
+  const [side, setSide] = useState(rows[0]?.teamCode ?? sideCodes[0]);
   const visibleRows = isMd ? rows : rows.filter((row) => row.teamCode === side);
 
   const teamColumn: TableColumn<ExpertRow> = {
@@ -410,6 +492,21 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
   const isAbsent = bundle.players === null;
   const emptyHeadline = t("expert.empty.headline");
   const emptyExplanation = t("expert.empty.explanation");
+  /*
+   * REVIEW PATCH (2.11b code review). `[]` used to fall through `isAbsent` and
+   * render 50 sortable headers over an empty <tbody> with no explanation at
+   * all — and `[]` is not hypothetical: match-bundle.schema.json states
+   * verbatim that "Empty array and null are distinct states", and PlayerRecords
+   * carries no `minItems`. Gating on the VISIBLE row count catches that plus
+   * the two narrow-layout routes to the same blank table (a one-team Domain G
+   * page, and the reader selecting the side that has no rows), with one branch
+   * and one honest string — `expert.empty.*` says the report does not carry the
+   * pages, which is false in all three cases.
+   */
+  const hasNoRows = visibleRows.length === 0;
+  const emptyRowsHeadline = t("expert.emptyRows.headline");
+  const emptyRowsExplanation = t("expert.emptyRows.explanation");
+  const tableName = t("expert.tableName");
 
   return (
     <section
@@ -522,27 +619,64 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
                * inside a height-UNBOUNDED ancestor, which computed correctly
                * and silently did nothing.
                *
-               * `scroll-pt-11` is UX-DR12's scroll-padding-top: 44px, equal to
-               * the sticky header's own MIN_HIT_PX floor, so a row focused by
-               * keyboard is never scrolled under the header.
+               * Its classes, and why both scroll-padding axes are needed, are
+               * on SCROLLPORT at the top of this file.
                *
                * These tables are PRIMARY content and deliberately NOT behind a
                * "Ver los datos" disclosure (decision 9) — the layer is already
                * collapsed by default, and a disclosure would put them two taps
                * deep.
                */}
-              <div className="max-h-[70vh] overflow-auto scroll-pt-11">
-                <DataTable
-                  caption={t("expert.tableCaption")}
-                  columns={columns}
-                  rows={visibleRows}
-                  // The card, never the pitch. Getting this backwards is the
-                  // defect Story 2.7's review headlined.
-                  surface="canvas"
-                  sticky
-                  tableName={t("expert.tableName")}
+              {hasNoRows ? (
+                // The two ToggleGroups stay mounted above this, so the
+                // reader-selected-empty-side case is one tap from recovery.
+                <EmptyStatePanel
+                  headline={emptyRowsHeadline}
+                  explanation={emptyRowsExplanation}
                 />
-              </div>
+              ) : (
+                <div
+                  /*
+                   * FOCUSABLE AND NAMED (review patch): a bounded scroll
+                   * container whose only focusable descendants are pinned at
+                   * `top: 0` cannot otherwise be scrolled by keyboard at all.
+                   * `role="region"` + a name is the standard pairing — an
+                   * unnamed tab stop is its own defect. The region wraps the
+                   * table rather than sitting inside it, so 2.11a's "zero
+                   * landmark regions INSIDE any table" rule is untouched.
+                   */
+                  tabIndex={0}
+                  role="region"
+                  aria-label={tableName}
+                  className={SCROLLPORT}
+                >
+                  <DataTable
+                    /*
+                     * KEYED ON THE COLUMN SET (review patch). Switching the
+                     * `<md` group tab, or crossing the md breakpoint, removes
+                     * the active sort column — and `sortRows` then falls back
+                     * to artifact order while `sortState` lives on inside
+                     * DataTable. The rows visibly re-ordered with no
+                     * announcement, every `aria-sort` reverted to "none", and
+                     * the sort silently RE-APPLIED itself the moment the reader
+                     * came back. Remounting resets the sort honestly: artifact
+                     * order, consistent `aria-sort`, and a caption that matches
+                     * what is on screen. `side` is deliberately absent from the
+                     * key — a team switch does not change the columns, so a
+                     * sort should survive it.
+                     */
+                    key={`${isMd ? "wide" : "narrow"}-${group}`}
+                    caption={t("expert.tableCaption")}
+                    columns={columns}
+                    rows={visibleRows}
+                    // The card, never the pitch. Getting this backwards is the
+                    // defect Story 2.7's review headlined.
+                    surface="canvas"
+                    sticky
+                    tableName={tableName}
+                  />
+                </div>
+              )}
             </>
           )}
         </div>

@@ -183,7 +183,7 @@ export function expertFieldKey(field: ExpertField): DictionaryKey {
 }
 
 /*
- * The six heads that are ABBREVIATED and therefore carry a full term in
+ * The seven heads that are ABBREVIATED and therefore carry a full term in
  * `headTitle` (TableColumn's own contract: "Full term when headText is
  * abbreviated; null otherwise").
  *
@@ -200,6 +200,16 @@ const TITLED_FIELDS: Partial<Record<ExpertField, true>> = {
   distanceZone4: true,
   distanceZone5: true,
   highSpeedRuns: true,
+  /*
+   * REVIEW PATCH (2.11b code review). `topSpeed` now ships the RULED
+   * abbreviation "Vel. máx." in Spanish — `enums.metric.topSpeed` already
+   * carried it, and EXPERIENCE.md:139 names this exact term as the
+   * table-abbreviation precedent — so it needs its full term here. This map is
+   * keyed per FIELD, not per locale, so the EN entry restates its already-short
+   * head; that is the cost of one shared `headTitle` gate across both
+   * dictionaries, and it is cheaper than a per-locale title predicate.
+   */
+  topSpeed: true,
 };
 
 /** `expert.fieldTitle.<field>` for an abbreviated head, else null. */
