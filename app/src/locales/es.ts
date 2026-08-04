@@ -292,6 +292,23 @@ export const es = {
       receivedPct: "% recibido",
       players: "Jugadores",
       total: "Total",
+      // Story 2.10 columns, shared by the four Tactical closing sections.
+      phase: "Fase",
+      category: "Categoría",
+      measure: "Medida",
+      value: "Valor",
+      count: "Cantidad",
+      share: "Participación",
+      left: "Izquierda",
+      right: "Derecha",
+      complete: "Completados",
+      incomplete: "Incompletos",
+      // The involvement timeline's slot-index column. Duplicate-minute rows are
+      // otherwise indistinguishable (ruled decision 7): the corpus draws 95-145
+      // slots against a 0-120 minute with no stoppage field, so on real data
+      // many slots share a minute.
+      slot: "Intervalo",
+      keeper: "Arquero",
     },
     cluster: {
       dialogLabel: "Eventos en este punto",
@@ -492,6 +509,173 @@ export const es = {
        */
       tableCaptionNoClock: "Ordenado por equipo; el informe no registra el minuto.",
     },
+    /*
+     * Story 2.10's four sections. NO `title` KEY IN ANY OF THEM: the four
+     * section titles already exist as tactical.sections.*.title ("Fases del
+     * juego", "Presión y bloques defensivos", "Balón parado", "Arqueros") and
+     * are used verbatim for the ViewDataDisclosure panelTitle. Re-minting a
+     * viz.*.title here would give the page two names for one section.
+     */
+    phases: {
+      figurePrefix: "Fases del juego:",
+      inPossession: "Con balón",
+      outOfPossession: "Sin balón",
+      /*
+       * THE SINGLE MOST IMPORTANT SENTENCE ON THIS SURFACE. The eight and nine
+       * values are INDEPENDENT RATES: corpus in-possession sums run 84-149 and
+       * equal 100 on five of 208 team-innings; out-of-possession 73-97 and
+       * equal 100 on ZERO. Without this line a reader reasonably assumes the
+       * bars partition the match.
+       */
+      note: "Son tasas independientes por fase: no suman 100 y no son partes de un total.",
+      axisRate: "Porcentaje del tiempo",
+      axisPhase: "Fase",
+      tableCaption: "Ordenado por fase, en el orden del informe.",
+    },
+    pressing: {
+      figurePrefix: "Presión y bloques:",
+      pressRates: "Intensidad de la presión",
+      blocks: "Bloques defensivos",
+      note: "Son tasas independientes: no suman 100 y no son partes de un total.",
+      axisRate: "Porcentaje del tiempo",
+      axisPhase: "Fase",
+      metres: "Altura de la línea y longitud del equipo",
+      /*
+       * Keyed by measure and possession state (AD-7). The unit is NOT baked in
+       * — enums.unit.m carries it.
+       */
+      metre: {
+        lineHeight: {
+          inPossession: "Altura de la línea con balón",
+          outOfPossession: "Altura de la línea sin balón",
+        },
+        teamLength: {
+          inPossession: "Longitud del equipo con balón",
+          outOfPossession: "Longitud del equipo sin balón",
+        },
+      },
+      /*
+       * Ruled decision 5. The corpus prints THREE panels per possession state
+       * with three measures each (including team_width, which the contract does
+       * not model), and m001's staged line_height of 19/39/54 matches neither
+       * the fixture's single 44.4 nor any mean of them. This sentence states
+       * the gap WITHOUT claiming which phase the number describes — the one
+       * thing decision 5 forbids. Story 1.16 owns the aggregation rule.
+       */
+      metreNote: "El informe no define a qué fase del juego corresponden estas distancias.",
+      tableCaption: "Ordenado por fase, en el orden del informe.",
+      metreTableCaption: "Distancias en metros, por medida y estado de posesión.",
+    },
+    setPlays: {
+      figurePrefix: "Balón parado:",
+      totals: "Totales",
+      totalSetPlays: "Acciones a balón parado",
+      setPlaysOne: "acción a balón parado",
+      setPlaysMany: "acciones a balón parado",
+      freeKicks: "Tiros libres",
+      corners: "Tiros de esquina",
+      cornersOne: "tiro de esquina",
+      cornersMany: "tiros de esquina",
+      throwIns: "Saques de banda",
+      penalties: "Penales",
+      /*
+       * Ruled decision 6. `direct == directOnTarget + directOffTarget` is what
+       * the contract's FreeKickCounts description asserts, and it is FALSE on
+       * 208/208 corpus team-innings (160 have on+off == 0 while direct > 0) —
+       * while TRUE on all six fixture ones. The four values therefore render as
+       * flat siblings with no containment cue, and this sentence is why.
+       */
+      freeKickNote: "El informe publica los cuatro valores por separado; no siempre se contienen entre sí.",
+      cornerSide: "Lado del saque",
+      cornerType: "Tipo de envío",
+      cornerStyle: "Estilo de envío",
+      // Corner STYLE sums to totalCorners on only 96 of 208 corpus
+      // team-innings (112 under, never over), so it is never drawn as a bar.
+      cornerStyleNote: "Recuento independiente: puede no coincidir con el total de tiros de esquina.",
+      // Printed verbatim beside a bar whose denominator is the sum of its own
+      // segments. When the two disagree the surface shows BOTH (AD-6).
+      declaredTotal: "Total según el informe",
+      barNote: "Cada barra reparte los tiros de esquina del equipo entre las categorías del informe.",
+      zero: "El informe no registra acciones a balón parado para este equipo.",
+      zeroCorners: "El informe no registra tiros de esquina para este equipo.",
+      totalsCaption: "Totales por equipo.",
+      freeKickCaption: "Tiros libres por tipo, recuentos independientes.",
+      cornerCaption: "Tiros de esquina por lado, tipo y estilo de envío.",
+    },
+    goalkeeping: {
+      figurePrefix: "Arqueros:",
+      keeperOne: "Arquero",
+      keeperMany: "Arqueros",
+      involvementsOne: "participación",
+      involvementsMany: "participaciones",
+      involvementTitle: "Participaciones",
+      /*
+       * Ruled decision 7's axis sentence. The x axis is the SAMPLE INDEX, never
+       * the minute: the corpus draws 95-145 slots per team-inning against a
+       * bare 0-120 `Minute` with no stoppage field, and 2,506 of 21,764 slots
+       * fall in stoppage time — so minutes repeat. An unexplained axis whose
+       * labels repeat is exactly what this sentence prevents.
+       */
+      involvementAxisNote:
+        "El eje ordena los intervalos del informe; un intervalo de descuento lleva el minuto reglamentario anterior.",
+      axisSlot: "Intervalo del informe",
+      axisInvolvements: "Participaciones",
+      distribution: "Distribución",
+      distributionTotal: "Total",
+      lineBreaks: "Rupturas de líneas",
+      goalPrevention: "Prevención de gol",
+      attemptsFaced: "Remates enfrentados",
+      savePercentage: "% de atajadas",
+      interventions: "Intervenciones",
+      byInterventionType: "Por tipo de intervención",
+      byBodyType: "Por parte del cuerpo",
+      /*
+       * Ruled decision 13: the two goal-prevention breakdowns have DIFFERENT
+       * denominators — byInterventionType sums to attemptsFaced, byBodyType to
+       * totalInterventions — and the contract requires each panel to be
+       * labelled with its own total rather than implying a shared one.
+       */
+      denominatorPrefix: "sobre",
+      aerial: "Juego aéreo",
+      aerialInterventions: "Intervenciones aéreas",
+      crossesFaced: "Centros enfrentados",
+      crossesFacedCompleted: "Centros completados",
+      /*
+       * Ruled decision 3's second consequence. Once its counterpart is gated
+       * away, `crossesFacedAttempted` renders ALONE — and a value labelled as
+       * the *attempted half of a pair* with no counterpart reads as a MISSING
+       * number rather than an ABSENT one. This is its solo label.
+       */
+      crossesFacedAlone: "Centros enfrentados (el informe no publica cuántos se completaron)",
+      deliveryTypes: "Tipo de centro enfrentado",
+      /*
+       * THE RULED GATE-DISCLOSURE SENTENCE (decision 3). Five contract-required
+       * sub-blocks are null on 208/208 corpus team-innings and populated on 6/6
+       * fixture ones, so the section the dev builds is NOT the section that
+       * ships at the 2.19 cutover. Hiding five whole panels with nothing on
+       * screen explaining it is silent absence at panel granularity — the one
+       * thing FR-22 forbids. This is neither five rows of em dashes (rightly
+       * banned) nor silence.
+       */
+      gateNote:
+        "El informe publica algunos desgloses solo como imagen, sin valores legibles: esos paneles no se muestran.",
+      zeroRecord: "El informe no incluye un bloque de arquero para este equipo.",
+      zeroAll: "El informe no lista arqueros para este partido.",
+      /*
+       * Ruled decision 14's TWO captions. `totalInvolvements` is what the
+       * report PRINTS; the timeline is what it PLOTS. Measured over 208
+       * team-innings the difference runs 0..5 and is exactly 0 on only 59 —
+       * while all six fixture keepers sum precisely. The captions disclose the
+       * gap rather than resolving it, because the ledger's rule is "do not
+       * resolve it by making the numbers agree".
+       */
+      summaryCaption: "Total de participaciones que publica el informe.",
+      timelineCaption:
+        "Intervalos que grafica el informe, en orden. La fuente no garantiza que sumen el total.",
+      distributionCaption: "Distribución por familia y técnica.",
+      preventionCaption: "Prevención de gol; cada desglose lleva su propio total.",
+      aerialCaption: "Juego aéreo y centros enfrentados.",
+    },
   },
   enums: {
     // Tournament stage labels, keyed by the Stage enum codes (AD-7).
@@ -615,9 +799,144 @@ export const es = {
       distanceCovered: "Distancia",
       sprintDistance: "Distancia en sprint",
     },
+    /*
+     * ------------------------- STORY 2.10's ENUMS -------------------------
+     *
+     * Fourteen closed vocabularies, keyed by CONTRACT ENUM CODE (AD-7), each
+     * driven by a frozen ordered list in the models and each pinned by an
+     * i18n.test.ts exhaustiveness assertion in BOTH locales.
+     *
+     * Ruled terms reused VERBATIM from EXPERIENCE.md's per-term table:
+     * presión · bloque alto/medio/bajo · altura de la línea defensiva ·
+     * longitud del equipo · fases del juego · salida de balón · contrapresión ·
+     * balón parado · tiro de esquina · arquero · atajada · distribución.
+     * Everything else was minted here under EXPERIENCE.md:278's procedure and
+     * is recorded in the story's Dev Agent Record. LatAm register throughout
+     * (UX-DR19).
+     */
+    // The eight in-possession phases of play (Domain C).
+    inPossessionPhase: {
+      "build-up-unopposed": "Salida de balón sin presión",
+      "build-up-opposed": "Salida de balón con presión",
+      progression: "Progresión",
+      "final-third": "Último tercio",
+      "long-ball": "Balón largo",
+      "attacking-transition": "Transición ofensiva",
+      "counter-attack": "Contraataque",
+      "set-piece": "Balón parado",
+    },
+    /*
+     * The nine out-of-possession phases. `high-press` and `high-block` are
+     * SEPARATE enum values in the source and stay separate here — #pressing
+     * renders the four press rates and the three block heights as distinct
+     * concepts, so collapsing the vocabulary would make the duplication
+     * ruled decision 4 requires look like an error.
+     */
+    outOfPossessionPhase: {
+      "high-press": "Presión alta",
+      "mid-press": "Presión media",
+      "low-press": "Presión baja",
+      "high-block": "Bloque alto",
+      "mid-block": "Bloque medio",
+      "low-block": "Bloque bajo",
+      recovery: "Repliegue",
+      "defensive-transition": "Transición defensiva",
+      "counter-press": "Contrapresión",
+    },
+    // The three defensive block heights. EXPERIENCE's ruled rows, verbatim.
+    blockLevel: {
+      high: "Bloque alto",
+      mid: "Bloque medio",
+      low: "Bloque bajo",
+    },
+    /*
+     * The four free-kick types (Domain F). Each label STANDS ALONE, because the
+     * four render as flat siblings with no containment cue (ruled decision 6) —
+     * "Al arco" on its own would read as a column header rather than a
+     * free-kick outcome.
+     */
+    freeKick: {
+      direct: "Tiro libre directo",
+      "direct-on-target": "Directo al arco",
+      "direct-off-target": "Directo desviado",
+      indirect: "Tiro libre indirecto",
+    },
+    cornerDeliveryType: {
+      "direct-to-area": "Directo al área",
+      short: "En corto",
+      "edge-of-penalty-area": "Al borde del área",
+    },
+    /*
+     * Corner delivery STYLE shares its vocabulary with CrossDeliveryType, and
+     * deliberately reuses Story 2.7's ruled adjectives so one delivery shape
+     * has one Spanish name across the app. They are separate contract enums, so
+     * they get separate namespaces — but not separate words.
+     */
+    cornerDeliveryStyle: {
+      inswing: "Cerrado",
+      outswing: "Abierto",
+      driven: "Tenso",
+      lofted: "Bombeado",
+    },
+    pitchSide: {
+      left: "Izquierda",
+      right: "Derecha",
+    },
+    /*
+     * ---------------------- Domain E, the goalkeeper ----------------------
+     * review-i18n.md:26 records that the WHOLE goalkeeping domain had zero
+     * terminology coverage, so every row below is newly minted. "Arquero" and
+     * "atajada" are the ruled LatAm terms and carry the register.
+     */
+    distributionType: {
+      feet: "Saque con el pie",
+      hands: "Saque de volea",
+      throw: "Saque con la mano",
+    },
+    feetTechnique: {
+      "play-onto": "Al pie",
+      "play-into": "Al interior",
+      "play-around": "Por fuera",
+      "play-through": "Filtrado",
+      "play-beyond": "A la espalda",
+      other: "Otro",
+    },
+    handsTechnique: {
+      "side-kick": "Volea lateral",
+      "from-hands": "Desde las manos",
+      "drop-kick": "Bote pronto",
+    },
+    throwTechnique: {
+      "over-arm": "Por encima",
+      "under-arm": "Por abajo",
+      "side-arm": "Lateral",
+      chest: "Desde el pecho",
+    },
+    interventionType: {
+      "save-and-retain": "Atajada y retención",
+      "save-and-deflect": "Atajada y rechace",
+      "deflect-and-retain": "Rechace y retención",
+      "save-attempt": "Intento de atajada",
+      "no-save-attempt": "Sin intento de atajada",
+    },
+    interventionBodyType: {
+      head: "Cabeza",
+      hands: "Manos",
+      "upper-body": "Tren superior",
+      "lower-body": "Tren inferior",
+      feet: "Pies",
+    },
+    aerialType: {
+      punch: "Despeje de puños",
+      claim: "Descuelgue",
+      "tipped-palmed": "Desvío con la mano",
+    },
     // Units are locale metadata, never baked into a label string (AD-7).
     unit: {
       km: "km",
+      // Story 2.10: the four Domain C distances. Added HERE rather than in a
+      // new namespace — AD-7 keys units by metric code, and this is the home.
+      m: "m",
     },
   },
 };

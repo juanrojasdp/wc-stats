@@ -3,12 +3,30 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { DefensiveActionsSection } from "@/components/DefensiveActionsSection";
-import { EmptyStatePanel, PendingSectionPanel, useEmptyHeadline } from "@/components/EmptyStatePanel";
+/*
+ * `PendingSectionPanel` is NO LONGER IMPORTED. Story 2.10 gives every SectionId
+ * a real component, so it loses its last call site — and a dead binding here
+ * would be caught by NOTHING in the build chain:
+ * @typescript-eslint/no-unused-vars is not in the flat config's active set and
+ * tsconfig sets no noUnusedLocals, so `eslint --max-warnings 0` exits 0 on one.
+ * Story 2.9 shipped dead bindings and took a review finding for it.
+ *
+ * THE COMPONENT ITSELF AND ITS tactical.pending.* KEYS STAY (ruled decision
+ * 20): EmptyStatePanel.tsx is outside this story's touch list, the Expert Layer
+ * (2.11) may want the same shell, and deleting live locale keys is a change
+ * three exhaustiveness tests would have to be reasoned about. The keep-or-delete
+ * call is routed to 2.11 in deferred-work.md.
+ */
+import { EmptyStatePanel, useEmptyHeadline } from "@/components/EmptyStatePanel";
+import { GoalkeepingSection } from "@/components/GoalkeepingSection";
 import { KeyStatisticsSection } from "@/components/KeyStatisticsSection";
 import { MomentumSection } from "@/components/MomentumSection";
 import { MovementToReceiveSection } from "@/components/MovementToReceiveSection";
 import { OffersToReceiveSection } from "@/components/OffersToReceiveSection";
 import { PassNetworksSection } from "@/components/PassNetworksSection";
+import { PhasesSection } from "@/components/PhasesSection";
+import { PressingSection } from "@/components/PressingSection";
+import { SetPlaysSection } from "@/components/SetPlaysSection";
 import { ShotMapsSection } from "@/components/ShotMapsSection";
 import { TacticalSection } from "@/components/TacticalSection";
 import type { MatchBundle } from "@/lib/contract/contract-types";
@@ -247,11 +265,82 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
             }}
           />
         );
+      /*
+       * Story 2.10's four sections — the LAST four PendingSectionPanel
+       * fall-throughs, so all eleven sections now render real content.
+       *
+       * Narrow, explicit props, never the whole bundle (Story 2.5 Task 5.1's
+       * precedent). #phases and #pressing read the SAME `tacticalIdentity`
+       * block: ruled decision 4 gives #phases all 17 phase rates and #pressing
+       * the four press rates plus the blocks plus the metres, so seven of the
+       * nine out-of-possession values appear in both — deliberately, because
+       * #pressing's shipped, frozen summary promises pressing intensity and is
+       * also the <lg collapsed-shell copy.
+       */
       case "phases":
+        return (
+          <PhasesSection
+            tacticalIdentity={bundle.tacticalIdentity}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
       case "pressing":
+        return (
+          <PressingSection
+            tacticalIdentity={bundle.tacticalIdentity}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
       case "set-plays":
+        return (
+          <SetPlaysSection
+            setPlays={bundle.setPlays}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
       case "goalkeeping":
-        return <PendingSectionPanel />;
+        return (
+          <GoalkeepingSection
+            goalkeeping={bundle.goalkeeping}
+            home={{
+              teamId: bundle.metadata.homeTeam.teamId,
+              teamCode: bundle.metadata.homeTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.homeTeam.name,
+            }}
+            away={{
+              teamId: bundle.metadata.awayTeam.teamId,
+              teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
+              name: bundle.metadata.awayTeam.name,
+            }}
+          />
+        );
       default: {
         const unexpected: never = id;
         throw new Error(`TacticalLayer: unknown section id ${JSON.stringify(unexpected)}`);

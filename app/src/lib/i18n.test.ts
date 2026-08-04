@@ -12,7 +12,42 @@ import {
   defensiveActionKey,
   possessionContestKey,
 } from "@/viz/defensive-actions-model";
+import {
+  AERIAL_TYPES,
+  DISTRIBUTION_TYPES,
+  FEET_TECHNIQUES,
+  HANDS_TECHNIQUES,
+  INTERVENTION_BODY_TYPES,
+  INTERVENTION_TYPES,
+  THROW_TECHNIQUES,
+  aerialTypeKey,
+  distributionTypeKey,
+  feetTechniqueKey,
+  handsTechniqueKey,
+  interventionBodyTypeKey,
+  interventionTypeKey,
+  throwTechniqueKey,
+} from "@/viz/goalkeeping-model";
+import {
+  BLOCK_LEVELS,
+  IN_POSSESSION_PHASES,
+  OUT_OF_POSSESSION_PHASES,
+  PRESS_PHASES,
+  blockLevelKey,
+  inPossessionPhaseKey,
+  outOfPossessionPhaseKey,
+} from "@/viz/phases-model";
 import { OFFER_MOVEMENT_TYPES, offerMovementKey } from "@/viz/receiving-model";
+import {
+  CORNER_DELIVERY_STYLES,
+  CORNER_DELIVERY_TYPES,
+  FREE_KICK_TYPES,
+  PITCH_SIDES,
+  cornerDeliveryStyleKey,
+  cornerDeliveryTypeKey,
+  freeKickTypeKey,
+  pitchSideKey,
+} from "@/viz/set-plays-model";
 import { SHOT_OUTCOMES, shotOutcomeKey } from "@/viz/shot-map-model";
 
 describe("t()", () => {
@@ -234,6 +269,220 @@ describe("enums.offerMovement / defensiveAction / possessionContest (AD-7)", () 
     // quarter of the data behind a label that does not exist.
     for (const locale of locales) {
       expect(t("enums.offerMovement.no-movement", locale)).not.toBe("");
+    }
+  });
+});
+
+/*
+ * ------------------------- STORY 2.10's FOURTEEN ENUMS -------------------------
+ *
+ * Task 8.5. Every list is IMPORTED from the model that owns it, never
+ * hand-copied here — the 2.9 review patched exactly that mistake, because a
+ * hand-copied list means a widened enum needs two files edited to be caught and
+ * the label-resolution loop simply never visits the new code.
+ *
+ * THIS SUITE IS WHY THE KEY BUILDERS' `as DictionaryKey` CAST IS SAFE. Every
+ * builder ends in that cast because DictionaryKey is a literal union and a
+ * template-literal expression infers `string`; the cast silences the compiler,
+ * so this round-trip is the ONLY thing standing between a typo'd key and a
+ * runtime miss.
+ */
+describe("Story 2.10's Domain C enums (AD-7)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("has exactly one entry per InPossessionPhase value", () => {
+    expect(Object.keys(es.enums.inPossessionPhase).sort()).toEqual(
+      [...IN_POSSESSION_PHASES].sort()
+    );
+    expect(Object.keys(en.enums.inPossessionPhase).sort()).toEqual(
+      [...IN_POSSESSION_PHASES].sort()
+    );
+  });
+
+  it("has exactly one entry per OutOfPossessionPhase value", () => {
+    expect(Object.keys(es.enums.outOfPossessionPhase).sort()).toEqual(
+      [...OUT_OF_POSSESSION_PHASES].sort()
+    );
+    expect(Object.keys(en.enums.outOfPossessionPhase).sort()).toEqual(
+      [...OUT_OF_POSSESSION_PHASES].sort()
+    );
+  });
+
+  it("has exactly one entry per BlockLevel value", () => {
+    expect(Object.keys(es.enums.blockLevel).sort()).toEqual([...BLOCK_LEVELS].sort());
+    expect(Object.keys(en.enums.blockLevel).sort()).toEqual([...BLOCK_LEVELS].sort());
+  });
+
+  it("resolves every Domain C label in both locales", () => {
+    for (const locale of locales) {
+      for (const code of IN_POSSESSION_PHASES) {
+        const label = t(inPossessionPhaseKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.inPossessionPhase");
+      }
+      for (const code of OUT_OF_POSSESSION_PHASES) {
+        const label = t(outOfPossessionPhaseKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.outOfPossessionPhase");
+      }
+      for (const code of BLOCK_LEVELS) {
+        const label = t(blockLevelKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.blockLevel");
+      }
+    }
+  });
+
+  /*
+   * #pressing renders the four press rates through the SAME namespace #phases
+   * uses (ruled decision 4's deliberate duplication), so the subset needs no
+   * labels of its own — but it must stay a strict subset, or a press rate would
+   * render an unresolved key.
+   */
+  it("labels every press rate #pressing renders", () => {
+    for (const code of PRESS_PHASES) {
+      expect(OUT_OF_POSSESSION_PHASES).toContain(code);
+      for (const locale of locales) {
+        expect(t(outOfPossessionPhaseKey(code), locale)).not.toBe("");
+      }
+    }
+  });
+
+  it("keeps the metre unit as locale metadata (AD-7)", () => {
+    expect(t("enums.unit.m", "es")).toBe("m");
+    expect(t("enums.unit.m", "en")).toBe("m");
+  });
+});
+
+describe("Story 2.10's Domain F enums (AD-7)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("has exactly one entry per Domain F value", () => {
+    expect(Object.keys(es.enums.freeKick).sort()).toEqual([...FREE_KICK_TYPES].sort());
+    expect(Object.keys(en.enums.freeKick).sort()).toEqual([...FREE_KICK_TYPES].sort());
+    expect(Object.keys(es.enums.cornerDeliveryType).sort()).toEqual(
+      [...CORNER_DELIVERY_TYPES].sort()
+    );
+    expect(Object.keys(en.enums.cornerDeliveryType).sort()).toEqual(
+      [...CORNER_DELIVERY_TYPES].sort()
+    );
+    expect(Object.keys(es.enums.cornerDeliveryStyle).sort()).toEqual(
+      [...CORNER_DELIVERY_STYLES].sort()
+    );
+    expect(Object.keys(en.enums.cornerDeliveryStyle).sort()).toEqual(
+      [...CORNER_DELIVERY_STYLES].sort()
+    );
+    expect(Object.keys(es.enums.pitchSide).sort()).toEqual([...PITCH_SIDES].sort());
+    expect(Object.keys(en.enums.pitchSide).sort()).toEqual([...PITCH_SIDES].sort());
+  });
+
+  it("resolves every Domain F label in both locales", () => {
+    for (const locale of locales) {
+      for (const code of FREE_KICK_TYPES) {
+        const label = t(freeKickTypeKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.freeKick");
+      }
+      for (const code of CORNER_DELIVERY_TYPES) {
+        const label = t(cornerDeliveryTypeKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.cornerDeliveryType");
+      }
+      for (const code of CORNER_DELIVERY_STYLES) {
+        const label = t(cornerDeliveryStyleKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.cornerDeliveryStyle");
+      }
+      for (const code of PITCH_SIDES) {
+        const label = t(pitchSideKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.pitchSide");
+      }
+    }
+  });
+
+  /*
+   * The four free-kick labels must STAND ALONE, because they render as flat
+   * siblings with no containment cue (ruled decision 6). "Al arco" on its own
+   * would read as a column header rather than a free-kick outcome, so each
+   * Spanish label carries its own qualifier.
+   */
+  it("gives each free-kick label a self-standing Spanish form", () => {
+    expect(t(freeKickTypeKey("direct-on-target"), "es")).toBe("Directo al arco");
+    expect(t(freeKickTypeKey("direct-off-target"), "es")).toBe("Directo desviado");
+  });
+});
+
+describe("Story 2.10's Domain E enums (AD-7)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("has exactly one entry per Domain E value", () => {
+    const pairs: [Record<string, string>, Record<string, string>, readonly string[]][] = [
+      [es.enums.distributionType, en.enums.distributionType, DISTRIBUTION_TYPES],
+      [es.enums.feetTechnique, en.enums.feetTechnique, FEET_TECHNIQUES],
+      [es.enums.handsTechnique, en.enums.handsTechnique, HANDS_TECHNIQUES],
+      [es.enums.throwTechnique, en.enums.throwTechnique, THROW_TECHNIQUES],
+      [es.enums.interventionType, en.enums.interventionType, INTERVENTION_TYPES],
+      [es.enums.interventionBodyType, en.enums.interventionBodyType, INTERVENTION_BODY_TYPES],
+      [es.enums.aerialType, en.enums.aerialType, AERIAL_TYPES],
+    ];
+    for (const [spanish, english, codes] of pairs) {
+      expect(Object.keys(spanish).sort()).toEqual([...codes].sort());
+      expect(Object.keys(english).sort()).toEqual([...codes].sort());
+    }
+  });
+
+  it("resolves every Domain E label in both locales", () => {
+    for (const locale of locales) {
+      for (const code of DISTRIBUTION_TYPES) {
+        expect(t(distributionTypeKey(code), locale), `${code} in ${locale}`).not.toBe("");
+      }
+      for (const code of FEET_TECHNIQUES) {
+        const label = t(feetTechniqueKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.feetTechnique");
+      }
+      for (const code of HANDS_TECHNIQUES) {
+        expect(t(handsTechniqueKey(code), locale), `${code} in ${locale}`).not.toBe("");
+      }
+      for (const code of THROW_TECHNIQUES) {
+        expect(t(throwTechniqueKey(code), locale), `${code} in ${locale}`).not.toBe("");
+      }
+      for (const code of INTERVENTION_TYPES) {
+        const label = t(interventionTypeKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.interventionType");
+      }
+      for (const code of INTERVENTION_BODY_TYPES) {
+        expect(t(interventionBodyTypeKey(code), locale), `${code} in ${locale}`).not.toBe("");
+      }
+      for (const code of AERIAL_TYPES) {
+        expect(t(aerialTypeKey(code), locale), `${code} in ${locale}`).not.toBe("");
+      }
+    }
+  });
+
+  /*
+   * The LatAm register is the ruled one (UX-DR19), and review-i18n.md:26
+   * recorded that the WHOLE goalkeeping domain had zero terminology coverage
+   * before this story. "arquero" and "atajada" carry it.
+   */
+  it("uses the ruled LatAm register for the goalkeeping vocabulary", () => {
+    expect(t("tactical.sections.goalkeeping.title", "es")).toBe("Arqueros");
+    expect(t("viz.goalkeeping.keeperOne", "es")).toBe("Arquero");
+    expect(t(interventionTypeKey("save-and-retain"), "es")).toContain("Atajada");
+    expect(t("viz.goalkeeping.savePercentage", "es")).toContain("atajadas");
+  });
+
+  /*
+   * CrossDeliveryType is REUSED from Story 2.7 for aerialControl's
+   * deliveryTypesFaced rather than a second namespace being minted — one
+   * vocabulary, one source of truth.
+   */
+  it("does not mint a second cross-delivery namespace", () => {
+    expect(Object.keys(es.enums)).not.toContain("aerialCrossDelivery");
+    for (const code of CROSS_DELIVERY_TYPES) {
+      expect(t(crossDeliveryKey(code), "es")).not.toBe("");
     }
   });
 });

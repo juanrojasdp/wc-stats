@@ -612,3 +612,211 @@ measured; they are re-filed here with the added blast radius `#defensive-actions
   they do, this resolves itself with no code change. If they do not, the disambiguator becomes a
   real UX question and should be ruled alongside the diamond/second-visual-channel question already
   filed by Task 8.1.
+
+## Filed by Story 2.10 — the four closing Tactical sections (#phases, #pressing, #set-plays, #goalkeeping)
+
+Story 2.10 closes the Tactical Layer at eleven of eleven. Everything below was measured at story
+creation over the **104 staged Extraction Records in `work/extracted/`** (208 team-innings), the
+three committed fixtures and the committed schemas, and re-derived during implementation wherever
+the App depends on it. `work/extracted/` is gitignored staging — evidence to re-measure, never a
+source the App may read.
+
+- **AD-14 (d) UNDERSTATED THE `#goalkeeping` RE-SCOPE, and the App has now shipped against the
+  larger version.** The recorded notice covered the per-keeper/per-team mismatch. It did **not**
+  record that **FIVE contract-REQUIRED sub-blocks are `null` on 208/208 team-innings**:
+  `distribution.feetTechniques`, `distribution.handsTechniques`, `distribution.throwTechniques`,
+  `goalPrevention.byBodyType`, `aerialControl.crossesFacedCompleted`. They are raster donut-slice
+  labels and an unvalidatable marker colour (1.9, AD-14 (c)). **The fixtures populate all five**,
+  because `data/fixtures/README.md` files Domain E goalkeeping as Synthetic *"in full"* — so the
+  surface a developer sees in dev is **not** the surface that ships at the 2.19 cutover.
+  **What the App did.** (1) `#goalkeeping` renders **one block per TEAM**, ordered from
+  `metadata.homeTeam`/`awayTeam` and never from array order, with the keeper name(s) as **context**;
+  the **two-keeper case** (7 of 208 team-innings: M21 home, M41 away, M53 away, M62 away, M66 home,
+  M88 home, M98 away) renders **both records stacked and separately labelled, with nothing summed
+  across them** (AD-5). (2) The five fields are **presence-gated** through a single widened view
+  type, `CorpusNullableGoalkeeperRecord` in `app/src/viz/goalkeeping-model.ts`, cast **once** at the
+  model's entry point — a closed gate **omits its panel entirely**, never renders em dashes, and the
+  team block states **once** that it did so (`viz.goalkeeping.gateNote`), because silent absence at
+  panel granularity is what FR-22 forbids. The surface therefore degrades to the corpus-real field
+  set with **no code change and no permanently-empty panel**.
+  **Owner: Story 1.16**, which cannot emit any of the five and **must not read their absence as an
+  extraction defect**. Either the schema marks them nullable (and the widened view collapses to a
+  re-export) or extraction starts filling them (and the gates go permanently open). Rides the
+  **successor** change-set, never CS-1.
+
+- **`lineHeight` / `teamLength` now RENDER in `#pressing` with no defined provenance.** This
+  **extends the 1.7 entry above** (grep `"the line-height/team-length pages are per-phase panels"`)
+  with the App-side consequence rather than restating it: the four contracted values per team are
+  drawn as two per-team blocks, exactly as the contract names them, with **no invented aggregation,
+  no third measure, and no copy claiming which phase they describe** — the surface states only that
+  *"El informe no define a qué fase del juego corresponden estas distancias."*
+  Re-derived at implementation: the metres are the **only** part of Domain C with no real
+  counterpart. `data/fixtures/README.md` lists *"All of Domain C phase percentages"* under Real and
+  nothing else from Domain C; the corpus prints **three panels per possession state with three
+  measures each**, including **`team_width`, unmodelled by the contract**; and `m001` home
+  in-possession staged `line_height` is **19 / 39 / 54** against the fixture's single **44.4**,
+  matching no panel and no mean of them. Corpus ranges: `line_height` 10–71 m, `team_length`
+  13–51 m, `team_width` 28–60 m.
+  **Owner: Story 1.16** (the aggregation rule). **When it rules, this presentation is deleted or
+  re-shaped** — `metreRows`' docblock in `app/src/viz/phases-model.ts` carries that binding.
+
+- **The contract's `FreeKickCounts` `description` is CORPUS-FALSE on 208/208 and needs correcting
+  in the successor change-set.** It asserts *"directOnTarget and directOffTarget are subdivisions of
+  direct, so direct == directOnTarget + directOffTarget (holds across all six fixture
+  team-innings)"*. The parenthesis is true and the claim is false: measured over 208 corpus
+  team-innings the relation holds on **0**, and **160** of them have `on + off == 0` while
+  `direct > 0`. Corner delivery **STYLE** is the second false partition — it sums to `totalCorners`
+  on only **96 / 208** (112 under, never over) while holding 6/6 in the fixtures.
+  **Recorded so a later reader does not over-correct**, these relations ARE corpus-true 208/208:
+  `direct + indirect == totalFreeKicks`; `sum(cornersByDeliveryType[*].total) == totalCorners`;
+  `left + right == total` per type and overall; and
+  `totalSetPlays == freeKicks + corners + throwIns + penalties`.
+  **What the App did.** The four free-kick values render as **flat siblings with no containment cue
+  of any kind — no stack, no segmented bar, and specifically no indentation**, since indentation is
+  the most conventional visual assertion of containment there is and would smuggle the banned claim
+  back in. Corner **STYLE** renders as four independent labelled counts. Corner **TYPE** and corner
+  **SIDE** are drawn as parts of `totalCorners`, with the bar's denominator taken from the **sum of
+  its own rendered segments** while `totalCorners` is printed verbatim beside it; when the two
+  disagree the surface shows both and normalizes neither (AD-6). The side split is read from the
+  **precomputed `cornersBySide`**, never by adding the three per-type numbers
+  (`contract/README.md` §14). `set-plays-model.test.ts` pins BOTH halves — that the fixtures satisfy
+  the two false relations 6/6, and the corpus figures that make them false — so a later reader
+  cannot "fix" the surface back to a stacked chart by looking at a dev server.
+  **`/contract` was NOT edited by this story.** **Owner:** the successor change-set, **never CS-1**.
+
+- **`GoalkeeperInvolvementSample.minute` CANNOT REPRESENT THE CORPUS CLOCK — filed as a BLOCKER for
+  Story 2.19's real-data cutover, not as an open note.** It is a bare `Minute` (0–120) with **no
+  stoppage field**, while the corpus draws **95–145 slots per team-inning** (min 95, median 102,
+  max 145) and puts **2,506 of 21,764 slots in stoppage time** — so minutes are **not unique** on
+  real data. This is exactly what Story 1.8 already fixed for `MomentumSample.at` by making it a
+  `MinuteStamp`, and exactly what invalidated Story 2.6's original slider AC. The fixtures hide it
+  completely: 19 or 25 evenly-spaced, minute-unique slots that also sum exactly to
+  `totalInvolvements`.
+  **Why a blocker and not a note:** the upstream data already exists (grep
+  `"The involvement clock's stamps are staged per slot"`), `MinuteStamp` already exists in the
+  contract, and only the emit-boundary type is missing. It is the difference between a truthful axis
+  and a misleading one.
+  **No App change is owed when it lands.** Story 2.10 already indexes the timeline by **sample
+  index**, treats the minute as a label, dedupes repeated tick labels by value with first occurrence
+  winning, and states the axis's meaning on the surface and in the figure summary. **Owner:** the
+  successor change-set.
+
+- **DECLARED DEPARTURE FROM UX-DR7: no leader treatment on any Story 2.10 surface. Needs a UX
+  ruling.** No ▲ / «líder» appears in `#phases`, `#pressing`, `#set-plays` or `#goalkeeping`, and
+  `resolveLeader` is neither imported nor re-implemented in any of them.
+  **The reasoning is STRUCTURAL, not semantic, and that distinction matters** — the semantic
+  argument ("higher carries no meaning for a rate or a distance") is **false by shipped precedent**:
+  Story 2.9 applies `resolveLeader` to `offersMade` with the glyph and the spoken «líder», and
+  `KeyStatisticsSection` applies it across a block containing `forcedTurnovers` and `crosses`, every
+  bit as directionless as *"saques de banda 21 vs 26"*. The real reason is that **no head-to-head
+  TILE SHAPE exists in this story**: UX-DR7 and DESIGN's component spec both scope the treatment to
+  the *stat tile* — two values facing each other across a centred label — and there is no shared
+  `StatTile` to inherit it from (`KeyStatisticsSection`'s is private). Story 2.10 made that true
+  rather than asserting it: every two-team value renders as **two per-team blocks in a responsive
+  grid**, including `#pressing`'s four metre values, which are the one place the story would
+  otherwise have built the very shape it claims does not exist.
+  **The narrow question for UX:** *should a per-team block pair carry the leader treatment that the
+  stat tile carries?* **Owner: UX.**
+
+- **`#phases` and `#pressing` DELIBERATELY DUPLICATE SEVEN of the nine out-of-possession rates.**
+  `#phases` renders all 17 phase rates (the Phases of Play page verbatim); `#pressing` renders the
+  four press rates **plus** `defensiveBlockDistribution` **plus** the four metre values.
+  **Why, so a reviewer does not read it as an error and 2.16 does not re-derive it.** The first
+  draft gave `#pressing` only the blocks and the metres, which ships a section whose **shipped,
+  frozen copy is false**: `tactical.sections.pressing` reads *"Presión y bloques defensivos"* /
+  *"Altura de la línea defensiva e **intensidad de la presión**."* — and that summary is also the
+  **`<lg` collapsed-shell copy** (`key-match-dashboard-mobile.html:350-353`), so a phone reader
+  hunting press intensity opens `#pressing` first and would have found neither the press rates nor
+  any hint they lived elsewhere. The duplication rides the argument the contract already makes for
+  the blocks: `DefensiveBlockDistribution`'s `$comment` names this story — *"They are surfaced again
+  here because Story 2.10's `#pressing` section renders block height as its own concept."* The
+  source keeps `high-press` and `high-block` as **separate enum values**, so no reading collapses
+  them. Nothing is recomputed: both sections read the same contract fields and print the same
+  numbers, pinned by a test.
+  **Owner: Story 2.16** (Team Profile renders the same Domain C block and inherits this ruling).
+
+- **The whole-layer error boundary now has its FULL blast radius, and it is still unpatched.**
+  Re-filed with Story 2.10's contribution (the original entry is above — grep
+  `"kills all eleven Tactical sections"`). There is **exactly one** `TacticalErrorBoundary`, in
+  `MatchBundleRegion.tsx`, wrapping all eleven sections with no per-section boundary anywhere. Story
+  2.10 adds **four more surfaces** behind it over **the deepest object graph in the contract**
+  (`GoalkeeperRecord` alone is 8 required fields across 5 nested objects), and — because all eleven
+  sections now render real content rather than pending shells — **the blast radius is finally
+  complete** rather than partly shells: any single model throw replaces the entire Tactical Layer
+  with one crashed panel.
+  Story 2.10 mitigated within its own scope (every model entry point returns early on an absent or
+  zero-length slice, each guarded by its own test: `goalkeeping: []`, records for one team only, two
+  records for one team, an empty `involvementTimeline`, `attemptsFaced: 0`, `totalCorners: 0`, and
+  every set-play total at 0) but **did not build the boundary** — pre-existing architecture, and
+  fixing it in one story's sections only would make the eleven diverge. **Owner:** unchanged.
+
+- **`PendingSectionPanel` and the `tactical.pending.*` keys now have ZERO CALL SITES.** Story 2.10
+  replaced the last four fall-throughs, so every `SectionId` dispatches to a real component. The
+  now-orphaned import binding was deleted from `TacticalLayer.tsx` in the same edit — worth
+  recording that **nothing in the build chain catches a dead import**:
+  `@typescript-eslint/no-unused-vars` is not in the flat config's active set and `tsconfig.json`
+  sets no `noUnusedLocals`, so `eslint --max-warnings 0` exits 0 on one (Story 2.9 shipped dead
+  bindings and took a review finding for it).
+  **The component and its locale keys were deliberately KEPT.** `EmptyStatePanel.tsx` is outside
+  Story 2.10's touch list, the Expert Layer may want the same shell, and deleting live locale keys
+  is a change three exhaustiveness tests would have to be reasoned about.
+  **Owner: Story 2.11** — keep or delete.
+
+- **NULLABILITY ASYMMETRY across the four sections, proved by building them.** `goalkeeping` and
+  `players` are nullable; `tacticalIdentity` and `setPlays` are **required, non-nullable objects**.
+  So FR-22's *"explicit empty state names what's absent"* is **structurally reachable for only one**
+  of Story 2.10's four sections: a report lacking the Domain C or F pages fails the **whole report**
+  under AD-8, so the reader loses the entire match rather than seeing a named empty section. The
+  `#phases` / `#pressing` / `#set-plays` empty branches are therefore unreachable at contract v2
+  except through a truncated `as`-cast payload — which is exactly what the existing
+  `sectionDataState` predicate exists to catch, and which Story 2.10 pinned with assertions rather
+  than changing any predicate (`tactical-sections.ts` itself is **unchanged** by this story).
+  **Empirically moot** — 208/208 team-innings carry both — which is why this is a note and not a
+  blocker. **Owner:** contract / **Story 1.16**.
+
+- **The Team B non-hue channel SHIPPED AS A DIAGONAL HATCH, not the declared dashed-stroke
+  fallback — and here is the evidence that decided it.** Stories 2.13 / 2.15 / 2.16 / 2.17 will all
+  face the same choice, and this is the project's **first** SVG `<defs>` / `<pattern>` / `url(#…)`
+  reference, so there was no precedent to copy.
+  **What ships:** a 6 px diagonal-hatch `<pattern>` — a **solid `--viz-team-b` ground** with a
+  1.5 px `--ink-primary` stripe — plus a solid `--viz-team-b` stroke on the bar. Team A is a plain
+  solid fill. UX-DR11's first channel is the direct team-code label at the end of each series'
+  longest bar (never a legend).
+  **Measured live on `--surface-raised`, method validated first by reproducing published figures
+  (the Story 2.6 method):** `--viz-team-a` **13.56** dark / **4.99** light and `--viz-team-b`
+  **10.30** / **5.36**, all four matching the published values exactly before any new number was
+  trusted. The two accents against **each other** are **1.07:1** light, which is why a second
+  channel is mandatory at all.
+  **The one number that needed a ruling:** the hatch STRIPE against its own team-b GROUND measures
+  **3.30 light but only 1.53 dark**. That does **not** trigger decision 10(b)'s forced fallback,
+  and the decision says why in its own words: with the hatch drawn over a *solid* ground rather than
+  transparent gaps, "the measured solid figures … govern, and the hatch only adds texture". WCAG
+  1.4.11's 3:1 non-text floor applies to the mark against its background — **10.30 / 5.36**, which
+  passes in both themes — not to a mark's internal texture. The remaining test was therefore the
+  legibility one, made in the browser as ruled: **the hatch is clearly legible in both themes and
+  still legible at 320 px**, including on the shortest bars, where it remains distinguishable from
+  Team A's solid fill.
+  **Recorded for the next story rather than left implicit:** a card-coloured stripe would raise the
+  texture contrast to 10.30 / 5.36 but is exactly the "transparent gaps" case decision 10(b) bans
+  by name, and the declared dashed-stroke fallback **cannot work on a filled bar at all** — a dashed
+  `--viz-team-b` stroke over a solid `--viz-team-b` fill is invisible, which is the same observation
+  that made the hatch necessary in the first place ("MomentumChart discharges the same rule with
+  `TEAM_B_DASH_ARRAY` on a stroke, which a filled bar cannot use"). So for BARS the fallback as
+  written is not available, and a future story that needs one should rule a new mechanism rather
+  than reach for it. **Owner:** whichever of 2.13 / 2.15 / 2.16 / 2.17 lands first.
+
+- **Adding the second recharts importer DUPLICATED the recharts vendor chunk rather than sharing
+  it.** Measured on the built export: recharts appears in four chunks — two vendor chunks of
+  **300.4 KB each** (uncompressed) that carry the same recharts internals (`CartesianAxis`,
+  `ResponsiveContainer`, `ReferenceDot`, `LabelList` each present in both), plus the two small
+  leaves themselves, `MomentumChart` at **47.2 KB** and `TacticalCharts` at **34.5 KB**.
+  **The code-split itself is intact and that was the requirement:** none of the four chunks is
+  referenced by the match page's initial HTML, whose 15 initial chunks total **855 KB**
+  uncompressed. Story 2.10's `import type`-only rule held.
+  **But a reader who expands both `#momentum` and `#phases` now downloads recharts twice.** Turbopack
+  produced one vendor chunk per `dynamic()` entry point instead of a shared one. Not fixed here:
+  the obvious remedy is a single shared re-export module that both leaves import, which means
+  touching `MomentumChart.tsx` / `MomentumSection.tsx` — both on Story 2.10's do-not-touch list —
+  and it is a bundling decision worth making once, for all of 2.13 / 2.15 / 2.16 / 2.17, rather
+  than in the story that first noticed it.
+  **Owner:** whoever owns the bundle budget for the remaining recharts stories.

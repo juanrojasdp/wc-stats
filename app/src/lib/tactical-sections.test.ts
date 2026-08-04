@@ -265,6 +265,42 @@ describe("sectionDataState: null vs [] (AC 3)", () => {
     expect(sectionDataState({ ...m001, goalkeeping: null }, "goalkeeping")).toBe("empty");
   });
 
+  /*
+   * Story 2.10, Task 8.3. THE MODULE ITSELF IS UNCHANGED — all four of this
+   * story's ids were already answered correctly and no predicate change was
+   * needed or authorised. These are the two branches that had no assertion.
+   *
+   * `tacticalIdentity` and `setPlays` are REQUIRED, NON-NULLABLE objects, so
+   * their empty branch is unreachable at contract v2 except through a truncated
+   * `as`-cast payload — which is exactly what the existing predicate is there
+   * to catch. The `as unknown as` cast simulates that real path: bundles reach
+   * the App as unvalidated `as`-cast JSON.
+   *
+   * The existing `withEvents(...)` helper patches `events` only and reaches
+   * neither field, hence the explicit spreads.
+   */
+  it("treats an absent tacticalIdentity as empty for BOTH phases and pressing", () => {
+    const truncated = {
+      ...m001,
+      tacticalIdentity: null,
+    } as unknown as MatchBundle;
+    expect(sectionDataState(truncated, "phases")).toBe("empty");
+    expect(sectionDataState(truncated, "pressing")).toBe("empty");
+    // Both are ready on the untouched fixture — the assertion above is not
+    // passing for want of any data at all.
+    expect(sectionDataState(m001, "phases")).toBe("ready");
+    expect(sectionDataState(m001, "pressing")).toBe("ready");
+  });
+
+  it("treats an absent setPlays as empty", () => {
+    const truncated = {
+      ...m001,
+      setPlays: null,
+    } as unknown as MatchBundle;
+    expect(sectionDataState(truncated, "set-plays")).toBe("empty");
+    expect(sectionDataState(m001, "set-plays")).toBe("ready");
+  });
+
   it("throws on an id outside the union rather than falling through", () => {
     expect(() => sectionDataState(m001, "expert" as SectionId)).toThrow(/expert/);
   });
