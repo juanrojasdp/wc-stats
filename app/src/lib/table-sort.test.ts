@@ -247,6 +247,47 @@ describe("the shared null-last comparators", () => {
   });
 
   /*
+   * REVIEW PATCH (Story 2.11a code review). `undefined` must rank exactly as
+   * `null` does, even though the `valueOf` signatures promise `Value | null`.
+   *
+   * A getter reading an index off a `Record<Code, number>` is typed `number`
+   * whether or not the key is present, so a record built as `{} as Record<…>`
+   * can hand the comparator `undefined` with no type error. Ranking it as
+   * PRESENT sends it into `a - b` -> `NaN`, and `Array.prototype.sort` coerces a
+   * `NaN` result to `+0` — which silently discards the index tiebreak, so the
+   * sort stops being stable as well as ordering wrongly. `clockSortValue`
+   * already normalized `undefined`; this pins the rest of the module to agree.
+   */
+  it("ranks undefined exactly as null, so a missing Record key cannot poison the sort", () => {
+    const undefinedValue = undefined as unknown as number | null;
+    expect(compareNumberNullLast(undefinedValue, 1)).toBe(1);
+    expect(compareNumberNullLast(1, undefinedValue)).toBe(-1);
+    expect(compareNumberNullLast(undefinedValue, undefinedValue)).toBe(0);
+    expect(compareNumberNullLast(undefinedValue, null)).toBe(0);
+
+    const rows = [
+      { key: "present", count: 2 },
+      { key: "missing", count: undefined as unknown as number },
+      { key: "small", count: 1 },
+    ];
+    const column: TableColumn<(typeof rows)[number]> = {
+      key: "count",
+      headText: "Count",
+      headTitle: null,
+      render: (row) => row.count,
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.count },
+    };
+    // Absent goes LAST in both directions, and the present values still order.
+    expect(
+      sortRows(rows, [column], { columnKey: "count", direction: "ascending" }).map((r) => r.key)
+    ).toEqual(["small", "present", "missing"]);
+    expect(
+      sortRows(rows, [column], { columnKey: "count", direction: "descending" }).map((r) => r.key)
+    ).toEqual(["present", "small", "missing"]);
+  });
+
+  /*
    * EQUIVALENT TO orderByMinute'S NULL HANDLING (Task 2.4). marker-layout's
    * `left == null ? 1 : -1` defines only ASCENDING; the module above states the
    * rest. This asserts the two agree wherever orderByMinute has an opinion, so

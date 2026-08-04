@@ -1160,3 +1160,90 @@ recorded as corrections rather than by rewriting the entries they correct.
   either: every one of the twenty tables makes every column sortable, and none promotes a cell to
   `<th scope="row">`. Story 2.11b's per-player tables are the intended first consumer. Flagged so
   the unused paths are not mistaken for dead code and deleted.
+
+## Deferred from: code review of 2-11a-sortable-data-table-contract (2026-08-04)
+
+Seven findings triaged to `defer` by the 2.11a code review. All are real; none is caused by a
+mistake this story made, and none is reachable as a user-visible defect on the shipped fixtures.
+
+- **Zero-row tables render live sort controls.** `panelDataState` returns `"zero"` for `[]` (a
+  deliberate contract distinction from `null`), so a bundle with an empty event array renders a
+  full sortable header over an empty `<tbody>`. Clicking a head flips `aria-sort` and announces
+  "Ordenado por Equipo, ascendente." for a table with nothing in it. Pre-existing as a rendering
+  shape — the ten private copies did the same — but the announcement is new.
+  `app/src/components/DataTable.tsx`.
+- **Sort state is silently destroyed by the disclosure toggle.** Sort state is ephemeral component
+  state (AR-10, ruled), and `ViewDataDisclosure` unmounts its children when collapsed. Sorting a
+  column, hiding the data and showing it again returns the table to artifact order with every
+  `aria-sort` at `"none"` and no announcement. The `sortCleared` string exists for exactly this
+  state change but is wired only to the cycle's third click.
+- **The locale toggle re-orders an actively-sorted table without announcing it.** Sorting during
+  render is deliberate and load-bearing (a `DictionaryKey` column must re-order when labels change
+  language), but `announce()` fires only from `handleSort`, so every row can move with the polite
+  region silent.
+- **A gated column disappearing while active reverts rows with no announcement.** `sortRows` falls
+  back to artifact order when the active `columnKey` is absent from `columns`, and `ariaSortFor`
+  then reads `"none"` everywhere — but `sortState` stays non-null and nothing announces. Not
+  reachable today (`showXg` / `showMinute` / `showContestType` are constant per bundle); the module
+  documents the case and covers only half of it. `app/src/lib/table-sort.ts`.
+- **The sort is unmemoised and the inactive path still copies the array.** `sortRows` runs on every
+  render of every table, and `state === null` returns `[...rows]`. Deliberately un-memoised for
+  correctness under the EN toggle, and a non-issue at fixture scale (the largest shipped table is
+  well under 600 rows). It becomes a real main-thread cost at the corpus scale the code's own
+  comments cite (20,169 defensive events). **Route: revisit at the 2.19 real-data cutover**, where
+  the fix is a `useMemo` on the `columns` construction rather than on the sort.
+- **`(minute, stoppage)` is now packed at two different scales.** `clockSortValue` uses `× 1000`;
+  `momentum-model.ts`'s `stampRank` uses `STOPPAGE_RANK_BASE = 100`, whose bound `readStamp`
+  enforces. The orders agree and `× 1000` is the safer choice for the shot and defensive log models,
+  which enforce no upper bound — but the packing constant is stated twice, in a story whose own
+  docblock argues `MIN_HIT_PX` should have exactly one definition. Unify only if a third consumer
+  appears.
+- **`aria-label` replaces rather than extends the visible head text.** The header button's
+  accessible name is `"Ordenar por Minuto"` over visible text `"Minuto"`. WCAG 2.5.3 Label in Name
+  is met (the visible label is contained, and `i18n.test.ts` pins the prefix order), but a
+  voice-control user saying "click Minuto" no longer matches the name's start. The alternative — a
+  visually-hidden prefix span, keeping the accessible name equal to the visible label — is a DOM
+  change across every sortable head and was not worth making inside this story.
+
+### Two further deferrals, ruled by Juan at the 2.11a review (2026-08-04)
+
+- **Sort collation stays pinned to `es`; re-measure at the 2.19 real-data cutover.** The 2.11a
+  review challenged ruled decision 8 — `sortRows` calls `compareText(a, b)` at its `'es'` default,
+  so an EN reader sorting a name column gets Spanish collation (ñ as a distinct letter after n)
+  rather than the `en` collator's base-sensitivity folding. **Decision 8 was re-affirmed and
+  STANDS**: the two-argument call is what UX-DR12 asks for verbatim, and the decision's own
+  measurement holds — across all 96 fixture player names the `es` and `en` orders are identical, 0
+  disagreements in 9,216 pairs, 0 non-ASCII characters. The reviewers' failure case is therefore
+  **unobservable on shipped data**. It stops being unobservable when real corpus names replace the
+  fixtures. **Owner: 2.19.** Re-run the 96-name comparison over the real name corpus; if the orders
+  diverge, that is the evidence needed to re-open decision 8, and the fix is to thread `useLocale()`
+  through `DataTable` into `compareText`'s third argument (a departure from UX-DR12's verbatim
+  `Intl.Collator('es')` clause, which would then need filing). `app/src/lib/table-sort.ts`.
+- **One polite live region serves twenty tables and cannot say which one moved. Owner: 2.11b.**
+  `announcementFor` composes only `${sortedBy} ${headText}, ${direction}.`, and `sortCleared` names
+  nothing at all. `#offers-to-receive` renders two tables whose first column is headed "Equipo";
+  `#set-plays` ships four tables inside one disclosure and `#goalkeeping` seven. Sorting the second
+  produces speech identical to sorting the first. `SortAnnouncer`'s `tick` key solves
+  re-announcement of an identical string, not its ambiguity. Ruled decision 9 (one region, mounted
+  once, outside the table) is NOT re-opened by this — the fix is in what the announcement says, not
+  in how many regions exist. **Routed to 2.11b**, which reworks the table shell and introduces the
+  Expert-layer bounded container, so it can rule disambiguation alongside sticky headers with the
+  full table inventory in view. The candidate fix is a short per-table identifier prefixed to the
+  announcement (~20 new locale keys); it was judged not worth minting inside 2.11a.
+
+### Departure filed at the 2.11a code review (2026-08-04): `aria-sort` on unsortable heads
+
+Ruled decision 5 and Task 2.5 say that in the "none" state **every** `<th>` reads
+`aria-sort="none"`. The shipped `DataTable` does that for every SORTABLE head, but omits the
+attribute **entirely** on a `sort: null` head, justified only by an inline comment.
+
+**This is a departure, and it is the right behaviour** — WAI-ARIA APG puts `aria-sort` on the
+sortable column headers of a sortable table; `aria-sort="none"` on a head that can never sort
+announces a capability that does not exist. Decision 5's "every `<th>`" was written about the
+none-state of sortable columns, not about columns excluded from sorting altogether.
+
+**It is currently unreachable**: zero call sites ship `sort: null` — all twenty retrofitted tables
+make every column sortable — so every `<th>` that actually mounts today does read `"none"`, and
+decision 5 holds verbatim on the shipped surface. Recorded so that the first story to ship a
+`sort: null` column (2.11b's per-player tables are the likely first consumer) knows the deviation is
+deliberate and does not "fix" it back into a decision-5 violation.

@@ -79,17 +79,31 @@ export interface SortState {
 }
 
 /**
- * 0 for a present value, 1 for `null` — the ONE statement of "nulls last",
- * shared by the exported comparators and by `sortRows` so the two can never
- * drift apart.
+ * "Absent" for ranking purposes.
+ *
+ * `undefined` COUNTS AS ABSENT even though the `valueOf` signatures return
+ * `Value | null`. A getter reading an index off a `Record<Code, number>` is
+ * typed `number` whether or not the key is present, so a record built as
+ * `{} as Record<…>` and filled from a list can hand us `undefined` with no type
+ * error. Ranking that as PRESENT would send it into `a - b` -> `NaN`, and
+ * `Array.prototype.sort` coerces a `NaN` comparator result to `+0` — silently
+ * discarding the index tiebreak and the stability guarantee with it.
+ * `clockSortValue` already normalizes `undefined`; this makes the whole module
+ * agree with it. (Review patch, Story 2.11a.)
  */
+function isAbsent(value: unknown): boolean {
+  return value === null || value === undefined;
+}
+
+/** 0 for a present value, 1 for an absent one — the ONE statement of "nulls last". */
 function nullRank(value: unknown): 0 | 1 {
-  return value === null ? 1 : 0;
+  return isAbsent(value) ? 1 : 0;
 }
 
 /**
- * Wraps an ascending comparator so `null` ranks after every present value,
- * matching `orderByMinute`'s `left == null ? 1 : -1` (viz/marker-layout.ts).
+ * Wraps an ascending comparator so an absent value ranks after every present
+ * one, matching `orderByMinute`'s `left == null ? 1 : -1`
+ * (viz/marker-layout.ts).
  */
 function nullLast<Value>(
   compareDefined: (a: Value, b: Value) => number
@@ -99,10 +113,10 @@ function nullLast<Value>(
     if (rank !== 0) {
       return rank;
     }
-    if (a === null || b === null) {
+    if (isAbsent(a) || isAbsent(b)) {
       return 0;
     }
-    return compareDefined(a, b);
+    return compareDefined(a as Value, b as Value);
   };
 }
 
@@ -172,30 +186,44 @@ export function sortRows<Row>(
   }
   const sign = state.direction === "ascending" ? 1 : -1;
   if (column.sort.kind === "number") {
-    return sortByValue(rows, column.sort.valueOf, (a, b) => a - b, sign);
+    return sortByValue(rows, column.sort.valueOf, compareNumberNullLast, sign);
   }
-  return sortByValue(rows, column.sort.valueOf, (a, b) => compareText(a, b), sign);
+  return sortByValue(rows, column.sort.valueOf, compareTextNullLast, sign);
 }
 
+/**
+ * `compare` is one of the EXPORTED null-last comparators above — never a second
+ * inline restatement of the ordering.
+ *
+ * That indirection is the point (review patch, Story 2.11a): an earlier draft
+ * re-derived null-last here, so `compareNumberNullLast` / `compareTextNullLast`
+ * and their assertions could have kept passing while the shipped table diverged
+ * from them. Now the tested comparators ARE the shipped path, and this function
+ * adds only the two things a comparator cannot know: the direction, and the
+ * stability tiebreak.
+ */
 function sortByValue<Row, Value>(
   rows: readonly Row[],
   valueOf: (row: Row) => Value | null,
-  compareDefined: (a: Value, b: Value) => number,
+  compare: (a: Value | null, b: Value | null) => number,
   sign: number
 ): Row[] {
   const decorated = rows.map((row, index) => ({ row, index, value: valueOf(row) }));
   decorated.sort((left, right) => {
-    const rank = nullRank(left.value) - nullRank(right.value);
-    if (rank !== 0) {
-      // Unsigned on purpose: nulls belong at the END in BOTH directions.
-      return rank;
-    }
-    if (left.value === null || right.value === null) {
+    const delta = compare(left.value, right.value);
+    if (delta === 0) {
+      // The tiebreak is never signed — equal rows must not flip on reversal.
       return left.index - right.index;
     }
-    const delta = compareDefined(left.value, right.value);
-    // The tiebreak is never signed either — equal rows must not flip.
-    return delta !== 0 ? sign * delta : left.index - right.index;
+    if (isAbsent(left.value) || isAbsent(right.value)) {
+      /*
+       * Unsigned on purpose: an absent value belongs at the END OF THE ARRAY in
+       * BOTH directions, so descending must not float the nulls to the top.
+       * `compare` has already ranked them last; signing that would undo it.
+       */
+      return delta;
+    }
+    return sign * delta;
   });
   return decorated.map((entry) => entry.row);
 }

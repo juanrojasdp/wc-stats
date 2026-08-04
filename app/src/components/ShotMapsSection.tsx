@@ -297,7 +297,19 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
           {
             key: "xg",
             headText: t("viz.table.xg"),
-            headTitle: t("viz.shotMap.xg"),
+            /*
+             * REVIEW PATCH (Story 2.11a code review): this was
+             * `t("viz.shotMap.xg")`, which resolves to "xG" — byte-identical to
+             * headText — so the head rendered `title="xG"` over visible text
+             * "xG": a native tooltip carrying nothing, which did not exist
+             * before the retrofit. The contract is explicit that headTitle is
+             * the "full term when headText is abbreviated; null otherwise".
+             * The real expansion exists only as `match.hero.xgExpansion`, and
+             * reaching across namespaces for it is not this story's call —
+             * term expansion in the tactical layer belongs to Story 2.18's
+             * glossary, which this story's scope boundaries route away.
+             */
+            headTitle: null,
             render: (row: ShotLogRow) =>
               row.expectedGoals === null ? unknown : formatDecimal(row.expectedGoals, locale, 2),
             align: "numeric" as const,

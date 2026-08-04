@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type FocusEvent as ReactFocusEvent } from "react";
 
 import { useSortAnnounce } from "@/components/SortAnnouncer";
 import { useT } from "@/lib/i18n-provider";
@@ -158,8 +158,11 @@ export function DataTable<Row extends { key: string }>({
   const [sortState, setSortState] = useState<SortState | null>(null);
 
   const bodyRef = useRef<HTMLTableSectionElement>(null);
-  /** The row key that owned focus when the last sort was requested, if any. */
-  const pendingFocusKey = useRef<string | null>(null);
+  /**
+   * Where focus last sat INSIDE THIS TABLE'S BODY — row and column both, so the
+   * restore can land on the same cell rather than the row's first focusable.
+   */
+  const lastFocusedCell = useRef<{ rowKey: string; columnKey: string | null } | null>(null);
 
   /*
    * DECISION 6: A STABLE KEY IS NECESSARY AND NOT SUFFICIENT.
@@ -170,26 +173,77 @@ export function DataTable<Row extends { key: string }>({
    * does not use it in stable. So the key alone does not satisfy AC 2's
    * "sorting never loses row focus".
    *
-   * THIS IS UNOBSERVABLE TODAY and is the FORWARD guarantee (AC 2 BINDING (c)):
-   * no body-row content in any of the twenty tables is focusable — every cell
-   * is plain text, and Story 2.9 Task 6.7 ruled player names plain text because
+   * REVIEW PATCH (Story 2.11a code review, ruled by Juan). The original capture
+   * read `document.activeElement` inside the click handler and walked up from
+   * it. That could never fire: the ONLY path to a sort is the <button> in the
+   * <thead> row, which holds focus at that moment in Chrome and on every
+   * keyboard path, so `closest("tr[data-row-key]")` always returned null and
+   * this effect always early-returned. Three further defects rode along — the
+   * walk was not scoped to this table (Safari does not focus buttons on click,
+   * so another table's row key could be captured), the "focus survived" guard
+   * missed `null` and `documentElement`, and the restore targeted the row's
+   * FIRST focusable rather than the one that had focus.
+   *
+   * The capture is now a `focusin` on <tbody> (React's onFocus bubbles), which
+   * is scoped to this table BY CONSTRUCTION and records the cell, not just the
+   * row.
+   *
+   * STILL UNOBSERVABLE IN CHROME TODAY, and honestly so (AC 2 BINDING (c)): no
+   * body-row content in any of the twenty tables is focusable — every cell is
+   * plain text, and Story 2.9 Task 6.7 ruled player names plain text because
    * /players/{slug} does not exist. The clause is satisfied by construction
    * now; this is what keeps it satisfied when 2.15 makes those names links.
    */
   useLayoutEffect(() => {
-    const key = pendingFocusKey.current;
-    pendingFocusKey.current = null;
-    if (key === null) {
-      // Mount, or a re-render that was not a sort. Nothing was captured.
+    const captured = lastFocusedCell.current;
+    if (captured === null) {
+      // Mount, or a table whose body has never held focus.
       return;
     }
-    // Focus survived the reorder — do not move it.
-    if (document.activeElement !== document.body) {
+    /*
+     * Focus survived the reorder — do not move it. `activeElement` is `null`
+     * when the document is not fully active, and Firefox and Safari have parked
+     * it on <html> rather than <body>; treating either as "survived" would
+     * discard the capture in exactly the case the restore exists for.
+     */
+    const active = document.activeElement;
+    const focusIsLost =
+      active === null || active === document.body || active === document.documentElement;
+    if (!focusIsLost) {
       return;
     }
-    const row = bodyRef.current?.querySelector(`tr[data-row-key="${CSS.escape(key)}"]`);
-    row?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)?.focus();
+    const row = bodyRef.current?.querySelector(`tr[data-row-key="${CSS.escape(captured.rowKey)}"]`);
+    if (row === null || row === undefined) {
+      // The row left the table entirely; there is nothing to restore to.
+      return;
+    }
+    const sameCell =
+      captured.columnKey === null
+        ? null
+        : row.querySelector<HTMLElement>(
+            `[data-column-key="${CSS.escape(captured.columnKey)}"] ${FOCUSABLE_SELECTOR}`
+          );
+    (sameCell ?? row.querySelector<HTMLElement>(FOCUSABLE_SELECTOR))?.focus();
   }, [sortState]);
+
+  /**
+   * Records the cell focus is entering. Bubbles from the cell's own focusable
+   * content, and is bound to <tbody>, so it can only ever see this table.
+   */
+  function handleBodyFocus(event: ReactFocusEvent<HTMLTableSectionElement>): void {
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+    const rowKey = target.closest("tr[data-row-key]")?.getAttribute("data-row-key") ?? null;
+    if (rowKey === null) {
+      return;
+    }
+    lastFocusedCell.current = {
+      rowKey,
+      columnKey: target.closest("[data-column-key]")?.getAttribute("data-column-key") ?? null,
+    };
+  }
 
   const ink = INK[surface];
   const sortActionLabel = t("viz.table.sortAction");
@@ -209,16 +263,11 @@ export function DataTable<Row extends { key: string }>({
 
   function handleSort(column: TableColumn<Row>): void {
     /*
-     * Captured BEFORE the state change, while the pre-sort DOM is still live:
-     * walk from document.activeElement up to its own <tr> and keep that row's
-     * key. After the commit the element may be gone.
+     * No capture here — `handleBodyFocus` already holds the last cell focused
+     * inside this table's body, recorded when focus ARRIVED rather than read
+     * from `document.activeElement` at click time (by which point focus is on
+     * this button, not on a row). See the useLayoutEffect above.
      */
-    const active = document.activeElement;
-    pendingFocusKey.current =
-      active instanceof Element
-        ? (active.closest("tr[data-row-key]")?.getAttribute("data-row-key") ?? null)
-        : null;
-
     const next = nextSortState(sortState, column.key);
     setSortState(next);
     announce(announcementFor(next, column.headText));
@@ -325,7 +374,12 @@ export function DataTable<Row extends { key: string }>({
           })}
         </tr>
       </thead>
-      <tbody ref={bodyRef}>
+      {/*
+       * onFocus (React implements it with focusin, so it BUBBLES) is what
+       * records the cell for decision 6's restore. Binding it here rather than
+       * walking document.activeElement is what scopes the capture to this table.
+       */}
+      <tbody ref={bodyRef} onFocus={handleBodyFocus}>
         {ordered.map((row) => (
           <tr key={row.key} data-row-key={row.key} className={cn("border-b", ink.divider)}>
             {columns.map((column) =>
@@ -333,12 +387,17 @@ export function DataTable<Row extends { key: string }>({
                 <th
                   key={column.key}
                   scope="row"
+                  data-column-key={column.key}
                   className={cn(cellClassFor(column.align, ink.cell), "font-normal")}
                 >
                   {column.render(row)}
                 </th>
               ) : (
-                <td key={column.key} className={cellClassFor(column.align, ink.cell)}>
+                <td
+                  key={column.key}
+                  data-column-key={column.key}
+                  className={cellClassFor(column.align, ink.cell)}
+                >
                   {column.render(row)}
                 </td>
               )

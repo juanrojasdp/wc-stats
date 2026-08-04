@@ -412,12 +412,17 @@ export function goalMarkerHitHalfWidths(
  * The data-table rows (Task 3.5). RAW values only — never `awayPlotted`, never
  * a negative number, because this is the surface UX-DR16/NFR-2 exist for.
  *
- * The stamp is carried RAW rather than formatted, and deliberately NOT through
- * `ShotLogRow`'s `?? 0` minute defaulting (deferred-work: "dead fields carrying
- * a defaulting decision") — that pattern sorts a clock-less row to minute 0,
- * the opposite of `orderByMinute`'s ruled contract. A MomentumSample's `at` is
- * required and `momentumRows` has already thrown if it is unreadable, so there
- * is nothing here to default.
+ * The stamp is carried RAW rather than formatted. It was once contrasted here
+ * with `ShotLogRow`'s `?? 0` minute defaulting (deferred-work: "dead fields
+ * carrying a defaulting decision"), which sorted a clock-less row to minute 0 —
+ * the opposite of `orderByMinute`'s ruled contract. THAT ENTRY IS NOW CLOSED:
+ * Story 2.11a decision 3 widened `ShotLogRow.minute` / `stoppageMinute` to
+ * `number | null` populated `?? null`, so all three log row models agree on one
+ * null contract and there is no longer a divergent pattern to contrast with.
+ * (Review patch, Story 2.11a — the surrounding plug-in block was rewritten at
+ * implementation time and this paragraph was left behind describing a defect
+ * that no longer exists.) A MomentumSample's `at` is required and `momentumRows`
+ * has already thrown if it is unreadable, so there is nothing here to default.
  *
  * SORTABLE as of Story 2.11a: the shared `components/DataTable` sorts this row
  * array through the one cross-table contract in `lib/table-sort.ts`. The clock

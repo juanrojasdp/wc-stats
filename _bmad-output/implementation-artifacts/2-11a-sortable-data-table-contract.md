@@ -4,7 +4,7 @@ baseline_commit: 892766c
 
 # Story 2.11a: The Sortable Data-Table Contract
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -380,6 +380,128 @@ column sets **dynamic**, which is why decision 2 forbids index-based sort keys.
   - [x] 9.12 **Full chain green:** `npm run build`, **then** `npm test`. Report the new suite total
         against the baseline **you measured in Task 1.1**.
 
+### Review Findings
+
+Code review 2026-08-04. Three adversarial layers (Blind Hunter, Edge Case Hunter, Acceptance
+Auditor) raised 30 findings; triaged to 4 decisions, 6 patches, 7 deferrals, 5 dismissed.
+
+**Decisions — all four ruled by Juan, 2026-08-04.** D1 and D2 become patches; D3 and D4 become
+filed deferrals.
+
+- [x] [Review][Decision] **D1 RULED: widen the File List to carry `goalkeeping-model.ts`, disclose
+      the co-commit, and re-run the Task 9.7 differential digest against the tree actually being
+      committed.** The alternative — holding 2.11a until the concurrent sessions land — was rejected.
+- [x] [Review][Decision] **D2 RULED: fix decision 6's mechanism now.** Track the last-focused row
+      with a `focusin` listener on `<tbody>` rather than reading `activeElement` at click time; scope
+      the walk to `bodyRef`; widen the guard to `null` / `documentElement`; capture column identity
+      so the restore lands on the element that had focus. The forward guarantee becomes real rather
+      than being deferred to 2.15.
+- [x] [Review][Decision] **D3 RULED: decision 8 STANDS, unchanged, and the challenge is filed.** The
+      `'es'` default is what UX-DR12 asks for verbatim, and decision 8's measurement (0 disagreements
+      across 96 fixture names, 0 non-ASCII characters) still holds, so the reviewers' failure case is
+      unobservable on shipped data. Filed to the 2.19 real-data cutover, where the fixture-vs-corpus
+      gap must be re-measured. No code change.
+- [x] [Review][Decision] **D4 RULED: deferred to 2.11b.** 2.11b reworks the table shell and
+      introduces the Expert-layer bounded container; it rules announcement disambiguation there,
+      alongside sticky headers, when it can see the full table inventory. No code change here.
+
+**Decisions as originally raised**
+
+- [ ] [Review][Decision] **The commit unit does not compile, and Task 9's evidence describes a
+      different tree** — `GoalkeepingSection.tsx` is on this story's File List but now imports six
+      symbols that do not exist at `892766c` (`distributionTableRows`, `aerialTableRows`,
+      `bodyTypeTableRows`, `preventionHeadlineRows`, `KeeperBreakdownRow`, `PreventionHeadlineRow`),
+      all added by a concurrent 2-10 review session to `app/src/viz/goalkeeping-model.ts` — a file
+      **not** on the File List. Staging exactly the File List, as Task 8.5 directs, produces a
+      commit that fails `tsc`. Consequently the Task 9.7 differential digest (22 tables / 451 rows,
+      m001 `2241e22c`) describes the isolated worktree, not the tree being committed: the shipped
+      tree renders 26 tables, Phases/Pressing now print `43,0%` where the pre-change build printed
+      `43%`, and SetPlays' fourth caption changed. The suite is also 660/24, not the recorded 608/24.
+- [ ] [Review][Decision] **Ruled decision 6's focus restore can never fire** — `handleSort` captures
+      `document.activeElement.closest("tr[data-row-key]")`, but the only path to a sort is the
+      `<button>` inside the `<thead>` row, which holds focus at that moment; `closest` returns
+      `null`, so `pendingFocusKey` is always `null` and the `useLayoutEffect` early-returns. The
+      forward guarantee AC 2 BINDING (c) defers to 2.15 is dead code as written. Three secondary
+      defects in the same mechanism: the `closest` walk is not scoped to `bodyRef` (in Safari, which
+      does not focus buttons on click, table A's row key can be captured into table B's ref); the
+      `activeElement !== document.body` guard misses `null` and `documentElement`; and the restore
+      targets the row's *first* focusable rather than the one that had focus (PassNetworks' edge rows
+      carry two player names). [app/src/components/DataTable.tsx:179-192,210-225]
+- [ ] [Review][Decision] **Ruled decision 8 challenged: text collation is pinned to `es` and never
+      follows the EN toggle** — `sortRows` calls `compareText(a, b)` at its `'es'` default, exactly
+      as decision 8 ruled, while every retrofit comments that the resolved label makes order "follow
+      the EN toggle". Only the values follow it; the collation does not. `DataTable` never calls
+      `useLocale()` though every calling section does. Decision 8's measurement (0 disagreements
+      across 96 fixture names, 0 non-ASCII) still holds — this is unobservable on shipped fixtures
+      and bites at the 2.19 real-data cutover. [app/src/lib/table-sort.ts:177]
+- [ ] [Review][Decision] **One live region for twenty tables cannot say which table moved** —
+      `announcementFor` composes only `${sortedBy} ${headText}, ${direction}.`, and `sortCleared`
+      names nothing at all. `#offers-to-receive` renders two tables whose first column is headed
+      "Equipo"; `#set-plays` ships four tables in one disclosure and `#goalkeeping` seven. Sorting
+      the second produces speech identical to sorting the first. `SortAnnouncer`'s `tick` key fixes
+      re-announcement, not ambiguity. [app/src/components/DataTable.tsx:201-208]
+
+**Patches — all 8 applied 2026-08-04.** Verified after application: `tsc --noEmit` 0 errors,
+`eslint` 0 (including the 34-test i18n gate), suite **661 passed / 24 files** — up 1 from 660,
+which is the new `undefined`-ranking assertion. D1 and D2 below are the two ruled decisions that
+became patches.
+
+- [x] [Review][Patch] **D1** — File List widened to disclose `goalkeeping-model.ts` and
+      `glossary.ts` as required co-travellers, proven by rebuilding the unit in a clean worktree;
+      Completion Notes' stale verification figures corrected. See the File List section. Overtaken
+      mid-review by the concurrent commits — see the note there.
+- [x] [Review][Patch] **D2** — decision 6's focus restore rebuilt: capture moved to a `focusin` on
+      `<tbody>` (scoped to this table by construction, replacing the unscoped `activeElement` walk
+      that could never fire), `data-column-key` added to every cell so the restore lands on the cell
+      that had focus, and the "focus survived" guard widened to `null` / `documentElement`
+      [app/src/components/DataTable.tsx:160-260]
+
+- [x] [Review][Patch] Announcer provider is conditionally mounted, breaching Task 5.3's "never
+      conditionally mounted" [app/src/components/MatchBundleRegion.tsx:164]
+- [x] [Review][Patch] xG head ships `headTitle` byte-identical to `headText` (`viz.table.xg` and
+      `viz.shotMap.xg` are both `"xG"`); the real expansion `xgExpansion: "goles esperados"` exists
+      and was not used [app/src/components/ShotMapsSection.tsx:299]
+- [x] [Review][Patch] Stale ledger cross-reference: the docblock still cites `ShotLogRow`'s `?? 0`
+      defaulting, which this story removed and filed CLOSED [app/src/viz/momentum-model.ts:414-416]
+- [x] [Review][Patch] `nullRank` tests `=== null`, so an `undefined` sort value ranks as present and
+      reaches `a - b` → `NaN`, which `Array.sort` coerces to `+0`, discarding the index tiebreak.
+      Unreachable today (every `counts` Record is built from a frozen enum list) but `clockSortValue`
+      already normalizes `undefined` — the two disagree [app/src/lib/table-sort.ts:86-88]
+- [x] [Review][Patch] `sortRows` re-implements null-last inline in `sortByValue` instead of using the
+      exported `compareNumberNullLast` / `compareTextNullLast`, whose docblock claims they are the
+      one statement "so no table re-implements it". Both exports have zero production callers; only
+      `nullRank` is genuinely shared [app/src/lib/table-sort.ts:113-125,187-198]
+- [x] [Review][Patch] The `sort: null` head omits `aria-sort` entirely, departing from decision 5's
+      "every `<th>` reads `none`" with only an inline comment and no filed departure. Unreachable —
+      zero call sites ship `sort: null` [app/src/components/DataTable.tsx:264-278]
+
+**Deferred**
+
+- [x] [Review][Defer] Zero-row tables render live, announcing sort controls over an empty `<tbody>`
+      (`panelDataState` returns `"zero"` for `[]` and still renders) [app/src/components/DataTable.tsx:235]
+- [x] [Review][Defer] Collapsing a `ViewDataDisclosure` unmounts the table and silently discards sort
+      state; reopening shows artifact order with no announcement [app/src/components/DataTable.tsx:158]
+- [x] [Review][Defer] Locale toggle re-orders an actively-sorted table with no announcement
+      [app/src/components/DataTable.tsx:235]
+- [x] [Review][Defer] A gated column disappearing while active reverts rows to artifact order but
+      leaves `sortState` non-null and un-announced [app/src/lib/table-sort.ts:169-172]
+- [x] [Review][Defer] Sort runs unmemoised on every render, and the inactive path still copies the
+      array. Non-issue on shipped fixtures (largest table is well under 600 rows) — a real cost at
+      the corpus scale the code comments cite [app/src/components/DataTable.tsx:235]
+- [x] [Review][Defer] `clockSortValue`'s `× 1000` is a second encoding of `(minute, stoppage)`
+      alongside `momentum-model.ts`'s `STOPPAGE_RANK_BASE = 100`. The `× 1000` is the safer scale
+      (shot/defensive models enforce no upper bound where `readStamp` does), but the constant is now
+      stated twice [app/src/lib/table-sort.ts:139-147]
+- [x] [Review][Defer] `aria-label` replaces rather than extends the visible head text, so a
+      voice-control user saying "click Minuto" no longer matches the accessible name prefix. WCAG
+      2.5.3 is met (visible text is contained) [app/src/components/DataTable.tsx:302]
+
+**Dismissed as noise** — header row growing ~30px → 44px (Task 7.2 anticipates it explicitly); the
+caption "becoming false" after a sort (decision 7 rules exactly this, and `aria-sort` is the durable
+statement); new `title` tooltips on team-code heads (that is `headTitle`'s designed purpose); the
+deleted plug-in comments losing the sticky-header record (filed in the ledger and in `DataTable.tsx`'s
+header); dead `rowHeader` / `sort: null` reported as defects (already recorded in the ledger).
+
 ## Dev Notes
 
 ### What already exists — reuse it, do not rebuild it
@@ -742,6 +864,49 @@ mine — see the note at the end of this record.
 - `_bmad-output/implementation-artifacts/deferred-work.md` (append-only)
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `_bmad-output/implementation-artifacts/2-11a-sortable-data-table-contract.md`
+
+> **D1 WAS OVERTAKEN BY EVENTS DURING THE REVIEW, 2026-08-04.** Between the review's triage and its
+> patch pass, the concurrent sessions committed the shared tree — `54f7093` ("Story 2.10 code
+> review") and `0c407b3` ("Story 2.18: the terminology gate, /glossary and /about") — and their
+> sweeping stage **captured every one of this story's File List entries**, including all four new
+> files (`table-sort.ts`, `table-sort.test.ts`, `DataTable.tsx`, `SortAnnouncer.tsx`). 2.11a's work
+> is therefore already on `main`, but attributed in the history to two other stories' commit
+> messages. Nothing was lost and the tree compiles — those commits necessarily carried
+> `goalkeeping-model.ts` and `glossary.ts`, which is exactly why. **The staging problem below is
+> resolved; the attribution problem is not, and is Juan's to decide.** The analysis is retained
+> because it is the measurement that proves the entanglement was real.
+
+**Carried from concurrent sessions to make the commit compile (review patch D1, ruled by Juan
+2026-08-04) — NOT this story's work, disclosed in full**
+
+The File List above is **not a self-consistent commit unit**. Two files this story does not own must
+travel with it, and this was proven by rebuilding the unit in an isolated worktree at `892766c`
+rather than argued:
+
+- `app/src/viz/goalkeeping-model.ts` (+ `goalkeeping-model.test.ts`) — **the concurrent 2-10 code
+  review's work.** `GoalkeepingSection.tsx`, which IS on the File List, imports six symbols that do
+  not exist at `892766c`: `distributionTableRows`, `aerialTableRows`, `bodyTypeTableRows`,
+  `preventionHeadlineRows`, `KeeperBreakdownRow`, `PreventionHeadlineRow`. Without this file the
+  commit fails `tsc`.
+- `app/src/lib/glossary.ts` — **the concurrent Story 2.18 session's work.** `app/src/lib/i18n.test.ts`,
+  which IS on the File List, has since acquired an `import … from "@/lib/glossary"`. Without this
+  file the commit fails `tsc` with `TS2307: Cannot find module '@/lib/glossary'` plus nine cascading
+  `TS7053`s.
+
+**Measured in a clean worktree containing exactly the File List + those two files:**
+`tsc --noEmit` → **0 errors**; `vitest run` → **599 passed, 20 skipped** (the static-output tests
+`describe.skipIf` out with no `app/out/`), 21 files passed + 2 skipped.
+
+**Correction to the Completion Notes' verification figures.** The Task 9.7 differential digest
+(m001 `2241e22c` / 22 tables / 451 rows, m002 `4f07f977`, m074 `99508d0d`) and the structural sweep
+(112 sortable `<th>`, 451 `data-row-key` rows, "0 across all 22 tables") were measured in a worktree
+taken **before** the concurrent patches landed. They are honest measurements of this story's own
+work and they still support it — but they do **not** describe the tree being committed, which
+renders **26** tables (Goalkeeping 3 → 7), prints `43,0%` where the pre-change build printed `43%`
+in Phases/Pressing, and carries a changed SetPlays caption. **The digest must be re-run against the
+final staged tree at commit time**; it was not re-run here because two sessions were still writing
+`app/` and any figure taken now would be stale again by the time it is staged. The suite total in
+the shared tree is likewise **661 / 24 files** as measured at review time, not the recorded 608/24.
 
 ## Change Log
 

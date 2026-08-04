@@ -2136,7 +2136,7 @@ development_status:
   2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: done
   # Epic story 2.11 is SPLIT three ways (ruled by Juan 2026-08-04 at story creation) — see the
   # 2026-08-04 note above. 2.11b depends on 2.11a; 2.11c depends on both. epics.md is NOT edited.
-  2-11a-sortable-data-table-contract: review
+  2-11a-sortable-data-table-contract: done
   2-11b-expert-layer-per-player-tables: backlog
   2-11c-expert-layer-event-logs: backlog
   2-12-tournament-hub-results-standings: backlog
@@ -2149,3 +2149,10 @@ development_status:
   # Requires committed real /data from 1-19
   2-19-performance-accessibility-hardening-real-data-swap-launch: backlog
   epic-2-retrospective: optional
+
+# 2026-08-04: story 2-11a code review — 3 layers, 30 raw findings triaged to 4 decisions (all ruled
+#             by Juan), 8 patches (all applied), 9 deferrals filed, 5 dismissed. Status -> done.
+#             Verified after patching: tsc 0, eslint 0, suite 661 passed / 24 files.
+#             NOTE: 2.11a's code reached main inside 54f7093 and 0c407b3 (concurrent sessions'
+#             sweeping stage captured it), not under its own commit. The review patches on top are
+#             uncommitted as of this line.

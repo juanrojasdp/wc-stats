@@ -161,13 +161,22 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
        * mounted inside its "Ver los datos" disclosure — and a region that
        * mounts already-populated does not announce reliably.
        */}
-      {status === "loaded" && bundle !== null ? (
-        <SortAnnouncerProvider>
+      {/*
+       * REVIEW PATCH (Story 2.11a code review): the provider is OUTSIDE the
+       * status gate, so its one polite region is mounted for the lifetime of
+       * the route rather than appearing with the bundle. Task 5.3 is explicit —
+       * "never conditionally mounted" — and mounting it with the layer also made
+       * it unmount and remount on the error-path retry, which resets a live
+       * region. It renders nothing but an empty sr-only span until a table
+       * announces through it.
+       */}
+      <SortAnnouncerProvider>
+        {status === "loaded" && bundle !== null ? (
           <TacticalErrorBoundary>
             <TacticalLayer bundle={bundle} />
           </TacticalErrorBoundary>
-        </SortAnnouncerProvider>
-      ) : null}
+        ) : null}
+      </SortAnnouncerProvider>
     </div>
   );
 }
