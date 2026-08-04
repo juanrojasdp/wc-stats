@@ -60,6 +60,77 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-04
+# 2026-08-04: story 2-18 implemented and moved to review — the TERMINOLOGY GATE closes, plus
+#             /glossary (42 terms), /about filled, and the project's FIRST WCAG 1.4.13 surface.
+#             THE STORY'S OWN ABORT RULE FIRED MID-IMPLEMENTATION and was escalated rather than
+#             worked around: the 2.11a session began writing app/ and took es.ts, en.ts and
+#             i18n.test.ts — the exact three files the rule names. Tasks 1-7 (append-only) were
+#             completed under the rule, then JUAN RULED PROCEED, and Tasks 8-11 landed with
+#             targeted string-replacement edits only, every anchor re-grepped at edit time.
+#             ALL THREE VIOLATED POLICY ROWS REMEDIATED: "Córners … laterales" -> "Tiros de esquina
+#             … saques de banda" (it contradicted the SEVEN sibling viz.setPlays keys in its own
+#             section); "en propia puerta" -> "en contra" (the peninsular goal-frame noun, and the
+#             reason the new register sweep could not go green before it); and row 38's possession
+#             vocabulary, where the naive "repoint the six leaves" would have turned "Altura de la
+#             línea con balón" into "En posesión" — only TWO leaves are standalone vocabulary, the
+#             other four are compound metric labels and were rephrased.
+#             THE POLICY TABLE WAS RECOUNTED AND NOW SUMS: 26 compliant + 3 violated + 7 not-yet-used
+#             + 2 partial = 38, against a creation audit whose own partition did not sum. The recount
+#             found a NINTH undischarged item the audit's list of eight missed — `faltas` (row 32)
+#             occurs 0 times in es.ts and has no glossary id either, since the row is classified as
+#             scaffolding. Filed.
+#             FOUR DEFECTS FOUND BY DRIVING THE REAL THING, not by reading code. (1) ESC WAS A NO-OP
+#             FOR KEYBOARD USERS: Esc with focus inside the panel closed it, Radix's onCloseAutoFocus
+#             returned focus to the trigger, and the trigger's own focus handler instantly RE-OPENED
+#             it — so the panel could never be dismissed. Fixed with a 150ms dismissal suppression;
+#             all four Esc clauses now pass live. (2) The first ESLint closure flagged the DICTIONARY
+#             KEY inside `value={t("…")}` and recharts' own `position: "insideLeft"` layout keyword —
+#             both would have broken the build; the selectors are now direct-child and scoped to the
+#             copy-bearing object members. (3) Task 8.13's ruled summary rewrite had been applied to
+#             es.ts ONLY — caught by this story's own new ruled-term pin. (4) A trailingSlash slip in
+#             a new static-output assertion.
+#             VERIFIED LIVE, NOT ASSERTED: WCAG 1.4.13 hoverable+persistent proven with a REAL
+#             pointer travelling from the term across the offset gap and resting on the panel's link
+#             (`:hover` confirmed) with the panel still open 600ms later; role="dialog" with an
+#             accessible name and ZERO <h2> in the panel; the panel's link is the IMMEDIATELY NEXT
+#             focusable after the trigger with nothing between (the no-portal clause); `#{id} button
+#             button` EMPTY across all eleven sections (decision 6's whole reason for existing);
+#             aria-describedby on the nine collapsible triggers flattens to the complete unmangled
+#             sentence even with a focusable term inside it, so decision 6's declared fallback was
+#             NOT taken; single-open holds across 6 triggers; decision 13's counterpart subtitle
+#             INVERTS on a real locale toggle, with xG showing the ruled gloss and momentum showing
+#             neither. Contrast measured in BOTH themes with the method validated first (13.56/10.30
+#             and 14.13/3.30 reproduced exactly): every text pair clears its floor, light-theme
+#             definition ink 15.43, link 4.68, dotted underline 4.99-5.36. Reflow clean at 320/390 on
+#             both new routes; the 5px match-route overflow is the PRE-EXISTING tile-value pair and
+#             NONE of the six marked surfaces or popovers is an offender.
+#             THE PER-SECTION ERROR BOUNDARY IS PROVEN, twice: a probe throw showed #phases carrying
+#             the new fallback copy while THE OTHER TEN STILL RENDERED and console.error still fired,
+#             and a throw-once probe showed the `${id}-${open}` key producing a fresh instance. The
+#             residual limits are filed rather than glossed: a throw during sectionContent()'s eager
+#             evaluation still reaches only the outer boundary, and key-stats/momentum never collapse
+#             so a crash in either is permanent for the page's life.
+#             FILED, NOT FIXED: FIVE Tactical sections cannot carry a mark at all — their ruled 2.5
+#             summaries contain no policy term while their titles, which decision 6 forbids marking,
+#             do. Juan ruled: file it, ship six marks (five sections + the Hero's xG). Also filed:
+#             the two viz.momentum copy holes (Task 8.8 discharged as a filing), the
+#             DESIGN.md/EXPERIENCE.md footer disagreement, the <title>/OG-stays-Spanish decision
+#             (which /glossary makes one route worse, and why /about was deliberately given NO
+#             metadata export), and the CS-1 forward note — CS-1 has NOT landed (7 artifacts at
+#             schemaVersion 2) and both tripwires stay green, now in TWO places.
+#             Suite 577/23 -> 660/24, full chain green. deferred-work.md appended under its own
+#             heading with the append-only property PROVEN programmatically (first 189,602 bytes
+#             byte-identical, 16,273 appended). PROPOSED AND AWAITING JUAN: about.credits and
+#             about.project have no ruled wording in any spine.
+#             HISTORY-INTEGRITY DEFECT, DISCLOSED: story 2.18's ENTIRE implementation was committed
+#             by the CONCURRENT SESSION under another story's title — commit 54f7093 "Story 2.10 code
+#             review: ..." carries all of 2.18's code plus the three untracked 2-11a/b/c story files
+#             alongside its own 2.10-review work. This story never ran `git add -A` or `git add app/`;
+#             the sweep came from the other direction. Content integrity was VERIFIED (HEAD carries
+#             the final state of every 2.18 file, including the Esc-dismissal fix and all three
+#             remediated strings), so it is an ATTRIBUTION defect only. Ruled per this repo's own
+#             precedent — the 1.14 review's ruling on commit 5344fac — RECORD IT, DO NOT REPAIR
+#             HISTORY. A reviewer looking for 2.18's diff must read 54f7093.
 # 2026-08-04: story 2-11a implemented and moved to review — the ONE sortable data-table contract.
 #             ALL TWENTY INSTANCES ACROSS ALL TEN FILES RETROFITTED AND ALL TEN PRIVATE DataTable
 #             COPIES DELETED. Re-counted at Task 1.2 rather than trusted (10 files / 20 instances,
@@ -2074,7 +2145,7 @@ development_status:
   2-15-player-profile: backlog
   2-16-team-profile: backlog
   2-17-comparison-mode: backlog
-  2-18-glossary-about-terminology-completion: in-progress
+  2-18-glossary-about-terminology-completion: review
   # Requires committed real /data from 1-19
   2-19-performance-accessibility-hardening-real-data-swap-launch: backlog
   epic-2-retrospective: optional
