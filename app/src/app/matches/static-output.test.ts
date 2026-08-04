@@ -239,6 +239,24 @@ describe.skipIf(!anyBuilt)("the Tactical Layer stays off the build-time path (AR
     // An unmarked section keeps its whole title as the run.
     expect(longestUnmarkedRun("set-plays")).toBe(es.tactical.sections["set-plays"].title);
   });
+
+  /*
+   * Story 2.11b Task 8.3. The guard above walks the ELEVEN SectionIds, and the
+   * Expert Layer is deliberately not one of them (ruled decision 2) — so
+   * `#expert` was entirely unprotected. It is a client-only layer for exactly
+   * the same reason the Tactical one is: it mounts inside MatchBundleRegion's
+   * loaded branch, from a runtime fetch, under AR-11.
+   */
+  it("exports no Expert Layer markup either — the id, the pill and the heading", () => {
+    for (const entity of readTournament().entities.matches) {
+      const html = matchHtml(entity.matchId);
+      expect(html, `${entity.matchId} exports id="expert"`).not.toContain('id="expert"');
+      expect(html, `${entity.matchId} exports the EXPERTO pill`).not.toContain(es.expert.pill);
+      expect(html, `${entity.matchId} exports the Expert heading`).not.toContain(
+        es.expert.heading
+      );
+    }
+  });
 });
 
 describe.skipIf(!anyBuilt)("Hero links and the single disclosure (AC 2)", () => {

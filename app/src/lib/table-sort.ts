@@ -46,6 +46,18 @@ export interface TableColumn<Row> {
   align: "text" | "numeric" | "clock";
   /** Renders <th scope="row"> instead of <td>. At most one per row. */
   rowHeader?: boolean;
+  /*
+   * PRESENTATION ONLY (Story 2.11b). Neither field reaches `sortRows` — they
+   * exist because a STICKY COLUMN RUN cannot be expressed any other way: each
+   * column in the run needs its own explicit `left` offset and an opaque fill,
+   * and a class string cannot be computed from the column list. Both are
+   * `undefined` at all 26 pre-2.11b call sites, and `cn()` makes an undefined
+   * extra a no-op, so the default rendering is byte-identical.
+   */
+  /** Extra classes for this column's <th> AND <td> — width, offset, fill. */
+  cellClass?: string;
+  /** Extra classes for this column's <thead> cell only — the z-index ladder. */
+  headClass?: string;
   /**
    * Sort key, INDEPENDENT of render. null-valued rows sort to the array END in
    * BOTH directions. `sort: null` makes the column unsortable.

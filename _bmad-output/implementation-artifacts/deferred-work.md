@@ -1128,8 +1128,21 @@ recorded as corrections rather than by rewriting the entries they correct.
 
 ### DECLARED DEPARTURES filed by this story
 
-- **UX-DR12's STICKY HEADER is NOT implemented, and the reason is structural rather than
-  discretionary. Routed to Story 2.11b.** `ViewDataDisclosure`'s region — which hosts every one of
+- ~~**UX-DR12's STICKY HEADER is NOT implemented, and the reason is structural rather than
+  discretionary. Routed to Story 2.11b.**~~ — **RESOLVED by Story 2.11b (2026-08-04), and the
+  departure's own analysis was correct in every particular.** `DataTable` gained an opt-in
+  `sticky` prop; the twenty disclosure tables do NOT pass it and their headers are still not
+  sticky, for exactly the reason filed below. The Expert Layer supplies its own height-bounded
+  scrollport (`max-h-[70vh] overflow-auto scroll-pt-11`) and passes it. Two mechanics had to be
+  built rather than assumed: the table switches to `border-separate` in sticky mode (under
+  `border-collapse` the TABLE paints cell borders, so a sticky `<th>`'s bottom border scrolls away
+  beneath the rows), and the sticky column run needs a strict z-ladder (body 10 / header 20 /
+  corner 30 — equal z resolves to later-in-DOM, and `<tbody>` is later than `<thead>`). Verified
+  BEHAVIOURALLY at 1280px, not by computed style, which is the trap this entry named: the header
+  pinned to the scrollport's top edge to the pixel (574.09 vs 574.09) and held there while the body
+  scrolled 400px and again 145px. `scroll-padding-top` is 44px. The original text follows.
+
+  `ViewDataDisclosure`'s region — which hosts every one of
   the twenty tables — is `className="mt-tile-gap w-full overflow-x-auto"`. Per CSS Overflow 3, an
   `overflow-x: auto` box with `overflow-y: visible` has its used `overflow-y` forced to `auto`, so
   that div is already a two-axis scroll container and is the nearest scrolling ancestor a sticky
@@ -1162,11 +1175,15 @@ recorded as corrections rather than by rewriting the entries they correct.
   as-is deliberately: clearing it on locale change would itself mutate the region and risk
   announcing an empty string. Recorded so a later reader does not mistake the residue for a bug.
 
-- **`TableColumn.rowHeader` and `sort: null` ship with NO consumer.** Both are part of the ruled
+- ~~**`TableColumn.rowHeader` and `sort: null` ship with NO consumer.** Both are part of the ruled
   decision-2 contract and are exercised by `table-sort.test.ts`, but no retrofitted call site sets
   either: every one of the twenty tables makes every column sortable, and none promotes a cell to
   `<th scope="row">`. Story 2.11b's per-player tables are the intended first consumer. Flagged so
-  the unused paths are not mistaken for dead code and deleted.
+  the unused paths are not mistaken for dead code and deleted.~~ — **HALF-RESOLVED by Story 2.11b
+  (2026-08-04).** `rowHeader` now has its first consumer: the Expert table's `player` column, which
+  is the sticky run's third member and renders `<th scope="row">` on all 34 rows. **`sort: null`
+  still has none** — every one of the Expert table's 50 columns sorts — and it stays filed for the
+  same reason as before.
 
 ## Deferred from: code review of 2-11a-sortable-data-table-contract (2026-08-04)
 
@@ -1237,6 +1254,19 @@ mistake this story made, and none is reachable as a user-visible defect on the s
   Expert-layer bounded container, so it can rule disambiguation alongside sticky headers with the
   full table inventory in view. The candidate fix is a short per-table identifier prefixed to the
   announcement (~20 new locale keys); it was judged not worth minting inside 2.11a.
+
+  — **MECHANISM RESOLVED by Story 2.11b (2026-08-04); the ~25 identifiers are NOT, and are
+  re-filed.** `DataTableProps` gained an optional `tableName?: string`, prefixed to the polite
+  announcement in BOTH its states (the cleared one included — "the table's original order was
+  restored" is exactly as ambiguous across 26 tables as the sorted form). With no `tableName` the
+  announcement is byte-identical to what shipped, so all 26 pre-existing call sites are unchanged.
+  2.11b mints the ONE key it owns (`expert.tableName`) and passes it; verified live —
+  *"Tabla de datos por jugador: Ordenado por Goles, descendente."* **It could not verify the
+  multi-table case**, because it adds exactly one table. Ruled decision 9 (one region) is NOT
+  re-opened. **Owner: whichever story next opens `#set-plays` (4 tables), `#goalkeeping` (7) or
+  `#offers-to-receive` (2), or 2.19.** The remaining work is copy, not mechanism: mint a short
+  identifier per table and pass it. The two-tables-headed-"Equipo" case in `#offers-to-receive` is
+  the cheapest place to prove it.
 
 ### Departure filed at the 2.11a code review (2026-08-04): `aria-sort` on unsortable heads
 
@@ -1374,3 +1404,78 @@ convention. All three are claim-accuracy defects in what 2.18 filed, not new def
   marking site was not taken. Not reopened here — the summary is ruled verbatim by decision 3 and
   changing it again is a copy ruling — but the next story to touch it should know a mark is
   available there for the cost of two words.
+
+## Filed by Story 2.11b — Expert Layer shell and Domain G per-player tables (2026-08-04)
+
+- **THE THREE FIXTURES BREAK `domain-g-zone-sum` ON 79 OF 96 ROWS, WORST DRIFT 4.400 m. Owner:
+  2.19 / 1.16.** `pipeline/extract/domain_g.py` ships a self-validation check asserting the six
+  speed-zone distances sum to `physical.totalDistance` within `ZONE_SUM_TOLERANCE_M = 0.35`, and
+  that check is **corpus-verified at worst drift 0.200 m over 3,289 rows** — so the tolerance is
+  right and the FIXTURES are wrong. Corroborated by the entry above on m001's
+  `physical.totalDistance` disagreeing with the printed value on 30 of 31 players. This is a
+  FIXTURE DEFECT, not a rendering decision, and 2.11b changed nothing about it: all seven values
+  render verbatim, nothing is derived (AD-5), and the layer makes **no on-screen sum claim** while
+  the fixtures contradict the corpus. Whoever regenerates fixtures from real reports should run
+  `domain-g-zone-sum` over them as an acceptance gate. Related and equally not-to-be-built-on:
+  `domain_g.py` records `goals <= attemptsAtGoal` as corpus-FALSE on 4 of 104 reports, so no
+  consistency affordance may be built on that pair either.
+
+- **`PendingSectionPanel`: KEEP; the delete is RE-FILED, not actioned.** Story 2.10 decision 20
+  routed the keep-or-delete call to 2.11 on the grounds that *"the Expert Layer (2.11) may want the
+  same shell"*. **It does not** — the Expert Layer's absence state is a real `EmptyStatePanel` with
+  both copy halves overridden to name Domain G, because `players` genuinely can be `null` and the
+  generic "the official report does not include this section" would be a false statement otherwise.
+  So the component keeps its zero consumers. Not deleted here: removing a component plus its live
+  locale keys means reasoning about three assertions in `tactical-sections.test.ts:108-125`, which
+  is not this story's surface. **Owner: 2.19, or whichever story next touches that test.**
+
+- **The Expert empty state (`players === null`) is BUILT BUT VISUALLY UNVERIFIED.** No fixture
+  exercises the branch — all three carry a populated `players` array (31 / 31 / 34) — so the panel
+  was verified by construction and by `buildExpertRows` returning `[]` rather than throwing, never
+  on screen. `[]` is deliberately NOT this state: it is `ready` with zero rows. Recorded so a later
+  reader knows which of the two absence paths has been seen and which has not.
+
+- **CARRIED FORWARD, still unanswered: EXPERIENCE.md's Visualization Layering table (`:215`)
+  assigns more to Expert altitude than AC 1 enumerates** — *"underlying series in data table"*
+  (momentum), *"Exact percentages and per-match splits in tables"* (phases / pressing / blocks),
+  *"Set-play log"*. Those are Story 2.10's four sections, each of which already carries a
+  Tactical-altitude table. AC 1's five-log enumeration controls for 2.11c; whether these four
+  **also** surface at Expert altitude is a scope question, not a defect. **Owner: 2.11c**, which is
+  the story that mounts logs into this shell and is best placed to see the duplication.
+
+### Declared departures filed by this story
+
+- **The sticky run's ruled WIDTHS did not survive the layout and were re-measured. Recorded because
+  the failure mode is silent.** The story ruled `3.5rem / 2.75rem / 6.25rem` for team / shirt /
+  player with matching `left` offsets. Under AUTO table layout a cell `width` is only a suggestion —
+  the algorithm may land on the column's max-content in EITHER direction — so the run rendered
+  79 + 82 + 141px while `shirt` was pinned at 56px and `player` at 100px: each sticky column
+  overlapped and clipped the head before it, and a `w-[5.5rem]` (88px) attempt still rendered 82px
+  and opened a 6px gap for scrolled data to slide through. `min-width` DOES bind on a table cell in
+  Chrome (verified: max-content 82px renders at exactly 88px under `min-w-[5.5rem]`), so the run
+  ships as `min-w-*` with values clearing the wider of the two locales' head text. Measured exact
+  in both: offsets 0 / 5.5rem / 11rem, widths 88 / 88 / 192, **gap 0.00px**. Anyone adding a sticky
+  column elsewhere should use `min-w`, not `w`.
+
+- **`truncate` does not truncate inside a table cell — it WIDENS the column.** It includes
+  `white-space: nowrap`, which makes the cell's max-content the whole string; the `player` column's
+  141px was this, not the declared width. Truncation has to happen in a fixed-width block INSIDE
+  the cell. Recorded because the class name says the opposite of what it does here.
+
+- **At 390px the `<md` escape hatch was TAKEN, and it buys less than the story assumed.** Measured
+  before taking it: scrollport 345px, three-column sticky run 289px, **55.7px of data columns — not
+  one full column**, because the Spanish heads run 102-126px wide (the story's estimate assumed a
+  212px run and ~146px of data). Dropping the `team` column at `<md` behind a team `ToggleGroup`
+  (the PitchPanel precedent) returns 88px: run 200px, **145px of data, one full column visible on
+  open**. Two data columns at 390px is not reachable at this type scale without abbreviating the
+  identity heads, which is a copy ruling this story does not have. **Owner: 2.19 or a UX pass** —
+  if two columns is a real requirement, the lever is short ruled abbreviations for `viz.table.shirt`
+  and `viz.table.player` with the full term in `headTitle`, not more width.
+
+- **`sectionContent()` is still evaluated eagerly, so a throw during PROP CONSTRUCTION escapes the
+  per-section boundary to the outer one.** Re-filed unchanged from the 2.11a/2.18 boundary work:
+  2.11b adds a second sibling boundary around `<ExpertLayer>` (per-instance `state`, no
+  module-level state, so the two are structurally independent and an Expert crash leaves the eleven
+  Tactical sections rendering), but it does not change when the Tactical Layer builds its props.
+  **Owner: whichever story next touches `TacticalLayer`'s content construction, or 2.19.**
+

@@ -60,6 +60,25 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-04
+# 2026-08-04: story 2-11b implemented and moved to review — the Expert Layer shell and the Domain G
+#             per-player tables. 50 rendered columns (46 data + 4 identity) over 34 rows, one
+#             DataTable instance serving both layouts, collapsed by default at every width.
+#             THREE THINGS THE STORY RULED DID NOT SURVIVE THE BROWSER AND WERE RE-MEASURED, all
+#             filed to deferred-work.md as declared departures: (1) the sticky run's ruled widths —
+#             under auto table layout a cell `width` is only a suggestion, so the columns stuck at
+#             the WRONG offsets while still computing as `sticky`; `min-width` binds where `width`
+#             does not, and the run now measures exactly 0/5.5rem/11rem with a 0.00px gap in both
+#             locales; (2) `truncate` inside a table cell WIDENS the column rather than truncating
+#             (white-space: nowrap makes max-content the whole name) — truncation had to move into
+#             a fixed-width block inside the cell; (3) the <md escape hatch was TAKEN on the
+#             measurement Task 5.4 demanded — at 390px the three-column run left 55.7px, less than
+#             ONE data column, so dropping `team` behind a team ToggleGroup returns 88px for 145px
+#             of data. AC 2 was verified BEHAVIOURALLY, not by computed style, which is precisely
+#             the trap 2.11a's departure named: the header pins to the scrollport's top edge to the
+#             pixel and holds while the body scrolls. Two sibling error boundaries now mount on the
+#             match route, the Expert one with its own copy (the shipped "análisis táctico" string
+#             would be a false statement over an Expert crash). Full chain green: lint, typecheck,
+#             build, 703/703 tests.
 # 2026-08-04: story 2-11b context created and moved to ready-for-dev — the Expert Layer shell and
 #             the Domain G per-player tables. Baseline moved 163fa20 -> 3d27ed0, and the re-verify
 #             at that baseline found THREE CLAIMS IN THE SPLIT STUB HAD GONE STALE, each of which
@@ -2223,7 +2242,7 @@ development_status:
   # Epic story 2.11 is SPLIT three ways (ruled by Juan 2026-08-04 at story creation) — see the
   # 2026-08-04 note above. 2.11b depends on 2.11a; 2.11c depends on both. epics.md is NOT edited.
   2-11a-sortable-data-table-contract: done
-  2-11b-expert-layer-per-player-tables: in-progress
+  2-11b-expert-layer-per-player-tables: review
   2-11c-expert-layer-event-logs: backlog
   2-12-tournament-hub-results-standings: backlog
   2-13-tournament-leaderboards: backlog

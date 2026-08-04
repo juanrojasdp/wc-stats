@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { EmptyStatePanel } from "@/components/EmptyStatePanel";
+import { ExpertLayer } from "@/components/ExpertLayer";
 import { SortAnnouncerProvider } from "@/components/SortAnnouncer";
 import { TacticalErrorBoundary } from "@/components/TacticalErrorBoundary";
 import { TacticalLayer } from "@/components/TacticalLayer";
@@ -35,6 +36,13 @@ import { useT } from "@/lib/i18n-provider";
  * and a retry button re-fetches the identical bad artifact forever.
  */
 type Status = "loading" | "loaded" | "error" | "invalid";
+
+/**
+ * DEVELOPER-facing console label for the Expert boundary, never user copy — so
+ * it is a module const and not a t() call. `logLabel` rather than `label`
+ * because `label` is one of the i18n gate's sixteen gated prop names.
+ */
+const EXPERT_LOG_LABEL = "ExpertLayer render failed";
 
 export function MatchBundleRegion({ matchId }: { matchId: string }) {
   const t = useT();
@@ -170,11 +178,33 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
        * region. It renders nothing but an empty sr-only span until a table
        * announces through it.
        */}
+      {/*
+       * TWO SIBLING BOUNDARIES, one per layer (Story 2.11b ruled decision 1).
+       * Structurally safe: `failed` is a per-instance class field and the
+       * boundary holds no module-level state, so an Expert crash leaves the
+       * eleven Tactical sections rendering and vice versa.
+       *
+       * The Expert one carries its OWN copy, because the shipped
+       * match.bundle.crashed says "el análisis táctico de este partido" — a
+       * false statement over an Expert crash with a healthy Tactical Layer
+       * directly above it. Both instances sit INSIDE the one
+       * SortAnnouncerProvider so the Expert table's sort announcements reach
+       * the single polite live region (2.11a decision 9, not re-opened).
+       */}
       <SortAnnouncerProvider>
         {status === "loaded" && bundle !== null ? (
-          <TacticalErrorBoundary>
-            <TacticalLayer bundle={bundle} />
-          </TacticalErrorBoundary>
+          <>
+            <TacticalErrorBoundary>
+              <TacticalLayer bundle={bundle} />
+            </TacticalErrorBoundary>
+            <TacticalErrorBoundary
+              headlineKey="match.bundle.crashedExpert"
+              explanationKey="match.bundle.crashedExpertExplanation"
+              logLabel={EXPERT_LOG_LABEL}
+            >
+              <ExpertLayer bundle={bundle} />
+            </TacticalErrorBoundary>
+          </>
         ) : null}
       </SortAnnouncerProvider>
     </div>

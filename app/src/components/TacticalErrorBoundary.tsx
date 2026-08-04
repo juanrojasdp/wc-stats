@@ -59,8 +59,29 @@ function TacticalErrorFallback({
   );
 }
 
+/**
+ * The console label's default — the exact string this boundary has logged
+ * since Story 2.5, so the Tactical mount is byte-identical without it.
+ */
+const DEFAULT_LOG_LABEL = "TacticalLayer render failed";
+
 export class TacticalErrorBoundary extends Component<
-  { children: ReactNode; headlineKey?: DictionaryKey; explanationKey?: DictionaryKey },
+  {
+    children: ReactNode;
+    headlineKey?: DictionaryKey;
+    explanationKey?: DictionaryKey;
+    /*
+     * Story 2.11b: two sibling instances now mount on the match route, and a
+     * console line reading "TacticalLayer render failed" over an EXPERT crash
+     * misdirects whoever reads it.
+     *
+     * NAMED `logLabel`, NOT `label` — `label` is one of the i18n gate's sixteen
+     * gated prop names, so every call site passing a literal would fail
+     * `eslint --max-warnings 0`. This string is a DEVELOPER-facing console
+     * label, never user-visible copy, so it must not be routed through t().
+     */
+    logLabel?: string;
+  },
   { failed: boolean }
 > {
   state = { failed: false };
@@ -72,7 +93,7 @@ export class TacticalErrorBoundary extends Component<
   componentDidCatch(error: Error, info: ErrorInfo) {
     // Fail loud in the console — the throw is still a real defect upstream,
     // and swallowing it silently would trade one dishonesty for another.
-    console.error("TacticalLayer render failed", error, info.componentStack);
+    console.error(this.props.logLabel ?? DEFAULT_LOG_LABEL, error, info.componentStack);
   }
 
   render() {

@@ -22,6 +22,7 @@ import {
 } from "@/lib/tactical-sections";
 import type { CollapsibleSectionId, SectionId } from "@/lib/tactical-sections";
 import { CROSS_DELIVERY_TYPES, crossDeliveryKey } from "@/viz/cross-map-model";
+import { EXPERT_FIELDS, expertFieldKey, expertFieldTitleKey } from "@/viz/expert-model";
 import {
   DEFENSIVE_ACTION_TYPES,
   POSSESSION_CONTEST_TYPES,
@@ -1015,6 +1016,128 @@ describe("the per-section crash copy (Story 2.18 decision 7)", () => {
     }
     expect(es.tactical.empty.sectionCrashedExplanation).not.toContain("informe");
     expect(en.tactical.empty.sectionCrashedExplanation).not.toContain("report");
+  });
+});
+
+describe("the expert.* namespace (Story 2.11b, AD-7)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  /*
+   * THE MANDATORY SWEEP. `expertFieldKey` ends in an `as DictionaryKey` cast —
+   * DictionaryKey is a literal union and a template-literal expression infers
+   * `string` — so tsc is defeated by construction and this round-trip over the
+   * builder's FULL DOMAIN is the only thing between a typo'd key and a runtime
+   * miss. Both locales, because `en` is a separate object.
+   */
+  it("resolves all 40 column heads in both locales", () => {
+    expect(EXPERT_FIELDS).toHaveLength(40);
+    for (const field of EXPERT_FIELDS) {
+      for (const locale of locales) {
+        const label = t(expertFieldKey(field), locale);
+        expect(label, `${field} in ${locale}`).not.toBe("");
+        expect(label, `${field} in ${locale}`).not.toContain("expert.field");
+      }
+    }
+  });
+
+  it("resolves the full term behind every abbreviated head", () => {
+    const titled = EXPERT_FIELDS.map(expertFieldTitleKey).filter((key) => key !== null);
+    expect(titled).toHaveLength(6);
+    for (const key of titled) {
+      for (const locale of locales) {
+        expect(t(key, locale), `${key} in ${locale}`).not.toBe("");
+      }
+    }
+  });
+
+  it("ships the ruled table abbreviation for high-speed runs", () => {
+    // The glossary definition states it as ruled copy: "En las tablas la
+    // columna se abrevia CARR. ALTA VEL." A head that quietly stopped using it
+    // would contradict a definition the same page renders.
+    expect(es.expert.field.highSpeedRuns).toBe("CARR. ALTA VEL.");
+    expect(es.glossary["high-speed-run"].definition).toContain("CARR. ALTA VEL.");
+  });
+
+  it("reuses the ruled glossary Spanish rather than minting a second form", () => {
+    expect(es.expert.field.takeOns).toContain("Regate");
+    expect(es.expert.field.stepIns).toContain("Irrupci");
+    expect(es.expert.field.lineBreaksAttempted).toContain("Rupturas de líneas");
+    expect(es.expert.field.ballProgressions).toBe(es.enums.metric.ballProgressions);
+  });
+
+  it("keeps the three group labels resolvable and distinct", () => {
+    for (const locale of locales) {
+      const labels = [
+        t("expert.group.inPossession", locale),
+        t("expert.group.outOfPossession", locale),
+        t("expert.group.physical", locale),
+      ];
+      for (const label of labels) {
+        expect(label, locale).not.toBe("");
+      }
+      expect(new Set(labels).size, locale).toBe(3);
+    }
+  });
+
+  it("uses the RULED group labels, not the rejected broadcast form", () => {
+    // EXPERIENCE.md:276 rules "En posesión / Sin posesión / Físico". Story 2.18
+    // decision 4 already moved the app off "Con balón / Sin balón"; this is the
+    // pin that keeps a new namespace from reintroducing it.
+    expect(es.expert.group.inPossession).toBe("En posesión");
+    expect(es.expert.group.outOfPossession).toBe("Sin posesión");
+    expect(es.expert.group.physical).toBe("Físico");
+  });
+
+  it("resolves the six movement columns through enums.offerMovement", () => {
+    // The Expert table's six offersByMovementType columns mint NO keys of
+    // their own — a seventh entry in that namespace would turn the
+    // OFFER_MOVEMENT_TYPES pin above red.
+    for (const code of OFFER_MOVEMENT_TYPES) {
+      for (const locale of locales) {
+        expect(t(offerMovementKey(code), locale), `${code} in ${locale}`).not.toBe("");
+      }
+    }
+    expect(Object.keys(es.expert.field)).not.toContain("offersByMovementType");
+  });
+
+  it("keeps Domain G OUT of enums.metric", () => {
+    /*
+     * The regression this namespace exists to avoid: enums.metric is pinned
+     * key-for-key to KEY_STAT_FIELDS (19 Domain B fields), so parking one
+     * per-player label there would turn a green test red — and the two
+     * namespaces genuinely describe different quantities.
+     */
+    expect(Object.keys(es.enums.metric).sort()).toEqual([...KEY_STAT_FIELDS].sort());
+    for (const field of EXPERT_FIELDS) {
+      if (!(KEY_STAT_FIELDS as readonly string[]).includes(field)) {
+        expect(Object.keys(es.enums.metric)).not.toContain(field);
+      }
+    }
+  });
+
+  it("gives the Expert crash its own copy, distinct from the Tactical pair", () => {
+    /*
+     * Ruled decision 1. match.bundle.crashed says "el análisis táctico de este
+     * partido" — a FALSE statement over an Expert crash while eleven healthy
+     * Tactical sections render above it, and false the other way round too.
+     */
+    for (const dictionary of [es, en]) {
+      expect(dictionary.match.bundle.crashedExpert).not.toBe(dictionary.match.bundle.crashed);
+      expect(dictionary.match.bundle.crashedExpertExplanation).not.toBe(
+        dictionary.match.bundle.crashedExplanation
+      );
+      expect(dictionary.match.bundle.crashedExpert).not.toBe(
+        dictionary.tactical.empty.sectionCrashed
+      );
+    }
+  });
+
+  it("describes the tables ONLY in the summary — 2.11c's logs are not shipped", () => {
+    // The mockup's copy ends "— tablas por jugador y registros completos".
+    // Those "registros completos" are the five event logs Story 2.11c mounts
+    // into this shell; claiming them now would point the reader at nothing.
+    expect(es.expert.summary).not.toContain("registros completos");
+    expect(en.expert.summary).not.toContain("full logs");
   });
 });
 
