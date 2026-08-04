@@ -114,7 +114,7 @@ Items raised by reviews that were consciously deferred rather than fixed or dism
 
 Full evidence table and adjudications: `_bmad-output/implementation-artifacts/2-3-contract-v1-per-surface-sign-off.md`; durable gate record: `contract/README.md` → "Story 2.3 sign-off (v1)". Gate outcome: **SIGNED-OFF-WITH-CHANGE-REQUESTS** — Epic 1 extraction (1.7–1.15) unblocked; Story 1.16 blocked-pending CS-1.
 
-- **Change-set CS-1 (scheduled; must land as ONE atomic AD-14 commit before Story 1.16 begins emission)** — contents: **CR-1** extend `ShotOutcomeDetail` with bare `incomplete` + `on-target` (with `x-maps-to-outcome` entries, README provenance rows, and the two locale label rows when 2.13/2.18 map detail codes); **CR-2** `x-maps-to-outcome["deflected-on-target-defensive-event"]` → `["incomplete", "on-target"]` (rejected alternatives, recorded 2026-07-23 review: remap-to-`incomplete` — the one genuine on-target row fails emission; keep-`on-target` — corpus-false 10:1; enum-split into two colour-specific values — keeps the map scalar but breaks the 1:1 corpus-label→detail identity and pushes marker colour into the value, rejected by decision); **plus riding**: the stale own-goal `$comment` correction at `match-bundle.schema.json` (`GoalOwnGoal` — Story 1.6 proved the corpus marks own goals; the 1.16 emission-flip entry above still applies) and the matching stale row in `contract/README.md`'s "deliberately empty" table (corrected in prose 2026-07-23; keep consistent when decision 17 lands). **Pipeline consumers (added by the 2026-07-23 code review — the original "nothing else consumes the changed values" claim was FALSE):** `pipeline/tests/test_markers_attempts.py:87-99` asserts the enum equals the label map minus exactly the two AD-14 extras and `DETAIL_TO_OUTCOME == {**contract_map, **AD14_EXTRA_DETAILS}` — CR-1 and CR-2 each break these; `pipeline/tests/test_fixtures.py` needs BOTH asserts of the outcome/detail test updated (the values-subset check at :693 `TypeError`s on an array value, not just the per-shot check at :696); `AD14_EXTRA_DETAILS`/`DETAIL_COMPATIBLE_OUTCOMES` in `pipeline/markers/attempts.py` must drop/absorb the now-in-contract extras. Recipe per AD-14: schema edits + pipeline constant/test updates above + logged decision 17 in `contract/README.md` + `version.json` 1 → 2 + hand-edited fixtures re-pinned to `schemaVersion: 2` + BOTH regenerated type outputs (`contract/generated/` via `npm run generate:types` in `contract/`, and `app/src/lib/contract/` via `npm run generate:types` in `app/`), proven in the same commit by the FULL `pipeline/tests` suite (not just the two contract/fixture files — the markers tests are consumers) + `npm run check:types`. **Coordination (restating Task 6.2's rule, dropped from the first filing):** a bump re-pins fixtures and regenerates app types, so CS-1 must not land while another story session is in flight against the current baseline (1-7 is in-progress as of 2026-07-23) — land after in-flight sessions commit, or with Juan's explicit go-ahead. **Epic-2 binding:** stories 2.7/2.13/2.18 build their label/legend/locale maps against the post-CS-1 24-value enum (or handle unknown detail values defensively) — do not hardcode the 22-value set. Solo-repo AD-14 note: 2.3 filed these wearing the Epic 2 hat; whoever lands CS-1 executes Epic 1's side and says so in logged decision 17.
+- ~~**Change-set CS-1 (scheduled; must land as ONE atomic AD-14 commit before Story 1.16 begins emission)**~~ — **LANDED 2026-08-04** as one atomic commit with Juan's explicit go-ahead while two Epic 2 sessions were in flight (the coordination rule's escape hatch). Durable record: `contract/README.md` → logged decision **17**. Epic 1 executed both change requests per the solo-repo AD-14 note. **The filed recipe below was stale on two points and wrong-by-omission on two more — corrected here for the successor change-set:** (1) it says `version.json` 1 → 2, but that bump already landed in `c645cfe` (Story 1.8); CS-1 was **2 → 3**. (2) "`version.json` bump" reads as one file — it is **six declarations**: `version.json` plus a `schemaVersion` `const` in each of the five artifact schemas (`match-bundle`, `tournament`, `team-profile`, `player-profile`, `leaderboards`). Miss them and `test_every_artifact_schema_pins_schema_version_to_the_declared_version` fails and the re-pinned fixtures stop validating. (3) A **fourth** pipeline consumer went unlisted: `pipeline/tests/test_contract_schemas.py` hardcodes `assert contents == {"schemaVersion": N}` / `assert schema_version() == N`. (4) `data/fixtures/README.md` states the stamp in prose. **Story 1.16 is unblocked.** Original filing follows. — contents: **CR-1** extend `ShotOutcomeDetail` with bare `incomplete` + `on-target` (with `x-maps-to-outcome` entries, README provenance rows, and the two locale label rows when 2.13/2.18 map detail codes); **CR-2** `x-maps-to-outcome["deflected-on-target-defensive-event"]` → `["incomplete", "on-target"]` (rejected alternatives, recorded 2026-07-23 review: remap-to-`incomplete` — the one genuine on-target row fails emission; keep-`on-target` — corpus-false 10:1; enum-split into two colour-specific values — keeps the map scalar but breaks the 1:1 corpus-label→detail identity and pushes marker colour into the value, rejected by decision); **plus riding**: the stale own-goal `$comment` correction at `match-bundle.schema.json` (`GoalOwnGoal` — Story 1.6 proved the corpus marks own goals; the 1.16 emission-flip entry above still applies) and the matching stale row in `contract/README.md`'s "deliberately empty" table (corrected in prose 2026-07-23; keep consistent when decision 17 lands). **Pipeline consumers (added by the 2026-07-23 code review — the original "nothing else consumes the changed values" claim was FALSE):** `pipeline/tests/test_markers_attempts.py:87-99` asserts the enum equals the label map minus exactly the two AD-14 extras and `DETAIL_TO_OUTCOME == {**contract_map, **AD14_EXTRA_DETAILS}` — CR-1 and CR-2 each break these; `pipeline/tests/test_fixtures.py` needs BOTH asserts of the outcome/detail test updated (the values-subset check at :693 `TypeError`s on an array value, not just the per-shot check at :696); `AD14_EXTRA_DETAILS`/`DETAIL_COMPATIBLE_OUTCOMES` in `pipeline/markers/attempts.py` must drop/absorb the now-in-contract extras. Recipe per AD-14: schema edits + pipeline constant/test updates above + logged decision 17 in `contract/README.md` + `version.json` 1 → 2 + hand-edited fixtures re-pinned to `schemaVersion: 2` + BOTH regenerated type outputs (`contract/generated/` via `npm run generate:types` in `contract/`, and `app/src/lib/contract/` via `npm run generate:types` in `app/`), proven in the same commit by the FULL `pipeline/tests` suite (not just the two contract/fixture files — the markers tests are consumers) + `npm run check:types`. **Coordination (restating Task 6.2's rule, dropped from the first filing):** a bump re-pins fixtures and regenerates app types, so CS-1 must not land while another story session is in flight against the current baseline (1-7 is in-progress as of 2026-07-23) — land after in-flight sessions commit, or with Juan's explicit go-ahead. **Epic-2 binding:** stories 2.7/2.13/2.18 build their label/legend/locale maps against the post-CS-1 24-value enum (or handle unknown detail values defensively) — do not hardcode the 22-value set. Solo-repo AD-14 note: 2.3 filed these wearing the Epic 2 hat; whoever lands CS-1 executes Epic 1's side and says so in logged decision 17.
 
 - **Fixture request FR-1 (routed to Story 1.18's fixture work; fixture-only, NO `schemaVersion` bump — the AD-14 flow triggers on shape changes and fixtures validate against unchanged schemas)** — add coverage for the schema-guaranteed-but-unfixtured branches found by the 2.3 walk: `goalkeeping: null`, `players: null`, `events.*: null` beyond `shootoutAttempts`, an empty `[]` event array, `decidedBy: "extra-time"` (folds the existing 1.1 entry above), a zero-appearance player (folds the existing 1.1 entry above), `movementType: null` (0 of 270 receiving rows exercise it), any `CardRecord` (all three bundles carry zero cards), and `penalty: true`. Canonical serialization + green `test_fixtures.py` required. **Scope caveats (added by the 2026-07-23 code review — "validates against unchanged tests" is not achievable as written):** the zero-appearance-player branch fails the guard suite's non-empty assert (`test_fixtures.py:549` `assert fixture["matches"]` — the folded 1.1 entry above records this), so that guard must be consciously relaxed alongside; and a new `decidedBy: "extra-time"` match fixture is not a single-file edit — it cascades into `tournament.json` entities/results (reachability bijection), profile per-match rows, and leaderboards `matchesPlayed` consistency tests. FR-1 therefore includes the matching guard-test updates as part of its scope.
 
@@ -1036,6 +1036,13 @@ clearance verbatim in shape). 2.18 maps **`ShotOutcome` only** — the stable fi
 CS-1 does not touch. Verified at Task 1.2: `assert:schema-version` reports 7 artifacts at
 schemaVersion 2, so **CS-1 has not landed**.
 
+> **Superseded 2026-08-04: CS-1 HAS now landed** (schemaVersion 3, decision 17). Everything
+> below still holds — CS-1 shipped the 24-value enum and the array map entry but **no locale
+> labels**, which remain Stories 2.13/2.18's. **Both tripwires must therefore stay green and
+> undeleted**; CS-1 verified them green and did not touch either. They are now the only thing
+> between the extended enum and an unlabelled detail code reaching a user. The owner line
+> below still reads correctly: whoever ships CS-1 (done), then 2.13.
+
 - **Two tripwires must stay green until detail labels ship, and must then be deleted
   DELIBERATELY:** `Object.keys(es.enums)).not.toContain("shotOutcomeDetail")` and
   `Object.keys(es.enums.shotOutcome)).toHaveLength(5)`. Story 2.18 re-asserts both from its own side
@@ -1247,3 +1254,123 @@ make every column sortable — so every `<th>` that actually mounts today does r
 decision 5 holds verbatim on the shipped surface. Recorded so that the first story to ship a
 `sort: null` column (2.11b's per-player tables are the likely first consumer) knows the deviation is
 deliberate and does not "fix" it back into a decision-5 violation.
+
+## Deferred from: code review of 2-18-glossary-about-terminology-completion (2026-08-04)
+
+Five findings triaged to `defer` by the 2.18 code review. All are real. Two are disclosed
+constraints the story had no authority to resolve; three are guard-robustness items that cost
+nothing today and will cost something later.
+
+- **Title and summary marks render OUTSIDE the per-section error boundary.** `TacticalLayer`
+  passes `TacticalErrorBoundary` as `children` of `TacticalSection`, and `TacticalSection` renders
+  `title` and `summary` above the `{open ? <div id={contentId}> : null}` branch that holds the
+  boundary. A throw from a `GlossaryTerm` in a heading or summary therefore escapes to the
+  whole-layer instance in `MatchBundleRegion` and replaces all eleven sections. Story 2.18's
+  ruled decision 7 discloses the class ("a throw during prop construction happens ABOVE this
+  boundary") but its docblock enumerates only `sectionContent()`'s eager evaluation; marking is an
+  unlisted instance of the same class. Reachability is low — all four `t()` keys `GlossaryTerm`
+  resolves are pinned by the i18n exhaustiveness suites — but the containment decision 7 was filed
+  five times to deliver does not cover the surface 2.18 added. Routed to whoever next touches
+  `TacticalLayer` / `TacticalSection`.
+  `app/src/components/TacticalLayer.tsx`, `app/src/components/TacticalSection.tsx`.
+
+- **Roughly 450 lines of new client code ship with zero automated coverage.**
+  `GlossaryTerm.tsx`, `GlossaryContent.tsx`, `glossary-marking.tsx`, `ui/popover.tsx` and
+  `use-glossary-popover.ts` are untestable in a node-only harness, and "do not add jsdom" is an
+  explicit Story 2.18 scope boundary — so this is not a defect of the story, it is the standing
+  cost of the harness. Every behavioural clause of AC 2 (hover intent, page-wide single open, Esc,
+  the two auto-focus contracts, Tab reachability) rests on a manual browser session. The 2.18
+  review found two focus defects in that untested surface — the grace timer closing the panel out
+  from under a focused link, and `focusInPanel` never being reset — which is the concrete price.
+  Recorded so the next story that proposes a test-environment change has the evidence.
+
+- **AC 2's "Tab-reachable glossary link" has never been verified with a real Tab key.** The harness
+  delivers no OS-level key presses: a `keydown` capture listener on `document` recorded zero events
+  across five Tab presses in two independent tabs. Story 2.18 substituted a document-order
+  focusable walk (trigger at index 9, panel link at index 10, nothing between) and the no-portal
+  implementation is correct in code, so the structural proof stands. But both focus defects the
+  review found live on exactly this path, so the clause needs one minute of a focused browser
+  window once they are patched. Not a code change — a verification debt.
+
+- **`longestUnmarkedRun`'s absence guard can assert on a short, non-unique fragment.**
+  `matches/static-output.test.ts` asserts `not.toContain(run)` for each section title's longest
+  contiguous unmarked run, with only a separate `toBeGreaterThan(5)` floor. Today `momentum`
+  yields `"Línea de"` — 8 characters, not unique to the section. Nothing requires the run to be
+  section-unique, so an unrelated exported string can make the AR-11 guard report that the Tactical
+  Layer has moved to the build-time path, which is the one thing that guard exists to detect.
+  `app/src/app/matches/static-output.test.ts`.
+
+- **The "no Spanish left in an `en` leaf" glossary check only asserts inequality.**
+  `i18n.test.ts` counts ids whose `en` definition differs from its `es` definition and asserts the
+  count equals `GLOSSARY_TERMS.length`. A paraphrased-but-still-Spanish `en` definition passes,
+  and the test goes red if two locales ever legitimately share a definition. The stated property
+  and the asserted property are not the same. `app/src/lib/i18n.test.ts`.
+
+## Deferred from: change-set CS-1 (ShotOutcomeDetail 22->24, schemaVersion 2->3, 2026-08-04)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-cs-1-shot-outcome-detail-ad14-bump.md`
+  summary: **The app's generated contract types have NO freshness gate — AD-14 step 5 is enforced for only one of the two generated trees.** `test_the_committed_generated_types_still_match_the_schemas` runs `--check` against `contract/generated/` alone. `app`'s own `check:types` script exists but is wired into nothing: `app`'s `build` is `lint && typecheck && assert:schema-version && next build && copy-data`, `netlify.toml` runs `npm run build`, and no vitest test invokes it. `assert-schema-version.mjs` only regex-greps the version INTEGER out of `schema-version.ts` — it never compares `contract-types.d.ts` against the schemas.
+  evidence: A description-only contract correction needs no version bump (the AD-14 flow triggers on *shape* changes — ratified at the 2.3 sign-off), so regenerate `contract/generated/` only and: `pipeline/tests` green, `assert:schema-version` green (version unchanged), `npm run build` green, and Netlify ships an `app/src/lib/contract/contract-types.d.ts` whose JSDoc states the superseded fact. That is precisely the drift `check:types` was created to stop — the README's own callout says the committed types once "drifted four JSDoc blocks behind the schemas with 256 tests green" — reintroduced in the one file decision 17 calls "the only thing Epic 2 reads". CS-1 got this right only because it ran `app`'s `check:types` by hand. Fix: add `check:types` to `app`'s `build` chain, or a vitest test that shells it. Interim mitigation landed as a warning in `contract/README.md`'s AD-14 flow section.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-cs-1-shot-outcome-detail-ad14-bump.md`
+  summary: **Six sites in `app/src/` now assert in prose that "CS-1 has not landed" — two of them as TEST NAMES.** `glossary.test.ts:125` is titled `"mints no ShotOutcomeDetail id (ruled decision 12 — CS-1 has not landed)"`; `i18n.test.ts:897` is titled `"still mints NO ShotOutcomeDetail namespace (decision 12 — CS-1 has not landed)"`; plus comments at `i18n.test.ts:208,210`, `glossary.ts:114-115`, `locales/es.ts:1247`, `viz/shot-map-model.ts:24` describing the 22->24 extension as pending.
+  evidence: Every ASSERTION still holds and the suite is green — CS-1 shipped the enum but no locale rows — which is exactly the problem: green tests named "CS-1 has not landed" misreport the gate's state to the next reader. Decision 17 calls these two tripwires "the only thing standing between the 24-value enum and an unlabelled detail reaching a user" while they remain labelled as guarding an unlanded change. **NOT fixed by CS-1 deliberately:** two Epic 2 sessions were in flight and own these files (coordination rule). **Owner: Stories 2.13/2.18**, which must retitle them when they map detail labels and then delete them deliberately.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-cs-1-shot-outcome-detail-ad14-bump.md`
+  summary: **A dual-colour detail gives the linking outcome cross-check no discriminating power over its own rows.** `pipeline/markers/linking.py:215` accepts a (marker, glyph) pair when the marker's RGB outcome is in `DETAIL_COMPATIBLE_OUTCOMES[detail]`; for `deflected-on-target-defensive-event` that tuple holds both colours, so overlapping incomplete- and on-target-coloured markers over such a row can only be separated by distance and the bijection rule.
+  evidence: Pre-existing, NOT introduced by CS-1 — `DETAIL_COMPATIBLE_OUTCOMES` is byte-identical before and after this change-set (the pre-CS-1 code carried the same both-colours tuple as a local override), so no production behaviour moved. CR-2 makes it permanent rather than provisional, which is why it is worth filing: acknowledging the one-to-many rendering *means* surrendering that discriminator, and the adjudication accepted that. Sits alongside the existing merged-ordinal-pileup robustness note. Current corpus links 2571/2571 markers (100%), so this is a robustness note for future tournaments, not a live gap.
+
+## Corrections to the Story 2.18 entries (code review, 2026-08-04)
+
+Recorded as corrections rather than by rewriting the entries they correct, per this file's own
+convention. All three are claim-accuracy defects in what 2.18 filed, not new deferrals.
+
+- **CORRECTION — "No count is hardcoded anywhere in this story, in code, comment or copy" was
+  FALSE when written.** Ruled decision 12 says "do NOT hardcode the pre-CS-1 `ShotOutcomeDetail`
+  count anywhere — not in a comment, a count, or a glossary entry", and two comments carried it:
+  `app/src/lib/glossary.ts`'s `GLOSSARY_ORDER` note on the shot-outcome expansion, and
+  `app/src/locales/es.ts`'s `glossary.incomplete` docblock — where the instruction and its
+  violation were the same sentence. Both were corrected by the code review; the counts now live
+  only in `contract/common.schema.json`, which is the one place they cannot go stale. The original
+  claim stands corrected, not deleted.
+
+- **CORRECTION — "The glossary's five shot-outcome entries carry the forward note in prose" names
+  more entries than ship it.** Exactly ONE does: `glossary.incomplete.definition`. `goal`,
+  `on-target`, `off-target` and `blocked` carry no forward clause. The sentence's own colon then
+  names the single key, so the entry self-narrows and nothing downstream was misled — but the lead
+  clause is what a grep returns, and Task 10.3's obligation is discharged by that one entry, not by
+  five. No code change: one honest forward note is what decision 12 asked for.
+
+- **CORRECTION — the "six table-scaffolding rows are discharged in the locale files" claim covers
+  three rows, not six.** `stage names` (`enums.stage`), `lineup labels` and `Expert column groups`
+  really are discharged in the locale files. `result letters & standings columns`,
+  `standings / leaderboards` and `fouls / duels` have **no locale keys at all** — their surfaces do
+  not ship until 2.11-2.16, and minting keys for an absent surface is the dead-key defect AC 1's
+  own BINDING prohibits. Story 2.18's own FINDINGS FOR JUAN already flagged `faltas` (row 32) as a
+  ninth undischarged item, which contradicted the docblock. The comments in
+  `app/src/lib/glossary.ts`, `app/src/lib/glossary.test.ts` and `app/src/lib/i18n.test.ts` were
+  corrected to say DEFERRED rather than discharged. **Routed to the owning stories: 2.11-2.14 for
+  the standings/leaderboard vocabulary, and whichever story first renders fouls or duels.** A later
+  story reading the original wording would have shipped a standings table believing its vocabulary
+  was already ruled.
+
+## Ruled at the Story 2.18 code review (2026-08-04)
+
+- **The 5-of-11 section marking reduction is CONFIRMED by Juan: ship six marks, file the rest.**
+  `SECTION_HEADING_MARKS` holds one entry (`momentum`) and `SECTION_SUMMARY_MARKS` four
+  (`shot-maps`, `pressing`, `set-plays`, `goalkeeping`); with the Hero's `xg` that is six marked
+  surfaces, not eleven. AC 2's "terms are marked once per section" is a CEILING, so this is
+  compliant. `key-stats`, `pass-networks`, `offers-to-receive`, `movement-to-receive`,
+  `defensive-actions` and `phases` carry no mark because their ruled 2.5 summaries contain no
+  policy-table term while their titles — which decision 6 forbids marking, since `{title}` renders
+  inside the accordion `<button>` for every collapsible section — do.
+
+  **One correction to the reasoning, recorded for whoever next opens those summaries.** Story 2.18
+  cites "rewriting frozen ruled copy to manufacture a marking site is outside this story's
+  authority" as the blocker. That constraint did not apply to `movement-to-receive`: Task 8.13
+  rewrote its summary outright in both locales, and chose wording ("Cómo se ofrecieron para
+  recibir, y en cuáles de esos ofrecimientos además se movieron.") that matches neither
+  `ofrecimientos para recibir` nor `desmarques` under `findTermSpan`. That row was open and the
+  marking site was not taken. Not reopened here — the summary is ruled verbatim by decision 3 and
+  changing it again is a copy ruling — but the next story to touch it should know a mark is
+  available there for the cost of two words.

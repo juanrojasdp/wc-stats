@@ -92,6 +92,12 @@ export function GlossaryTerm({
           lang={termLang}
           onClick={popover.onTriggerClick}
           onFocus={popover.onTriggerFocus}
+          /*
+           * Without this the panel a Tab opened stayed open forever once the
+           * user tabbed past its link — nothing but Esc or an outside click
+           * closed it, so it sat over the content they had moved on to.
+           */
+          onBlur={popover.onTriggerBlur}
           onPointerEnter={popover.triggerHover.onPointerEnter}
           onPointerLeave={popover.triggerHover.onPointerLeave}
           className="inline cursor-help text-left underline decoration-accent-cyan decoration-dotted underline-offset-2"
@@ -125,6 +131,16 @@ export function GlossaryTerm({
           if (!focusHere) {
             event.preventDefault();
           }
+          /*
+           * MUST run after the contract above has read the flag, and must run
+           * on EVERY close. Removing a focused node does not fire focusout, so
+           * onBlurCapture never sees the panel go away — leaving "focus is
+           * inside the panel" latched true for the rest of the instance's life.
+           * The next close then took the focus-return branch and yanked focus
+           * across the page from wherever the user actually was, which is the
+           * exact failure this handler exists to prevent.
+           */
+          popover.notePanelClosed();
         }}
       >
         {/*

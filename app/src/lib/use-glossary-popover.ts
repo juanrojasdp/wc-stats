@@ -56,10 +56,19 @@ export interface GlossaryPopover {
   onTriggerFocus: () => void;
   triggerHover: GlossaryPopoverHandlers;
   panelHover: GlossaryPopoverHandlers;
+  onTriggerBlur: () => void;
   /** True while focus sits inside the panel — the onCloseAutoFocus contract. */
   focusInsidePanel: () => boolean;
   onPanelFocusCapture: () => void;
   onPanelBlurCapture: () => void;
+  /**
+   * Called at the END of onCloseAutoFocus, after the focus-return contract has
+   * been evaluated. Clears the panel-scoped interaction state that the DOM
+   * cannot clear for us: removing a focused node does NOT fire focusout, so
+   * without this the "focus is inside the panel" flag survives the panel and
+   * the NEXT close steals focus from wherever the user actually is.
+   */
+  notePanelClosed: () => void;
 }
 
 /*
@@ -84,6 +93,7 @@ export function useGlossaryPopover(): GlossaryPopover {
   const pointerOnTrigger = useRef(false);
   const pointerOnPanel = useRef(false);
   const focusInPanel = useRef(false);
+  const focusOnTrigger = useRef(false);
   const suppressFocusOpen = useRef(false);
   const suppressTimer = useRef<number | null>(null);
   // The closer this instance registered, so `openNow` can skip itself.
@@ -102,6 +112,15 @@ export function useGlossaryPopover(): GlossaryPopover {
         window.clearTimeout(timer.current);
         timer.current = null;
       }
+      /*
+       * The panel unmounts UNDER the cursor, so no pointerleave and no focusout
+       * ever fire for it. Left set, these refs make scheduleClose's fire-time
+       * re-check permanently false and the popover sticks open the next time it
+       * is used. onOpenChange(false) already resets them; this path is the one
+       * that did not.
+       */
+      pointerOnPanel.current = false;
+      focusInPanel.current = false;
       setOpen(false);
     };
     selfCloser.current = closer;
@@ -149,13 +168,31 @@ export function useGlossaryPopover(): GlossaryPopover {
     setOpen(false);
   }, [cancelTimer]);
 
+  /*
+   * The grace-window close, used by BOTH the pointer and the focus paths.
+   *
+   * FOUR holds, not two. The pointer pair is the hover-intent half; the focus
+   * pair is what stops a stray mouse movement from closing the panel out from
+   * under a KEYBOARD user. Without the focus holds, this sequence broke AC 2:
+   * Tab to the trigger (opens), Tab to the "see in the glossary" link, then let
+   * the mouse cross the term and leave — 180 ms later the panel unmounted while
+   * the link held focus, onCloseAutoFocus took its focus-return branch, and the
+   * trigger's own focus handler re-opened the panel. The keyboard user lost
+   * both the link and their place, which is a 1.4.13 "persistent" failure.
+   */
   const scheduleClose = useCallback(() => {
     cancelTimer();
     timer.current = window.setTimeout(() => {
       timer.current = null;
-      // Re-read at fire time: the pointer may have arrived on the panel while
-      // the timer was running, which is the whole point of the grace window.
-      if (!pointerOnTrigger.current && !pointerOnPanel.current) {
+      // Re-read at fire time: the pointer may have arrived on the panel, or
+      // focus may have entered it, while the timer was running — which is the
+      // whole point of the grace window.
+      if (
+        !pointerOnTrigger.current &&
+        !pointerOnPanel.current &&
+        !focusOnTrigger.current &&
+        !focusInPanel.current
+      ) {
         setOpen(false);
       }
     }, CLOSE_GRACE_MS);
@@ -223,6 +260,10 @@ export function useGlossaryPopover(): GlossaryPopover {
       openNow();
     },
     onTriggerFocus: () => {
+      // Recorded BEFORE the suppression check: focus really is on the trigger
+      // either way, and scheduleClose must not close a panel whose trigger the
+      // user is sitting on just because the dismissal suppressed the re-open.
+      focusOnTrigger.current = true;
       /*
        * The focus that a dismissal itself causes must not re-open the panel.
        * Radix's onCloseAutoFocus returns focus to the trigger when focus was
@@ -234,14 +275,31 @@ export function useGlossaryPopover(): GlossaryPopover {
       }
       openNow();
     },
+    /*
+     * CLOSE ON FOCUS-OUT. Without this the panel opened by a Tab onto the term
+     * stayed open forever once the user tabbed past the link — nothing in the
+     * hook closed it but Esc or an outside click, so it sat over the content
+     * the user had moved on to. The grace timer re-checks all four holds, so
+     * Tab from the trigger INTO the panel does not trip it.
+     */
+    onTriggerBlur: () => {
+      focusOnTrigger.current = false;
+      scheduleClose();
+    },
     triggerHover,
     panelHover,
     focusInsidePanel: () => focusInPanel.current,
     onPanelFocusCapture: () => {
       focusInPanel.current = true;
+      cancelTimer();
     },
     onPanelBlurCapture: () => {
       focusInPanel.current = false;
+      scheduleClose();
+    },
+    notePanelClosed: () => {
+      focusInPanel.current = false;
+      pointerOnPanel.current = false;
     },
   };
 }

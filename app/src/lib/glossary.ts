@@ -1,4 +1,5 @@
 import type { DictionaryKey } from "@/lib/i18n";
+import { isCollapsibleId } from "@/lib/tactical-sections";
 import type {
   AlwaysExpandedSectionId,
   CollapsibleSectionId,
@@ -20,9 +21,19 @@ import type {
  * an id of `stage-names` has no coherent term pair and no counterpart-language
  * subtitle, so set-rows are expanded to one id per member. Six rows are TABLE
  * SCAFFOLDING (stage names, lineup labels, result letters & standings columns,
- * fouls / duels, standings / leaderboards, Expert column groups) and are
- * discharged in the locale files rather than here — they have no term pair to
- * show and no definition to write.
+ * fouls / duels, standings / leaderboards, Expert column groups) and get no
+ * glossary id — they have no term pair to show and no definition to write.
+ *
+ * BUT "no glossary id" IS NOT "done" (2.18 code review corrected this docblock).
+ * Only THREE of the six are discharged in the locale files today — stage names
+ * (`enums.stage`), lineup labels and Expert column groups. The other three —
+ * `result letters & standings columns`, `standings / leaderboards` and
+ * `fouls / duels` — have NO locale keys at all, because their surfaces do not
+ * ship until 2.11-2.16, and minting keys for an absent surface is the dead-key
+ * defect AC 1's own BINDING prohibits. They are DEFERRED to their owning
+ * stories and recorded by name in deferred-work.md. A later story reading the
+ * original wording would have shipped a standings table with no ruled
+ * vocabulary, believing the row was already satisfied.
  */
 
 /**
@@ -63,7 +74,10 @@ export type GlossaryTermId =
   | "goalkeeper"
   | "save"
   | "distribution"
-  | "salida"
+  // English slug, not the Spanish "salida" this shipped as (2.18 code review):
+  // decision 11 requires language-neutral ids because the anchor is a public
+  // URL that must not break when a Spanish term is amended.
+  | "coming-off-the-line"
   | "one-on-one"
   | "defender"
   | "midfielder"
@@ -111,8 +125,10 @@ const GLOSSARY_ORDER: Record<GlossaryTermId, true> = {
   "set-play": true,
   momentum: true,
   // Row "shot outcomes (legend + log headers)" expanded to the FIVE stable
-  // ShotOutcome values. ShotOutcomeDetail is deliberately absent (decision 12
-  // — its 22->24 extension rides CS-1, which has not landed).
+  // ShotOutcome values. ShotOutcomeDetail is deliberately absent (decision 12,
+  // whose extension rides CS-1 and has not landed). Decision 12 also says "do
+  // NOT hardcode the pre-CS-1 count anywhere, in code, comment or copy" — this
+  // comment carried it until the 2.18 code review.
   goal: true,
   "on-target": true,
   "off-target": true,
@@ -122,7 +138,7 @@ const GLOSSARY_ORDER: Record<GlossaryTermId, true> = {
   save: true,
   // Row "goalkeeping vocabulary" (distribución / salidas / mano a mano).
   distribution: true,
-  salida: true,
+  "coming-off-the-line": true,
   "one-on-one": true,
   // Row "positions"; its goalkeeper member reuses the id minted above.
   defender: true,
@@ -180,7 +196,7 @@ export const GLOSSARY_POLICY: Record<GlossaryTermId, GlossaryPolicy> = {
   goalkeeper: "translate",
   save: "translate",
   distribution: "translate",
-  salida: "translate",
+  "coming-off-the-line": "translate",
   "one-on-one": "translate",
   defender: "translate",
   midfielder: "translate",
@@ -305,8 +321,20 @@ export const SECTION_SUMMARY_MARKS: Partial<Record<CollapsibleSectionId, Section
   goalkeeping: { id: "distribution" },
 };
 
+/*
+ * DERIVED from tactical-sections' own guard, never hand-copied (2.18 code
+ * review). This read `id === "key-stats" || id === "momentum"` — a literal copy
+ * of ALWAYS_EXPANDED_SECTION_IDS that `tsc` cannot connect back to it. Add a
+ * third always-expanded section and the union widens so SECTION_HEADING_MARKS
+ * still type-checks, while this predicate silently returns false: headingMark
+ * drops the new section's mark and summaryMark looks it up in the wrong map
+ * behind an `as` cast. That is the 2.9 review's PossessionContestType finding,
+ * and this same story's i18n.test.ts states the rule — "The list is IMPORTED,
+ * never hand-copied". Inverting the shipped `isCollapsibleId` also deletes the
+ * unsound cast below, because the narrowing is now real.
+ */
 export function isAlwaysExpandedSectionId(id: SectionId): id is AlwaysExpandedSectionId {
-  return id === "key-stats" || id === "momentum";
+  return !isCollapsibleId(id);
 }
 
 /** The mark a section's HEADING carries, or null. */
@@ -316,9 +344,7 @@ export function headingMark(id: SectionId): SectionMark | null {
 
 /** The mark a section's SUMMARY carries, or null. */
 export function summaryMark(id: SectionId): SectionMark | null {
-  return isAlwaysExpandedSectionId(id)
-    ? null
-    : (SECTION_SUMMARY_MARKS[id as CollapsibleSectionId] ?? null);
+  return isCollapsibleId(id) ? (SECTION_SUMMARY_MARKS[id] ?? null) : null;
 }
 
 /** A half-open [start, end) range into the text a term was found in. */
@@ -346,6 +372,19 @@ function toWordEnd(text: string, start: number, end: number): TermSpan {
   return { start, end: extended };
 }
 
+/*
+ * The match must begin a word. toWordEnd extends the END so a singular term
+ * marks a plural surface, and that asymmetry looked deliberate but was a gap
+ * (2.18 code review): with no leading check, `gol` matched inside "Autogol",
+ * `presión` inside "compresión" and `goal` inside "Goalkeeper" — marking a
+ * word fragment, or the wrong word entirely, as the popover trigger. The
+ * degrade path only covers "not found", never "found wrongly", so nothing
+ * downstream can notice.
+ */
+function isWordStart(text: string, index: number): boolean {
+  return index === 0 || !WORD_CHARACTER.test(text[index - 1]);
+}
+
 /**
  * Locate a glossary term inside an already-resolved copy string.
  *
@@ -369,17 +408,30 @@ export function findTermSpan(text: string, term: string): TermSpan | null {
   if (needle === "" || text === "") {
     return null;
   }
-  const exact = text.toLowerCase().indexOf(needle.toLowerCase());
-  if (exact >= 0) {
-    return toWordEnd(text, exact, exact + needle.length);
+  // Both passes skip matches that start mid-word (see isWordStart) and keep
+  // looking, rather than returning the first hit at any offset.
+  const haystack = text.toLowerCase();
+  const lowerNeedle = needle.toLowerCase();
+  let exact = haystack.indexOf(lowerNeedle);
+  while (exact >= 0) {
+    if (isWordStart(text, exact)) {
+      return toWordEnd(text, exact, exact + needle.length);
+    }
+    exact = haystack.indexOf(lowerNeedle, exact + 1);
   }
   const loose = needle
     .split(/\s+/)
     .map((word) => `${escapeForRegExp(word)}(?:e?s)?`)
     .join("\\s+");
-  const match = new RegExp(loose, "iu").exec(text);
-  if (match === null) {
-    return null;
+  const pattern = new RegExp(loose, "giu");
+  let match = pattern.exec(text);
+  while (match !== null) {
+    if (isWordStart(text, match.index)) {
+      return toWordEnd(text, match.index, match.index + match[0].length);
+    }
+    // Advance by one so a zero-width or same-index re-match cannot spin.
+    pattern.lastIndex = match.index + 1;
+    match = pattern.exec(text);
   }
-  return toWordEnd(text, match.index, match.index + match[0].length);
+  return null;
 }

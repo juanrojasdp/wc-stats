@@ -80,8 +80,15 @@ export const es = {
      */
     credits:
       "El sitio lo construye y lo mantiene una sola persona. El diseño, el código y las traducciones son propios; los datos son de la FIFA.",
+    /*
+     * THIRD PERSON, matching credits (2.18 code review). These two sit on one
+     * page and disagreed about who "we" are: credits says the site is built by
+     * "una sola persona" and project then answered in the first person plural
+     * ("No vendemos… no cobramos… no recibimos"). Both now describe the project
+     * itself, so the page holds one voice.
+     */
     project:
-      "Es un proyecto personal, gratuito y sin publicidad. No vendemos datos, no cobramos por el acceso y no recibimos nada de la FIFA ni de ningún club.",
+      "Es un proyecto personal, gratuito y sin publicidad. No vende datos, no cobra por el acceso y no recibe nada de la FIFA ni de ningún club.",
   },
   /*
    * ---------------------------- THE GLOSSARY ----------------------------
@@ -126,7 +133,7 @@ export const es = {
       es: "presión",
       en: "pressing",
       definition:
-        "Ir a quitarle el balón al rival de forma organizada. El informe reparte el tiempo sin balón entre presión alta, media y baja.",
+        "Ir a quitarle el balón al rival de forma organizada. El informe publica la presión alta, media y baja como tasas independientes: no suman 100 y no son partes del tiempo sin balón.",
     },
     "build-up": {
       es: "salida de balón",
@@ -296,8 +303,11 @@ export const es = {
       /*
        * The forward note ruled decision 12 requires: the report also prints a
        * LONGER per-shot label whose vocabulary this site does not map yet. Its
-       * 22->24 extension rides CS-1, which has not landed. Do NOT write the
-       * number 22 anywhere.
+       * extension rides CS-1, which has not landed. Decision 12: do NOT write
+       * the pre-CS-1 count anywhere, in code, comment or copy — this comment
+       * stated the rule and broke it in the same sentence until the 2.18 code
+       * review. The counts live in contract/common.schema.json, which is the
+       * one place they cannot go stale.
        */
       es: "incompleto",
       en: "incomplete",
@@ -322,7 +332,7 @@ export const es = {
       definition:
         "Cómo el arquero pone el balón en juego: con el pie, de volea desde las manos o con un lanzamiento. El informe reparte cada familia en técnicas.",
     },
-    salida: {
+    "coming-off-the-line": {
       es: "salidas",
       en: "coming off the line",
       definition: "Cuando el arquero deja su línea para cortar un centro o un balón filtrado.",
@@ -375,17 +385,23 @@ export const es = {
        * player rows, and `no-movement` is 24.9% of all corpus offers — so offers
        * strictly contain movements. STATE the relationship; never put a fixture
        * number in user-facing copy.
+       *
+       * EACH ENTRY OPENS WITH ITS OWN SENTENCE (2.18 code review). The shared
+       * relationship sentence is unchanged and still ships in both, as Task 6.5
+       * requires — but it was the ENTIRE definition of both, and the two entries
+       * render consecutively at /glossary, so a reader met the same paragraph
+       * twice in a row and the page read as a duplication bug.
        */
       es: "ofrecimientos para recibir",
       en: "offers to receive",
       definition:
-        "Un ofrecimiento es un jugador que se ofrece para recibir; un desmarque es la parte de esos ofrecimientos en la que además se movió. El informe cuenta aparte los ofrecimientos sin movimiento.",
+        "Cuántas veces los jugadores de un equipo se ofrecieron como opción de pase, y en cuántas de esas les llegó el balón. Un ofrecimiento es un jugador que se ofrece para recibir; un desmarque es la parte de esos ofrecimientos en la que además se movió. El informe cuenta aparte los ofrecimientos sin movimiento.",
     },
     "movement-to-receive": {
       es: "desmarques",
       en: "movement to receive",
       definition:
-        "Un ofrecimiento es un jugador que se ofrece para recibir; un desmarque es la parte de esos ofrecimientos en la que además se movió. El informe cuenta aparte los ofrecimientos sin movimiento.",
+        "Los ofrecimientos en los que el jugador además hizo un movimiento, repartidos en seis tipos. Un ofrecimiento es un jugador que se ofrece para recibir; un desmarque es la parte de esos ofrecimientos en la que además se movió. El informe cuenta aparte los ofrecimientos sin movimiento.",
     },
     "defensive-actions": {
       es: "acciones defensivas",
@@ -416,9 +432,14 @@ export const es = {
      */
     esPrefix: "es:",
     enPrefix: "en:",
-    metaTitle: "Glosario — WC Stats",
-    metaDescription:
-      "Los términos tácticos y estadísticos del Mundial 2026 que usa el sitio, en español y en inglés.",
+    /*
+     * NO metaTitle/metaDescription (2.18 code review). /glossary shipped a
+     * route metadata export while /about deliberately refuses one until the
+     * open <title>/OG-stays-Spanish ruling lands — so the en.* halves of these
+     * keys were unreachable by construction, which is the dead-key pattern
+     * AC 1's BINDING prohibits. Both routes now wait on the same decision;
+     * re-mint these with the metadata export when it is taken.
+     */
   },
   notFound: {
     // Ruled copy, verbatim (EXPERIENCE.md → State Patterns → Unknown route).
@@ -500,6 +521,15 @@ export const es = {
       // Fallback when the Tactical Layer itself throws while rendering.
       crashed: "No pudimos mostrar el análisis táctico de este partido.",
       crashedExplanation: "El resto de la página sigue disponible.",
+      /*
+       * Story 2.11b ruled decision 1. The Expert Layer gets its OWN sibling
+       * boundary and its own copy: `crashed` above literally says "el análisis
+       * táctico de este partido", which would be a FALSE STATEMENT over an
+       * Expert crash while eleven healthy Tactical sections render above it.
+       * The explanation names what survives, for the same reason.
+       */
+      crashedExpert: "No pudimos mostrar los datos por jugador de este partido.",
+      crashedExpertExplanation: "El análisis táctico y el resto de la página siguen disponibles.",
     },
   },
   /*
@@ -758,6 +788,13 @@ export const es = {
       sortAscending: "ascendente",
       sortDescending: "descendente",
       sortCleared: "Se restauró el orden original de la tabla.",
+      /*
+       * Story 2.11b — the Expert tables' fourth identity column. The
+       * viz.table.* namespace already carried team, player and shirt; this was
+       * the only identity head missing. The VALUES are enums.position.*, which
+       * has shipped since Story 2.4.
+       */
+      position: "Posición",
     },
     cluster: {
       dialogLabel: "Eventos en este punto",
@@ -1165,9 +1202,17 @@ export const es = {
        * different numbers; reusing them here put the same words over two
        * different quantities. Minted under EXPERIENCE.md:278.
        */
+      /*
+       * These three MUST track enums.distributionType (2.18 code review). Task
+       * 8.6 realigned that enum's es labels to the en kick-vs-throw distinction
+       * BECAUSE "Saque de volea" and "Saque con la mano" were mutually
+       * confusable — but these headings kept both rejected strings verbatim and
+       * print one line below the labels that replaced them, reintroducing the
+       * confusion the enum fix removed. Each heading now names its own family.
+       */
       feetTechniques: "Técnicas de saque con el pie",
-      handsTechniques: "Técnicas de saque de volea",
-      throwTechniques: "Técnicas de saque con la mano",
+      handsTechniques: "Técnicas de volea desde las manos",
+      throwTechniques: "Técnicas de lanzamiento con la mano",
       /*
        * Ruled decision 14's TWO captions. `totalInvolvements` is what the
        * report PRINTS; the timeline is what it PLOTS. Measured over 208
@@ -1470,6 +1515,169 @@ export const es = {
       // Story 2.18 Task 8.10: the Hero's top-speed tile had no unit entry at
       // all, so "km/h" was baked into its label.
       kmh: "km/h",
+    },
+  },
+  /*
+   * ------------------------ THE EXPERT LAYER (Story 2.11b) ------------------
+   *
+   * A NEW TOP-LEVEL NAMESPACE, not a branch of `tactical`: the Expert Layer is
+   * a SIBLING of the Tactical Layer, never a twelfth SectionId (ruled decision
+   * 2), and nesting its copy under `tactical.` would be the first step back
+   * toward the registry it must stay out of.
+   *
+   * `field` is FORTY keys, not forty-six. The six `offersByMovementType`
+   * columns resolve through the shipped `enums.offerMovement` bridge — adding a
+   * seventh entry there would turn i18n.test.ts's OFFER_MOVEMENT_TYPES pin red,
+   * and restating those six labels here would be two sources for one term.
+   *
+   * Domain G labels are DELIBERATELY NOT in `enums.metric`: that namespace is
+   * pinned key-for-key to KEY_STAT_FIELDS (19 Domain B fields), so one extra
+   * key there is a red suite.
+   *
+   * Ruled Spanish reused verbatim from the glossary rather than re-invented:
+   * regate (take-on) · irrupción (step-in, FINAL, 2.18 decision 2) ·
+   * rupturas de líneas (line-break) · progresión de balón · centro (cross) ·
+   * presión (pressing) · zonas de velocidad · carreras a alta velocidad, whose
+   * definition already ships the ruled table abbreviation "CARR. ALTA VEL." ·
+   * recuperaciones (forced-turnover) · balón suelto (second-ball) · sprint.
+   * `Tiros`, `Precisión de pases` and `Ofrecimientos` / `Recibidos` follow the
+   * shipped enums.metric and viz.table values for the SAME quantities rather
+   * than minting a second name for each.
+   *
+   * Newly minted here under EXPERIENCE.md:278's procedure and recorded in the
+   * story's Dev Agent Record: proyecciones (pushingOn), proyecciones con
+   * presión (pushingOnIntoPressing), recepciones de balón suelto
+   * (looseBallReceptions), disputas ganadas (possessionContestsWon),
+   * posesiones interrumpidas (possessionInterrupted), cambios de orientación
+   * (switchesOfPlay).
+   */
+  expert: {
+    pill: "EXPERTO",
+    // Ruled by the mobile mockup's own <h2>, verbatim.
+    heading: "Datos por jugador",
+    /*
+     * THE TABLES ONLY. The mockup's copy ends "— tablas por jugador y
+     * registros completos", and those "registros completos" are Story 2.11c's
+     * five event logs, which do not exist yet. Shipping the full mockup string
+     * would be a claim about content the reader cannot find. 2.11c updates
+     * this leaf when it lands.
+     */
+    summary: "En posesión · Sin posesión · Físico — tablas por jugador",
+    // UX-DR12 requires every table to STATE its default order, and this one
+    // never mutates on sort (2.11a decision 7).
+    tableCaption: "Ordenado por equipo local y dorsal.",
+    // Names the table in the ONE polite sort announcement the page owns.
+    tableName: "Tabla de datos por jugador",
+    group: {
+      // Ruled VERBATIM in EXPERIENCE.md:276. The rejected "Con balón / Sin
+      // balón" form was removed from the app by Story 2.18 decision 4 — do not
+      // reintroduce it, and do not reuse viz.phases.*, which are PHASE labels.
+      inPossession: "En posesión",
+      outOfPossession: "Sin posesión",
+      physical: "Físico",
+      // aria-label for the <md column-group ToggleGroup.
+      label: "Grupo de columnas",
+    },
+    empty: {
+      /*
+       * NAMES DOMAIN G, not "the Expert Layer" (ruled decision 10). The
+       * generic "El informe oficial no incluye esta sección." would be a false
+       * statement over a report whose other pages are present, and `players`
+       * is nullable, so this branch is reachable.
+       */
+      headline: "Sin datos por jugador para este partido.",
+      explanation: "El informe oficial de este partido no incluye las páginas por jugador.",
+    },
+    /*
+     * The 40 keyed column heads, in the contract's required[] order.
+     * The unit NEVER rides the label (ruled decision 4): metres and km/h go in
+     * the column head as `enums.unit.*`, composed at the call site, and never
+     * per cell — 46 columns of per-cell units at 11px is unreadable.
+     */
+    field: {
+      // inPossession (16 scalars; the nested offers block is six more columns
+      // resolved through enums.offerMovement).
+      passesAttempted: "Pases intentados",
+      passesCompleted: "Pases completados",
+      passCompletion: "Precisión de pases",
+      switchesOfPlay: "Cambios de orientación",
+      crossesAttempted: "Centros intentados",
+      crossesCompleted: "Centros completados",
+      lineBreaksAttempted: "Rupturas de líneas intentadas",
+      lineBreaksCompleted: "Rupturas de líneas completadas",
+      lineBreakCompletion: "Precisión de rupturas de líneas",
+      ballProgressions: "Progresiones de balón",
+      takeOns: "Regates",
+      stepIns: "Irrupciones",
+      /*
+       * "Tiros", following the shipped enums.metric.shots for the same
+       * quantity. NEVER "Intentos a puerta": "a puerta" is on the
+       * forbidden-register sweep and "al arco" is the ruled LatAm form, which
+       * this column does not need because the report counts ALL attempts, not
+       * only the on-target ones.
+       */
+      attemptsAtGoal: "Tiros",
+      goals: "Goles",
+      /*
+       * OFFER, not movement. The glossary's FINAL ruling (2.18 decision 3) is
+       * "offers to receive" -> ofrecimientos and "movement to receive" ->
+       * desmarques, and Story 2.9 already ships these two exact fields as
+       * viz.table.offersMade / offersReceived. `enums.offerMovement`'s "Sin
+       * desmarque" labels the MOVEMENT type `no-movement`, so it fixes the
+       * house term for movement, not for offer.
+       */
+      totalOffers: "Ofrecimientos",
+      offersReceived: "Ofrecimientos recibidos",
+      // outOfPossession (15).
+      tacklesMade: "Entradas",
+      tacklesWon: "Entradas ganadas",
+      blocks: "Bloqueos",
+      interceptions: "Intercepciones",
+      pressingDirect: "Presión directa",
+      pressingIndirect: "Presión indirecta",
+      duelsWonAerial: "Duelos aéreos ganados",
+      duelsWonPhysical: "Duelos físicos ganados",
+      // "disputa" is the shipped house term for a possession contest
+      // (viz.table.contestType = "Tipo de disputa").
+      possessionContestsWon: "Disputas ganadas",
+      clearances: "Despejes",
+      looseBallReceptions: "Recepciones de balón suelto",
+      /*
+       * MINTED. The report prints "Pushing On" for a defender advancing with
+       * the line; "proyección" is the established LatAm term for exactly that
+       * movement and invents no direction the source does not print.
+       */
+      pushingOn: "Proyecciones",
+      pushingOnIntoPressing: "Proyecciones con presión",
+      possessionRegains: "Recuperaciones",
+      possessionInterrupted: "Posesiones interrumpidas",
+      // physical (9). The five zones are the PAGE'S OWN km/h bands, which ride
+      // in `fieldTitle` rather than in the head text.
+      totalDistance: "Distancia total",
+      distanceZone1: "Zona 1",
+      distanceZone2: "Zona 2",
+      distanceZone3: "Zona 3",
+      distanceZone4: "Zona 4",
+      distanceZone5: "Zona 5",
+      // The ruled table abbreviation, shipped verbatim by the high-speed-run
+      // glossary definition: "En las tablas la columna se abrevia CARR. ALTA
+      // VEL."
+      highSpeedRuns: "CARR. ALTA VEL.",
+      sprints: "Sprints",
+      topSpeed: "Velocidad máxima",
+    },
+    /*
+     * `headTitle` for the six ABBREVIATED heads only — TableColumn's contract
+     * is "full term when headText is abbreviated; null otherwise", so every
+     * other column deliberately has no entry here.
+     */
+    fieldTitle: {
+      distanceZone1: "0-7 km/h",
+      distanceZone2: "7-15 km/h",
+      distanceZone3: "15-20 km/h",
+      distanceZone4: "20-25 km/h",
+      distanceZone5: "25 km/h o más",
+      highSpeedRuns: "Carreras a alta velocidad",
     },
   },
 };

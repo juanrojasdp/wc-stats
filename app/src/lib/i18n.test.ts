@@ -5,6 +5,9 @@ import { es } from "@/locales/es";
 import type { PossessionContestType } from "@/lib/contract/contract-types";
 import {
   GLOSSARY_TERMS,
+  SECTION_HEADING_MARKS,
+  SECTION_SUMMARY_MARKS,
+  findTermSpan,
   glossaryDefinitionKey,
   glossaryTermEnKey,
   glossaryTermEsKey,
@@ -17,6 +20,7 @@ import {
   sectionSummaryKey,
   sectionTitleKey,
 } from "@/lib/tactical-sections";
+import type { CollapsibleSectionId, SectionId } from "@/lib/tactical-sections";
 import { CROSS_DELIVERY_TYPES, crossDeliveryKey } from "@/viz/cross-map-model";
 import {
   DEFENSIVE_ACTION_TYPES,
@@ -684,8 +688,31 @@ describe("forbidden-register sweep (Story 2.18 Task 9.1b)", () => {
    * viz.momentum.ownGoal's "en propia puerta", which is why this sweep could
    * only go green after Task 8.2.
    */
+  /*
+   * LEADING-ANCHORED (2.18 code review). This was an unanchored substring
+   * match, so any future legitimate string containing a forbidden form INSIDE a
+   * longer word turned the build red with a register violation it did not
+   * commit — "disparada", "comparada" and "preparada" all contain "parada", and
+   * the only escape was the whole-namespace glossary exemption. `\b` does not
+   * work against accented Spanish in JS RegExp, so the boundary is spelled with
+   * a Unicode lookbehind: not preceded by a letter or digit.
+   *
+   * DELIBERATELY LEADING-ONLY — a trailing boundary would silently disarm the
+   * sweep. "clasificaci" is a PREFIX (it must still catch "clasificación" and
+   * "clasificatoria"), and the live violation this story remediated was the
+   * PLURAL "Córners"; a trailing `(?![\p{L}\p{N}])` makes both unmatchable, so
+   * the test would pass by never firing.
+   *
+   * "a puerta" is now plain "puerta": the goal-frame noun is peninsular
+   * wherever it appears (the app says "arco" everywhere), and anchoring the old
+   * two-word form on its leading "a" would have stopped catching "en propia
+   * puerta" — the exact string Task 8.2 had to remediate.
+   *
+   * [¡!] sits OUTSIDE the anchor — punctuation has no word boundary and is
+   * banned wherever it appears.
+   */
   const FORBIDDEN =
-    /portero|parada|a puerta|fuera de juego|clasificaci|chute|córner|vosotros|usted|[¡!]/i;
+    /(?<![\p{L}\p{N}])(?:portero|parada|puerta|fuera de juego|clasificaci|chute|córner|vosotros|usted)|[¡!]/iu;
 
   /*
    * The glossary DEFINITIONS are exempt, and the exemption is the point rather
@@ -717,6 +744,64 @@ describe("forbidden-register sweep (Story 2.18 Task 9.1b)", () => {
     expect(FORBIDDEN.test(es.tactical.sections["set-plays"].title)).toBe(false);
     expect(FORBIDDEN.test(es.viz.setPlays.figurePrefix)).toBe(false);
     expect(es.tactical.sections["set-plays"].title).toBe("Balón parado");
+  });
+});
+
+/*
+ * THE MARKS MUST STILL LAND — added by the 2.18 code review, and it is the
+ * guard the marking mechanism was missing.
+ *
+ * markHeading/markSummary resolve the ruled term out of the dictionary and look
+ * for it in the ALREADY-RESOLVED title or summary. A miss degrades SILENTLY to
+ * unmarked text — deliberately, because a reworded summary is a copy change and
+ * not a crash. The cost of that choice is that a copy edit can delete a
+ * section's only glossary affordance with the whole suite green: the sole pin
+ * was matches/static-output.test.ts's `expect(marked).toEqual(["momentum"])`,
+ * which exercises headingMark alone, so all four SUMMARY marks were asserted in
+ * neither locale. `set-plays` is the sharpest case — its ruled term is the
+ * singular "tiro de esquina" against a summary reading "Tiros de esquina", so
+ * it resolves only through findTermSpan's plural fallback, the most fragile
+ * path in the function.
+ *
+ * This walks the real registry against the real dictionaries in BOTH locales,
+ * so it cannot drift from what the renderer does.
+ */
+describe("every configured section mark resolves in both locales (Story 2.18)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("resolves every HEADING mark", () => {
+    for (const [id, mark] of Object.entries(SECTION_HEADING_MARKS)) {
+      for (const locale of locales) {
+        const title = t(sectionTitleKey(id as SectionId), locale);
+        const term = t(
+          locale === "es" ? glossaryTermEsKey(mark.id) : glossaryTermEnKey(mark.id),
+          locale
+        );
+        expect(findTermSpan(title, term), `${id} heading / ${locale}: "${term}" in "${title}"`)
+          .not.toBeNull();
+      }
+    }
+  });
+
+  it("resolves every SUMMARY mark", () => {
+    for (const [id, mark] of Object.entries(SECTION_SUMMARY_MARKS)) {
+      for (const locale of locales) {
+        const summary = t(sectionSummaryKey(id as CollapsibleSectionId), locale);
+        const term = t(
+          locale === "es" ? glossaryTermEsKey(mark.id) : glossaryTermEnKey(mark.id),
+          locale
+        );
+        expect(findTermSpan(summary, term), `${id} summary / ${locale}: "${term}" in "${summary}"`)
+          .not.toBeNull();
+      }
+    }
+  });
+
+  it("is not vacuous — the registry actually configures marks", () => {
+    // If a future edit empties either map, the two loops above pass trivially.
+    const configured =
+      Object.keys(SECTION_HEADING_MARKS).length + Object.keys(SECTION_SUMMARY_MARKS).length;
+    expect(configured).toBeGreaterThan(0);
   });
 });
 

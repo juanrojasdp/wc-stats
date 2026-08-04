@@ -117,7 +117,19 @@ describe.skipIf(!anyBuilt)("exported /about (AC 3)", () => {
     expect(html).toContain(es.about.title);
     // The attribution is the ALREADY-RULED string, split at its sentence
     // boundary in the component — never a second copy minted in a new key.
-    const [dataSentence, independence] = es.chrome.footer.attribution.split(". ");
+    const sentences = es.chrome.footer.attribution.split(". ");
+    /*
+     * ASSERT THE SHAPE BEFORE DESTRUCTURING (2.18 code review). This read
+     * `const [dataSentence, independence] = …split(". ")`, so a one-sentence
+     * rewording made `independence` undefined and `toContain(undefined)` threw
+     * a TypeError — the guard failed pointing at itself instead of reporting
+     * that AC 3's independence disclaimer had vanished from the page.
+     */
+    expect(
+      sentences.length,
+      "the ruled attribution must stay two sentences — AC 3 requires the independence disclaimer to stand alone"
+    ).toBeGreaterThanOrEqual(2);
+    const [dataSentence, independence] = sentences;
     expect(html).toContain(dataSentence);
     expect(html).toContain(independence);
     expect(html).toContain(es.about.methodology);

@@ -52,8 +52,9 @@ export const en: Dictionary = {
     // PROPOSED, not ruled — flagged for Juan at review (see es.ts).
     credits:
       "The site is built and maintained by one person. The design, the code and the translations are ours; the data is FIFA's.",
+    // Third person, matching credits — see the es.ts note on the person clash.
     project:
-      "This is a personal project, free and ad-free. We do not sell data, we do not charge for access, and we receive nothing from FIFA or from any club.",
+      "This is a personal project, free and ad-free. It does not sell data, it does not charge for access, and it receives nothing from FIFA or from any club.",
   },
   /*
    * THE GLOSSARY. The `es` and `en` leaves are BYTE-IDENTICAL to es.ts and that
@@ -83,7 +84,7 @@ export const en: Dictionary = {
       es: "presión",
       en: "pressing",
       definition:
-        "Organised pressure to win the ball back. The report splits time out of possession across high, mid and low pressing.",
+        "Organised pressure to win the ball back. The report publishes high, mid and low pressing as independent rates: they do not add to 100 and they are not shares of time out of possession.",
     },
     "build-up": {
       es: "salida de balón",
@@ -251,7 +252,7 @@ export const en: Dictionary = {
       definition:
         "How a goalkeeper puts the ball back in play: kicked from feet, volleyed from the hands, or thrown. The report splits each family into techniques.",
     },
-    salida: {
+    "coming-off-the-line": {
       es: "salidas",
       en: "coming off the line",
       definition: "When a goalkeeper leaves the line to cut out a cross or a through ball.",
@@ -297,16 +298,17 @@ export const en: Dictionary = {
     },
     "offers-to-receive": {
       // Decision 3's relationship, verbatim and shared with movement-to-receive.
+      // Each entry opens with its own sentence first — see the es.ts note.
       es: "ofrecimientos para recibir",
       en: "offers to receive",
       definition:
-        "An offer is a player making himself available to receive; a movement to receive is the subset of those offers in which he also moved. The report counts offers with no movement separately.",
+        "How often a team's players made themselves an option for a pass, and how often the ball reached them. An offer is a player making himself available to receive; a movement to receive is the subset of those offers in which he also moved. The report counts offers with no movement separately.",
     },
     "movement-to-receive": {
       es: "desmarques",
       en: "movement to receive",
       definition:
-        "An offer is a player making himself available to receive; a movement to receive is the subset of those offers in which he also moved. The report counts offers with no movement separately.",
+        "The offers in which the player also made a move, split across six types. An offer is a player making himself available to receive; a movement to receive is the subset of those offers in which he also moved. The report counts offers with no movement separately.",
     },
     "defensive-actions": {
       es: "acciones defensivas",
@@ -327,9 +329,8 @@ export const en: Dictionary = {
     // language, so its prefix does not swap with the interface.
     esPrefix: "es:",
     enPrefix: "en:",
-    metaTitle: "Glossary — WC Stats",
-    metaDescription:
-      "The tactical and statistical terms from the 2026 World Cup that the site uses, in Spanish and English.",
+    // No metaTitle/metaDescription — see the es.ts note: /glossary's metadata
+    // export was removed so both new routes wait on the same open ruling.
   },
   notFound: {
     message: "This page does not exist. Were you looking for a match?",
@@ -380,6 +381,8 @@ export const en: Dictionary = {
       invalidExplanation: "We are aware of it. Please try again later.",
       crashed: "We could not display the tactical analysis for this match.",
       crashedExplanation: "The rest of the page is still available.",
+      crashedExpert: "We could not display the per-player data for this match.",
+      crashedExpertExplanation: "The tactical analysis and the rest of the page are still available.",
     },
   },
   tactical: {
@@ -507,6 +510,7 @@ export const en: Dictionary = {
       sortAscending: "ascending",
       sortDescending: "descending",
       sortCleared: "The table's original order has been restored.",
+      position: "Position",
     },
     cluster: {
       dialogLabel: "Events at this point",
@@ -905,6 +909,74 @@ export const en: Dictionary = {
       km: "km",
       m: "m",
       kmh: "km/h",
+    },
+  },
+  expert: {
+    pill: "EXPERT",
+    heading: "Per-player data",
+    // Tables only — the "full logs" half of the mockup's copy is Story 2.11c's.
+    summary: "In possession · Out of possession · Physical — per-player tables",
+    tableCaption: "Sorted by home team and shirt number.",
+    tableName: "Per-player data table",
+    group: {
+      inPossession: "In possession",
+      outOfPossession: "Out of possession",
+      physical: "Physical",
+      label: "Column group",
+    },
+    empty: {
+      headline: "No per-player data for this match.",
+      explanation: "The official report for this match does not include the per-player pages.",
+    },
+    field: {
+      passesAttempted: "Passes attempted",
+      passesCompleted: "Passes completed",
+      passCompletion: "Pass completion",
+      switchesOfPlay: "Switches of play",
+      crossesAttempted: "Crosses attempted",
+      crossesCompleted: "Crosses completed",
+      lineBreaksAttempted: "Line breaks attempted",
+      lineBreaksCompleted: "Line breaks completed",
+      lineBreakCompletion: "Line break completion",
+      ballProgressions: "Ball progressions",
+      takeOns: "Take-ons",
+      stepIns: "Step-ins",
+      attemptsAtGoal: "Attempts at goal",
+      goals: "Goals",
+      totalOffers: "Offers to receive",
+      offersReceived: "Offers received",
+      tacklesMade: "Tackles made",
+      tacklesWon: "Tackles won",
+      blocks: "Blocks",
+      interceptions: "Interceptions",
+      pressingDirect: "Direct pressing",
+      pressingIndirect: "Indirect pressing",
+      duelsWonAerial: "Aerial duels won",
+      duelsWonPhysical: "Physical duels won",
+      possessionContestsWon: "Possession contests won",
+      clearances: "Clearances",
+      looseBallReceptions: "Loose-ball receptions",
+      pushingOn: "Pushing on",
+      pushingOnIntoPressing: "Pushing on into pressing",
+      possessionRegains: "Possession regains",
+      possessionInterrupted: "Possession interrupted",
+      totalDistance: "Total distance",
+      distanceZone1: "Zone 1",
+      distanceZone2: "Zone 2",
+      distanceZone3: "Zone 3",
+      distanceZone4: "Zone 4",
+      distanceZone5: "Zone 5",
+      highSpeedRuns: "HIGH-SPD RUNS",
+      sprints: "Sprints",
+      topSpeed: "Top speed",
+    },
+    fieldTitle: {
+      distanceZone1: "0-7 km/h",
+      distanceZone2: "7-15 km/h",
+      distanceZone3: "15-20 km/h",
+      distanceZone4: "20-25 km/h",
+      distanceZone5: "25 km/h and above",
+      highSpeedRuns: "High-speed runs",
     },
   },
 };

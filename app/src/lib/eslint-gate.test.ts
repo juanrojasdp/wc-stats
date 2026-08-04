@@ -298,6 +298,73 @@ describe("i18n gate reaches object-shaped and recharts props (Story 2.18)", () =
     );
     expect(errors).toEqual([]);
   });
+
+  /*
+   * FOUR RESIDUAL SHAPES the first closure left open, found by the 2.18 code
+   * review. Each is the same hole decision 8 exists to close, wearing a
+   * different AST: a quoted object key, a ternary inside the object member, a
+   * ternary inside <Label value>, and the namespaced element spelling.
+   */
+  it("catches a string literal under a QUOTED object key", async () => {
+    // key.name exists only for the identifier spelling; `"value"` has key.value.
+    const errors = await gateErrorsFor(
+      `export function P() { return <YAxis label={{ "value": "hardcoded" }} />; }`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("catches a hardcoded branch of a TERNARY inside an object-shaped label", async () => {
+    const errors = await gateErrorsFor(
+      `import { t } from "@/lib/i18n";
+       export function P({ loading }: { loading: boolean }) {
+         return <YAxis label={{ value: loading ? t("app.siteName") : "Cargando…" }} />;
+       }`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("catches a hardcoded branch of a TERNARY on <Label value>", async () => {
+    const errors = await gateErrorsFor(
+      `import { t } from "@/lib/i18n";
+       export function P({ loading }: { loading: boolean }) {
+         return <Label value={loading ? t("app.siteName") : "hardcoded"} />;
+       }`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("catches a bare string on a NAMESPACED <Recharts.Label value>", async () => {
+    const errors = await gateErrorsFor(
+      `export function P() { return <Recharts.Label value="hardcoded" />; }`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("still leaves a t()-valued ternary on <Label value> alone", async () => {
+    // The counterpart the four above must not break: both branches are t().
+    const errors = await gateErrorsFor(
+      `import { t } from "@/lib/i18n";
+       export function P({ loading }: { loading: boolean }) {
+         return <Label value={loading ? t("app.siteName") : t("app.siteName")} />;
+       }`
+    );
+    expect(errors).toEqual([]);
+  });
+
+  it("KNOWN LIMIT: a computed object key is not statically reachable", async () => {
+    /*
+     * Recorded, not fixed. A computed key has neither key.name nor key.value,
+     * so no selector can see it; the same is true of an aliased import
+     * (`import { Label as L }`), where the binding is not the identifier. Both
+     * are shapes this codebase does not write. This test documents the edge of
+     * the gate so a later reader does not mistake it for coverage.
+     */
+    const errors = await gateErrorsFor(
+      `const K = "value";
+       export function P() { return <YAxis label={{ [K]: "hardcoded" }} />; }`
+    );
+    expect(errors).toEqual([]);
+  });
 });
 
 /*

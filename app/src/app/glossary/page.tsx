@@ -1,7 +1,4 @@
-import type { Metadata } from "next";
-
 import { GlossaryContent } from "@/components/GlossaryContent";
-import { t } from "@/lib/i18n";
 
 /*
  * /glossary (Story 2.18, AC 2) — a thin server page whose body is a client
@@ -10,21 +7,16 @@ import { t } from "@/lib/i18n";
  * it does not escape the i18n import seam (a known open gap this story is told
  * not to trigger).
  *
- * The metadata strings come from dedicated keys rather than being composed, so
- * no pure helper is needed: the gate flags a template or concatenation that is
- * the DIRECT VALUE of a title:/description: property, and a t() call is
- * neither. This is layout.tsx's shipped pattern.
- *
- * KNOWN AND FILED, not fixed here: <title> and OG stay Spanish after an EN
- * toggle, which makes the en.* metadata keys unreachable. That is one of the
- * open decisions awaiting a human ruling; this route makes it one route worse
- * and says so in the ledger rather than resolving it.
+ * NO metadata export, deliberately, and this MATCHES /about rather than
+ * diverging from it (2.18 code review). This route shipped a metadata export
+ * while /about's docblock refused one on the grounds that the <title>/OG-
+ * stays-Spanish decision is open and "adding one here would quietly take that
+ * decision" — so the product had one new page with a title and one without,
+ * and the en.glossaryPage.meta* keys were dead by construction, which is the
+ * pattern AC 1's own BINDING prohibits. Both routes now wait on the same
+ * ruling. The keys are removed rather than left unreachable; re-mint them with
+ * the route metadata when the <title>/OG decision lands.
  */
-export const metadata: Metadata = {
-  title: t("glossaryPage.metaTitle"),
-  description: t("glossaryPage.metaDescription"),
-};
-
 export default function GlossaryPage() {
   return <GlossaryContent />;
 }

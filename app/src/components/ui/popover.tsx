@@ -74,6 +74,18 @@ function PopoverContent({
          */
         "z-10 flex w-56 max-w-full flex-col gap-1 overflow-y-auto rounded-sm border border-hairline bg-surface-overlay p-3 shadow-overlay",
         "max-h-[60vh]",
+        /*
+         * TYPOGRAPHY RESET, and it belongs HERE rather than at a call site
+         * precisely BECAUSE there is no portal: the panel is a DOM child of
+         * whatever marked the term, so it inherits that element's text
+         * treatment. The Hero's xG trigger sits inside `type-stat-label
+         * text-center`, which is uppercase, centred and tracked at 0.08em — so
+         * the definition, the counterpart subtitle and the link all rendered
+         * centred and letter-spaced, unlike every other popover on the site.
+         * `type-body`/`type-caption` set neither property, so nothing else
+         * resets it. Every future marked surface gets this for free.
+         */
+        "text-left normal-case tracking-normal",
         className
       )}
       {...props}

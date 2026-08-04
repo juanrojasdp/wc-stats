@@ -20,6 +20,14 @@ import { useT } from "@/lib/i18n-provider";
  * Split the ruled attribution at its sentence boundary. Degrades to the whole
  * string in one paragraph if the copy is ever reworded into one sentence — a
  * copy change must not blank half the page.
+ *
+ * DEGRADING KEEPS THE TEXT ON THE PAGE, which is the point (2.18 code review
+ * hardened the guard around it, not this function): AC 3 requires /about to
+ * carry the independence disclaimer, and the ruled attribution's SECOND
+ * sentence is that disclaimer. If the split ever misses, everything still
+ * renders in one paragraph rather than the disclaimer silently disappearing —
+ * and static-output.test.ts now asserts the two-sentence shape explicitly, so
+ * the AC failure is reported as an AC failure rather than as a broken test.
  */
 function splitAttribution(full: string): { data: string; independence: string | null } {
   const at = full.indexOf(". ");

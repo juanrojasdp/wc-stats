@@ -72,9 +72,33 @@ export default defineConfig([
          *    includes numbers, booleans and null, and both shipped charts pass
          *    numeric `angle`, `position` and `offset` values.
          */
+        /*
+         * 3. Reached by :matches on key.name OR key.value, because a STRING
+         *    key is a different AST shape: `label={{ value: "…" }}` has
+         *    key.name === "value", but `label={{ "value": "…" }}` has no
+         *    key.name at all — it has key.value. Keying only on the identifier
+         *    form let the quoted spelling through silently (2.18 code review).
+         *    A computed key (`label={{ [K]: "…" }}`) has neither and is not
+         *    reachable by any static selector; it is not a shape this codebase
+         *    writes, and the fixtures record that limit.
+         */
         {
           selector:
-            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-placeholder|aria-roledescription|aria-braillelabel|aria-valuetext|title|alt|placeholder|label|message|text|description|caption|heading|tooltip)$/] JSXExpressionContainer ObjectExpression > Property[key.name=/^(value|children)$/] > :matches(Literal[raw=/^[\"']/], TemplateLiteral)",
+            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-placeholder|aria-roledescription|aria-braillelabel|aria-valuetext|title|alt|placeholder|label|message|text|description|caption|heading|tooltip)$/] JSXExpressionContainer ObjectExpression > Property:matches([key.name=/^(value|children)$/], [key.value=/^(value|children)$/]) > :matches(Literal[raw=/^[\"']/], TemplateLiteral)",
+          message: "User-facing strings must come from the locale layer (t()).",
+        },
+        /*
+         * The ternary/concatenation form of the same hole. The direct-child
+         * combinator above stops at `value: "…"`, so
+         * `label={{ value: loading ? t("x") : "Cargando…" }}` and
+         * `label={{ value: t("x") + " (" + unit + ")" }}` both shipped clean.
+         * This mirrors selector #3 in the plain-prop family. Still constrained
+         * to STRING literals, so the numeric angle/offset values both shipped
+         * charts pass inside `label={{…}}` stay legal.
+         */
+        {
+          selector:
+            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-placeholder|aria-roledescription|aria-braillelabel|aria-valuetext|title|alt|placeholder|label|message|text|description|caption|heading|tooltip)$/] JSXExpressionContainer ObjectExpression > Property:matches([key.name=/^(value|children)$/], [key.value=/^(value|children)$/]) :matches(BinaryExpression, LogicalExpression, ConditionalExpression) > :matches(Literal[raw=/^[\"']/], TemplateLiteral)",
           message: "User-facing strings must come from the locale layer (t()).",
         },
         /*
@@ -100,6 +124,32 @@ export default defineConfig([
         {
           selector:
             "JSXElement[openingElement.name.name=/^(Label|LabelList)$/] > JSXOpeningElement > JSXAttribute[name.name=\"value\"] > JSXExpressionContainer > :matches(Literal[raw=/^[\"']/], TemplateLiteral)",
+          message: "User-facing strings must come from the locale layer (t()).",
+        },
+        /*
+         * The ternary/concatenation form for the element-scoped `value`, and
+         * the namespaced element spelling. Two gaps the first closure left
+         * (2.18 code review):
+         *
+         * - `<Label value={cond ? t("x") : "hardcoded"} />` was unreachable:
+         *   the direct-child combinator above stops at the ConditionalExpression,
+         *   and the shared ternary selector deliberately excludes `value` from
+         *   its name list (SiteHeader's ToggleGroupItem state tokens).
+         * - `<Recharts.Label value="…" />` is a JSXMemberExpression, which has
+         *   no `name.name` — matched here via `name.property.name`.
+         *
+         * NOT REACHABLE and deliberately so: an aliased import
+         * (`import { Label as L }`) changes the identifier, and no static
+         * selector can follow the binding. Recorded rather than papered over.
+         */
+        {
+          selector:
+            "JSXElement[openingElement.name.name=/^(Label|LabelList)$/] > JSXOpeningElement > JSXAttribute[name.name=\"value\"] JSXExpressionContainer :matches(BinaryExpression, LogicalExpression, ConditionalExpression) > :matches(Literal[raw=/^[\"']/], TemplateLiteral)",
+          message: "User-facing strings must come from the locale layer (t()).",
+        },
+        {
+          selector:
+            "JSXElement[openingElement.name.property.name=/^(Label|LabelList)$/] > JSXOpeningElement > JSXAttribute[name.name=\"value\"] :matches(Literal[raw=/^[\"']/], TemplateLiteral)",
           message: "User-facing strings must come from the locale layer (t()).",
         },
         {

@@ -53,7 +53,18 @@ function GlossaryEntry({ termId }: { termId: GlossaryTermId }) {
   const glossKey = GLOSSARY_GLOSS_KEY[termId];
   const gloss = identical && glossKey !== undefined ? t(glossKey) : null;
   const policy = GLOSSARY_POLICY[termId];
-  const keepsEnglish = policy === "jargon" || policy === "tooltip";
+  /*
+   * The jargon note explains that the ENGLISH term is deliberately retained
+   * because no Spanish form would be recognised — so it must not render on an
+   * entry that is, three lines above, showing the reader a Spanish form. `xg`
+   * carries the ruled gloss "goles esperados" and a definition that opens with
+   * those same two words, and shipped the note anyway: the page told the reader
+   * both the Spanish form and that there isn't one (2.18 code review).
+   *
+   * Same shape as decision 13's own rule for the counterpart subtitle —
+   * suppress where the line would contradict what is already on screen.
+   */
+  const keepsEnglish = (policy === "jargon" || policy === "tooltip") && gloss === null;
 
   return (
     <div className="border-t border-hairline py-4">

@@ -153,10 +153,19 @@ export function StoryStatTiles({
            * screen-reader expansion of an abbreviation — a regression no test in
            * this harness can see.
            */
-          <span className="inline-flex items-center gap-1 normal-case">
+          /*
+           * A <div>, NOT a <span> (2.18 code review). Decision 9 forbids
+           * portalling Popover.Content, so the panel mounts as a DOM sibling of
+           * its trigger — i.e. as a child of THIS element. A <div> inside a
+           * <span> is an invalid content model, and React's validateDOMNesting
+           * warns on `p > div` but NOT on `span > div`, which is why the
+           * TacticalSection summary case was caught during development and this
+           * one was not. Same fix, same reason.
+           */
+          <div className="inline-flex items-center gap-1 normal-case">
             <GlossaryTerm termId="xg">{t("match.hero.xg")}</GlossaryTerm>
             <span className="sr-only">{t("match.hero.xgExpansion")}</span>
-          </span>
+          </div>
         }
         homeValue={formatDecimal(home.expectedGoals, locale, 2)}
         awayValue={formatDecimal(away.expectedGoals, locale, 2)}

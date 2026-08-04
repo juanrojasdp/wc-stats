@@ -60,6 +60,37 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-04
+# 2026-08-04: story 2-11b context created and moved to ready-for-dev — the Expert Layer shell and
+#             the Domain G per-player tables. Baseline moved 163fa20 -> 3d27ed0, and the re-verify
+#             at that baseline found THREE CLAIMS IN THE SPLIT STUB HAD GONE STALE, each of which
+#             would have cost the dev a wrong implementation: (1) the TacticalErrorBoundary
+#             copy-override parameterisation the stub rules as work to do ALREADY SHIPPED in 2.18
+#             (optional headlineKey/explanationKey) — only the hardcoded console label remains, and
+#             it must be named logLabel because `label` is on the i18n gate's sixteen gated prop
+#             names; (2) `enums.unit.m` ALREADY EXISTS alongside km and kmh, so the metres ruling
+#             costs no minting; (3) the stub's "exhaustiveness test" worry is misaimed — there is no
+#             orphan-key or top-level-namespace assertion anywhere, so `expert.*` is safe; what
+#             actually binds is the AD-12 mirroring test and the forbidden-register sweep, whose
+#             `a puerta` clause a naive "Intentos a puerta" label would trip.
+#             THE STORY'S REAL COST WAS FOUND AT THE TABLE PRIMITIVE, not the shell: 2.11a's
+#             DataTable ships FOUR props, `border-collapse`, and no scroll container, so AC 2's
+#             sticky-header residual and AC 3's sticky player column are unreachable without
+#             extending it. Ruled additive rather than forked (2.11a decision 1, ruled by Juan, is
+#             ONE shared table): two optional presentation fields on TableColumn, `sticky` and
+#             `tableName` on DataTable, every default path byte-identical. Under `border-collapse`
+#             the TABLE paints cell borders, so a sticky header's bottom border scrolls away —
+#             border-separate is mandatory, not cosmetic. The z-ladder is spelled out because a flat
+#             one fails silently: <tbody> is later in the DOM than <thead>, so equal z means body
+#             cells paint over header cells on diagonal scroll.
+#             ONE MEASUREMENT IS LEFT TO THE DEV RATHER THAN GUESSED: at 390px a three-column sticky
+#             run leaves ~146px of data columns. The task requires measuring it and records a
+#             PRE-AUTHORISED escape (a <md team ToggleGroup, PitchPanel precedent) if fewer than two
+#             data columns are visible — a decision rule instead of a coin flip.
+#             Also ruled here, both routed by the 2.11a review: the announcement-ambiguity mechanism
+#             ships (optional tableName) while the ~23 remaining table identifiers re-file, since
+#             2.11b adds exactly ONE table and cannot verify the multi-table case; and
+#             PendingSectionPanel is KEPT with its delete re-routed — the Expert Layer's absence
+#             state is a real EmptyStatePanel, so it declines the shell 2.10 decision 20 offered it.
 # 2026-08-04: story 2-18 implemented and moved to review — the TERMINOLOGY GATE closes, plus
 #             /glossary (42 terms), /about filled, and the project's FIRST WCAG 1.4.13 surface.
 #             THE STORY'S OWN ABORT RULE FIRED MID-IMPLEMENTATION and was escalated rather than
@@ -131,6 +162,61 @@ last_updated: 2026-08-04
 #             remediated strings), so it is an ATTRIBUTION defect only. Ruled per this repo's own
 #             precedent — the 1.14 review's ruling on commit 5344fac — RECORD IT, DO NOT REPAIR
 #             HISTORY. A reviewer looking for 2.18's diff must read 54f7093.
+# 2026-08-04: story 2-18 code review — 5 decisions ruled, 23 patches applied, 5 deferred,
+#             4 dismissed; review -> done. Three adversarial layers over 892766c..HEAD scoped to
+#             the story's own File List (the concurrent session's 22 files excluded); 58 raw
+#             findings deduped to 37, each re-read against the code before rating.
+#             TWO REAL FOCUS DEFECTS IN THE POPOVER, both on the one path the harness cannot test
+#             and both invisible to tsc, ESLint and a jsdom-less suite. (1) The hover grace timer
+#             read only the two POINTER refs, never focus — so Tab to the trigger, Tab to the link,
+#             then let the mouse cross the term and leave, and 180ms later the panel unmounted under
+#             the focused link, onCloseAutoFocus took its focus-return branch and the trigger's focus
+#             handler RE-OPENED it. (2) focusInPanel was never reset on close: removing a focused
+#             node fires no focusout, so after the first Esc-from-inside the flag stayed latched and
+#             the NEXT close yanked focus across the page — verbatim the failure onCloseAutoFocus
+#             exists to prevent, and the reason Task 11.4(e) passed without covering it. Also fixed:
+#             the panel never closed on focus-out, and single-open eviction left pointer refs stale
+#             so a popover could stick open with the pointer nowhere near it.
+#             A FALSE COPY CLAIM ON THE TERMINOLOGY-GATE STORY ITSELF: glossary.pressing.definition
+#             said the report "reparte el tiempo sin balón entre presión alta, media y baja" —
+#             contradicting its own sibling glossary.phases-of-play entry, the shipped
+#             viz.pressing.note, and the NINE-value outOfPossessionPhase enum. Exactly the defect
+#             class this story exists to prevent.
+#             THE <p>-><div> DEPARTURE WAS ONE OF THREE SITES: the non-portalled panel also mounts
+#             inside <h2> (momentum's heading mark) and inside <span> (the Hero's xG). React's
+#             validateDOMNesting warns on p>div but NOT on h2>div or span>div, which is precisely
+#             why Task 11.14's zero-console check caught one and was structurally unable to see the
+#             other two. Juan ruled: restructure both containers, keep decision 9's no-portal clause
+#             (it is what makes the Tab-reachable link possible). The residual accessible-name
+#             absorption while a panel is open is FILED, not faked — it follows from the no-portal
+#             rule and cannot be restructured away.
+#             TASK 8.6 WAS HALF-APPLIED: realigning enums.distributionType left the es technique
+#             headings carrying "Técnicas de saque de volea" / "Técnicas de saque con la mano" —
+#             the two labels 8.6 replaced BECAUSE they were confusable — printed one line below the
+#             corrected family labels. en was consistent; only es was left half-migrated.
+#             ALSO: decision 11 violated by the Spanish id `salida` (renamed coming-off-the-line);
+#             decision 12's "do not hardcode the count" violated in two comments while the ledger
+#             asserted "no count is hardcoded anywhere in this story"; /glossary shipped a metadata
+#             export on the exact grounds /about refuses one, minting dead en keys (Juan ruled: drop
+#             it, both routes now wait on the same open ruling); the /glossary xG entry rendered
+#             "goles esperados" and then told the reader no Spanish form exists; four of the five
+#             marks had NO guard that they still resolve (now asserted in both locales against the
+#             real registry); findTermSpan had no LEADING word boundary; isAlwaysExpandedSectionId
+#             hand-copied a partition the codebase derives; four residual shapes of the ESLint hole
+#             closed (quoted object key, ternary-in-object, ternary-on-Label, namespaced element).
+#             RECORD REPAIRED: a superseded pause-time Completion Notes block (THREE departures /
+#             suite 609) contradicted the final one on the two numbers a reader most needs and was
+#             removed; the co-commit disclosure named one co-tenant when the diff carries two — the
+#             2.10 review's locale work was in there un-attributed, and the goalkeeping-heading
+#             defect above sits exactly on that seam; five differently-discharged subtasks recorded.
+#             VERIFIED IN AN ISOLATED WORKTREE at 3d27ed0, and that was necessary rather than
+#             fastidious: the concurrent session's in-flight 2.11b files broke the shared tree three
+#             times (untracked expert-model.ts, a viz.table.position leaf in es.ts but not en.ts, an
+#             undefined ExpertLayer). In isolation the full chain is green — eslint --max-warnings 0,
+#             tsc --noEmit, assert:schema-version, next build (all five routes exporting), copy-data
+#             — and the suite is 670/24 with 0 failures, with the static-output guards run against a
+#             FRESHLY BUILT out/ (four patches change strings those guards assert and one renames a
+#             glossary id the anchors are built from, so a stale export would have proved nothing).
 # 2026-08-04: story 2-11a implemented and moved to review — the ONE sortable data-table contract.
 #             ALL TWENTY INSTANCES ACROSS ALL TEN FILES RETROFITTED AND ALL TEN PRIVATE DataTable
 #             COPIES DELETED. Re-counted at Task 1.2 rather than trusted (10 files / 20 instances,
@@ -2137,7 +2223,7 @@ development_status:
   # Epic story 2.11 is SPLIT three ways (ruled by Juan 2026-08-04 at story creation) — see the
   # 2026-08-04 note above. 2.11b depends on 2.11a; 2.11c depends on both. epics.md is NOT edited.
   2-11a-sortable-data-table-contract: done
-  2-11b-expert-layer-per-player-tables: backlog
+  2-11b-expert-layer-per-player-tables: in-progress
   2-11c-expert-layer-event-logs: backlog
   2-12-tournament-hub-results-standings: backlog
   2-13-tournament-leaderboards: backlog
@@ -2145,7 +2231,7 @@ development_status:
   2-15-player-profile: backlog
   2-16-team-profile: backlog
   2-17-comparison-mode: backlog
-  2-18-glossary-about-terminology-completion: review
+  2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
   2-19-performance-accessibility-hardening-real-data-swap-launch: backlog
   epic-2-retrospective: optional

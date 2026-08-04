@@ -68,7 +68,17 @@ export function TacticalSection({
   children: ReactNode;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  /*
+   * HTMLElement, not HTMLHeadingElement: the collapsible branch renders an <h2>
+   * and the always-expanded branch a <div role="heading"> (see below). React's
+   * `ref` prop is invariant in the element type, so a RefObject<HTMLElement>
+   * cannot be handed to either JSX site directly — both assign through the
+   * callback form below, which is contravariant and accepts both.
+   */
+  const headingRef = useRef<HTMLElement | null>(null);
+  const setHeadingRef = (node: HTMLElement | null) => {
+    headingRef.current = node;
+  };
 
   /*
    * AC 1 and UX-DR6 both say "focus to revealed heading", and that is what
@@ -111,7 +121,7 @@ export function TacticalSection({
       {collapsible ? (
         <>
           <h2
-            ref={headingRef}
+            ref={setHeadingRef}
             id={headingId}
             tabIndex={-1}
             className="type-headline text-ink-primary"
@@ -162,14 +172,32 @@ export function TacticalSection({
           ) : null}
         </>
       ) : (
-        <h2
-          ref={headingRef}
+        /*
+         * role="heading" on a <div>, NOT a bare <h2> (2.18 code review). This is
+         * the ONLY branch that renders `title` as a direct child, and `title` is
+         * where the two never-collapsible sections mark their glossary term
+         * (decision 6). Decision 9 forbids portalling Popover.Content, so the
+         * panel mounts as a DOM sibling of its trigger — inside this element.
+         * <h1>-<h6> take PHRASING content only, so a <div> panel inside one is
+         * an invalid content model, and React's validateDOMNesting warns on
+         * `p > div` but not on `h2 > div`, which is why the summary case was
+         * caught during development and this one was not.
+         *
+         * role="heading" + aria-level={2} is the exact ARIA equivalent of <h2>:
+         * same level, same outline position, same aria-labelledby target for the
+         * <section>, and tabIndex={-1} focus behaves identically — while the
+         * content model becomes flow, which is what the panel needs.
+         */
+        <div
+          ref={setHeadingRef}
           id={headingId}
+          role="heading"
+          aria-level={2}
           tabIndex={-1}
           className="type-headline text-ink-primary"
         >
           {title}
-        </h2>
+        </div>
       )}
 
       {/*

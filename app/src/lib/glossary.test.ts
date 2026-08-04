@@ -55,7 +55,7 @@ const EXPECTED_ORDER: readonly GlossaryTermId[] = [
   "goalkeeper",
   "save",
   "distribution",
-  "salida",
+  "coming-off-the-line",
   "one-on-one",
   "defender",
   "midfielder",
@@ -96,7 +96,7 @@ describe("GLOSSARY_TERMS (ruled decision 10)", () => {
     for (const id of ["goal", "on-target", "off-target", "blocked", "incomplete"] as const) {
       expect(GLOSSARY_TERMS).toContain(id);
     }
-    for (const id of ["distribution", "salida", "one-on-one"] as const) {
+    for (const id of ["distribution", "coming-off-the-line", "one-on-one"] as const) {
       expect(GLOSSARY_TERMS).toContain(id);
     }
     for (const id of ["goalkeeper", "defender", "midfielder", "forward"] as const) {
@@ -108,14 +108,17 @@ describe("GLOSSARY_TERMS (ruled decision 10)", () => {
     // AC 1's "implemented verbatim" is discharged HERE for the rows whose
     // surfaces ship in 2.11-2.16: a real es entry with a real definition, not a
     // dead viz.*/enums.* key. The scaffolding rows (result letters & standings
-    // columns, standings / leaderboards) are discharged in the locale files.
+    // columns, standings / leaderboards, fouls / duels) get no glossary id and
+    // are NOT discharged anywhere yet — their surfaces ship in 2.11-2.16 and
+    // minting keys for an absent surface is the dead-key defect AC 1 prohibits.
+    // They are deferred by name in deferred-work.md (2.18 code review).
     for (const id of [
       "speed-zones",
       "high-speed-run",
       "take-on",
       "step-in",
       "offside",
-      "salida",
+      "coming-off-the-line",
       "one-on-one",
     ] as const) {
       expect(GLOSSARY_TERMS).toContain(id);
