@@ -161,3 +161,63 @@ a live trap for Story 1.16's first real emission.
 - `cd app && npm run assert:schema-version` -- expected: "7 artifact(s) at schemaVersion 3".
 - `cd app && npx vitest run src/lib/i18n.test.ts src/lib/glossary.test.ts` -- expected: green, tripwires intact.
 - `git status --short` -- expected: no `app/src` path staged except `app/src/lib/contract/`.
+
+## Suggested Review Order
+
+**The contract change itself**
+
+- Entry point: the one array value that makes the map heterogeneous — read this first.
+  [`common.schema.json:113`](../../contract/common.schema.json#L113)
+
+- The enum's two new bare values and the description that tells consumers to expect string OR array.
+  [`common.schema.json:105`](../../contract/common.schema.json#L105)
+
+- The durable AD-14 record: both change requests, CR-2's rejected alternatives, and what the filed recipe got wrong.
+  [`README.md:471`](../../contract/README.md#L471)
+
+- The riding correction — Story 1.6 disproved the old claim; the flip itself is 1.16's.
+  [`match-bundle.schema.json:198`](../../contract/match-bundle.schema.json#L198)
+
+**Production behaviour (the only code path that reads the change)**
+
+- Compatible outcomes are now DERIVED from the contract, not overridden locally.
+  [`attempts.py:134`](../../pipeline/markers/attempts.py#L134)
+
+- The frozen mirror, now tuple-valued for the one dual-colour detail.
+  [`attempts.py:96`](../../pipeline/markers/attempts.py#L96)
+
+- The sole consumer. Unchanged by design — the widening kept its `dict[str, tuple]` shape.
+  [`linking.py:222`](../../pipeline/markers/linking.py#L222)
+
+**The version bump — six declarations, not one**
+
+- The per-artifact `const` stamp; four sibling schemas carry the same edit.
+  [`match-bundle.schema.json:26`](../../contract/match-bundle.schema.json#L26)
+
+- The AD-14 flow, rewritten so the next bump author doesn't repeat the omission.
+  [`README.md:542`](../../contract/README.md#L542)
+
+- The unlisted fourth consumer: the version hardcoded in a test assert.
+  [`test_contract_schemas.py:171`](../../pipeline/tests/test_contract_schemas.py#L171)
+
+**Tests — where the review found the real problems**
+
+- Was tautological after the comprehension; now asserts against the contract's keys, plus a non-empty guard.
+  [`test_markers_attempts.py:122`](../../pipeline/tests/test_markers_attempts.py#L122)
+
+- Lost its exact-map pin under an otherwise-fair relaxation; both asserts now stand.
+  [`test_markers_attempts.py:174`](../../pipeline/tests/test_markers_attempts.py#L174)
+
+- Exact equality plus a raw value-TYPE pin, so 1-element arrays can't drift in silently.
+  [`test_markers_attempts.py:101`](../../pipeline/tests/test_markers_attempts.py#L101)
+
+- Both asserts rewritten — the subset check raised `TypeError` on an array value.
+  [`test_fixtures.py:748`](../../pipeline/tests/test_fixtures.py#L748)
+
+**Peripherals**
+
+- Version-only re-pins; no fixture content moved.
+  [`m001-mexico-south-africa.json`](../../data/fixtures/matches/m001-mexico-south-africa.json)
+
+- Generated, never hand-edited; both trees regenerated and byte-identical.
+  [`contract-types.d.ts:1295`](../../contract/generated/contract-types.d.ts#L1295)
