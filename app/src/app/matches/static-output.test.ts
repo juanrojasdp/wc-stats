@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { readMatchBundle, readTournament } from "@/lib/build-data";
+import { findTermSpan, headingMark } from "@/lib/glossary";
 import { SECTION_IDS } from "@/lib/tactical-sections";
 import { es } from "@/locales/es";
 
@@ -173,6 +174,35 @@ describe.skipIf(!anyBuilt)("m074 Hero markup — own goal, shoot-out, knockout (
  * that absence is the assertion. A regression here means someone moved the
  * layer to the build-time path and broke the rendering split.
  */
+/*
+ * STORY 2.18 Task 9.7 — the title half of this guard DEGRADES, and the fix is
+ * to re-anchor it rather than delete it.
+ *
+ * Once a heading is fragmented by term marking, the full title never appears as
+ * one contiguous run in ANY markup, so `not.toContain(title)` becomes trivially
+ * true and would stay green through exactly the regression it exists to catch.
+ * Today that is "Línea de momentum", which renders as "Línea de " + a marked
+ * "momentum". The `id` half is unaffected and is NOT the thing being fixed.
+ *
+ * The replacement asserts on the longest contiguous run of each title that
+ * carries no glossary term — computed from the SAME pure marking table the
+ * renderer uses, so the guard and the component cannot drift.
+ */
+function longestUnmarkedRun(id: (typeof SECTION_IDS)[number]): string {
+  const title = es.tactical.sections[id].title;
+  const mark = headingMark(id);
+  if (mark === null) {
+    return title;
+  }
+  const term = es.glossary[mark.id].es;
+  const span = findTermSpan(title, term);
+  if (span === null) {
+    return title;
+  }
+  const runs = [title.slice(0, span.start), title.slice(span.end)].map((run) => run.trim());
+  return runs.reduce((longest, run) => (run.length > longest.length ? run : longest), "");
+}
+
 describe.skipIf(!anyBuilt)("the Tactical Layer stays off the build-time path (AR-11)", () => {
   it("exports no Tactical section markup — all eleven ids and titles", () => {
     for (const entity of readTournament().entities.matches) {
@@ -184,10 +214,30 @@ describe.skipIf(!anyBuilt)("the Tactical Layer stays off the build-time path (AR
         expect(html, `${entity.matchId} exports id="${id}"`).not.toContain(`id="${id}"`);
         // The pre-rendered document is Spanish canonical; the section titles
         // are the copy that would appear if the layer were server-rendered.
-        const { title } = es.tactical.sections[id];
-        expect(html, `${entity.matchId} exports the "${id}" title`).not.toContain(title);
+        const run = longestUnmarkedRun(id);
+        expect(html, `${entity.matchId} exports the "${id}" title`).not.toContain(run);
       }
     }
+  });
+
+  it("the re-anchored runs are non-vacuous and actually shorter where a heading is marked", () => {
+    /*
+     * A guard that asserts the absence of "" passes on every document ever
+     * written. This pins that every run is substantial, and that the ONE marked
+     * heading really did shorten — if term marking is later removed, this test
+     * goes red and tells the next author to simplify the guard back.
+     */
+    const marked = SECTION_IDS.filter((id) => headingMark(id) !== null);
+    expect(marked).toEqual(["momentum"]);
+    for (const id of SECTION_IDS) {
+      expect(longestUnmarkedRun(id).length, `${id} run`).toBeGreaterThan(5);
+    }
+    expect(longestUnmarkedRun("momentum")).toBe("Línea de");
+    expect(longestUnmarkedRun("momentum").length).toBeLessThan(
+      es.tactical.sections.momentum.title.length
+    );
+    // An unmarked section keeps its whole title as the run.
+    expect(longestUnmarkedRun("set-plays")).toBe(es.tactical.sections["set-plays"].title);
   });
 });
 
@@ -204,9 +254,43 @@ describe.skipIf(!anyBuilt)("Hero links and the single disclosure (AC 2)", () => 
   });
 
   it("contains exactly one aria-expanded disclosure in the Hero", () => {
-    // Scoped to the Hero: a document-wide count breaks the day SiteHeader
-    // gains a menu toggle, for a reason that has nothing to do with the Hero.
-    const disclosures = (heroSection(html).match(/aria-expanded="(?:true|false)"/g) ?? []).length;
-    expect(disclosures).toBe(1);
+    /*
+     * Scoped to the Hero: a document-wide count breaks the day SiteHeader
+     * gains a menu toggle, for a reason that has nothing to do with the Hero.
+     *
+     * STORY 2.18 RE-ANCHOR, not a relaxation. A bare aria-expanded count went
+     * from 1 to 2 when the xG tile label became a real glossary popover
+     * trigger — and a popover trigger is NOT a disclosure: Radix marks it
+     * aria-haspopup="dialog" and it controls an overlay, while the lineups
+     * disclosure carries aria-controls and expands in flow. Counting them
+     * together would have made this assertion mean "how many things in the
+     * Hero happen to use aria-expanded", which tests nothing. Both halves are
+     * asserted below, so neither can regress silently.
+     */
+    const hero = heroSection(html);
+    const expandables = [...hero.matchAll(/<[a-z]+[^>]*aria-expanded="(?:true|false)"[^>]*>/g)].map(
+      ([tag]) => tag
+    );
+    const disclosures = expandables.filter((tag) => !tag.includes('aria-haspopup="dialog"'));
+    expect(disclosures).toHaveLength(1);
+    expect(disclosures[0]).toContain("aria-controls");
+  });
+
+  /*
+   * Story 2.18 Task 5.3: the Hero's xG tile label is the FIRST GlossaryTerm
+   * call site, and the ONE glossary mark on this route's build-time path. The
+   * popover PANEL is deliberately absent from the export — Radix mounts content
+   * only while open — so the trigger is what the exported HTML can prove.
+   */
+  it("marks xG as a glossary term in the Hero, exactly once", () => {
+    const hero = heroSection(html);
+    const triggers = hero.match(/data-slot="popover-trigger"/g) ?? [];
+    expect(triggers).toHaveLength(1);
+    // The sr-only expansion STAYS: the popover's accessible name is the term
+    // itself, so dropping it would remove the only screen-reader expansion of
+    // the abbreviation.
+    expect(hero).toContain(es.match.hero.xgExpansion);
+    // Closed on export — no panel copy, no role="dialog" in the static HTML.
+    expect(hero).not.toContain(es.glossary.xg.definition);
   });
 });

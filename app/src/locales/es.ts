@@ -44,10 +44,381 @@ export const es = {
       attribution:
         "Datos: informes oficiales post-partido de la FIFA — Copa Mundial 2026. Sitio independiente, sin afiliación con la FIFA.",
       aboutLink: "Acerca del sitio",
+      /*
+       * Story 2.18 Task 7.5. EXPERIENCE.md's IA route table names the footer as
+       * /glossary's reach path ("Footer, every glossary tooltip's 'see more'");
+       * DESIGN.md's footer bullet mentions only the about link and is stale.
+       * The spine disagreement is FILED, not resolved by editing DESIGN.md.
+       */
+      glossaryLink: "Glosario",
     },
   },
   about: {
     title: "Acerca del sitio",
+    dataTitle: "Los datos",
+    methodologyTitle: "Cómo leemos el xG",
+    creditsTitle: "Créditos",
+    projectTitle: "Sobre el proyecto",
+    /*
+     * RULED VERBATIM (Story 2.18 decision 1, Juan). The epic's own parenthetical
+     * — "xG used as-is, never recomputed" — is TRUE of the team totals and
+     * MISLEADING about per-shot values: rendering decision FD-1 records that
+     * per-shot xG does not exist in the source PDFs at all, which is why every
+     * shot marker is drawn at the same size and every event log omits the xG
+     * row. This is the first time FD-1 becomes user-visible copy, on the one
+     * page whose entire purpose is to explain the data honestly. It must agree
+     * with glossary.xg.definition — two surfaces, one claim.
+     */
+    methodology:
+      "Los valores de xG son los que publica la FIFA en el informe oficial; nunca los recalculamos. El informe solo publica el xG total de cada equipo — no hay un valor por remate, por eso todos los remates se dibujan del mismo tamaño.",
+    /*
+     * PROPOSED, NOT RULED. No spine carries credits or project-framing wording,
+     * so both were authored here under Voice and Tone (tuteo, neutral LatAm, no
+     * exclamation marks, flat register, numbers carry the drama) and logged as
+     * new rows under EXPERIENCE.md's extension procedure. Flagged in the story's
+     * Completion Notes for Juan to confirm or overturn at review.
+     */
+    credits:
+      "El sitio lo construye y lo mantiene una sola persona. El diseño, el código y las traducciones son propios; los datos son de la FIFA.",
+    project:
+      "Es un proyecto personal, gratuito y sin publicidad. No vendemos datos, no cobramos por el acceso y no recibimos nada de la FIFA ni de ningún club.",
+  },
+  /*
+   * ---------------------------- THE GLOSSARY ----------------------------
+   *
+   * One entry per GlossaryTermId (src/lib/glossary.ts), in EXPERIENCE.md's
+   * per-term policy-table order — NOT alphabetical, because alphabetical
+   * differs between es and en and /glossary renders this order to the reader.
+   *
+   * `es` and `en` hold the SAME BYTES IN BOTH DICTIONARIES. The term PAIR is
+   * locale-invariant: AC 2 and EXPERIENCE's Component-Patterns rule both require
+   * both languages to render simultaneously, in one locale's page ("salida de
+   * balón — en: build-up"), so a bilingual reader can bridge the two without
+   * flipping the entire interface (review-i18n.md §5). Only `definition`
+   * differs between the dictionaries. Do not "fix" the mirrored term leaves.
+   *
+   * EVERY DEFINITION IS AUTHORED, NOT TRANSCRIBED. The PMSR prints no glossary
+   * page and no definition of any term — 0 hits across all 52 pages — so these
+   * are written from page placement and reconciliation arithmetic, and
+   * glossaryPage.authoredNote says so on the page. A definition that claims data
+   * the corpus does not carry is exactly the defect this story exists to
+   * prevent.
+   *
+   * This namespace is EXEMPT from i18n.test.ts's forbidden-register sweep: the
+   * definitions legitimately name rejected and peninsular forms in order to
+   * explain them (row 30's "córner", row 31's "fuera de juego", the "a puerta"
+   * the shot-outcome row rejects).
+   */
+  glossary: {
+    "line-break": {
+      es: "rupturas de líneas",
+      en: "line breaks",
+      definition:
+        "Un pase que deja atrás a una o más líneas de jugadores rivales. El informe las cuenta por equipo, y también las que sufre cada defensa.",
+    },
+    "counter-press": {
+      es: "contrapresión",
+      en: "counter-press",
+      definition:
+        "Presionar de inmediato después de perder el balón, para recuperarlo antes de que el rival se acomode. El informe la publica como una de las fases sin balón.",
+    },
+    pressing: {
+      es: "presión",
+      en: "pressing",
+      definition:
+        "Ir a quitarle el balón al rival de forma organizada. El informe reparte el tiempo sin balón entre presión alta, media y baja.",
+    },
+    "build-up": {
+      es: "salida de balón",
+      en: "build-up",
+      definition:
+        "La fase en la que un equipo saca el balón desde su propio campo. El informe la separa en salida con presión y salida sin presión.",
+    },
+    "high-block": {
+      es: "bloque alto",
+      en: "high block",
+      definition:
+        "El equipo defiende con sus líneas cerca del campo rival. Es una de las tres alturas de bloque que mide el informe.",
+    },
+    "mid-block": {
+      es: "bloque medio",
+      en: "mid block",
+      definition:
+        "El equipo defiende con sus líneas en la zona central del campo. Es una de las tres alturas de bloque que mide el informe.",
+    },
+    "low-block": {
+      es: "bloque bajo",
+      en: "low block",
+      definition:
+        "El equipo defiende con sus líneas cerca de su propio arco. Es una de las tres alturas de bloque que mide el informe.",
+    },
+    "line-height": {
+      es: "altura de la línea defensiva",
+      en: "line height",
+      definition:
+        "A qué distancia del propio arco juega la última línea, en metros. El informe no dice a qué fase del juego corresponde cada distancia.",
+    },
+    "team-length": {
+      es: "longitud del equipo",
+      en: "team length",
+      definition:
+        "La distancia en metros entre la línea más adelantada del equipo y la más retrasada. El informe no dice a qué fase del juego corresponde.",
+    },
+    "phases-of-play": {
+      es: "fases del juego",
+      en: "phases of play",
+      definition:
+        "Los tramos en los que el informe reparte el partido: ocho con balón y nueve sin balón. Son tasas independientes, no suman 100 y no son partes de un total.",
+    },
+    xg: {
+      es: "xG",
+      en: "xG",
+      // Must agree with about.methodology — two surfaces, one claim (FD-1).
+      definition:
+        "Goles esperados: la probabilidad de gol de cada remate según el modelo de la FIFA. El informe publica solo el total por equipo, no un valor por remate.",
+    },
+    "pass-network": {
+      es: "red de pases",
+      en: "pass network",
+      definition:
+        "El dibujo de quién le pasó a quién dentro de un equipo. Cada jugador es un nodo y cada línea son los pases entre dos jugadores.",
+    },
+    "speed-zones": {
+      es: "zonas de velocidad",
+      en: "speed zones",
+      definition:
+        "Los tramos de velocidad en los que el informe reparte la distancia que recorre cada jugador.",
+    },
+    "high-speed-run": {
+      es: "carreras a alta velocidad",
+      en: "high-speed runs",
+      definition:
+        "Los recorridos que un jugador hace por encima del umbral de velocidad que fija el informe. En las tablas la columna se abrevia CARR. ALTA VEL.",
+    },
+    sprint: {
+      es: "sprint",
+      en: "sprint",
+      definition:
+        "Un tramo de carrera a máxima velocidad. El informe publica la distancia recorrida en sprint por jugador y por equipo.",
+    },
+    "take-on": {
+      es: "regate",
+      en: "take-on",
+      definition:
+        "El intento de superar a un rival con el balón controlado. El informe lo imprime como Take Ons, entre las progresiones de balón y los remates.",
+    },
+    "step-in": {
+      /*
+       * FINAL (Story 2.18 decision 2, Juan). `stepIns` is a required member of
+       * PlayerInPossession, printed as "Step Ins" on the In Possession -
+       * Distributions page between "Take Ons" and "Attempts at Goal" — so
+       * "salto" is affirmatively contradicted (a defender stepping out to press
+       * could only be an out-of-possession metric) and "conducción interior"
+       * invents a direction the PMSR never prints.
+       */
+      es: "irrupción",
+      en: "step-in",
+      definition:
+        "Una conducción con la que el jugador se mete en el bloque rival. El informe la imprime como Step Ins en la página de distribuciones con balón, así que es una acción con balón y no una salida defensiva.",
+    },
+    "second-ball": {
+      es: "segunda jugada",
+      en: "second ball",
+      definition:
+        "La disputa por un balón suelto después de un despeje, un rechace o un duelo aéreo.",
+    },
+    "forced-turnover": {
+      es: "recuperaciones forzadas",
+      en: "forced turnovers",
+      definition:
+        "Las pérdidas que un equipo le provoca al rival. El crédito es de quien fuerza la pérdida, no de quien la sufre.",
+    },
+    "ball-progression": {
+      es: "progresión de balón",
+      en: "ball progression",
+      definition:
+        "Llevar el balón hacia el arco rival, con pase o con conducción. El informe la cuenta por jugador y por equipo.",
+    },
+    "reception-in-final-third": {
+      es: "recepción en el último tercio",
+      en: "reception in the final third",
+      definition: "Recibir el balón en el tercio de campo más cercano al arco rival.",
+    },
+    "set-play": {
+      es: "balón parado",
+      en: "set play",
+      definition:
+        "Toda jugada que arranca con el balón detenido: tiros de esquina, tiros libres, saques de banda y penales.",
+    },
+    momentum: {
+      /*
+       * DECISION 5, ruled by Juan: the policy table's own tooltip text
+       * ("impulso del partido: qué equipo domina en cada tramo") is FACTUALLY
+       * FALSE for the shipped series. Story 1.8 closed OQ-5 — the series is a
+       * per-minute per-team count of final-third distributions, not a possession
+       * or dominance measure, and viz.momentum's docblock says the App's own
+       * copy must not imply otherwise, which is why the ruled tooltip was
+       * silently never shipped. Newly authored, logged under the table's
+       * extension procedure; NOT a reuse of viz.momentum.metricNote, which is a
+       * different string. The second sentence exists because the FIRST sentence
+       * of any momentum gloss invites the dominance reading.
+       */
+      es: "momentum",
+      en: "momentum",
+      definition:
+        "Cuántas veces entra cada equipo al último tercio, minuto a minuto. El informe no publica posesión por minuto, así que esto no mide dominio.",
+    },
+    goal: {
+      es: "gol",
+      en: "goal",
+      definition:
+        "El remate que termina en gol. Es uno de los cinco resultados de remate que publica el informe.",
+    },
+    "on-target": {
+      es: "al arco",
+      en: "on target",
+      definition:
+        "El remate que iba al arco y no entró. Decimos al arco y no a puerta, que es la forma peninsular. Es uno de los cinco resultados de remate.",
+    },
+    "off-target": {
+      es: "desviado",
+      en: "off target",
+      definition:
+        "El remate que se fue por fuera del arco. Es uno de los cinco resultados de remate.",
+    },
+    blocked: {
+      es: "bloqueado",
+      en: "blocked",
+      definition:
+        "El remate que un rival bloquea antes de que llegue al arco. Es uno de los cinco resultados de remate.",
+    },
+    incomplete: {
+      /*
+       * The forward note ruled decision 12 requires: the report also prints a
+       * LONGER per-shot label whose vocabulary this site does not map yet. Its
+       * 22->24 extension rides CS-1, which has not landed. Do NOT write the
+       * number 22 anywhere.
+       */
+      es: "incompleto",
+      en: "incomplete",
+      definition:
+        "El remate que el informe no clasifica en ninguno de los otros cuatro resultados. El informe también imprime una etiqueta más larga por remate, cuyo vocabulario el sitio todavía no traduce.",
+    },
+    goalkeeper: {
+      es: "arquero",
+      en: "goalkeeper",
+      definition:
+        "El jugador que defiende el arco. Decimos arquero, la forma que usa la mayor parte de América Latina.",
+    },
+    save: {
+      es: "atajada",
+      en: "save",
+      definition:
+        "La intervención con la que el arquero evita un gol. Decimos atajada, la forma que acompaña a arquero.",
+    },
+    distribution: {
+      es: "distribución",
+      en: "distribution",
+      definition:
+        "Cómo el arquero pone el balón en juego: con el pie, de volea desde las manos o con un lanzamiento. El informe reparte cada familia en técnicas.",
+    },
+    salida: {
+      es: "salidas",
+      en: "coming off the line",
+      definition: "Cuando el arquero deja su línea para cortar un centro o un balón filtrado.",
+    },
+    "one-on-one": {
+      es: "mano a mano",
+      en: "one-on-one",
+      definition: "El duelo entre el arquero y un atacante que llega solo frente al arco.",
+    },
+    defender: {
+      es: "defensa",
+      en: "defender",
+      definition:
+        "La posición de los jugadores de la última línea. El informe la imprime en las alineaciones.",
+    },
+    midfielder: {
+      es: "mediocampista",
+      en: "midfielder",
+      definition:
+        "La posición de los jugadores del mediocampo. El informe la imprime en las alineaciones.",
+    },
+    forward: {
+      es: "delantero",
+      en: "forward",
+      definition:
+        "La posición de los jugadores de ataque. El informe la imprime en las alineaciones.",
+    },
+    corner: {
+      es: "tiro de esquina",
+      en: "corner",
+      definition:
+        "El saque desde la esquina del campo. Decimos tiro de esquina en todo el sitio; córner es la forma que el sitio no usa.",
+    },
+    offside: {
+      es: "posición adelantada",
+      en: "offside",
+      definition:
+        "La infracción por recibir el balón por detrás de la última línea rival. Decimos posición adelantada; fuera de juego es la forma peninsular.",
+    },
+    cross: {
+      es: "centro",
+      en: "cross",
+      definition:
+        "El envío desde una banda hacia el área. El informe publica cuántos se intentaron, cuántos se completaron y con qué tipo de envío.",
+    },
+    "offers-to-receive": {
+      /*
+       * DECISION 3's relationship, verbatim and shared with movement-to-receive.
+       * Measured: sum(offersByMovementType) == totalOffers on 3,289/3,289 staged
+       * player rows, and `no-movement` is 24.9% of all corpus offers — so offers
+       * strictly contain movements. STATE the relationship; never put a fixture
+       * number in user-facing copy.
+       */
+      es: "ofrecimientos para recibir",
+      en: "offers to receive",
+      definition:
+        "Un ofrecimiento es un jugador que se ofrece para recibir; un desmarque es la parte de esos ofrecimientos en la que además se movió. El informe cuenta aparte los ofrecimientos sin movimiento.",
+    },
+    "movement-to-receive": {
+      es: "desmarques",
+      en: "movement to receive",
+      definition:
+        "Un ofrecimiento es un jugador que se ofrece para recibir; un desmarque es la parte de esos ofrecimientos en la que además se movió. El informe cuenta aparte los ofrecimientos sin movimiento.",
+    },
+    "defensive-actions": {
+      es: "acciones defensivas",
+      en: "defensive actions",
+      definition:
+        "Las acciones con las que un equipo intenta recuperar el balón: recuperaciones, bloqueos y disputas. El informe solo publica coordenadas de algunas de ellas.",
+    },
+  },
+  /*
+   * /glossary page chrome. DELIBERATELY SEPARATE from the `glossary` namespace
+   * above, which carries term entries ONLY: i18n.test.ts asserts
+   * Object.keys(es.glossary) equals GLOSSARY_TERMS exactly, with no allowance,
+   * and a page-chrome key living in there would have to be exempted by hand.
+   */
+  glossaryPage: {
+    title: "Glosario",
+    intro: "Los términos tácticos y estadísticos que usa el sitio, en español y en inglés.",
+    // The popover's "see more" link, and EXPERIENCE's named reach path.
+    seeMore: "Ver en el glosario",
+    jargonNote: "Se mantiene el término en inglés: no hay una forma corta en español que se reconozca.",
+    authoredNote:
+      "El informe oficial no trae un glosario. Estas definiciones las escribimos nosotros, a partir de dónde aparece cada dato en el informe y de cómo cuadran sus cifras.",
+    /*
+     * Language-code prefixes for the counterpart-language subtitle
+     * ("salida de balón — en: build-up"). Locale-invariant in BOTH dictionaries,
+     * like the term pairs themselves: the subtitle names the OTHER language, so
+     * its prefix does not swap with the interface.
+     */
+    esPrefix: "es:",
+    enPrefix: "en:",
+    metaTitle: "Glosario — WC Stats",
+    metaDescription:
+      "Los términos tácticos y estadísticos del Mundial 2026 que usa el sitio, en español y en inglés.",
   },
   notFound: {
     // Ruled copy, verbatim (EXPERIENCE.md → State Patterns → Unknown route).
@@ -81,8 +452,19 @@ export const es = {
       tiles: {
         possession: "Posesión",
         shots: "Tiros",
-        distance: "Distancia (km)",
-        topSpeed: "Vel. máx. (km/h)",
+        /*
+         * STORY 2.18 Task 8.10 — the AD-7 unit violation, narrow fix only.
+         * These two baked their unit into the label, which enums.unit exists to
+         * prevent (and "km/h" had no entry at all). The unit is now composed at
+         * the call site in StoryStatTiles, as a STRING.
+         *
+         * Deliberately NOT routed through enums.metric or KEY_STAT_UNIT:
+         * `topSpeed` is absent from KEY_STAT_FIELDS, so an enums.metric.topSpeed
+         * entry turns i18n.test.ts's "one entry per Key Statistics field"
+         * assertion red, and tactical-sections.ts is do-not-touch.
+         */
+        distance: "Distancia",
+        topSpeed: "Vel. máx.",
       },
       lineups: {
         title: "Alineaciones y formaciones",
@@ -156,7 +538,23 @@ export const es = {
       },
       "movement-to-receive": {
         title: "Desmarques",
-        summary: "Cómo se movieron sin balón para recibir con ventaja.",
+        /*
+         * STORY 2.18 decision 3. The section is titled "Desmarques" but every
+         * number under it is an OFFER count: offersByMovementType is a six-way
+         * split of totalOffers whose sixth value is literally `no-movement`
+         * ("Sin desmarque"), 24.9% of all corpus offers. So offers strictly
+         * CONTAIN movements, and the title names the smaller set while the data
+         * is the larger one.
+         *
+         * Ruled: do NOT retitle (the title is consumed by two test suites, the
+         * section id, the anchor and the collapsed-shell copy), and do NOT rely
+         * on the glossary alone — a popover is a hover-away affordance, so the
+         * relationship ships HERE, where a reader meets it. Verbatim.
+         *
+         * This also replaces the "sin balón" prose decision 4 deliberately left
+         * alone: natural prose, not the vocabulary token.
+         */
+        summary: "Cómo se ofrecieron para recibir, y en cuáles de esos ofrecimientos además se movieron.",
       },
       "defensive-actions": {
         title: "Acciones defensivas",
@@ -172,7 +570,15 @@ export const es = {
       },
       "set-plays": {
         title: "Balón parado",
-        summary: "Córners, tiros libres y laterales: cuántos y con qué resultado.",
+        /*
+         * STORY 2.18 REMEDIATION — the one HARD register violation the
+         * terminology audit found. This line shipped "Córners … y laterales"
+         * while the SEVEN viz.setPlays.* keys inside this very section all say
+         * "tiro de esquina", and viz.setPlays.throwIns says "Saques de banda".
+         * EXPERIENCE.md row 30 rules "tiro de esquina"; "córner" is the
+         * forbidden register. English was already correct.
+         */
+        summary: "Tiros de esquina, tiros libres y saques de banda: cuántos y con qué resultado.",
       },
       goalkeeping: {
         title: "Arqueros",
@@ -217,6 +623,20 @@ export const es = {
       receivingHeadline: "Sin datos por jugador para este partido.",
       receivingExplanation:
         "Esta sección se arma con las tablas por jugador del informe, y este informe no las trae.",
+      /*
+       * Story 2.18 ruled decision 7 — the PER-SECTION error boundary's copy.
+       * Deliberately NOT match.bundle.crashed reused: that string names a
+       * bundle-level failure ("el análisis táctico de este partido"), and a
+       * bundle-wide fault surfacing as "this section" would be a narrower and
+       * possibly false claim.
+       *
+       * It states an APP-SIDE failure as one. It must NEVER claim the report
+       * lacks the section — that is the FR-22 inversion this codebase has
+       * guarded against three times, and it is what makes this pair different
+       * from tactical.empty.explanation.
+       */
+      sectionCrashed: "No pudimos mostrar esta sección.",
+      sectionCrashedExplanation: "Los datos llegaron en un formato que no pudimos leer.",
     },
     /*
      * Ruled decision 9: a section whose data IS in the bundle but whose
@@ -296,7 +716,6 @@ export const es = {
       phase: "Fase",
       category: "Categoría",
       measure: "Medida",
-      value: "Valor",
       count: "Cantidad",
       share: "Participación",
       left: "Izquierda",
@@ -308,7 +727,37 @@ export const es = {
       // slots against a 0-120 minute with no stoppage field, so on real data
       // many slots share a minute.
       slot: "Intervalo",
+      /*
+       * A COUNT of slots, distinct from `slot` (a slot INDEX). The two appear in
+       * adjacent tables inside one disclosure, and decision 14 separated those
+       * tables precisely because the two quantities are not the same thing.
+       */
+      slotCount: "Intervalos",
       keeper: "Arquero",
+      /*
+       * Story 2.11a — the ONE sortable data-table contract (UX-DR12).
+       *
+       * t() has no interpolation and no plural machinery, so every one of these
+       * is composed into a `const` identifier at the call site and never as a
+       * template literal inside a gated prop.
+       *
+       * `sortAction` prefixes the column head in the header button's
+       * ACCESSIBLE NAME ("Ordenar por Minuto"). The visible text is the head
+       * itself, so the name contains it — WCAG 2.5.3 Label in Name holds.
+       *
+       * `sortedBy` + a direction word is the polite announcement. The state
+       * also rides `aria-sort` on the <th>; the announcement exists because a
+       * changed attribute on an element the reader is not focused on is not
+       * spoken.
+       *
+       * `sortCleared` is the cycle's THIRD state — no column active, which IS
+       * the artifact order (AD-5). It names no column, because none is active.
+       */
+      sortAction: "Ordenar por",
+      sortedBy: "Ordenado por",
+      sortAscending: "ascendente",
+      sortDescending: "descendente",
+      sortCleared: "Se restauró el orden original de la tabla.",
     },
     cluster: {
       dialogLabel: "Eventos en este punto",
@@ -422,7 +871,18 @@ export const es = {
       minutes: "minutos",
       minutesOne: "minuto",
       goalPrefix: "Gol de",
-      ownGoal: "en propia puerta",
+      /*
+       * STORY 2.18 REMEDIATION — the peninsular survivor. "Puerta" is the
+       * peninsular goal-frame noun and the app says "arco" everywhere else;
+       * "en contra" pairs with the already-shipped match.hero.ownGoal "(a.g.)"
+       * while avoiding "meta", which also leans peninsular. Ruled in the story,
+       * not chosen at implementation time.
+       *
+       * This is also why i18n.test.ts's forbidden-register sweep can only go
+       * green after this edit: "a puerta" was never a standalone hit, it hid
+       * inside this string.
+       */
+      ownGoal: "en contra",
       penalty: "de penal",
       // Spoken when a goal's stamp is not on the sample grid and its marker was
       // placed on the nearest minute instead. Without it the chart, the table
@@ -518,8 +978,18 @@ export const es = {
      */
     phases: {
       figurePrefix: "Fases del juego:",
-      inPossession: "Con balón",
-      outOfPossession: "Sin balón",
+      /*
+       * STORY 2.18 REMEDIATION, decision 4 — EXPERIENCE.md row 38 ("Expert
+       * column groups") rules "En posesión / Sin posesión" and logs
+       * "Con balón / Sin balón" as the REJECTED chattier broadcast alternative;
+       * 2.10 shipped the rejected form. The table stands and the app moves:
+       * EXPERIENCE's own header rule is "Spines win on conflict", the contract
+       * enums are inPossessionPhase / outOfPossessionPhase, and 2.11's Expert
+       * column-group tabs are this row's own surface. The `en` values were
+       * already correct and are NOT touched.
+       */
+      inPossession: "En posesión",
+      outOfPossession: "Sin posesión",
       /*
        * THE SINGLE MOST IMPORTANT SENTENCE ON THIS SURFACE. The eight and nine
        * values are INDEPENDENT RATES: corpus in-possession sums run 84-149 and
@@ -544,14 +1014,21 @@ export const es = {
        * Keyed by measure and possession state (AD-7). The unit is NOT baked in
        * — enums.unit.m carries it.
        */
+      /*
+       * STORY 2.18 REMEDIATION, decision 4's SECOND half. These four are
+       * COMPOUND METRIC LABELS, not standalone possession vocabulary — the
+       * naive "repoint the six leaves to En posesión" would have deleted the
+       * metric name and left four labels reading "En posesión". Only the
+       * possession-state clause moves.
+       */
       metre: {
         lineHeight: {
-          inPossession: "Altura de la línea con balón",
-          outOfPossession: "Altura de la línea sin balón",
+          inPossession: "Altura de la línea en posesión",
+          outOfPossession: "Altura de la línea sin posesión",
         },
         teamLength: {
-          inPossession: "Longitud del equipo con balón",
-          outOfPossession: "Longitud del equipo sin balón",
+          inPossession: "Longitud del equipo en posesión",
+          outOfPossession: "Longitud del equipo sin posesión",
         },
       },
       /*
@@ -592,6 +1069,16 @@ export const es = {
       // Corner STYLE sums to totalCorners on only 96 of 208 corpus
       // team-innings (112 under, never over), so it is never drawn as a bar.
       cornerStyleNote: "Recuento independiente: puede no coincidir con el total de tiros de esquina.",
+      /*
+       * FOR A PARTITION THAT DISAGREES WITH ITS DECLARED TOTAL — never the note
+       * above. Corner SIDE and corner TYPE both hold 208/208 on the corpus, so
+       * calling them "recuento independiente" would deny the part-of-whole
+       * relation the bar is drawing. Decision 8 requires the surface to SHOW
+       * BOTH AND NORMALIZE NEITHER (AD-6): this says the source disagrees with
+       * itself, not that the categories are independent.
+       */
+      cornerMismatchNote:
+        "Los segmentos no suman el total de tiros de esquina que publica el informe. Se muestran ambas cifras, sin ajustar ninguna.",
       // Printed verbatim beside a bar whose denominator is the sum of its own
       // segments. When the two disagree the surface shows BOTH (AD-6).
       declaredTotal: "Total según el informe",
@@ -601,6 +1088,9 @@ export const es = {
       totalsCaption: "Totales por equipo.",
       freeKickCaption: "Tiros libres por tipo, recuentos independientes.",
       cornerCaption: "Tiros de esquina por lado, tipo y estilo de envío.",
+      /* Its own caption: this table is the izquierda/derecha split WITHIN each
+         delivery type, not the counts-and-shares table above (decision 19). */
+      cornerTypeSideCaption: "Tiros de esquina por lado dentro de cada tipo de envío.",
     },
     goalkeeping: {
       figurePrefix: "Arqueros:",
@@ -662,6 +1152,23 @@ export const es = {
       zeroRecord: "El informe no incluye un bloque de arquero para este equipo.",
       zeroAll: "El informe no lista arqueros para este partido.",
       /*
+       * PER-KEEPER, and distinct from `zeroAll` on purpose. This renders inside
+       * a named keeper's panel, beside their own involvement total and above
+       * their distribution and aerial numbers — so the section-level "no lista
+       * arqueros para este partido" was flatly contradicted by its own
+       * surroundings. What is absent here is the plotted timeline, nothing else.
+       */
+      zeroTimeline: "El informe no grafica intervalos para este arquero.",
+      /*
+       * QUALIFIED technique headings. `enums.distributionType.*` names the three
+       * FAMILIES, which `completionList` prints as rows immediately above with
+       * different numbers; reusing them here put the same words over two
+       * different quantities. Minted under EXPERIENCE.md:278.
+       */
+      feetTechniques: "Técnicas de saque con el pie",
+      handsTechniques: "Técnicas de saque de volea",
+      throwTechniques: "Técnicas de saque con la mano",
+      /*
        * Ruled decision 14's TWO captions. `totalInvolvements` is what the
        * report PRINTS; the timeline is what it PLOTS. Measured over 208
        * team-innings the difference runs 0..5 and is exactly 0 on only 59 —
@@ -673,7 +1180,17 @@ export const es = {
       timelineCaption:
         "Intervalos que grafica el informe, en orden. La fuente no garantiza que sumen el total.",
       distributionCaption: "Distribución por familia y técnica.",
-      preventionCaption: "Prevención de gol; cada desglose lleva su propio total.",
+      preventionCaption:
+        "Intervenciones por tipo; suman los remates enfrentados, no las intervenciones totales.",
+      /*
+       * Decision 13's denominators, NAMED. The contract requires an App
+       * rendering these panels together to "label them with their own totals
+       * rather than implying a shared one": byInterventionType sums to
+       * attemptsFaced, byBodyType to totalInterventions.
+       */
+      headlineCaption: "Totales de prevención de gol que publica el informe.",
+      bodyTypeCaption:
+        "Intervenciones por parte del cuerpo; suman las intervenciones totales, no los remates enfrentados.",
       aerialCaption: "Juego aéreo y centros enfrentados.",
     },
   },
@@ -888,10 +1405,20 @@ export const es = {
      * terminology coverage, so every row below is newly minted. "Arquero" and
      * "atajada" are the ruled LatAm terms and carry the register.
      */
+    /*
+     * STORY 2.18 Task 8.6 — one of the two ad-hoc terms 2.10 minted with no
+     * policy row, now ruled and logged as a new table row.
+     *
+     * The es labels split on body-part/technique while `en` splits on
+     * KICK vs THROW, and "Saque de volea" (kick from the hands) against
+     * "Saque con la mano" (thrown) were mutually confusable — nothing in the
+     * volley label said it came from the hands. Realigned to the en
+     * distinction: two kicks, one throw.
+     */
     distributionType: {
       feet: "Saque con el pie",
-      hands: "Saque de volea",
-      throw: "Saque con la mano",
+      hands: "Volea desde las manos",
+      throw: "Lanzamiento con la mano",
     },
     feetTechnique: {
       "play-onto": "Al pie",
@@ -928,7 +1455,10 @@ export const es = {
     },
     aerialType: {
       punch: "Despeje de puños",
-      claim: "Descuelgue",
+      // Story 2.18 Task 8.6: "Descuelgue" leans Spain against the ruled LatAm
+      // register (UX-DR19), and "Atrapada" pairs with the shipped
+      // arquero/atajada vocabulary. Logged as a new table row.
+      claim: "Atrapada",
       "tipped-palmed": "Desvío con la mano",
     },
     // Units are locale metadata, never baked into a label string (AD-7).
@@ -937,6 +1467,9 @@ export const es = {
       // Story 2.10: the four Domain C distances. Added HERE rather than in a
       // new namespace — AD-7 keys units by metric code, and this is the home.
       m: "m",
+      // Story 2.18 Task 8.10: the Hero's top-speed tile had no unit entry at
+      // all, so "km/h" was baked into its label.
+      kmh: "km/h",
     },
   },
 };

@@ -50,6 +50,58 @@ export default defineConfig([
             "JSXAttribute[name.name=/^(aria-label|aria-description|aria-placeholder|aria-roledescription|aria-braillelabel|aria-valuetext|title|alt|placeholder|label|message|text|description|caption|heading|tooltip)$/] JSXExpressionContainer :matches(BinaryExpression, LogicalExpression, ConditionalExpression) > :matches(Literal, TemplateLiteral)",
           message: "User-facing strings must come from the locale layer (t()).",
         },
+        /*
+         * OBJECT-SHAPED PROPS (Story 2.18 ruled decision 8). The three
+         * selectors above match a Literal/TemplateLiteral that is a DIRECT
+         * child of the JSXExpressionContainer — but recharts delivers text
+         * through object-shaped props: `<YAxis label={{ value: "…" }} />` puts
+         * the literal inside an ObjectExpression, so it passed the gate
+         * silently. Filed by Story 2.6 in a story file and never promoted to
+         * the ledger; two recharts surfaces ship today (2.6 MomentumChart, 2.10
+         * TacticalCharts) and 2.13/2.15/2.16/2.17 will add more.
+         *
+         * TWO CONSTRAINTS, each of which exists because the looser form flags
+         * correct code:
+         *
+         * 1. Scoped to the object's COPY-BEARING members (`value`, `children`).
+         *    Gating every Property flags recharts' own positioning tokens —
+         *    `label={{ value: t("…"), position: "insideLeft" }}` is correct
+         *    code, and "insideLeft" is a layout keyword, not a user-facing
+         *    string.
+         * 2. Constrained to STRING literals via `raw`, because ESTree `Literal`
+         *    includes numbers, booleans and null, and both shipped charts pass
+         *    numeric `angle`, `position` and `offset` values.
+         */
+        {
+          selector:
+            "JSXAttribute[name.name=/^(aria-label|aria-description|aria-placeholder|aria-roledescription|aria-braillelabel|aria-valuetext|title|alt|placeholder|label|message|text|description|caption|heading|tooltip)$/] JSXExpressionContainer ObjectExpression > Property[key.name=/^(value|children)$/] > :matches(Literal[raw=/^[\"']/], TemplateLiteral)",
+          message: "User-facing strings must come from the locale layer (t()).",
+        },
+        /*
+         * `value` is NOT added to the shared name regex, deliberately: the
+         * language toggle passes `value="es"` / `value="en"` to Radix
+         * ToggleGroupItem as STATE TOKENS, both bare Literals directly under a
+         * JSXAttribute[name.name="value"], and they would fail
+         * `eslint --max-warnings 0` immediately. No scoping BY NAME can
+         * separate a UI `value` from a form/state `value`, so recharts'
+         * `<Label value="…" />` is reached by ELEMENT instead — the only
+         * syntactically safe way to get at it.
+         *
+         * DIRECT-CHILD combinators, matching the three selectors above. A
+         * descendant combinator here reaches into `value={t("app.siteName")}`
+         * and flags the DICTIONARY KEY — turning the one correct way to write
+         * the prop into a build error.
+         */
+        {
+          selector:
+            "JSXElement[openingElement.name.name=/^(Label|LabelList)$/] > JSXOpeningElement > JSXAttribute[name.name=\"value\"] > Literal[raw=/^[\"']/]",
+          message: "User-facing strings must come from the locale layer (t()).",
+        },
+        {
+          selector:
+            "JSXElement[openingElement.name.name=/^(Label|LabelList)$/] > JSXOpeningElement > JSXAttribute[name.name=\"value\"] > JSXExpressionContainer > :matches(Literal[raw=/^[\"']/], TemplateLiteral)",
+          message: "User-facing strings must come from the locale layer (t()).",
+        },
         {
           // Covers `export const metadata = {...}` AND generateMetadata()
           // (Next's other first-class metadata path), including nested

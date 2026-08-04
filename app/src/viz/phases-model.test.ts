@@ -23,7 +23,6 @@ import {
   percentAxisMax,
   percentTicks,
   phaseRows,
-  phaseTableRows,
   pressRows,
   rowsPeak,
   wrapAxisLabel,
@@ -212,8 +211,16 @@ describe("phaseRows (Task 2.3)", () => {
     expect(midBlock?.home).toBe(m001.tacticalIdentity.home.phasesOutOfPossession.midBlock);
   });
 
-  it("phaseTableRows concatenates both families in frozen order", () => {
-    const rows = phaseTableRows(m074.tacticalIdentity);
+  it("the two families concatenate to 17 rows in frozen order with unique keys", () => {
+    /*
+     * Asserted against `phaseRows` directly, which is what BOTH sections
+     * actually consume. The `phaseTableRows` convenience this test used to call
+     * was removed by the 2.10 code review as a dead export — it had no call site
+     * outside this file, and asserting on it proved only that the test could
+     * reach it.
+     */
+    const sets = phaseRows(m074.tacticalIdentity);
+    const rows = [...sets.inPossession, ...sets.outOfPossession];
     expect(rows).toHaveLength(17);
     expect(rows[0].code).toBe("build-up-unopposed");
     expect(rows[16].code).toBe("counter-press");

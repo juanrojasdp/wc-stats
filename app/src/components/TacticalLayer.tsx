@@ -28,7 +28,9 @@ import { PhasesSection } from "@/components/PhasesSection";
 import { PressingSection } from "@/components/PressingSection";
 import { SetPlaysSection } from "@/components/SetPlaysSection";
 import { ShotMapsSection } from "@/components/ShotMapsSection";
+import { TacticalErrorBoundary } from "@/components/TacticalErrorBoundary";
 import { TacticalSection } from "@/components/TacticalSection";
+import { useGlossaryMarking } from "@/components/glossary-marking";
 import type { MatchBundle } from "@/lib/contract/contract-types";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
@@ -107,6 +109,9 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
   // AC 3's section-named absence copy, shared with the panel-level absence
   // ShotMapsSection renders (Story 2.7 Task 8.2a).
   const emptyHeadline = useEmptyHeadline();
+  // Story 2.18 ruled decision 6: term marking is a policy the LAYER owns, so
+  // the eleven consumers of the shell can see it. TacticalSection stays unaware.
+  const { markHeading, markSummary } = useGlossaryMarking();
   const isLg = useMediaQuery(LG_MEDIA_QUERY);
   // Explicit user/anchor decisions only; everything unset follows the
   // breakpoint, so a resize past lg still expands the untouched sections.
@@ -362,13 +367,25 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
   return (
     <div>
       {plans.map((plan) => {
-        const title = t(sectionTitleKey(plan.id));
+        /*
+         * Story 2.18 decision 6's four bindings, in this exact shape. The
+         * RESOLVED STRING must survive: useEmptyHeadline() is
+         * `(title: string) => string`, and that signature is the only thing
+         * standing between a mistake here and
+         * "Sin datos de [object Object] para este partido." — do not pass it a
+         * node and do not widen it.
+         */
+        const titleText = t(sectionTitleKey(plan.id));
+        const summaryText =
+          plan.showSummary && isCollapsibleId(plan.id) ? t(sectionSummaryKey(plan.id)) : null;
+        const titleNode = markHeading(plan.id, titleText);
+        const summaryNode = markSummary(plan.id, summaryText);
         /*
          * Hoisted into an identifier: the ternary form inside the `headline=`
          * prop trips the i18n gate, which requires a plain identifier there.
          */
         const overrideKey = EMPTY_HEADLINE_OVERRIDE[plan.id];
-        const emptyCopy = overrideKey === undefined ? emptyHeadline(title) : t(overrideKey);
+        const emptyCopy = overrideKey === undefined ? emptyHeadline(titleText) : t(overrideKey);
         // Same hoist, same reason: a ternary inside `explanation=` trips the
         // i18n gate, which requires a plain identifier there.
         const explanationKey = EMPTY_EXPLANATION_OVERRIDE[plan.id] ?? "tactical.empty.explanation";
@@ -377,10 +394,8 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
           <TacticalSection
             key={plan.id}
             id={plan.id}
-            title={title}
-            summary={
-              plan.showSummary && isCollapsibleId(plan.id) ? t(sectionSummaryKey(plan.id)) : null
-            }
+            title={titleNode}
+            summary={summaryNode}
             collapsible={plan.collapsible}
             open={plan.open}
             onToggle={() => toggle(plan.id, !plan.open)}
@@ -388,11 +403,39 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
             focusScroll={focus?.id === plan.id ? focus.scroll : false}
             className={plan.spacedFromPrevious ? "mt-section-gap" : undefined}
           >
-            {plan.isEmpty ? (
-              <EmptyStatePanel headline={emptyCopy} explanation={emptyExplanation} />
-            ) : (
-              sectionContent(plan.id)
-            )}
+            {/*
+             * PER-SECTION CONTAINMENT (Story 2.18 ruled decision 7), resolving a
+             * blast radius filed FIVE times (2.8, 2.6, 2.9, 1.14, 2.10) and
+             * routed every time to "whichever story next touches
+             * TacticalSection". The whole-layer instance in MatchBundleRegion
+             * stays as the outer floor; that call site is untouched.
+             *
+             * TWO LIMITS THE READER MUST HAVE, both of which make this weaker
+             * than "one section dies":
+             *
+             * 1. `sectionContent(plan.id)` is evaluated EAGERLY, inside this
+             *    render. A throw during prop construction — or the `default:`
+             *    exhaustiveness throw — happens ABOVE this boundary and is
+             *    caught only by the outer instance. What this contains is a
+             *    throw inside a SECTION COMPONENT's own render.
+             * 2. There is no automatic reset: `state = { failed: false }` with
+             *    no reset path, and `plan.id` is constant, so `key={plan.id}`
+             *    could never force a remount. Keyed on `${id}-${open}` instead,
+             *    so collapsing and re-expanding a crashed section yields a
+             *    fresh instance. `key-stats` and `momentum` NEVER collapse, so
+             *    a crash in either is permanent for the page's life.
+             */}
+            <TacticalErrorBoundary
+              key={`${plan.id}-${plan.open}`}
+              headlineKey="tactical.empty.sectionCrashed"
+              explanationKey="tactical.empty.sectionCrashedExplanation"
+            >
+              {plan.isEmpty ? (
+                <EmptyStatePanel headline={emptyCopy} explanation={emptyExplanation} />
+              ) : (
+                sectionContent(plan.id)
+              )}
+            </TacticalErrorBoundary>
           </TacticalSection>
         );
       })}

@@ -1,14 +1,18 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { ReactNode } from "react";
 
+import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { TacticalIdentityBlock } from "@/lib/contract/contract-types";
 import { formatDecimal, formatPercent } from "@/lib/format";
+import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
+import type { TableColumn } from "@/lib/table-sort";
 import { cn } from "@/lib/utils";
 import {
+  BLOCK_LEVELS,
+  PRESS_PHASES,
   blockRows,
   distributionChartHeightClass,
   metreRows,
@@ -45,8 +49,15 @@ import type { ChartSeries } from "@/components/TacticalCharts";
  * NOTHING HERE IS A PARTITION either — same corpus measurements as #phases.
  */
 
-const PRESS_HEIGHT = distributionChartHeightClass(4);
-const BLOCK_HEIGHT = distributionChartHeightClass(3);
+/*
+ * Category counts come from the FROZEN ENUM LISTS, not from literals: the press
+ * subset and BLOCK_LEVELS are the same arrays `pressRows` / `blockRows`
+ * iterate, so a contract enum change moves the height with it — and if it moves
+ * outside the supported set, `distributionChartHeightClass`'s exhaustive throw
+ * finally fires instead of being bypassed by a hardcoded 4.
+ */
+const PRESS_HEIGHT = distributionChartHeightClass(PRESS_PHASES.length as 3 | 4 | 8 | 9);
+const BLOCK_HEIGHT = distributionChartHeightClass(BLOCK_LEVELS.length as 3 | 4 | 8 | 9);
 
 function ChartFallback({ heightClass }: { heightClass: string }) {
   return (
@@ -56,10 +67,24 @@ function ChartFallback({ heightClass }: { heightClass: string }) {
   );
 }
 
-const DistributionChart = dynamic(
-  () => import("@/components/TacticalCharts").then((module) => module.DistributionChart),
-  { ssr: false, loading: () => <ChartFallback heightClass={PRESS_HEIGHT} /> }
-);
+/*
+ * ONE HANDLE PER HEIGHT, NOT ONE PER MODULE. A `dynamic()` call bakes its
+ * `loading` fallback in at declaration time and cannot vary it per instance, so
+ * a single shared handle rendered at two different category counts necessarily
+ * shows one of them the wrong-sized skeleton — here a 182 px fallback in front
+ * of the 152 px three-category blocks chart. That is a CLS hit against the very
+ * budget the code-split protects. Both handles share one chunk: `next/dynamic`
+ * dedupes on the import specifier, so this costs nothing at the network layer.
+ */
+function distributionChart(heightClass: string) {
+  return dynamic(
+    () => import("@/components/TacticalCharts").then((module) => module.DistributionChart),
+    { ssr: false, loading: () => <ChartFallback heightClass={heightClass} /> }
+  );
+}
+
+const PressChart = distributionChart(PRESS_HEIGHT);
+const BlockChart = distributionChart(BLOCK_HEIGHT);
 
 const CAPTION_SEPARATOR = " — ";
 const CLAUSE_SEPARATOR = ", ";
@@ -86,41 +111,6 @@ export interface PressingSectionProps {
   away: SideRef;
 }
 
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  // Private copy per section, the current convention. Not sortable — 2.11 owns
-  // aria-sort and the collator sort. No overflow-x-auto: the disclosure has one.
-  return (
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-hairline">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
-}
-
 export function PressingSection({ tacticalIdentity, home, away }: PressingSectionProps) {
   const t = useT();
   const { locale } = useLocale();
@@ -136,13 +126,17 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
   const axisCategoryLabel = t("viz.pressing.axisPhase");
   const figurePrefix = t("viz.pressing.figurePrefix");
   const note = t("viz.pressing.note");
-  const metreUnit = t("enums.unit.m");
 
   function formatValue(value: number): string {
     return formatPercent(value, locale, 0);
   }
 
-  function chartFor(rows: PhaseRow[], groupLabel: string, heightClass: string) {
+  function chartFor(
+    rows: PhaseRow[],
+    groupLabel: string,
+    heightClass: string,
+    DistributionChart: typeof PressChart
+  ) {
     const peak = rowsPeak(rows);
     const homeSeries: ChartSeries = {
       teamCode: home.teamCode,
@@ -206,7 +200,15 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
               <dd className="type-caption tabular-nums text-ink-primary">
                 {formatDecimal(read(row), locale, 1)}
                 {UNIT_SEPARATOR}
-                {metreUnit}
+                {/*
+                 * THE UNIT COMES FROM THE ROW, keyed by measure code (AD-7:
+                 * "Units are locale-layer metadata keyed by metric code, never
+                 * artifact strings"). Hardcoding `t("enums.unit.m")` here made
+                 * the model's `unitKey` / `METRE_UNIT` mechanism exist only in
+                 * its own test: a measure added with a different unit would be
+                 * modelled correctly, rendered in metres, and stay green.
+                 */}
+                {t(row.unitKey)}
               </dd>
             </div>
           ))}
@@ -217,20 +219,61 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
 
   /* ------------------------------- The tables -------------------------------- */
 
-  const rateHeaders = [
-    { key: "phase", label: t("viz.table.phase"), numeric: false },
-    { key: "home", label: home.teamCode, numeric: true },
-    { key: "away", label: away.teamCode, numeric: true },
-  ];
-  const metreHeaders = [
-    { key: "measure", label: t("viz.table.measure"), numeric: false },
-    { key: "home", label: home.teamCode, numeric: true },
-    { key: "away", label: away.teamCode, numeric: true },
-  ];
+  /*
+   * The rate tables and the metre table share a shape — label, home, away —
+   * differing only in the first column's head and in the value formatter. Built
+   * from one factory so the three can never drift apart.
+   */
+  function labelledPairColumns<Row extends { labelKey: DictionaryKey; home: number; away: number }>(
+    labelHead: string,
+    format: (value: number) => string
+  ): TableColumn<Row>[] {
+    return [
+      {
+        key: "label",
+        headText: labelHead,
+        headTitle: null,
+        render: (row) => t(row.labelKey),
+        align: "text",
+        // The RESOLVED label, so the order follows the EN toggle.
+        sort: { kind: "text", valueOf: (row) => t(row.labelKey) },
+      },
+      {
+        key: "home",
+        headText: home.teamCode,
+        headTitle: home.name,
+        render: (row) => format(row.home),
+        align: "numeric",
+        // The RAW value, never the formatted string: "9,0" and "47,0" collate
+        // in the wrong order as text under es-CO comma decimals.
+        sort: { kind: "number", valueOf: (row) => row.home },
+      },
+      {
+        key: "away",
+        headText: away.teamCode,
+        headTitle: away.name,
+        render: (row) => format(row.away),
+        align: "numeric",
+        sort: { kind: "number", valueOf: (row) => row.away },
+      },
+    ];
+  }
 
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
-  const textCell = "px-2 py-1.5 type-caption text-ink-primary";
-  const rowClass = "border-b border-hairline";
+  /*
+   * ONE DECIMAL IN THE TABLE, deliberately more precise than the chart's axis.
+   * AC 1 requires "exact percentages and values are reachable via each chart's
+   * data table", and `Percentage` is declared with "x-decimals": 1 — so rounding
+   * to whole points here would discard contracted precision. Invisible today
+   * (every fixture value is an integer) and first visible at the 2.19 real-data
+   * cutover: the fixture-vs-corpus trap this story is built around. The axis
+   * ticks stay at 0 decimals; they are integers by construction.
+   */
+  const rateColumns = labelledPairColumns<PhaseRow>(t("viz.table.phase"), (value) =>
+    formatPercent(value, locale, 1)
+  );
+  const metreColumns = labelledPairColumns<MetreRow>(t("viz.table.measure"), (value) =>
+    formatDecimal(value, locale, 1)
+  );
 
   const pressCaption =
     `${title}${CAPTION_SEPARATOR}${t("viz.pressing.pressRates")}` +
@@ -242,32 +285,14 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
     `${title}${CAPTION_SEPARATOR}${t("viz.pressing.metreTableCaption")}`;
 
   function rateTable(caption: string, rows: PhaseRow[]) {
-    return (
-      <DataTable caption={caption} headers={rateHeaders}>
-        {rows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{t(row.labelKey)}</td>
-            <td className={numericCell}>{formatPercent(row.home, locale, 0)}</td>
-            <td className={numericCell}>{formatPercent(row.away, locale, 0)}</td>
-          </tr>
-        ))}
-      </DataTable>
-    );
+    return <DataTable caption={caption} columns={rateColumns} rows={rows} surface="canvas" />;
   }
 
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">
       {rateTable(pressCaption, press)}
       {rateTable(blockCaption, blocks)}
-      <DataTable caption={metreCaption} headers={metreHeaders}>
-        {metres.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{t(row.labelKey)}</td>
-            <td className={numericCell}>{formatDecimal(row.home, locale, 1)}</td>
-            <td className={numericCell}>{formatDecimal(row.away, locale, 1)}</td>
-          </tr>
-        ))}
-      </DataTable>
+      <DataTable caption={metreCaption} columns={metreColumns} rows={metres} surface="canvas" />
     </div>
   );
 
@@ -275,8 +300,9 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
     <div className="flex flex-col gap-tile-gap">
       <p className="type-stat-label text-ink-secondary">{note}</p>
       {/* Press FIRST, matching the section title's own word order. */}
-      {chartFor(press, t("viz.pressing.pressRates"), PRESS_HEIGHT)}
-      {chartFor(blocks, t("viz.pressing.blocks"), BLOCK_HEIGHT)}
+      {/* Each handle carries a skeleton fallback at ITS OWN height — see above. */}
+      {chartFor(press, t("viz.pressing.pressRates"), PRESS_HEIGHT, PressChart)}
+      {chartFor(blocks, t("viz.pressing.blocks"), BLOCK_HEIGHT, BlockChart)}
       <div className="flex flex-col gap-1">
         <p className="type-stat-label text-ink-secondary">{t("viz.pressing.metres")}</p>
         {/*

@@ -1,7 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
-
+import { DataTable } from "@/components/DataTable";
 import {
   DOT_SEPARATOR,
   PitchPanel,
@@ -12,7 +11,7 @@ import type { DefensiveActions } from "@/lib/contract/contract-types";
 import { formatDecimal, formatInteger } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
-import { cn } from "@/lib/utils";
+import { clockSortValue, type TableColumn } from "@/lib/table-sort";
 import {
   anyContestType,
   anyMinute,
@@ -60,47 +59,6 @@ const ACCENT_VAR = { a: "--viz-team-a-on-pitch", b: "--viz-team-b-on-pitch" } as
 
 /** Separator glyphs are module consts, never bare JSX literals (i18n gate). */
 const CAPTION_SEPARATOR = " — ";
-
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  /*
-   * A fourth private copy of the helper is the CURRENT CONVENTION
-   * (PassNetworksSection says so explicitly). Refactoring DataTable out of
-   * ShotMapsSection is Story 2.11's call, not this story's.
-   *
-   * On-pitch ink, because this table renders inside the panel on
-   * --pitch-surface: the hairline and the canvas ink are invisible there.
-   */
-  return (
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-on-pitch-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-pitch-line/40">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-on-pitch-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
-}
 
 export function DefensiveActionsSection({
   defensiveActions,
@@ -194,25 +152,101 @@ export function DefensiveActionsSection({
     },
   ]);
 
-  const headers = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    ...(showPlayer ? [{ key: "player", label: t("viz.table.player"), numeric: false }] : []),
-    ...(showMinute ? [{ key: "minute", label: t("viz.table.minute"), numeric: true }] : []),
-    { key: "x", label: t("viz.table.x"), numeric: true },
-    { key: "y", label: t("viz.table.y"), numeric: true },
-    { key: "actionType", label: t("viz.table.actionType"), numeric: false },
+  const unknown = t("viz.table.unknown");
+
+  /*
+   * THE COLUMN SET IS DYNAMIC — three presence gates, preserved exactly as they
+   * shipped. That is precisely why every sort key is a stable string and never
+   * a column index: `showMinute` closing shifts every later column by one.
+   */
+  const columns: TableColumn<DefensiveLogRow>[] = [
+    {
+      key: "team",
+      headText: t("viz.table.team"),
+      headTitle: null,
+      render: (row) => row.teamCode,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.teamCode },
+    },
+    ...(showPlayer
+      ? [
+          {
+            key: "player",
+            headText: t("viz.table.player"),
+            headTitle: null,
+            render: (row: DefensiveLogRow) => row.playerName ?? unknown,
+            align: "text" as const,
+            sort: { kind: "text" as const, valueOf: (row: DefensiveLogRow) => row.playerName },
+          },
+        ]
+      : []),
+    ...(showMinute
+      ? [
+          {
+            key: "minute",
+            headText: t("viz.table.minute"),
+            headTitle: null,
+            render: (row: DefensiveLogRow) => row.minuteLabel ?? unknown,
+            align: "numeric" as const,
+            sort: {
+              kind: "number" as const,
+              // NULL, never 0 — Story 2.9's review fixed this model's `?? 0`
+              // with a docblock naming Story 2.11 as the owner of the sort that
+              // would otherwise have read every clock-less row as minute 0.
+              valueOf: (row: DefensiveLogRow) => clockSortValue(row.minute, row.stoppageMinute),
+            },
+          },
+        ]
+      : []),
+    {
+      key: "x",
+      headText: t("viz.table.x"),
+      headTitle: null,
+      render: (row) => formatDecimal(row.x, locale, 2),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.x },
+    },
+    {
+      key: "y",
+      headText: t("viz.table.y"),
+      headTitle: null,
+      render: (row) => formatDecimal(row.y, locale, 2),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.y },
+    },
+    {
+      key: "actionType",
+      headText: t("viz.table.actionType"),
+      headTitle: null,
+      render: (row) => t(row.actionTypeKey),
+      align: "text",
+      // The RESOLVED label, so the order follows the EN toggle.
+      sort: { kind: "text", valueOf: (row) => t(row.actionTypeKey) },
+    },
     /*
      * A WHOLE-COLUMN decision on the FD-1 precedent (ruled decision 20): on
      * corpus-real data `contest_type` is null on 20,169/20,169, so a per-cell
      * em dash would ship a column of 20,169 em dashes. The column is absent
      * entirely unless some row carries a value.
      */
-    ...(showContestType ? [{ key: "contestType", label: t("viz.table.contestType"), numeric: false }] : []),
+    ...(showContestType
+      ? [
+          {
+            key: "contestType",
+            headText: t("viz.table.contestType"),
+            headTitle: null,
+            render: (row: DefensiveLogRow) =>
+              row.contestTypeKey === null ? unknown : t(row.contestTypeKey),
+            align: "text" as const,
+            sort: {
+              kind: "text" as const,
+              valueOf: (row: DefensiveLogRow) =>
+                row.contestTypeKey === null ? null : t(row.contestTypeKey),
+            },
+          },
+        ]
+      : []),
   ];
-
-  const unknown = t("viz.table.unknown");
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-on-pitch";
-  const textCell = "px-2 py-1.5 type-caption text-ink-on-pitch";
 
   /*
    * THE CAPTION MUST STATE THE ORDER THE TABLE ACTUALLY HAS.
@@ -226,34 +260,17 @@ export function DefensiveActionsSection({
    * the table did not have — the same false claim the two receiving tables
    * minted their own caption keys to avoid.
    *
-   * Not sortable in this story: Story 2.11 owns aria-sort, the
-   * Intl.Collator('es') sort and the Expert-layer instance of this same log. It
-   * plugs in at the <th> elements above and at the row array below.
+   * IT STILL STATES THE DEFAULT ORDER AND NEVER MUTATES (Story 2.11a decision
+   * 7). Sorting is user-initiated re-ordering laid over that order; a caption
+   * that rewrote itself on every sort would destroy the one durable statement
+   * of canonical order, and would fight this very conditional.
    */
   const orderKey: DictionaryKey = showMinute
     ? "viz.table.caption"
     : "viz.defensiveActions.tableCaptionNoClock";
   const caption = `${title}${CAPTION_SEPARATOR}${t(orderKey)}`;
 
-  const dataTable = (
-    <DataTable caption={caption} headers={headers}>
-      {rows.map((row) => (
-        <tr key={row.key} className="border-b border-pitch-line/40">
-          <td className={textCell}>{row.teamCode}</td>
-          {showPlayer ? <td className={textCell}>{row.playerName ?? unknown}</td> : null}
-          {showMinute ? <td className={numericCell}>{row.minuteLabel ?? unknown}</td> : null}
-          <td className={numericCell}>{formatDecimal(row.x, locale, 2)}</td>
-          <td className={numericCell}>{formatDecimal(row.y, locale, 2)}</td>
-          <td className={textCell}>{t(row.actionTypeKey)}</td>
-          {showContestType ? (
-            <td className={textCell}>
-              {row.contestTypeKey === null ? unknown : t(row.contestTypeKey)}
-            </td>
-          ) : null}
-        </tr>
-      ))}
-    </DataTable>
-  );
+  const dataTable = <DataTable caption={caption} columns={columns} rows={rows} surface="pitch" />;
 
   /*
    * NO `selection` (ruled decision 18): pinning exists to isolate a node's

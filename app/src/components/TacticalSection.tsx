@@ -39,9 +39,24 @@ export function TacticalSection({
 }: {
   /** The registry union, not `string` — a wrong id must not reach the DOM. */
   id: SectionId;
-  title: string;
-  /** Rendered ONLY in the collapsible (<lg) presentation — the desktop mockup shows no summary lines. */
-  summary: string | null;
+  /**
+   * `ReactNode`, not `string` (Story 2.18 ruled decision 6): a glossary term
+   * inside a heading is a focusable popover trigger, which cannot be a plain
+   * string. ONLY the two never-collapsible sections may pass a node here — for
+   * the other nine `{title}` renders inside the accordion <button> below, and a
+   * node containing a trigger would nest interactive content inside a button.
+   * The layer enforces that partition; this type cannot.
+   */
+  title: ReactNode;
+  /**
+   * The one-line section summary, rendered in the collapsible presentation at
+   * EVERY width (the 2.5 review's decision D1 overturned the original
+   * "<lg only" reading; the docblock said otherwise until Story 2.18).
+   *
+   * `ReactNode` for the same reason as `title` — this is where the nine
+   * collapsible sections mark their glossary term, outside the trigger.
+   */
+  summary: ReactNode | null;
   collapsible: boolean;
   open: boolean;
   onToggle: () => void;
@@ -130,10 +145,20 @@ export function TacticalSection({
               </span>
             </button>
           </h2>
+          {/*
+           * A <div>, not a <p> (Story 2.18): the summary is where the nine
+           * collapsible sections mark their glossary term, and the term's
+           * popover panel is a non-portalled Radix <div> that renders as a DOM
+           * sibling of its trigger — inside this element. A <div> descendant of
+           * a <p> is an invalid content model and trips React's dev-time
+           * nesting validation, which would put a console error on every match
+           * route. Block-level either way, so the layout and the
+           * aria-describedby target are unchanged.
+           */}
           {showSummary ? (
-            <p id={summaryId} className="mt-1 type-body text-ink-secondary">
+            <div id={summaryId} className="mt-1 type-body text-ink-secondary">
               {summary}
-            </p>
+            </div>
           ) : null}
         </>
       ) : (

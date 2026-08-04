@@ -1,28 +1,37 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { ReactNode } from "react";
 
+import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { Goalkeeping } from "@/lib/contract/contract-types";
 import { formatInteger, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
+import type { TableColumn } from "@/lib/table-sort";
 import { cn } from "@/lib/utils";
 import {
   INVOLVEMENT_CHART_HEIGHT_CLASS,
+  aerialTableRows,
+  bodyTypeTableRows,
   countAxisMax,
   countTicks,
+  distributionTableRows,
   goalkeepingByTeam,
   involvementPeak,
   involvementSummaryRows,
   involvementTicks,
   involvementTimelineRows,
+  preventionHeadlineRows,
   type CompletionRow,
   type CountRow,
   type GatedRows,
   type GoalkeeperBlock,
   type GoalkeepingTeamBlock,
+  type InvolvementSummaryRow,
+  type InvolvementTimelineRow,
+  type KeeperBreakdownRow,
+  type PreventionHeadlineRow,
 } from "@/viz/goalkeeping-model";
 
 /*
@@ -90,39 +99,13 @@ export interface GoalkeepingSectionProps {
   away: SideRef;
 }
 
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  // Private copy per section (current convention). Not sortable — 2.11 owns
-  // aria-sort, the Intl.Collator('es') sort and the Expert-layer instance.
-  return (
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-hairline">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
+/** The goal-prevention breakdown, flattened per keeper for its own table. */
+interface PreventionTableRow {
+  key: string;
+  teamCode: string;
+  playerName: string;
+  labelKey: DictionaryKey;
+  count: number;
 }
 
 export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSectionProps) {
@@ -162,6 +145,7 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
   }
 
   function completionList(rows: CompletionRow[]) {
+    const totalLabel = t("viz.table.total");
     const completeLabel = t("viz.table.complete");
     const incompleteLabel = t("viz.table.incomplete");
     return (
@@ -170,6 +154,15 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
           <div key={row.key} className="contents">
             <dt className="type-caption text-ink-secondary">{t(row.labelKey)}</dt>
             <dd className="type-caption tabular-nums text-ink-primary">
+              {/*
+               * THE TOTAL IS LABELLED TOO. It previously led the line as a bare
+               * figure while both its siblings carried labels, so it read as a
+               * number of unstated meaning sitting next to two explained ones.
+               * `viz.table.total` already exists and is used as a column head
+               * for exactly this quantity.
+               */}
+              {totalLabel}
+              {DENOMINATOR_SPACE}
               {formatInteger(row.total, locale)}
               {VALUE_SEPARATOR}
               {completeLabel}
@@ -221,10 +214,22 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
       "viz.goalkeeping.involvementsOne",
       "viz.goalkeeping.involvementsMany"
     );
+    /*
+     * THE CHART'S OWN NAME CARRIES NO TOTAL (ruled decision 14, verbatim: "No
+     * copy, caption, `figureSummary` or table footer may state or imply that the
+     * timeline adds up to it").
+     *
+     * `involvementPhrase` used to sit in this string, which is the accessible
+     * name of the element wrapping the timeline — so a screen-reader user was
+     * told the chart IS "47 participaciones" while the plotted slots run 0..5
+     * short on real data (exactly 0 on only 59 of 208 team-innings, and exact on
+     * all six fixture keepers, so the gap is invisible in dev). The headline
+     * below still prints the total verbatim, which is what decision 14 requires;
+     * what it forbids is attaching that number to the chart.
+     */
     const chartSummary =
       `${t("viz.goalkeeping.figurePrefix")} ${keeper.playerName}${CLAUSE_SEPARATOR}` +
-      `${teamName}${CLAUSE_SEPARATOR}${involvementPhrase}${CLAUSE_SEPARATOR}` +
-      `${t("viz.goalkeeping.involvementAxisNote")}`;
+      `${teamName}${CLAUSE_SEPARATOR}${t("viz.goalkeeping.involvementAxisNote")}`;
 
     function formatSlot(index: number): string {
       const point = points[index];
@@ -255,7 +260,18 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
         </div>
 
         {points.length === 0 ? (
-          <p className="type-caption text-ink-secondary">{t("viz.goalkeeping.zeroAll")}</p>
+          /*
+           * THIS KEEPER HAS NO PLOTTED SLOTS — which is NOT "the match listed no
+           * goalkeeper". `viz.goalkeeping.zeroAll` ("El informe no lista arqueros
+           * para este partido.") used to render here, inside a block that has
+           * just printed this keeper's name and involvement count and is about to
+           * print their distribution, save percentage and aerial numbers: a
+           * sentence flatly contradicted by everything around it. That string is
+           * correct only at section level, where it still lives.
+           */
+          <p className="type-caption text-ink-secondary">
+            {t("viz.goalkeeping.zeroTimeline")}
+          </p>
         ) : (
           <>
             <InvolvementChart
@@ -300,9 +316,27 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
               </dd>
             </div>
           </dl>
-          {gatedPanel(keeper.distribution.feetTechniques, t("enums.distributionType.feet"))}
-          {gatedPanel(keeper.distribution.handsTechniques, t("enums.distributionType.hands"))}
-          {gatedPanel(keeper.distribution.throwTechniques, t("enums.distributionType.throw"))}
+          {/*
+           * QUALIFIED HEADINGS, not a bare repeat of the family names. These
+           * three panels previously reused `enums.distributionType.*` — the very
+           * labels `completionList` has just printed as family rows above, with
+           * DIFFERENT numbers — so the reader met "Saque con el pie 24 ·
+           * Completados 20 · Incompletos 4" and then a second "Saque con el pie"
+           * heading over six technique counts. Minted under EXPERIENCE.md:278's
+           * procedure for terms discovered during content work.
+           */}
+          {gatedPanel(
+            keeper.distribution.feetTechniques,
+            t("viz.goalkeeping.feetTechniques")
+          )}
+          {gatedPanel(
+            keeper.distribution.handsTechniques,
+            t("viz.goalkeeping.handsTechniques")
+          )}
+          {gatedPanel(
+            keeper.distribution.throwTechniques,
+            t("viz.goalkeeping.throwTechniques")
+          )}
         </div>
 
         <div>
@@ -486,29 +520,87 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
 
   /* ------------------------------- The tables -------------------------------- */
 
-  const summaryHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "keeper", label: t("viz.table.keeper"), numeric: false },
-    { key: "total", label: t("viz.goalkeeping.involvementTitle"), numeric: true },
-    { key: "slots", label: t("viz.table.slot"), numeric: true },
-  ];
-  const timelineHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "keeper", label: t("viz.table.keeper"), numeric: false },
-    { key: "slot", label: t("viz.table.slot"), numeric: true },
-    { key: "minute", label: t("viz.table.minute"), numeric: true },
-    { key: "involvements", label: t("viz.goalkeeping.involvementTitle"), numeric: true },
-  ];
-  const preventionHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "keeper", label: t("viz.table.keeper"), numeric: false },
-    { key: "category", label: t("viz.table.category"), numeric: false },
-    { key: "count", label: t("viz.table.count"), numeric: true },
+  /** Team + keeper, the two columns all three tables open with. */
+  function identityColumns<Row extends { teamCode: string; playerName: string }>(): TableColumn<
+    Row
+  >[] {
+    return [
+      {
+        key: "team",
+        headText: t("viz.table.team"),
+        headTitle: null,
+        render: (row) => row.teamCode,
+        align: "text",
+        sort: { kind: "text", valueOf: (row) => row.teamCode },
+      },
+      {
+        key: "keeper",
+        headText: t("viz.table.keeper"),
+        headTitle: null,
+        /* The keeper name is CONTEXT, and plain text — never a link:
+           /players/{slug} does not exist, so a link 404s in the static
+           export. UX-DR22's cross-link rule is scoped to lineup names. */
+        render: (row) => row.playerName,
+        align: "text",
+        sort: { kind: "text", valueOf: (row) => row.playerName },
+      },
+    ];
+  }
+
+  function countColumn<Row>(
+    key: string,
+    headText: string,
+    read: (row: Row) => number
+  ): TableColumn<Row> {
+    return {
+      key,
+      headText,
+      headTitle: null,
+      render: (row) => formatInteger(read(row), locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: read },
+    };
+  }
+
+  const summaryColumns: TableColumn<InvolvementSummaryRow>[] = [
+    ...identityColumns<InvolvementSummaryRow>(),
+    countColumn("total", t("viz.goalkeeping.involvementTitle"), (row) => row.totalInvolvements),
+    /*
+     * A COUNT OF SLOTS, not a slot index — a different quantity from the
+     * timeline table's `slot` column below, which both used to label
+     * `viz.table.slot` ("Intervalo"). The two tables sit one above the other in
+     * one disclosure, and ruled decision 14 split them precisely because the
+     * figure the report PRINTS and the slots it PLOTS are different things.
+     */
+    countColumn("slots", t("viz.table.slotCount"), (row) => row.sampleCount),
   ];
 
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
-  const textCell = "px-2 py-1.5 type-caption text-ink-primary";
-  const rowClass = "border-b border-hairline";
+  const timelineColumns: TableColumn<InvolvementTimelineRow>[] = [
+    ...identityColumns<InvolvementTimelineRow>(),
+    /*
+     * THE SLOT INDEX COLUMN, and it is now load-bearing twice over: on real
+     * data many slots share a minute (the corpus draws 95-145 slots against a
+     * 0-120 minute with no stoppage field), so it is the only column that can
+     * restore the plotted order once a reader has sorted by minute.
+     */
+    countColumn("slot", t("viz.table.slot"), (row) => row.index),
+    countColumn("minute", t("viz.table.minute"), (row) => row.minute),
+    countColumn("involvements", t("viz.goalkeeping.involvementTitle"), (row) => row.involvements),
+  ];
+
+  const preventionColumns: TableColumn<PreventionTableRow>[] = [
+    ...identityColumns<PreventionTableRow>(),
+    {
+      key: "category",
+      headText: t("viz.table.category"),
+      headTitle: null,
+      render: (row) => t(row.labelKey),
+      align: "text",
+      // The RESOLVED category, so the order follows the EN toggle.
+      sort: { kind: "text", valueOf: (row) => t(row.labelKey) },
+    },
+    countColumn("count", t("viz.table.count"), (row) => row.count),
+  ];
 
   /*
    * DECISION 14'S TWO TABLES, NOT ONE. A single table reading "Total: 47" above
@@ -524,14 +616,95 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
    * the order is SAMPLE INDEX, the minutes are not unique, and nothing in the
    * contract guarantees the array is minute-sorted.
    */
+  /*
+   * A BREAKDOWN TABLE'S COLUMNS. `complete` / `incomplete` are null for any
+   * quantity that carries no completion split (a technique count, lineBreaks, a
+   * delivery type), and null means NO SUCH SPLIT EXISTS — never "the report
+   * recorded zero". An em dash says so, the same treatment the set-plays table
+   * gives a non-partition group's share. Sorting on a null puts the row at the
+   * END in both directions, which the shared table already guarantees.
+   */
+  function breakdownColumns(): TableColumn<KeeperBreakdownRow>[] {
+    return [
+      ...identityColumns<KeeperBreakdownRow>(),
+      {
+        key: "category",
+        headText: t("viz.table.category"),
+        headTitle: null,
+        render: (row) => t(row.labelKey),
+        align: "text",
+        // The RESOLVED category, so the order follows the EN toggle.
+        sort: { kind: "text", valueOf: (row) => t(row.labelKey) },
+      },
+      countColumn("total", t("viz.table.total"), (row) => row.total),
+      {
+        key: "complete",
+        headText: t("viz.table.complete"),
+        headTitle: null,
+        render: (row) =>
+          row.complete === null ? emDash : formatInteger(row.complete, locale),
+        align: "numeric",
+        sort: { kind: "number", valueOf: (row) => row.complete },
+      },
+      {
+        key: "incomplete",
+        headText: t("viz.table.incomplete"),
+        headTitle: null,
+        render: (row) =>
+          row.incomplete === null ? emDash : formatInteger(row.incomplete, locale),
+        align: "numeric",
+        sort: { kind: "number", valueOf: (row) => row.incomplete },
+      },
+    ];
+  }
+
+  const headlineColumns: TableColumn<PreventionHeadlineRow>[] = [
+    ...identityColumns<PreventionHeadlineRow>(),
+    countColumn("attempts", t("viz.goalkeeping.attemptsFaced"), (row) => row.attemptsFaced),
+    {
+      key: "save",
+      headText: t("viz.goalkeeping.savePercentage"),
+      headTitle: null,
+      // Contracted field, read VERBATIM — never re-derived.
+      render: (row) => formatPercent(row.savePercentage, locale, 1),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.savePercentage },
+    },
+    countColumn(
+      "interventions",
+      t("viz.goalkeeping.interventions"),
+      (row) => row.totalInterventions
+    ),
+  ];
+
   const summaryCaption = `${title}${CAPTION_SEPARATOR}${t("viz.goalkeeping.summaryCaption")}`;
   const timelineCaption = `${title}${CAPTION_SEPARATOR}${t("viz.goalkeeping.timelineCaption")}`;
   const preventionCaption = `${title}${CAPTION_SEPARATOR}${t("viz.goalkeeping.preventionCaption")}`;
+  /*
+   * The two captions minted for these tables in Task 8.4 and then left with zero
+   * call sites, which is what identified the missing tables as dropped work.
+   */
+  const distributionCaption = `${title}${CAPTION_SEPARATOR}${t(
+    "viz.goalkeeping.distributionCaption"
+  )}`;
+  const aerialCaption = `${title}${CAPTION_SEPARATOR}${t("viz.goalkeeping.aerialCaption")}`;
+  /*
+   * Each of these names ITS OWN denominator (ruled decision 13). The contract is
+   * explicit: "An App rendering the two panels side by side must label them with
+   * their own totals rather than implying a shared one."
+   */
+  const headlineCaption = `${title}${CAPTION_SEPARATOR}${t(
+    "viz.goalkeeping.headlineCaption"
+  )}`;
+  const bodyTypeCaption = `${title}${CAPTION_SEPARATOR}${t(
+    "viz.goalkeeping.bodyTypeCaption"
+  )}`;
+  const emDash = t("viz.table.unknown");
 
   const teams = [grouping.home, grouping.away];
   const summaryRows = teams.flatMap((team) => involvementSummaryRows(team));
   const timelineRows = teams.flatMap((team) => involvementTimelineRows(team));
-  const preventionRows = teams.flatMap((team) =>
+  const preventionRows: PreventionTableRow[] = teams.flatMap((team) =>
     team.records.flatMap((keeper) =>
       keeper.goalPrevention.byInterventionType.map((row) => ({
         key: `${keeper.key}-${row.key}`,
@@ -543,41 +716,73 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
     )
   );
 
+  const distributionTable = teams.flatMap((team) => distributionTableRows(team));
+  const aerialTable = teams.flatMap((team) => aerialTableRows(team));
+  const headlineRows = teams.flatMap((team) => preventionHeadlineRows(team));
+  /*
+   * The GATED body-type breakdown, appended to the intervention rows but kept in
+   * its OWN table below, because decision 13 forbids implying a shared total:
+   * byInterventionType sums to attemptsFaced, byBodyType to totalInterventions.
+   * Empty on real data (null on 208/208), populated on every fixture.
+   */
+  const bodyTypeRows = teams.flatMap((team) => bodyTypeTableRows(team));
+
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">
-      <DataTable caption={summaryCaption} headers={summaryHeaders}>
-        {summaryRows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={textCell}>{row.playerName}</td>
-            <td className={numericCell}>{formatInteger(row.totalInvolvements, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.sampleCount, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
-      <DataTable caption={timelineCaption} headers={timelineHeaders}>
-        {timelineRows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={textCell}>{row.playerName}</td>
-            {/* The SLOT INDEX column: duplicate-minute rows are otherwise
-                indistinguishable on real data (ruled decision 7). */}
-            <td className={numericCell}>{formatInteger(row.index, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.minute, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.involvements, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
-      <DataTable caption={preventionCaption} headers={preventionHeaders}>
-        {preventionRows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={textCell}>{row.playerName}</td>
-            <td className={textCell}>{t(row.labelKey)}</td>
-            <td className={numericCell}>{formatInteger(row.count, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
+      <DataTable
+        caption={summaryCaption}
+        columns={summaryColumns}
+        rows={summaryRows}
+        surface="canvas"
+      />
+      <DataTable
+        caption={timelineCaption}
+        columns={timelineColumns}
+        rows={timelineRows}
+        surface="canvas"
+      />
+      {/*
+       * DECISION 19'S REMAINING TABLES. Without these the surface printed ~30
+       * numbers and the disclosure carried a fraction of them — a UX-DR16 /
+       * ARCHITECTURE-SPINE.md:140 gap, and below EXPERIENCE.md:113's floor that
+       * every viz has a data-table alternative.
+       */}
+      <DataTable
+        caption={distributionCaption}
+        columns={breakdownColumns()}
+        rows={distributionTable}
+        surface="canvas"
+      />
+      <DataTable
+        caption={headlineCaption}
+        columns={headlineColumns}
+        rows={headlineRows}
+        surface="canvas"
+      />
+      <DataTable
+        caption={preventionCaption}
+        columns={preventionColumns}
+        rows={preventionRows}
+        surface="canvas"
+      />
+      {/*
+       * Its own table with its own caption naming its own denominator — never
+       * folded in above (ruled decision 13). Absent entirely on corpus data.
+       */}
+      {bodyTypeRows.length === 0 ? null : (
+        <DataTable
+          caption={bodyTypeCaption}
+          columns={breakdownColumns()}
+          rows={bodyTypeRows}
+          surface="canvas"
+        />
+      )}
+      <DataTable
+        caption={aerialCaption}
+        columns={breakdownColumns()}
+        rows={aerialTable}
+        surface="canvas"
+      />
     </div>
   );
 

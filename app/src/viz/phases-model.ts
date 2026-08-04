@@ -1,6 +1,5 @@
 import type {
   BlockLevel,
-  DefensiveBlockDistribution,
   InPossessionPhase,
   InPossessionPhases,
   OutOfPossessionPhase,
@@ -9,7 +8,6 @@ import type {
   TeamTacticalIdentity,
 } from "@/lib/contract/contract-types";
 import type { DictionaryKey } from "@/lib/i18n";
-import type { LogSide } from "@/viz/marker-model";
 
 /*
  * Domain C -> the #phases and #pressing surfaces (Story 2.10, Tasks 2 and 4).
@@ -237,8 +235,18 @@ export function pressRows(identity: TacticalIdentityBlock): PhaseRow[] {
  * three do NOT sum to 100 and are never stacked.
  */
 export function blockRows(identity: TacticalIdentityBlock): PhaseRow[] {
+  /*
+   * NO CAST. `BlockLevel` is "high" | "mid" | "low" and
+   * `DefensiveBlockDistribution` is { high, mid, low }, so the code IS the
+   * property name and this indexes cleanly — which is the point: every other
+   * enum in this story routes through an explicit Record<Enum, keyof Counts> map
+   * (IN_POSSESSION_PROPERTY, FREE_KICK_PROPERTY, INTERVENTION_PROPERTY, ...)
+   * precisely so that a renamed or widened contract field is a COMPILE ERROR.
+   * A `code as keyof DefensiveBlockDistribution` cast here would have silenced
+   * exactly that check while adding nothing, so the review removed it.
+   */
   const read = (team: TeamTacticalIdentity, code: BlockLevel): number =>
-    team.defensiveBlockDistribution[code as keyof DefensiveBlockDistribution];
+    team.defensiveBlockDistribution[code];
   return BLOCK_LEVELS.map((code) => ({
     key: `block-${code}`,
     code,
@@ -495,7 +503,14 @@ export function wrapAxisLabel(label: string, maxChars: number, maxLines: number)
    * like two different phases.
    */
   const consumed = lines.join(" ");
-  if (consumed.replace(/…$/, "").length < label.replace(/\s+/g, " ").length) {
+  /*
+   * `.trim()` matters: the comparison normalizes internal runs of whitespace but
+   * would otherwise KEEP a leading or trailing space, making the source look one
+   * character longer than what was consumed and appending an ellipsis to a label
+   * that was never cut. A false truncation cue is worse than none — it tells the
+   * reader a phase name continues when it does not.
+   */
+  if (consumed.replace(/…$/, "").length < label.replace(/\s+/g, " ").trim().length) {
     const last = lines[lines.length - 1];
     if (!last.endsWith("…")) {
       lines[lines.length - 1] =
@@ -511,31 +526,19 @@ export const AXIS_LABEL_MAX_LINES = 2;
 
 /* ------------------------------- Table rows -------------------------------- */
 
-/**
- * Decision 19's table rows. The data table carries the SAME NUMBERS the surface
- * displays — UX-DR16 and ARCHITECTURE-SPINE.md:140 require "a reachable data
- * table rendering the same artifact slice".
+/*
+ * DECISION 19'S TABLE ROWS ARE `PhaseRow` AND `MetreRow` THEMSELVES. Both
+ * sections build their tables per family straight from `phaseRows` / `pressRows`
+ * / `blockRows` / `metreRows` — every category, both teams, in the frozen order.
+ * Nothing is summed into a "total" column, because THERE IS NO TOTAL: a column
+ * footer adding the eight in-possession rates would assert the partition this
+ * whole module exists to deny.
  *
- * These are the phase rows themselves: every category, both teams, in the
- * frozen order. Nothing is summed into a "total" column, because THERE IS NO
- * TOTAL — a column footer adding the eight in-possession rates would assert the
- * partition this whole module exists to deny.
+ * The `PhaseTableRow` / `MetreTableRow` aliases, the `phaseTableRows` convenience
+ * and the `PhaseSide` re-export that once lived here were removed by the 2.10
+ * code review: all four were referenced ONLY by this module's own test, and
+ * nothing in the build chain catches a dead export (`no-unused-vars` is not in
+ * the flat config's active set and `tsconfig.json` sets no `noUnusedLocals`), so
+ * they would have accumulated silently. Add a table-row type here only when a
+ * component actually needs a shape `PhaseRow` cannot express.
  */
-export type PhaseTableRow = PhaseRow;
-
-/** The metre rows, unchanged — four rows, both teams, no total. */
-export type MetreTableRow = MetreRow;
-
-/** Convenience for a caller that wants every #phases row in one table. */
-export function phaseTableRows(identity: TacticalIdentityBlock): PhaseTableRow[] {
-  const sets = phaseRows(identity);
-  return [...sets.inPossession, ...sets.outOfPossession];
-}
-
-/**
- * The side codes a chart labels its two series with.
- *
- * Re-exported as a type alias so the sections and the chart agree on one shape
- * without either importing marker-model for a two-field interface.
- */
-export type PhaseSide = LogSide;

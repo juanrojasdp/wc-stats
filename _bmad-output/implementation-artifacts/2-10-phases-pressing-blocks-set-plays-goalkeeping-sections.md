@@ -4,7 +4,7 @@ baseline_commit: 325dc2b
 
 # Story 2.10: Phases, Pressing & Blocks, Set Plays & Goalkeeping Sections
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -1502,3 +1502,199 @@ delivery STYLE deliberately reuses Story 2.7's cross-delivery adjectives (*cerra
 | 2026-08-03 | Story context created. Four rulings taken by Juan at creation: `#goalkeeping` re-scoped to team-grouped blocks with presence gates over five corpus-null required sub-blocks (decisions 2, 3); `lineHeight`/`teamLength` render with the provenance gap filed to 1.16 (decision 5); `#phases` takes all 17 phase rates and `#pressing` takes blocks + metres (decision 4); set plays bars the two corpus-false partitions and uses the three corpus-true ones (decision 6). Status backlog → ready-for-dev. |
 | 2026-08-03 | Validation pass, three fresh-context subagents (evidence audit, checklist/implementability, adversarial decision review). ~180 factual claims audited: 3 corrected (fixture phase-sum ranges, `totalSetPlays` median, `contract/README.md` §13 → §14 and `cornersBySide` named), 8 imprecisions tightened. Seventeen implementability gaps closed, four of them build-breaking (the `Record`-not-array frozen-list shape, the `as DictionaryKey` cast on all fourteen key builders, the three-level nested `CorpusNullableGoalkeeperRecord` widening, and the `dynamic()` named-export call form). Eleven adversarial findings ruled: flat free-kick rows replace the containment-implying indent, the involvement axis gets a dedupe rule and a stated meaning, decision 14 gains a two-table disclosure, decision 3 gains a ruled gate-disclosure sentence, decision 11 is re-grounded structurally, decision 10(b) gains a solid ground and a 3:1 forcing floor, decision 8 gains a segment-sum denominator, and the "no record for this team" trap 2.9's review patched is pinned. **Decision 4 amended by Juan: `#pressing` also takes the four press rates**, because the shipped `<lg` collapsed-shell copy promises pressing intensity. Coordination section rewritten — a 2.9 code-review session began writing `app/` (nine files, including both locale files) during story creation, so `git add app/` is now unsafe. |
 | 2026-08-04 | Implemented. Three pure models (`phases-model.ts`, `set-plays-model.ts`, `goalkeeping-model.ts`), one new recharts leaf (`TacticalCharts.tsx`, the project's second recharts importer), four section components, four `TacticalLayer` dispatch cases, and the locale layer (four `viz.*` + fourteen `enums.*` namespaces in both locales). Suite 447 → **555 passed / 22 files**, no regressions; build, lint and typecheck green. **All eleven Tactical sections now render real content and `PendingSectionPanel` has zero call sites** (component and keys kept, call routed to 2.11). Two documented departures: the two `direct*` free-kick rows render FLAT, since ruled decision 6 forbids the containment cue Tasks 3.4/7.3 still described (the `subordinate` flag is kept as data only); and a pure `wrapAxisLabel` helper was added because recharts does not wrap axis ticks, without which the 17 Spanish phase labels overrun a 320 px SVG. Decision 10(b) resolved in the browser: **the diagonal hatch ships**, on the decision's own reading that a solid ground makes the mark-vs-card figures (10.30 dark / 5.36 light, both reproduced exactly) govern — recorded alongside the finding that the declared dashed-stroke fallback cannot work on a filled bar at all. Reflow clean at 320 and 390 px with every section expanded and every disclosure open (the only 320 px overflow is the pre-existing stat tile). Ten entries appended to `deferred-work.md`, including the recharts vendor chunk being duplicated (300.4 KB x2) across the two `dynamic()` entry points — off the critical path, so the split holds. Status ready-for-dev → review. |
+
+## Review Findings
+
+Adversarial code review, 2026-08-04 — three parallel layers (Blind Hunter, Edge Case Hunter,
+Acceptance Auditor) over the 2.10-scoped diff `163fa20..892766c` (19 files, +8370/-3; 6837 diff
+lines under `app/`). The range is this story's own commit, deliberately **not** `325dc2b..HEAD`:
+the baseline is two commits back and the intervening 1.15 and 2.9 review commits would have swept
+~2,100 lines of `pipeline/` changes into scope. Every finding below was re-verified against the
+shipped tree before triage; three were dropped as noise.
+
+**The toolchain baseline was re-measured independently, not inherited from the Dev Record, and all
+four green claims hold:** `npm test` 555 passed / 22 files, `check:types` up to date (237
+declarations / 6 schemas), `eslint . --max-warnings 0` clean, `tsc --noEmit` clean. No finding
+below is a build, lint or type failure.
+
+**The Acceptance Auditor cleared the scope boundary and both declared departures.** No file on the
+"Do not touch" list was modified; `tactical-sections.ts` is genuinely unchanged (Task 8.2);
+`PendingSectionPanel` and `tactical.pending.*` survive with zero call sites (decision 20); Task 9's
+ten ledger filings and the sprint-status line are present. The two declared departures are real as
+described — the four free-kick rows render flat with `subordinate` carried as data only, and
+`wrapAxisLabel` is pure and unit-tested. Decision 10(b)'s hatch ships over a solid ground with
+`TEAM_B_DASH_ARRAY` correctly not imported.
+
+Three layers converged independently on the empty-involvement-timeline string; three on the
+skeleton-height drift; two on the dropped goalkeeping tables, the shared corner caption, and the
+unconsumed metre-unit map.
+
+**The headline finding is a decision-19 / AC-3 gap, not a crash:** `#goalkeeping` displays roughly
+thirty numbers on screen and carries three tables behind "Ver los datos". The two caption keys the
+story minted for the missing tables — `viz.goalkeeping.distributionCaption` and `aerialCaption` —
+exist in both locales with **zero call sites**, which is the receipt that the work was planned and
+dropped rather than reasoned away.
+
+### Code-review session halted mid-patch — concurrent rewrite of `app/` (2026-08-04)
+
+**Ruled by Juan: pause, keep what landed, re-review the rest later.**
+
+Six patches were applied and then this session **stopped deliberately**, because a concurrent
+session rewrote `app/` underneath it while the patches were being written. At the moment of the
+halt the working tree carried **33 modified files and 16 untracked ones**, none of them this
+review's: Stories **2.11a** (the sortable data-table contract), **2.11b**, **2.11c** and **2.18**
+(glossary) are all in flight, with file mtimes still advancing during the session.
+
+**The decisive change is 2.11a.** `DataTable` has been **extracted** into a shared
+`app/src/components/DataTable.tsx` carrying a `TableColumn` / sort contract, and all ten sections
+now import it. Story 2.10's Task 7.6 ruled the opposite (*"a private `DataTable` copy per section is
+the **current convention**… do **not** refactor `DataTable` out of any shipped file"*), so this
+review's dismissal of the nine-copies finding was correct against 2.10's spec and is now obsolete
+against the tree. Nothing needs re-litigating; it simply means the table findings must be
+re-derived, not re-argued.
+
+**What that invalidates.** Every table-shaped finding below was written against private per-section
+`DataTable` copies taking `caption` / `headers` props. That shape no longer exists — the sections
+now build `columns: TableColumn<Row>[]`. Specifically **not applied, and requiring re-derivation
+before anyone acts on them**:
+
+- the `#goalkeeping` dropped-tables rebuild (the file has since been rewritten and already carries
+  `summaryColumns` / `timelineColumns` / `preventionColumns`; whether the distribution and aerial
+  tables are still missing is a fresh question);
+- the two set-plays tables sharing `cornerCaption`;
+- `viz.table.slot` naming two different quantities;
+- the 1-decimal table-percentage fix (the `render` callbacks moved into the column definitions).
+
+The remaining unapplied patches are **not** table-shaped and should still hold as written: the
+keeper React key, `anyGateClosed`'s over-firing, the `zeroAll`/`zeroTimeline` string, the
+`totalInvolvements` in `chartSummary`, the metre `unitKey`, the technique-panel labels, the
+unlabelled `completionList` total, the partition-mismatch note, and the test order dependency.
+
+**Verification at the halt, against the combined tree:** `npm test` **609 passed / 24 files**,
+`tsc --noEmit` clean. The six applied patches are coherent with the concurrent work and broke
+nothing. **Nothing was committed** — staging any of this would have produced exactly the
+undisclosed co-commit the Coordination section warns about (*"how a reviewer loses the ability to
+tell which story changed what"*).
+
+**Owed before this story returns to `review`:** the remaining unapplied patches, the D1 browser
+re-verification, and a fresh diff for the table findings once 2.11a/2.11b/2.11c/2.18 are committed
+and the tree is stable.
+
+**Second pass, same session (ruled by Juan): the HIGH finding was cleared.** With the concurrent
+session idle and `goalkeeping-model.ts` / `set-plays-model.ts` confirmed untouched since HEAD, four
+more patches were applied — the `#goalkeeping` disclosure rebuild plus the three model-only fixes.
+The rebuild was written **against 2.11a's `TableColumn` contract**, not against the private
+`DataTable` copy the finding originally described, and it is **additive**: four new tables beside
+their three, no restructuring of the concurrent session's work. Verified on the combined tree —
+`npm test` **627 passed / 24 files**, `tsc --noEmit` clean, `eslint . --max-warnings 0` clean.
+**Still nothing committed.**
+
+**THIRD PASS — all 21 patches are now applied.** Ruled by Juan: proceed despite the concurrent
+session. Every remaining patch was applied against the CURRENT tree, re-reading each file
+immediately before editing, and each table-shaped finding was re-derived against 2.11a's
+`TableColumn` contract rather than the private `DataTable` the original finding described. Verified
+on the combined tree: `npm test` **660 passed / 24 files**, `tsc --noEmit` clean,
+`eslint . --max-warnings 0` clean. **Still nothing committed.**
+
+**The browser pass has since been run** (see the verification section above): D1's legibility
+re-check is discharged in both themes at 320 px, and every rendering change this review made — the
+seven goalkeeping tables, the new on-screen strings, the per-instance skeletons, the `role="img"`
+chart wrapper, the removed SVG axis title — was exercised against all three fixtures. One cosmetic
+question is left open for UX (the `38.0%` trailing zero); it is not a defect.
+
+### Code-review browser verification (2026-08-04)
+
+Run against `python -m http.server 8765 --directory app/out` after a clean `npm run build`
+(the full chain green: eslint → tsc → assert:schema-version → next build → copy-data). The `<md`
+checks used a same-origin 320 px iframe, with `matchMedia` confirmed **genuinely false** for both
+`md` and `lg` inside it (`innerWidth` 316). All three fixtures.
+
+**D1 — the corrected hatch, discharged.** The pattern now renders `x1 = x2 = 3` in a 6×6
+`userSpaceOnUse` tile at `strokeWidth 1.5`, so the stroke spans 2.25→3.75 and is **fully inside the
+tile** — no clipping, and the texture is the declared width rather than half of it. Legibility was
+re-judged in the browser at 320 px in **both** themes and the diagonal reads clearly in each
+(light: dark stripes over the blue ground; dark: light stripes over cyan). All six `<pattern>` ids
+are valid XML NCNames.
+
+**Contrast, method validated first (the 2.6 method).** All four published figures reproduced
+**exactly** before any new number was trusted: `--viz-team-a` on `--surface-raised` **13.56** dark /
+**4.99** light, `--viz-team-b` **10.30** / **5.36**. The hatch stripe against its own ground measures
+**1.53** dark / **3.30** light — unchanged by this patch, as expected, since the fix altered the
+stripe's WIDTH and not its colour. Decision 10(b)'s governing measure remains the mark against the
+card (10.30 / 5.36), which clears both the 4.5:1 and 3:1 floors.
+
+| Check | Result |
+|---|---|
+| Goalkeeping disclosure tables | **7**, all seven captions distinct, on all three fixtures |
+| Distribution / aerial table rows (m001) | 36 / 22 — the ~30 previously untabled numbers now render |
+| Count-only rows | em dash in Completados/Incompletos, never `0` (28 of 36 rows on m074) |
+| Set-plays captions | **4 distinct** — the shared `cornerCaption` is gone |
+| Nested `role="figure"` | **0** on all three fixtures (2 team figures + 2 `role="img"` charts) |
+| Chart accessible name | no longer carries `totalInvolvements` (decision 14) |
+| Category-axis title painted in SVG | **none** — it rides an HTML `sr-only` span, where `sr-only` works |
+| Zero tick present | **6 / 6 axes**, incl. m074's extra-time axis 0…120 |
+| Focusable nodes in charts | **0** |
+| `role="application"` / `<Tooltip>` / `<Legend>` | **0 / 0 / 0** |
+| Running animations in the four sections | **0** |
+| Own-denominator labels (decision 13) | live — "Por tipo de intervención sobre 2", "Por parte del cuerpo sobre 2" |
+| EN toggle after load | clean; every new key mirrored, **0** Spanish leakage |
+| Console errors | none |
+| Reflow at 320 px, everything expanded and every disclosure open | doc overflow **7 px**, **0 genuine offenders** |
+
+**On the reflow number.** 7 px matches the pre-existing figure the implementation recorded, and the
+offender sweep returns zero once elements inside an `overflow-x` ancestor are excluded — the
+disclosure supplies that scroll container by design. A naive sweep that ignores scroll ancestors
+flags every wide table in **five sections this story never touched**, which is what confirms the
+behaviour as the shipped norm rather than something this review introduced.
+
+**One cosmetic consequence of the AC 1 precision fix, flagged rather than absorbed.** The
+`#phases` / `#pressing` tables now format at 1 decimal to preserve `Percentage`'s contracted
+`"x-decimals": 1`, so on today's fixtures — where every value is an integer — every cell reads
+`38.0%` rather than `38%`. That is correct against AC 1 and invisible-to-wrong at the 2.19 cutover
+if left at 0 decimals, but it is noisier on current data. **Open for a UX call:** suppress the
+trailing zero per cell (`Number.isInteger(v) ? 0 : 1` decimals) if the noise is judged worse than
+the asymmetry. `@/lib/format` is on the do-not-touch list, so this would be a component-level
+conditional, not a format-layer change.
+
+**Honest limits, unchanged.** No live screen reader is available in this harness — the structural
+pass read roles, labels and strings back from the live DOM in both locales, which is not the same
+thing. The 195 px reflow is 2.19's and was not attempted.
+
+### Decisions needed
+
+- [x] [Review][Decision] **RULED — fix the geometry and re-verify in the browser.** Ruled by Juan, 2026-08-04. The stripe is drawn at the tile centre (or mirrored at both edges) so the rendered texture is the declared 1.5 px, and Task 10.2’s legibility check is re-run at 320 px in both themes before the patch is considered closed. The reasoning: decision 10(b) ruled the hatch in on the argument that a solid ground makes the mark-vs-card figures govern and *“the hatch only adds texture”* — a half-strength texture is a weaker discharge of UX-DR11(b) than the decision intended, and the browser judgement was made against a mark nobody knew was clipped. Correcting the geometry restores what was ruled rather than overturning it. *Original finding:* **The Team B hatch stripe renders at half its declared width, and the mark Juan approved in the browser is the half-width one.** `TacticalCharts.tsx:314-321` (and the duplicate at `:483-490`) draws the pattern line at `x1=0, x2=0` with `strokeWidth={1.5}` inside a `userSpaceOnUse` tile of width 6. Half the 1.5 px stroke falls at negative x and is clipped by the tile; SVG pattern tiles do not wrap clipped content, and there is no compensating stroke at `x=6`. The rendered texture is therefore a ~0.75 px line every 6 px, not the intended 1.5. This is the entire UX-DR11(b) non-hue channel — hue alone measures 1.32:1 dark / 1.07:1 light between the two team accents — and decision 10(b) was resolved at Task 10.2 on a *legibility* judgement made against what actually painted. So the constant `HATCH_STROKE_PX = 1.5` misdescribes the shipped mark, but correcting the geometry changes the mark that was signed off. **Options: (a) fix the geometry (draw at `x = HATCH_TILE_PX / 2`, or add the mirror stroke) and re-verify legibility in the browser; (b) keep the shipped appearance and correct the constant to `0.75` with a comment recording why; (c) defer to the first successor story that needs the pattern (2.13 / 2.15 / 2.16 / 2.17).**
+
+### Patches
+
+- [x] [Review][Patch] ⟨from D1⟩ **Draw the Team B hatch stripe at its declared width and re-verify legibility** — move the pattern line off the tile edge (`x = HATCH_TILE_PX / 2`) or add the mirror stroke at `x = HATCH_TILE_PX`, in **both** copies of the `<defs>` block, so the ~0.75 px rendered stripe becomes the intended 1.5 px. Then re-run Task 10.2’s hatch check at 320 px in both themes and record the observation in the Dev Record beside the original decision-10(b) note. [app/src/components/TacticalCharts.tsx:314-321,483-490] **APPLIED 2026-08-04 (code only).** The stripe now draws at `x = HATCH_TILE_PX / 2` in both `<defs>` blocks, so the full 1.5 px falls inside the tile. **The browser half of this patch is NOT done** — Task 10.2’s 320 px legibility re-check in both themes is still owed and must run before this is called closed.
+- [x] [Review][Patch] **`#goalkeeping`'s data disclosure omits most of the numbers the surface displays, and two minted captions prove the tables were dropped** — the disclosure carries exactly three tables (involvement summary, involvement timeline, intervention-type counts). On screen but in no table: the distribution families and their complete/incomplete triples, `lineBreaks`, all three gated technique panels, `attemptsFaced`, `savePercentage`, `totalInterventions`, `byBodyType`, the three aerial `CompletionCounts`, `crossesFacedAttempted`/`Completed`, and the six cross-delivery counts. Violates ruled decision 19 ("the SAME NUMBERS the surface displays"), AC 3 via UX-DR16 / `ARCHITECTURE-SPINE.md:140`, and `EXPERIENCE.md:113`'s accessibility floor. Task 5.6 is marked `[x]`. The model exports no distribution / aerial / prevention-headline row builders, and `viz.goalkeeping.distributionCaption` / `aerialCaption` were minted in both locales with zero call sites. [app/src/components/GoalkeepingSection.tsx:546-582] **APPLIED 2026-08-04.** Three new pure row builders in `goalkeeping-model.ts` — `distributionTableRows`, `aerialTableRows`, `preventionHeadlineRows` — plus `bodyTypeTableRows` kept separate so decision 13's two denominators are never implied to be shared. The disclosure now carries **seven** tables instead of three, built against 2.11a's `TableColumn` contract; `distributionCaption` and `aerialCaption` finally have call sites, and two new captions (`headlineCaption`, `bodyTypeCaption`) name their own denominators in both locales. One shared row shape carries both quantity kinds: `complete`/`incomplete` are `number | null`, where null means NO SUCH SPLIT EXISTS (rendered as an em dash), never zero. Gated rows are ABSENT, not em-dashed, so table and surface agree on corpus data too. Six new tests pin it, including the corpus shape and the two-keeper case.
+- [x] [Review][Patch] **A keeper with an empty involvement timeline is told the match listed no goalkeepers** — `points.length === 0` renders `viz.goalkeeping.zeroAll` = *"El informe no lista arqueros para este partido."* inside a block that has just printed that keeper's name and involvement count and is about to print their distribution, save percentage and aerial numbers. It is the same string used at `:595` for the genuinely keeper-less match, where it is correct. The model has a dedicated test for this branch that cannot catch it, because the defect is in the component. Needs its own key in both locales. [app/src/components/GoalkeepingSection.tsx:257-258] **APPLIED 2026-08-04.** New `viz.goalkeeping.zeroTimeline` in both locales ("El informe no grafica intervalos para este arquero."). `zeroAll` stays where it is correct — section level.
+- [x] [Review][Patch] **The `dynamic()` skeleton fallback is the wrong height on 2 of the 4 `DistributionChart` mounts, contradicting both files' own comments** — a `dynamic()` declared once cannot vary its fallback per instance. `PhasesSection.tsx:78` fixes the fallback at `IN_POSSESSION_HEIGHT` (`h-[302px]`), so the 9-category out-of-possession chart mounts behind a 30 px-short skeleton; `PressingSection.tsx:61` fixes it at `PRESS_HEIGHT` (`h-[182px]`) in front of the 3-category blocks chart (`h-[152px]`), 30 px tall. `PhasesSection.tsx:52-58` claims the fallback is "AT THE CHART'S EXACT HEIGHT" and `phases-model.ts` claims fallback and chart "cannot drift". A CLS hit against the budget the code-split exists to protect, and on the `#phases` deep link `TacticalLayer` scrolls on mount, before the chunk resolves. Needs two `dynamic()` handles per file, or a height-carrying fallback. [app/src/components/PhasesSection.tsx:78; app/src/components/PressingSection.tsx:61] **APPLIED 2026-08-04.** Both files now build one `dynamic()` handle per height — `InPossessionChart` / `OutOfPossessionChart` and `PressChart` / `BlockChart` — each with a fallback at its own height. Both handles share one chunk (`next/dynamic` dedupes on the import specifier), so the code-split is unaffected.
+- [x] [Review][Patch] **`totalInvolvements` is embedded in the involvement chart's own `figureSummary`, which ruled decision 14 forbids verbatim** — decision 14: *"No copy, caption, `figureSummary` or table footer may state or imply that the timeline adds up to it."* `chartSummary` interpolates `involvementPhrase` (= `countPhrase(keeper.totalInvolvements, …)`) and is the `aria-label` of the `role="figure"` wrapping the timeline, so a screen-reader user is told the chart *is* "47 participaciones" — while on real data the plotted slots run 0-5 short (exactly 0 on only 59 of 208). The printed headline at `:252-254` is correct and required; the chart's own accessible name is the surface the decision names. [app/src/components/GoalkeepingSection.tsx:224-227] **APPLIED 2026-08-04.** `involvementPhrase` removed from `chartSummary`; the headline still prints the total verbatim, which is what decision 14 requires.
+- [x] [Review][Patch] **Two different set-plays tables ship under one identical caption** — `:455` (corner counts by side / type / style with shares) and `:472` (per-type left / right / total) both pass `caption={cornerCaption}` = *"Tiros de esquina por lado, tipo y estilo de envío."*, which does not describe the second table. Violates decision 19's "each caption states its own content and its own order — mint caption keys per table", and two adjacent `<caption>` elements with identical text make the tables indistinguishable in a screen-reader table list. Same defect class the 2.7 review patched once already. [app/src/components/SetPlaysSection.tsx:455,472] **APPLIED 2026-08-04.** New `viz.setPlays.cornerTypeSideCaption` in both locales, naming the left/right split within each delivery type.
+- [x] [Review][Patch] **A partition bar discloses its segment / total disagreement with the copy that denies the partition** — `segmentedBar` is called only for corner SIDE and corner TYPE, both corpus-true 208/208, but on `disagreesWithDeclaredTotal` it renders `viz.setPlays.cornerStyleNote` = *"Recuento independiente: puede no coincidir con el total de tiros de esquina."* "Independent count" is precisely what SIDE and TYPE are **not**. Decision 8 requires the surface to "show both and normalize neither", which needs its own sentence. Unreachable on fixtures (false 6/6), live on corpus. [app/src/components/SetPlaysSection.tsx:244-247] **APPLIED 2026-08-04.** New `viz.setPlays.cornerMismatchNote` states that the segments do not add up to the published total and that both are shown unadjusted (AD-6) — instead of the non-partition disclaimer, which denied the relation the bar draws.
+- [x] [Review][Patch] **Nested `role="figure"` with two competing accessible names in every goalkeeper block** — `teamBlock` opens `<figure role="figure" aria-label={figureSummary}>` and the `InvolvementChart` rendered inside it opens a second one at `TacticalCharts.tsx:466-469`. The outer label ("Arqueros: México, Arquero, Raul RANGEL") does not function as a caption for the inner chart. Decision 15 requires the per-team block to be the figure, so the chart is the one that must give way — note `DistributionChart`'s own figure is correct in `#phases` / `#pressing`, where it is not nested. [app/src/components/GoalkeepingSection.tsx:435-439; app/src/components/TacticalCharts.tsx:466-469] **APPLIED 2026-08-04.** `InvolvementChart` renders `role="img"` instead of a second figure. `DistributionChart` keeps its figure — it is never nested.
+- [x] [Review][Patch] **The `#phases` and `#pressing` data tables round percentages to whole numbers, discarding a contracted decimal** — both render `formatPercent(row.home, locale, 0)` while `common.schema.json:450-457` defines `Percentage` with `"x-decimals": 1`. AC 1 requires *"exact percentages and values are reachable via each chart's data table."* Every fixture value is an integer, so the loss is invisible in dev and appears only at the 2.19 cutover — the exact fixture-vs-corpus trap this story is built around. The same components already use 1 decimal for `savePercentage`, corner shares and metres. Axis ticks may stay at 0 decimals; the tables are what AC 1 names. [app/src/components/PhasesSection.tsx:229-230; app/src/components/PressingSection.tsx:250-251] **APPLIED 2026-08-04.** Both tables now format at 1 decimal, matching `Percentage`'s `"x-decimals": 1`. Axis ticks stay at 0 decimals — they are integers by construction.
+- [x] [Review][Patch] **A two-keeper team whose records share `playerId` and `playerName` collapses to one panel through duplicate React keys** — the key is `keeper-${teamId}-${playerId}-${playerName}` with no index. `playerId` and `playerName` are `required` but **unfulfillable from the source** (Story 1.9, AD-14 (a)) and "will be whatever Story 1.16 decides" — a per-team placeholder is a live possibility. Two-keeper teams are real on 7 of 208 team-innings, and this lands squarely on ruled decision 2, which the story went to lengths to handle (both records rendered, nothing summed). React would drop the second keeper's panel and its table rows. One-line fix: add the record index. [app/src/viz/goalkeeping-model.ts:535] **APPLIED 2026-08-04.** The record index is now part of the key. The pre-existing test only varied `playerName`, so the true collision was never covered — a new constructed test asserts two records identical in every keyed field still survive as two panels and two row sets.
+- [x] [Review][Patch] **`sr-only` on a recharts `<Label>` does not hide SVG text, so the category-axis title is likely painted over the wrapped phase labels** — Tailwind's `sr-only` works through `position:absolute` + `clip` + `width` / `height:1px`, none of which apply to an SVG `<text>`; recharts renders a position-less `Label` centred in the axis viewBox, i.e. on top of the `CategoryTick` `<tspan>`s at 96 px. This is the only SVG use of `sr-only` in the codebase (the other ~10 call sites are HTML `<span>`s), so there is no precedent that it works. The comment's stated intent is that the title is carried in the figure summary and the table header instead — so removing the `<Label>` outright matches the intent and is strictly safer either way. [app/src/components/TacticalCharts.tsx:363] **APPLIED 2026-08-04.** The SVG `<Label>` is removed; the axis title now rides an HTML `<span className="sr-only">` inside the figure, where `sr-only` genuinely works, so the locale key still reaches the accessibility tree.
+- [x] [Review][Patch] **The three gated technique panels are headed with the same words as the family rows immediately above them, with different numbers** — `gatedPanel(...)` labels each breakdown with `enums.distributionType.{feet,hands,throw}` ("Saque con el pie" / "Saque de volea" / "Saque con la mano"), which `completionList` has already printed as family rows at `:292`. The reader sees "Saque con el pie 24 · Completados 20 · Incompletos 4" and then a second "Saque con el pie" heading over six technique counts. No "técnicas de…" qualifier exists in either locale. Live on all three fixtures. Mint under `EXPERIENCE.md:278`'s procedure. [app/src/components/GoalkeepingSection.tsx:303-305] **APPLIED 2026-08-04.** New `viz.goalkeeping.{feet,hands,throw}Techniques` in both locales ("Técnicas de saque con el pie", …), minted under EXPERIENCE.md:278 so the panel heading no longer repeats the family row above it.
+- [x] [Review][Patch] **`completionList` prints an unlabelled leading number** — the row renders `{total} · Completados N · Incompletos M`, so the first figure has no label at all while both its siblings do, reading as a bare number of unstated meaning. `viz.goalkeeping.distributionTotal` ("Total") already exists and is used only as a *row* label inside the same list, which makes the omission read as an oversight rather than a shorthand. [app/src/components/GoalkeepingSection.tsx:172-182] **APPLIED 2026-08-04.** The total now carries `viz.table.total` like both its siblings.
+- [x] [Review][Patch] **`viz.table.slot` labels two different quantities in two adjacent tables inside one disclosure** — `:493` uses it for the summary table's *count of plotted slots*; `:498` uses it for the timeline table's *slot index*. Both render "Intervalo". Ruled decision 14 split these into two tables precisely because they are different things, and decision 7 added the index column because duplicate-minute rows are otherwise indistinguishable. Needs a distinct `slotCount` key. [app/src/components/GoalkeepingSection.tsx:493,498] **APPLIED 2026-08-04.** New `viz.table.slotCount` ("Intervalos") for the count; `viz.table.slot` ("Intervalo") stays on the index column.
+- [x] [Review][Patch] **`anyGateClosed` fires on `crossesFacedCompleted === null`, which hides no panel, so the gate sentence can claim omissions that did not happen** — the flag ORs in the crosses field, but that field only swaps the label to `crossesFacedAlone` (which already discloses the absence in words) and drops one `<dt>` / `<dd>` pair; no panel is removed. A record where only that field is null makes the block state *"…esos paneles no se muestran"* while every panel is on screen. All-or-nothing on corpus (all five null) and all-present on fixtures, so this is a mixed-record case only — but the flag should be scoped to the four panel gates. [app/src/viz/goalkeeping-model.ts:543-548; app/src/components/GoalkeepingSection.tsx:470-472] **APPLIED 2026-08-04.** The flag is scoped to the four gates that actually remove a panel. New test asserts a record whose only null is `crossesFacedCompleted` reports `anyGateClosed === false` while every panel is present.
+- [x] [Review][Patch] **The metre unit is modelled per measure and then ignored, giving two sources of truth** — `phases-model.ts:264` puts `unitKey` on every `MetreRow`, `:275` exports `METRE_UNIT`, and `phases-model.test.ts` asserts both; the only consumer hardcodes `const metreUnit = t("enums.unit.m")` and never reads `row.unitKey`. Task 7.2 mandated exactly this AD-7 "units keyed by metric code" mechanism, so it currently exists only in the test: a future measure with a different unit would be modelled correctly, rendered in metres, and stay green. [app/src/components/PressingSection.tsx:139] **APPLIED 2026-08-04.** `PressingSection` reads `t(row.unitKey)`; the hardcoded `t("enums.unit.m")` is gone, so AD-7's keyed-by-metric-code mechanism is live rather than test-only.
+- [x] [Review][Patch] **Dead exports and dead locale keys shipped with the story** — `phaseTableRows`, `PhaseTableRow`, `MetreTableRow` and `PhaseSide` (`phases-model.ts:524-541`) are referenced only by their own test; both sections build their tables from `phaseRows` per family. `viz.table.value` ("Valor" / "Value") was added to both locales and is read by nothing. `SideRef.teamId` is declared in all four new sections and populated by `TacticalLayer` for every one of them, and no section reads it. The story's own Task 8.1 records that **nothing in the build chain catches a dead binding** (`no-unused-vars` is not in the flat config's active set and `tsconfig.json` sets no `noUnusedLocals`), and 2.9 took a review finding for exactly this. [app/src/viz/phases-model.ts:524-541] **APPLIED 2026-08-04, with one deliberate exception.** `phaseTableRows`, `PhaseTableRow`, `MetreTableRow` and `PhaseSide` are deleted (the orphaned test was rewritten against `phaseRows`), and `viz.table.value` is removed from both locales. **`SideRef.teamId` is deliberately KEPT:** re-checked at patch time it is NOT dead — `GoalkeepingSection` and `SetPlaysSection` both pass their `SideRef` to a model expecting a `LogSide`, which reads `teamId`. Only `#phases` and `#pressing` do not, and narrowing the interface in two of four sections would break a uniform prop convention across the layer for no gain. The original finding overstated this.
+- [x] [Review][Patch] **Two latent wrong-output paths in the axis-label wrapper** — (a) `wrapAxisLabel`'s truncation check compares `lines.join(" ")` against `label.replace(/\s+/g, " ")`, which preserves leading and trailing whitespace, so a label with edge whitespace gets an ellipsis appended although nothing was cut — falsely signalling truncated text; a `.trim()` fixes it. (b) `CategoryTick` keys its `<tspan>`s by line content, so a label wrapping to two identical lines yields duplicate React keys and one dropped `tspan`, rendering half the label. Both need curated-string inputs to trigger, hence low reachability — but both are one-line fixes on the story's own declared-departure helper. [app/src/viz/phases-model.ts:497-498; app/src/components/TacticalCharts.tsx:173-177] **APPLIED 2026-08-04.** `wrapAxisLabel` now trims before comparing lengths, and `CategoryTick` keys its `<tspan>`s by index.
+- [x] [Review][Patch] **The chart height's category count is hardcoded at the call sites rather than read from the rows** — `distributionChartHeightClass(8)` / `(9)` / `(4)` / `(3)` are written as literals while the rows come from the frozen enum lists. If a phase or block enum gains a member, the height freezes at the old count, the bars crowd, and the function's own exhaustive throw never fires — the one guard that exists for this is bypassed by construction. [app/src/components/PhasesSection.tsx:48-49; app/src/components/PressingSection.tsx:48-49] **APPLIED 2026-08-04.** Both files derive their heights from the frozen enum lists — `IN_POSSESSION_PHASES` / `OUT_OF_POSSESSION_PHASES` / `PRESS_PHASES` / `BLOCK_LEVELS` — so an enum change moves the height with it and `distributionChartHeightClass`'s exhaustive throw is reachable again.
+- [x] [Review][Patch] **`blockRows` is the one enum read that bypasses the module's own exhaustiveness discipline, and the cast is not even needed** — `team.defensiveBlockDistribution[code as keyof DefensiveBlockDistribution]`, while every other enum in the story routes through an explicit `Record<Enum, keyof Counts>` map (`IN_POSSESSION_PROPERTY`, `FREE_KICK_PROPERTY`, `INTERVENTION_PROPERTY`, …) specifically so a renamed field is a compile error. `BlockLevel` is `"high" | "mid" | "low"` and `DefensiveBlockDistribution` is `{high, mid, low}`, so the indexing compiles **without** the cast — deleting it both removes code and restores the compile-time guarantee. [app/src/viz/phases-model.ts:241] **APPLIED 2026-08-04.** The cast is gone; `DefensiveBlockDistribution` is no longer imported.
+- [x] [Review][Patch] **A test asserts array-order independence and a sibling test then depends on array order** — the "ignores array order entirely" test establishes that home / away must come from `metadata`, never from array position; the `savePercentage` verbatim test then reads `records(bundle)[index === 0 ? 0 : 1].goalPrevention`, i.e. it assumes `goalkeeping[0]` is the home record. It passes only because the fixtures happen to be emitted home-first — the exact assumption the earlier test exists to forbid. It also softens its own assertion with `matching?.goalPrevention.savePercentage`, so a lookup miss compares `undefined` rather than failing loudly. [app/src/viz/goalkeeping-model.test.ts] **APPLIED 2026-08-04.** Sources are matched by `teamId` and `playerId` instead of array position, the row count is asserted, and the `matching?.` softening is replaced by an explicit `toBeDefined()` so a lookup miss fails loudly.
+
+### Deferred
+
+- [x] [Review][Defer] **A series whose values are all equal puts both direct team labels at the axis origin, overlapping** [app/src/components/TacticalCharts.tsx:229-237] — deferred, marginal reachability
+- [x] [Review][Defer] **A denominator-labelled breakdown can contradict its own listed rows with no disclosure** [app/src/components/GoalkeepingSection.tsx:348-367] — deferred, needs a corpus measurement this story did not take
+
+### Dismissed as noise (3)
+
+- **`segmentedBar` throws at render inside a layer with one shared error boundary** — the throw can only fire on a broken model invariant (`segmentedBar` is called solely with the two `partition: true` groups), never from data. Throwing is the correct response to a violated invariant, and decision 18's guard requirement is about *data-driven* early returns at model entry points. The boundary's blast radius is already re-filed by Task 9.6.
+- **A zero-segment bar renders "no corners" beside a non-zero declared total** — for corner SIDE and TYPE the segments sum to `totalCorners` on 208/208, so all-zero segments imply `totalCorners === 0`. Unreachable for the only two groups that reach `segmentedBar`.
+- **`DataTable` is copy-pasted into four more files, bringing the repo to nine** — Task 7.6 rules this explicitly ("a private `DataTable` copy per section is the **current convention**… do **not** refactor `DataTable` out of any shipped file"). A reviewer does not overturn a ruled decision; 2.11 owns the cross-table sort contract that would motivate extraction.

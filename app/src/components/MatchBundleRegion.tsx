@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { EmptyStatePanel } from "@/components/EmptyStatePanel";
+import { SortAnnouncerProvider } from "@/components/SortAnnouncer";
 import { TacticalErrorBoundary } from "@/components/TacticalErrorBoundary";
 import { TacticalLayer } from "@/components/TacticalLayer";
 import { Button } from "@/components/ui/button";
@@ -151,10 +152,21 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
        * from costing the reader the whole route — the Hero above is
        * build-time markup and must survive a bad bundle.
        */}
+      {/*
+       * SortAnnouncerProvider wraps the layer, INSIDE the boundary's sibling
+       * position and outside the layer itself: it owns the one polite live
+       * region every sortable data table announces through (Story 2.11a ruled
+       * decision 9). Mounted here rather than in the shared table because
+       * twenty tables would otherwise mint twenty regions, each conditionally
+       * mounted inside its "Ver los datos" disclosure — and a region that
+       * mounts already-populated does not announce reliably.
+       */}
       {status === "loaded" && bundle !== null ? (
-        <TacticalErrorBoundary>
-          <TacticalLayer bundle={bundle} />
-        </TacticalErrorBoundary>
+        <SortAnnouncerProvider>
+          <TacticalErrorBoundary>
+            <TacticalLayer bundle={bundle} />
+          </TacticalErrorBoundary>
+        </SortAnnouncerProvider>
       ) : null}
     </div>
   );

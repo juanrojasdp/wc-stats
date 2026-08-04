@@ -509,7 +509,7 @@ export function goalkeepingByTeam(
 }
 
 function teamBlock(records: readonly GoalkeeperRecord[], side: LogSide): GoalkeepingTeamBlock {
-  const blocks = records.map((record) => keeperBlock(widen(record), side));
+  const blocks = records.map((record, index) => keeperBlock(widen(record), side, index));
   return {
     key: `goalkeeping-${side.teamId}`,
     teamId: side.teamId,
@@ -523,16 +523,31 @@ function teamBlock(records: readonly GoalkeeperRecord[], side: LogSide): Goalkee
 
 function keeperBlock(
   record: CorpusNullableGoalkeeperRecord,
-  side: LogSide
+  side: LogSide,
+  index: number
 ): GoalkeeperBlock {
   const distribution = distributionRows(record);
   const goalPrevention = goalPreventionRows(record);
   const aerial = aerialRows(record);
   return {
-    // Keyed on teamId + playerId + name: `playerId` is `required` but
-    // UNFULFILLABLE from the source (Story 1.9, AD-14 (a)), so it is used only
-    // to disambiguate a React key and NEVER as an identity this surface keys on.
-    key: `keeper-${side.teamId}-${record.playerId}-${record.playerName}`,
+    /*
+     * Keyed on teamId + RECORD INDEX + playerId + name.
+     *
+     * THE INDEX IS LOAD-BEARING AND IT IS NOT DECORATION. `playerId` and
+     * `playerName` are `required` but UNFULFILLABLE FROM THE SOURCE (Story 1.9,
+     * AD-14 (a)) — no goalkeeper name appears on any of the 936 goalkeeping
+     * pages — so whatever Story 1.16 emits for them may well be one placeholder
+     * per team. Two keepers are real on 7 of 208 corpus team-innings, and
+     * without the index those two records would collide on one React key: React
+     * drops the duplicate, so the second keeper's panel AND its table rows
+     * silently vanish — defeating ruled decision 2, which exists precisely to
+     * render both and sum neither. No fixture can catch this (all six carry one
+     * keeper), so the constructed two-keeper test is the only guard.
+     *
+     * `playerId` still contributes, but it is a DISAMBIGUATOR here and never an
+     * identity this surface keys on.
+     */
+    key: `keeper-${side.teamId}-${index}-${record.playerId}-${record.playerName}`,
     playerId: record.playerId,
     playerName: record.playerName,
     totalInvolvements: record.totalInvolvements,
@@ -540,12 +555,25 @@ function keeperBlock(
     distribution,
     goalPrevention,
     aerial,
+    /*
+     * SCOPED TO THE FOUR GATES THAT ACTUALLY REMOVE A PANEL.
+     *
+     * `crossesFacedCompleted` is deliberately NOT in this list even though it is
+     * one of decision 3's five corpus-null fields. It hides no panel: when it is
+     * null the aerial block swaps to the `crossesFacedAlone` label, which states
+     * the absence IN WORDS at the point of use, and drops a single value. The
+     * gate sentence this flag drives says "esos paneles no se muestran" — so
+     * including the crosses field would let a record whose ONLY null is that one
+     * announce hidden panels while every panel is on screen. All five are null
+     * together on corpus data and present together on the fixtures, so the
+     * mismatch is a mixed-record case only; the flag is still scoped, because a
+     * disclosure sentence that can be false is worse than no sentence.
+     */
     anyGateClosed:
       !distribution.feetTechniques.present ||
       !distribution.handsTechniques.present ||
       !distribution.throwTechniques.present ||
-      !goalPrevention.byBodyType.present ||
-      aerial.crossesFacedCompleted === null,
+      !goalPrevention.byBodyType.present,
   };
 }
 
@@ -927,5 +955,208 @@ export function involvementTimelineRows(
       minute: point.minute,
       involvements: point.involvements,
     }))
+  );
+}
+
+/*
+ * THE DISTRIBUTION AND AERIAL TABLES (added by the 2.10 code review).
+ *
+ * Ruled decision 19 requires each section's disclosure to carry THE SAME NUMBERS
+ * THE SURFACE DISPLAYS, and UX-DR16 / ARCHITECTURE-SPINE.md:140 require "a
+ * reachable data table rendering the same artifact slice" — with EXPERIENCE.md:113
+ * making a data-table alternative the accessibility floor for every viz.
+ *
+ * The first implementation shipped three tables (involvement summary, involvement
+ * timeline, intervention types) against roughly thirty numbers on screen. The
+ * distribution families and their complete/incomplete triples, `lineBreaks`, the
+ * three gated technique panels, `attemptsFaced` / `savePercentage` /
+ * `totalInterventions`, `byBodyType`, the three aerial families,
+ * `crossesFacedAttempted` / `Completed` and the six cross-delivery counts all
+ * reached the screen and NO table. The two caption keys minted for exactly these
+ * tables — `viz.goalkeeping.distributionCaption` and `aerialCaption` — sat in both
+ * locales with zero call sites, which is what identified the gap as dropped work
+ * rather than a ruling.
+ *
+ * ONE ROW SHAPE FOR BOTH, because both mix two kinds of quantity: a family row is
+ * a complete/incomplete/total triple read verbatim, while a technique, body-type
+ * or delivery-type row is a bare count. `complete` and `incomplete` are therefore
+ * `number | null`, and null means THIS QUANTITY HAS NO SUCH SPLIT — never "the
+ * report recorded zero". The component renders an em dash for it, the same
+ * treatment the set-plays table already gives a non-partition group's share.
+ *
+ * GATED ROWS ARE ABSENT, NOT EM-DASHED (ruled decision 3): a closed gate
+ * contributes no rows at all here, exactly as it renders no panel on the surface,
+ * so the table and the surface agree on real data as well as on the fixtures.
+ * NOTHING IN THIS FILE SUMS ANYTHING (AD-5) — every number is read verbatim, and
+ * each breakdown carries its OWN denominator (ruled decision 13) rather than
+ * implying a shared one.
+ */
+export interface KeeperBreakdownRow {
+  key: string;
+  teamCode: string;
+  playerName: string;
+  labelKey: DictionaryKey;
+  /** Verbatim. For a count-only row this IS the quantity. */
+  total: number;
+  /** null when the quantity carries no completion split — NOT a zero. */
+  complete: number | null;
+  incomplete: number | null;
+}
+
+function breakdownFromCompletion(
+  team: GoalkeepingTeamBlock,
+  record: GoalkeeperBlock,
+  prefix: string,
+  rows: readonly CompletionRow[]
+): KeeperBreakdownRow[] {
+  return rows.map((row) => ({
+    key: `${record.key}-${prefix}-${row.key}`,
+    teamCode: team.teamCode,
+    playerName: record.playerName,
+    labelKey: row.labelKey,
+    total: row.total,
+    complete: row.complete,
+    incomplete: row.incomplete,
+  }));
+}
+
+function breakdownFromCounts(
+  team: GoalkeepingTeamBlock,
+  record: GoalkeeperBlock,
+  prefix: string,
+  rows: readonly CountRow[]
+): KeeperBreakdownRow[] {
+  return rows.map((row) => ({
+    key: `${record.key}-${prefix}-${row.key}`,
+    teamCode: team.teamCode,
+    playerName: record.playerName,
+    labelKey: row.labelKey,
+    total: row.count,
+    complete: null,
+    incomplete: null,
+  }));
+}
+
+/**
+ * Every distribution number the surface prints: the four families as triples,
+ * `lineBreaks`, and the three GATED technique groups (absent when gated).
+ */
+export function distributionTableRows(team: GoalkeepingTeamBlock): KeeperBreakdownRow[] {
+  return team.records.flatMap((record) => {
+    const distribution = record.distribution;
+    return [
+      ...breakdownFromCompletion(team, record, "dist", distribution.families),
+      {
+        key: `${record.key}-dist-line-breaks`,
+        teamCode: team.teamCode,
+        playerName: record.playerName,
+        labelKey: "viz.goalkeeping.lineBreaks" as DictionaryKey,
+        total: distribution.lineBreaks,
+        complete: null,
+        incomplete: null,
+      },
+      // Gated: absent, never em-dashed (ruled decision 3).
+      ...breakdownFromCounts(team, record, "feet", distribution.feetTechniques.rows),
+      ...breakdownFromCounts(team, record, "hands", distribution.handsTechniques.rows),
+      ...breakdownFromCounts(team, record, "throw", distribution.throwTechniques.rows),
+    ];
+  });
+}
+
+/**
+ * Every aerial number the surface prints: the three families as triples, the
+ * crosses-faced pair (the completed half GATED), and the six delivery types.
+ */
+export function aerialTableRows(team: GoalkeepingTeamBlock): KeeperBreakdownRow[] {
+  return team.records.flatMap((record) => {
+    const aerial = record.aerial;
+    const crosses: KeeperBreakdownRow[] = [
+      {
+        key: `${record.key}-aerial-crosses`,
+        teamCode: team.teamCode,
+        playerName: record.playerName,
+        /*
+         * The SAME label swap the surface makes: once its counterpart is gated
+         * away, a value labelled as the *attempted half of a pair* reads as a
+         * MISSING number rather than an ABSENT one (decision 3's first named
+         * consequence). The table must not re-introduce the ambiguity the panel
+         * was careful to remove.
+         */
+        labelKey: (aerial.crossesFacedCompleted === null
+          ? "viz.goalkeeping.crossesFacedAlone"
+          : "viz.goalkeeping.crossesFaced") as DictionaryKey,
+        total: aerial.crossesFacedAttempted,
+        complete: null,
+        incomplete: null,
+      },
+    ];
+    if (aerial.crossesFacedCompleted !== null) {
+      crosses.push({
+        key: `${record.key}-aerial-crosses-completed`,
+        teamCode: team.teamCode,
+        playerName: record.playerName,
+        labelKey: "viz.goalkeeping.crossesFacedCompleted" as DictionaryKey,
+        total: aerial.crossesFacedCompleted,
+        complete: null,
+        incomplete: null,
+      });
+    }
+    return [
+      ...breakdownFromCompletion(team, record, "aerial", aerial.types),
+      ...crosses,
+      ...breakdownFromCounts(team, record, "delivery", aerial.deliveryTypes),
+    ];
+  });
+}
+
+/**
+ * The goal-prevention HEADLINE figures — `attemptsFaced`, `savePercentage` and
+ * `totalInterventions` — which the surface prints above its breakdowns and which
+ * no table carried.
+ *
+ * SEPARATE FROM THE BREAKDOWN ROWS ON PURPOSE (ruled decision 13). The two
+ * breakdowns have DIFFERENT denominators — `byInterventionType` sums to
+ * `attemptsFaced`, `byBodyType` to `totalInterventions` — and the contract
+ * requires an App rendering them together to "label them with their own totals
+ * rather than implying a shared one". Folding these three into the intervention
+ * table would imply exactly that shared total.
+ *
+ * `savePercentage` is read VERBATIM and is a percentage, not a count, which is
+ * why this row shape carries it separately rather than as another
+ * `KeeperBreakdownRow`.
+ */
+export interface PreventionHeadlineRow {
+  key: string;
+  teamCode: string;
+  playerName: string;
+  attemptsFaced: number;
+  savePercentage: number;
+  totalInterventions: number;
+}
+
+export function preventionHeadlineRows(team: GoalkeepingTeamBlock): PreventionHeadlineRow[] {
+  return team.records.map((record) => ({
+    key: `${record.key}-prevention-headline`,
+    teamCode: team.teamCode,
+    playerName: record.playerName,
+    attemptsFaced: record.goalPrevention.attemptsFaced,
+    savePercentage: record.goalPrevention.savePercentage,
+    totalInterventions: record.goalPrevention.totalInterventions,
+  }));
+}
+
+/**
+ * The GATED body-type breakdown, as its own rows.
+ *
+ * Kept out of `preventionHeadlineRows` and out of the intervention-type rows for
+ * decision 13's reason: it sums to `totalInterventions`, a DIFFERENT denominator
+ * from the intervention-type breakdown's `attemptsFaced`. On real data this
+ * returns nothing at all — `byBodyType` is null on 208/208 corpus team-innings —
+ * so the fixtures are the only place it is exercised, which is exactly where the
+ * mislabelling risk decision 13 guards against is live.
+ */
+export function bodyTypeTableRows(team: GoalkeepingTeamBlock): KeeperBreakdownRow[] {
+  return team.records.flatMap((record) =>
+    breakdownFromCounts(team, record, "body", record.goalPrevention.byBodyType.rows)
   );
 }

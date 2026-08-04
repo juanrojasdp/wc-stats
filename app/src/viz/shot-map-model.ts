@@ -152,8 +152,24 @@ export interface ShotLogRow {
   teamCode: string;
   playerName: string | null;
   minuteLabel: string | null;
-  minute: number;
-  stoppageMinute: number;
+  /*
+   * NULL when the attempt carries no clock — never 0.
+   *
+   * STORY 2.11a DECISION 3, which CLOSES the ledger's "dead fields carrying a
+   * defaulting decision" item. These were `shot.at?.minute ?? 0`, which stamped
+   * minute 0 on every clock-less row while `minuteLabel` stayed null and
+   * `orderByMinute` sorted the row LAST — so the row claimed the earliest
+   * possible clock and the earliest position disagreed. Nothing read them until
+   * the shared sortable table arrived; an `aria-sort` over `.minute` would have
+   * ordered every clock-less attempt FIRST, silently, and pinned green by
+   * fixtures that populate `at` on 100% of rows.
+   *
+   * `CrossLogRow` already used `?? null` and `DefensiveLogRow` was fixed by
+   * Story 2.9's code review; this makes all THREE log row models agree on one
+   * null contract, asserted across the three in shot-map-model.test.ts.
+   */
+  minute: number | null;
+  stoppageMinute: number | null;
   x: number;
   y: number;
   outcomeKey: DictionaryKey;
@@ -189,8 +205,8 @@ export function shotLogRows(
       teamCode: side.teamCode,
       playerName: shot.playerName ?? null,
       minuteLabel: shot.at == null ? null : formatGoalMinute(shot.at),
-      minute: shot.at?.minute ?? 0,
-      stoppageMinute: shot.at?.stoppageMinute ?? 0,
+      minute: shot.at?.minute ?? null,
+      stoppageMinute: shot.at?.stoppageMinute ?? null,
       x: shot.x,
       y: shot.y,
       outcomeKey: shotOutcomeKey(shot.outcome),

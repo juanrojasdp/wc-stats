@@ -491,9 +491,10 @@ describe("the corpus-real event shape (Task 3.7)", () => {
   });
 
   /*
-   * `minute` is NULL, never a fabricated 0. Story 2.11's sort plug-in attaches
-   * to this field; a `?? 0` would have ordered the whole corpus log as minute 0
-   * while `orderByMinute` sorted those same rows last.
+   * `minute` is NULL, never a fabricated 0. Story 2.11a's shared sortable table
+   * now reads this field through `clockSortValue`; a `?? 0` would have ordered
+   * the whole corpus log as minute 0 while `orderByMinute` sorted those same
+   * rows last. The three-model agreement is asserted in shot-map-model.test.ts.
    */
   it("leaves minute and stoppageMinute NULL on a clock-less row", () => {
     const [row] = defensiveRows([CORPUS_SHAPED_EVENT], HOME, AWAY);

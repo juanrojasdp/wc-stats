@@ -3,7 +3,15 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import type { MatchBundle, ShotEvent, ShotOutcome } from "@/lib/contract/contract-types";
+import type {
+  CrossEvent,
+  DefensiveActionEvent,
+  MatchBundle,
+  ShotEvent,
+  ShotOutcome,
+} from "@/lib/contract/contract-types";
+import { crossLogRows } from "@/viz/cross-map-model";
+import { defensiveRows } from "@/viz/defensive-actions-model";
 import { panelDataState } from "@/viz/marker-model";
 import {
   SHOT_OUTCOME_ENCODING,
@@ -204,8 +212,11 @@ describe("shotLogRows", () => {
     for (let i = 1; i < rows.length; i += 1) {
       const previous = rows[i - 1];
       const current = rows[i];
-      const previousClock = previous.minute * 1000 + previous.stoppageMinute;
-      const currentClock = current.minute * 1000 + current.stoppageMinute;
+      // `Infinity` for an absent clock, matching the CrossLogRow test: nulls
+      // sort LAST, so a clock-less row must compare as later than every stamped
+      // one rather than as minute 0 (Story 2.11a decision 3).
+      const previousClock = (previous.minute ?? Infinity) * 1000 + (previous.stoppageMinute ?? 0);
+      const currentClock = (current.minute ?? Infinity) * 1000 + (current.stoppageMinute ?? 0);
       expect(previousClock).toBeLessThanOrEqual(currentClock);
       if (previousClock === currentClock && previous.teamCode !== current.teamCode) {
         expect(previous.teamCode).toBe(home.teamCode);
@@ -269,6 +280,63 @@ describe("the xG column is omitted while every value is null (FD-1)", () => {
       "viz.shotMap.xg",
     ]);
     expect(withXg.detail[3].value).toEqual({ kind: "number", value: 0.42, digits: 2 });
+  });
+});
+
+describe("the three log row models agree on ONE null contract (Story 2.11a decision 3)", () => {
+  /*
+   * `ShotLogRow` was the last of the three still carrying `?? 0`. `CrossLogRow`
+   * already used `?? null` and `DefensiveLogRow` was fixed by Story 2.9's code
+   * review with a docblock naming this story as the owner of the Shot fix.
+   *
+   * A clock-less event must yield `null`, not 0, in all three — otherwise the
+   * shared sortable table orders those rows FIRST on a clock column while
+   * `orderByMinute` puts them LAST, and the row silently claims minute 0.
+   */
+  const { home, away } = sides(m001);
+
+  it("yields null minute and stoppageMinute for a clock-less SHOT", () => {
+    const clockless: ShotEvent = {
+      ...shotsOf(m001)[0],
+      at: undefined as unknown as ShotEvent["at"],
+    };
+    const [row] = shotLogRows([clockless], home, away);
+    expect(row.minute).toBeNull();
+    expect(row.stoppageMinute).toBeNull();
+    expect(row.minuteLabel).toBeNull();
+  });
+
+  it("yields null minute and stoppageMinute for a clock-less CROSS", () => {
+    const crosses = m001.events.crosses;
+    if (crosses === null) {
+      throw new Error("fixture m001 has no crosses");
+    }
+    const clockless: CrossEvent = { ...crosses[0], at: undefined as unknown as CrossEvent["at"] };
+    const [row] = crossLogRows([clockless], home, away);
+    expect(row.minute).toBeNull();
+    expect(row.stoppageMinute).toBeNull();
+    expect(row.minuteLabel).toBeNull();
+  });
+
+  it("yields null minute and stoppageMinute for a clock-less DEFENSIVE ACTION", () => {
+    const actions = m001.events.defensiveActions;
+    if (actions === null) {
+      throw new Error("fixture m001 has no defensive actions");
+    }
+    const clockless: DefensiveActionEvent = {
+      ...actions[0],
+      at: undefined as unknown as DefensiveActionEvent["at"],
+    };
+    const [row] = defensiveRows([clockless], home, away);
+    expect(row.minute).toBeNull();
+    expect(row.stoppageMinute).toBeNull();
+    expect(row.minuteLabel).toBeNull();
+  });
+
+  it("keeps a REAL clock intact in all three — the fix is null-only", () => {
+    const [shot] = shotLogRows([shotsOf(m001)[0]], home, away);
+    expect(shot.minute).not.toBeNull();
+    expect(typeof shot.minute).toBe("number");
   });
 });
 

@@ -1,0 +1,587 @@
+---
+baseline_commit: 892766c
+---
+
+# Story 2.18: Glossary, About & Terminology Completion
+
+Status: in-progress
+
+<!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+## Story
+
+As Mariana,
+I want tactical terms explained in my language and the data source clearly stated,
+So that the app teaches rather than intimidates, and every screenshot credits its source (FR-32, OQ-1, OQ-3).
+
+> **This story is the terminology GATE, not a terminology addition.** Ten stories (2.1–2.10) shipped ~417 locale leaves ahead of it under the honour system, and nothing in the build chain has ever compared a shipped Spanish string to the EXPERIENCE.md policy table. The audit performed at story creation found **one hard register violation, one peninsular survivor, two policy rows the shipped app already contradicts, and eight table rows still undischarged** — plus an AD-7 unit violation and an en/es asymmetry nobody had noticed. This story implements the table, remediates what preceded it, and leaves behind the mechanical guard that stops the next story re-breaking it.
+>
+> **It also owns a shared-component seam and, by Juan's ruling, a five-times-filed architecture defect.** `TacticalSection`'s `title: string` blocks glossary term-marking and is filed to 2.18 **by name**; widening it makes 2.18 "the story that next touches `TacticalSection`", which is the routing target of the OPEN, unpatched whole-layer `TacticalErrorBoundary` blast radius. Juan ruled 2.18 takes it.
+
+## Acceptance Criteria
+
+The epic's ACs (`epics.md:990-1002`, under the header at `:988`) are reproduced **verbatim**, each followed by the **BINDING** reconciliation the story-creation probe forced. Read both.
+
+**AC 1 — Terminology**
+
+**Given** the locale files
+**When** the terminology pass completes
+**Then** every row of the EXPERIENCE.md per-term policy table is implemented verbatim (translate/jargon/tooltip decisions, abbreviations, stage names, result letters, positions, LatAm register), every tactical term has an explicit `es` entry with no raw-key fallthrough, and new terms discovered during content work get their own logged row (FR-32)
+**And** the provisional terms (step-in → irrupción, offers-to-receive wording) are verified against the PMSR definitions and finalized.
+
+> **BINDING — "implemented verbatim" is not achievable for eight rows, and the AC's own word "verbatim" is what forces the ruling rather than a silent skip.**
+>
+> The creation audit read all 38 table rows (`EXPERIENCE.md:239-276`) against the live `es.ts`/`en.ts`. **Three rows are VIOLATED**:
+> - row 30 `corner` — `tactical.sections["set-plays"].summary` ships `"Córners, tiros libres y laterales: cuántos y con qué resultado."`: forbidden register, and it contradicts the **seven** `viz.setPlays.*` keys inside the very same section which all correctly say *tiro de esquina*, plus `viz.setPlays.throwIns` = `"Saques de banda"` against its own `"laterales"`.
+> - row 38 `Expert column groups` — 2.10 shipped the possession vocabulary the table logs as the **rejected** alternative (decision 4 — read it, the shape is not what a grep suggests).
+> - row 21 `momentum` — the ruled tooltip text is **factually false** for the shipped series (decision 5).
+>
+> **Eight rows are NOT-YET-USED** — `speed zones`, `high-speed run` (and its `"CARR. ALTA VEL."` abbreviation), `take-on`, `step-in`, `result letters & standings columns`, `offside`, `standings / leaderboards`, and the `salidas` / `mano a mano` half of `goalkeeping vocabulary`. Their surfaces ship in 2.11–2.16. The remaining rows are compliant, several byte-identical to the ruled string. **The audit's own partition did not sum to 38 — recount it at Task 8.7 and record the exact split; do not carry a number forward from this paragraph.**
+>
+> **A row whose surface does not exist cannot be "implemented" in a locale file without minting a dead key**, and dead keys are a recorded review finding (the 2.9 review patched five). `es.ts`'s own `enums` docblock says the reserved namespaces are extended by **per-surface** stories. **RULED:** those eight rows are discharged **in the glossary** — a surface that exists in this story, where every term legitimately appears, and where a real `es` entry with a real definition satisfies "an explicit `es` entry with no raw-key fallthrough". Task 8.7 records the eight explicitly so the next story neither assumes them done nor re-mints them.
+>
+> **Declared reading, flagged for review:** a reviewer argued that `result letters & standings columns` and the `"CARR. ALTA VEL."` abbreviation are *table scaffolding the AC names by category*, and are as safe to mint now as `enums.stage` was — i.e. that this BINDING declines ~20% of the work the AC asks for. The counter is that `enums.stage`/`enums.position` were minted **by the stories that rendered them**, and that a standings-column map with no standings table is the dead key the ledger already punished. The ruling stands; the objection is recorded so review can overturn it cheaply.
+>
+> The two provisional terms are FINALIZED by ruled decisions 2 and 3, against corpus evidence. **The PMSR has no glossary page — 0 hits for `glossar|definition|Football Language|terminolog` across all 52 pages of `spike/mex_rsa.pdf`** — so "verified against the PMSR definitions" means verified against page placement, printed column order and reconciliation arithmetic. There is no prose definition to consult and the story must not pretend otherwise.
+
+**AC 2 — Glossary tooltip and `/glossary`**
+
+**Given** the glossary tooltip component
+**When** a marked term is tapped/hovered/focused
+**Then** the definition popover opens (hoverable, persistent, Esc-dismissible per 1.4.13, Tab-reachable glossary link), shows the counterpart-language subtitle, and terms are marked once per section (UX-DR20)
+**And** `/glossary` renders the full term list in both languages with `#term` anchors.
+
+> **BINDING — this is the project's FIRST WCAG 1.4.13 surface and there is no precedent anywhere in the ledger.** All 615 lines of `deferred-work.md` at baseline carry **zero** hits for `1.4.13`, hover-persistence, dismissibility or tooltip a11y. The only occurrence of the word "tooltip" in the entire ledger is the entry that assigns this work to 2.18.
+>
+> The one existing overlay, `PitchPanel`'s cluster popover, is **not** a usable precedent for the hoverable clause: its hover variant is `aria-hidden="true"` and deliberately unhoverable. A glossary popover contains a **Tab-reachable link**, so it must be a real focusable region that survives the pointer leaving the trigger. **Decision 9 settles the primitive AND its exact configuration — three of its clauses exist because the obvious Radix setup ships this AC broken.** Read it before writing a line.
+>
+> **"terms are marked once per section" is satisfied BY CONSTRUCTION, not by bookkeeping** — decision 6 rules exactly one marked term per section, in the heading or the summary. There is no marking registry, no context, and no first-occurrence state.
+>
+> **"both languages" ≠ "the active locale".** AC 2's `/glossary` clause and EXPERIENCE's Component-Patterns rule (*"Every tooltip and `/glossary` entry shows the counterpart-language term as a subtitle (\"salida de balón — en: build-up\")"*) both mean the **term pair renders simultaneously**, in one locale's page. Definitions follow the active locale; the term pair does not. This is Diego's bridge, filed as `review-i18n.md` §5 [medium] — *"A bilingual reader … can't map 'salida de balón' ↔ 'build-up' without flipping the entire interface."*
+
+**AC 3 — `/about`**
+
+**Given** `/about`
+**When** it renders
+**Then** it carries the full attribution statement, methodology note (xG used as-is, never recomputed), and independence disclaimer per the ruled wording, linked from the footer on every route (UX-DR21, NFR-10).
+
+> **BINDING — the AC's parenthetical is MISLEADING and must not be shipped verbatim. Ruled by Juan (decision 1).**
+>
+> Rendering decision FD-1 (`deferred-work.md`, grep `"per-shot xG does not exist in the source PDFs"`) records that **per-shot xG does not exist in the source PDFs at all — team totals only** — which is why shot markers render at uniform size and every event log omits the xG row while `ShotEvent.expectedGoals` is `null`. "Used as-is, never recomputed" is **true of the team totals and misleading about per-shot values**, on the one page in the product whose entire purpose is to explain the data honestly.
+>
+> **`/about` already exists and 2.2 measured bundle behaviour on it — verify before adding.** `app/src/app/about/page.tsx` is an 11-line server page rendering `AboutContent`, which renders `t("about.title")` + `t("chrome.footer.attribution")` and nothing else. Its docblock says *"methodology, glossary and credits are Story 2.18."* The locale namespace is a **one-key** `about: { title: "Acerca del sitio" }`. The route is **not** to be recreated; it is to be filled.
+>
+> **The footer link half of this AC is already shipped and correct** — `AttributionFooter` renders `chrome.footer.attribution` + a `/about` link on every route via `layout.tsx`. What is **missing** is the `/glossary` link: `EXPERIENCE.md`'s IA route table names the footer as `/glossary`'s reach path (*"| `/glossary` | Glossary | Footer, every glossary tooltip's \"see more\" |"*), while `DESIGN.md`'s footer bullet mentions only the about link. Task 7.5 adds the link; Task 10.6 files the spine disagreement rather than editing `DESIGN.md`.
+
+## Ruled Decisions
+
+These are decided. Do not re-litigate them mid-implementation; if evidence contradicts one, record a departure in the Dev Agent Record with the reason, exactly as 2.6, 2.7, 2.8, 2.9 and 2.10 did.
+
+**1 — The `/about` methodology note is the two-sentence honest form, NOT the AC's one clause. Ruled by Juan.**
+
+Evidence: FD-1 (above). **RULED — ship exactly this copy:**
+
+- `about.methodology` es: `"Los valores de xG son los que publica la FIFA en el informe oficial; nunca los recalculamos. El informe solo publica el xG total de cada equipo — no hay un valor por remate, por eso todos los remates se dibujan del mismo tamaño."`
+- `about.methodology` en: `"xG values are FIFA's own, taken from the official report and never recomputed. The report publishes only each team's xG total — there is no per-shot value, which is why every shot marker is drawn at the same size."`
+
+This is the first time FD-1 becomes user-visible copy. The uniform marker size stops being an unexplained rendering choice.
+
+*Rejected alternative — AC verbatim, one sentence:* satisfies the AC literally and leaves the per-shot absence unexplained on the page that exists to explain the data. Rejected by Juan.
+
+*Rejected alternative — a broader "Cómo leemos el informe" section covering the other absences:* correct in substance, but 2.19-scale, and several of its claims move when 1.16 emits. **The xG note is the only methodology claim this story ships.**
+
+**2 — `step-in → irrupción` is FINAL. Ruled by Juan.**
+
+Corpus evidence, gathered at creation:
+
+- `stepIns` is a **`required` member of `PlayerInPossession`** in `contract/match-bundle.schema.json` (`"description": "Domain G, in-possession half."`), between `takeOns` and `attemptsAtGoal`. It is **absent** from `PlayerOutOfPossession`, which is where `pressingDirect` / `pressingIndirect` / `tacklesMade` live.
+- The printed PDF label is verbatim **`Step Ins`**, on the page titled **`In Possession - Distributions`**, in the printed run `Ball Progressions · Take Ons · Step Ins · Attempts at Goal · Goals` — pinned by `pipeline/extract/domain_g.py`'s `DISTRIBUTIONS_COLUMNS` (*"These lists ARE the assignment rule"*).
+- The PMSR prints **no definition of any term anywhere**; there is no glossary page.
+
+**RULED — keep `irrupción`, and record why the two alternatives died:** `"salto"` is **affirmatively contradicted** — a defender stepping out to press could only be an out-of-possession metric and `stepIns` is not one. `"conducción interior"` fits the on-ball advancing neighbourhood but **invents a direction the PMSR never prints**. Task 8.5 strikes the `[ASSUMPTION: provisional …]` marker and replaces it with this evidence.
+
+`stepIns` has **no consumer anywhere in `app/`** — the only occurrences under `app/src` are two generated lines in `contract-types.d.ts`. Per AC 1's BINDING its label lands in the glossary, not in `enums.metric`.
+
+**3 — `ofrecimientos para recibir` is FINAL and accurate. `desmarques` STANDS as the section title, and the honest relationship ships in the SECTION, not only in the glossary. Ruled here.**
+
+2.9 re-scoped both surfaces from marker maps to aggregate card surfaces, so the wording had to be re-checked against what they now show. Measured:
+
+- `#offers-to-receive` renders exactly three numbers per team: `Σ inPossession.totalOffers`, `Σ inPossession.offersReceived`, and their ratio. Its copy makes **no locational or per-event claim** (`viz.offers.note` = `"Totales del partido, sumados sobre los jugadores del equipo."`). `ofrecimientos para recibir` therefore needs checking only as vocabulary, and it is descriptive, Spanish-first, with no competing broadcast term. **FINAL.**
+- `#movement-to-receive` is titled `Desmarques` but every number under it is an **offer count**: `offersByMovementType`, a six-way split of `totalOffers` whose sixth value is literally `no-movement` (`"Sin desmarque"`, **24.9% of all corpus offers**). `sum(offersByMovementType) == totalOffers` on **3,289/3,289** staged player rows, delta histogram exactly `{0: 3289}`. On M01 Mexico the source prints `Total Offers Made` **424** against `All Movement Types` **309** — **115 offers with no movement**. So *offers ⊋ movements*, and the title names the smaller set while the data is the larger one.
+
+**RULED — do not retitle, and do not rely on the glossary alone.** `desmarques` is the EXPERIENCE-ruled term for *movement to receive*, it matches the section id, and `viz.movement.barNote` is already accurate (*"Cada barra reparte los **ofrecimientos** del equipo entre los seis tipos de desmarque."*). But a glossary popover is a hover-away affordance and the title is what appears in the collapsed shell, the anchor and the `panelTitle`. **The relationship therefore ships as a sentence in the section's own summary line** (which is where decision 6 marks this section's term anyway) **and** in the glossary entry. Task 8.13 and Task 6.4 give both strings verbatim.
+
+*Rejected alternative — retitle to something like "Tipos de desmarque al ofrecerse":* more accurate and materially worse. It edits a shipped section title that `tactical-sections.test.ts`, `matches/static-output.test.ts` and the collapsed-shell copy all consume, for a distinction two sentences can carry. Flagged for Juan as a declared reading he may overturn.
+
+**4 — Row 38: `en posesión` / `sin posesión` wins. TWO leaves are repointed and FOUR compound labels are rephrased — they are not the same edit. Ruled here, on Juan's instruction to rule the row.**
+
+**The obvious grep is wrong and the naive fix destroys four labels.** `grep "Con balón\|Sin balón"` returns only **two** hits. The four `viz.pressing.metre.*` leaves are compound metric labels, not standalone possession vocabulary. Current values, verified live:
+
+| key | current es | current en |
+|---|---|---|
+| `viz.phases.inPossession` | `"Con balón"` | `"In possession"` |
+| `viz.phases.outOfPossession` | `"Sin balón"` | `"Out of possession"` |
+| `viz.pressing.metre.lineHeight.inPossession` | `"Altura de la línea con balón"` | `"Line height in possession"` |
+| `viz.pressing.metre.lineHeight.outOfPossession` | `"Altura de la línea sin balón"` | `"Line height out of possession"` |
+| `viz.pressing.metre.teamLength.inPossession` | `"Longitud del equipo con balón"` | `"Team length in possession"` |
+| `viz.pressing.metre.teamLength.outOfPossession` | `"Longitud del equipo sin balón"` | `"Team length out of possession"` |
+
+**RULED — the table stands and the app moves.** `EXPERIENCE.md`'s own header rule is *"Spines win on conflict with any mock or wireframe"*, Voice-and-Tone's Do column is *"Terms follow the i18n & Terminology table exactly"*, the contract enums are `inPossessionPhase` / `outOfPossessionPhase`, and 2.11's Expert column-group tabs are the row's own surface and are imminent. **Ship exactly:**
+
+- `viz.phases.inPossession` → `"En posesión"`; `.outOfPossession` → `"Sin posesión"`.
+- `viz.pressing.metre.lineHeight.inPossession` → `"Altura de la línea en posesión"`; `.outOfPossession` → `"Altura de la línea sin posesión"`.
+- `viz.pressing.metre.teamLength.inPossession` → `"Longitud del equipo en posesión"`; `.outOfPossession` → `"Longitud del equipo sin posesión"`.
+- **All six `en` values are already correct — do not touch `en.ts` for this row.**
+- **Do not touch** `tactical.sections["movement-to-receive"].summary` (`"Cómo se movieron sin balón para recibir con ventaja."`). That `sin balón` is natural prose, not the vocabulary token, and the sentence is being rewritten by decision 3 anyway.
+
+*Rejected alternative — amend the table to accept "Con balón / Sin balón":* the shorter form reads better in an 11px chart label, which is a real argument. It loses because the table already weighed and rejected it, and because a story whose purpose is to make the app match the table must not resolve the first conflict by moving the table.
+
+**5 — Row 21: the ruled momentum tooltip text is amended, because it is FALSE. Ruled by Juan.**
+
+The table proposes `momentum (tooltip: "impulso del partido: qué equipo domina en cada tramo")`. Story 1.8 closed OQ-5: the series is **a per-minute per-team count of final-third distributions**, not a possession or dominance measure — and `es.ts`'s own `viz.momentum` docblock states *"the App's own copy must not imply otherwise"*, which is why the ruled tooltip was silently never shipped (`"impulso"` occurs 0 times in `es.ts`). The row was never amended to record that.
+
+**RULED — ship this definition and amend the row. This is NEWLY AUTHORED copy, logged under the table's extension procedure — it is not a reuse of the shipped `viz.momentum.metricNote`, which reads `"Entradas al último tercio por minuto, por equipo."` and is a different string:**
+
+- es: `"Cuántas veces entra cada equipo al último tercio, minuto a minuto. El informe no publica posesión por minuto, así que esto no mide dominio."`
+- en: `"How often each team enters the final third, minute by minute. The report publishes no per-minute possession, so this does not measure dominance."`
+
+The English term `momentum` is kept — the `tooltip` decision is unchanged; only its text moves. The second sentence exists because the *first* sentence of any momentum gloss invites the dominance reading the docblock forbids.
+
+**6 — `TacticalSection.title` AND `.summary` widen to `ReactNode`. Exactly one term is marked per section, in the heading for the two always-expanded sections and in the SUMMARY for the nine collapsible ones. NEVER inside the accordion `<button>`. Ruled here.**
+
+The ledger entry (grep `"which blocks Story 2.18's glossary"`) names 2.18 owner and offers two mechanisms. **RULED — widen the props**, not a per-section hook: a hook would put term-marking policy inside the shell component where the eleven consumers cannot see it.
+
+**The trap the first draft missed, and the reason this decision has a second half.** `TacticalSection` renders `{title}` in **two** places: a bare `<h2>{title}</h2>` in the non-collapsible branch, and — in the collapsible branch — **inside the accordion `<button aria-expanded>`**. `buildSectionPlans` makes `collapsible` true for **nine of eleven sections at every width** (only `key-stats` and `momentum` are never collapsible). A `GlossaryTerm` renders a focusable trigger with `aria-haspopup`, so marking those nine headings would nest interactive content inside a `<button>`: invalid content model, the term not independently focusable, and a click on the term toggling the section instead of opening the popover. `tsc` is satisfied by `ReactNode` and the harness has no jsdom, so **nothing in the build chain would catch it.**
+
+**RULED — the partition, which is exact and exhaustive:**
+
+- `key-stats` and `momentum` — never collapsible, `{title}` is a bare `<h2>` child — **mark in the heading.** This is precisely the case the ledger filed (`momentum`).
+- The other **nine** — mark in the **summary**, which `TacticalSection` renders as `<p id={summaryId}>` **outside** the trigger, at every width (2.5 review decision D1). Every one of the nine has a summary by construction: `sectionSummaryKey` accepts only a `CollapsibleSectionId`.
+- **No section is marked twice**, so AC 2's "once per section" holds without any registry, context or first-occurrence state.
+
+**Required shape in `TacticalLayer`** — the string must survive for the empty-state composition, whose signature is `(title: string) => string`:
+
+```ts
+const titleText = t(sectionTitleKey(plan.id));          // string — feeds emptyHeadline(), unchanged
+const summaryText = plan.showSummary && isCollapsibleId(plan.id) ? t(sectionSummaryKey(plan.id)) : null;
+const titleNode = markHeading(plan.id, titleText);      // ReactNode — key-stats/momentum only, else titleText
+const summaryNode = markSummary(plan.id, summaryText);  // ReactNode | null — the nine, else summaryText
+```
+
+**Do not change `emptyHeadline`'s signature and do not pass it a node** — `"Sin datos de [object Object] para este partido."` is a defect `tsc` catches only while that parameter stays `string`.
+
+**Do not widen `PitchPanel`'s `title`** — it is forwarded as `panelTitle` into `ViewDataDisclosure` and string-concatenated into an accessible name. Four call sites depend on it being a string.
+
+**Verify, do not assume:** the summary `<p>` is the target of `aria-describedby` on the trigger. A description containing a focusable element is unusual; accessible-description computation flattens to text, so the popover trigger inside it should be announced as plain text while remaining DOM-focusable. **Read it back out of the live DOM (Task 11.10). If the description is mangled, fall back to marking the nine in their section bodies and record the departure.**
+
+Also patch the **stale `summary` docblock** in `TacticalSection.tsx` — it still says *"Rendered ONLY in the collapsible (`<lg`) presentation"*, which the 2.5 review's decision D1 overturned.
+
+**7 — 2.18 adds a PER-SECTION error boundary. Ruled by Juan.**
+
+The whole-layer blast radius has been filed **five times** — the 2.8 review (grep `"kills all eleven Tactical sections"`), re-filed by the 2.6 review (`"A malformed momentum series takes down all eleven Tactical sections"`), re-filed by 2.9 (`"The whole-layer error boundary, re-filed with Story 2.9's added blast radius"`), confirmed unpatched by 1.14, and re-filed **again** by 2.10 (`"The whole-layer error boundary now has its FULL blast radius"`) — every time routed to *"whichever story next touches `MatchBundleRegion` / `TacticalSection`"*.
+
+**RULED — contain each section to its own panel.** `TacticalErrorBoundary` is already a self-contained class component taking `{children}` and rendering `EmptyStatePanel`. Wrap `TacticalSection`'s `children` **in `TacticalLayer`'s render**, keeping the existing whole-layer instance in `MatchBundleRegion` as the outer floor.
+
+**Two facts the dev must have, both of which make the boundary weaker than "one section dies":**
+
+- **`sectionContent(plan.id)` is invoked eagerly inside `TacticalLayer`'s own render.** A throw during prop construction — or the `default:` exhaustiveness throw — happens **above** the per-section boundary and is caught only by the outer instance. What the new boundary contains is a throw inside a *section component's* render. Say exactly this in Task 10.4's ledger entry.
+- **There is no automatic reset.** The boundary has `state = { failed: false }` and no reset path, and `plan.id` is constant, so `key={plan.id}` can never force a remount. Key it `` `${plan.id}-${plan.open}` `` so collapsing and re-expanding a crashed section yields a fresh instance — and record that recovery is by collapse/re-expand only, and that `key-stats` and `momentum` never collapse, so a crash there is permanent for the page's life.
+
+The fallback copy must **not** reuse `match.bundle.crashed` verbatim — that string names a bundle-level failure, and a bundle-wide fault surfacing as "we couldn't display this section" would be a narrower and possibly false claim. New keys, and the crash message must not claim the report lacks the section (the FR-22 inversion this codebase has guarded against three times).
+
+*Rejected alternative — decline and re-route to 2.19, filing a sixth ledger entry:* the honest minimal move, and rejected by Juan on the grounds that 2.18 is already inside the file. **Recorded objection:** a validation reviewer rated this the single riskiest item in the story — a shared-shell change to a component eleven sections consume, on a terminology story, with no jsdom to catch a regression. Task 11.6's live proof is the mitigation and is not optional.
+
+**8 — The i18n ESLint gate's object-shaped-prop hole is closed HERE, and the entry is filed into the ledger it never reached. Ruled by Juan.**
+
+The gap was filed by 2.6 in a **story file, never promoted to `deferred-work.md`**. Verbatim:
+
+> The selectors match a `Literal`/`TemplateLiteral` that is a **direct child** of the `JSXExpressionContainer` … recharts delivers text through **object-shaped props**: `<YAxis label={{ value: "…" }} />` puts the literal inside an `ObjectExpression`, so it **passes the gate silently** — and `value` is not a gated prop name at all, so `<Label value="…" />` is uncaught too.
+
+Two recharts surfaces ship (2.6 `MomentumChart`, 2.10 `TacticalCharts`) and 2.13/2.15/2.16/2.17 will add more.
+
+**RULED — close it, with the exact shape below, because the obvious fix breaks the build.**
+
+- **Do NOT add `value` to the shared 16-name regex.** `SiteHeader.tsx` passes `value="es"` and `value="en"` to `ToggleGroupItem` as Radix state tokens; both are bare `Literal`s directly under a `JSXAttribute[name.name="value"]` and would fail `eslint --max-warnings 0` immediately. No scoping *by name* can separate UI `value` from a form/state `value`.
+- **The `label={{value:"…"}}` family is closed by a new selector on the EXISTING name set**, reaching a string literal inside an object property rather than by widening the name list.
+- **`Label`/`LabelList`'s bare `value` gets its own element-scoped selector** — the only syntactically safe way to reach it.
+- **Beware `Literal` in ESTree includes numbers, booleans and null.** A naive descendant combinator under `label=` immediately flags correct code: `TacticalCharts.tsx` and `MomentumChart.tsx` pass numeric `angle`, `position` and `offset` inside `label={{…}}`. Constrain to string literals.
+
+Task 9.2 carries the concrete selectors and the required before/after verification.
+
+**9 — Vendor Radix `Popover` as `src/components/ui/popover.tsx`. Do NOT hand-roll and do NOT copy `PitchPanel` — but the DEFAULT Radix configuration ships AC 2 BROKEN, and every clause below is a fix for a traced failure. Ruled here.**
+
+`radix-ui@1.6.5` is **already a dependency** and `@radix-ui/react-popover` is already in its tree — **this adds no runtime dependency**. `PitchPanel`'s hand-rolled popover is justified by an SVG anchor (*"anchoring to an SVG child through collision machinery built for DOM triggers costs more than it saves"*); a glossary term is a real DOM trigger, so that rationale does not carry, and the hand-rolled version took review findings for an unclamped height and a z-order/description mismatch.
+
+**Required configuration. Each clause was traced through `app/node_modules/@radix-ui/react-popover/dist/index.mjs` and its focus-scope dependency:**
+
+- **Controlled** (`open` / `onOpenChange` from the story's own hook). Radix has no hover trigger; hover intent is the hook's job.
+- `modal={false}` — UX-DR15 bans modal stacks; the page must stay scrollable and the document must stay in the accessibility tree.
+- **NO `Popover.Portal`. Render `Popover.Content` inline.** With a portal the content mounts at the end of `document.body`, so (a) Tab from an inline trigger goes to the next in-page focusable and **never reaches the link**, and (b) that Tab fires a `focusin` outside the portalled layer, which `DismissableLayer`'s `onFocusOutside` treats as a dismissal — **the Tab that was supposed to reach the link closes the popover instead.** Inline, `Content` is a DOM sibling of the anchor, so tab order and focus containment both work. AC 2's "Tab-reachable glossary link" is unachievable any other way without hand-writing a Tab interception.
+- `onOpenAutoFocus={(e) => e.preventDefault()}` — a **hover**-opened popover that steals focus is a defect. Focus enters only by Tab.
+- `onCloseAutoFocus={(e) => { if (!contentRef.current?.contains(document.activeElement)) e.preventDefault(); }}` — **this clause is not optional.** `PopoverContentNonModal`'s default `onCloseAutoFocus` calls `context.triggerRef.current?.focus()` on **every** close, so a mouse hover elsewhere that times out would yank a keyboard user's focus across the page. Returning focus to the trigger is correct **only** when focus is inside the panel. `onEscapeKeyDown` closes and has **no** focus semantics — do not wire the contract there.
+- **Intercept `Popover.Trigger`'s built-in click toggle.** `PopoverTrigger` composes `onClick` with `context.onOpenToggle` unconditionally, so a mouse user who hovers (open) and then clicks gets a toggle to *closed*, and on touch the `pointerenter`-then-`click` sequence double-flips. The hook owns every state transition: `preventDefault()` the trigger's click, or use `Popover.Anchor asChild` with a hand-wired `<button>`.
+- **The panel needs an accessible name.** `PopoverContentImpl` sets `aria-labelledby` **only** when a `Popover.Title` is present; a plain styled `<span>` gives `role="dialog"` with no name — an axe `aria-dialog-name` failure. But `Popover.Title` renders `Primitive.h2`, and an `<h2>` inside a match route's section would corrupt the heading outline. **Use `Popover.Title asChild` wrapping a `<span>`** (Radix primitives accept `asChild`), so the name is set and no heading is emitted.
+- **Hoverable and persistent**: open on mouse-only `pointerenter` (guard `pointerType !== "mouse"`, `PitchPanel`'s shipped rule), on `focus`, and on click/tap; close only when the pointer has left **both** trigger and panel past a grace timer, or on Esc, or on outside-click. A pointer travelling from the term to the link must not close it.
+- **Sizing**: `w-56 max-w-full` and `max-h-[60vh] overflow-y-auto`. The `max-w-full` is what makes the 320px clamp pass; the height clamp is the 2.7-review finding the hand-rolled version took (*"a >1000px popover inside a ~250px panel"*).
+- Vendor on the house conventions: `"use client"`, namespace import `import { Popover as PopoverPrimitive } from "radix-ui"`, `data-slot` attributes, `cn()`, **no `outline-none`** (*"focus comes from the global `:focus-visible` 2px solid `--ring` treatment"*), `border-hairline` as the only divider weight, surface `rounded-sm bg-surface-overlay p-3 shadow-overlay`.
+
+**10 — Glossary content is a PURE registry returning `DictionaryKey`s. Ruled here.**
+
+`src/lib/glossary.ts` — no React, no DOM, no `t()`, no `@/lib/format` — on the `tactical-sections.ts` / `src/viz/*-model.ts` precedent. It exports the frozen ordered `GLOSSARY_TERMS`, the `GlossaryTermId` union, the per-term policy decision, and key builders. **This is the only part of this story a node-only harness can test.**
+
+**A frozen list is a `Record`, never a bare array** (2.10 decision 16, and the 2.9 review finding behind it): `readonly T[] = [...]` gives **no** compile-time exhaustiveness, and the i18n exhaustiveness suite compares locale keys against that very array — a widened union slips past both. Shipped shape:
+
+```ts
+const GLOSSARY_ORDER: Record<GlossaryTermId, true> = { "build-up": true, /* … */ };
+export const GLOSSARY_TERMS: readonly GlossaryTermId[] = Object.keys(GLOSSARY_ORDER) as GlossaryTermId[];
+```
+
+Every key builder ends in `as DictionaryKey` (a template-literal expression infers `string`, so `tsc --noEmit` fails without it) — **and that cast is precisely why Task 9.4's exhaustiveness test is mandatory rather than optional.**
+
+**Order is POLICY-TABLE ORDER**, then minted terms in the order they were ruled. Not alphabetical: alphabetical differs between `es` and `en`, and `/glossary` renders this order to the user.
+
+**11 — Term ids are language-neutral English slugs. Ruled here.**
+
+`EXPERIENCE.md`'s IA rule: *"**Slugs** are language-neutral English/romanized, stable, human-readable"*, and the URL carries no language. So `/glossary/#build-up`, not `#salida-de-balon` — one anchor works from both locales and does not break when a Spanish term is amended. `trailingSlash: true`, so the deep link is `/glossary/#build-up`.
+
+**12 — 2.18 ships NO `enums.shotOutcomeDetail`. The CS-1 dependency is stated, not absorbed. Ruled here.**
+
+`deferred-work.md` (grep `"post-CS-1 24-value enum"`) binds this story by name. CS-1 has **not landed** — `ShotOutcomeDetail` is 22 values today and becomes 24 (CR-1 adds bare `incomplete` and `on-target`), and CR-2 makes `x-maps-to-outcome["deflected-on-target-defensive-event"]` an **array** `["incomplete", "on-target"]`, so anything treating that map as scalar-valued breaks.
+
+**RULED — take 2.7 Task 10.4's clearance, verbatim in shape.** This story maps and glosses **`ShotOutcome` only** — the stable **five**-value marker enum, which CS-1 does not touch — and never `ShotOutcomeDetail`. Consequences the dev must not violate:
+
+- **Do not create an `enums.shotOutcomeDetail` namespace.** `i18n.test.ts` carries a deliberate tripwire asserting `Object.keys(es.enums)).not.toContain("shotOutcomeDetail")` and `Object.keys(es.enums.shotOutcome)).toHaveLength(5)`. **Both must stay green.**
+- **Do not hardcode 22 anywhere** — not in a comment, a count, or a glossary entry.
+- The glossary's shot-outcome entries describe the **five** outcomes and note that the report also prints a longer detail label whose vocabulary is not yet mapped. Task 10.3 appends the forward note.
+- **Marker COLOUR is per-family, not global** (the crosses legend: orange = attempted-not-completed, blue = completed; the same two RGBs mean `off-target`/`incomplete` on shots). Do not write a glossary entry claiming a colour has one meaning site-wide. Note this is a property of the **RGB legends**, not of `x-maps-to-outcome`, which is a single 22-entry `ShotOutcomeDetail → ShotOutcome` map on `common.schema.json` with no family dimension.
+
+**13 — The counterpart-language subtitle carries an explicit `lang`, and is SUPPRESSED where the two terms are identical. Ruled here — this closes a gap neither spine resolved.**
+
+The subtitle renders a foreign-language fragment inline (`"salida de balón — en: build-up"`). `EXPERIENCE.md` says *"wrap terms in `lang=\"en\"` spans only where pronunciation is unintelligible (3.1.2)"*, and `review-accessibility.md` §6 flags the blanket assumption as *"asserted, not tested"*. Neither rules the subtitle case, because the subtitle did not exist when they were written.
+
+**RULED:**
+
+- Where the two terms **differ**: always mark the counterpart. In the `es` UI the English term carries `lang="en"`; in the `en` UI the Spanish term carries `lang="es"`. This is not the "unintelligible pronunciation" judgement call — the subtitle's *entire purpose* is that the reader recognises it as the other language, and an unmarked one is read by a Spanish TTS voice as Spanish.
+- Where the two terms are **identical** — the `jargon` and `tooltip` rows `xG`, `sprint`, `momentum` — **render no counterpart subtitle at all.** `momentum — en: momentum` is a tautology wearing a `lang` span that asserts a language change that does not occur. Render the ruled gloss instead where the table gives one (`xG → goles esperados`), and nothing where it does not.
+- The same `<span lang="en">` mechanism discharges the ledger's second obligation on this seam (grep `"pronunciation"` in the 2.18 entry), which is why both were filed as one entry.
+
+## Tasks / Subtasks
+
+- [x] **Task 1 — Baseline and orientation** (no AC)
+  - [x] 1.1 `npm test` in `app/`. **Re-measure; do not inherit a number.** The baseline has two legitimate values: with no `app/out/` the static-output tests are `describe.skipIf`-skipped and you see the lower count; after a build populates `out/` you see the higher. 2.10's pre-work post-build baseline was **439 / 19 files** and 2.10 added to it. `npm test` is **not** part of `npm run build`.
+  - [x] 1.2 `npm run check:types` and `npm run assert:schema-version`. If `check:types` fails, run `npm run generate:types` and continue; **never** hand-edit generated types. If `assert:schema-version` fails, **STOP** — it may mean CS-1 landed, which changes decision 12's tripwires and is Juan's call, not yours.
+  - [x] 1.3 Confirm `npm run build` is green (chain: `eslint . --max-warnings 0` → `tsc --noEmit` → `assert:schema-version` → `next build` → `copy-data`).
+  - [x] 1.4 `git status`, and **re-derive it — do not trust this story's snapshot.** Read Dev Notes → "Coordination & hygiene" **before your first edit**, not before your first commit.
+  - [x] 1.5 **Re-run the creation audit's three greps before touching `es.ts`.** Expected at baseline `892766c`: `grep -n "Córners" src/locales/es.ts` → 1 hit; `grep -n "propia puerta" src/locales/es.ts` → 1 hit; `grep -n "Con balón\|Sin balón" src/locales/es.ts` → **2** hits (the `viz.phases` pair only — decision 4 explains why the other four leaves do not match this grep). If any has already been fixed by another session, record that and skip its subtask; **do not re-apply an edit that landed.**
+
+- [x] **Task 2 — The glossary registry** (AC 1, AC 2)
+  - [x] 2.1 `src/lib/glossary.ts`, pure (decision 10). Export `type GlossaryTermId` (language-neutral English slugs, decision 11), the `Record<GlossaryTermId, true>`-derived frozen `GLOSSARY_TERMS` in policy-table order, `GLOSSARY_POLICY: Record<GlossaryTermId, "translate" | "jargon" | "tooltip">`, and key builders `glossaryTermEsKey(id)`, `glossaryTermEnKey(id)`, `glossaryDefinitionKey(id)` — each ending `as DictionaryKey`.
+  - [x] 2.2 **A policy row is not automatically one id.** Ten rows name a SET, and a `GlossaryTermId` of `stage-names` has no coherent term pair and no counterpart subtitle. Expand set-rows to one id per member, and discharge scaffolding rows in the locale files rather than the glossary:
+    - expand → `high-block`/`mid-block`/`low-block`; the five shot outcomes reuse ids `goal`/`on-target`/`off-target`/`blocked`/`incomplete`; `goalkeeping vocabulary` → `distribution`/`salida`/`one-on-one`; `positions` → `goalkeeper`/`defender`/`midfielder`/`forward`.
+    - **no glossary id** → `stage names`, `lineup labels`, `result letters & standings columns`, `fouls / duels`, `standings / leaderboards`, `Expert column groups`. These are table scaffolding; record each in the Dev Record as "row discharged in the locale files, no glossary id".
+    - Every one of AC 1's eight NOT-YET-USED rows that is a *term* (not scaffolding) **must** have an id — that is where they are discharged.
+    - **State the resulting `GLOSSARY_TERMS` count in the Dev Record. Do not hardcode 38 anywhere.**
+  - [x] 2.3 `src/lib/glossary.test.ts` (node env, pure): ids unique; **`GLOSSARY_TERMS` asserted against a LITERAL array written out in the test file** — a derived-vs-derived comparison against `Object.keys(GLOSSARY_ORDER)` proves nothing and cannot catch the reordering this test exists to catch (the 2.10 frozen-`Record` tests do it this way); every id's three key builders produce the literal expected strings; no id contains an uppercase character or a space; `GLOSSARY_POLICY` is total over `GLOSSARY_TERMS`.
+
+- [x] **Task 3 — The glossary popover and trigger** (AC 2)
+  - [x] 3.1 Vendor `src/components/ui/popover.tsx` per decision 9 — house conventions, no `outline-none`, `data-slot`, namespace import from `radix-ui`. **No new dependency is installed**; confirm and say so in the Dev Record.
+  - [x] 3.2 `src/components/GlossaryTerm.tsx` (`"use client"`). Props are **exactly** `{ termId: GlossaryTermId; termLang?: "es" | "en"; children?: ReactNode }` and no other name. **Do not name any prop `title`, `tooltip`, `label`, `description`, `caption`, `heading`, `text` or `message`** — all eight are gated by `no-restricted-syntax`. (`TacticalSection.title` keeps its name legitimately: the rule fires on JSX **attributes**, not interface members, and every call site passes an identifier.)
+  - [x] 3.3 Trigger styling — **reuse what already ships.** `StoryStatTiles.tsx` renders the exact treatment for xG: `underline decoration-accent-cyan decoration-dotted underline-offset-2`. Copy it; do not invent a second style. The trigger is the **term itself**, focusable, never the containing tile (`review-accessibility.md` §3: *"A non-focusable tap target is a 2.1.1 fail"*).
+  - [x] 3.4 `src/components/glossary-marking.tsx` (`"use client"`) owns the non-pure half: `useGlossaryPopover()` (the hover-intent + Esc + close-focus hook of decision 9), `markHeading(id, titleText)` and `markSummary(id, summaryText)`. **Page-wide single-open without a new React Context** (UX-DR15 bans a stack deeper than one, and the "do not add a new Context" rule stands): a module-scope `Set<() => void>` of close callbacks that each open popover registers into and clears on close — not React state, the same shape `i18n.ts`'s `reportedMissing` module `Set` already uses. Opening calls every registered closer first.
+  - [x] 3.5 **Marking never writes copy into JSX.** `markHeading`/`markSummary` split the **already-resolved** string around the term and render only expression containers, so `react/jsx-no-literals` never sees a literal:
+    ```tsx
+    const term = t(locale === "es" ? glossaryTermEsKey(id) : glossaryTermEnKey(id));
+    const at = text.indexOf(term);
+    if (at < 0) { return text; }   // reworded title/summary: degrade to plain text, never crash
+    return (<>{text.slice(0, at)}<GlossaryTerm termId={id}>{text.slice(at, at + term.length)}</GlossaryTerm>{text.slice(at + term.length)}</>);
+    ```
+    The term string comes from the dictionary, never from a hardcoded slice length. **A miss must degrade silently to unmarked text** — a reworded summary is a copy change, not a crash.
+  - [x] 3.6 Panel content, in order: the term in `type-title` inside `Popover.Title asChild` wrapping a `<span>` (decision 9 — the accessible name without an `<h2>`); the **counterpart-language subtitle** with its explicit `lang`, **omitted entirely when the two terms are identical** (decision 13); the definition in `type-body`; the `"Ver en el glosario"` link in `text-accent-cyan` to `/glossary/#{termId}`. **Definition text must never render in `text-ink-muted`** — it computes 3.30:1 on `--surface-overlay`, below the 4.5:1 text floor.
+  - [x] 3.7 Hit area: the inline trigger is a `<button>` with `display: inline` and no clipping padding. Confirm via `getBoundingClientRect()` that its height equals the surrounding line-box height and its width the term's, and **record the two numbers** — the 44px rule cannot apply to a word inside running text, and that reading must be declared rather than assumed.
+  - [x] 3.8 **No unit tests here** — the harness has no jsdom. Everything assertable lives in Task 2's registry and Task 9's dictionary tests.
+
+- [x] **Task 4 — The `TacticalSection` seam and the per-section boundary** (AC 2)
+  - [x] 4.1 `TacticalSection.tsx`: widen `title` to `ReactNode` and `summary` to `ReactNode | null` (decision 6). `id` stays `SectionId`. Both render sites are otherwise unchanged.
+  - [x] 4.2 Patch the **stale `summary` docblock** in the same file — it still says *"Rendered ONLY in the collapsible (`<lg`) presentation"*, which the 2.5 review's decision D1 overturned.
+  - [x] 4.3 `TacticalLayer.tsx`: adopt decision 6's four-binding shape exactly. **Assert that `useEmptyHeadline()` still returns `(title: string) => string`** — that signature is the only thing standing between a mistake and `"Sin datos de [object Object] para este partido."`.
+  - [x] 4.4 Per-section error boundary (decision 7). Wrap the `children` expression **in `TacticalLayer`**, keyed `` `${plan.id}-${plan.open}` `` — `plan.id` alone is constant and can never force a remount. Record that recovery is by collapse/re-expand only, and that `key-stats`/`momentum` never collapse.
+  - [x] 4.5 Widen `TacticalErrorBoundary`'s props to `{ children: ReactNode; headlineKey?: DictionaryKey; explanationKey?: DictionaryKey }`, defaulting **with `??` inside `TacticalErrorFallback`** (`headlineKey ?? "match.bundle.crashed"`), not via `defaultProps`. Neither name is on the sixteen-name gated list. **`MatchBundleRegion.tsx` is NOT edited** — its call site stays byte-identical.
+  - [x] 4.6 New keys, both locales: `tactical.empty.sectionCrashed` es `"No pudimos mostrar esta sección."` / en `"We couldn't display this section."`; `tactical.empty.sectionCrashedExplanation` es `"Los datos llegaron en un formato que no pudimos leer."` / en `"The data arrived in a format we couldn't read."` — an app-side failure, stated as one. It must not claim the report lacks the section.
+  - [ ] 4.7 `componentDidCatch`'s `console.error` stays (fail loud upstream). Confirm the per-section instance still logs. — *code half done (untouched); the "still logs" confirmation is Task 11.6's live probe.*
+
+- [x] **Task 5 — Mark one term per section** (AC 2)
+  - [x] 5.1 **Before writing code, produce the marking table** and put it in the Dev Record: for each of the eleven sections, `(sectionId, termId, target = heading|summary, the exact substring marked in es, and in en)`. Mark exactly those. Where a title or summary spans two policy rows (`"Presión y bloques defensivos"` → `pressing` **and** `high/mid/low block`), mark the **first in reading order** and leave the second to the glossary.
+  - [x] 5.2 `key-stats` and `momentum` mark in the **heading**; the other nine mark in the **summary** (decision 6). **Never inside the accordion `<button>`.** `momentum`'s heading is the ledger's named case and also carries `lang="en"` on the term.
+  - [x] 5.3 Migrate `StoryStatTiles`' existing xG treatment to `GlossaryTerm` — the first call site. Keep `match.hero.xg`. `match.hero.xgExpansion`'s sr-only span may be dropped **only if** the popover's accessible name carries the same information; **read it back out of the live DOM (Task 11.10) before dropping it**, and if in doubt keep it. Silently removing the only screen-reader expansion of "xG" is a regression no test can see.
+  - [x] 5.4 **Do not add a dotted underline anywhere a popover does not open.** 2.5's ruled decision 8: *"A dotted cyan underline is an affordance; with no tooltip behind it, it is a broken promise."*
+  - [x] 5.5 **`#shot-maps` will still contain an unmarked `xG`** (`ShotMapsSection` is do-not-touch and renders `teamXg`). That is the one section where "once per section" is discharged by the Hero's mark rather than its own. Record it; do not widen scope to fix it.
+
+- [x] **Task 6 — `/glossary`** (AC 2)
+  - [x] 6.1 `src/app/glossary/page.tsx` — a thin server page rendering a `"use client"` `GlossaryContent`, exactly like `/about` and `/404`. **A server `t()` call emits frozen Spanish**; only `useT()` consumers swap. Add `export const metadata` composed in a **pure helper** (the gate flags any template or concatenation that is the direct value of a `title:`/`description:` property). `/about` gets **no** metadata export — `src/app/about/page.tsx` is edited only for its docblock, and its metadata is deliberately left to the open `<title>`/OG ruling (Task 10.6).
+  - [x] 6.2 **Namespace split, required by Task 9.4's exhaustiveness assertion.** `glossary.*` carries **term entries only**, one object per `GlossaryTermId`, shape `{ es: string; en: string; definition: string }` — so `glossaryTermEsKey(id)` = `` `glossary.${id}.es` ``, etc. **All page chrome lives in a separate top-level `glossaryPage` namespace**: `.title`, `.intro`, `.seeMore` (`"Ver en el glosario"` / `"See in the glossary"`), `.jargonNote`, `.authoredNote`, `.metaTitle`, `.metaDescription`. Because `en: Dictionary` mirrors shape, `glossary.<id>.es` and `.en` hold the **same bytes in both dictionaries** — the term pair is locale-invariant and only `.definition` differs. **Say this in the `en.ts` docblock** so a later reader does not "fix" it.
+  - [x] 6.3 Render `GLOSSARY_TERMS` in order. Each entry: an `id={termId}` anchor target, the **es and en terms both present** (AC 2), `lang`-marked per decision 13, the definition in the active locale, and — for `jargon`/`tooltip` rows — `glossaryPage.jargonNote` explaining that the English term is deliberately retained.
+  - [x] 6.4 Page container on the house shell: `mx-auto max-w-6xl px-gutter-mobile py-layer-gap md:px-gutter-desktop`. One `<h1>`; entries as a definition list, `type-title` term / `type-body` definition. **No `role="region"` anywhere.** Ship `glossaryPage.authoredNote` — the definitions are authored from the source's structure, not transcribed from it, because the PMSR prints no definitions; say so once on the page.
+  - [x] 6.5 The `movement-to-receive` and `offers-to-receive` entries ship decision 3's relationship. **Verbatim:** es `"Un ofrecimiento es un jugador que se ofrece para recibir; un desmarque es la parte de esos ofrecimientos en la que además se movió. El informe cuenta aparte los ofrecimientos sin movimiento."` / en `"An offer is a player making himself available to receive; a movement to receive is the subset of those offers in which he also moved. The report counts offers with no movement separately."` **State the relationship; do not put a fixture number in user-facing copy.**
+  - [x] 6.6 The `xg` entry. **Verbatim:** es `"Goles esperados: la probabilidad de gol de cada remate según el modelo de la FIFA. El informe publica solo el total por equipo, no un valor por remate."` / en `"Expected goals: each shot's probability of becoming a goal, per FIFA's model. The report publishes only the team total, not a per-shot value."` This must agree with `/about`'s methodology note — two surfaces, one claim.
+  - [x] 6.7 **English definitions are AUTHORED, not machine-translated.** `en: Dictionary` guards key shape only and will happily accept a Spanish string in an `en` leaf. Every `.definition` is written in English against the same corpus facts.
+  - [x] 6.8 Fragment focus: `#term` must move focus, not just scroll — give each entry a focusable target, on the layout's `<main tabIndex={-1}>` precedent. **Known adjacent gap (NOT this story's to fix):** re-activating an unchanged hash never re-fires `hashchange`, so a repeat link is a silent no-op. Filed by the 2.5 review, still open.
+
+- [x] **Task 7 — `/about`** (AC 3)
+  - [x] 7.1 **Read `AboutContent.tsx` and `app/about/page.tsx` first.** The route exists as a 2.2 attribution-only stub whose docblock names 2.18 as the replacement. Fill `AboutContent.tsx`; edit `page.tsx` only to discharge that docblock claim.
+  - [x] 7.2 Expand the `about` namespace (currently a single `title` leaf) with `about.methodology` (decision 1, **verbatim, both locales**), the credits, and the free/open passion-project framing.
+  - [x] 7.3 **The attribution long form is already ruled and already shipped** at `chrome.footer.attribution`, byte-identical to `EXPERIENCE.md`. `/about` renders that same key — **do not mint a second copy of a ruled string.** The independence disclaimer is its second sentence; if `/about` wants it standing alone, split at the sentence boundary in the component, not by duplicating text into a new key.
+  - [x] 7.4 **Credits and the passion-project framing have NO ruled wording in any spine.** Author them under Voice and Tone (tuteo, neutral LatAm, **no exclamation marks**, flat register, numbers carry the drama), log them as new rows per the extension procedure, and **flag them in Completion Notes as `PROPOSED — Juan to confirm or overturn at review`. Do not treat authored copy as ruled.**
+  - [x] 7.5 Add the `/glossary` link to `AttributionFooter` (AC 3's BINDING). New key `chrome.footer.glossaryLink` in both locales.
+  - [x] 7.6 Confirm `/about` and `/glossary` add **zero external requests** — no font, no image, no CDN. The build has no automated origin check (open ledger item, 2.19's), so this is a manual grep of `out/about/index.html` and `out/glossary/index.html`.
+
+- [ ] **Task 8 — The terminology pass and remediation** (AC 1) — **cite by quoted anchor phrase, never line number**
+  - [ ] 8.1 Fix the hard register violation: `tactical.sections["set-plays"].summary`. Replace `"Córners"` with the ruled *tiros de esquina* and `"laterales"` with *saques de banda*, matching the seven sibling `viz.setPlays.*` keys and `viz.setPlays.throwIns`. English is already correct.
+  - [ ] 8.2 Fix the peninsular survivor: `viz.momentum.ownGoal` = `"en propia puerta"` → **`"en contra"`**. *Puerta* is the peninsular goal-frame noun; the app says **arco** everywhere else, and `"en contra"` pairs with the already-shipped `match.hero.ownGoal` = `"(a.g.)"` while avoiding *meta*, which also leans peninsular. **Ruled here — do not choose at implementation time.**
+  - [ ] 8.3 Apply decision 4's **six exact replacements** — two standalone leaves repointed, four compound labels rephrased. Read decision 4's table; a literal "repoint to En posesión" on the four compound leaves deletes the metric name. **Do not touch `en.ts` for this row** and do not touch `tactical.sections["movement-to-receive"].summary`.
+  - [ ] 8.4 Ship decision 5's amended momentum definition, both locales.
+  - [ ] 8.5 Amend the per-term policy table in `_bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/EXPERIENCE.md` (`:237-276`): strike the `[ASSUMPTION: provisional …]` from `step-in` and record decision 2's evidence; strike it from `offers to receive` and record decision 3; amend row 21's tooltip text (decision 5); record decision 4 against row 38. **Amend the cells; never rewrite the table, never renumber or reorder rows.**
+  - [ ] 8.6 Rule the two ad-hoc terms 2.10 minted with no policy row. **Ruled here:** `enums.aerialType.claim` = `"Descuelgue"` → **`"Atrapada"`** (Spain-leaning vs the LatAm register rule, and *atrapada* pairs with the shipped *arquero*/*atajada* vocabulary). `enums.distributionType` — its es labels split on body-part/technique (`"Saque con el pie"` / `"Saque de volea"` / `"Saque con la mano"`) while `en` splits on kick-vs-throw, and es `hands`/`throw` are mutually confusable; **realign es to the en distinction** and log both as new table rows.
+  - [ ] 8.7 Recount the policy table and record the exact partition (compliant / violated / not-yet-used) in the Dev Record. Then record the eight NOT-YET-USED rows by name so the next story neither assumes them done nor re-mints them: `speed zones`, `high-speed run` (+ `"CARR. ALTA VEL."`), `take-on`, `step-in`, `result letters & standings columns`, `offside`, `standings / leaderboards`, and the `salidas` / `mano a mano` half of `goalkeeping vocabulary`.
+  - [ ] 8.8 **FILE, DO NOT FIX — the two `viz.momentum` copy holes.** Both require editing `MomentumSection.tsx` and `MomentumChart.tsx`, which Scope boundaries forbid: `cursorLabel` (an operating instruction used as an `aria-label`; splitting name from instruction needs both files) and the missing `viz.momentum.zero` (`MomentumSection` has **no zero-state branch**, so the key would be the dead key AC 1's BINDING prohibits). Append both to the ledger under this story's heading, routed to whoever next touches the momentum surface, and record in the Dev Record that 8.8 was discharged as a filing.
+  - [ ] 8.9 Fix `en.enums.cornerDeliveryStyle`: it ships `"Inswing"`/`"Outswing"` while `en.enums.crossDelivery` ships `"Inswinging"`/`"Outswinging"` for the same delivery shape. The es docblock states the reuse is deliberate (*"one delivery shape has one Spanish name across the app"*) and es delivers on it; en does not.
+  - [ ] 8.10 **The AD-7 unit violation — the narrow fix only.** `match.hero.tiles.distance` = `"Distancia (km)"` and `.topSpeed` = `"Vel. máx. (km/h)"` bake units into labels, which `enums.unit` exists to prevent; `km/h` has no entry at all. Ship: add `enums.unit.kmh` = `"km/h"` to **both** locales; **rename the two leaves in place** to `"Distancia"` / `"Distance"` and `"Vel. máx."` / `"Top speed"`; compose in `StoryStatTiles.tsx` as a **string**, on `KeyStatisticsSection.statLabel()`'s exact pattern (`` const distanceLabel = `${t("match.hero.tiles.distance")} (${t("enums.unit.km")})`; ``) and pass it as `labelNode` — a JSX `{t(a)} ({t(b)})` emits ` (` and `)` as literals and fails the gate. **Do NOT add `enums.metric.topSpeed`** — `topSpeed` is absent from `KEY_STAT_FIELDS` and `i18n.test.ts`'s "one entry per Key Statistics field" assertion goes red the moment you do. **Do NOT extend `KEY_STAT_UNIT`** — `tactical-sections.ts` is do-not-touch and the Hero tiles do not read it. `matches/static-output.test.ts` asserts `toContain(es.match.hero.tiles.distance)` against the dictionary object and stays green under this change; **verify rather than assume.**
+  - [ ] 8.11 **Do not delete "unused" enum labels.** 2.9 ruled the four `DefensiveActionType` codes stay labelled even though the corpus can never produce two of them (*"an unlabelled row is worse than an unreachable label"*), and 2.10 ruled `tactical.pending.*` stays. A prune sweep is out of scope.
+  - [ ] 8.12 **Do not "improve" the ruled absence copy.** The unknown-player/unknown-minute marker announcement degradation is a **ruled** decision (*"The announcement is honest — it states exactly the absence that is real"*). Do not soften it into something implying data exists.
+  - [ ] 8.13 Decision 3's in-section sentence: rewrite `tactical.sections["movement-to-receive"].summary` so the section states the relationship where a reader meets it. **Verbatim:** es `"Cómo se ofrecieron para recibir, y en cuáles de esos ofrecimientos además se movieron."` / en `"How they offered to receive, and in which of those offers they also moved."` This also replaces the `sin balón` prose decision 4 leaves alone.
+
+- [ ] **Task 9 — Mechanical guards** (AC 1, AC 2)
+  - [ ] 9.1 **The guard that makes this story stick.** Add to `i18n.test.ts`:
+    - **(a) Key-builder resolution sweep.** Resolve **every key builder in the repo** across its full id domain — `glossaryTermEsKey`/`EnKey`/`glossaryDefinitionKey` over `GLOSSARY_TERMS`, `sectionTitleKey`/`sectionSummaryKey`, and the seven 2.10 enum builders — asserting each resolves to a real, non-empty leaf in **both** locales. This is what actually discharges AC 1's *"no raw-key fallthrough"*: the risk is an `as DictionaryKey` cast pointing at a path that does not exist, which no leaf-level sweep can see.
+    - **(b) Forbidden-register sweep**, case-insensitive (`/córner/i` — the live violation is capital-C), over the exported `es` **object's** string leaves via the existing `keyShape()` walker, **never over the file text**: comments legitimately name the forbidden forms in order to reject them, and `es.ts` already contains `balón parado · tiro de esquina · arquero · atajada` in a comment. Pattern: `portero|parada|a puerta|fuera de juego|clasificaci|chute|córner|vosotros|usted|[¡!]`. **Exempt the `glossary.*.definition` leaves** — they legitimately name rejected and peninsular forms in order to explain them; comment that exemption naming row 30 and `standings / leaderboards`. Confirm `Balón parado` and its `viz.setPlays` siblings stay green (`parado` ≠ `parada`).
+    - **(c) Ruled-term pins.** At minimum these six, each a row a prior story broke or nearly broke: `tactical.sections['set-plays'].summary` contains `tiro`+`esquina` and **not** `órner` or `laterales`; `viz.setPlays.corners` equals `"Tiros de esquina"`; `viz.phases.inPossession` equals `"En posesión"`; `viz.momentum.ownGoal` does **not** contain `puerta`; `tactical.sections.pressing.title` equals `"Presión y bloques defensivos"`; `tactical.sections.goalkeeping.title` equals `"Arqueros"`.
+  - [ ] 9.2 Close the ESLint gate's object-shaped-prop hole (decision 8). **Two new selectors, and `value` does NOT join the shared name regex:**
+    - object-shaped, on the existing 16 names: `JSXAttribute[name.name=/^(aria-label|…|tooltip)$/] JSXExpressionContainer ObjectExpression > Property > Literal` — **constrained to string literals**, because ESTree `Literal` includes the numeric `angle`/`position`/`offset` values `TacticalCharts.tsx` and `MomentumChart.tsx` legitimately pass inside `label={{…}}`.
+    - element-scoped `value`: `JSXElement[openingElement.name.name=/^(Label|LabelList)$/] > JSXOpeningElement > JSXAttribute[name.name="value"] > :matches(Literal, TemplateLiteral)`.
+    - **Verify with `grep -rn 'value=' src/ --include=*.tsx` before and after**: `SiteHeader.tsx`'s `value="es"` / `value="en"` (`ToggleGroupItem` state tokens) must stay legal, and the ONLY new errors must be the two new fixtures.
+  - [ ] 9.3 `eslint-gate.test.ts` fixtures for 9.2, plus one proving the widening stays legal: passing = `` `export function P({t}:{t:(k:string)=>string}) { return <C title={<span>{t("a")}</span>} />; }` `` (expect `[]`); failing = `<C title={<span>literal</span>} />` (expect `react/jsx-no-literals`); and a third pinning that selector #3 still fires on a ternary-with-literal nested inside a `title={…}` node, so a future author does not inline a conditional className into a marked title and get an opaque failure. Confirm the eleven existing i18n fixtures and nine seam fixtures still behave.
+  - [ ] 9.4 Glossary exhaustiveness in `i18n.test.ts`: `Object.keys(es.glossary).sort()` equals `[...GLOSSARY_TERMS].sort()` **exactly, with no allowance** — which is why Task 6.2 puts page chrome in `glossaryPage`. Plus a per-term, per-locale `t()` round-trip asserting the label is neither empty nor the key. **Import the frozen list — never hand-copy it** (the 2.9 review's `PossessionContestType` finding: a hand-copied list means a widened enum needs two files edited to be caught).
+  - [ ] 9.5 **Verify-only.** 2.10 landed the fourteen enum-namespace exhaustiveness assertions its `es.ts` docblock promised. Confirm all fourteen are present and green; if any is missing, add it — every 2.10 key builder uses an unchecked `as DictionaryKey` cast, so a missing label is invisible to `tsc` and renders the raw dot path in production. Expect this to be a no-op.
+  - [ ] 9.6 `static-output.test.ts` additions for `out/glossary/index.html` and `out/about/index.html`, on the house pattern (`describe.skipIf`, assert against the dictionary object never against the function under test, and **fail loudly on a partial export** rather than skipping).
+  - [ ] 9.7 **The static-output absence guard degrades — fix the right half.** `src/app/matches/static-output.test.ts` already asserts **both** `not.toContain(\`id="${id}"\`)` **and** `not.toContain(es.tactical.sections[id].title)`. The `id` half still works and is **not** the fix. The **title** half goes trivially true for `key-stats` and `momentum` once their headings are fragmented. Replace it with an assertion on the longest contiguous run of each title that carries no glossary term, computed from the same `markHeading` split so the two cannot drift. List the affected sections in the Dev Record.
+
+- [ ] **Task 10 — Ledger, docs and disclosure** (AC 1, AC 2, AC 3) — **every edit APPEND-ONLY**
+  - [ ] 10.1 Append a `## Filed by Story 2.18 implementation` heading to `_bmad-output/implementation-artifacts/deferred-work.md` and put every new entry under it. **Verify the append-only property programmatically** (the post-edit file starts with the pre-edit bytes exactly) and say so.
+  - [ ] 10.2 File the object-shaped-prop gate gap **even though this story closes it** — it lived in two story files and never reached the ledger, and the closure needs a durable record of what was open, what the fix covers, and that `value` is reachable only for `Label`/`LabelList`.
+  - [ ] 10.3 File the CS-1 forward note (decision 12): what 2.18 deliberately did **not** map, the two tripwire assertions that must be deleted deliberately when detail labels ship, and that the post-CS-1 enum is **24**.
+  - [ ] 10.4 Record the per-section boundary as **RESOLVED** against all **five** prior filings — quote each so a reader can follow the chain — and state precisely what it does **not** contain: a throw during `sectionContent()`'s eager evaluation in `TacticalLayer.render()`, including the `default:` exhaustiveness throw, still reaches only the outer whole-layer boundary.
+  - [ ] 10.5 File the terms minted or re-ruled in Tasks 7.4, 8.6 and 8.13, and the NOT-YET-USED rows from 8.7 with their owning stories.
+  - [ ] 10.6 File anything found and NOT fixed. Required: the two `viz.momentum` copy holes (8.8); the **`DESIGN.md` / `EXPERIENCE.md` disagreement on the footer's `/glossary` link** (AC 3's BINDING — this story follows `EXPERIENCE.md` and leaves `DESIGN.md`'s bullet stale); the `<title>`/OG-stays-Spanish decision, which 2.18 makes worse by adding a route's metadata; the cluster-popover over-claim copy (needs a geometry ruling, not a copy edit); the `minutePrefixKey`/`valuePrefixKey` rename still routed to whoever next touches all five files; and the fact that `app/src/app/about/page.tsx`'s "Story 2.18 replaces this" docblock is now discharged.
+  - [ ] 10.7 Update `sprint-status.yaml` and append a dated note. **Do not touch any other story's status line** — that has been a review finding twice.
+  - [ ] 10.8 **Never `git add -A`, and never `git add app/`.** Stage explicit file paths only, from your own File List, plus this story file and the two shared artifacts at `_bmad-output/implementation-artifacts/`, plus `EXPERIENCE.md`. If your commit carries any in-flight 2.11 lines, **disclose it in the Completion Notes** — an undisclosed co-commit *"is how a reviewer loses the ability to tell which story changed what."*
+
+- [ ] **Task 11 — Verification** (all ACs) — the harness has **no jsdom**, so nothing rendered can be unit-tested. Both defects the 2.7 review found were in rendered code and invisible to a green suite.
+  - [ ] 11.1 **Serving mechanics first.** `next dev` cannot serve `/data/fixtures`; only `copy-data` populates `out/`. Verify against `python -m http.server 8765 --directory app/out`. `trailingSlash: true`, so links are `/glossary/#build-up` and `/matches/{slug}/#momentum`. Hard-reload (Ctrl+Shift+R) before every check — Turbopack reuses chunk filenames.
+  - [ ] 11.2 **Hard-reload is NOT sufficient for bundle DATA.** `MatchBundleRegion` calls `fetchArtifact` from `src/lib/data.ts`, which fetches `/data/fixtures/matches/{id}.json` from `out/` **after** load, lazily on scroll — so the hard-reload's cache bypass never applies to that request and the page keeps rendering stale numbers. Before scrolling, run `const o=window.fetch; window.fetch=(i,x={})=>o(i,{...x,cache:'no-store'});` then `window.scrollTo(0, document.body.scrollHeight)` and wait ~3s. (Build-time reads via `src/lib/build-data.ts` come from `<repo>/data/fixtures` instead — that is the Hero's path, and it is why editing a fixture requires a rebuild.)
+  - [ ] 11.3 **Contrast, both themes, method validated first (the 2.6 method).** Reproduce a published figure before trusting a new one: `--viz-team-a` on `--surface-raised` must compute **13.56** dark / **4.99** light and `--viz-team-b` **10.30** / **5.36**. Then measure, on the **popover panel** (`--surface-overlay`) and on the **two new pages** (`--surface-base`): the definition ink, the counterpart subtitle ink, the `"Ver en el glosario"` link, the dotted trigger underline against its running-text background, the panel edge against the page behind it, and the focus ring on the trigger. Record as `| element | dark | light | floor |`. **A popover is a card — 2.6, 2.7, 2.8 and 2.9 each found a light-theme failure from exactly this first-consumer position.** `--ink-primary` on `--surface-overlay` is **14.13:1**; `--ink-muted` is **3.30** and must never carry definition text.
+  - [ ] 11.4 **1.4.13, with real input — five named checks, each targeting a traced failure mode.** (a) Hover the term, then move the pointer **onto the panel and onto its link**; it must not close in transit. (b) **Tab from the trigger must land on the link**, not on the next in-page control, and must not dismiss the panel — this is the clause the portal breaks. (c) Esc with focus on the trigger: closes, focus does not move. (d) Esc with focus **inside** the panel: closes, focus returns to the trigger. (e) Open by hover, put focus somewhere else entirely, let the grace timer close it: **focus must not move** — this is the `onCloseAutoFocus` failure. Plus: click after hover does not toggle closed; touch does not flicker; exactly one popover is ever open.
+  - [ ] 11.5 **No nested interactive content.** Query the live DOM for `#{sectionId} button button` across all eleven sections; the result must be empty. This is decision 6's whole reason for existing and nothing else can see it.
+  - [ ] 11.6 **The per-section boundary, proven not asserted.** Inject a `throw new Error("probe")` at the top of a **section component's** function body (e.g. `PhasesSection`) — **never inside `TacticalLayer.sectionContent()`**, which runs during the layer's own render and would be caught by the outer boundary, falsely reading as the new one failing. Confirm: that section shows the new fallback, **the other ten still render**, Hero and chrome stay usable, `console.error` still fires, and collapsing and re-expanding recovers it. Then revert.
+  - [ ] 11.7 **Keyboard, live, with real key presses.** Tab through `/glossary` and `/about` end to end; no traps, no lost focus. Confirm `/glossary/#term` both scrolls and **focuses**. Confirm the eleven Tactical headings still focus correctly after the widening — the nonce-driven focus contract must be unchanged.
+  - [ ] 11.8 **Reflow:** `scrollWidth === clientWidth` at **320** and **390** CSS px on `/glossary`, `/about`, and the match route with a popover open near a viewport edge. Chrome will not resize below ~500px — use a same-origin iframe so `matchMedia` reflects the iframe viewport. **The measurement is vacuous unless you expand first**: `TacticalSection` lazy-mounts and collapsible sections open only at `≥lg`. A 5px overflow at 320px is **pre-existing and proven to be Key Statistics' tile** — confirm your surfaces are not in the offender list rather than fixing it. **The 195px failure is 2.19's — do not attempt it.**
+  - [ ] 11.9 **Reduced motion:** with the popover open under `prefers-reduced-motion: reduce`, assert every entry from `getAnimations({subtree: true})` has `effect.getTiming().duration <= 0.01`. **A count of zero is NOT the contract and will fail** — `globals.css` sets `animation-duration: 0.01ms !important` rather than removing animations, which `skeleton-pulse` already relies on.
+  - [ ] 11.10 **Screen-reader / structural pass**, method stated honestly (no live screen reader in this harness): read every new string back from the live DOM in both locales; confirm the popover has an accessible name (decision 9's `Popover.Title asChild`) and emits **no `<h2>`**; confirm decision 6's `aria-describedby` on the nine collapsible triggers still yields a sane description with a marked term inside it — **if it is mangled, take decision 6's declared fallback and record the departure**; confirm Task 5.3's xG decision against the real accessible name; confirm the glossary entries are a real definition list; confirm no `role="region"` was added.
+  - [ ] 11.11 **EN toggle after load** and **theme toggle after load**, on `/glossary`, `/about` and a match route. No mixed-language page, no Spanish leakage under a regex sweep, and the **counterpart subtitle must invert** (in EN the Spanish term becomes the subtitle, and stays absent for `xG`/`sprint`/`momentum`). Read the `lang` attributes back out of the live DOM and confirm decision 13.
+  - [ ] 11.12 **Static-output guards** stay green, including the re-anchored `matches/static-output.test.ts` (9.7) and the Hero-tile assertions (8.10). If the absence guard goes red, something moved the Tactical Layer to the build-time path — the one change this story must not make.
+  - [ ] 11.13 **Bundle check.** Two new routes and one vendored Radix primitive. Record the `next build` route-size lines for `/glossary`, `/about` and `/matches/[slug]`, and confirm the popover did not land on the Hero's critical path.
+  - [ ] 11.14 **Full chain green:** `npm run build`, **then** `npm test` (the static-output tests read `out/` and stay skipped until it exists). Report the new suite total against your Task 1.1 baseline. **Zero console messages** on a full page load of each new route and of a match route with all eleven sections mounted.
+
+## Dev Notes
+
+### What the terminology audit actually found — read this before opening the locale files
+
+The creation audit read all of `es.ts` and `en.ts` against all 38 policy rows. Do not re-derive it; do re-verify the three greps at Task 1.5.
+
+**Clean, verified by exhaustive grep — do not "fix" these:** `portero` 0 · `parada` 0 · `fuera de juego` 0 · `clasificación` 0 · `chute` 0 · vosotros forms 0 · `usted` 0 · exclamation marks 0 in both files. Tuteo is consistent. The attribution strings are **byte-identical** to `EXPERIENCE.md`'s ruled wording, and so is `notFound.message`. **No `en` value is left in Spanish** — the only Spanish in `en.ts` is `chrome.languageToggle.esFull` = `"Español"`, which is correct and documented. **Note `a puerta` is NOT zero** — it appears as a substring of `"en propia puerta"`, so Task 9.1(b)'s sweep is red until Task 8.2 lands. Order those two accordingly.
+
+**The dictionary's shape, which constrains everything you write:** ~417 string leaves before this story, ten top-level groups (`app`, `a11y`, `chrome`, `about`, `notFound`, `meta`, `match`, `tactical`, `viz`, `enums`). **No arrays, no functions, no template strings, no `as const`, no ICU, no interpolation of any kind.** Plurals are **two keys** chosen at the call site (sixteen such pairs). The one nonstandard pattern is sentence-fragment composition (`tactical.empty.headlineBefore` + title + `headlineAfter`) — grammatically fragile, and the reason decision 6 keeps a resolved **string** in `TacticalLayer`. Max depth five segments. `viz.*` namespaces are **one per surface, appended in ship order**; `enums.*` are **one per contract enum, keyed by enum code** (AD-7).
+
+**This story adds the largest single expansion the dictionary has taken** — one `{es, en, definition}` triple per glossary term in both files. Author the definitions deliberately: they are the discharge mechanism for AC 1's eight deferred rows, and a definition that claims data the corpus does not carry is exactly the defect this story exists to prevent.
+
+**`en.ts` is the only mechanical parity guard** — typed `en: Dictionary`, so a missing or extra key is a compile error, and `keyShape()` throws on any non-string leaf. But **nothing enforces a single ruled string anywhere**, and `t()`'s production fallback means a missing `en` key renders **Spanish with a `console.error`**, not a crash. That is why Task 9.1 exists.
+
+### The i18n gate — six prior reviews paid for these
+
+- `t()` has **no interpolation and no plural machinery**. Counters need a singular **and** a plural key.
+- `{t(cond ? "a" : "b")}` **fails the gate**. Hoist the key into a `const … : DictionaryKey`.
+- A **template literal inside a gated prop** fails **even when every fragment is a `t()` call**. Hoist composed labels into identifiers first.
+- **Bare text between JSX expressions fails too.** `{t(a)} ({t(b)})` emits ` (` and `)` as literal children — compose into a string first (`KeyStatisticsSection.statLabel()` is the shipped pattern). This is why Task 3.5 splits an already-resolved string rather than writing markup around words.
+- Separator glyphs and any `▲`/`▸`-class mark are **module consts**, never bare JSX literals.
+- **16 prop names are gated**: `aria-label`, `aria-description`, `aria-placeholder`, `aria-roledescription`, `aria-braillelabel`, `aria-valuetext`, `title`, `alt`, `placeholder`, `label`, `message`, `text`, `description`, `caption`, `heading`, `tooltip`. **`title` and `tooltip` are both on it** — a glossary component must not name its props from that set. `PitchPanelProps.title` exists happily because **the rule fires on JSX attributes, not interface members** — the risk is the call site.
+- The gate is regression-tested through the real config in `src/lib/eslint-gate.test.ts`, which lints inline snippets programmatically. **Adding a bypass fails CI.**
+- `src/locales/**` is exempt by definition; `src/app/**` keeps direct `t()` for metadata; `src/components/**` and `src/viz/**` are barred from importing `t`.
+
+### What already exists — reuse it, do not rebuild it
+
+- **The trigger style ships today.** `StoryStatTiles.tsx`: `underline decoration-accent-cyan decoration-dotted underline-offset-2`, with `labelNode: ReactNode` as the prop that carries it — both the visual and the naming precedent for a marked-up label prop.
+- **`radix-ui@1.6.5` is already installed** and `@radix-ui/react-popover` is already in its tree. Four primitives are vendored (`button`, `card`, `toggle`, `toggle-group`) and their file shape is the template: `"use client"`, namespace import, `cva` where variants exist, `data-slot`, `cn()`, **no `outline-none`**, `border-hairline` as the only divider.
+- **The overlay grammar exists.** `ViewDataDisclosure` shows the `aria-controls`-only-while-open rule (patched twice) and the `surface?: "pitch" | "canvas"` opt-in-prop pattern Task 4.5 copies. `PitchPanel` shows the mouse-only hover guard (`pointerType !== "mouse"`), the pointerdown-not-click outside handler, and the `w-56 max-w-full` sizing.
+- **The route shape exists.** Server page → `"use client"` content component; `output: "export"`, `trailingSlash: true`; per-route metadata composed in a pure helper.
+- **`enums.shotOutcome` is complete and correct** — five values byte-identical to the ruled strings. Do not touch it.
+- **`about.title`, `chrome.footer.attribution`, `chrome.footer.aboutLink` and `viz.attribution` all exist and are ruled.** Do not mint duplicates.
+
+### The corpus facts the glossary must not contradict
+
+- **xG**: team totals only, no per-shot value, markers uniform (FD-1). Any sentence implying a per-shot xG is false.
+- **offers vs movements**: `sum(offersByMovementType) == totalOffers` on 3,289/3,289 rows; `no-movement` is **24.9%** of all corpus offers; the source's own `Movement to Receive` page prints only **five** types while Domain G carries six.
+- **step-ins**: in-possession, on-ball, printed between `Take Ons` and `Attempts at Goal`.
+- **phases**: sums run 84–149 in possession and 73–97 out, so **nothing may normalize or pie them** — no entry may describe them as percentages of a whole.
+- **marker colour is per-family**, not global: the same two RGBs mean `off-target`/`incomplete` on shots and `attempted`/`completed` on crosses.
+- **The PMSR has no glossary page.** Every definition this story writes is authored from page placement and reconciliation arithmetic, not transcribed. Task 6.4's `authoredNote` says so on the page.
+
+### Project Structure Notes
+
+- `src/lib/glossary.ts` is **pure**: no React, no DOM, no `t()`, no `@/lib/format`. It returns `DictionaryKey`s and ids; components resolve them. That split is the only reason any of this is testable in a node-only harness. Everything React lives in `src/components/glossary-marking.tsx`.
+- **Heading levels:** `TacticalSection` owns the section `<h2>`. `/glossary` and `/about` each own exactly one `<h1>`. **The popover emits no heading** (decision 9). The `<section>` is already a named region landmark — **do not add `role="region"` to anything**; that produced 22 landmarks for 11 sections and an axe failure once already.
+- Component files PascalCase (the two non-component modules, `glossary.ts` and `glossary-marking.tsx`, are kebab, matching `tactical-sections.ts` / `use-media-query.ts`). Routes stay within the architecture seed list — `/glossary` is on it.
+- Client route bodies live in `src/components/`, not colocated under `src/app/**` — a `"use client"` file there escapes the i18n import seam (open ledger item; do not trigger it with a new route).
+
+### Scope boundaries
+
+**Touch:** `app/src/lib/glossary.ts` (+ `glossary.test.ts`); `app/src/components/glossary-marking.tsx`, `GlossaryTerm.tsx`, `GlossaryContent.tsx`, `AboutContent.tsx`; `app/src/components/ui/popover.tsx`; `app/src/app/glossary/page.tsx`; `app/src/app/about/page.tsx` (**docblock only**); `app/src/components/TacticalSection.tsx` (prop widening + docblock), `TacticalLayer.tsx` (title/summary split + boundary wrap), `TacticalErrorBoundary.tsx` (opt-in fallback props), `AttributionFooter.tsx` (glossary link), `StoryStatTiles.tsx` (xG migration + the 8.10 label composition); `app/src/locales/{es,en}.ts`; `app/src/lib/i18n.test.ts`, `eslint-gate.test.ts`, `app/eslint.config.mjs`; `app/src/app/static-output.test.ts` and `app/src/app/matches/static-output.test.ts`; `EXPERIENCE.md`'s policy table (**cell amendments only**); `deferred-work.md`; `sprint-status.yaml`; this story file.
+
+**Do not touch:** `pipeline/**`, `contract/**`, `data/**`, `app/src/lib/contract/**` (generated); `app/src/lib/tactical-sections.ts` (**the registry** — no id, order, predicate or `KEY_STAT_UNIT` change is needed or authorised); `MatchBundleRegion.tsx` (decision 7 keeps its call site byte-identical); `MomentumSection.tsx` / `MomentumChart.tsx` (which is why Task 8.8 files rather than fixes); `PitchPanel.tsx`, `EmptyStatePanel.tsx`, `ShotMapsSection.tsx`, `PassNetworksSection.tsx`, `KeyStatisticsSection.tsx`, `DefensiveActionsSection.tsx`, `OffersToReceiveSection.tsx`, `MovementToReceiveSection.tsx`, `PhasesSection.tsx`, `PressingSection.tsx`, `SetPlaysSection.tsx`, `GoalkeepingSection.tsx`, `TacticalCharts.tsx`; `src/viz/**` models; `DESIGN.md`; the layout/providers/bootstrap/storage/format modules.
+
+**Do not build here:** sortable tables, `aria-sort`, the collator sort, Expert-layer tables and logs (**2.11a / 2.11b / 2.11c**); the Tournament Hub, leaderboards, search, profiles, comparison (**2.12–2.17**); the real-data swap, Lighthouse/axe runs, the 195px reflow, the automated zero-external-request check (**2.19**); `ShotOutcomeDetail` labels (**post-CS-1**, decision 12).
+
+**Do not add:** jsdom, Testing Library, a state library, a client cache, **a new React Context**, or **any** runtime dependency. Radix Popover is already installed — confirm it, do not `npm install`. Page-wide single-open is a module-scope `Set`, not a Context (Task 3.4).
+
+**Do not "fix":** the 320px Key Statistics tile overflow (pre-existing, proven, 2.19's); the 195px zoom failure (2.19's); the `<title>`/OG-stays-Spanish decision (open, needs a human ruling); the `minutePrefixKey` naming drift; `m002`'s `momentum: null`; the cluster-popover over-claim copy (needs a geometry ruling — file it); `DESIGN.md`'s stale footer bullet (file it).
+
+### Known-open items that are NOT this story's
+
+- **The fragment/hash re-entry defects** (three of them, one policy needed) — re-activating an unchanged hash never re-fires `hashchange`, so a repeat `#term` link is a silent no-op. Filed by the 2.5 review, open, no owner. `/glossary`'s anchors inherit it; record it, do not fix it.
+- **Focus dropped to `<body>` when a viewport change unmounts a focused region** — open, needs a ruling this story does not have. If a popover unmounting on resize hits the same class of gap, file rather than invent a policy.
+- **The 195px (390px @ 200% zoom) reflow failure** — Story 2.19's, stated explicitly.
+- **`<title>`/OG stay Spanish after an EN toggle**, which makes `en.*` metadata keys unreachable. Two dead keys already exist and `/glossary` adds more — **file it, do not resolve it**; it is one of seven decisions deferred at Juan's call.
+- **The live region re-announces "Datos cargados." on every language toggle** — open, needs a ruling.
+- **`tactical-sections.ts`'s `momentum: undefined` classified as "ready"** — open, no owner, and the same `!== null` shape is worth auditing across the other ten predicates. Not this story's file.
+
+### Coordination & hygiene
+
+- **Baseline `892766c` — Story 2.10 has LANDED and the tree is CLEAN.** `TacticalLayer.tsx` already carries all four dispatch cases and no `PendingSectionPanel` import; `i18n.test.ts` already carries the fourteen 2.10 exhaustiveness suites (Task 9.5 is a verify-only no-op); both locale files are committed. **Re-derive at Task 1.4 anyway — do not trust this paragraph.**
+- **A 2.11 planning session IS active and its shape is still moving.** Story 2.11 has been **split three ways** by Juan; the untracked context files changed *during this story's creation* (from a single `2-11-…md` to `2-11a-sortable-data-table-contract.md`, `2-11b-expert-layer-per-player-tables.md`, `2-11c-expert-layer-event-logs.md`), and 2-11a is already `ready-for-dev`. It has not written `app/` yet, but it will, and its stated scope (~200 new locale strings and twenty table retrofits) means its **first targets are `es.ts`, `en.ts` and `i18n.test.ts`** — the same three files this story rewrites more of than any story so far. Check `git status` before every locale edit, not only at Task 1.4.
+- **Every edit to `es.ts`, `en.ts` and `i18n.test.ts` is written as if another session holds them**: amend the smallest possible span, verified by grep at edit time, and never rewrite or reorder a block you do not own. Cite by quoted anchor phrase, never by line number — the 2.6 drift lesson cost twelve citations to a +12-line drift.
+- **Every shared-artifact edit is APPEND-ONLY.** `deferred-work.md` was 614 lines at `163fa20` and 2.10 appended a further ~200. Append under your own `## Filed by Story 2.18 implementation` heading and **verify the property programmatically** — the post-edit file must start with the pre-edit bytes exactly.
+- `deferred-work.md` line numbers **drift**. Every ledger citation here is a `grep "<quoted phrase>"`; if a number disagrees, **trust the phrase**. **The ledger hard-wraps mid-sentence, so a long quoted phrase will not match** — the working anchors are short. Stable artifacts (`EXPERIENCE.md`, `DESIGN.md`, `epics.md`) are still cited by line.
+- **Never `git add -A`, and never `git add app/`.** Stage explicit file paths only, from your own File List. Co-commits have happened in both directions and both were caught by review; if yours carries in-flight 2.11 lines, **disclose it in the Completion Notes**.
+- **Commit directly to `main`** (solo repo); no feature branch, no PR.
+- **Abort rule.** If a 2.11 session starts writing `es.ts`/`en.ts` mid-story, **stop before Task 8** (the remediation edits, which change existing values rather than appending) and coordinate. Tasks 2–7 append only and are safe to continue.
+
+### References
+
+Paths: `_bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/{EXPERIENCE,DESIGN,review-i18n,review-accessibility}.md`; `_bmad-output/planning-artifacts/epics.md`; `_bmad-output/implementation-artifacts/{deferred-work.md,sprint-status.yaml}`.
+
+- **Epics** — Story 2.18 at `:982-1002` (AC header `:988`, ACs `:990-1002`); FR-30 `:59`, FR-31 `:60`, FR-32 `:61`, NFR-10 `:76`; AR-11 `:92`; UX-DR6 `:109`, UX-DR13 `:116`, UX-DR15 `:118`, UX-DR19 `:122`, UX-DR20 `:123`, UX-DR21 `:124`.
+- **EXPERIENCE.md** — `## i18n & Terminology` (policy table `:237-276`, header `:237`, rows `:239-276`; momentum row `:259`, corner row `:268`, Expert column groups row `:276`; extension procedure `:278`; Attribution OQ-3 `:280-285`); `## Component Patterns` → the *Glossary tooltip* row (the 1.4.13 contract and the counterpart subtitle), the *Stat tile* row (*"Glossary terms inside tile labels are the focusable triggers"*), *Attribution footer*, *Language toggle*; `## Information Architecture` (the `/glossary` and `/about` route rows, language-not-in-URL, language-neutral slugs, deep-link anchors); `## Voice and Tone`; `## Accessibility Floor`; `## State Patterns` → *Focus*.
+- **DESIGN.md** — frontmatter `components.glossary-tooltip` (`background: {colors.surface-overlay}`, `foreground: {colors.ink-primary}`, `trigger-underline: {colors.accent-cyan}`, `radius: {rounded.sm}`); `## Components` → *Glossary tooltip*, *Attribution footer* (**stale on the `/glossary` link — file, do not edit**), *Site header*; `## Brand accents`; `## Elevation & Depth`; `## Canvas & ink` (the `ink-muted` restriction).
+- **review-i18n.md** — `:11` (**critical** — `recuperaciones forzadas`, never bare *pérdidas forzadas*), `:13` (line height), `:17` (team length), `:26` (goalkeeping had zero terminology coverage), `:45` (Spanish text expansion at 11px); §1 (step-in unverified), §3 (`clasificación` collision; the *"no incluye esta sección"* fix), §5 (Diego's bridge — the origin of the counterpart subtitle).
+- **review-accessibility.md** — §6 (the 1.4.13 fix text, verbatim: *"remains open while pointer or focus is within trigger or panel; dismissible via Esc without moving focus; the link is reachable by Tab from the trigger"*, and the `lang="en"` pronunciation spot-check at `:62`); §3 (the stat-tile trigger fix); §5 (320px reflow); §1 (`ink-primary` on `surface-overlay` = **14.13:1**; `ink-muted` **3.30**, below the text floor).
+- **deferred-work.md** — grep `"which blocks Story 2.18's glossary"` (**the seam, 2.18 named owner**; the phrase hard-wraps after "glossary"); `"pronunciation"` (the `lang="en"` half of the same entry); `"post-CS-1 24-value enum"` (**CS-1, open**); `"per-shot xG does not exist in the source PDFs"` (**FD-1**); `"kills all eleven Tactical sections"` (2.8), `"A malformed momentum series takes down all eleven"` (2.6), `"re-filed with Story 2.9's added blast radius"` (2.9), `"now has its FULL blast radius"` (2.10) — **the boundary's five filings**; `"Client-import seam residual gaps"`; `"an unlabelled row is worse than an unreachable label"`; `"Cluster popover copy over-claims"`; `"Zero-external-request audit"`.
+- **The i18n gate hole** — **not in the ledger**; it lives in `2-6-momentum-timeline.md`, grep `"The gate does NOT reach recharts"`, restated in `2-10-…md`, grep `"object-shaped props"`.
+- **Prior stories** — `2-2-…md` (the `/about` stub handoff, the route allow-list, the server-`t()`-freezes-Spanish rule); `2-5-…md` (the `TacticalSection` markup contract, review decisions D1–D4, and **ruled decision 8: no glossary underlines until 2.18 marks the whole layer at once**); `2-6-…md` (the `-canvas` token convention, the contrast method, Task 10.2a — the seam filing); `2-7-…md` (the light-theme disaster from the first-consumer position; **Task 10.4's CS-1 clearance, the shape decision 12 copies**; ruled decision 10 — the precedent for minting term labels in-story); `2-9-…md` (the card-surface ink ruling; AD-7 enum-code keying; the append-only proof obligation); `2-10-…md` (the frozen-`Record` pattern, the `as DictionaryKey` cast rule, the mint-and-file procedure, the reflow anti-vacuity clause, and the four sections whose strings you are auditing).
+- **Corpus evidence** — `contract/match-bundle.schema.json` `$defs.PlayerInPossession` (`stepIns` placement); `contract/common.schema.json` `$defs.OfferMovementType` and `$defs.ShotOutcomeDetail` (`x-maps-to-outcome`); `contract/README.md` provenance row for `OfferMovementType`; `pipeline/extract/domain_g.py` `DISTRIBUTIONS_COLUMNS`; `pipeline/README.md` reconciliations #6 and #8; `app/src/components/MovementToReceiveSection.tsx` (*"THE PROPORTION IS LEGITIMATE FOR ONE MEASURED REASON"*).
+
+## Dev Agent Record
+
+### Agent Model Used
+
+claude-opus-5[1m] (Claude Opus 5, 1M context)
+
+### Debug Log References
+
+**Baseline (Task 1), re-measured at `892766c`, NOT inherited.** `npm test` **577 passed / 23 files** *with* `out/` present (95 files) — note this already includes 22 tests from a concurrent 2.11a session's uncommitted `table-sort.ts`/`table-sort.test.ts`, so the 2.18-attributable baseline is **555 / 22**. `check:types` up to date (237 declarations from 6 schemas). `assert:schema-version` **7 artifacts at schemaVersion 2** — **CS-1 has NOT landed**, so decision 12's tripwires stand unchanged. `npm run build` green end to end.
+
+**Task 1.5 — the three audit greps reproduce exactly, nothing pre-fixed by another session.** `Córners` 1 hit (`tactical.sections["set-plays"].summary`); `propia puerta` 1 hit (`viz.momentum.ownGoal`); `Con balón|Sin balón` **2** hits (`viz.phases.inPossession` / `.outOfPossession` only) — confirming decision 4's point that the four `viz.pressing.metre.*` compound labels do not match this grep.
+
+**Task 3.7 — the trigger's hit area, measured live rather than assumed.** The Hero xG trigger's `getBoundingClientRect()` is **16.27 × 14.30 px**, against a parent line-box height of **14.30 px** — i.e. the trigger is exactly the word inside its own line box, which is the contract. `display` computes `block` rather than `inline` because the tile's label wrapper is `inline-flex` and blockifies its children; the measured height is unchanged by that. **Declared reading:** the ≥44px target rule cannot apply to a word inside running text, so it is not applied here; the term is nonetheless independently focusable, which is what `review-accessibility.md` §3 actually requires.
+
+**Task 7.6 — zero external requests, verified by grep of the built HTML.** `out/about/index.html` and `out/glossary/index.html` each carry **0** absolute/protocol-relative `src`/`href`/`action` values and **0** external `url(...)` references.
+
+**Live verification already performed (partial — the full Task 11 pass is still outstanding).** Served `app/out` over `python -m http.server 8765` and drove Chrome:
+
+- **The popover opens on real mouse hover** and renders `role="dialog"` with `aria-labelledby` resolving to the accessible name **"xG"** — so decision 9's `Popover.Title asChild` clause works: the panel is named, and **`h2` count inside the panel is 0**, so no heading is emitted into a match route's outline.
+- **The no-portal clause is structurally proven.** With the panel rendered inline, a document-order walk of focusables puts the trigger at index 9 and the panel's "see in the glossary" link at index **10**, with **nothing between them** — which is precisely the property a portal destroys (the link would sit at the end of `<body>`). The panel is a DOM sibling *following* the trigger inside the same wrapper. Its `href` is `/glossary/#xg`, correct under `trailingSlash: true`.
+- **Decision 6's whole reason for existing holds: `#{sectionId} button button` is EMPTY across all eleven sections** on a fully-mounted match route (11/11 sections mounted at 1920px). Per-section marking landed exactly as ruled: `momentum` → **"Momentum"** in the *heading*; `shot-maps` → **"crosses"**, `pressing` → **"line height"**, `set-plays` → **"Corners"**, `goalkeeping` → **"distribution"** in the *summary*; none nested inside an accordion `<button>`.
+- **Decision 13 verified live in BOTH directions.** In `en`, `build-up` renders "es: salida de balón"; after a locale toggle to `es` the same entry renders "en: build-up" with `lang="en"` on the counterpart — the subtitle **inverts**. `xg` renders the ruled gloss ("goles esperados" / "expected goals") and **no** counterpart subtitle; `momentum` renders **neither**. `<html lang>` swaps correctly.
+- **`/glossary`** renders **42** entries as a real `<dl>/<dt>/<dd>` definition list, **0** `role="region"`, no horizontal page scroll. **`/about`** renders one `<h1>` and four `<h2>`s, with the ruled attribution split cleanly at its sentence boundary so the independence disclaimer stands alone — no ruled string duplicated into a new key.
+
+**HARNESS LIMITATION, recorded rather than worked around: real key presses are not reaching the page.** A `keydown` capture listener installed on `document` recorded **zero** events across three separate Tab presses (both after a JS `.focus()` and after a real click), so Task 11.4's five 1.4.13 keyboard checks (b)–(e) and Task 11.7's keyboard sweep **could not be executed in this session** — the browser window does not appear to hold OS-level focus. The Tab-order property those checks exist to prove is established structurally above, but it is **not** a substitute for the real key presses, and the outstanding checks are listed in Completion Notes.
+
+**One self-inflicted defect, found and repaired.** A PowerShell `Get-Content`/`Set-Content` round-trip used to tick this file's checkboxes double-encoded it (PS 5.1 defaults to the ANSI codepage on read and UTF-8 on write): 79 mojibake sequences, 0 em dashes, and a spurious BOM. Repaired losslessly by re-encoding through Windows-1252 and rewriting as UTF-8 without BOM; verified afterwards at **0** mojibake, **253** em dashes, **58** `ó`, no BOM. The file is untracked, so git could not have restored it. **Lesson for the remaining tasks: use the editing tools, never a PowerShell text round-trip, on any file containing non-ASCII.**
+
+### Completion Notes List
+
+**STATUS: PAUSED AT THE STORY'S OWN ABORT RULE. Tasks 1–7 are complete; Tasks 8–11 are not started and need Juan's ruling first.**
+
+**The abort rule fired, and it fired on the exact condition it was written for.** Dev Notes → Coordination & hygiene: *"If a 2.11 session starts writing `es.ts`/`en.ts` mid-story, **stop before Task 8** (the remediation edits, which change existing values rather than appending) and coordinate. Tasks 2–7 append only and are safe to continue."* At baseline the tree was clean apart from three untracked 2.11 context files. **Mid-story the 2.11a session began writing `app/` and is now holding twenty-two files**, including all three the story names: `src/locales/es.ts` and `src/locales/en.ts` (it appended five `viz.table.sort*` leaves to each) and `src/lib/i18n.test.ts` (+58 lines, one new `describe`), plus new `DataTable.tsx` / `SortAnnouncer.tsx` and nine section components. Its locale edits are append-only and **disjoint from every span 2.18 touches**, but Task 8 is the one task that *changes existing values*, so the rule applies and the decision is Juan's, not the dev's.
+
+**What was completed under the rule (all append-only, all verified green):**
+
+- **Task 2 — the registry.** `src/lib/glossary.ts` is pure (no React, no DOM, no `t()`), exporting `GlossaryTermId`, a frozen `Record`-derived `GLOSSARY_TERMS`, `GLOSSARY_POLICY`, three key builders and `GLOSSARY_GLOSS_KEY`. **`GLOSSARY_TERMS` count is 42** (Task 2.2's required figure; nothing hardcodes 38 anywhere). 22 unit tests, all green, with the order asserted against a **literal** array written out in the test file rather than a derived-vs-derived comparison.
+- **Task 3 — the popover.** `src/components/ui/popover.tsx` vendored on the house conventions. **No runtime dependency was added and none was needed: `radix-ui@1.6.5` is already installed and `@radix-ui/react-popover` is already in its tree** (verified by module resolution and by listing the `Popover` export's members). Every clause of decision 9 is implemented at the call site rather than baked into the primitive, so the eleven consumers can see the policy.
+- **Task 4 — the seam and the boundary.** `TacticalSection`'s `title` and `summary` are `ReactNode`; the stale `summary` docblock is corrected; `TacticalErrorBoundary` takes optional `headlineKey`/`explanationKey` defaulting with `??` inside the fallback, and **`MatchBundleRegion.tsx` is untouched**. The per-section boundary wraps `children` in `TacticalLayer`, keyed `` `${plan.id}-${plan.open}` ``.
+- **Tasks 5–7** — marking, `/glossary`, `/about`, and the footer's `/glossary` link.
+
+**THREE DEPARTURES, each recorded with its reason. None is a silent deviation.**
+
+1. **`useGlossaryPopover()` lives in `src/lib/use-glossary-popover.ts`, not in `glossary-marking.tsx` (Task 3.4's stated placement).** Same public surface, same module-scope `Set<() => void>` single-open mechanism, no new Context. The reason is mechanical: `glossary-marking.tsx` must import `GlossaryTerm` (its helpers render one), and `GlossaryTerm` needs the hook — co-locating them makes the two modules import each other. `src/lib/use-media-query.ts` is the shipped precedent for a client hook in `src/lib`.
+2. **`TacticalSection`'s summary element changed from `<p>` to `<div>`.** Not cosmetic and not optional: Radix renders `Popover.Content` as a `<div>`, decision 9 forbids portalling it, and the nine collapsible sections mark their term *inside the summary* — so the panel is a `<div>` descendant of that element. A `<div>` inside a `<p>` is an invalid content model and trips React's dev-time nesting validation, which would put a console error on every match route and fail Task 11.14's zero-console-messages requirement. Block-level either way; the `aria-describedby` target id and the classes are unchanged.
+3. **`findTermSpan()` matches case-insensitively and tolerates a plural suffix**, rather than the plain `text.indexOf(term)` of Task 3.5's sketch. Task 3.5's binding constraints are both kept — the term string comes from the dictionary, never a hardcoded slice length, and a miss degrades silently to unmarked text. Without the two tolerances the mechanism is dead on the copy it has to mark: the ruled term `momentum` is lower-case while the en heading reads "Momentum timeline", and the ruled terms `tiro de esquina` and `centro` meet the surfaces "Tiros de esquina" and "los centros". The span finder is pure and lives in `glossary.ts`, so it is unit-tested (8 cases) in a harness that can test nothing else about marking.
+
+**A FINDING THAT CHANGES WHAT AC 2 CAN DELIVER, surfaced for Juan rather than papered over. FIVE of the eleven Tactical sections carry no glossary mark, and one more cannot.** Decision 6 rules that the nine collapsible sections mark in their **summary**. Their summaries are frozen ruled copy from 2.5, and five of them — `pass-networks`, `offers-to-receive`, `movement-to-receive`, `defensive-actions`, `phases` — contain **no term from the policy table at all**, while their *titles* do ("Red de pases", "Ofrecimientos para recibir", "Desmarques", "Acciones defensivas", "Fases del juego"). Marking a title is exactly what decision 6 forbids for those nine. Separately `key-stats`'s heading ("Estadísticas clave" / "Key statistics") matches no policy row, and its metric labels are rendered by the do-not-touch `KeyStatisticsSection`. Note Task 8.13's ruled rewrite of `movement-to-receive`'s summary is **verbatim** and contains no policy term either, so it does not open that section up. Net: **5 section marks + the Hero's xG = 6 marks**, not 11. Rewriting frozen ruled summaries to manufacture marking sites is outside this story's authority, so this is filed rather than taken — but it is a real reduction against the spirit of AC 2 and Juan may want to rule on it.
+
+**Also recorded:** `goalkeeping`'s first-in-reading-order term differs by locale — es opens "Intervenciones, **distribución** …" while en opens "**Goalkeeper** interventions, distribution …". One id per section is the contract, so `distribution` was chosen because it is present in both; the divergence is noted rather than silently resolved.
+
+**Task 5.5 confirmed as written:** `#shot-maps` still contains an unmarked `xG` (`ShotMapsSection` is do-not-touch and renders `teamXg`); that section's "once per section" is discharged by the Hero's mark. Scope was not widened.
+
+**One shipped assertion was re-anchored, not relaxed (the same class of fix Task 9.7 anticipates).** `matches/static-output.test.ts`'s *"contains exactly one aria-expanded disclosure in the Hero"* went 1 → 2 the moment the xG tile label became a real popover trigger. A popover trigger is **not** a disclosure — Radix marks it `aria-haspopup="dialog"` and it controls an overlay, while the lineups disclosure carries `aria-controls` and expands in flow. Counting them together would have made the assertion mean "how many things in the Hero happen to use `aria-expanded`", which tests nothing. It now counts non-`haspopup` expandables (exactly 1, and it carries `aria-controls`), and a **new** test asserts the Hero carries exactly one glossary trigger, keeps the sr-only xG expansion, and exports **no** panel copy.
+
+**Task 5.3 decided against dropping the sr-only xG expansion.** Read back from the live DOM, the popover's accessible name is the term itself ("xG") — it does **not** carry "goles esperados". Dropping `match.hero.xgExpansion` would therefore have silently removed the only screen-reader expansion of the abbreviation. It stays, and a test now pins it.
+
+**Suite:** 577/23 → **609 passed / 24 files, fully green**, with `eslint . --max-warnings 0`, `tsc --noEmit` and the full `npm run build` chain all green and both new routes exporting (`/about`, `/glossary`). The +32 spans this story (22 glossary-registry tests, +1 static-output test) and the concurrent 2.11a session's own additions (+6 in `i18n.test.ts`); the shared tree makes a single attributable number impossible, so both components are stated.
+
+**NOT DONE — and each of these is real outstanding scope, not a rounding error:**
+- **Task 8** in full — the register violation (`"Córners"`), the peninsular survivor (`"en propia puerta"`), decision 4's six replacements, the `EXPERIENCE.md` table amendments, the two 2.10 ad-hoc terms, the AD-7 unit fix, and the `movement-to-receive` summary rewrite. **Blocked on the abort rule.** The one piece of 8.10 that had been started (composing the Hero's unit labels through `enums.unit`) was **backed out** so the tree stays green at the pause point; `es.ts` currently still ships `"Distancia (km)"` and `"Vel. máx. (km/h)"`.
+- **Task 9** in full — the key-builder resolution sweep, the forbidden-register sweep, the ruled-term pins, the ESLint object-shaped-prop closure and its fixtures, the glossary exhaustiveness assertion, and the `static-output` additions. Effectively blocked too: 9.1(b)'s register sweep is **red by construction until 8.2 lands** (the story says so — `a puerta` hides inside `"en propia puerta"`), and 9.1/9.4 write `i18n.test.ts`, which 2.11a is actively holding.
+- **Task 10** in full — no ledger entry, no `sprint-status` note, nothing filed yet. The material to file is enumerated in these notes.
+- **Task 11** — mostly outstanding. Executed: 11.5 (nested-interactive), part of 11.1/11.2, and the structural half of 11.4. **Not executed:** contrast measurement in both themes (11.3), the four keyboard 1.4.13 checks (11.4 b–e), the per-section boundary probe (11.6), the keyboard sweep (11.7), reflow at 320/390 (11.8), reduced motion (11.9), the screen-reader/structural pass (11.10), the full EN/theme-toggle sweep (11.11), bundle sizes (11.13) and the zero-console-message check (11.14).
+
+**Nothing is committed.** No `git add` has been run; the working tree carries both this story's changes and the 2.11a session's, and staging is deliberately deferred until Task 10.8 can list explicit paths.
+
+### File List
+
+New:
+- `app/src/lib/glossary.ts`
+- `app/src/lib/glossary.test.ts`
+- `app/src/lib/use-glossary-popover.ts`
+- `app/src/components/ui/popover.tsx`
+- `app/src/components/GlossaryTerm.tsx`
+- `app/src/components/glossary-marking.tsx`
+- `app/src/components/GlossaryContent.tsx`
+- `app/src/app/glossary/page.tsx`
+
+Modified:
+- `app/src/locales/es.ts`
+- `app/src/locales/en.ts`
+- `app/src/components/TacticalSection.tsx`
+- `app/src/components/TacticalLayer.tsx`
+- `app/src/components/TacticalErrorBoundary.tsx`
+- `app/src/components/StoryStatTiles.tsx`
+- `app/src/components/AboutContent.tsx`
+- `app/src/components/AttributionFooter.tsx`
+- `app/src/app/about/page.tsx`
+- `app/src/app/matches/static-output.test.ts`
+- `_bmad-output/implementation-artifacts/2-18-glossary-about-terminology-completion.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-04 | **Implementation PAUSED at the story's own abort rule after Tasks 1–7.** The 2.11a session began writing `app/` mid-story and now holds `es.ts`, `en.ts` and `i18n.test.ts` — the exact condition Dev Notes → Coordination & hygiene says to stop on before Task 8, because Task 8 changes existing values rather than appending. Shipped and green: the pure 42-term glossary registry (+22 unit tests), the vendored Radix popover with **no new runtime dependency**, `GlossaryTerm` and the marking helpers, the `TacticalSection` `ReactNode` widening, the per-section error boundary resolving a blast radius filed five times, `/glossary` (42 entries), `/about` filled, and the footer's `/glossary` link. Suite 577/23 → **609/24, full chain green**. Verified live rather than asserted: `role="dialog"` with an accessible name and **zero `<h2>`** in the panel; the panel's link is the **immediately next focusable** after the trigger with nothing between (the no-portal clause); **`#{sectionId} button button` empty across all eleven sections**; decision 13's counterpart subtitle **inverting** on a real locale toggle, with `xG` showing the ruled gloss and `momentum` showing neither. Three departures recorded with reasons (hook file placement, summary `<p>`→`<div>` for valid nesting, a case- and plural-tolerant `findTermSpan`). One finding for Juan: **five sections cannot be marked at all** — their ruled summaries carry no policy term while their titles, which decision 6 forbids marking, do. Tasks 8–11 not started. |
+| 2026-08-04 | Story context created and moved to ready-for-dev. **Four rulings taken by Juan at creation**: (1) the `/about` methodology note ships the two-sentence honest form, not the AC's clause — FD-1 records that per-shot xG does not exist in the source at all, so "used as-is" alone is true of the team totals and misleading about per-shot values, and this is the first time FD-1 becomes user-visible copy; (2) `step-in → irrupción` is FINAL, with `"salto"` affirmatively contradicted (`stepIns` is a `required` member of `PlayerInPossession`, printed as `Step Ins` between `Take Ons` and `Attempts at Goal`) and `"conducción interior"` rejected for inventing a direction the PMSR never prints — the PMSR has **no glossary page at all**, 0 hits across 52 pages, so "verified against the PMSR definitions" means page placement and reconciliation arithmetic; (3) all four remediation items taken — the `"Córners"` register violation, the `"en propia puerta"` peninsular survivor, row 38's possession vocabulary and row 21's factually-false momentum tooltip; (4) **2.18 takes the per-section error boundary**, the whole-layer blast radius now filed **five** times (2.8, 2.6, 2.9, 1.14, 2.10) and routed every time to "whichever story next touches `TacticalSection`" — which widening `title` makes this story. **THE TERMINOLOGY AUDIT INVERTED THE STORY'S SHAPE**: ten stories shipped ~417 leaves under the honour system and nothing has ever compared a shipped string to the policy table; three rows are violated and eight have no surface yet — so AC 1's "implemented verbatim" is ruled discharged **in the glossary**, not by minting dead `viz.*`/`enums.*` keys, because `es.ts`'s own docblock reserves those namespaces for **per-surface** stories and the 2.9 review already patched five dead keys. **CS-1 has not landed and binds this story by name**: 2.18 maps `ShotOutcome` (5, CS-1-invariant) only and never `ShotOutcomeDetail` (22→24), taking 2.7 Task 10.4's clearance verbatim in shape, and `i18n.test.ts`'s two tripwires asserting the detail namespace does not exist must stay green. **This is the project's first WCAG 1.4.13 surface** — zero hits for 1.4.13, hover-persistence or dismissibility across the whole ledger, and `PitchPanel`'s hover popover is `aria-hidden` and deliberately unhoverable, so it is not a precedent. **VALIDATED BY THREE FRESH-CONTEXT SUBAGENTS before ready-for-dev**, and the pass changed the build in four decision-level ways. (a) **The Radix configuration in the first draft shipped AC 2 broken**: traced through `react-popover` and `react-focus-scope`, a portalled non-modal popover with `onOpenAutoFocus` prevented puts the panel at the end of `<body>`, so Tab from an inline trigger never reaches the "Ver en el glosario" link — and that same Tab fires a `focusin` outside the layer, which `DismissableLayer` treats as a dismissal, so **the Tab meant to reach the link closes the popover**. `onCloseAutoFocus` was unspecified and its Radix default calls `triggerRef.focus()` on *every* close, so a hover-opened popover timing out would steal a keyboard user's focus. Decision 9 now bans the portal, pins `onCloseAutoFocus`, intercepts `Popover.Trigger`'s unconditional click toggle, and requires `Popover.Title asChild` (a plain `<span>` gives `role="dialog"` with **no accessible name**; the default `Popover.Title` emits an `<h2>` into a match route). (b) **Decision 6's "mechanically safe" widening was FALSE for nine of eleven sections**: `{title}` renders inside the accordion `<button>` for every collapsible section, and `buildSectionPlans` makes nine of eleven collapsible **at every width** — marking those headings would nest a focusable popover trigger inside a button, so a click on the term would toggle the section. Ruled: mark the heading only for `key-stats` and `momentum` (the two never-collapsible sections, and the ledger's own named case), and mark the other nine in the **summary**, which renders outside the trigger. That partition also makes "once per section" true **by construction**, so the marking context the first draft invented was deleted along with its new-Context exemption. (c) **Row 38 is not six identical leaves**: only two carry the bare `"Con balón"`/`"Sin balón"`, and the other four are compound metric labels — the drafted "repoint the six leaves" would have turned `"Altura de la línea con balón"` into `"En posesión"`. Decision 4 now carries the exact six replacements and the note that `en` needs no edit at all. (d) **Three tasks would have broken the build**: adding `value` to the shared gated-prop regex fails on `SiteHeader`'s two `ToggleGroupItem` state tokens; the drafted `enums.metric`/`KEY_STAT_UNIT` route for the AD-7 unit fix turns `i18n.test.ts` red (`topSpeed` is not in `KEY_STAT_FIELDS`) and needs a do-not-touch file; and both `viz.momentum` copy holes need two do-not-touch components, so Task 8.8 became a filing. Also corrected: `fetchArtifact` **does** have callers and is the runtime path (the draft claimed the opposite), the two flagship ledger grep anchors returned zero hits because the file hard-wraps mid-phrase, the boundary has five filings not four, `a puerta` is not zero (it hides inside `"en propia puerta"`, so the new register sweep is red until 8.2 lands), decision 5's second sentence is newly authored rather than a reuse of `viz.momentum.metricNote`, and the `matches/static-output.test.ts` remedy the draft proposed was already shipped. Nine user-visible sentences that the draft left to the dev are now ruled verbatim in both locales. A recorded objection stands unresolved: one reviewer rated decisions 7 and 8 hidden scope that no AC requires and recommended cutting both — kept on Juan's ruling, with Task 11.6's live boundary proof as the mitigation. **Coordination changed during creation**: baseline moved `163fa20` → `892766c` because **Story 2.10 landed mid-write**, so the tree is now clean and every "expect to rebase onto 2.10" clause was removed — but a 2.11 session has appeared with **three** untracked context files (2.11 is splitting into 2-11a/2-11b) and its first `app/` targets will be the same three files this story rewrites, so the append-only discipline and a new explicit abort rule stand. Status backlog → ready-for-dev. |

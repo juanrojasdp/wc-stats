@@ -59,7 +59,201 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-08-03
+last_updated: 2026-08-04
+# 2026-08-04: story 2-11a implemented and moved to review — the ONE sortable data-table contract.
+#             ALL TWENTY INSTANCES ACROSS ALL TEN FILES RETROFITTED AND ALL TEN PRIVATE DataTable
+#             COPIES DELETED. Re-counted at Task 1.2 rather than trusted (10 files / 20 instances,
+#             exactly the story's table); post-retrofit the same greps return ONE definition (the
+#             shared component) and twenty instances, all through @/components/DataTable. Ships
+#             lib/table-sort.ts (pure; the only React reference is an erased ReactNode TYPE),
+#             components/DataTable.tsx, and ONE SortAnnouncer provider mounted once in
+#             MatchBundleRegion — twenty tables would otherwise have minted twenty live regions,
+#             each conditionally mounted inside its own disclosure, and a region that mounts
+#             already-populated does not announce reliably.
+#             REGRESSION PROVEN BY DIFFERENTIAL BUILD, not by inspection: pristine 892766c was built
+#             and served alongside the 2.11a build, and a digest over every table's caption, column
+#             set, row count and every cell's text in the DEFAULT (unsorted) state is BYTE-IDENTICAL
+#             on all three fixtures — m001 22 tables/451 rows/2241e22c, m002 21/364/4f07f977, m074
+#             22/600/99508d0d. m002's 21 is a presence gate closing, evaluated identically on both.
+#             VERIFIED WITH REAL KEY PRESSES: Enter -> ascending (glyph ▲, "Ordenado por Minuto,
+#             ascendente."), Space -> descending (order reversed 66'..3', glyph ▼), Enter -> every
+#             <th> back to aria-sort="none" with the artifact order restored BYTE-IDENTICALLY and
+#             "Se restauró el orden original de la tabla." Focus held throughout; arrow keys do not
+#             hijack (the button carries onClick only — Enter/Space are native button semantics).
+#             112 sortable heads all aria-sort="none" ON MOUNT (decision 5: there is no defaultSort,
+#             because "none" IS the artifact order and AD-5 reserves that to the artifact); exactly
+#             one active at a time; ZERO aria-pressed inside any table; exactly THREE polite live
+#             regions page-wide with ZERO inside any table and no role=status/alert; ZERO sticky
+#             theads; ZERO animations; no zebra; all 112 header buttons exactly 44px.
+#             DECISION 2'S PAYOFF PROVEN LIVE: with a sort active on a DictionaryKey column, the EN
+#             toggle RE-SORTS the rows (Al arco/Bloqueado/Desviado/Gol/Incompleto -> Blocked/Goal/
+#             Incomplete/Off target/On target), because sort.valueOf returns the CALL-SITE-RESOLVED
+#             label rather than the raw key.
+#             TWO DECLARED DEPARTURES, both filed. (a) HEADERS ARE NOT STICKY, and the reason is
+#             structural: ViewDataDisclosure's region is overflow-x-auto with NO height bound, so
+#             CSS forces overflow-y to auto and it is BOTH the sticky ancestor AND a scrollport that
+#             never scrolls — position:sticky never offsets. It would have shipped green and
+#             silently dead. Routed to 2.11b's bounded container; do NOT close it by giving the
+#             shared disclosure a height. (b) DESIGN's data-table.sort-active-color is used on the
+#             CANVAS as specified (11.27 dark / 4.99 light) but REJECTED on the pitch, where the
+#             light --accent-cyan computes 2.28:1; the pitch uses a theme-invariant lightness step
+#             (--ink-on-pitch 11.14 over --ink-on-pitch-secondary 5.55) plus the direction glyph.
+#             Contrast method VALIDATED FIRST by reproducing all seven published figures to 2dp.
+#             --ink-muted: ZERO uses in any table, both themes.
+#             LEDGER: the `?? 0` item is CLOSED (decision 3) and its "cross-map-model.ts does the
+#             same" clause CONFIRMED STALE — only ShotLogRow was still wrong; Cross already used
+#             ?? null and Defensive was fixed by 2.9's review. Correction APPENDED, original entry
+#             untouched; append-only verified programmatically (+5,701 bytes, file starts with the
+#             pre-edit bytes exactly). The 2.6/2.7/2.8/2.9 plug-in points are DISCHARGED. Task 8.3's
+#             "re-file if 2-10 has not landed" branch is DEAD and recorded as such.
+#             COORDINATION — THE HAZARD THE STORY WAS WRITTEN AROUND CAME BACK. A concurrent Story
+#             2.18 (glossary) session was writing app/ from Task 7 onward, and its in-flight state
+#             DOES NOT TYPECHECK, so `npm run build` in the shared tree fails on ITS work. Rather
+#             than touch another session's files or report a red chain as this story's, the full
+#             chain was verified in a GIT WORKTREE AT 892766c CARRYING EXACTLY THIS STORY'S 24 FILES
+#             — lint, tsc, assert-schema-version, next build (7 pages), copy-data all GREEN. Shared
+#             suite 608/24 all green, of which this story contributes 555 -> 586 across 23 files
+#             (+22 table-sort, +4 i18n, +4 shot-map, +1 momentum); the other 22 are 2.18's glossary
+#             tests. NOTHING IS COMMITTED: locales/{es,en}.ts, i18n.test.ts, deferred-work.md,
+#             PhasesSection and PressingSection are genuinely co-mingled with 2.18's and a 2-10
+#             review patch, and committing now would capture 2.18's half-finished, non-compiling
+#             work. Every shared-file edit was an anchor-phrase INSERT — nothing deleted or
+#             rewritten — and `git add -A` / `git add app/` were never used. Staging is Juan's call.
+#             COUNT CORRECTION AT HAND-OFF: the twenty retrofitted instances are those that existed
+#             at 892766c. A concurrent session has since added FOUR MORE in GoalkeepingSection, so
+#             the Task 1.2 grep now returns 24 in the shared tree. All four are NOT this story's and
+#             all four consume the shared columns/rows/surface API correctly — the contract being
+#             adopted, not a defect. Recorded so a reviewer re-running the grep is not surprised.
+# 2026-08-04: story 2-18 context created and moved to ready-for-dev — the TERMINOLOGY GATE, plus
+#             /glossary, /about and the project's FIRST WCAG 1.4.13 surface. app/ + locales only.
+#             THE AUDIT INVERTED THE STORY'S SHAPE: ten stories shipped ~417 locale leaves under the
+#             honour system and NOTHING in the build chain has ever compared a shipped Spanish string
+#             to the EXPERIENCE.md policy table. Three rows are VIOLATED — "Córners" (forbidden
+#             register, contradicting the SEVEN sibling viz.setPlays keys in the same section),
+#             row 38's possession vocabulary (2.10 shipped the form the table logs as REJECTED), and
+#             row 21's momentum tooltip, whose ruled text is FACTUALLY FALSE for a series 1.8 proved
+#             is final-third entries per minute. Eight rows have no surface yet, so AC 1's
+#             "implemented verbatim" is RULED discharged in the GLOSSARY rather than by minting dead
+#             viz.*/enums.* keys — es.ts's own docblock reserves those namespaces for PER-SURFACE
+#             stories and the 2.9 review already patched five dead keys. The objection that
+#             result-letters and the "CARR. ALTA VEL." abbreviation are scaffolding the AC names by
+#             category is RECORDED so review can overturn it cheaply.
+#             FOUR RULINGS BY JUAN. (1) The /about methodology note ships a TWO-SENTENCE honest form,
+#             not the AC's clause: FD-1 records that per-shot xG does not exist in the source at all
+#             (team totals only), so "used as-is" alone is true of the totals and misleading about
+#             per-shot values — the first time FD-1 becomes user-visible copy, and the reason the
+#             uniform marker size stops being unexplained. (2) step-in -> irrupción is FINAL:
+#             `stepIns` is a REQUIRED member of PlayerInPossession printed as "Step Ins" between
+#             "Take Ons" and "Attempts at Goal", so "salto" is affirmatively contradicted and
+#             "conducción interior" invents a direction the PMSR never prints. The PMSR has NO
+#             glossary page — 0 hits across all 52 pages — so "verified against the PMSR definitions"
+#             means page placement and reconciliation arithmetic, and the story says so rather than
+#             pretending. (3) All four remediation items taken. (4) 2.18 TAKES THE PER-SECTION ERROR
+#             BOUNDARY — the whole-layer blast radius is now filed FIVE times (2.8, 2.6, 2.9, 1.14,
+#             2.10) and routed every time to "whichever story next touches TacticalSection", which
+#             widening `title` makes this story.
+#             VALIDATED BY THREE FRESH-CONTEXT SUBAGENTS, and the pass changed the build four times
+#             at decision level. (a) THE RADIX CONFIGURATION IN THE FIRST DRAFT SHIPPED AC 2 BROKEN:
+#             traced through react-popover and react-focus-scope, a PORTALLED non-modal popover with
+#             onOpenAutoFocus prevented puts the panel at the end of <body>, so Tab from an inline
+#             trigger never reaches the "Ver en el glosario" link — and that same Tab fires a focusin
+#             outside the layer, which DismissableLayer treats as a DISMISSAL. The Tab meant to reach
+#             the link closes the popover. onCloseAutoFocus was unspecified and its default calls
+#             triggerRef.focus() on EVERY close, so a hover-opened popover timing out would steal a
+#             keyboard user's focus. Now: no portal, onCloseAutoFocus pinned, the trigger's
+#             unconditional click toggle intercepted, and Popover.Title asChild (a plain span gives
+#             role="dialog" with NO accessible name; the default emits an <h2> into a match route).
+#             (b) DECISION 6's "mechanically safe" WAS FALSE FOR NINE OF ELEVEN SECTIONS: {title}
+#             renders inside the accordion <button> for every collapsible section and nine of eleven
+#             are collapsible AT EVERY WIDTH, so marking those headings would nest a focusable
+#             popover trigger inside a button and a click on the term would toggle the section.
+#             Ruled: heading-mark only key-stats and momentum (the two never-collapsible, and the
+#             ledger's own named case), summary-mark the other nine. That partition makes "once per
+#             section" true BY CONSTRUCTION, so the marking context the draft invented was deleted
+#             along with its new-Context exemption. (c) ROW 38 IS NOT SIX IDENTICAL LEAVES: only two
+#             carry the bare "Con balón"/"Sin balón"; the other four are compound metric labels, and
+#             the drafted "repoint the six" would have turned "Altura de la línea con balón" into
+#             "En posesión". The six exact replacements are now written out and en.ts needs no edit.
+#             (d) THREE TASKS WOULD HAVE BROKEN THE BUILD: adding `value` to the shared gated-prop
+#             regex fails on SiteHeader's two ToggleGroupItem state tokens; the drafted
+#             enums.metric/KEY_STAT_UNIT route for the AD-7 unit fix turns i18n.test.ts red
+#             (topSpeed is not in KEY_STAT_FIELDS) and needs a do-not-touch file; and both
+#             viz.momentum copy holes need two do-not-touch components, so that task became a filing.
+#             Also corrected: fetchArtifact DOES have callers and is the runtime path (the draft
+#             claimed the opposite); the two flagship ledger grep anchors returned ZERO hits because
+#             the file hard-wraps mid-phrase; a puerta is not zero (it hides inside "en propia
+#             puerta", so the new register sweep is red until the fix lands); and the
+#             matches/static-output.test.ts remedy the draft proposed was already shipped. Nine
+#             user-visible sentences the draft left to the dev are now ruled verbatim in both
+#             locales. RECORDED OBJECTION, unresolved: one reviewer rated the error boundary and the
+#             ESLint gate closure hidden scope no AC requires and recommended cutting both — kept on
+#             Juan's ruling, with a live boundary proof as the mitigation.
+#             COORDINATION CHANGED DURING CREATION: baseline moved 163fa20 -> 892766c because STORY
+#             2.10 LANDED MID-WRITE, so the tree is clean and every "expect to rebase onto 2.10"
+#             clause was removed — but a 2.11 session appeared with THREE untracked context files
+#             (2.11 splitting into 2-11a/2-11b) whose first app/ targets will be the same three files
+#             this story rewrites more of than any story so far. Append-only discipline stands and an
+#             explicit ABORT RULE was added: if 2.11 starts writing the locale files, stop before the
+#             remediation task, which changes existing values rather than appending.
+# 2026-08-04: epic story 2.11 SPLIT THREE WAYS at story creation, ruled by Juan; 2-11a created and
+#             moved to ready-for-dev. epics.md is NOT edited — AC 2 becomes 2.11a, AC 1's per-player
+#             half plus AC 3 become 2.11b, AC 1's log clause becomes 2.11c. Reason: the combined
+#             story measured ~30 files, ~200 new locale strings and TWENTY table retrofits in one
+#             commit, against FIVE files a concurrent 2-10 session is actively editing, in a harness
+#             with NO jsdom where nothing rendered can be unit-tested. Two independent validators
+#             called it three stories.
+#             THE SHELL DOES NOT EXIST, which the epic's AC assumes it does. AC 1 opens "Given the
+#             Expert Layer shell (#expert, EXPERTO/EXPERT pill)" — there is no ExpertLayer, no
+#             #expert section, no pill, ZERO `experto` keys in either locale, and
+#             tactical-sections.test.ts actively asserts sectionDataState THROWS on "expert". 2.11b
+#             builds the third layer of the Match Dashboard from nothing; it is a SIBLING of
+#             TacticalLayer, never a twelfth SectionId.
+#             THE RETROFIT SURFACE IS TEN FILES / TWENTY TABLES, not the three the brief named and
+#             not the nine a first draft counted (its own enumeration summed to ten). Six committed
+#             files carry ten instances; 2-10 is AUTHORING FOUR MORE private DataTable copies with
+#             ten more instances, and its story file lists "the private DataTable copies" under Do
+#             not "fix" — so the debt this story exists to retire is growing while it is written.
+#             2.11a re-counts at Task 1.2 and re-files whatever it cannot reach.
+#             TWO OF THE FIVE LEDGER-ROUTED ITEMS CAME BACK WRONG when checked against code rather
+#             than trusted. (a) CrossLogRow ALREADY uses `?? null`; DefensiveLogRow was fixed by
+#             2.9's review with a docblock naming 2.11 as owner — only ShotLogRow still carries the
+#             `?? 0`, so the ledger's "cross-map-model.ts does the same" is stale. (b) The defensive
+#             log's absent columns are REMOVED, not em dashes: 2.9 extended the FD-1 gate to all
+#             three of anyContestType / anyPlayerName / anyMinute.
+#             THE RECEIVING LOG IS NOT "UNBUILDABLE" AND THAT WORD IS RETIRED. The fixtures ship 270
+#             receiving events with ALL EIGHT fields non-null on 270/270 rows, so all four of
+#             EXPERIENCE.md:221's columns have a source in the data the app renders TODAY. True of
+#             the corpus, false of the build. Juan RULED the symmetric answer the first draft missed:
+#             build it behind `anyReceivingEvents`, exactly as showXg and the three defensive gates
+#             work — renders on fixtures, self-removes on corpus, AC satisfied by construction with
+#             no re-scope and no waiver. (1.13 enumerates SEVEN unfulfillable fields, not the
+#             ledger's eight; teamId is derivable.)
+#             THE STICKY-HEADER AC IS UNIMPLEMENTABLE WHERE IT WAS ASKED FOR, and would have shipped
+#             green and silently dead. ViewDataDisclosure's region is `overflow-x-auto` with NO
+#             height bound; CSS forces overflow-y to auto, so it is the sticky ancestor AND never
+#             scrolls vertically — position:sticky never offsets. 2.11a ships non-sticky headers with
+#             the departure FILED; 2.11b introduces a bounded container where they work. Related and
+#             measured: DESIGN's data-table.header-background token is a 1.00:1 NO-OP, because
+#             --surface-raised and --card are BYTE-IDENTICAL in both themes.
+#             ONE MORE RULING AND ONE WITHDRAWN. Juan ruled the Expert Layer gets its OWN sibling
+#             error boundary (additive, discharging half the carry-forward blast radius) — but the
+#             shipped boundary's copy says "el análisis táctico", a FALSE statement over an Expert
+#             crash, so 2.11b parameterises it with defaults that keep the Tactical mount
+#             byte-identical. Withdrawn: a drafted "declared departure" to active-locale collation —
+#             compareText's default IS 'es', so calling it with two arguments satisfies UX-DR12
+#             verbatim and no departure was ever needed. Measured: es and en orders are IDENTICAL on
+#             all 96 fixture names (0/9,216 pairs), so the choice is provable only in a unit test.
+#             ALSO CORRECTED AT VALIDATION: a --viz-team-a light contrast figure (7.08 was
+#             --accent-lime; the real value is 4.99), the test baseline (462/19 committed), the
+#             plug-in-point census (4 + 3 = 7 across FOUR filing stories), a `grep expert` premise
+#             that would have tripped a stop-work gate, and a Task-8.6 delete recipe that would have
+#             stripped live ShotOutcomeDetail docblocks belonging to 2.13/2.18. Three misquotes fixed.
+#             FILED, NOT FIXED: the three fixtures violate the shipped `domain-g-zone-sum` pipeline
+#             check on 79 of 96 player rows (worst 4.400 m) against a corpus-verified worst of
+#             0.200 m over 3,289 rows — the fixtures are not corpus-faithful for Domain G physical
+#             data. Also filed: the mobile mockup carries a complete Expert Layer block (pill CSS,
+#             ruled <h2> copy, hairline separator) that no draft had consulted.
+#             VALIDATED BY THREE FRESH-CONTEXT SUBAGENTS before ready-for-dev.
 # 2026-08-03: story 2-10 context created and moved to ready-for-dev — the LAST four Tactical
 #             sections (#phases, #pressing, #set-plays, #goalkeeping) and the four remaining
 #             PendingSectionPanel fall-throughs, so 2.10 CLOSES the Tactical Layer at eleven of
@@ -1868,15 +2062,19 @@ development_status:
   2-7-pitch-panel-infrastructure-with-shot-cross-maps: done
   2-8-pass-network-visualization: done
   2-9-receiving-defensive-action-maps-heatmap-decision: done
-  2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: review
-  2-11-expert-layer-per-player-tables-event-logs: backlog
+  2-10-phases-pressing-blocks-set-plays-goalkeeping-sections: done
+  # Epic story 2.11 is SPLIT three ways (ruled by Juan 2026-08-04 at story creation) — see the
+  # 2026-08-04 note above. 2.11b depends on 2.11a; 2.11c depends on both. epics.md is NOT edited.
+  2-11a-sortable-data-table-contract: review
+  2-11b-expert-layer-per-player-tables: backlog
+  2-11c-expert-layer-event-logs: backlog
   2-12-tournament-hub-results-standings: backlog
   2-13-tournament-leaderboards: backlog
   2-14-header-search: backlog
   2-15-player-profile: backlog
   2-16-team-profile: backlog
   2-17-comparison-mode: backlog
-  2-18-glossary-about-terminology-completion: backlog
+  2-18-glossary-about-terminology-completion: in-progress
   # Requires committed real /data from 1-19
   2-19-performance-accessibility-hardening-real-data-swap-launch: backlog
   epic-2-retrospective: optional

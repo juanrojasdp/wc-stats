@@ -133,7 +133,14 @@ export interface MomentumGoalMarker {
 
 /** One data-table row. RAW values only — never `awayPlotted` (decision 6). */
 export interface MomentumTableRow {
-  key: number;
+  /*
+   * A STRING key, `momentum-row-${index}`, on the `shot-row-${index}` /
+   * `defensive-row-${index}` precedent — every other row model in src/viz/ uses
+   * one. Unified by Story 2.11a (decision 6): the shared sortable table stamps
+   * `data-row-key` on every `<tr>` so a sort can restore focus into the row that
+   * had it, and that key must be one type across all twenty tables.
+   */
+  key: string;
   /** The raw stamp; the component formats it. No `?? 0` defaulting here — see below. */
   at: MinuteStamp;
   home: number;
@@ -412,11 +419,9 @@ export function goalMarkerHitHalfWidths(
  * required and `momentumRows` has already thrown if it is unreadable, so there
  * is nothing here to default.
  *
- * Ships PLAIN, not sortable (decision 14). ==> 2.11 PLUG-IN POINT: the
- * `aria-sort` contract attaches to the `<th>` elements in MomentumSection's
- * private DataTable and sorts THIS row array. One cross-table contract, built
- * once in 2.11 — a bespoke second copy is what 2.11 would then have to
- * reconcile. UX-DR16/NFR-2's floor is met in full today.
+ * SORTABLE as of Story 2.11a: the shared `components/DataTable` sorts this row
+ * array through the one cross-table contract in `lib/table-sort.ts`. The clock
+ * column sorts on the raw `at` stamp, never on the rendered "45+2′" label.
  */
 export function momentumTableRows(
   rows: readonly MomentumRow[],
@@ -424,7 +429,7 @@ export function momentumTableRows(
 ): MomentumTableRow[] {
   const goalIndices = new Set(markers.map((marker) => marker.index));
   return rows.map((row) => ({
-    key: row.index,
+    key: `momentum-row-${row.index}`,
     at: row.at,
     home: row.home,
     away: row.away,

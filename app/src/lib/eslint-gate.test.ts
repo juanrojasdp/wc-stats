@@ -216,6 +216,129 @@ describe("client-import seam bars direct t() from src/components", () => {
   });
 });
 
+/*
+ * STORY 2.18 ruled decision 8 — the object-shaped-prop hole. The original three
+ * selectors match a Literal/TemplateLiteral that is a DIRECT CHILD of the
+ * JSXExpressionContainer, so recharts' `label={{ value: "…" }}` slipped
+ * through, and `<Label value="…" />` was never gated at all. Filed by Story 2.6
+ * in a story file and never promoted to the ledger; closed here.
+ *
+ * Each fixture below pins one half of the closure AND the thing that half must
+ * NOT break — the obvious fix (adding `value` to the shared name regex) fails
+ * the build on SiteHeader's two Radix state tokens.
+ */
+describe("i18n gate reaches object-shaped and recharts props (Story 2.18)", () => {
+  it("catches a string literal inside an object-shaped label prop", async () => {
+    const errors = await gateErrorsFor(
+      `export function P() { return <YAxis label={{ value: "hardcoded" }} />; }`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("catches a template literal inside an object-shaped label prop", async () => {
+    const errors = await gateErrorsFor(
+      "export function P() { return <YAxis label={{ value: `hardcoded` }} />; }"
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("leaves NUMERIC members of an object-shaped label alone", async () => {
+    /*
+     * The reason the selector is constrained by `raw` rather than matching any
+     * Literal: ESTree Literal includes numbers, and both shipped charts pass
+     * angle/position/offset numerics inside label={{…}}. A naive descendant
+     * combinator flags correct code on the first chart it meets.
+     */
+    const errors = await gateErrorsFor(
+      `import { t } from "@/lib/i18n";
+       export function P() {
+         return <YAxis label={{ value: t("app.siteName"), angle: -90, offset: 5, position: "insideLeft" }} />;
+       }`
+    );
+    expect(errors).toEqual([]);
+  });
+
+  it("catches a bare string on recharts' <Label value>", async () => {
+    const errors = await gateErrorsFor(
+      `export function P() { return <Label value="hardcoded" />; }`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("catches a bare string on <LabelList value>", async () => {
+    const errors = await gateErrorsFor(
+      `export function P() { return <LabelList value="hardcoded" />; }`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("leaves a t()-valued <Label value> alone", async () => {
+    const errors = await gateErrorsFor(
+      `import { t } from "@/lib/i18n";
+       export function P() { return <Label value={t("app.siteName")} />; }`
+    );
+    expect(errors).toEqual([]);
+  });
+
+  it("keeps SiteHeader's ToggleGroupItem state tokens LEGAL", async () => {
+    /*
+     * The whole reason `value` is reached by ELEMENT and not by name. These two
+     * are Radix state tokens, not copy; adding `value` to the shared sixteen-name
+     * regex fails `eslint --max-warnings 0` on this exact shape.
+     */
+    const errors = await gateErrorsFor(
+      `export function P() {
+         return (
+           <ToggleGroup>
+             <ToggleGroupItem value="es" />
+             <ToggleGroupItem value="en" />
+           </ToggleGroup>
+         );
+       }`
+    );
+    expect(errors).toEqual([]);
+  });
+});
+
+/*
+ * STORY 2.18 decision 6 widened TacticalSection's `title`/`summary` to
+ * ReactNode so a glossary term can be marked inside them. These three pin that
+ * the widening did not open a bypass: a node built from t() calls is legal, a
+ * node carrying a literal is not, and the pre-existing ternary selector still
+ * reaches inside a `title={…}` node — so a future author who inlines a
+ * conditional string into a marked title gets the gate, not an opaque failure.
+ */
+describe("the ReactNode title widening stays gated (Story 2.18)", () => {
+  it("allows a node built entirely from t() calls", async () => {
+    const errors = await gateErrorsFor(
+      `import { t } from "@/lib/i18n";
+       export function P({ C }: { C: (p: { title: React.ReactNode }) => JSX.Element }) {
+         return <C title={<span>{t("app.siteName")}</span>} />;
+       }`
+    );
+    expect(errors).toEqual([]);
+  });
+
+  it("still catches a literal inside a node-valued title", async () => {
+    const errors = await gateErrorsFor(
+      `export function P({ C }: { C: (p: { title: React.ReactNode }) => JSX.Element }) {
+         return <C title={<span>literal</span>} />;
+       }`
+    );
+    expect(errors).toContain("react/jsx-no-literals");
+  });
+
+  it("still catches a ternary-with-literal inside a title", async () => {
+    const errors = await gateErrorsFor(
+      `import { t } from "@/lib/i18n";
+       export function P({ on }: { on: boolean }) {
+         return <C title={on ? t("app.siteName") : "hardcoded"} />;
+       }`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+});
+
 describe("i18n gate keeps legal patterns legal", () => {
   it("t() everywhere, className and data-* strings", async () => {
     const errors = await gateErrorsFor(

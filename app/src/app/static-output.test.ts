@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { GLOSSARY_TERMS } from "@/lib/glossary";
 import { es } from "@/locales/es";
 
 /*
@@ -17,6 +18,9 @@ import { es } from "@/locales/es";
 const OUT_DIR = fileURLToPath(new URL("../../out/", import.meta.url));
 const INDEX_HTML = OUT_DIR + "index.html";
 const NOT_FOUND_HTML = OUT_DIR + "404.html";
+// trailingSlash: true → out/<route>/index.html.
+const ABOUT_HTML = OUT_DIR + "about/index.html";
+const GLOSSARY_HTML = OUT_DIR + "glossary/index.html";
 const anyBuilt = existsSync(INDEX_HTML) || existsSync(NOT_FOUND_HTML);
 
 describe.skipIf(!anyBuilt)("exported 404.html (AC 4)", () => {
@@ -60,5 +64,87 @@ describe.skipIf(!anyBuilt)("exported index.html canonical markup (AC 2)", () => 
     const at = html.indexOf(executables[0][0]);
     expect(at).toBeGreaterThan(html.indexOf("<body"));
     expect(at).toBeLessThan(html.indexOf("<header"));
+  });
+});
+
+/*
+ * STORY 2.18 Task 9.6 — the two routes this story owns. On the house pattern:
+ * skipped only when NO build ran, asserting against the DICTIONARY OBJECT
+ * rather than against the components under test, and failing loudly on a
+ * partial export rather than skipping.
+ */
+describe.skipIf(!anyBuilt)("exported /glossary (AC 2)", () => {
+  it("was exported at all — a build that skipped it fails here, it does not skip", () => {
+    expect(existsSync(GLOSSARY_HTML), "out/glossary/index.html missing").toBe(true);
+  });
+
+  it("renders every glossary term, Spanish canonical, with its #term anchor", () => {
+    const html = readFileSync(GLOSSARY_HTML, "utf8");
+    expect(html).toContain(es.glossaryPage.title);
+    for (const id of GLOSSARY_TERMS) {
+      // The anchor is a language-neutral English slug (ruled decision 11), so
+      // one id works from both locales and survives an amended Spanish term.
+      expect(html, `missing anchor for ${id}`).toContain(`id="${id}"`);
+      // Both languages render SIMULTANEOUSLY (AC 2), not just the active one.
+      expect(html, `missing es term for ${id}`).toContain(es.glossary[id].es);
+      expect(html, `missing en term for ${id}`).toContain(es.glossary[id].en);
+    }
+  });
+
+  it("says once, on the page, that the definitions are authored rather than transcribed", () => {
+    // The PMSR prints no glossary and no definition of any term. Claiming
+    // otherwise on this page would be the dishonesty the story exists against.
+    expect(readFileSync(GLOSSARY_HTML, "utf8")).toContain(es.glossaryPage.authoredNote);
+  });
+
+  it("is a real definition list and adds no landmark", () => {
+    const html = readFileSync(GLOSSARY_HTML, "utf8");
+    expect(html).toContain("<dl");
+    expect(html).toContain("<dt");
+    expect(html).toContain("<dd");
+    // 22 landmarks for 11 sections was an axe failure once already.
+    expect(html).not.toContain('role="region"');
+  });
+});
+
+describe.skipIf(!anyBuilt)("exported /about (AC 3)", () => {
+  it("was exported at all — a build that skipped it fails here, it does not skip", () => {
+    expect(existsSync(ABOUT_HTML), "out/about/index.html missing").toBe(true);
+  });
+
+  it("carries the full attribution, the methodology note and the credits", () => {
+    const html = readFileSync(ABOUT_HTML, "utf8");
+    expect(html).toContain(es.about.title);
+    // The attribution is the ALREADY-RULED string, split at its sentence
+    // boundary in the component — never a second copy minted in a new key.
+    const [dataSentence, independence] = es.chrome.footer.attribution.split(". ");
+    expect(html).toContain(dataSentence);
+    expect(html).toContain(independence);
+    expect(html).toContain(es.about.methodology);
+    expect(html).toContain(es.about.credits);
+    expect(html).toContain(es.about.project);
+  });
+
+  it("states the per-shot xG absence, not just 'used as-is' (FD-1, decision 1)", () => {
+    /*
+     * The AC's own parenthetical is MISLEADING: per-shot xG does not exist in
+     * the source PDFs at all (team totals only), which is why every shot marker
+     * is drawn at the same size. This is the page whose purpose is to explain
+     * the data honestly, so the absence must be on it.
+     */
+    expect(readFileSync(ABOUT_HTML, "utf8")).toContain("no hay un valor por remate");
+  });
+});
+
+describe.skipIf(!anyBuilt)("the footer reaches both /about and /glossary on every route (AC 3)", () => {
+  it("links both from the site chrome, on an unrelated route", () => {
+    // EXPERIENCE.md's IA route table names the footer as /glossary's reach
+    // path; DESIGN.md's footer bullet mentions only /about and is stale (filed).
+    // trailingSlash: true, so Next rewrites both hrefs — asserting the
+    // slash-less form passes on a document that links nowhere.
+    const html = readFileSync(INDEX_HTML, "utf8");
+    expect(html).toContain('href="/about/"');
+    expect(html).toContain('href="/glossary/"');
+    expect(html).toContain(es.chrome.footer.glossaryLink);
   });
 });

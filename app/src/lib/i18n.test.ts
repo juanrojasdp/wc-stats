@@ -3,8 +3,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { en } from "@/locales/en";
 import { es } from "@/locales/es";
 import type { PossessionContestType } from "@/lib/contract/contract-types";
+import {
+  GLOSSARY_TERMS,
+  glossaryDefinitionKey,
+  glossaryTermEnKey,
+  glossaryTermEsKey,
+} from "@/lib/glossary";
 import { t, type Locale } from "@/lib/i18n";
-import { KEY_STAT_FIELDS, sectionTitleKey } from "@/lib/tactical-sections";
+import {
+  COLLAPSIBLE_SECTION_IDS,
+  KEY_STAT_FIELDS,
+  SECTION_IDS,
+  sectionSummaryKey,
+  sectionTitleKey,
+} from "@/lib/tactical-sections";
 import { CROSS_DELIVERY_TYPES, crossDeliveryKey } from "@/viz/cross-map-model";
 import {
   DEFENSIVE_ACTION_TYPES,
@@ -525,6 +537,399 @@ describe("the receiving empty-state override (ruled decision 4)", () => {
   it("names the per-player data rather than the section", () => {
     expect(es.tactical.empty.receivingExplanation).toMatch(/jugador/);
     expect(en.tactical.empty.receivingExplanation).toMatch(/per-player/);
+  });
+});
+
+describe("the sortable data-table keys (Story 2.11a, UX-DR12)", () => {
+  /*
+   * Every key the shared DataTable and its announcer resolve, in BOTH locales,
+   * on the shipped template. The harness has no jsdom, so this is the only
+   * place the sort surface's strings can be proved to exist at all.
+   */
+  const SORT_KEYS = [
+    "viz.table.sortAction",
+    "viz.table.sortedBy",
+    "viz.table.sortAscending",
+    "viz.table.sortDescending",
+    "viz.table.sortCleared",
+  ] as const;
+
+  it("resolves in both locales", () => {
+    for (const locale of ["es", "en"] as Locale[]) {
+      for (const key of SORT_KEYS) {
+        const value = t(key, locale);
+        expect(value, `${key} (${locale})`).not.toBe("");
+        // t() returns the key itself when a leaf is missing.
+        expect(value, `${key} (${locale})`).not.toBe(key);
+      }
+    }
+  });
+
+  it("keeps the two direction words distinct in both locales", () => {
+    for (const locale of ["es", "en"] as Locale[]) {
+      expect(t("viz.table.sortAscending", locale)).not.toBe(
+        t("viz.table.sortDescending", locale)
+      );
+    }
+  });
+
+  it("composes an accessible name that CONTAINS the visible head text", () => {
+    /*
+     * WCAG 2.5.3 Label in Name: the header button's visible text is the column
+     * head, and its accessible name is `${sortAction} ${headText}`. This pins
+     * the composition order — a name of "Minuto Ordenar por" would still
+     * contain the head but reads as broken Spanish, and a name that REPLACED
+     * the head would break 2.5.3 outright.
+     */
+    const headText = es.viz.table.minute;
+    const accessibleName = `${es.viz.table.sortAction} ${headText}`;
+    expect(accessibleName).toBe("Ordenar por Minuto");
+    expect(accessibleName).toContain(headText);
+    expect(accessibleName.startsWith(es.viz.table.sortAction)).toBe(true);
+  });
+
+  it("states the cleared order as a sentence naming no column (decision 5)", () => {
+    // The third state of the cycle is "no column active", so the announcement
+    // cannot name one. It must still be a complete sentence.
+    for (const dictionary of [es, en]) {
+      expect(dictionary.viz.table.sortCleared.endsWith(".")).toBe(true);
+    }
+    expect(es.viz.table.sortCleared).not.toContain(es.viz.table.sortedBy);
+  });
+});
+
+/*
+ * ==================== STORY 2.18 — THE TERMINOLOGY GATE ====================
+ *
+ * THE GUARDS THAT MAKE THIS STORY STICK. Ten stories shipped ~417 locale leaves
+ * ahead of 2.18 under the honour system, and NOTHING in the build chain had ever
+ * compared a shipped Spanish string to EXPERIENCE.md's per-term policy table.
+ * The audit that opened this story found one hard register violation, one
+ * peninsular survivor and two policy rows the shipped app contradicted. These
+ * suites are what stop the next story re-breaking any of it.
+ */
+
+/** Every string leaf of a dictionary, as `dot.path` → value pairs. */
+function stringLeaves(node: unknown, prefix = ""): [string, string][] {
+  if (typeof node === "string") {
+    return [[prefix, node]];
+  }
+  if (typeof node === "object" && node !== null) {
+    return Object.entries(node).flatMap(([key, value]) =>
+      stringLeaves(value, prefix ? `${prefix}.${key}` : key)
+    );
+  }
+  throw new Error(`unexpected dictionary leaf at "${prefix}"`);
+}
+
+describe("key-builder resolution sweep (Story 2.18 Task 9.1a)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  /*
+   * THIS IS WHAT DISCHARGES AC 1's "no raw-key fallthrough", and it is a
+   * different risk from the leaf-level sweeps below. Every key builder in the
+   * repo ends in `as DictionaryKey`, because DictionaryKey is a literal union
+   * and a template-literal expression infers `string`. The cast silences the
+   * compiler — so a builder pointing at a path that DOES NOT EXIST is invisible
+   * to tsc, and no sweep over the dictionary's own leaves can see it either:
+   * the leaves are all fine, it is the ADDRESS that is wrong. Only resolving
+   * every builder over its full id domain catches it.
+   *
+   * t() throws on an unresolvable key outside production, so a bad cast fails
+   * here loudly rather than rendering a raw dot path to a reader.
+   */
+  it("resolves every glossary key builder over every term, in both locales", () => {
+    expect(GLOSSARY_TERMS.length).toBeGreaterThan(0);
+    for (const id of GLOSSARY_TERMS) {
+      for (const locale of locales) {
+        for (const key of [
+          glossaryTermEsKey(id),
+          glossaryTermEnKey(id),
+          glossaryDefinitionKey(id),
+        ]) {
+          const value = t(key, locale);
+          expect(value, `${key} in ${locale}`).not.toBe("");
+          expect(value, `${key} in ${locale}`).not.toBe(key);
+          expect(value, `${key} in ${locale}`).not.toContain("glossary.");
+        }
+      }
+    }
+  });
+
+  it("resolves every section title and summary key, in both locales", () => {
+    for (const locale of locales) {
+      for (const id of SECTION_IDS) {
+        const value = t(sectionTitleKey(id), locale);
+        expect(value, `${id} title in ${locale}`).not.toBe("");
+        expect(value, `${id} title in ${locale}`).not.toContain("tactical.sections");
+      }
+      for (const id of COLLAPSIBLE_SECTION_IDS) {
+        const value = t(sectionSummaryKey(id), locale);
+        expect(value, `${id} summary in ${locale}`).not.toBe("");
+        expect(value, `${id} summary in ${locale}`).not.toContain("tactical.sections");
+      }
+    }
+  });
+});
+
+describe("forbidden-register sweep (Story 2.18 Task 9.1b)", () => {
+  /*
+   * Walks the EXPORTED es OBJECT's string leaves, never the file text.
+   * Comments legitimately name the forbidden forms in order to reject them —
+   * es.ts's own enums docblock contains "balón parado · tiro de esquina ·
+   * arquero · atajada" — so a text-level grep would be red on correct code.
+   *
+   * Case-insensitive because the live violation was a capital-C "Córners".
+   * Note "a puerta" was never a standalone hit: it hid inside
+   * viz.momentum.ownGoal's "en propia puerta", which is why this sweep could
+   * only go green after Task 8.2.
+   */
+  const FORBIDDEN =
+    /portero|parada|a puerta|fuera de juego|clasificaci|chute|córner|vosotros|usted|[¡!]/i;
+
+  /*
+   * The glossary DEFINITIONS are exempt, and the exemption is the point rather
+   * than a loophole: they legitimately name rejected and peninsular forms in
+   * order to explain them. Row 30 ("córner is the form the site does not use"),
+   * row 31 ("fuera de juego is the peninsular form") and the shot-outcome row's
+   * rejected "a puerta" all appear there on purpose. The `es`/`en` TERM leaves
+   * are NOT exempt.
+   */
+  const isExempt = (path: string) => /^glossary\.[^.]+\.definition$/.test(path);
+
+  it("finds no forbidden register in any non-exempt es leaf", () => {
+    const offenders = stringLeaves(es)
+      .filter(([path]) => !isExempt(path))
+      .filter(([, value]) => FORBIDDEN.test(value))
+      .map(([path, value]) => `${path} = ${JSON.stringify(value)}`);
+    expect(offenders).toEqual([]);
+  });
+
+  it("keeps the exemption honest — the definitions really do carry the rejected forms", () => {
+    // A vacuous exemption is worse than none: if these ever stop matching, the
+    // exemption is dead weight and should be deleted rather than kept.
+    expect(es.glossary.corner.definition).toMatch(/córner/i);
+    expect(es.glossary.offside.definition).toMatch(/fuera de juego/i);
+    expect(es.glossary["on-target"].definition).toMatch(/a puerta/i);
+  });
+
+  it("does NOT flag 'balón parado' — parado is not parada", () => {
+    expect(FORBIDDEN.test(es.tactical.sections["set-plays"].title)).toBe(false);
+    expect(FORBIDDEN.test(es.viz.setPlays.figurePrefix)).toBe(false);
+    expect(es.tactical.sections["set-plays"].title).toBe("Balón parado");
+  });
+});
+
+describe("ruled-term pins (Story 2.18 Task 9.1c)", () => {
+  /*
+   * Six pins, each a policy row a prior story broke or nearly broke. Nothing
+   * else in the build chain enforces a single ruled string.
+   */
+  it("row 30 — the set-plays summary uses tiro de esquina, not córner or laterales", () => {
+    const summary = es.tactical.sections["set-plays"].summary;
+    expect(summary).toContain("iro");
+    expect(summary).toContain("esquina");
+    expect(summary).not.toContain("órner");
+    expect(summary).not.toContain("laterales");
+  });
+
+  it("row 30 — viz.setPlays.corners is the ruled plural", () => {
+    expect(es.viz.setPlays.corners).toBe("Tiros de esquina");
+  });
+
+  it("row 38 — the possession vocabulary is the RULED form, not the rejected one", () => {
+    expect(es.viz.phases.inPossession).toBe("En posesión");
+    expect(es.viz.phases.outOfPossession).toBe("Sin posesión");
+    // The four compound metric labels keep their metric name (decision 4).
+    expect(es.viz.pressing.metre.lineHeight.inPossession).toBe("Altura de la línea en posesión");
+    expect(es.viz.pressing.metre.teamLength.outOfPossession).toBe(
+      "Longitud del equipo sin posesión"
+    );
+  });
+
+  it("the peninsular goal-frame noun is gone — the app says arco, never puerta", () => {
+    expect(es.viz.momentum.ownGoal).not.toContain("puerta");
+    expect(es.viz.momentum.ownGoal).toBe("en contra");
+  });
+
+  it("rows 3 and 23 — the ruled section labels are byte-exact", () => {
+    expect(es.tactical.sections.pressing.title).toBe("Presión y bloques defensivos");
+    expect(es.tactical.sections.goalkeeping.title).toBe("Arqueros");
+  });
+
+  it("decision 1 — /about and the glossary make ONE xG claim, not two", () => {
+    /*
+     * FD-1: per-shot xG does not exist in the source PDFs at all (team totals
+     * only), which is why every marker is drawn at the same size. Both surfaces
+     * must say so; a reader who finds them disagreeing learns nothing.
+     */
+    for (const dictionary of [es, en]) {
+      expect(dictionary.about.methodology).toMatch(/xG/);
+      expect(dictionary.glossary.xg.definition).toMatch(/xG|Expected goals|Goles esperados/);
+    }
+    expect(es.about.methodology).toContain("no hay un valor por remate");
+    expect(es.glossary.xg.definition).toContain("no un valor por remate");
+    expect(en.about.methodology).toContain("there is no per-shot value");
+    expect(en.glossary.xg.definition).toContain("not a per-shot value");
+  });
+
+  it("decision 5 — the momentum gloss refuses the dominance reading", () => {
+    // Story 1.8 closed OQ-5: the series is final-third entries per minute. The
+    // policy table's original tooltip ("qué equipo domina en cada tramo") was
+    // factually false, and viz.momentum's docblock forbids implying it.
+    expect(es.glossary.momentum.definition).toContain("no mide dominio");
+    expect(en.glossary.momentum.definition).toContain("does not measure dominance");
+    expect(es.glossary.momentum.definition).not.toContain("impulso");
+  });
+
+  it("decision 3 — the offers/movements relationship ships in the SECTION, not only the glossary", () => {
+    // A glossary popover is a hover-away affordance; the summary is what the
+    // collapsed shell, the anchor and the panelTitle all show.
+    expect(es.tactical.sections["movement-to-receive"].summary).toContain("ofrecimientos");
+    expect(en.tactical.sections["movement-to-receive"].summary).toContain("offers");
+  });
+
+  it("Task 8.10 — the Hero tile labels no longer bake in their unit (AD-7)", () => {
+    for (const dictionary of [es, en]) {
+      expect(dictionary.match.hero.tiles.distance).not.toContain("(");
+      expect(dictionary.match.hero.tiles.topSpeed).not.toContain("(");
+    }
+    expect(t("enums.unit.kmh", "es")).toBe("km/h");
+    expect(t("enums.unit.kmh", "en")).toBe("km/h");
+  });
+
+  it("Task 8.9 — one delivery shape has ONE name per language", () => {
+    expect(en.enums.cornerDeliveryStyle.inswing).toBe(en.enums.crossDelivery.inswing);
+    expect(en.enums.cornerDeliveryStyle.outswing).toBe(en.enums.crossDelivery.outswing);
+    expect(es.enums.cornerDeliveryStyle.inswing).toBe(es.enums.crossDelivery.inswing);
+  });
+});
+
+describe("glossary exhaustiveness (Story 2.18 Task 9.4)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("has exactly one entry per GlossaryTermId, with NO allowance", () => {
+    /*
+     * Exact, in both dictionaries. This is why the /glossary page's chrome
+     * lives in a separate `glossaryPage` namespace: a page-chrome key in here
+     * would have to be exempted by hand, and the first exemption is how an
+     * exhaustiveness assertion stops being one.
+     *
+     * The list is IMPORTED, never hand-copied — the 2.9 review's
+     * PossessionContestType finding: a hand-copied list means a widened union
+     * needs two files edited to be caught, and the loops below simply never
+     * visit the new id.
+     */
+    expect(Object.keys(es.glossary).sort()).toEqual([...GLOSSARY_TERMS].sort());
+    expect(Object.keys(en.glossary).sort()).toEqual([...GLOSSARY_TERMS].sort());
+  });
+
+  it("gives every term a non-empty, non-key label in both locales", () => {
+    for (const id of GLOSSARY_TERMS) {
+      for (const locale of locales) {
+        for (const key of [
+          glossaryTermEsKey(id),
+          glossaryTermEnKey(id),
+          glossaryDefinitionKey(id),
+        ]) {
+          const value = t(key, locale);
+          expect(value.trim(), `${key} in ${locale}`).not.toBe("");
+          expect(value, `${key} in ${locale}`).not.toBe(key);
+        }
+      }
+    }
+  });
+
+  it("keeps the TERM PAIR locale-invariant — only the definition is translated", () => {
+    /*
+     * AC 2 and EXPERIENCE's Component-Patterns rule both require both languages
+     * to render SIMULTANEOUSLY in one locale's page ("salida de balón — en:
+     * build-up"), so es.glossary.<id>.es and en.glossary.<id>.es must hold the
+     * same bytes. Without this pin, a later reader "fixes" the apparently
+     * untranslated en mirror and silently deletes Diego's bridge.
+     */
+    for (const id of GLOSSARY_TERMS) {
+      expect(en.glossary[id].es, `${id}.es`).toBe(es.glossary[id].es);
+      expect(en.glossary[id].en, `${id}.en`).toBe(es.glossary[id].en);
+    }
+  });
+
+  it("actually translates the definitions — no Spanish left in an en leaf", () => {
+    // `en: Dictionary` guards key SHAPE only and would happily accept a Spanish
+    // string in an en leaf, so shape-mirroring proves nothing about content.
+    let differing = 0;
+    for (const id of GLOSSARY_TERMS) {
+      if (en.glossary[id].definition !== es.glossary[id].definition) {
+        differing += 1;
+      }
+    }
+    expect(differing).toBe(GLOSSARY_TERMS.length);
+  });
+
+  it("suppresses the counterpart subtitle exactly where the two terms are identical", () => {
+    // Ruled decision 13. These three are the jargon/tooltip rows; every other
+    // term must differ, or its subtitle would be a tautology.
+    const identical = GLOSSARY_TERMS.filter((id) => es.glossary[id].es === es.glossary[id].en);
+    expect([...identical].sort()).toEqual(["momentum", "sprint", "xg"]);
+  });
+
+  it("resolves the /glossary page chrome in both locales", () => {
+    for (const locale of locales) {
+      for (const key of [
+        "glossaryPage.title",
+        "glossaryPage.intro",
+        "glossaryPage.seeMore",
+        "glossaryPage.jargonNote",
+        "glossaryPage.authoredNote",
+        "glossaryPage.esPrefix",
+        "glossaryPage.enPrefix",
+      ] as const) {
+        const value = t(key, locale);
+        expect(value, `${key} in ${locale}`).not.toBe("");
+        expect(value, `${key} in ${locale}`).not.toBe(key);
+      }
+    }
+    // The language-code prefixes name the OTHER language, so they do not swap.
+    expect(en.glossaryPage.esPrefix).toBe(es.glossaryPage.esPrefix);
+    expect(en.glossaryPage.enPrefix).toBe(es.glossaryPage.enPrefix);
+  });
+
+  it("still mints NO ShotOutcomeDetail namespace (decision 12 — CS-1 has not landed)", () => {
+    // The 2.7 tripwires, re-asserted from this story's side: 2.18 maps the
+    // stable five-value ShotOutcome only, and both must be deleted DELIBERATELY
+    // when detail labels ship.
+    expect(Object.keys(es.enums)).not.toContain("shotOutcomeDetail");
+    expect(Object.keys(es.enums.shotOutcome)).toHaveLength(5);
+  });
+});
+
+describe("the per-section crash copy (Story 2.18 decision 7)", () => {
+  it("does NOT reuse the bundle-level crash strings", () => {
+    /*
+     * match.bundle.crashed names a BUNDLE-level failure ("el análisis táctico
+     * de este partido"). A bundle-wide fault surfacing as "this section" is a
+     * narrower and possibly false claim; a section-level fault claiming the
+     * whole analysis is gone is false the other way.
+     */
+    for (const dictionary of [es, en]) {
+      expect(dictionary.tactical.empty.sectionCrashed).not.toBe(dictionary.match.bundle.crashed);
+      expect(dictionary.tactical.empty.sectionCrashedExplanation).not.toBe(
+        dictionary.match.bundle.crashedExplanation
+      );
+    }
+  });
+
+  it("never claims the REPORT lacks the section (the FR-22 inversion)", () => {
+    // An app-side failure stated as one. The generic empty-state explanation —
+    // "El informe oficial no incluye esta sección." — would be a false
+    // statement over a render crash.
+    for (const dictionary of [es, en]) {
+      expect(dictionary.tactical.empty.sectionCrashedExplanation).not.toBe(
+        dictionary.tactical.empty.explanation
+      );
+    }
+    expect(es.tactical.empty.sectionCrashedExplanation).not.toContain("informe");
+    expect(en.tactical.empty.sectionCrashedExplanation).not.toContain("report");
   });
 });
 

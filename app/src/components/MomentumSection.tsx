@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 
 /*
  * TYPE-ONLY. A value import from this module — it used to bring in
@@ -11,12 +11,14 @@ import { useMemo, useState, type ReactNode } from "react";
  * carries no such edge; the height class now lives in the pure model module.
  */
 import type { MomentumChartSide } from "@/components/MomentumChart";
+import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { Goals, Momentum } from "@/lib/contract/contract-types";
 import { formatInteger } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import { formatGoalMinute } from "@/lib/match-hero";
+import { clockSortValue, type TableColumn } from "@/lib/table-sort";
 import { MD_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 import {
@@ -28,6 +30,7 @@ import {
   momentumRows,
   momentumTableRows,
   momentumTickIndices,
+  type MomentumTableRow,
 } from "@/viz/momentum-model";
 
 /*
@@ -92,57 +95,6 @@ export interface MomentumSectionProps {
   goals: Goals;
   home: MomentumChartSide;
   away: MomentumChartSide;
-}
-
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  /*
-   * {components.data-table} with CANVAS ink substitutions: text-ink-primary /
-   * -secondary and border-hairline, never the pitch-scoped -on-pitch classes
-   * and pitch-line/40 — this table renders on --surface-raised, not on the
-   * green. Mixing the two token families is the exact defect Story 2.7's review
-   * spent its headline finding on.
-   *
-   * NO overflow-x-auto here: ViewDataDisclosure's region already applies it,
-   * and a second scroll container nests them.
-   *
-   * ==> 2.11 PLUG-IN POINT (decision 14): UX-DR12's sort contract — aria-sort,
-   * Intl.Collator('es', {sensitivity:'base'}), polite live-region
-   * announcements, a sticky header and a stated default sort — attaches to
-   * these <th> elements and sorts momentumTableRows' output. ONE cross-table
-   * contract, implemented once in 2.11; a bespoke second copy here is what 2.11
-   * would then have to reconcile. UX-DR16/NFR-2's floor (a reachable table
-   * carrying the same numbers) is met in full today.
-   */
-  return (
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-hairline">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
 }
 
 export function MomentumSection({ momentum, goals, home, away }: MomentumSectionProps) {
@@ -328,12 +280,6 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
    */
   const tableCaption =
     `${title}${CAPTION_SEPARATOR}${metricNote}${SPACE}${t("viz.momentum.tableCaption")}`;
-  const headers = [
-    { key: "minute", label: t("viz.table.minute"), numeric: false },
-    { key: "home", label: home.teamCode, numeric: true },
-    { key: "away", label: away.teamCode, numeric: true },
-    { key: "goal", label: t("viz.momentum.tableGoal"), numeric: false },
-  ];
   const yes = t("viz.table.yes");
   /*
    * "No", not viz.table.unknown's em dash. Whether a goal fell on a sample is
@@ -342,21 +288,58 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
    * information exists — on the data-table surface UX-DR16/NFR-2 exist for.
    */
   const no = t("viz.table.no");
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
-  const textCell = "px-2 py-1.5 type-caption text-ink-primary";
+
+  const columns: TableColumn<MomentumTableRow>[] = [
+    {
+      key: "minute",
+      headText: t("viz.table.minute"),
+      headTitle: null,
+      /* RAW values only — never awayPlotted, never a negative number. */
+      render: (row) => formatGoalMinute(row.at),
+      /*
+       * `clock`, not `text`: LEFT-aligned tabular figures, which is exactly what
+       * this column has rendered since Story 2.6.
+       */
+      align: "clock",
+      /*
+       * Sorted on the STAMP, never on the rendered "45+2′" label, which
+       * collates after "9′". `at` is the raw MinuteStamp — the model does no
+       * `?? 0` defaulting, so there is nothing to undo here.
+       */
+      sort: {
+        kind: "number",
+        valueOf: (row) => clockSortValue(row.at.minute, row.at.stoppageMinute),
+      },
+    },
+    {
+      key: "home",
+      headText: home.teamCode,
+      headTitle: home.name,
+      render: (row) => formatInteger(row.home, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.home },
+    },
+    {
+      key: "away",
+      headText: away.teamCode,
+      headTitle: away.name,
+      render: (row) => formatInteger(row.away, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.away },
+    },
+    {
+      key: "goal",
+      headText: t("viz.momentum.tableGoal"),
+      headTitle: null,
+      render: (row) => (row.hasGoal ? yes : no),
+      align: "text",
+      // Sorted on the RESOLVED label, so the order follows the EN toggle.
+      sort: { kind: "text", valueOf: (row) => (row.hasGoal ? yes : no) },
+    },
+  ];
 
   const dataTable = (
-    <DataTable caption={tableCaption} headers={headers}>
-      {tableRows.map((row) => (
-        <tr key={row.key} className="border-b border-hairline">
-          {/* RAW values only — never awayPlotted, never a negative number. */}
-          <td className={cn(textCell, "tabular-nums")}>{formatGoalMinute(row.at)}</td>
-          <td className={numericCell}>{formatInteger(row.home, locale)}</td>
-          <td className={numericCell}>{formatInteger(row.away, locale)}</td>
-          <td className={textCell}>{row.hasGoal ? yes : no}</td>
-        </tr>
-      ))}
-    </DataTable>
+    <DataTable caption={tableCaption} columns={columns} rows={tableRows} surface="canvas" />
   );
 
   const attribution = t("viz.attribution");

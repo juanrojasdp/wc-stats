@@ -14,9 +14,12 @@ import {
   INTERVENTION_BODY_TYPES,
   INTERVENTION_TYPES,
   THROW_TECHNIQUES,
+  aerialTableRows,
   aerialTypeKey,
+  bodyTypeTableRows,
   countAxisMax,
   countTicks,
+  distributionTableRows,
   distributionTypeKey,
   feetTechniqueKey,
   goalkeepingByTeam,
@@ -27,6 +30,7 @@ import {
   involvementSummaryRows,
   involvementTicks,
   involvementTimelineRows,
+  preventionHeadlineRows,
   throwTechniqueKey,
 } from "@/viz/goalkeeping-model";
 
@@ -188,14 +192,31 @@ describe("the four summaries on fixture data (Tasks 5.3-5.5)", () => {
    * client-side derivation is used.
    */
   it("reads savePercentage verbatim rather than deriving it", () => {
+    /*
+     * Sources are matched BY teamId, never by array position.
+     *
+     * The previous form read `records(bundle)[index === 0 ? 0 : 1]`, i.e. it
+     * assumed `goalkeeping[0]` is the home record — the exact assumption the
+     * "ignores array order entirely" test above exists to forbid. It passed only
+     * because the fixtures happen to be emitted home-first, so it would have
+     * gone green against a grouping that had silently reverted to array order.
+     * It also softened its assertion with `matching?.`, which compares
+     * `undefined` on a lookup miss instead of failing.
+     */
     for (const { slug, bundle } of FIXTURES) {
       const grouping = group(bundle);
-      for (const [index, block] of [grouping.home, grouping.away].entries()) {
-        const source = records(bundle)[index === 0 ? 0 : 1].goalPrevention;
-        const matching = block.records.find(
-          (record) => record.goalPrevention.attemptsFaced === source.attemptsFaced
-        );
-        expect(matching?.goalPrevention.savePercentage, slug).toBe(source.savePercentage);
+      for (const block of [grouping.home, grouping.away]) {
+        const sources = records(bundle).filter((record) => record.teamId === block.teamId);
+        expect(block.records, slug).toHaveLength(sources.length);
+        for (const source of sources) {
+          const matching = block.records.find(
+            (record) => record.playerId === source.playerId
+          );
+          expect(matching, `${slug}: no block for ${source.playerId}`).toBeDefined();
+          expect(matching!.goalPrevention.savePercentage, slug).toBe(
+            source.goalPrevention.savePercentage
+          );
+        }
       }
     }
   });
@@ -548,6 +569,66 @@ describe("the CORPUS shape no fixture can produce (Task 5.8)", () => {
     const keys = grouping.home.records.map((record) => record.key);
     expect(new Set(keys).size).toBe(2);
   });
+
+  /*
+   * THE REAL COLLISION, which the test above does not reach because it varies
+   * `playerName`.
+   *
+   * `teamId`, `playerId` and `playerName` are all `required` and ALL THREE ARE
+   * UNFULFILLABLE FROM THE SOURCE (Story 1.9, AD-14 (a)): no goalkeeper name
+   * appears on any of the 936 goalkeeping pages. Whatever Story 1.16 emits could
+   * therefore be ONE placeholder per team — at which point a two-keeper team
+   * (real on 7 of 208 team-innings) produces two records identical in every
+   * field this key was built from. React would drop the duplicate, silently
+   * deleting the second keeper's panel and every one of its table rows, which is
+   * exactly what ruled decision 2 exists to prevent. No fixture can produce this
+   * shape, so it is constructed.
+   */
+  it("keys two keepers apart even when playerId AND playerName are identical", () => {
+    const { home, away } = sides(m001);
+    const first = records(m001)[0];
+    const indistinguishable = { ...first } as unknown as GoalkeeperRecord;
+    const grouping = goalkeepingByTeam([first, indistinguishable], home, away);
+
+    expect(grouping.home.recordCount).toBe(2);
+    const keys = grouping.home.records.map((record) => record.key);
+    expect(new Set(keys).size, "both keepers must survive as distinct React keys").toBe(2);
+
+    // And the table rows built off those keys stay distinct too.
+    const summary = involvementSummaryRows(grouping.home);
+    expect(new Set(summary.map((row) => row.key)).size).toBe(2);
+    const timeline = involvementTimelineRows(grouping.home);
+    expect(new Set(timeline.map((row) => row.key)).size).toBe(timeline.length);
+  });
+
+  /*
+   * THE GATE FLAG IS SCOPED TO THE FOUR GATES THAT REMOVE A PANEL.
+   * `crossesFacedCompleted` hides nothing — the aerial block swaps to the
+   * `crossesFacedAlone` label, which states the absence in words — so a record
+   * whose only null is that field must NOT drive the "esos paneles no se
+   * muestran" sentence. A disclosure sentence that can be false is worse than
+   * no sentence.
+   */
+  it("does not claim hidden panels when only crossesFacedCompleted is absent", () => {
+    const { home, away } = sides(m001);
+    const base = records(m001)[0];
+    const crossesOnly = {
+      ...base,
+      aerialControl: { ...base.aerialControl, crossesFacedCompleted: null },
+    } as unknown as GoalkeeperRecord;
+    const grouping = goalkeepingByTeam([crossesOnly], home, away);
+    const keeper = grouping.home.records[0];
+
+    expect(keeper.aerial.crossesFacedCompleted).toBeNull();
+    // Every actual panel is still present...
+    expect(keeper.distribution.feetTechniques.present).toBe(true);
+    expect(keeper.distribution.handsTechniques.present).toBe(true);
+    expect(keeper.distribution.throwTechniques.present).toBe(true);
+    expect(keeper.goalPrevention.byBodyType.present).toBe(true);
+    // ...so nothing announces that panels were omitted.
+    expect(keeper.anyGateClosed).toBe(false);
+    expect(grouping.home.anyGateClosed).toBe(false);
+  });
 });
 
 describe("zero-state guards (Task 5.7)", () => {
@@ -635,5 +716,179 @@ describe("zero-state guards (Task 5.7)", () => {
     // A zero denominator produced no division anywhere: savePercentage is
     // contracted and read verbatim, never re-derived.
     expect(prevention.savePercentage).toBe(0);
+  });
+});
+
+/*
+ * DECISION 19'S REMAINING TABLES (added by the 2.10 code review).
+ *
+ * The first implementation shipped three tables against roughly thirty numbers
+ * on screen: the distribution families and their triples, lineBreaks, the three
+ * gated technique groups, attemptsFaced / savePercentage / totalInterventions,
+ * byBodyType, the aerial families, the crosses-faced pair and the six delivery
+ * types all reached the surface and NO table. That is a decision-19 gap, an AC 3
+ * gap through UX-DR16 / ARCHITECTURE-SPINE.md:140, and it sits below
+ * EXPERIENCE.md:113's floor that every viz carries a data-table alternative.
+ *
+ * These assertions are the regression guard: they compare the table rows against
+ * the SAME model summaries the surface renders, so the two cannot drift apart
+ * again without a red test.
+ */
+describe("the distribution, aerial and prevention tables (decision 19)", () => {
+  it("carries every distribution number the surface displays, on every fixture", () => {
+    for (const { slug, bundle } of FIXTURES) {
+      const grouping = group(bundle);
+      for (const team of [grouping.home, grouping.away]) {
+        const rows = distributionTableRows(team);
+        for (const keeper of team.records) {
+          const mine = rows.filter((row) => row.playerName === keeper.playerName);
+          const distribution = keeper.distribution;
+          // Four families + lineBreaks + the three gated groups, all present on
+          // the fixtures (6/6 keepers), which is where this is exercised.
+          const expected =
+            distribution.families.length +
+            1 +
+            distribution.feetTechniques.rows.length +
+            distribution.handsTechniques.rows.length +
+            distribution.throwTechniques.rows.length;
+          expect(mine, slug).toHaveLength(expected);
+
+          // Every family triple is carried VERBATIM, all three numbers.
+          for (const family of distribution.families) {
+            const row = mine.find((candidate) => candidate.labelKey === family.labelKey);
+            expect(row, `${slug}: ${family.key}`).toBeDefined();
+            expect(row!.total).toBe(family.total);
+            expect(row!.complete).toBe(family.complete);
+            expect(row!.incomplete).toBe(family.incomplete);
+          }
+
+          // A count-only row carries NO completion split — null, never zero.
+          const lineBreaks = mine.find(
+            (row) => row.labelKey === "viz.goalkeeping.lineBreaks"
+          );
+          expect(lineBreaks, slug).toBeDefined();
+          expect(lineBreaks!.total).toBe(distribution.lineBreaks);
+          expect(lineBreaks!.complete, "no split exists, so null and not 0").toBeNull();
+          expect(lineBreaks!.incomplete).toBeNull();
+        }
+      }
+    }
+  });
+
+  it("carries every aerial number the surface displays, on every fixture", () => {
+    for (const { slug, bundle } of FIXTURES) {
+      const grouping = group(bundle);
+      for (const team of [grouping.home, grouping.away]) {
+        const rows = aerialTableRows(team);
+        for (const keeper of team.records) {
+          const mine = rows.filter((row) => row.playerName === keeper.playerName);
+          const aerial = keeper.aerial;
+          // 3 families + attempted + completed (present on fixtures) + 6 types.
+          expect(mine, slug).toHaveLength(aerial.types.length + 2 + aerial.deliveryTypes.length);
+
+          for (const type of aerial.types) {
+            const row = mine.find((candidate) => candidate.labelKey === type.labelKey);
+            expect(row, `${slug}: ${type.key}`).toBeDefined();
+            expect(row!.total).toBe(type.total);
+            expect(row!.complete).toBe(type.complete);
+          }
+          const attempted = mine.find(
+            (row) => row.labelKey === "viz.goalkeeping.crossesFaced"
+          );
+          expect(attempted, slug).toBeDefined();
+          expect(attempted!.total).toBe(aerial.crossesFacedAttempted);
+        }
+      }
+    }
+  });
+
+  it("carries the goal-prevention headline figures, savePercentage verbatim", () => {
+    for (const { slug, bundle } of FIXTURES) {
+      const grouping = group(bundle);
+      for (const team of [grouping.home, grouping.away]) {
+        const rows = preventionHeadlineRows(team);
+        expect(rows, slug).toHaveLength(team.recordCount);
+        for (const keeper of team.records) {
+          const row = rows.find((candidate) => candidate.playerName === keeper.playerName);
+          expect(row, slug).toBeDefined();
+          expect(row!.attemptsFaced).toBe(keeper.goalPrevention.attemptsFaced);
+          expect(row!.totalInterventions).toBe(keeper.goalPrevention.totalInterventions);
+          // Contracted, never re-derived.
+          expect(row!.savePercentage).toBe(keeper.goalPrevention.savePercentage);
+        }
+      }
+    }
+  });
+
+  /*
+   * A CLOSED GATE CONTRIBUTES NO ROWS — absent, never em-dashed (ruled decision
+   * 3), exactly as it renders no panel. This is the corpus shape, which no
+   * fixture can produce, so the table and the surface must agree on real data as
+   * well as on the fixtures.
+   */
+  it("omits gated rows entirely on a corpus-shaped record", () => {
+    const { home, away } = sides(m001);
+    const base = records(m001)[0];
+    const corpusShaped = {
+      ...base,
+      distribution: {
+        ...base.distribution,
+        feetTechniques: null,
+        handsTechniques: null,
+        throwTechniques: null,
+      },
+      goalPrevention: { ...base.goalPrevention, byBodyType: null },
+      aerialControl: { ...base.aerialControl, crossesFacedCompleted: null },
+    } as unknown as GoalkeeperRecord;
+    const grouping = goalkeepingByTeam([corpusShaped], home, away);
+    const team = grouping.home;
+
+    // Four families + lineBreaks, and NOTHING from the three technique groups.
+    expect(distributionTableRows(team)).toHaveLength(5);
+    // byBodyType is null on 208/208 corpus team-innings: no rows, no table.
+    expect(bodyTypeTableRows(team)).toEqual([]);
+
+    const aerial = aerialTableRows(team);
+    // 3 families + attempted + 6 delivery types. The completed half is GONE.
+    expect(aerial).toHaveLength(10);
+    expect(
+      aerial.some((row) => row.labelKey === "viz.goalkeeping.crossesFacedCompleted")
+    ).toBe(false);
+    /*
+     * And the surviving half relabels itself, exactly as the panel does: a value
+     * labelled as the *attempted half of a pair* with no counterpart reads as a
+     * MISSING number rather than an ABSENT one.
+     */
+    expect(
+      aerial.some((row) => row.labelKey === "viz.goalkeeping.crossesFacedAlone")
+    ).toBe(true);
+  });
+
+  it("keeps both keepers' rows separate for a two-keeper team", () => {
+    const { home, away } = sides(m001);
+    const first = records(m001)[0];
+    const second = {
+      ...records(m001)[1],
+      teamId: home.teamId,
+      playerId: "second-keeper",
+      playerName: "Luis MALAGON",
+    } as unknown as GoalkeeperRecord;
+    const team = goalkeepingByTeam([first, second], home, away).home;
+
+    for (const rows of [distributionTableRows(team), aerialTableRows(team)]) {
+      expect(new Set(rows.map((row) => row.playerName)).size).toBe(2);
+      // Keys stay unique across the two record sets — nothing is summed or merged.
+      expect(new Set(rows.map((row) => row.key)).size).toBe(rows.length);
+    }
+    expect(preventionHeadlineRows(team)).toHaveLength(2);
+  });
+
+  it("survives a team with no records at all", () => {
+    const { home, away } = sides(m001);
+    const grouping = goalkeepingByTeam([], home, away);
+    expect(distributionTableRows(grouping.home)).toEqual([]);
+    expect(aerialTableRows(grouping.home)).toEqual([]);
+    expect(bodyTypeTableRows(grouping.home)).toEqual([]);
+    expect(preventionHeadlineRows(grouping.home)).toEqual([]);
   });
 });

@@ -1,14 +1,20 @@
 "use client";
 
-import type { ReactNode } from "react";
-
+import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { Players } from "@/lib/contract/contract-types";
 import { formatInteger, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
+import type { TableColumn } from "@/lib/table-sort";
 import { cn } from "@/lib/utils";
-import { offersRows, offersSummary, offersTotalsRows } from "@/viz/receiving-model";
+import {
+  offersRows,
+  offersSummary,
+  offersTotalsRows,
+  type OffersRow,
+  type OffersTotalsRow,
+} from "@/viz/receiving-model";
 
 /*
  * The #offers-to-receive content (Story 2.9 Task 6.2).
@@ -56,49 +62,6 @@ const ACCENT_CLASS = { a: "text-viz-team-a", b: "text-viz-team-b" } as const;
 const LEADER_GLYPH = "▲";
 const CAPTION_SEPARATOR = " — ";
 const CLAUSE_SEPARATOR = ", ";
-
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  /*
-   * CANVAS ink substitutions, following MomentumSection: text-ink-primary /
-   * -secondary and border-hairline, never the pitch-scoped -on-pitch classes.
-   * --ink-on-pitch computes 1.10:1 on the white card — the exact defect Story
-   * 2.7's review spent its headline finding on.
-   *
-   * NO overflow-x-auto: ViewDataDisclosure's region already applies it.
-   * ==> 2.11 PLUG-IN POINT: aria-sort, the Intl.Collator('es') sort and the
-   * Expert-layer instance of this log all attach at these <th> elements.
-   */
-  return (
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-hairline">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
-}
 
 /**
  * One value inside a team's figure, with the ruled UX-DR7 leader treatment:
@@ -273,25 +236,107 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
 
   /* ------------------------------- The table -------------------------------- */
 
-  const totalsHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "made", label: t("viz.table.offersMade"), numeric: true },
-    { key: "received", label: t("viz.table.offersReceived"), numeric: true },
-    { key: "pct", label: t("viz.table.receivedPct"), numeric: true },
-    { key: "players", label: t("viz.table.players"), numeric: true },
-  ];
-  const playerHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "shirt", label: t("viz.table.shirt"), numeric: true },
-    { key: "player", label: t("viz.table.player"), numeric: false },
-    { key: "made", label: t("viz.table.offersMade"), numeric: true },
-    { key: "received", label: t("viz.table.offersReceived"), numeric: true },
-    { key: "pct", label: t("viz.table.receivedPct"), numeric: true },
+  /** The team column both tables open with, identical in each. */
+  function teamColumn<Row extends { teamCode: string }>(): TableColumn<Row> {
+    return {
+      key: "team",
+      headText: t("viz.table.team"),
+      headTitle: null,
+      render: (row) => row.teamCode,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.teamCode },
+    };
+  }
+
+  /*
+   * `receivedPct` sorts on the NUMBER, never on `shareText`'s output: null
+   * renders as "Sin ofrecimientos" and 0 as "0,0 %", and collating those two as
+   * text would interleave a team that made no offers with one that made many
+   * and received none — the exact distinction this column's null exists to
+   * preserve.
+   */
+  const totalsColumns: TableColumn<OffersTotalsRow>[] = [
+    teamColumn<OffersTotalsRow>(),
+    {
+      key: "made",
+      headText: t("viz.table.offersMade"),
+      headTitle: null,
+      render: (row) => formatInteger(row.offersMade, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.offersMade },
+    },
+    {
+      key: "received",
+      headText: t("viz.table.offersReceived"),
+      headTitle: null,
+      render: (row) => formatInteger(row.offersReceived, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.offersReceived },
+    },
+    {
+      key: "pct",
+      headText: t("viz.table.receivedPct"),
+      headTitle: null,
+      render: (row) => shareText(row.receivedPct),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.receivedPct },
+    },
+    {
+      key: "players",
+      headText: t("viz.table.players"),
+      headTitle: null,
+      render: (row) => formatInteger(row.playerCount, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.playerCount },
+    },
   ];
 
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
-  const textCell = "px-2 py-1.5 type-caption text-ink-primary";
-  const rowClass = "border-b border-hairline";
+  const playerColumns: TableColumn<OffersRow>[] = [
+    teamColumn<OffersRow>(),
+    {
+      key: "shirt",
+      headText: t("viz.table.shirt"),
+      headTitle: null,
+      render: (row) => formatInteger(row.shirtNumber, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.shirtNumber },
+    },
+    {
+      key: "player",
+      headText: t("viz.table.player"),
+      headTitle: null,
+      /* Plain text, never a link: /players/{slug} does not exist in
+         src/app/, so a link 404s in the static export. UX-DR22's
+         cross-link rule is scoped to LINEUP names. */
+      render: (row) => row.playerName,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.playerName },
+    },
+    {
+      key: "made",
+      headText: t("viz.table.offersMade"),
+      headTitle: null,
+      render: (row) => formatInteger(row.offersMade, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.offersMade },
+    },
+    {
+      key: "received",
+      headText: t("viz.table.offersReceived"),
+      headTitle: null,
+      render: (row) => formatInteger(row.offersReceived, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.offersReceived },
+    },
+    {
+      key: "pct",
+      headText: t("viz.table.receivedPct"),
+      headTitle: null,
+      render: (row) => shareText(row.receivedPct),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.receivedPct },
+    },
+  ];
 
   /*
    * BOTH tables ship (ruled decision 11). UX-DR16 and ARCHITECTURE-SPINE.md:140
@@ -308,32 +353,13 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
 
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">
-      <DataTable caption={totalsCaption} headers={totalsHeaders}>
-        {totals.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={numericCell}>{formatInteger(row.offersMade, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.offersReceived, locale)}</td>
-            <td className={numericCell}>{shareText(row.receivedPct)}</td>
-            <td className={numericCell}>{formatInteger(row.playerCount, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
-      <DataTable caption={playersCaption} headers={playerHeaders}>
-        {rows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={numericCell}>{formatInteger(row.shirtNumber, locale)}</td>
-            {/* Plain text, never a link: /players/{slug} does not exist in
-                src/app/, so a link 404s in the static export. UX-DR22's
-                cross-link rule is scoped to LINEUP names. */}
-            <td className={textCell}>{row.playerName}</td>
-            <td className={numericCell}>{formatInteger(row.offersMade, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.offersReceived, locale)}</td>
-            <td className={numericCell}>{shareText(row.receivedPct)}</td>
-          </tr>
-        ))}
-      </DataTable>
+      <DataTable
+        caption={totalsCaption}
+        columns={totalsColumns}
+        rows={totals}
+        surface="canvas"
+      />
+      <DataTable caption={playersCaption} columns={playerColumns} rows={rows} surface="canvas" />
     </div>
   );
 

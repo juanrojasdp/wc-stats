@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { GlossaryTerm } from "@/components/GlossaryTerm";
 import type { StoryStatsBlock } from "@/lib/contract/contract-types";
 import { formatDecimal, formatInteger, formatPercent } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n-provider";
@@ -108,6 +109,15 @@ export function StoryStatTiles({
   const { locale } = useLocale();
   const { home, away } = storyStats;
   const leaderLabel = t("match.hero.leader");
+  /*
+   * AD-7 (Story 2.18 Task 8.10): units are locale metadata, never baked into a
+   * label string. These two read "Distancia (km)" and "Vel. máx. (km/h)" until
+   * this story; the unit now comes from enums.unit and is composed HERE as a
+   * STRING, on KeyStatisticsSection.statLabel()'s exact pattern. The JSX form —
+   * {t(a)} ({t(b)}) — emits " (" and ")" as literal children and fails the gate.
+   */
+  const distanceLabel = `${t("match.hero.tiles.distance")} (${t("enums.unit.km")})`;
+  const topSpeedLabel = `${t("match.hero.tiles.topSpeed")} (${t("enums.unit.kmh")})`;
 
   return (
     <div className="mt-5 grid grid-cols-2 gap-tile-gap">
@@ -131,12 +141,20 @@ export function StoryStatTiles({
       />
       <Tile
         labelNode={
-          // xG keeps glossary-term styling (dotted cyan underline, no caps)
-          // plus an sr-only expansion. Full tooltip infra is Story 2.18.
+          /*
+           * Story 2.18 Task 5.3 — the FIRST GlossaryTerm call site. The dotted
+           * cyan underline that shipped here in 2.4 was the affordance without
+           * the popover behind it (2.5 decision 8: "with no tooltip behind it,
+           * it is a broken promise"); the treatment is unchanged, the behaviour
+           * is now real.
+           *
+           * The sr-only expansion STAYS. The popover's accessible name is the
+           * term itself ("xG"), so dropping this would silently remove the only
+           * screen-reader expansion of an abbreviation — a regression no test in
+           * this harness can see.
+           */
           <span className="inline-flex items-center gap-1 normal-case">
-            <span className="underline decoration-accent-cyan decoration-dotted underline-offset-2">
-              {t("match.hero.xg")}
-            </span>
+            <GlossaryTerm termId="xg">{t("match.hero.xg")}</GlossaryTerm>
             <span className="sr-only">{t("match.hero.xgExpansion")}</span>
           </span>
         }
@@ -148,7 +166,7 @@ export function StoryStatTiles({
         leaderLabel={leaderLabel}
       />
       <Tile
-        labelNode={t("match.hero.tiles.distance")}
+        labelNode={distanceLabel}
         homeValue={formatDecimal(home.distanceCovered, locale, 1)}
         awayValue={formatDecimal(away.distanceCovered, locale, 1)}
         homeCode={homeCode}
@@ -157,7 +175,7 @@ export function StoryStatTiles({
         leaderLabel={leaderLabel}
       />
       <Tile
-        labelNode={t("match.hero.tiles.topSpeed")}
+        labelNode={topSpeedLabel}
         homeValue={formatDecimal(home.topSpeed, locale, 1)}
         awayValue={formatDecimal(away.topSpeed, locale, 1)}
         homeCode={homeCode}

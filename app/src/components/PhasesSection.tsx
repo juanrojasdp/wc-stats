@@ -1,14 +1,17 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { ReactNode } from "react";
 
+import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { TacticalIdentityBlock } from "@/lib/contract/contract-types";
 import { formatPercent } from "@/lib/format";
 import { useLocale, useT } from "@/lib/i18n-provider";
+import type { TableColumn } from "@/lib/table-sort";
 import { cn } from "@/lib/utils";
 import {
+  IN_POSSESSION_PHASES,
+  OUT_OF_POSSESSION_PHASES,
   distributionChartHeightClass,
   percentAxisMax,
   percentTicks,
@@ -45,8 +48,19 @@ import {
  */
 import type { ChartSeries } from "@/components/TacticalCharts";
 
-const IN_POSSESSION_HEIGHT = distributionChartHeightClass(8);
-const OUT_OF_POSSESSION_HEIGHT = distributionChartHeightClass(9);
+/*
+ * Category counts come from the FROZEN ENUM LISTS, not from a literal written
+ * here: `IN_POSSESSION_PHASES` is the same array `phaseRows` iterates, so if the
+ * contract enum ever gains a member the height follows it — and if it moves
+ * outside the supported set, `distributionChartHeightClass`'s exhaustive throw
+ * finally fires instead of being bypassed by a hardcoded 8.
+ */
+const IN_POSSESSION_HEIGHT = distributionChartHeightClass(
+  IN_POSSESSION_PHASES.length as 3 | 4 | 8 | 9
+);
+const OUT_OF_POSSESSION_HEIGHT = distributionChartHeightClass(
+  OUT_OF_POSSESSION_PHASES.length as 3 | 4 | 8 | 9
+);
 
 /*
  * The skeleton fallback is AT THE CHART'S EXACT HEIGHT. The `skeleton` utility
@@ -66,18 +80,32 @@ function ChartFallback({ heightClass }: { heightClass: string }) {
 
 /*
  * TacticalCharts has NO DEFAULT EXPORT, so `dynamic(() => import(...))` alone
- * would resolve to a module object rather than a component. Declared ONCE here
- * and rendered twice.
+ * would resolve to a module object rather than a component.
+ *
+ * ONE HANDLE PER HEIGHT, NOT ONE PER MODULE. A `dynamic()` call bakes its
+ * `loading` fallback in at declaration time and cannot vary it per instance, so
+ * a single shared handle rendered at two different category counts necessarily
+ * shows one of them the wrong-sized skeleton — here a 302 px fallback in front
+ * of the 332 px nine-category chart. That is a CLS hit against the very budget
+ * the code-split protects, and it lands hardest on the #phases deep link, where
+ * TacticalLayer scrolls on mount BEFORE the chunk resolves. Both handles share
+ * one chunk: `next/dynamic` dedupes on the import specifier, so this costs
+ * nothing at the network layer.
  */
-const DistributionChart = dynamic(
-  () => import("@/components/TacticalCharts").then((module) => module.DistributionChart),
-  {
-    // Legal by AR-11: TacticalLayer is already client-only, so no Tactical
-    // markup exists in out/ and there is no server render to skip.
-    ssr: false,
-    loading: () => <ChartFallback heightClass={IN_POSSESSION_HEIGHT} />,
-  }
-);
+function distributionChart(heightClass: string) {
+  return dynamic(
+    () => import("@/components/TacticalCharts").then((module) => module.DistributionChart),
+    {
+      // Legal by AR-11: TacticalLayer is already client-only, so no Tactical
+      // markup exists in out/ and there is no server render to skip.
+      ssr: false,
+      loading: () => <ChartFallback heightClass={heightClass} />,
+    }
+  );
+}
+
+const InPossessionChart = distributionChart(IN_POSSESSION_HEIGHT);
+const OutOfPossessionChart = distributionChart(OUT_OF_POSSESSION_HEIGHT);
 
 /** Separator glyphs are module consts, never bare JSX literals (i18n gate). */
 const CAPTION_SEPARATOR = " — ";
@@ -94,52 +122,6 @@ export interface PhasesSectionProps {
   tacticalIdentity: TacticalIdentityBlock;
   home: SideRef;
   away: SideRef;
-}
-
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  /*
-   * Canvas ink, following MomentumSection — --ink-on-pitch computes 1.09:1 on
-   * the white card. NO overflow-x-auto of its own: ViewDataDisclosure's region
-   * already applies it and a second one nests scroll containers.
-   *
-   * A private copy per section is the CURRENT CONVENTION (PassNetworksSection
-   * says so explicitly); DataTable is deliberately not extracted here.
-   *
-   * NOT SORTABLE in this story. ==> 2.11 PLUG-IN POINT: UX-DR12's sort contract
-   * — aria-sort, Intl.Collator('es', {sensitivity:'base'}) and a stated default
-   * sort — attaches to these <th> elements and sorts the model's row arrays.
-   * ONE cross-table contract, built once in 2.11.
-   */
-  return (
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-hairline">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
 }
 
 export function PhasesSection({ tacticalIdentity, home, away }: PhasesSectionProps) {
@@ -180,8 +162,10 @@ export function PhasesSection({ tacticalIdentity, home, away }: PhasesSectionPro
     const figureSummary =
       `${figurePrefix} ${stateLabel}${CLAUSE_SEPARATOR}` +
       `${home.name} ${VALUE_SEPARATOR} ${away.name}${CLAUSE_SEPARATOR}${t("viz.phases.note")}`;
-    const heightClass =
-      stateKey === "inPossession" ? IN_POSSESSION_HEIGHT : OUT_OF_POSSESSION_HEIGHT;
+    const inPossession = stateKey === "inPossession";
+    const heightClass = inPossession ? IN_POSSESSION_HEIGHT : OUT_OF_POSSESSION_HEIGHT;
+    // Each handle carries a skeleton fallback at ITS OWN height — see above.
+    const DistributionChart = inPossession ? InPossessionChart : OutOfPossessionChart;
     return (
       <div className="flex flex-col gap-1">
         <p className="type-stat-label text-ink-secondary">{stateLabel}</p>
@@ -203,15 +187,47 @@ export function PhasesSection({ tacticalIdentity, home, away }: PhasesSectionPro
 
   /* ------------------------------- The table -------------------------------- */
 
-  const headers = [
-    { key: "phase", label: t("viz.table.phase"), numeric: false },
-    { key: "home", label: home.teamCode, numeric: true },
-    { key: "away", label: away.teamCode, numeric: true },
+  const columns: TableColumn<PhaseRow>[] = [
+    {
+      key: "phase",
+      headText: t("viz.table.phase"),
+      headTitle: null,
+      render: (row) => t(row.labelKey),
+      align: "text",
+      // The RESOLVED phase name, so the order follows the EN toggle. Sorting on
+      // `labelKey` would order by "viz.phases.*" and never re-sort.
+      sort: { kind: "text", valueOf: (row) => t(row.labelKey) },
+    },
+    {
+      key: "home",
+      headText: home.teamCode,
+      headTitle: home.name,
+      /*
+       * ONE DECIMAL, deliberately more precise than the chart's axis. AC 1
+       * requires "exact percentages and values are reachable via each chart's
+       * data table", and `Percentage` is declared with "x-decimals": 1 — so
+       * whole points would discard contracted precision. Invisible today (every
+       * fixture value is an integer), first visible at the 2.19 cutover.
+       */
+      render: (row) => formatPercent(row.home, locale, 1),
+      align: "numeric",
+      /*
+       * The RAW rate, not the rendered "43 %" string. These are INDEPENDENT
+       * per-phase rates and nothing here sums or normalizes them (the surface's
+       * whole subtitle exists to say so) — but each column is legitimately
+       * ordered on its own values.
+       */
+      sort: { kind: "number", valueOf: (row) => row.home },
+    },
+    {
+      key: "away",
+      headText: away.teamCode,
+      headTitle: away.name,
+      render: (row) => formatPercent(row.away, locale, 1),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.away },
+    },
   ];
-
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
-  const textCell = "px-2 py-1.5 type-caption text-ink-primary";
-  const rowClass = "border-b border-hairline";
 
   const inCaption =
     `${title}${CAPTION_SEPARATOR}${t("viz.phases.inPossession")}` +
@@ -221,17 +237,7 @@ export function PhasesSection({ tacticalIdentity, home, away }: PhasesSectionPro
     `${CAPTION_SEPARATOR}${t("viz.phases.tableCaption")}`;
 
   function tableFor(caption: string, rows: PhaseRow[]) {
-    return (
-      <DataTable caption={caption} headers={headers}>
-        {rows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{t(row.labelKey)}</td>
-            <td className={numericCell}>{formatPercent(row.home, locale, 0)}</td>
-            <td className={numericCell}>{formatPercent(row.away, locale, 0)}</td>
-          </tr>
-        ))}
-      </DataTable>
-    );
+    return <DataTable caption={caption} columns={columns} rows={rows} surface="canvas" />;
   }
 
   /*

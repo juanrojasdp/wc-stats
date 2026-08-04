@@ -398,10 +398,25 @@ describe("momentumTableRows — raw values only (decisions 6, 14)", () => {
     const tableRows = momentumTableRows(rows001, []);
     expect(tableRows[0]).not.toHaveProperty("awayPlotted");
     const series = seriesOf(m001);
-    for (const row of tableRows) {
-      expect(row.away).toBe(series.samples[row.key].away);
-      expect(row.home).toBe(series.samples[row.key].home);
-    }
+    /*
+     * Indexed POSITIONALLY, not by `row.key`. The key became the string
+     * `momentum-row-${index}` in Story 2.11a (decision 6's stable `data-row-key`
+     * needs one type across all twenty tables), so it is no longer a sample
+     * subscript — and `momentumTableRows` maps one row per sample in order, so
+     * the position IS the sample index.
+     */
+    tableRows.forEach((row, index) => {
+      expect(row.away).toBe(series.samples[index].away);
+      expect(row.home).toBe(series.samples[index].home);
+    });
+  });
+
+  it("keys rows as `momentum-row-${index}` strings, matching every other row model", () => {
+    const tableRows = momentumTableRows(rows001, []);
+    expect(tableRows[0].key).toBe("momentum-row-0");
+    expect(tableRows[44].key).toBe("momentum-row-44");
+    // Unique across the whole table — the stable-key half of decision 6.
+    expect(new Set(tableRows.map((row) => row.key)).size).toBe(tableRows.length);
   });
 
   it("carries the RAW stamp object, with no `?? 0` minute defaulting", () => {
@@ -415,7 +430,10 @@ describe("momentumTableRows — raw values only (decisions 6, 14)", () => {
   it("flags exactly the sample indices a goal fell on", () => {
     const markers = goalMarkers(m001.metadata.goals, rows001);
     const tableRows = momentumTableRows(rows001, markers);
-    expect(tableRows.filter((row) => row.hasGoal).map((row) => row.key)).toEqual([7, 69]);
+    expect(tableRows.filter((row) => row.hasGoal).map((row) => row.key)).toEqual([
+      "momentum-row-7",
+      "momentum-row-69",
+    ]);
   });
 });
 

@@ -170,8 +170,14 @@ function CategoryTick(props: {
       fill="var(--ink-secondary)"
       className="type-caption"
     >
+      {/*
+       * Keyed by INDEX, not by line content: a label that wraps to two
+       * identical lines would otherwise collide on the key and React would drop
+       * one tspan, rendering half the label. Index is stable here because the
+       * array is rebuilt wholesale on every render.
+       */}
       {lines.map((line, index) => (
-        <tspan key={line} x={x} dy={index === 0 ? 0 : AXIS_LINE_HEIGHT_PX}>
+        <tspan key={index} x={x} dy={index === 0 ? 0 : AXIS_LINE_HEIGHT_PX}>
           {line}
         </tspan>
       ))}
@@ -291,6 +297,14 @@ export function DistributionChart({
       aria-label={figureSummary}
       className="min-w-0 rounded-lg bg-surface-raised p-tile-gap"
     >
+      {/*
+       * The category-axis title, in HTML where `sr-only` GENUINELY WORKS. It
+       * cannot ride an SVG <Label> (see the YAxis note below) and it must not be
+       * painted beside 96 px of wrapped labels, but dropping it outright would
+       * leave the axis unnamed in the accessibility tree and strand the locale
+       * key. An HTML span inside the figure is the one place it does both jobs.
+       */}
+      <span className="sr-only">{axisCategoryLabel}</span>
       <div className={cn("w-full", heightClass)}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -311,10 +325,19 @@ export function DistributionChart({
               >
                 {/* THE SOLID GROUND. Without it the hatch is transparency. */}
                 <rect width={HATCH_TILE_PX} height={HATCH_TILE_PX} fill="var(--viz-team-b)" />
+                {/*
+                 * DRAWN AT THE TILE CENTRE, NOT THE TILE EDGE. A stroke centred
+                 * on x=0 puts half its width at negative x, and an SVG pattern
+                 * tile CLIPS rather than wraps — so an edge-drawn 1.5 px stroke
+                 * renders as a 0.75 px stripe with no compensating mark at the
+                 * opposite edge. That is half the texture UX-DR11(b) is being
+                 * discharged with, and it is invisible unless you measure it.
+                 * Centring keeps the full width inside the tile (2.25..3.75).
+                 */}
                 <line
-                  x1={0}
+                  x1={HATCH_TILE_PX / 2}
                   y1={0}
-                  x2={0}
+                  x2={HATCH_TILE_PX / 2}
                   y2={HATCH_TILE_PX}
                   stroke="var(--ink-primary)"
                   strokeWidth={HATCH_STROKE_PX}
@@ -352,16 +375,23 @@ export function DistributionChart({
               interval={0}
               axisLine={false}
               tickLine={false}
-            >
-              {/*
-               * The category axis title is carried in the figure summary and
-               * the data-table header rather than painted beside 96 px of
-               * wrapped labels, where it would collide at 320 px. Passing it
-               * through `name` would reach NO surface at all — that prop feeds
-               * only the tooltip and legend payloads, both banned here.
-               */}
-              <Label value={axisCategoryLabel} className="sr-only" />
-            </YAxis>
+            />
+            {/*
+             * NO CATEGORY-AXIS <Label> AT ALL, deliberately.
+             *
+             * The title is carried in the figure summary and the data-table
+             * header instead — painting it beside 96 px of wrapped labels
+             * collides at 320 px. The first implementation expressed that by
+             * hiding a <Label> with `className="sr-only"`, WHICH DOES NOT WORK
+             * ON SVG: Tailwind's sr-only is position:absolute + clip +
+             * width/height:1px, none of which apply to an SVG <text>, and
+             * recharts renders a position-less Label centred in the axis
+             * viewBox — i.e. straight over the CategoryTick tspans. It is the
+             * only SVG use of sr-only in the codebase, so nothing established
+             * that it worked. Passing the title through `name` instead would
+             * reach no surface at all: that prop feeds only the tooltip and
+             * legend payloads, both banned here.
+             */}
 
             <Bar
               dataKey="home"
@@ -463,8 +493,25 @@ export function InvolvementChart({
   const stroke = accent === "a" ? "var(--viz-team-a)" : "var(--viz-team-b)";
 
   return (
-    <figure
-      role="figure"
+    /*
+     * `role="img"`, NOT a second `role="figure"`.
+     *
+     * This chart always renders INSIDE a keeper block that is already a
+     * `<figure role="figure" aria-label={...}>` (ruled decision 15 makes the
+     * per-team block the figure). A figure nested in a figure gives the reader
+     * two competing accessible names, and the outer one — "Arqueros: México,
+     * Arquero, Raul RANGEL" — is not a caption for this chart. The shipped
+     * precedents (MovementToReceiveSection, OffersToReceiveSection) each use
+     * exactly ONE figure per block.
+     *
+     * `role="img"` is also the more honest semantic: the bars carry no text, so
+     * the element IS atomic to a screen reader, and the real text alternative is
+     * the timeline table behind "Ver los datos" (ruled decision 14's two-table
+     * disclosure). DistributionChart keeps its figure because it is never
+     * nested — #phases and #pressing render it as a top-level surface.
+     */
+    <div
+      role="img"
       aria-label={figureSummary}
       className="min-w-0 rounded-lg bg-surface-raised p-tile-gap"
     >
@@ -536,6 +583,6 @@ export function InvolvementChart({
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </figure>
+    </div>
   );
 }

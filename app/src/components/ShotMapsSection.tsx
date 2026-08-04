@@ -1,14 +1,13 @@
 "use client";
 
-import type { ReactNode } from "react";
-
+import { DataTable } from "@/components/DataTable";
 import { EmptyStatePanel, useEmptyHeadline } from "@/components/EmptyStatePanel";
 import { DOT_SEPARATOR, PitchPanel, type PitchPanelLegendEntry, type PitchPanelSide } from "@/components/PitchPanel";
 import type { Crosses, Shots } from "@/lib/contract/contract-types";
 import { formatDecimal, formatInteger } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
-import { cn } from "@/lib/utils";
+import { clockSortValue, type TableColumn } from "@/lib/table-sort";
 import {
   CROSS_COMPLETED_SHAPE,
   crossFigureCounts,
@@ -75,46 +74,6 @@ const ACCENT_VAR = { a: "--viz-team-a-on-pitch", b: "--viz-team-b-on-pitch" } as
 
 /** Separator glyphs are module consts, never bare JSX literals (i18n gate). */
 const CAPTION_SEPARATOR = " — ";
-
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  return (
-    /*
-     * {components.data-table}: row dividers, NO zebra striping. The divider is
-     * --pitch-line/40 rather than --border-hairline because this table renders
-     * INSIDE the panel, on the deep-green pitch, where the charcoal hairline is
-     * invisible; the mockup's own .panel-foot makes the same substitution.
-     * Recorded here because it is a departure from Task 7.2's "verbatim".
-     */
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-on-pitch-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-pitch-line/40">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-on-pitch-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
-}
 
 export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMapsSectionProps) {
   const t = useT();
@@ -240,32 +199,139 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
   const crossRows: CrossLogRow[] = crosses === null ? [] : crossLogRows(crosses, home, away);
   const showXg = anyExpectedGoals(shotRows);
 
-  const shotHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "player", label: t("viz.table.player"), numeric: false },
-    { key: "minute", label: t("viz.table.minute"), numeric: true },
-    { key: "x", label: t("viz.table.x"), numeric: true },
-    { key: "y", label: t("viz.table.y"), numeric: true },
-    { key: "outcome", label: t("viz.table.outcome"), numeric: false },
-    // FD-1: omitted entirely while every value is null.
-    ...(showXg ? [{ key: "xg", label: t("viz.table.xg"), numeric: true }] : []),
-  ];
-
-  const crossHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "player", label: t("viz.table.player"), numeric: false },
-    { key: "minute", label: t("viz.table.minute"), numeric: true },
-    { key: "x", label: t("viz.table.x"), numeric: true },
-    { key: "y", label: t("viz.table.y"), numeric: true },
-    { key: "delivery", label: t("viz.table.delivery"), numeric: false },
-    { key: "completed", label: t("viz.table.completed"), numeric: false },
-  ];
-
   const unknown = t("viz.table.unknown");
-  // On-pitch ink: this table renders inside the panel, on --pitch-surface.
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-on-pitch";
-  const textCell = "px-2 py-1.5 type-caption text-ink-on-pitch";
-  const rowClass = "border-b border-pitch-line/40";
+  const ownGoalLabel = t("match.hero.ownGoal");
+
+  /*
+   * SHARED COLUMNS, built once and spread into both logs. The two tables agree
+   * on their first five columns by construction rather than by two lists that a
+   * later edit could drift apart.
+   *
+   * Every `sort.valueOf` returns the RENDERED SEMANTIC value, never the raw
+   * model field: the minute column sorts on the (minute, stoppage) stamp rather
+   * than the "45+2′" label, and the outcome/delivery columns sort on the
+   * RESOLVED dictionary string so the order follows the EN toggle. Sorting on
+   * the raw key would order by "enums.shotOutcome.blocked".
+   */
+  function logColumns<Row extends {
+    teamCode: string;
+    playerName: string | null;
+    minuteLabel: string | null;
+    minute: number | null;
+    stoppageMinute: number | null;
+    x: number;
+    y: number;
+  }>(): TableColumn<Row>[] {
+    return [
+      {
+        key: "team",
+        headText: t("viz.table.team"),
+        headTitle: null,
+        render: (row) => row.teamCode,
+        align: "text",
+        sort: { kind: "text", valueOf: (row) => row.teamCode },
+      },
+      {
+        key: "player",
+        headText: t("viz.table.player"),
+        headTitle: null,
+        // Plain text, never a link: /players/{slug} does not exist.
+        render: (row) => row.playerName ?? unknown,
+        align: "text",
+        // NULL, not the em dash: an unnamed player sorts to the END of the
+        // array in both directions rather than collating on "—".
+        sort: { kind: "text", valueOf: (row) => row.playerName },
+      },
+      {
+        key: "minute",
+        headText: t("viz.table.minute"),
+        headTitle: null,
+        render: (row) => row.minuteLabel ?? unknown,
+        align: "numeric",
+        sort: {
+          kind: "number",
+          valueOf: (row) => clockSortValue(row.minute, row.stoppageMinute),
+        },
+      },
+      {
+        key: "x",
+        headText: t("viz.table.x"),
+        headTitle: null,
+        render: (row) => formatDecimal(row.x, locale, 2),
+        align: "numeric",
+        sort: { kind: "number", valueOf: (row) => row.x },
+      },
+      {
+        key: "y",
+        headText: t("viz.table.y"),
+        headTitle: null,
+        render: (row) => formatDecimal(row.y, locale, 2),
+        align: "numeric",
+        sort: { kind: "number", valueOf: (row) => row.y },
+      },
+    ];
+  }
+
+  /** The outcome label, own-goal suffix included — rendered AND sorted on. */
+  function outcomeText(row: ShotLogRow): string {
+    // The suffix is how a reader reconciles an 8-row Paraguay log against 7
+    // Paraguay markers.
+    return row.ownGoal ? `${t(row.outcomeKey)} ${ownGoalLabel}` : t(row.outcomeKey);
+  }
+
+  const shotColumns: TableColumn<ShotLogRow>[] = [
+    ...logColumns<ShotLogRow>(),
+    {
+      key: "outcome",
+      headText: t("viz.table.outcome"),
+      headTitle: null,
+      render: outcomeText,
+      align: "text",
+      sort: { kind: "text", valueOf: outcomeText },
+    },
+    // FD-1: omitted entirely while every value is null. The column set is
+    // therefore DYNAMIC, which is why sort keys are stable strings, never
+    // indices.
+    ...(showXg
+      ? [
+          {
+            key: "xg",
+            headText: t("viz.table.xg"),
+            headTitle: t("viz.shotMap.xg"),
+            render: (row: ShotLogRow) =>
+              row.expectedGoals === null ? unknown : formatDecimal(row.expectedGoals, locale, 2),
+            align: "numeric" as const,
+            sort: {
+              kind: "number" as const,
+              valueOf: (row: ShotLogRow) => row.expectedGoals,
+            },
+          },
+        ]
+      : []),
+  ];
+
+  const crossColumns: TableColumn<CrossLogRow>[] = [
+    ...logColumns<CrossLogRow>(),
+    {
+      key: "delivery",
+      headText: t("viz.table.delivery"),
+      headTitle: null,
+      render: (row) => t(row.deliveryKey),
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => t(row.deliveryKey) },
+    },
+    {
+      key: "completed",
+      headText: t("viz.table.completed"),
+      headTitle: null,
+      render: (row) => (row.completed ? t("viz.table.yes") : t("viz.table.no")),
+      align: "text",
+      sort: {
+        kind: "text",
+        valueOf: (row) => (row.completed ? t("viz.table.yes") : t("viz.table.no")),
+      },
+    },
+  ];
 
   /*
    * Each table's caption and each disclosure control name themselves after
@@ -277,49 +343,12 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
   const shotCaption = `${shotTitle}${CAPTION_SEPARATOR}${t("viz.table.caption")}`;
   const crossCaption = `${crossTitle}${CAPTION_SEPARATOR}${t("viz.table.caption")}`;
 
-  /*
-   * Not sortable in this story: Story 2.11 owns aria-sort, the collator sort
-   * and the Expert-layer instance of these same logs. It plugs in at the <th>
-   * elements in DataTable and at the row arrays built here.
-   */
   const shotTable = (
-    <DataTable caption={shotCaption} headers={shotHeaders}>
-      {shotRows.map((row) => (
-        <tr key={row.key} className={rowClass}>
-          <td className={textCell}>{row.teamCode}</td>
-          <td className={textCell}>{row.playerName ?? unknown}</td>
-          <td className={numericCell}>{row.minuteLabel ?? unknown}</td>
-          <td className={numericCell}>{formatDecimal(row.x, locale, 2)}</td>
-          <td className={numericCell}>{formatDecimal(row.y, locale, 2)}</td>
-          <td className={textCell}>
-            {/* The suffix is how a reader reconciles an 8-row Paraguay log
-                against 7 Paraguay markers. */}
-            {row.ownGoal ? `${t(row.outcomeKey)} ${t("match.hero.ownGoal")}` : t(row.outcomeKey)}
-          </td>
-          {showXg ? (
-            <td className={numericCell}>
-              {row.expectedGoals === null ? unknown : formatDecimal(row.expectedGoals, locale, 2)}
-            </td>
-          ) : null}
-        </tr>
-      ))}
-    </DataTable>
+    <DataTable caption={shotCaption} columns={shotColumns} rows={shotRows} surface="pitch" />
   );
 
   const crossTable = (
-    <DataTable caption={crossCaption} headers={crossHeaders}>
-      {crossRows.map((row) => (
-        <tr key={row.key} className={rowClass}>
-          <td className={textCell}>{row.teamCode}</td>
-          <td className={textCell}>{row.playerName ?? unknown}</td>
-          <td className={numericCell}>{row.minuteLabel ?? unknown}</td>
-          <td className={numericCell}>{formatDecimal(row.x, locale, 2)}</td>
-          <td className={numericCell}>{formatDecimal(row.y, locale, 2)}</td>
-          <td className={textCell}>{t(row.deliveryKey)}</td>
-          <td className={textCell}>{row.completed ? t("viz.table.yes") : t("viz.table.no")}</td>
-        </tr>
-      ))}
-    </DataTable>
+    <DataTable caption={crossCaption} columns={crossColumns} rows={crossRows} surface="pitch" />
   );
 
   /*

@@ -342,12 +342,14 @@ export interface DefensiveLogRow {
    * REVIEW PATCH: these were `event.at?.minute ?? 0`, which stamped minute 0 on
    * every clock-less row while `minuteLabel` stayed null and `orderByMinute`
    * sorted the row LAST. On corpus-real data, where `at` has no carrier at all,
-   * that meant every row claimed minute 0. Nothing renders these fields today,
-   * but the section's own comment names this row array as Story 2.11's sort
-   * plug-in point, so an `aria-sort` reading `.minute` would have ordered the
-   * whole log as minute 0 — silently, and pinned green by fixtures that
-   * populate `at` on 100% of rows. This is the same `?? 0` defect the story
-   * routes to 2.11 as a known-open item; it is not re-introduced here.
+   * that meant every row claimed minute 0.
+   *
+   * STORY 2.11a HAS NOW LANDED and the sort this anticipated is live: the
+   * shared DataTable's clock column reads these two fields through
+   * `clockSortValue`, which returns `null` — not 0 — for an absent clock, so a
+   * clock-less row sorts to the END of the array in both directions, agreeing
+   * with `orderByMinute`. 2.11a also closed the same `?? 0` in `ShotLogRow`,
+   * so all three log row models now share one null contract.
    */
   minute: number | null;
   stoppageMinute: number | null;

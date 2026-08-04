@@ -36,10 +36,300 @@ export const en: Dictionary = {
       attribution:
         "Data: official FIFA Post-Match Summary Reports — 2026 World Cup. Independent site, not affiliated with FIFA.",
       aboutLink: "About this site",
+      glossaryLink: "Glossary",
     },
   },
   about: {
     title: "About this site",
+    dataTitle: "The data",
+    methodologyTitle: "How we read xG",
+    creditsTitle: "Credits",
+    projectTitle: "About the project",
+    // RULED VERBATIM (Story 2.18 decision 1) — see es.ts for why the AC's
+    // one-clause form was overturned. Must agree with glossary.xg.definition.
+    methodology:
+      "xG values are FIFA's own, taken from the official report and never recomputed. The report publishes only each team's xG total — there is no per-shot value, which is why every shot marker is drawn at the same size.",
+    // PROPOSED, not ruled — flagged for Juan at review (see es.ts).
+    credits:
+      "The site is built and maintained by one person. The design, the code and the translations are ours; the data is FIFA's.",
+    project:
+      "This is a personal project, free and ad-free. We do not sell data, we do not charge for access, and we receive nothing from FIFA or from any club.",
+  },
+  /*
+   * THE GLOSSARY. The `es` and `en` leaves are BYTE-IDENTICAL to es.ts and that
+   * is deliberate, not an untranslated mirror: the term PAIR is
+   * locale-invariant, because AC 2 requires both languages to render
+   * simultaneously in one locale's page ("build-up — es: salida de balón").
+   * Only `definition` is localised. Do not "fix" the mirrored term leaves.
+   *
+   * Every definition below is AUTHORED IN ENGLISH against the same corpus
+   * facts, never machine-translated: `en: Dictionary` guards key shape only and
+   * would happily accept a Spanish string in an `en` leaf.
+   */
+  glossary: {
+    "line-break": {
+      es: "rupturas de líneas",
+      en: "line breaks",
+      definition:
+        "A pass that plays past one or more lines of opposition players. The report counts them per team, and also the ones each defence concedes.",
+    },
+    "counter-press": {
+      es: "contrapresión",
+      en: "counter-press",
+      definition:
+        "Pressing immediately after losing the ball, to win it back before the opponent settles. The report publishes it as one of the out-of-possession phases.",
+    },
+    pressing: {
+      es: "presión",
+      en: "pressing",
+      definition:
+        "Organised pressure to win the ball back. The report splits time out of possession across high, mid and low pressing.",
+    },
+    "build-up": {
+      es: "salida de balón",
+      en: "build-up",
+      definition:
+        "The phase in which a team plays the ball out from its own half. The report splits it into build-up opposed and build-up unopposed.",
+    },
+    "high-block": {
+      es: "bloque alto",
+      en: "high block",
+      definition:
+        "The team defends with its lines close to the opposition half. One of the three block heights the report measures.",
+    },
+    "mid-block": {
+      es: "bloque medio",
+      en: "mid block",
+      definition:
+        "The team defends with its lines around the middle of the pitch. One of the three block heights the report measures.",
+    },
+    "low-block": {
+      es: "bloque bajo",
+      en: "low block",
+      definition:
+        "The team defends with its lines close to its own goal. One of the three block heights the report measures.",
+    },
+    "line-height": {
+      es: "altura de la línea defensiva",
+      en: "line height",
+      definition:
+        "How far from its own goal a team's last line plays, in metres. The report does not state which phase of play each distance describes.",
+    },
+    "team-length": {
+      es: "longitud del equipo",
+      en: "team length",
+      definition:
+        "The distance in metres between a team's most advanced line and its deepest one. The report does not state which phase of play it describes.",
+    },
+    "phases-of-play": {
+      es: "fases del juego",
+      en: "phases of play",
+      definition:
+        "The passages the report splits a match into: eight in possession and nine out of possession. They are independent rates, they do not sum to 100 and they are not parts of a whole.",
+    },
+    xg: {
+      es: "xG",
+      en: "xG",
+      definition:
+        "Expected goals: each shot's probability of becoming a goal, per FIFA's model. The report publishes only the team total, not a per-shot value.",
+    },
+    "pass-network": {
+      es: "red de pases",
+      en: "pass network",
+      definition:
+        "The picture of who passed to whom within a team. Each player is a node and each line is the passes between two players.",
+    },
+    "speed-zones": {
+      es: "zonas de velocidad",
+      en: "speed zones",
+      definition: "The speed bands the report uses to split the distance each player covers.",
+    },
+    "high-speed-run": {
+      es: "carreras a alta velocidad",
+      en: "high-speed runs",
+      definition:
+        "Runs a player makes above the speed threshold the report sets. The Spanish column head is abbreviated to CARR. ALTA VEL.",
+    },
+    sprint: {
+      es: "sprint",
+      en: "sprint",
+      definition:
+        "A passage of running at top speed. The report publishes sprint distance per player and per team.",
+    },
+    "take-on": {
+      es: "regate",
+      en: "take-on",
+      definition:
+        "An attempt to beat an opponent while keeping the ball. The report prints it as Take Ons, between ball progressions and attempts at goal.",
+    },
+    "step-in": {
+      es: "irrupción",
+      en: "step-in",
+      definition:
+        "A carry with which a player breaks into the opposition block. The report prints it as Step Ins on the in-possession distributions page, so it is an on-ball action and not a defensive move.",
+    },
+    "second-ball": {
+      es: "segunda jugada",
+      en: "second ball",
+      definition: "The contest for a loose ball after a clearance, a rebound or an aerial duel.",
+    },
+    "forced-turnover": {
+      es: "recuperaciones forzadas",
+      en: "forced turnovers",
+      definition:
+        "Losses of possession a team forces on its opponent. The credit belongs to the team that forces it, not to the one that suffers it.",
+    },
+    "ball-progression": {
+      es: "progresión de balón",
+      en: "ball progression",
+      definition:
+        "Moving the ball towards the opposition goal, by pass or by carry. The report counts it per player and per team.",
+    },
+    "reception-in-final-third": {
+      es: "recepción en el último tercio",
+      en: "reception in the final third",
+      definition: "Receiving the ball in the third of the pitch closest to the opposition goal.",
+    },
+    "set-play": {
+      es: "balón parado",
+      en: "set play",
+      definition:
+        "Any play that starts from a dead ball: corners, free kicks, throw-ins and penalties.",
+    },
+    momentum: {
+      // Decision 5 — the policy table's own tooltip text is factually false for
+      // this series (Story 1.8 closed OQ-5). See es.ts.
+      es: "momentum",
+      en: "momentum",
+      definition:
+        "How often each team enters the final third, minute by minute. The report publishes no per-minute possession, so this does not measure dominance.",
+    },
+    goal: {
+      es: "gol",
+      en: "goal",
+      definition:
+        "A shot that ends in a goal. One of the five shot outcomes the report publishes.",
+    },
+    "on-target": {
+      es: "al arco",
+      en: "on target",
+      definition:
+        "A shot that was heading in and did not go in. One of the five shot outcomes the report publishes.",
+    },
+    "off-target": {
+      es: "desviado",
+      en: "off target",
+      definition:
+        "A shot that missed the goal. One of the five shot outcomes the report publishes.",
+    },
+    blocked: {
+      es: "bloqueado",
+      en: "blocked",
+      definition:
+        "A shot an opponent blocks before it reaches the goal. One of the five shot outcomes the report publishes.",
+    },
+    incomplete: {
+      es: "incompleto",
+      en: "incomplete",
+      definition:
+        "A shot the report does not classify into any of the other four outcomes. The report also prints a longer per-shot label whose vocabulary the site does not map yet.",
+    },
+    goalkeeper: {
+      es: "arquero",
+      en: "goalkeeper",
+      definition:
+        "The player who defends the goal. The Spanish term the site uses is the one most of Latin America uses.",
+    },
+    save: {
+      es: "atajada",
+      en: "save",
+      definition: "The intervention with which a goalkeeper prevents a goal.",
+    },
+    distribution: {
+      es: "distribución",
+      en: "distribution",
+      definition:
+        "How a goalkeeper puts the ball back in play: kicked from feet, volleyed from the hands, or thrown. The report splits each family into techniques.",
+    },
+    salida: {
+      es: "salidas",
+      en: "coming off the line",
+      definition: "When a goalkeeper leaves the line to cut out a cross or a through ball.",
+    },
+    "one-on-one": {
+      es: "mano a mano",
+      en: "one-on-one",
+      definition: "The duel between a goalkeeper and an attacker arriving alone in front of goal.",
+    },
+    defender: {
+      es: "defensa",
+      en: "defender",
+      definition:
+        "The position of the players in the last line. The report prints it in the line-ups.",
+    },
+    midfielder: {
+      es: "mediocampista",
+      en: "midfielder",
+      definition: "The position of the players in midfield. The report prints it in the line-ups.",
+    },
+    forward: {
+      es: "delantero",
+      en: "forward",
+      definition: "The position of the attacking players. The report prints it in the line-ups.",
+    },
+    corner: {
+      es: "tiro de esquina",
+      en: "corner",
+      definition:
+        "The kick taken from the corner of the pitch. The Spanish term the site uses throughout is tiro de esquina.",
+    },
+    offside: {
+      es: "posición adelantada",
+      en: "offside",
+      definition:
+        "The offence of receiving the ball beyond the opposition's last line. The Spanish term the site uses is the Latin American one.",
+    },
+    cross: {
+      es: "centro",
+      en: "cross",
+      definition:
+        "A delivery from a wide area into the box. The report publishes how many were attempted, how many were completed and the delivery type.",
+    },
+    "offers-to-receive": {
+      // Decision 3's relationship, verbatim and shared with movement-to-receive.
+      es: "ofrecimientos para recibir",
+      en: "offers to receive",
+      definition:
+        "An offer is a player making himself available to receive; a movement to receive is the subset of those offers in which he also moved. The report counts offers with no movement separately.",
+    },
+    "movement-to-receive": {
+      es: "desmarques",
+      en: "movement to receive",
+      definition:
+        "An offer is a player making himself available to receive; a movement to receive is the subset of those offers in which he also moved. The report counts offers with no movement separately.",
+    },
+    "defensive-actions": {
+      es: "acciones defensivas",
+      en: "defensive actions",
+      definition:
+        "The actions with which a team tries to win the ball back: regains, blocks and contests. The report publishes coordinates for only some of them.",
+    },
+  },
+  glossaryPage: {
+    title: "Glossary",
+    intro: "The tactical and statistical terms the site uses, in Spanish and English.",
+    seeMore: "See in the glossary",
+    jargonNote:
+      "The English term is kept: there is no short Spanish form a reader would recognise.",
+    authoredNote:
+      "The official report carries no glossary. These definitions are ours, written from where each figure appears in the report and from how its numbers reconcile.",
+    // Locale-invariant in both dictionaries — the subtitle names the OTHER
+    // language, so its prefix does not swap with the interface.
+    esPrefix: "es:",
+    enPrefix: "en:",
+    metaTitle: "Glossary — WC Stats",
+    metaDescription:
+      "The tactical and statistical terms from the 2026 World Cup that the site uses, in Spanish and English.",
   },
   notFound: {
     message: "This page does not exist. Were you looking for a match?",
@@ -64,8 +354,10 @@ export const en: Dictionary = {
       tiles: {
         possession: "Possession",
         shots: "Shots",
-        distance: "Distance (km)",
-        topSpeed: "Top speed (km/h)",
+        // Story 2.18 Task 8.10 — the unit is composed at the call site from
+        // enums.unit, never baked into the label (AD-7). See es.ts.
+        distance: "Distance",
+        topSpeed: "Top speed",
       },
       lineups: {
         title: "Line-ups and formations",
@@ -112,7 +404,9 @@ export const en: Dictionary = {
       },
       "movement-to-receive": {
         title: "Movement to receive",
-        summary: "How players moved off the ball to receive in space.",
+        // Story 2.18 decision 3 — the offers⊋movements relationship ships in
+        // the section, not only in the glossary. Verbatim; see es.ts.
+        summary: "How they offered to receive, and in which of those offers they also moved.",
       },
       "defensive-actions": {
         title: "Defensive actions",
@@ -143,6 +437,11 @@ export const en: Dictionary = {
       receivingHeadline: "No per-player data for this match.",
       receivingExplanation:
         "This section is built from the report's per-player tables, and this report does not carry them.",
+      // Story 2.18 decision 7 — the per-section boundary's copy. An app-side
+      // failure, stated as one; it must never claim the report lacks the
+      // section (see es.ts).
+      sectionCrashed: "We couldn't display this section.",
+      sectionCrashedExplanation: "The data arrived in a format we couldn't read.",
     },
     pending: {
       headline: "This section is not on the site yet.",
@@ -192,7 +491,6 @@ export const en: Dictionary = {
       phase: "Phase",
       category: "Category",
       measure: "Measure",
-      value: "Value",
       count: "Count",
       share: "Share",
       left: "Left",
@@ -200,7 +498,15 @@ export const en: Dictionary = {
       complete: "Complete",
       incomplete: "Incomplete",
       slot: "Slot",
+      slotCount: "Slots",
       keeper: "Goalkeeper",
+      // Story 2.11a — the one sortable data-table contract (UX-DR12). Mirrors
+      // es.ts exactly; see that file for why each key exists.
+      sortAction: "Sort by",
+      sortedBy: "Sorted by",
+      sortAscending: "ascending",
+      sortDescending: "descending",
+      sortCleared: "The table's original order has been restored.",
     },
     cluster: {
       dialogLabel: "Events at this point",
@@ -365,6 +671,8 @@ export const en: Dictionary = {
       cornerType: "Delivery type",
       cornerStyle: "Delivery style",
       cornerStyleNote: "Independent counts: these may not match the corner total.",
+      cornerMismatchNote:
+        "The segments do not add up to the corner total the report publishes. Both figures are shown, and neither is adjusted.",
       declaredTotal: "Report's total",
       barNote: "Each bar splits the team's corners across the report's categories.",
       zero: "The report records no set plays for this team.",
@@ -372,6 +680,7 @@ export const en: Dictionary = {
       totalsCaption: "Team totals.",
       freeKickCaption: "Free kicks by type, independent counts.",
       cornerCaption: "Corners by side, delivery type and delivery style.",
+      cornerTypeSideCaption: "Corners by side within each delivery type.",
     },
     goalkeeping: {
       figurePrefix: "Goalkeeping:",
@@ -404,11 +713,19 @@ export const en: Dictionary = {
         "The report publishes some breakdowns as images only, with no readable values: those panels are not shown.",
       zeroRecord: "The report includes no goalkeeper block for this team.",
       zeroAll: "The report lists no goalkeeper for this match.",
+      zeroTimeline: "The report plots no slots for this goalkeeper.",
+      feetTechniques: "Kick-from-feet techniques",
+      handsTechniques: "Kick-from-hands techniques",
+      throwTechniques: "Throw techniques",
       summaryCaption: "Total involvements as printed by the report.",
       timelineCaption:
         "Slots as plotted by the report, in order. The source does not guarantee they sum to the total.",
       distributionCaption: "Distribution by family and technique.",
-      preventionCaption: "Goal prevention; each breakdown carries its own total.",
+      preventionCaption:
+        "Interventions by type; these sum to attempts faced, not to total interventions.",
+      headlineCaption: "Goal-prevention totals as printed by the report.",
+      bodyTypeCaption:
+        "Interventions by body part; these sum to total interventions, not to attempts faced.",
       aerialCaption: "Aerial control and crosses faced.",
     },
   },
@@ -524,9 +841,16 @@ export const en: Dictionary = {
       short: "Short",
       "edge-of-penalty-area": "Edge of the area",
     },
+    /*
+     * Story 2.18 Task 8.9. These shipped as "Inswing"/"Outswing" while
+     * en.enums.crossDelivery ships "Inswinging"/"Outswinging" for the SAME
+     * delivery shape. The es docblock states the reuse is deliberate — "one
+     * delivery shape has one Spanish name across the app" — and es delivers on
+     * it; en did not.
+     */
     cornerDeliveryStyle: {
-      inswing: "Inswing",
-      outswing: "Outswing",
+      inswing: "Inswinging",
+      outswing: "Outswinging",
       driven: "Driven",
       lofted: "Lofted",
     },
@@ -580,6 +904,7 @@ export const en: Dictionary = {
     unit: {
       km: "km",
       m: "m",
+      kmh: "km/h",
     },
   },
 };

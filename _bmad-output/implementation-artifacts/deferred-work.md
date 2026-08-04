@@ -820,3 +820,343 @@ source the App may read.
   and it is a bundling decision worth making once, for all of 2.13 / 2.15 / 2.16 / 2.17, rather
   than in the story that first noticed it.
   **Owner:** whoever owns the bundle budget for the remaining recharts stories.
+
+## Deferred from: code review of 2-10-phases-pressing-blocks-set-plays-goalkeeping-sections (2026-08-04)
+
+- **A `DistributionChart` series whose values are all equal draws both direct team labels at the
+  axis origin, overlapping each other.** `seriesLabelIndex` (`TacticalCharts.tsx:229-237`) returns
+  the index of a series' largest value and falls back to index 0 when no value beats the first —
+  which is what happens when every value in the series is identical, the all-zero case included.
+  `SeriesEndLabel` then anchors both team codes at `x = barEnd + 6`, i.e. both at the axis origin,
+  and decision 10(a)'s direct series labels are the primary UX-DR11 channel on these charts.
+  **Deferred, marginal reachability:** corpus out-of-possession rates sum 73-97 across nine values
+  and in-possession 84-149 across eight, so a fully flat series is not a shape the source produces;
+  the four press rates being simultaneously zero is the only construction that reaches it.
+  Worth a `-1` sentinel and a suppressed label if a successor recharts story (2.13 / 2.15 / 2.16 /
+  2.17) touches this module anyway.
+  **Owner:** the first successor story to reuse `DistributionChart`.
+
+- **A denominator-labelled goalkeeping breakdown can contradict its own listed rows, with no
+  disclosure.** Ruled decision 13 makes each breakdown state its own total —
+  `byInterventionType` "de N" where N is `attemptsFaced`, `byBodyType` where N is
+  `totalInterventions` — on the contract's assertion that each set sums to its stated denominator
+  (`GoalPrevention.description`). `GoalkeepingSection.tsx:348-367` renders the label and the rows
+  with no check that they agree, so if the relation is corpus-false the panel asserts a total its
+  own visible numbers contradict. **Deferred because the measurement does not exist:** Story 2.10
+  measured the free-kick and corner partitions over 208 team-innings and found two of four false,
+  but never measured either goal-prevention relation. That is the missing input, not the fix — and
+  the fix is cheap once the number is known (the same `disagreesWithDeclaredTotal` flag the
+  set-plays model already carries). Note the risk is live **only on the fixtures** today, since
+  `byBodyType` is decision 3's gated panel and is null on 208/208 corpus team-innings.
+  **Owner:** Story 1.16 (to measure), then whoever ships the goalkeeping real-data cutover (2.19).
+
+## Filed by Story 2.18 implementation — the terminology gate, `/glossary` and `/about`
+
+Story 2.18 is the terminology GATE, not a terminology addition: ten stories shipped ~417 locale
+leaves ahead of it under the honour system, and nothing in the build chain had ever compared a
+shipped Spanish string to `EXPERIENCE.md`'s per-term policy table. Everything below was measured
+against the live `es.ts` / `en.ts` during implementation, not carried forward from the story's
+creation audit.
+
+### RESOLVED — the whole-layer error boundary, filed FIVE times, now contained per section
+
+The blast radius was filed by the 2.8 review (*"kills all eleven Tactical sections"*), re-filed by
+the 2.6 review (*"A malformed momentum series takes down all eleven Tactical sections"*), re-filed
+by 2.9 (*"The whole-layer error boundary, re-filed with Story 2.9's added blast radius"*), confirmed
+unpatched by 1.14, and re-filed **again** by 2.10 (*"The whole-layer error boundary now has its FULL
+blast radius"*) — routed every time to *"whichever story next touches `MatchBundleRegion` /
+`TacticalSection`"*. Widening `TacticalSection.title` made 2.18 that story, and Juan ruled it takes
+the work.
+
+**What shipped:** `TacticalErrorBoundary` gained optional `headlineKey` / `explanationKey` (defaulted
+with `??` inside the fallback, never `defaultProps`) and now wraps each section's `children` inside
+`TacticalLayer`'s render, keyed `` `${plan.id}-${plan.open}` ``. `MatchBundleRegion.tsx` is
+byte-identical — its whole-layer instance stays as the outer floor.
+
+**STATE PRECISELY WHAT IT DOES NOT CONTAIN, because the boundary is weaker than "one section dies":**
+
+- **`sectionContent(plan.id)` is evaluated EAGERLY, inside `TacticalLayer.render()`.** A throw during
+  prop construction — or the `default:` exhaustiveness throw — happens **above** the per-section
+  boundary and is caught only by the outer whole-layer instance. What the new boundary contains is a
+  throw inside a *section component's own render*.
+- **There is no automatic reset.** `state = { failed: false }` with no reset path, and `plan.id` is
+  constant, so `key={plan.id}` could never force a remount. The `${id}-${open}` key means **recovery
+  is by collapse and re-expand only** — and `key-stats` and `momentum` are never collapsible at any
+  width, so **a crash in either of those two is permanent for the page's life**.
+
+**Owner of the residual:** whoever next needs either of those two properties. Neither is a defect
+this story introduced; both are limits of the mechanism, recorded so the next reader does not
+assume the filing is fully discharged.
+
+### RESOLVED — the i18n ESLint gate's object-shaped-prop hole (and the reason it never reached this ledger)
+
+Filed by Story 2.6 **in a story file and never promoted here** (`2-6-momentum-timeline.md`, grep
+*"The gate does NOT reach recharts"*), restated in `2-10-…md` (grep *"object-shaped props"*). What
+was open: the three shipped selectors match a `Literal`/`TemplateLiteral` that is a **direct child**
+of the `JSXExpressionContainer`, but recharts delivers text through object-shaped props —
+`<YAxis label={{ value: "…" }} />` puts the literal inside an `ObjectExpression` and passed the gate
+silently — and `value` was not a gated prop name at all, so `<Label value="…" />` was uncaught too.
+
+**What the closure covers, exactly:** a string literal or template literal at
+`label={{ value: … }}` / `{{ children: … }}` on any of the existing sixteen gated prop names, and a
+string literal or template literal on `value` **for `<Label>` and `<LabelList>` only**. Ten new
+`eslint-gate.test.ts` fixtures pin both halves plus the three things the closure must not break.
+
+**What it deliberately does NOT cover, and why:**
+
+- **`value` is reachable ONLY through `Label`/`LabelList`.** It is not on the shared sixteen-name
+  regex and must not be added: `SiteHeader.tsx` passes `value="es"` / `value="en"` to Radix
+  `ToggleGroupItem` as **state tokens**, both bare `Literal`s directly under a
+  `JSXAttribute[name.name="value"]`, and they would fail `eslint --max-warnings 0` immediately. No
+  scoping *by name* can separate a UI `value` from a form/state `value`. A future chart library that
+  ships a differently-named text-bearing element needs its own element-scoped selector.
+- **Only the `value` and `children` members of an object-shaped prop are gated.** Gating every
+  `Property` flags recharts' own layout keywords — `label={{ value: t("…"), position: "insideLeft" }}`
+  is correct code and `"insideLeft"` is not user-facing copy.
+- **Both selectors are constrained to STRING literals via `raw`.** ESTree `Literal` includes numbers,
+  booleans and `null`, and `TacticalCharts.tsx` and `MomentumChart.tsx` both pass numeric `angle`,
+  `position` and `offset` values; an unconstrained selector flags correct code on the first chart it
+  meets. This was not theoretical — it failed on the first run and the fixture that caught it is now
+  a permanent test.
+- **A descendant combinator on the `Label` selector reaches the DICTIONARY KEY inside
+  `value={t("app.siteName")}`** and turns the one correct way to write the prop into a build error.
+  Both `Label` selectors use direct-child combinators for that reason. Also caught by a fixture.
+
+### FILED, NOT FIXED — the two `viz.momentum` copy holes (Task 8.8 discharged as a filing)
+
+Both require editing `MomentumSection.tsx` and `MomentumChart.tsx`, which Story 2.18's scope
+boundaries forbid, so the task was discharged as a filing rather than a fix:
+
+- **`viz.momentum.cursorLabel`** is an *operating instruction* (*"Cursor de minuto: mueve con las
+  flechas para leer cada minuto."*) used as an `aria-label`. Splitting the accessible NAME from the
+  INSTRUCTION needs both files.
+- **`viz.momentum.zero` does not exist**, and minting it would create the dead key AC 1's binding
+  prohibits: `MomentumSection` has **no zero-state branch** at all. The key and the branch have to
+  land together.
+
+**Owner:** whoever next touches the momentum surface.
+
+### FILED, NOT FIXED — five Tactical sections carry no glossary mark, and their titles are unmarkable
+
+Ruled decision 6 marks the two never-collapsible sections in their **heading** and the nine
+collapsible ones in their **summary**, because `{title}` renders inside the accordion
+`<button aria-expanded>` for all nine and a `GlossaryTerm` is a focusable trigger with
+`aria-haspopup`.
+
+**Measured against the live dictionary: five of the nine collapsible summaries contain no term from
+the policy table at all** — `pass-networks` (*"Quién conectó con quién y por dónde circuló el
+balón."*), `offers-to-receive` (*"Cuántas veces se pidió el balón y cuántas llegó el pase."*),
+`movement-to-receive` (whose Task 8.13 rewrite is ruled **verbatim** and also carries none),
+`defensive-actions` (*"Dónde recuperó cada equipo y dónde forzó las pérdidas."*) and `phases`
+(*"Cómo se repartió el partido entre ataque, transición y defensa."*) — while their **titles** do
+("Red de pases", "Ofrecimientos para recibir", "Desmarques", "Acciones defensivas", "Fases del
+juego"). Separately, `key-stats`'s heading ("Estadísticas clave") matches no policy row, and the
+metric labels that would carry one are rendered by the do-not-touch `KeyStatisticsSection`.
+
+So the Tactical Layer ships **five section marks** (`momentum` heading; `shot-maps`, `pressing`,
+`set-plays`, `goalkeeping` summaries) plus the Hero's `xG`, not eleven. AC 2's "terms are marked once
+per section" is a **ceiling**, so this is compliant — but it is materially thinner than the story
+imagined, and rewriting frozen 2.5 ruled copy to manufacture marking sites was outside 2.18's
+authority. **Juan ruled: file it, ship the six.**
+
+**Owner:** whoever next owns those summaries — most likely 2.19, or a copy pass that can re-rule the
+2.5 summaries with marking in mind.
+
+### FILED — `DESIGN.md` and `EXPERIENCE.md` disagree about the footer's `/glossary` link
+
+`EXPERIENCE.md`'s IA route table names the footer as `/glossary`'s reach path
+(*"| `/glossary` | Glossary | Footer, every glossary tooltip's \"see more\" |"*), while `DESIGN.md`'s
+attribution-footer bullet mentions only the `/about` link. Story 2.18 **followed `EXPERIENCE.md`**
+and shipped the link (`chrome.footer.glossaryLink`, both locales); `DESIGN.md`'s bullet is now stale
+and was deliberately **not** edited — it is not this story's artifact.
+
+**Owner:** whoever next edits `DESIGN.md`.
+
+### FILED — `<title>` / OG stay Spanish after an EN toggle, and `/glossary` makes it one route worse
+
+Pre-existing and open, needing a human ruling: the document title and Open Graph metadata are
+composed by server `t()` and never swap with the language toggle, so the `en.*` metadata keys are
+unreachable. Story 2.18 adds `glossaryPage.metaTitle` and `glossaryPage.metaDescription`, so the
+count of unreachable `en` metadata leaves grows. **Verified live:** `/glossary` serves
+`<title>Glosario — WC Stats</title>` with the interface in English.
+
+`/about` was deliberately given **no** metadata export at all rather than quietly taking the
+decision — it has shipped without one since 2.2, and adding one here would have resolved an open
+ruling as a side effect.
+
+**Owner:** Juan (it is one of the seven decisions deferred at his call).
+
+### FILED — the policy table's own scaffolding gap: `faltas` has no surface and no glossary id
+
+Task 8.7's recount (below) found an item the creation audit's list of eight did not contain. Row 32
+(*fouls / duels*) rules **`faltas / duelos`**. `duelos` ships — `enums.possessionContest` carries
+*"Duelo físico"* and *"Duelo aéreo"* — but **`falta` occurs 0 times in `es.ts`**. The row is
+classified as table scaffolding (Task 2.2's no-glossary-id list), so it is discharged "in the locale
+files" — except that half of it is not in the locale files either.
+
+**Owner:** whichever story first renders a fouls surface (2.11b/2.11c or the Tournament Hub).
+
+### Task 8.7 — the per-term policy table recounted, and the partition SUMS TO 38
+
+The story's own instruction was to recount rather than carry a number forward, because the creation
+audit's partition did not sum. Recounted against the live `es.ts`:
+
+| Partition | Rows | Which |
+|---|---|---|
+| **Compliant** | **26** | Wholly shipped and matching the ruled string |
+| **Violated** | **3** | Row 21 `momentum` (ruled tooltip factually false, never shipped), row 30 `corner` (*"Córners … laterales"*), row 38 `Expert column groups` (2.10 shipped the logged REJECTED form) — **all three remediated by this story** |
+| **Not yet used (wholly)** | **7** | `speed zones`, `high-speed run` (+ its `"CARR. ALTA VEL."` abbreviation), `take-on`, `step-in`, `result letters & standings columns`, `offside`, `standings / leaderboards` |
+| **Partial** | **2** | Row 25 `goalkeeping vocabulary` (*distribución* ships; **`salidas`** and **`mano a mano`** do not) and row 32 `fouls / duels` (*duelos* ships; **`faltas`** does not — see the entry above) |
+
+26 + 3 + 7 + 2 = **38**. The audit's "eight NOT-YET-USED rows" resolves to 7 whole rows plus the
+`salidas`/`mano a mano` half of row 25; the `faltas` half of row 32 is a **ninth** undischarged item
+the audit missed.
+
+**How the not-yet-used rows were discharged.** Every one that is a *term* got a real `es` entry with
+a real definition **in the glossary** — a surface that exists in this story, where the term
+legitimately appears, and which satisfies AC 1's *"an explicit `es` entry with no raw-key
+fallthrough"* without minting a dead `viz.*` / `enums.*` key. `es.ts`'s own `enums` docblock reserves
+those namespaces for **per-surface** stories, and the 2.9 review already patched five dead keys.
+**The next story must neither assume these are done nor re-mint them:** when `speed zones`,
+`high-speed run`, `take-on`, `step-in`, `offside`, `salidas` or `mano a mano` gets a real surface, it
+gets its `viz.*`/`enums.*` leaf **then**, reusing the ruled Spanish term from
+`glossary.<id>.es`.
+
+**The recorded objection stands.** A validation reviewer argued that `result letters & standings
+columns` and the `"CARR. ALTA VEL."` abbreviation are *table scaffolding the AC names by category*
+and are as safe to mint now as `enums.stage` was — i.e. that the binding declines ~20% of the work
+AC 1 asks for. The counter is that `enums.stage` / `enums.position` were minted **by the stories that
+rendered them**, and a standings-column map with no standings table is the dead key the ledger
+already punished. Review can overturn this cheaply.
+
+### FILED — the CS-1 forward note: what 2.18 deliberately did NOT map
+
+`ShotOutcomeDetail` is **not** mapped by this story (ruled decision 12, taking 2.7 Task 10.4's
+clearance verbatim in shape). 2.18 maps **`ShotOutcome` only** — the stable five-value marker enum
+CS-1 does not touch. Verified at Task 1.2: `assert:schema-version` reports 7 artifacts at
+schemaVersion 2, so **CS-1 has not landed**.
+
+- **Two tripwires must stay green until detail labels ship, and must then be deleted
+  DELIBERATELY:** `Object.keys(es.enums)).not.toContain("shotOutcomeDetail")` and
+  `Object.keys(es.enums.shotOutcome)).toHaveLength(5)`. Story 2.18 re-asserts both from its own side
+  in `i18n.test.ts`, so there are now **two** places to delete.
+- **The post-CS-1 enum is 24 values** (CR-1 adds bare `incomplete` and `on-target`), and CR-2 makes
+  `x-maps-to-outcome["deflected-on-target-defensive-event"]` an **array** `["incomplete", "on-target"]`
+  — so anything treating that map as scalar-valued breaks. **No count is hardcoded anywhere in this
+  story**, in code, comment or copy.
+- The glossary's five shot-outcome entries carry the forward note in prose:
+  `glossary.incomplete.definition` states that the report also prints a longer per-shot label whose
+  vocabulary the site does not map yet.
+- **Marker COLOUR is per-family, not global** — the same two RGBs mean `off-target`/`incomplete` on
+  shots and `attempted`/`completed` on crosses — so **no glossary entry claims a colour has one
+  meaning site-wide**, and none does. This is a property of the RGB legends, not of
+  `x-maps-to-outcome`, which is a single `ShotOutcomeDetail → ShotOutcome` map on
+  `common.schema.json` with no family dimension.
+
+**Owner:** whoever ships CS-1, then 2.13.
+
+### Terms minted or re-ruled by Story 2.18 (all logged as rows in `EXPERIENCE.md`)
+
+- **`enums.aerialType.claim`: "Descuelgue" → "Atrapada"** — 2.10 minted it with no policy row;
+  "Descuelgue" leans Spain against the ruled LatAm register (UX-DR19), and *atrapada* pairs with the
+  shipped *arquero* / *atajada* vocabulary.
+- **`enums.distributionType` (es) realigned to the `en` distinction** — es split on
+  body-part/technique while en splits on **kick vs throw**, leaving *"Saque de volea"* and *"Saque
+  con la mano"* mutually confusable. Now *"Saque con el pie"* / *"Volea desde las manos"* /
+  *"Lanzamiento con la mano"*: two kicks, one throw.
+- **`en.enums.cornerDeliveryStyle`: "Inswing"/"Outswing" → "Inswinging"/"Outswinging"** — the es
+  docblock states the reuse of one delivery vocabulary is deliberate and es delivered on it; en did
+  not.
+- **The counterpart-language subtitle's `es:` / `en:` prefixes**, locale-invariant in both
+  dictionaries, and **suppressed entirely where the two terms are identical** (decision 13).
+- **`about.credits` and `about.project` are PROPOSED, NOT RULED** — no spine carries credits or
+  project-framing wording. Authored under Voice and Tone and flagged for Juan at review.
+
+### Known-adjacent, inherited and NOT fixed by this story
+
+- **The fragment/hash re-entry defect** (filed by the 2.5 review, open, no owner): re-activating an
+  **unchanged** hash never re-fires `hashchange`, so a repeat `/glossary/#term` link is a silent
+  no-op. `/glossary`'s 42 anchors inherit it.
+- **The cluster-popover over-claim copy** — needs a geometry ruling, not a copy edit. Untouched.
+- **The `minutePrefixKey` / `valuePrefixKey` naming drift** — still routed to whoever next touches
+  all five files. Untouched.
+- **`app/src/app/about/page.tsx`'s "Story 2.18 replaces this" docblock is now DISCHARGED** — the
+  route is filled, and the docblock says so.
+
+## Filed by Story 2.11a — the sortable data-table contract (2026-08-04)
+
+Every entry below is APPENDED. No earlier paragraph is edited; the two corrections below are
+recorded as corrections rather than by rewriting the entries they correct.
+
+### CLOSED by this story
+
+- **The `?? 0` item is CLOSED.** Grep anchor: *"dead fields carrying a defaulting decision"*.
+  `ShotLogRow.minute` / `stoppageMinute` are now `number | null`, populated `?? null`, and the
+  shared sortable table reads them through `clockSortValue`, which returns `null` — never 0 — for a
+  clock-less row. Nulls sort to the END of the array in BOTH directions, which agrees with
+  `orderByMinute`'s `left == null ? 1 : -1` and is asserted equivalent to it in
+  `table-sort.test.ts`. The three log row models (`ShotLogRow`, `CrossLogRow`, `DefensiveLogRow`)
+  now share ONE null contract, asserted across all three in `shot-map-model.test.ts`.
+
+- **CORRECTION to that entry, measured rather than trusted.** It claims *"`cross-map-model.ts:160-161`
+  does the same"*. That clause was **STALE**: `CrossLogRow` already used `?? null` with type
+  `number | null`, and `DefensiveLogRow` had been fixed by Story 2.9's code review with a docblock
+  naming Story 2.11 as the owner of the Shot fix. **Only `ShotLogRow` was still wrong.** The
+  original entry is left untouched; this is the correction.
+
+- **The sortable-table plug-in points filed by Stories 2.6, 2.7, 2.8 and 2.9 are DISCHARGED.**
+  Grep anchors: *"The pass matrix ships PLAIN"* (2.8) and *"The momentum data table ships PLAIN"*
+  (2.6). Seven code sites across four filing stories (`grep "2.11 PLUG-IN POINT"` = 4,
+  `grep "Story 2.11 owns"` = 3, plus 2.10's four later copies) are retired: ONE shared
+  `app/src/components/DataTable.tsx` now serves **all twenty instances across all ten files**, and
+  every private `DataTable` copy is deleted. UX-DR12's sort contract — click/Enter/Space,
+  `aria-sort`, polite announcements, `Intl.Collator('es',{sensitivity:'base'})` text sort, a stated
+  default sort per table, tabular numeric alignment — ships once, in `app/src/lib/table-sort.ts`
+  plus that component.
+
+- **Task 8.3's branch is DEAD and is recorded as such rather than filed.** It was written to fire
+  *"only if 2-10 has not landed"*. 2-10 landed at `892766c` before this story started, the retrofit
+  surface was re-counted at Task 1.2 as exactly **10 files / 20 instances**, and all twenty were
+  reachable. Nothing is routed onward on this point.
+
+### DECLARED DEPARTURES filed by this story
+
+- **UX-DR12's STICKY HEADER is NOT implemented, and the reason is structural rather than
+  discretionary. Routed to Story 2.11b.** `ViewDataDisclosure`'s region — which hosts every one of
+  the twenty tables — is `className="mt-tile-gap w-full overflow-x-auto"`. Per CSS Overflow 3, an
+  `overflow-x: auto` box with `overflow-y: visible` has its used `overflow-y` forced to `auto`, so
+  that div is already a two-axis scroll container and is the nearest scrolling ancestor a sticky
+  `<thead>` resolves against. **It has no height bound**, so its scrollport equals its content
+  height and it never scrolls vertically: `position: sticky; top: 0` inside it never offsets. A
+  sticky header here would ship green, pass a suite with no jsdom, and **silently not stick**.
+  Verified live at Task 9.2: `getComputedStyle(thead).position === 'sticky'` is 0 across all 22
+  tables, deliberately.
+  **The fix** is a height-bounded scroll region. **The blocker** is that one shared disclosure
+  serving twenty tables cannot pick a height. **Owner: Story 2.11b**, which introduces the Expert
+  Layer's own bounded container. UX-DR12's `scroll-padding-top` clause travels with it.
+  **Do not add a height to `ViewDataDisclosure`'s region** to close this.
+
+- **DESIGN's `data-table.sort-active-color` is NOT used on the PITCH surface, and the number is
+  why.** DESIGN sets the active-sort head to `{colors.accent-cyan}`. Measured live in both themes
+  against the actual painted background: on the CANVAS it computes **11.27 dark / 4.99 light** and
+  is used as specified. On the theme-invariant PITCH the light `--accent-cyan` (`#0e7490`) computes
+  **2.28:1**, far under the 4.5 floor — the same clause `ViewDataDisclosure` and `ShotMapsSection`
+  already record for their own on-pitch controls. The pitch therefore marks the active column with
+  a LIGHTNESS STEP (`--ink-on-pitch` 11.14 over `--ink-on-pitch-secondary` 5.55, both
+  theme-invariant) plus the direction glyph. Direction is never carried by hue alone on either
+  surface. Filed for UX sign-off; not a request to edit DESIGN.md.
+
+### Recorded, not fixed
+
+- **The sort announcement is composed at click time and is NOT re-rendered by a later language
+  toggle.** Measured: toggling ES→EN with a sort active leaves the previous Spanish sentence in the
+  live region. It is **inert** — a live region speaks on change, and this text does not change — so
+  nothing is mis-announced, and the next sort composes a fresh string in the active locale. Left
+  as-is deliberately: clearing it on locale change would itself mutate the region and risk
+  announcing an empty string. Recorded so a later reader does not mistake the residue for a bug.
+
+- **`TableColumn.rowHeader` and `sort: null` ship with NO consumer.** Both are part of the ruled
+  decision-2 contract and are exercised by `table-sort.test.ts`, but no retrofitted call site sets
+  either: every one of the twenty tables makes every column sortable, and none promotes a cell to
+  `<th scope="row">`. Story 2.11b's per-player tables are the intended first consumer. Flagged so
+  the unused paths are not mistaken for dead code and deleted.

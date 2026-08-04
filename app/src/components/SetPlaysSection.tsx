@@ -1,12 +1,12 @@
 "use client";
 
-import type { ReactNode } from "react";
-
+import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { SetPlaysBlock } from "@/lib/contract/contract-types";
 import { formatInteger, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
+import type { TableColumn } from "@/lib/table-sort";
 import { cn } from "@/lib/utils";
 import {
   cornerRows,
@@ -15,9 +15,12 @@ import {
   freeKickTableRows,
   setPlayTotals,
   setPlayTotalsRows,
+  type CornerTableRow,
   type FreeKickRowSet,
+  type FreeKickTableRow,
   type SetPlayGroup,
   type SetPlayTotals,
+  type SetPlayTotalsRow,
   type TeamCornerGroups,
 } from "@/viz/set-plays-model";
 
@@ -85,39 +88,22 @@ export interface SetPlaysSectionProps {
   away: SideRef;
 }
 
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  // Private copy per section (current convention). Canvas ink; no
-  // overflow-x-auto (the disclosure supplies one). Not sortable — 2.11 owns it.
-  return (
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-hairline">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
+/**
+ * The per-type left/right rows, FLATTENED to carry their own team code.
+ *
+ * The shipped shape was `{ row, teamCode }`, which has no top-level `key` — and
+ * the shared table needs one per row for React reconciliation and for decision
+ * 6's `data-row-key`. The model's own key is already unique across both teams
+ * (`corner-type-sides-${teamId}-${code}`), so flattening adds nothing but the
+ * team code and changes no rendered value.
+ */
+interface CornerTypeSideTableRow {
+  key: string;
+  teamCode: string;
+  labelKey: DictionaryKey;
+  left: number;
+  right: number;
+  total: number;
 }
 
 export function SetPlaysSection({ setPlays, home, away }: SetPlaysSectionProps) {
@@ -241,9 +227,21 @@ export function SetPlaysSection({ setPlays, home, away }: SetPlaysSectionProps) 
              * ones for the STYLE group, which is why it is never drawn as a bar
              * at all.
              */}
+            {/*
+             * A PARTITION'S MISMATCH NEEDS ITS OWN SENTENCE, not the
+             * non-partition disclaimer. `segmentedBar` is only ever called with
+             * corner SIDE and corner TYPE, both of which hold 208/208 on the
+             * corpus — so telling the reader "recuento independiente" here would
+             * deny exactly the part-of-whole relation the bar is drawing. What
+             * decision 8 actually requires when segments and `totalCorners`
+             * disagree is to SHOW BOTH AND NORMALIZE NEITHER (AD-6), which is a
+             * statement about the source disagreeing with itself, not about the
+             * categories being independent. Unreachable on the fixtures (false
+             * 6/6), live on corpus data.
+             */}
             {group.disagreesWithDeclaredTotal ? (
               <p className="type-caption text-ink-secondary">
-                {t("viz.setPlays.cornerStyleNote")}
+                {t("viz.setPlays.cornerMismatchNote")}
               </p>
             ) : null}
           </>
@@ -373,113 +371,162 @@ export function SetPlaysSection({ setPlays, home, away }: SetPlaysSectionProps) 
 
   /* ------------------------------- The tables -------------------------------- */
 
-  const totalsHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "sp", label: t("viz.setPlays.totalSetPlays"), numeric: true },
-    { key: "fk", label: t("viz.setPlays.freeKicks"), numeric: true },
-    { key: "ck", label: t("viz.setPlays.corners"), numeric: true },
-    { key: "ti", label: t("viz.setPlays.throwIns"), numeric: true },
-    { key: "pk", label: t("viz.setPlays.penalties"), numeric: true },
-  ];
-  const freeKickHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    ...freeKicks.home.rows.map((row) => ({
-      key: row.code,
-      label: t(row.labelKey),
-      numeric: true,
-    })),
-    { key: "total", label: t("viz.table.total"), numeric: true },
-  ];
-  const cornerHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "category", label: t("viz.table.category"), numeric: false },
-    { key: "count", label: t("viz.table.count"), numeric: true },
-    { key: "share", label: t("viz.table.share"), numeric: true },
-  ];
-  const typeSideHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "type", label: t("viz.setPlays.cornerType"), numeric: false },
-    { key: "left", label: t("viz.table.left"), numeric: true },
-    { key: "right", label: t("viz.table.right"), numeric: true },
-    { key: "total", label: t("viz.table.total"), numeric: true },
+  const emDash = t("viz.table.unknown");
+
+  function teamColumn<Row extends { teamCode: string }>(): TableColumn<Row> {
+    return {
+      key: "team",
+      headText: t("viz.table.team"),
+      headTitle: null,
+      render: (row) => row.teamCode,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.teamCode },
+    };
+  }
+
+  /** A plain integer column reading one field. */
+  function countColumn<Row>(
+    key: string,
+    headText: string,
+    read: (row: Row) => number
+  ): TableColumn<Row> {
+    return {
+      key,
+      headText,
+      headTitle: null,
+      render: (row) => formatInteger(read(row), locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: read },
+    };
+  }
+
+  const totalsColumns: TableColumn<SetPlayTotalsRow>[] = [
+    teamColumn<SetPlayTotalsRow>(),
+    countColumn("sp", t("viz.setPlays.totalSetPlays"), (row) => row.totalSetPlays),
+    countColumn("fk", t("viz.setPlays.freeKicks"), (row) => row.totalFreeKicks),
+    countColumn("ck", t("viz.setPlays.corners"), (row) => row.totalCorners),
+    countColumn("ti", t("viz.setPlays.throwIns"), (row) => row.totalThrowIns),
+    countColumn("pk", t("viz.setPlays.penalties"), (row) => row.totalPenalties),
   ];
 
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
-  const textCell = "px-2 py-1.5 type-caption text-ink-primary";
-  const rowClass = "border-b border-hairline";
-  const emDash = t("viz.table.unknown");
+  const freeKickColumns: TableColumn<FreeKickTableRow>[] = [
+    teamColumn<FreeKickTableRow>(),
+    // Generated from the model's own row definitions — a nested `counts` read,
+    // so the sort key is a getter (decision 2).
+    ...freeKicks.home.rows.map((definition) =>
+      countColumn<FreeKickTableRow>(
+        definition.code,
+        t(definition.labelKey),
+        (row) => row.counts[definition.code]
+      )
+    ),
+    /*
+     * The DECLARED total, read verbatim — never the sum of the four columns
+     * beside it, which double-counts the direct free kicks.
+     */
+    countColumn("total", t("viz.table.total"), (row) => row.declaredTotal),
+  ];
+
+  const cornerColumns: TableColumn<CornerTableRow>[] = [
+    teamColumn<CornerTableRow>(),
+    {
+      key: "category",
+      headText: t("viz.table.category"),
+      headTitle: null,
+      render: (row) => t(row.labelKey),
+      align: "text",
+      // The RESOLVED category name, so the order follows the EN toggle.
+      sort: { kind: "text", valueOf: (row) => t(row.labelKey) },
+    },
+    countColumn("count", t("viz.table.count"), (row) => row.count),
+    {
+      key: "share",
+      headText: t("viz.table.share"),
+      headTitle: null,
+      /*
+       * The share is GEOMETRY AND IT IS ALSO PRINTED on the surface, so
+       * decision 19 requires it here too. A non-partition group has no
+       * share anywhere — an em dash, not a computed number.
+       */
+      render: (row) => (row.share === null ? emDash : formatPercent(row.share, locale, 1)),
+      align: "numeric",
+      // NULL, never the em dash: a share-less group sorts to the END of the
+      // array rather than collating on "—".
+      sort: { kind: "number", valueOf: (row) => row.share },
+    },
+  ];
+
+  const typeSideColumns: TableColumn<CornerTypeSideTableRow>[] = [
+    teamColumn<CornerTypeSideTableRow>(),
+    {
+      key: "type",
+      headText: t("viz.setPlays.cornerType"),
+      headTitle: null,
+      render: (row) => t(row.labelKey),
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => t(row.labelKey) },
+    },
+    countColumn("left", t("viz.table.left"), (row) => row.left),
+    countColumn("right", t("viz.table.right"), (row) => row.right),
+    countColumn("total", t("viz.table.total"), (row) => row.total),
+  ];
 
   const totalsCaption = `${title}${CAPTION_SEPARATOR}${t("viz.setPlays.totalsCaption")}`;
   const freeKickCaption = `${title}${CAPTION_SEPARATOR}${t("viz.setPlays.freeKickCaption")}`;
   const cornerCaption = `${title}${CAPTION_SEPARATOR}${t("viz.setPlays.cornerCaption")}`;
+  /*
+   * ITS OWN CAPTION. Decision 19 requires each caption to state its own content
+   * and its own order, and the two tables are different slices: the one above is
+   * counts and shares by side, type and style; this one is the LEFT/RIGHT split
+   * within each delivery type. Reusing `cornerCaption` for both left two
+   * adjacent <caption> elements reading identically, which makes the tables
+   * indistinguishable in a screen reader's table list — the same defect the 2.7
+   * review patched once already for the disclosure controls.
+   */
+  const cornerTypeSideCaption = `${title}${CAPTION_SEPARATOR}${t(
+    "viz.setPlays.cornerTypeSideCaption"
+  )}`;
 
   const totalsTableRows = setPlayTotalsRows(totals);
   const freeKickRowsForTable = freeKickTableRows(freeKicks);
   const cornerRowsForTable = cornerTableRows(corners);
-  const typeSideRows = [
-    ...corners.home.deliveryTypeSides.map((row) => ({ row, teamCode: corners.home.bySide.teamCode })),
-    ...corners.away.deliveryTypeSides.map((row) => ({ row, teamCode: corners.away.bySide.teamCode })),
+  const typeSideRows: CornerTypeSideTableRow[] = [
+    ...corners.home.deliveryTypeSides.map((row) => ({
+      ...row,
+      teamCode: corners.home.bySide.teamCode,
+    })),
+    ...corners.away.deliveryTypeSides.map((row) => ({
+      ...row,
+      teamCode: corners.away.bySide.teamCode,
+    })),
   ];
 
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">
-      <DataTable caption={totalsCaption} headers={totalsHeaders}>
-        {totalsTableRows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={numericCell}>{formatInteger(row.totalSetPlays, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.totalFreeKicks, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.totalCorners, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.totalThrowIns, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.totalPenalties, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
-      <DataTable caption={freeKickCaption} headers={freeKickHeaders}>
-        {freeKickRowsForTable.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            {freeKicks.home.rows.map((definition) => (
-              <td key={definition.code} className={numericCell}>
-                {formatInteger(row.counts[definition.code], locale)}
-              </td>
-            ))}
-            {/*
-             * The DECLARED total, read verbatim — never the sum of the four
-             * columns beside it, which double-counts the direct free kicks.
-             */}
-            <td className={numericCell}>{formatInteger(row.declaredTotal, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
-      <DataTable caption={cornerCaption} headers={cornerHeaders}>
-        {cornerRowsForTable.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={textCell}>{t(row.labelKey)}</td>
-            <td className={numericCell}>{formatInteger(row.count, locale)}</td>
-            {/*
-             * The share is GEOMETRY AND IT IS ALSO PRINTED on the surface, so
-             * decision 19 requires it here too. A non-partition group has no
-             * share anywhere — an em dash, not a computed number.
-             */}
-            <td className={numericCell}>
-              {row.share === null ? emDash : formatPercent(row.share, locale, 1)}
-            </td>
-          </tr>
-        ))}
-      </DataTable>
-      <DataTable caption={cornerCaption} headers={typeSideHeaders}>
-        {typeSideRows.map(({ row, teamCode }) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{teamCode}</td>
-            <td className={textCell}>{t(row.labelKey)}</td>
-            <td className={numericCell}>{formatInteger(row.left, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.right, locale)}</td>
-            <td className={numericCell}>{formatInteger(row.total, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
+      <DataTable
+        caption={totalsCaption}
+        columns={totalsColumns}
+        rows={totalsTableRows}
+        surface="canvas"
+      />
+      <DataTable
+        caption={freeKickCaption}
+        columns={freeKickColumns}
+        rows={freeKickRowsForTable}
+        surface="canvas"
+      />
+      <DataTable
+        caption={cornerCaption}
+        columns={cornerColumns}
+        rows={cornerRowsForTable}
+        surface="canvas"
+      />
+      <DataTable
+        caption={cornerTypeSideCaption}
+        columns={typeSideColumns}
+        rows={typeSideRows}
+        surface="canvas"
+      />
     </div>
   );
 

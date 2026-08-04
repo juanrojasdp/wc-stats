@@ -3,6 +3,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
 import { EmptyStatePanel } from "@/components/EmptyStatePanel";
+import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
 
 /*
@@ -29,18 +30,37 @@ import { useT } from "@/lib/i18n-provider";
  * story is told not to trigger).
  */
 
-function TacticalErrorFallback() {
+/*
+ * Story 2.18 ruled decision 7 makes this boundary reusable at PER-SECTION
+ * granularity as well as whole-layer. The copy is opt-in and defaults with `??`
+ * INSIDE the fallback rather than through defaultProps, so MatchBundleRegion's
+ * call site stays byte-identical and the whole-layer mount keeps the exact
+ * strings it shipped with. Neither prop name is on the sixteen-name gated list.
+ *
+ * The per-section copy is NOT match.bundle.crashed reused: that string names a
+ * BUNDLE-level failure ("the tactical analysis for this match"), and a
+ * bundle-wide fault surfacing as "we couldn't display this section" would be a
+ * narrower and possibly false claim in one direction, while a section-level
+ * fault claiming the whole analysis is gone is false in the other.
+ */
+function TacticalErrorFallback({
+  headlineKey,
+  explanationKey,
+}: {
+  headlineKey?: DictionaryKey;
+  explanationKey?: DictionaryKey;
+}) {
   const t = useT();
   return (
     <EmptyStatePanel
-      headline={t("match.bundle.crashed")}
-      explanation={t("match.bundle.crashedExplanation")}
+      headline={t(headlineKey ?? "match.bundle.crashed")}
+      explanation={t(explanationKey ?? "match.bundle.crashedExplanation")}
     />
   );
 }
 
 export class TacticalErrorBoundary extends Component<
-  { children: ReactNode },
+  { children: ReactNode; headlineKey?: DictionaryKey; explanationKey?: DictionaryKey },
   { failed: boolean }
 > {
   state = { failed: false };
@@ -56,6 +76,13 @@ export class TacticalErrorBoundary extends Component<
   }
 
   render() {
-    return this.state.failed ? <TacticalErrorFallback /> : this.props.children;
+    return this.state.failed ? (
+      <TacticalErrorFallback
+        headlineKey={this.props.headlineKey}
+        explanationKey={this.props.explanationKey}
+      />
+    ) : (
+      this.props.children
+    );
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 
+import { DataTable } from "@/components/DataTable";
 import { EmptyStatePanel, useEmptyHeadline } from "@/components/EmptyStatePanel";
 import {
   DOT_SEPARATOR,
@@ -16,6 +17,7 @@ import type {
 import { formatDecimal, formatInteger } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
+import type { TableColumn } from "@/lib/table-sort";
 import { MD_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 import type { PitchMarker } from "@/viz/marker-model";
@@ -34,6 +36,8 @@ import {
   passNetworkMarkers,
   passNodeRows,
   playerIdFromNodeKey,
+  type PassEdgeRow,
+  type PassNodeRow,
   quintileBands,
   teamIdOfPlayer,
   visibleEdgeGeometry,
@@ -88,45 +92,6 @@ const CAPTION_SEPARATOR = " — ";
 const RANGE_SEPARATOR = "–";
 /** Joins the two panel notes into `PitchPanelProps.note`, which takes one string. */
 const NOTE_SEPARATOR = " ";
-
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  return (
-    /*
-     * {components.data-table}: row dividers, NO zebra striping, --pitch-line/40
-     * rather than --border-hairline because this table renders inside the panel
-     * on the deep-green pitch. Private and duplicated from ShotMapsSection by
-     * the current convention — refactoring that component is out of scope here.
-     */
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-on-pitch-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-pitch-line/40">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-on-pitch-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
-}
 
 export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSectionProps) {
   const t = useT();
@@ -386,24 +351,101 @@ export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSe
   const edgeRows = passEdgeRows(edges, nodes, home, away);
 
   const unknown = t("viz.table.unknown");
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-on-pitch";
-  const textCell = "px-2 py-1.5 type-caption text-ink-on-pitch";
-  const rowClass = "border-b border-pitch-line/40";
 
-  const nodeHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "shirt", label: t("viz.table.shirt"), numeric: true },
-    { key: "player", label: t("viz.table.player"), numeric: false },
-    { key: "x", label: t("viz.table.x"), numeric: true },
-    { key: "y", label: t("viz.table.y"), numeric: true },
-    { key: "involvement", label: t("viz.table.involvement"), numeric: true },
+  /*
+   * Every nullable column sorts on the NULL, never on the em dash it renders:
+   * an unresolvable name or a node with no coordinates goes to the END of the
+   * array in both directions rather than collating on "—", which would bunch
+   * every absent value together at whichever end "—" happens to sort.
+   */
+  const nodeColumns: TableColumn<PassNodeRow>[] = [
+    {
+      key: "team",
+      headText: t("viz.table.team"),
+      headTitle: null,
+      render: (row) => row.teamCode,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.teamCode },
+    },
+    {
+      key: "shirt",
+      headText: t("viz.table.shirt"),
+      headTitle: null,
+      render: (row) =>
+        row.shirtNumber === null ? unknown : formatInteger(row.shirtNumber, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.shirtNumber },
+    },
+    {
+      key: "player",
+      headText: t("viz.table.player"),
+      headTitle: null,
+      /* Plain text, never a link: /players/{slug} does not exist, and
+         UX-DR22's cross-link is scoped to LINEUP player names. */
+      render: (row) => row.playerName ?? unknown,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.playerName },
+    },
+    {
+      key: "x",
+      headText: t("viz.table.x"),
+      headTitle: null,
+      render: (row) => (row.x === null ? unknown : formatDecimal(row.x, locale, 2)),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.x },
+    },
+    {
+      key: "y",
+      headText: t("viz.table.y"),
+      headTitle: null,
+      render: (row) => (row.y === null ? unknown : formatDecimal(row.y, locale, 2)),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.y },
+    },
+    {
+      key: "involvement",
+      headText: t("viz.table.involvement"),
+      headTitle: null,
+      render: (row) =>
+        row.involvement === null ? unknown : formatInteger(row.involvement, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.involvement },
+    },
   ];
 
-  const edgeHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "from", label: t("viz.table.from"), numeric: false },
-    { key: "to", label: t("viz.table.to"), numeric: false },
-    { key: "passes", label: t("viz.table.passes"), numeric: true },
+  const edgeColumns: TableColumn<PassEdgeRow>[] = [
+    {
+      key: "team",
+      headText: t("viz.table.team"),
+      headTitle: null,
+      render: (row) => row.teamCode,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.teamCode },
+    },
+    {
+      key: "from",
+      headText: t("viz.table.from"),
+      headTitle: null,
+      render: (row) => row.fromName ?? unknown,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.fromName },
+    },
+    {
+      key: "to",
+      headText: t("viz.table.to"),
+      headTitle: null,
+      render: (row) => row.toName ?? unknown,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.toName },
+    },
+    {
+      key: "passes",
+      headText: t("viz.table.passes"),
+      headTitle: null,
+      render: (row) => (row.volume === null ? unknown : formatInteger(row.volume, locale)),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.volume },
+    },
   ];
 
   /*
@@ -415,11 +457,9 @@ export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSe
    *
    * Each caption names its own table AND its own real order — two identical
    * captions on one page was patched in the 2.7 review precisely because a
-   * reader listing the page's tables got two indistinguishable entries.
-   *
-   * NOT sortable in this story: Story 2.11 owns aria-sort, the Intl.Collator
-   * sort and the Expert-layer instance of these same tables. UX-DR16's floor —
-   * a reachable data table carrying the same numbers — is met in full here.
+   * reader listing the page's tables got two indistinguishable entries. Each
+   * still states the DEFAULT order and never mutates under sorting (Story
+   * 2.11a decision 7).
    */
   /*
    * BOTH channels are named. nodeNote alone explained node size and left the
@@ -434,40 +474,8 @@ export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSe
 
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">
-      <DataTable caption={nodeCaption} headers={nodeHeaders}>
-        {nodeRows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={numericCell}>
-              {row.shirtNumber === null ? unknown : formatInteger(row.shirtNumber, locale)}
-            </td>
-            {/* Plain text, never a link: /players/{slug} does not exist, and
-                UX-DR22's cross-link is scoped to LINEUP player names. */}
-            <td className={textCell}>{row.playerName ?? unknown}</td>
-            <td className={numericCell}>
-              {row.x === null ? unknown : formatDecimal(row.x, locale, 2)}
-            </td>
-            <td className={numericCell}>
-              {row.y === null ? unknown : formatDecimal(row.y, locale, 2)}
-            </td>
-            <td className={numericCell}>
-              {row.involvement === null ? unknown : formatInteger(row.involvement, locale)}
-            </td>
-          </tr>
-        ))}
-      </DataTable>
-      <DataTable caption={edgeCaption} headers={edgeHeaders}>
-        {edgeRows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={textCell}>{row.fromName ?? unknown}</td>
-            <td className={textCell}>{row.toName ?? unknown}</td>
-            <td className={numericCell}>
-              {row.volume === null ? unknown : formatInteger(row.volume, locale)}
-            </td>
-          </tr>
-        ))}
-      </DataTable>
+      <DataTable caption={nodeCaption} columns={nodeColumns} rows={nodeRows} surface="pitch" />
+      <DataTable caption={edgeCaption} columns={edgeColumns} rows={edgeRows} surface="pitch" />
     </div>
   );
 

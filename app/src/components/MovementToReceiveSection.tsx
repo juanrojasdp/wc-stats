@@ -1,12 +1,12 @@
 "use client";
 
-import type { ReactNode } from "react";
-
+import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { Players } from "@/lib/contract/contract-types";
 import { formatInteger, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
+import type { TableColumn } from "@/lib/table-sort";
 import { cn } from "@/lib/utils";
 import {
   OFFER_MOVEMENT_TYPES,
@@ -14,7 +14,9 @@ import {
   movementSplit,
   movementTotalsRows,
   offerMovementKey,
+  type MovementRow,
   type MovementTeamSplit,
+  type MovementTotalsRow,
 } from "@/viz/receiving-model";
 
 /*
@@ -75,50 +77,6 @@ const VALUE_SEPARATOR = " · ";
 const MIN_SEGMENT_PX = 6;
 /** Bar height: comfortably above a hairline, well below a tap target. */
 const BAR_HEIGHT_PX = 16;
-
-function DataTable({
-  caption,
-  headers,
-  children,
-}: {
-  caption: string;
-  headers: { key: string; label: string; numeric: boolean }[];
-  children: ReactNode;
-}) {
-  /*
-   * Canvas ink, following MomentumSection — --ink-on-pitch computes 1.10:1 on
-   * the white card. No overflow-x-auto: ViewDataDisclosure already applies it.
-   *
-   * NOT SORTABLE in this story, deliberately. ==> 2.11 PLUG-IN POINT: UX-DR12's
-   * sort contract — aria-sort, Intl.Collator('es', {sensitivity:'base'}), polite
-   * live-region announcements and a stated default sort — attaches to these
-   * <th> elements and sorts movementRows' output. ONE cross-table contract,
-   * implemented once in 2.11; a bespoke second copy here is what 2.11 would then
-   * have to reconcile.
-   */
-  return (
-    <table className="w-full border-collapse text-left">
-      <caption className="mb-2 text-left type-caption text-ink-secondary">{caption}</caption>
-      <thead>
-        <tr className="border-b border-hairline">
-          {headers.map((header) => (
-            <th
-              key={header.key}
-              scope="col"
-              className={cn(
-                "px-2 py-1.5 type-stat-label text-ink-secondary",
-                header.numeric ? "text-right" : "text-left"
-              )}
-            >
-              {header.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
-  );
-}
 
 export function MovementToReceiveSection({ players, home, away }: MovementToReceiveSectionProps) {
   const t = useT();
@@ -270,28 +228,76 @@ export function MovementToReceiveSection({ players, home, away }: MovementToRece
 
   /* ------------------------------- The tables ------------------------------- */
 
-  const movementHeaders = OFFER_MOVEMENT_TYPES.map((code) => ({
-    key: code,
-    label: t(offerMovementKey(code)),
-    numeric: true,
-  }));
+  /*
+   * THE SIX GENERATED COLUMNS — the exact case ruled decision 2 forbids
+   * `keyof Row` for. Their values live two levels down in a nested `counts`
+   * record, so the sort key must be a GETTER; a field-name API could not reach
+   * them at all, and an index-based one would break the moment a column set
+   * changes.
+   *
+   * The frozen order comes from OFFER_MOVEMENT_TYPES, unchanged.
+   */
+  function movementColumns<Row extends { counts: MovementRow["counts"] }>(): TableColumn<Row>[] {
+    return OFFER_MOVEMENT_TYPES.map((code) => ({
+      key: code,
+      headText: t(offerMovementKey(code)),
+      headTitle: null,
+      render: (row: Row) => formatInteger(row.counts[code], locale),
+      align: "numeric" as const,
+      sort: { kind: "number" as const, valueOf: (row: Row) => row.counts[code] },
+    }));
+  }
 
-  const totalsHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    ...movementHeaders,
-    { key: "total", label: t("viz.table.total"), numeric: true },
-  ];
-  const playerHeaders = [
-    { key: "team", label: t("viz.table.team"), numeric: false },
-    { key: "shirt", label: t("viz.table.shirt"), numeric: true },
-    { key: "player", label: t("viz.table.player"), numeric: false },
-    ...movementHeaders,
-    { key: "total", label: t("viz.table.total"), numeric: true },
+  function teamColumn<Row extends { teamCode: string }>(): TableColumn<Row> {
+    return {
+      key: "team",
+      headText: t("viz.table.team"),
+      headTitle: null,
+      render: (row) => row.teamCode,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.teamCode },
+    };
+  }
+
+  function totalColumn<Row extends { total: number }>(): TableColumn<Row> {
+    return {
+      key: "total",
+      headText: t("viz.table.total"),
+      headTitle: null,
+      render: (row) => formatInteger(row.total, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.total },
+    };
+  }
+
+  const totalsColumns: TableColumn<MovementTotalsRow>[] = [
+    teamColumn<MovementTotalsRow>(),
+    ...movementColumns<MovementTotalsRow>(),
+    totalColumn<MovementTotalsRow>(),
   ];
 
-  const numericCell = "px-2 py-1.5 text-right type-table-numeric text-ink-primary";
-  const textCell = "px-2 py-1.5 type-caption text-ink-primary";
-  const rowClass = "border-b border-hairline";
+  const playerColumns: TableColumn<MovementRow>[] = [
+    teamColumn<MovementRow>(),
+    {
+      key: "shirt",
+      headText: t("viz.table.shirt"),
+      headTitle: null,
+      render: (row) => formatInteger(row.shirtNumber, locale),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.shirtNumber },
+    },
+    {
+      key: "player",
+      headText: t("viz.table.player"),
+      headTitle: null,
+      /* Plain text, never a link: /players/{slug} does not exist. */
+      render: (row) => row.playerName,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.playerName },
+    },
+    ...movementColumns<MovementRow>(),
+    totalColumn<MovementRow>(),
+  ];
 
   /*
    * BOTH tables (ruled decision 11): the team-totals table carries EXACTLY the
@@ -305,35 +311,13 @@ export function MovementToReceiveSection({ players, home, away }: MovementToRece
 
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">
-      <DataTable caption={totalsCaption} headers={totalsHeaders}>
-        {totals.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            {OFFER_MOVEMENT_TYPES.map((code) => (
-              <td key={code} className={numericCell}>
-                {formatInteger(row.counts[code], locale)}
-              </td>
-            ))}
-            <td className={numericCell}>{formatInteger(row.total, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
-      <DataTable caption={playersCaption} headers={playerHeaders}>
-        {rows.map((row) => (
-          <tr key={row.key} className={rowClass}>
-            <td className={textCell}>{row.teamCode}</td>
-            <td className={numericCell}>{formatInteger(row.shirtNumber, locale)}</td>
-            {/* Plain text, never a link: /players/{slug} does not exist. */}
-            <td className={textCell}>{row.playerName}</td>
-            {OFFER_MOVEMENT_TYPES.map((code) => (
-              <td key={code} className={numericCell}>
-                {formatInteger(row.counts[code], locale)}
-              </td>
-            ))}
-            <td className={numericCell}>{formatInteger(row.total, locale)}</td>
-          </tr>
-        ))}
-      </DataTable>
+      <DataTable
+        caption={totalsCaption}
+        columns={totalsColumns}
+        rows={totals}
+        surface="canvas"
+      />
+      <DataTable caption={playersCaption} columns={playerColumns} rows={rows} surface="canvas" />
     </div>
   );
 
