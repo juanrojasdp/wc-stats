@@ -9,7 +9,8 @@ wrong join in a crowded six-yard box, so three safety nets demote a link to *unl
 the distance threshold (the marker radius), the bijection rule (each ordinal accepted at
 most once, ordinal within 1..N), and the outcome cross-check (the linked row's
 `outcome_detail` must map onto the marker's RGB-keyed outcome via the contract's
-`x-maps-to-outcome`).
+`x-maps-to-outcome`, whose value is a `ShotOutcome` or — for one detail — an array of
+them).
 
 An unlinkable marker is per-marker DATA, never an exception (SM-C1/AD-8): it keeps its
 coordinates and outcome with null joined fields, `linked: false`, and fails the report's
@@ -179,9 +180,15 @@ def link_markers(
     once, each marker takes its nearest still-available glyph, and a pair is considered
     only when it is within `SHOTS_MARKER_RADIUS` AND *outcome-compatible* — the glyph's
     ordinal is in 1..len(rows) and the marker's RGB-keyed outcome is in that row's
-    `DETAIL_COMPATIBLE_OUTCOMES` (the contract's `x-maps-to-outcome`, plus its one
-    corpus-documented both-colours exception). Ties in distance break deterministically
-    by (marker, glyph) input order.
+    `DETAIL_COMPATIBLE_OUTCOMES` — which is now the contract's `x-maps-to-outcome`
+    widened to tuples and nothing else: change-set CS-1 moved the one both-colours detail
+    INTO the contract as an array value, so there is no local exception any more. Ties in
+    distance break deterministically by (marker, glyph) input order.
+
+    Note that a dual-colour detail gives the outcome cross-check no discriminating power
+    for its own rows — both colours are compatible by construction — so those rows are
+    guarded by distance and bijection alone. See deferred-work.md; the corpus links
+    2571/2571 today.
 
     Independent per-marker nearest is NOT enough on the real corpus: overlapping
     six-yard-box markers sit within threshold of *both* their labels (e.g. two markers

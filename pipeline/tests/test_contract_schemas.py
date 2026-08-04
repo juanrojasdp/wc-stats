@@ -153,17 +153,23 @@ def test_no_ref_node_carries_sibling_keywords(name: str) -> None:
 
 
 def test_version_json_declares_the_schema_version_and_nothing_else() -> None:
-    """Story 1.8 forced repair: v1 -> v2, the project's first contract bump (AD-14).
+    """Change-set CS-1: v2 -> v3, the project's second contract bump (AD-14).
 
-    `MomentumSample.minute` (a bare `Minute`, capped at the end of its period) could not
-    represent the momentum series' stoppage-time samples at all — every first-half
-    stoppage minute collapsed onto 45 — so it became `at: MinuteStamp`, and the values
-    narrowed from 2-decimal numbers to non-negative integers. Not strictly additive, and
-    that is exactly what the AD-14 change flow exists for.
+    `ShotOutcomeDetail` went 22 -> 24 (the corpus prints bare "Incomplete" and "On Target",
+    which the 2026-07-22 close missed), and `x-maps-to-outcome` stopped being uniformly
+    scalar: `deflected-on-target-defensive-event` became the array
+    ["incomplete", "on-target"], the corpus rendering that detail in both marker colours
+    10:1 against the declared pairing. Additive for the enum, NOT additive for the map's
+    value type — see contract/README.md decision 17.
+
+    v1 -> v2 was Story 1.8's forced repair: `MomentumSample.minute` (a bare `Minute`,
+    capped at the end of its period) could not represent the momentum series'
+    stoppage-time samples at all — every first-half stoppage minute collapsed onto 45 — so
+    it became `at: MinuteStamp` and the values narrowed to non-negative integers.
     """
     contents = json.loads((CONTRACT_DIR / "version.json").read_text(encoding="utf-8"))
-    assert contents == {"schemaVersion": 2}
-    assert schema_version() == 2
+    assert contents == {"schemaVersion": 3}
+    assert schema_version() == 3
 
 
 def test_every_artifact_schema_pins_schema_version_to_the_declared_version() -> None:

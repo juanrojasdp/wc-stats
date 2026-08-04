@@ -626,7 +626,7 @@ export interface Leaderboards {
   boards: Boards;
 }
 
-export type LeaderboardsSchemaVersion = 2;
+export type LeaderboardsSchemaVersion = 3;
 
 export interface Lineup {
   formation: Formation;
@@ -685,7 +685,7 @@ export interface MatchBundle {
 /**
  * Stamped from /contract/version.json. One global integer, declared exactly once (AD-2).
  */
-export type MatchBundleSchemaVersion = 2;
+export type MatchBundleSchemaVersion = 3;
 
 /**
  * Calendar date of the match, venue-local, ISO 8601 (AD-7).
@@ -1110,7 +1110,7 @@ export interface PlayerProfile {
 
 export type PlayerProfileName = string;
 
-export type PlayerProfileSchemaVersion = 2;
+export type PlayerProfileSchemaVersion = 3;
 
 /**
  * Domain G, one player. Every field the Expert Layer's per-player tables show is here — there is no reduced variant.
@@ -1290,7 +1290,7 @@ export type ShotExpectedGoals = ExpectedGoals | null;
 export type ShotOutcome = "goal" | "on-target" | "off-target" | "blocked" | "incomplete";
 
 /**
- * The compound Outcome label printed in the shots event table, which is finer than the five-value marker colour. Closed against all 104 reports on 2026-07-22; provenance table in contract/README.md. Every value maps onto exactly one ShotOutcome — the map is declared machine-readably in x-maps-to-outcome below, because the mapping is NOT derivable by prefix: 'incomplete-blocked' maps to 'blocked' while every other 'incomplete-*' maps to 'incomplete'. Nine of the 22 pairings are corpus-observed in the fixtures and test-enforced; the remaining 13 follow the same rule and are marked in contract/README.md as AD-14 change-flow candidates should real data contradict them.
+ * The compound Outcome label printed in the shots event table, which is finer than the five-value marker colour. Closed against all 104 reports on 2026-07-22 at 22 values; extended to 24 by change-set CS-1 (logged decision 17) with the two bare labels the closed set missed — 'Incomplete' (31 rows) and 'On Target' (3 rows), which mirror the existing bare 'off-target'. Provenance table in contract/README.md. The map onto ShotOutcome is declared machine-readably in x-maps-to-outcome below, because it is NOT derivable by prefix: 'incomplete-blocked' maps to 'blocked' while every other 'incomplete-*' maps to 'incomplete'. Values are scalar-mapped EXCEPT 'deflected-on-target-defensive-event', whose value is the ARRAY ['incomplete', 'on-target'] (majority first): the corpus renders that one detail in BOTH marker colours, 10 rows to 1 (decision 17, CR-2). A consumer of this map must therefore accept a string OR an array of strings. Nine of the 24 pairings are corpus-observed in the fixtures and test-enforced, the array entry is full-corpus measured, and the remaining 14 follow the mechanical rule and stay AD-14 change-flow candidates should real data contradict them. The App treats ShotEvent.outcome as authoritative for marker encoding and never derives it from outcomeDetail.
  */
 export type ShotOutcomeDetail =
   | "deflected-off-target"
@@ -1301,6 +1301,7 @@ export type ShotOutcomeDetail =
   | "deflected-on-target-goal"
   | "deflected-on-target-goal-prevented"
   | "deflected-on-target-saved"
+  | "incomplete"
   | "incomplete-assist"
   | "incomplete-blocked"
   | "incomplete-defensive-event"
@@ -1311,6 +1312,7 @@ export type ShotOutcomeDetail =
   | "off-target-defensive-event"
   | "off-target-player-on-ball-error"
   | "off-target-saved"
+  | "on-target"
   | "on-target-defensive-event"
   | "on-target-goal"
   | "on-target-goal-prevented"
@@ -1502,7 +1504,7 @@ export type TeamProfileGoalDifference = number;
 
 export type TeamProfileName = string;
 
-export type TeamProfileSchemaVersion = 2;
+export type TeamProfileSchemaVersion = 3;
 
 /**
  * A team's tournament record. The IA specifies team search results as name plus tournament record, and <title>/OG for a team route as name plus record — so this is a derived aggregate that must be a field (AD-5).
@@ -1602,7 +1604,7 @@ export interface Tournament {
  */
 export type TournamentName = string;
 
-export type TournamentSchemaVersion = 2;
+export type TournamentSchemaVersion = 3;
 
 export interface TrendPoint {
   matchId: MatchId;

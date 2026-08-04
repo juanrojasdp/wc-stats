@@ -22,7 +22,7 @@
     "schemaVersion": {
       "title": "PlayerProfileSchemaVersion",
       "type": "integer",
-      "const": 2
+      "const": 3
     },
     "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
     "name": {

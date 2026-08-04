@@ -1479,3 +1479,43 @@ convention. All three are claim-accuracy defects in what 2.18 filed, not new def
   Tactical sections rendering), but it does not change when the Tactical Layer builds its props.
   **Owner: whichever story next touches `TacticalLayer`'s content construction, or 2.19.**
 
+## Deferred from: code review of 2-11b-expert-layer-per-player-tables (2026-08-04)
+
+- **`scope="row"` sits on the THIRD column, so `team` and `shirt` are never assigned a row
+  header.** `app/src/components/ExpertLayer.tsx:361` puts `rowHeader: true` on `player`, rendered
+  as `<th scope="row">` at `DataTable.tsx:477-490`. HTML's header-assignment algorithm has a data
+  cell scan *leftward* for its row headers, so the two cells that precede `player` in DOM order —
+  and they precede it deliberately, as part of ruled decision 5's sticky run order
+  (`ExpertLayer.tsx:324-327`) — never pick it up. In a 50-column table the row header is the
+  primary orientation cue. **Deferred: low impact and structurally awkward to fix.** Both cells
+  still carry their `scope="col"` headers, so what is lost is the player-name prefix, not the
+  column identity; and the alternatives (moving `player` leftmost, or `headers=` attributes on
+  every cell) each trade against a ruled decision. **Owner: 2.11c, which adds five more tables to
+  the same layer, or a UX/a11y pass.**
+
+- **A duplicate `playerId` would collide as a React key and misdirect `DataTable`'s focus
+  restore.** `app/src/viz/expert-model.ts:250` sets `key: record.playerId` with no dedupe.
+  `contract/match-bundle.schema.json` declares `players` as a plain array with no `uniqueItems`
+  and puts no uniqueness constraint on `PlayerId`, and `expert-model.test.ts` asserts uniqueness
+  only over the three fixtures. A duplicate ships duplicate React keys (`DataTable.tsx:475`) —
+  reconciliation warning, unstable keyed reorder — and makes the focus restore's
+  `querySelector('tr[data-row-key="…"]')` (`DataTable.tsx:245`) resolve to the first match,
+  silently restoring focus into the wrong player's row. **Deferred: a data-integrity precondition,
+  not an app defect.** The right fix is upstream — either a `uniqueItems`-style invariant on
+  `players` in the contract, or a pipeline check in the cross-match identity resolution that
+  assigns `PlayerId` (Story 1.15). **Owner: 1.16 or a contract pass; the app-side guard is only
+  worth adding if the invariant is declined.**
+
+- **A locale switch re-orders any text-sorted table with no announcement, and the live region is
+  left holding the previous announcement in the previous language.** `DataTable.tsx:327` sorts
+  during render — deliberately, and load-bearing for the EN toggle, since a `DictionaryKey`
+  column's `sort.valueOf` resolves the label at the call site (`ExpertLayer.tsx:375`). So sorting
+  by **Posición** and toggling ES→EN re-collates all 34 rows (Arquero/Defensa/Mediocampista/
+  Delantero → Goalkeeper/Defender/Midfielder/Forward is a genuinely different order). But
+  `announce()` fires only from `handleSort` (`DataTable.tsx:316`), so nothing tells the reader the
+  order changed. **Deferred: pre-existing from 2.11a and not this story's to fix** — it applies to
+  every one of the 26 tables with a dictionary-key text column, so the fix belongs in `DataTable`
+  as a cross-table change with its own announcement copy. Not observed only because a text sort
+  plus a mid-session locale toggle is an uncommon pair. **Owner: 2.19, or whichever story next
+  re-opens `DataTable`'s announcement contract.**
+

@@ -723,13 +723,19 @@ def test_at_least_one_fixture_exercises_the_stoppage_minute_integer_branch() -> 
 
 @pytest.mark.parametrize("path", MATCH_FIXTURES, ids=lambda p: p.name)
 def test_shot_outcome_agrees_with_its_finer_outcome_detail(path: Path) -> None:
-    """The 22 detail values map onto the 5 outcomes, and the map is NOT derivable by prefix.
+    """The 24 detail values map onto the 5 outcomes, and the map is NOT derivable by prefix.
 
     `incomplete-blocked` maps to `blocked` while every other `incomplete-*` maps to
     `incomplete`, so a consumer deriving one from the other by prefix is wrong on the whole
     blocked family. The mapping now lives machine-readably in the schema; this holds the
     fixtures to it, so an outcome/detail pair that contradicts itself no longer validates at
     every layer.
+
+    A map value is a `ShotOutcome` OR an array of them: change-set CS-1 (decision 17, CR-2)
+    made `deflected-on-target-defensive-event` the array `["incomplete", "on-target"]`
+    because the corpus renders that one detail in both marker colours. BOTH asserts below
+    handle the array form — the subset check used to `set(mapping.values())`, which raises
+    `TypeError: unhashable type: 'list'` rather than failing informatively.
     """
     common = load_schemas()["common.schema.json"]
     detail_def = common["$defs"]["ShotOutcomeDetail"]
@@ -738,12 +744,22 @@ def test_shot_outcome_agrees_with_its_finer_outcome_detail(path: Path) -> None:
         "x-maps-to-outcome does not cover exactly the ShotOutcomeDetail enum"
     )
     outcomes = set(common["$defs"]["ShotOutcome"]["enum"])
-    assert set(mapping.values()) <= outcomes, "x-maps-to-outcome names an unknown ShotOutcome"
+
+    def compatible(detail: str) -> set:
+        """The outcome(s) this detail may pair with, scalar or array alike."""
+        mapped = mapping[detail]
+        return {mapped} if isinstance(mapped, str) else set(mapped)
+
+    named = set().union(*(compatible(detail) for detail in mapping))
+    assert named <= outcomes, (
+        f"x-maps-to-outcome names unknown ShotOutcome(s): {sorted(named - outcomes)}"
+    )
 
     for index, shot in enumerate(_load(path)["events"]["shots"] or []):
-        assert shot["outcome"] == mapping[shot["outcomeDetail"]], (
+        allowed = compatible(shot["outcomeDetail"])
+        assert shot["outcome"] in allowed, (
             f"{path.name} shot {index}: outcomeDetail {shot['outcomeDetail']!r} maps to "
-            f"{mapping[shot['outcomeDetail']]!r}, but outcome says {shot['outcome']!r}"
+            f"{sorted(allowed)}, but outcome says {shot['outcome']!r}"
         )
 
 

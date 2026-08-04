@@ -23,9 +23,17 @@ green.
 | `index/team-profiles/mexico.json` | One full team profile |
 | `index/player-profiles/quinones-julian-mex.json` | One full player profile |
 
-Every file is stamped `schemaVersion: 2` and validates against `/contract`. The tests live in
+Every file is stamped `schemaVersion: 3` and validates against `/contract`. The tests live in
 `pipeline/tests/test_fixtures.py`.
 
+> **Change-set CS-1 (`schemaVersion` 2 -> 3).** `ShotOutcomeDetail` went 22 -> 24 (the corpus
+> prints bare "Incomplete" and "On Target") and `x-maps-to-outcome`'s
+> `deflected-on-target-defensive-event` entry became the array `["incomplete", "on-target"]`.
+> **No fixture content changed** — the re-pin is the version field alone. No fixture carries
+> the array-valued detail, so the outcome/detail cross-check is unaffected in substance; it
+> was rewritten to handle the array form regardless, because Story 1.16's first real emission
+> will hit it. See `contract/README.md` §17.
+>
 > **Story 1.8 (`schemaVersion` 1 -> 2).** `MomentumSample` became
 > `{at: MinuteStamp, home: integer, away: integer}` and the `momentum` blocks of `m001` and
 > `m074` were regenerated from the real corpus (101 and 138 per-minute samples). See

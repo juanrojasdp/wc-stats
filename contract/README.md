@@ -9,7 +9,9 @@ The schemas are the **single definition** (AD-2). The App consumes the *generate
 never a hand-written mirror.
 
 ```
-version.json                    {"schemaVersion": 2} — the one global version declaration
+version.json                    {"schemaVersion": 3} — the one global version SOURCE, but see
+                                the AD-14 flow below: five artifact schemas each restate it as
+                                a `const`, so a bump edits six declarations, not one
 common.schema.json              ids, closed vocabularies, coordinates, scalars, KnockoutScore
 match-bundle.schema.json        one match, Domains A-G, storyStats, momentum
 tournament.schema.json          standings + results + route manifest + search source
@@ -119,7 +121,7 @@ bug — do not "fix" it by opening an enum.
 
 | Enum | Code ← verbatim source label | Source page |
 | --- | --- | --- |
-| `ShotOutcomeDetail` (22) | `on-target-goal` ← "On Target - Goal"; `on-target-saved` ← "On Target - Saved"; `on-target-defensive-event` ← "On Target - Defensive Event"; `on-target-goal-prevented` ← "On Target - Goal Prevented"; `off-target` ← "Off Target"; `off-target-saved` ← "Off Target - Saved"; `off-target-defensive-event` ← "Off Target - Defensive Event"; `off-target-player-on-ball-error` ← "Off Target - Player On Ball Error"; `deflected-off-target` ← "Deflected Off Target"; `deflected-off-target-saved`; `deflected-off-target-defensive-event`; `deflected-off-target-referee-event`; `deflected-on-target-goal`; `deflected-on-target-saved`; `deflected-on-target-defensive-event`; `deflected-on-target-goal-prevented`; `incomplete-blocked` ← "Incomplete - Blocked"; `incomplete-assist`; `incomplete-defensive-event`; `incomplete-foul-for` ← "Incomplete - Foul For"; `incomplete-player-on-ball-error`; `incomplete-referee-event` | `Attempts at Goal {team}` (event table) — first seen PMSR-M01 p14, M03 p14, M05 p14, M08 p16, M09 p14, M10 p17, M11 p14/16, M12 p14, M16 p14/16, M27 p14/15, M49 p16 |
+| `ShotOutcomeDetail` (24) | `on-target-goal` ← "On Target - Goal"; `on-target-saved` ← "On Target - Saved"; `on-target-defensive-event` ← "On Target - Defensive Event"; `on-target-goal-prevented` ← "On Target - Goal Prevented"; `off-target` ← "Off Target"; `off-target-saved` ← "Off Target - Saved"; `off-target-defensive-event` ← "Off Target - Defensive Event"; `off-target-player-on-ball-error` ← "Off Target - Player On Ball Error"; `deflected-off-target` ← "Deflected Off Target"; `deflected-off-target-saved`; `deflected-off-target-defensive-event`; `deflected-off-target-referee-event`; `deflected-on-target-goal`; `deflected-on-target-saved`; `deflected-on-target-defensive-event`; `deflected-on-target-goal-prevented`; `incomplete-blocked` ← "Incomplete - Blocked"; `incomplete-assist`; `incomplete-defensive-event`; `incomplete-foul-for` ← "Incomplete - Foul For"; `incomplete-player-on-ball-error`; `incomplete-referee-event`; **`incomplete` ← "Incomplete"** (bare, 31 rows — CS-1/CR-1); **`on-target` ← "On Target"** (bare, 3 rows — CS-1/CR-1) | `Attempts at Goal {team}` (event table) — first seen PMSR-M01 p14, M03 p14, M05 p14, M08 p16, M09 p14, M10 p17, M11 p14/16, M12 p14, M16 p14/16, M27 p14/15, M49 p16. The two bare labels were missed by the 2026-07-22 close and found by Story 1.5's full-corpus run; they mirror the bare `off-target` the close did catch |
 | `BodyPart` (5) | `right-foot` ← "Right Foot"; `left-foot` ← "Left Foot"; `head` ← "Head"; `upper-body` ← "Upper Body"; `lower-body` ← "Lower Body" | same table — M01 p14, M02 p16, M06 p14 |
 | `ShotDeliveryType` (10) | `pass` ← "Pass"; `cross` ← "Cross"; `corner` ← "Corner"; `free-kick` ← "Freekick"; `penalty` ← "Penalty"; `loose-ball` ← "Loose Ball"; `ball-progression` ← "Ball Progression"; `interception` ← "Interception"; `tackle` ← "Tackle"; `other` ← "Other" | same table — M01 p14, M02 p16, M08 p16, M09 p14 |
 | `CrossDeliveryType` (6) | `inswing` ← "Inswing" / "In Swing"; `outswing` ← "Outswing" / "Out Swing"; `driven` ← "Driven"; `lofted` ← "Lofted"; `cutback` ← "Cutback"; `push-cross` ← "Push Cross" | `Crosses (Open Play) {team}` M01 p17; `Aerial Control {team}` M01 p35 |
@@ -155,11 +157,15 @@ bug — do not "fix" it by opening an enum.
 
 ### Verified against the shot markers
 
-The 22-value `ShotOutcomeDetail` maps onto the 5-value `ShotOutcome` exactly, and the mapping
+The 24-value `ShotOutcomeDetail` maps onto the 5-value `ShotOutcome`, and the mapping
 reconciles with Domain B in all six team-innings of the fixture matches: Mexico's 16 table
 rows produce 2 goal + 2 on-target + 8 off-target + 3 blocked + 1 incomplete, and the page's
 own marker legend prints exactly those counts. Same for the other five. This is the
 marker-count self-validation Story 1.3 automates.
+
+The map is **not** one-to-one in one place: `deflected-on-target-defensive-event` renders in
+both marker colours and maps to the array `["incomplete", "on-target"]` (decision 17, CR-2).
+No fixture carries that detail, so the six-innings reconciliation above is unaffected.
 
 ---
 
@@ -188,7 +194,7 @@ corpus, each emits `null` in v1, and each is a change request rather than a gap 
 | --- | --- | --- |
 | `ShotEvent.expectedGoals` | xG appears **only** as a team total on the Key Statistics page. The shots event table has no xG column, in any of the 104 reports. | Per-shot xG is `null`. A shot tooltip must not promise it. |
 | `EventTables.shootoutAttempts` | PMSR prints only the aggregate cover line — `"(Switzerland win 4-3 on Penalties)"`. There is no per-attempt table anywhere, checked against all four shoot-out ties (M74, M75, M88, M96). | Real data emits `null`; the aggregate is in `knockoutScore.shootoutScore`. **The `m074` fixture carries attempt rows anyway**, per this story's fixture plan, so Epic 2 can build the surface — but it must handle `null`, because that is what production will send. |
-| `GoalRecord.ownGoal` / `ShotEvent.ownGoal` | Originally recorded (2026-07-22) as "no own-goal wording anywhere in the corpus" — **disproved by Story 1.6**: the red-football lineup glyph IS an own-goal marking, 14 across the corpus, verified by goal reconciliation 104/104. | v1 pipelines still emit `false` pending Story 1.16's emission flip; the matching stale schema `$comment` correction rides change-set CS-1 (see Story 2.3 sign-off below). The `m074` fixture carries a synthetic own goal to exercise the shape. |
+| `GoalRecord.ownGoal` / `ShotEvent.ownGoal` | Originally recorded (2026-07-22) as "no own-goal wording anywhere in the corpus" — **disproved by Story 1.6**: the red-football lineup glyph IS an own-goal marking, 14 across the corpus, verified by goal reconciliation 104/104. | v1 pipelines still emit `false` pending Story 1.16's emission flip. The matching stale schema `$comment` on `GoalOwnGoal` was corrected by change-set CS-1 (decision 17), so this row is no longer a "deliberately empty" shape — it is a shape whose EMISSION is pending, kept in this table until 1.16 flips it. The `m074` fixture carries a synthetic own goal to exercise the shape. |
 
 `null` and `[]` mean different things throughout the contract, and the App renders them
 differently: `null` is "not in the report", `[]` is "zero events". Do not collapse them.
@@ -415,7 +421,7 @@ it. pytest is the gate either way. The invariants held this way:
 
 ### 13. `ShotOutcomeDetail` carries its own map onto `ShotOutcome`
 
-The 22 detail values map onto the 5 marker outcomes, and the mapping is **not derivable by
+The detail values map onto the 5 marker outcomes, and the mapping is **not derivable by
 prefix**: `incomplete-blocked` maps to `blocked` while every other `incomplete-*` maps to
 `incomplete`. A consumer deriving one from the other by string prefix is wrong on the entire
 blocked family, and nothing stopped `{"outcome": "goal", "outcomeDetail": "off-target"}` from
@@ -423,9 +429,13 @@ validating at every layer.
 
 The map is now declared machine-readably as `x-maps-to-outcome` on the `ShotOutcomeDetail`
 `$def` — same custom-keyword convention as `x-decimals`: legal JSON Schema, ignored by
-validators and by the codegen, greppable and testable. Nine of the 22 pairings are observed in
-the corpus-derived fixtures and enforced against them; the remaining 13 follow the same rule
+validators and by the codegen, greppable and testable. Nine of the pairings are observed in
+the corpus-derived fixtures and enforced against them; the rest follow the same rule
 and are AD-14 change-flow candidates should real data contradict one.
+
+> Written at 22 values with every entry a scalar. **Decision 17 (change-set CS-1) supersedes
+> both counts**: the enum is 24, and one entry is an array. Values are not restated here —
+> the schema is the single definition, and a count in this file is a thing that goes stale.
 
 ### 14. Corners carry a team-level side split
 
@@ -457,6 +467,68 @@ by the App, cannot be validated, and drifts. A field on the row travels with the
 App never has to guess and never re-aggregates (AD-5), and
 `test_the_player_profile_aggregates_equal_their_own_aggregation` checks the artifact against
 its own declared semantics. Recorded here because the story's Task 9 asked for the table.
+
+### 17. `ShotOutcomeDetail` is 24 values, and one of them maps to two outcomes — schemaVersion 2 → 3
+
+Change-set **CS-1**, landed as one atomic AD-14 commit. Story 2.3 filed both change requests
+wearing the Epic 2 hat; per the solo-repo AD-14 note, **Epic 1 executed this side** — the
+schema, the version, the fixtures, the generated types and the pipeline consumers.
+
+**CR-1 — two corpus-real labels were missing.** The 2026-07-22 close read the shots event
+table across all 104 reports and produced 22 values, but it missed the two *bare* labels:
+`Incomplete` (31 rows) and `On Target` (3 rows), found by Story 1.5's full-corpus run. Both
+are added, mapping mechanically onto their own names exactly as the bare `Off Target` the
+close did catch. Until now the pipeline carried them as `AD14_EXTRA_DETAILS` — a documented
+divergence from the contract, which is precisely the thing a closed enum is supposed to make
+impossible. Story 1.16's emission could not have shipped a single one of those 34 rows.
+
+**CR-2 — `deflected-on-target-defensive-event` renders in BOTH marker colours.** Of its 11
+corpus rows, 10 sit under markers drawn in the *incomplete* colour and 1 (PMSR-M27-CAN-V-QAT,
+home ordinal 10) under an *on-target* marker, every ordinal label < 1 pt from its marker
+centre, so the joins are unambiguous. The contract guessed `on-target` — one of the 13
+pairings this file marked as change-flow candidates "should real data contradict them". The
+data contradicted it 10:1. The entry therefore becomes the array `["incomplete", "on-target"]`,
+majority first. **All 23 other entries stay exact scalars**, so a consumer must accept a
+string *or* an array of strings; it must not assume the map is uniformly one or the other.
+
+Rejected alternatives, recorded so they are not re-litigated:
+
+| Alternative | Why rejected |
+| --- | --- |
+| Remap to `incomplete` | The one genuine on-target row would fail emission — trading 10 wrong for 1 wrong is still wrong |
+| Keep `on-target` | Corpus-false 10:1 |
+| Split into two colour-specific enum values | Keeps the map scalar, but breaks the 1:1 corpus-label→detail identity and pushes marker colour into the value. Rejected by decision, not by evidence |
+
+**The App treats `ShotEvent.outcome` as authoritative for marker encoding and never derives it
+from `outcomeDetail`.** That is what makes the one-to-many entry safe to render.
+
+**Riding along, not itself a change request:** the `GoalOwnGoal` `$comment` still said PMSR
+prints no own-goal marking anywhere. Story 1.6 disproved it — the red-football lineup glyph is
+an own-goal marking, 14 across the corpus, reconciled 104/104. A `$comment` edit alone trips
+`check:types`, so the correction rides the bump rather than drifting to the next one.
+
+**What moved, all in the one commit:** `common.schema.json` (enum + map + description);
+`match-bundle.schema.json` (`$comment`); `version.json` 2 → 3 **and the five per-artifact
+`schemaVersion` `const` stamps**, which are five separate declarations, not one; all seven
+hand-edited fixtures re-pinned; both generated outputs regenerated; and the pipeline consumers
+of the changed values — `DETAIL_TO_OUTCOME` / `DETAIL_COMPATIBLE_OUTCOMES` in
+`pipeline/markers/attempts.py` (the extras and the both-colours override are now contract
+knowledge, so the compatible-outcomes map is *derived* from the contract map rather than
+overriding it), plus the frozen-map asserts in `test_markers_attempts.py`, both asserts of
+`test_shot_outcome_agrees_with_its_finer_outcome_detail` in `test_fixtures.py` (the
+values-subset check `TypeError`d on an array value), and the hardcoded version asserts in
+`test_contract_schemas.py`.
+
+> The last two were not in the filed recipe. The five `const` stamps were described as
+> "`version.json` bump", which reads as one file; `test_contract_schemas.py` was not listed
+> among the consumers at all. Both would have failed the commit. A version bump touches six
+> declarations in `/contract`, not one — noted here for whoever runs the next one.
+
+**Locale label rows are NOT part of this.** Stories 2.13/2.18 own them, and the
+`shotOutcomeDetail` tripwires in `app/src/lib/i18n.test.ts` and `glossary.test.ts` stay green
+and undeleted: CS-1 ships the enum, not its Spanish copy. Those two tripwires are now the only
+thing standing between the 24-value enum and an unlabelled detail reaching a user.
+
 ---
 
 ## The AD-14 change flow
@@ -467,13 +539,32 @@ here:
 1. **Epic 2 requests** the change, naming the surface that needs it and the field it needs.
 2. **Epic 1 implements** it in `/contract`.
 3. **A logged decision** is added to this file — what changed and why.
-4. **`schemaVersion` is bumped** in `contract/version.json`.
-5. **Fixtures and generated types are regenerated in the same commit.** Not the next one.
+4. **`schemaVersion` is bumped — in SIX places, not one.** `contract/version.json` is the
+   source, and each of the five artifact schemas (`match-bundle`, `tournament`, `team-profile`,
+   `player-profile`, `leaderboards`) restates it as a `schemaVersion` `const` that must move
+   with it. Two pytest asserts in `pipeline/tests/test_contract_schemas.py` also hardcode the
+   integer. Miss the `const`s and every re-pinned fixture stops validating.
+5. **Fixtures and BOTH generated type trees are regenerated in the same commit.** Not the next
+   one. `npm run generate:types` must be run in `contract/` **and** in `app/` — they write to
+   different directories (`contract/generated/` and `app/src/lib/contract/`) and neither
+   regenerates the other. Re-pin every fixture in `data/fixtures/` to the new integer, and fix
+   the prose that states it (`data/fixtures/README.md`, and the file map at the top of this
+   file).
 
 Step 5 is the one that gets skipped under pressure, and skipping it is what makes a contract
 stop being one. `pipeline/tests/test_fixtures.py` covers the fixture half, and
 `test_the_committed_generated_types_still_match_the_schemas` (equivalently
 `npm run check:types`) covers the generated half by regenerating and comparing.
+
+> **Gate gap, filed by the CS-1 review (2026-08-04): only `contract/generated/` has a
+> freshness gate.** `test_the_committed_generated_types_still_match_the_schemas` runs `--check`
+> against `contract/` alone, and `app`'s own `check:types` is wired into **no** gate — `build`
+> runs lint, typecheck, `assert:schema-version` and `next build`, none of which compare the
+> app's committed types against the schemas (`assert-schema-version.mjs` only greps the version
+> integer out of the file). So a description-only correction — which the flow says needs no
+> bump — can regenerate one tree, stay green everywhere, and ship a stale JSDoc in the one file
+> Epic 2 actually reads. Until that gate exists, **run `npm run check:types` in `app/` by hand
+> on every contract edit.**
 
 > This claim used to be made and not kept. Only the *version integer* was checked, so the
 > committed types drifted four JSDoc blocks behind the schemas with 256 tests green — and
@@ -535,7 +626,9 @@ the seven fixtures, EXPERIENCE.md/DESIGN.md and the epic 2.4–2.18 ACs. Full ev
 2. **CR-2** — surface: `#shot-maps` marker/outcome consistency; field:
    `x-maps-to-outcome["deflected-on-target-defensive-event"]`. The corpus contradicts the
    declared `on-target` 10:1. Acknowledge the one-to-many rendering: this one entry becomes
-   `["incomplete", "on-target"]` (majority first); the other 21 mappings stay exact; the
+   `["incomplete", "on-target"]` (majority first); the other 21 mappings stay exact [filed
+   against the pre-CR-1 enum of 22 — **as landed it is 23**, because CR-1 added two values in
+   the same change-set; decision 17 carries the live count]; the
    outcome/detail pytest invariant relaxes to set-membership for array entries — BOTH
    asserts of that test (`test_fixtures.py`: the values-subset check `TypeError`s on an
    array value, not only the per-shot agreement check). The App treats `outcome` as
@@ -561,6 +654,15 @@ fixtures and app types; 1-7 is in-progress as of 2026-07-23) — coordinate the 
 Stories 2.7/2.13/2.18 build their label/legend/locale maps against the post-CS-1 24-value
 enum, never hardcoding the 22-value set.
 
+> **✅ CS-1 LANDED 2026-08-04 — see logged decision 17, which supersedes this rule.** Two
+> corrections to the rule as written above, kept for whoever runs the next bump: the version
+> move was **2 → 3**, not 1 → 2 (Story 1.8 had already taken 1 → 2 in `c645cfe`); and
+> "`version.json`" is **six** declarations, not one — the file plus a `schemaVersion` `const`
+> in each of the five artifact schemas. The consumer list was also short by one:
+> `pipeline/tests/test_contract_schemas.py` hardcodes the version in two asserts. The landing
+> itself followed the coordination rule's escape hatch — two Epic 2 sessions were in flight,
+> and Juan gave the explicit go-ahead.
+
 **Filed fixture request (no schema change, no version bump):** **FR-1**, routed to Story
 1.18's fixture work — add coverage for the schema-guaranteed-but-unfixtured branches:
 `goalkeeping: null`, `players: null`, `events.*: null` beyond `shootoutAttempts`, an empty
@@ -578,5 +680,5 @@ render at uniform size and popovers/logs omit the xG row while `ShotEvent.expect
 EXPERIENCE.md/DESIGN.md/epic-2.7 xG-sizing conflict without a contract change.
 
 **Gate consequence:** Epic 1 extraction past the AD-8 sample set (stories 1.7–1.15) is
-**unblocked** by this sign-off. Story **1.16 is blocked-pending CS-1**. Fixture request FR-1
-blocks nothing.
+**unblocked** by this sign-off. Story **1.16 was blocked-pending CS-1 — CS-1 landed 2026-08-04
+(decision 17), so 1.16 is now unblocked** on this gate. Fixture request FR-1 blocks nothing.

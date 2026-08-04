@@ -47,15 +47,15 @@ _BOUNDARY_TOKENS = ("Player", "Outcome", "Body", "Delivery")
 # fall into the previous column.
 _COLUMN_X_TOLERANCE_PT = 1.0
 
-# The compound Outcome label printed in the table -> the contract's 22-value
+# The compound Outcome label printed in the table -> the contract's 24-value
 # `ShotOutcomeDetail` enum (kebab-case, ` - ` separators dropped). Frozen literals;
-# `test_markers_attempts` cross-checks every value against contract/common.schema.json.
+# `test_markers_attempts` cross-checks every value against contract/common.schema.json,
+# and the coverage is now EXACT in both directions — no documented divergence remains.
 #
-# Two corpus-observed labels are NOT in the contract's closed enum: bare "Incomplete"
-# (31 rows) and bare "On Target" (3 rows), found in the Story 1.5 full-corpus run.
-# They map mechanically like bare "Off Target" and are AD-14 change-flow candidates
-# (add `incomplete` and `on-target` to ShotOutcomeDetail + x-maps-to-outcome) —
-# recorded in deferred-work.md; Story 1.16's contract emission must resolve them.
+# The two bare labels ("Incomplete" x31, "On Target" x3, found in the Story 1.5
+# full-corpus run) used to sit outside the contract's closed enum and were carried here
+# as `AD14_EXTRA_DETAILS`. Change-set CS-1 added them (contract/README.md decision 17),
+# so they are ordinary in-contract values now.
 OUTCOME_LABEL_TO_DETAIL: dict[str, str] = {
     "Incomplete": "incomplete",
     "On Target": "on-target",
@@ -83,20 +83,26 @@ OUTCOME_LABEL_TO_DETAIL: dict[str, str] = {
     "On Target - Saved": "on-target-saved",
 }
 
-# `ShotOutcomeDetail` -> the five-value marker `ShotOutcome`, restating the contract's
-# `x-maps-to-outcome`. NOT prefix-derivable: `incomplete-blocked` maps to `blocked`.
-# The first two entries are the AD-14 candidates above, mapped mechanically.
-DETAIL_TO_OUTCOME: dict[str, str] = {
-    "incomplete": "incomplete",
-    "on-target": "on-target",
+# `ShotOutcomeDetail` -> the marker `ShotOutcome`, restating the contract's
+# `x-maps-to-outcome` EXACTLY — `test_markers_attempts` asserts equality against the
+# schema, so a drift fails here rather than in production. NOT prefix-derivable:
+# `incomplete-blocked` maps to `blocked`.
+#
+# One entry is a tuple, not a string: the contract declares
+# `deflected-on-target-defensive-event` as the array ["incomplete", "on-target"] because
+# the corpus renders that detail in BOTH marker colours (CS-1/CR-2, decision 17). JSON
+# lists arrive as `list`; the frozen literal uses `tuple` so the dict stays hashable-valued
+# and immutable, and the equality test normalizes the two.
+DETAIL_TO_OUTCOME: dict[str, str | tuple[str, ...]] = {
     "deflected-off-target": "off-target",
     "deflected-off-target-defensive-event": "off-target",
     "deflected-off-target-referee-event": "off-target",
     "deflected-off-target-saved": "off-target",
-    "deflected-on-target-defensive-event": "on-target",
+    "deflected-on-target-defensive-event": ("incomplete", "on-target"),
     "deflected-on-target-goal": "goal",
     "deflected-on-target-goal-prevented": "on-target",
     "deflected-on-target-saved": "on-target",
+    "incomplete": "incomplete",
     "incomplete-assist": "incomplete",
     "incomplete-blocked": "blocked",
     "incomplete-defensive-event": "incomplete",
@@ -107,24 +113,27 @@ DETAIL_TO_OUTCOME: dict[str, str] = {
     "off-target-defensive-event": "off-target",
     "off-target-player-on-ball-error": "off-target",
     "off-target-saved": "off-target",
+    "on-target": "on-target",
     "on-target-defensive-event": "on-target",
     "on-target-goal": "goal",
     "on-target-goal-prevented": "on-target",
     "on-target-saved": "on-target",
 }
 
-# What the linking outcome cross-check accepts: which marker colours a row's detail
-# may legitimately pair with. Every detail accepts exactly the `DETAIL_TO_OUTCOME`
-# colour EXCEPT `deflected-on-target-defensive-event`, which the corpus renders in
-# BOTH colours: Story 1.5's full-corpus run found 10 of its 11 rows under markers
-# drawn in the incomplete colour and 1 under an on-target marker (each sitting < 1 pt
-# under its own ordinal label). The contract's guessed `on-target` pairing is
-# corpus-contradicted for those 10 — an AD-14 contract change request recorded in
-# deferred-work.md; until it resolves, the cross-check accepts either colour for this
-# one detail rather than manufacturing 10 (or 1) false wrong-join demotions.
+# What the linking outcome cross-check accepts: which marker colours a row's detail may
+# legitimately pair with. This is now a pure widening of `DETAIL_TO_OUTCOME` — every
+# detail accepts exactly what the contract maps it to, with a scalar read as a
+# one-element tuple. There is no local override any more.
+#
+# The one multi-colour detail is `deflected-on-target-defensive-event`: Story 1.5's
+# full-corpus run found 10 of its 11 rows under markers drawn in the incomplete colour
+# and 1 under an on-target marker (each sitting < 1 pt under its own ordinal label). That
+# used to be a local exception to a scalar contract; CS-1 moved it INTO the contract as an
+# array, so accepting both colours is now the contract's instruction rather than this
+# module's tolerance of a known-wrong pairing.
 DETAIL_COMPATIBLE_OUTCOMES: dict[str, tuple[str, ...]] = {
-    **{detail: (outcome,) for detail, outcome in DETAIL_TO_OUTCOME.items()},
-    "deflected-on-target-defensive-event": ("incomplete", "on-target"),
+    detail: (mapped,) if isinstance(mapped, str) else mapped
+    for detail, mapped in DETAIL_TO_OUTCOME.items()
 }
 
 

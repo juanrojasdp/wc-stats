@@ -20,7 +20,7 @@
     "schemaVersion": {
       "title": "TeamProfileSchemaVersion",
       "type": "integer",
-      "const": 2
+      "const": 3
     },
     "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
     "name": {

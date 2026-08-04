@@ -67,47 +67,86 @@ def common_schema(repo_root: Path) -> dict:
     )
 
 
-# The two labels the closed enum missed, found in the Story 1.5 full-corpus run (bare
-# "Incomplete" x31, bare "On Target" x3) — AD-14 change-flow candidates recorded in
-# deferred-work.md. Named here so the cross-check tests state the divergence precisely:
-# anything beyond enum + exactly these two is a real drift and must fail.
-AD14_EXTRA_DETAILS = {"incomplete": "incomplete", "on-target": "on-target"}
-
 # The one detail the corpus renders in BOTH marker colours (10 incomplete + 1
-# on-target of 11 rows) — the linking cross-check accepts either; AD-14 contract
-# change request recorded in deferred-work.md.
-AD14_BOTH_COLOURS_DETAIL = "deflected-on-target-defensive-event"
+# on-target of 11 rows). Change-set CS-1 moved this INTO the contract as an array
+# value on `x-maps-to-outcome` (contract/README.md decision 17, CR-2), so it is no
+# longer a local exception — the tests below source the expectation from the schema
+# and name it here only to assert it is the ONLY such entry.
+BOTH_COLOURS_DETAIL = "deflected-on-target-defensive-event"
 
 
-def test_outcome_labels_cover_the_contract_enum_plus_the_ad14_extras(common_schema):
-    """Every enum value covered, injectively; extras are exactly the two documented
-    corpus-observed AD-14 candidates — no other gap or addition tolerated."""
+def _as_tuple(mapped) -> tuple[str, ...]:
+    """Normalize a scalar-or-array `x-maps-to-outcome` value to the frozen tuple form.
+
+    JSON arrays load as `list`; the production dict freezes them as `tuple`. The
+    normalization is deliberately the ONLY latitude the equality asserts below get.
+    """
+    return (mapped,) if isinstance(mapped, str) else tuple(mapped)
+
+
+def test_outcome_labels_cover_the_contract_enum_exactly(common_schema):
+    """Every enum value covered, injectively, with nothing left over.
+
+    Before CS-1 this asserted enum + two documented `AD14_EXTRA_DETAILS`: bare
+    "Incomplete" and "On Target" were printed by the corpus but absent from the closed
+    enum. Decision 17 added them, so the coverage is now exact in both directions and
+    ANY divergence is drift.
+    """
     enum = common_schema["$defs"]["ShotOutcomeDetail"]["enum"]
 
-    assert sorted(OUTCOME_LABEL_TO_DETAIL.values()) == sorted(
-        list(enum) + sorted(AD14_EXTRA_DETAILS)
-    )
+    assert sorted(OUTCOME_LABEL_TO_DETAIL.values()) == sorted(enum)
     assert len(set(OUTCOME_LABEL_TO_DETAIL.values())) == len(OUTCOME_LABEL_TO_DETAIL)
 
 
 def test_detail_to_outcome_restates_the_contract_x_maps_to_outcome(common_schema):
-    """The detail -> outcome map must equal the schema's machine-readable one plus
-    exactly the AD-14 extras — it is NOT prefix-derivable (`incomplete-blocked` ->
-    `blocked`)."""
+    """The detail -> outcome map must equal the schema's machine-readable one EXACTLY —
+    no extras. It is NOT prefix-derivable (`incomplete-blocked` -> `blocked`), and it is
+    not uniformly scalar-valued (CR-2's one array entry)."""
     contract_map = common_schema["$defs"]["ShotOutcomeDetail"]["x-maps-to-outcome"]
 
-    assert DETAIL_TO_OUTCOME == {**contract_map, **AD14_EXTRA_DETAILS}
+    assert {detail: _as_tuple(mapped) for detail, mapped in DETAIL_TO_OUTCOME.items()} == {
+        detail: _as_tuple(mapped) for detail, mapped in contract_map.items()
+    }
+
+    # `_as_tuple` normalizes BOTH sides above, so the equality alone cannot tell
+    # `"off-target"` from `["off-target"]`. The schema's own description promises consumers
+    # that values are scalar EXCEPT one, and generated JSDoc repeats it, so pin the raw
+    # value TYPES against that promise: silently flipping entries to 1-element arrays would
+    # otherwise pass every assert in this file while the documentation went false.
+    arrays = sorted(d for d, mapped in contract_map.items() if not isinstance(mapped, str))
+    assert arrays == [BOTH_COLOURS_DETAIL], (
+        "x-maps-to-outcome must carry exactly one array value; the rest are scalar strings"
+    )
 
 
-def test_compatible_outcomes_are_singletons_except_the_documented_both_colours_detail():
-    """The linking cross-check accepts exactly the mapped colour everywhere except the
-    one detail the corpus itself renders in two colours (AD-14)."""
-    for detail, outcome in DETAIL_TO_OUTCOME.items():
-        if detail == AD14_BOTH_COLOURS_DETAIL:
-            continue
-        assert DETAIL_COMPATIBLE_OUTCOMES[detail] == (outcome,)
-    assert DETAIL_COMPATIBLE_OUTCOMES[AD14_BOTH_COLOURS_DETAIL] == ("incomplete", "on-target")
-    assert set(DETAIL_COMPATIBLE_OUTCOMES) == set(DETAIL_TO_OUTCOME)
+def test_compatible_outcomes_widen_the_contract_map_and_nothing_else(common_schema):
+    """The linking cross-check accepts exactly what the contract maps each detail to.
+
+    Post-CS-1 this is a pure widening of `x-maps-to-outcome` with no local override, so
+    the both-colours detail is accepted because the SCHEMA says two colours — not because
+    this module tolerates a known-wrong pairing.
+    """
+    contract_map = common_schema["$defs"]["ShotOutcomeDetail"]["x-maps-to-outcome"]
+
+    for detail, mapped in contract_map.items():
+        assert DETAIL_COMPATIBLE_OUTCOMES[detail] == _as_tuple(mapped)
+
+    # Against the CONTRACT's keys, not against `DETAIL_TO_OUTCOME`'s. The production dict is
+    # now a comprehension over `DETAIL_TO_OUTCOME`, so comparing the two key sets is
+    # tautological — it holds by construction and could never catch the drift it names.
+    assert set(DETAIL_COMPATIBLE_OUTCOMES) == set(contract_map)
+
+    multi = sorted(d for d, o in DETAIL_COMPATIBLE_OUTCOMES.items() if len(o) > 1)
+    assert multi == [BOTH_COLOURS_DETAIL], "exactly one detail may accept two colours"
+    assert DETAIL_COMPATIBLE_OUTCOMES[BOTH_COLOURS_DETAIL] == ("incomplete", "on-target")
+
+    # A zero-length value would silently unlink every marker carrying that detail:
+    # `linking.py` tests `marker.outcome in DETAIL_COMPATIBLE_OUTCOMES[...]`, and an empty
+    # tuple fails that for every colour with no error. Impossible while the map was all
+    # scalars; possible from a hand-edit now that array values are legal.
+    assert all(len(o) >= 1 for o in DETAIL_COMPATIBLE_OUTCOMES.values()), (
+        "every detail must accept at least one outcome"
+    )
 
 
 def test_every_parsed_detail_has_a_compatible_outcomes_entry():
@@ -135,9 +174,23 @@ def test_delivery_labels_cover_the_contract_enum_exactly(common_schema):
 def test_the_fixture_outcome_labels_agree_with_the_production_mapping():
     """The factory's outcome -> label restatement must reverse through the frozen dict
     onto a detail that maps back to the marker outcome — otherwise every default
-    fixture would fail the linking cross-check for the wrong reason."""
+    fixture would fail the linking cross-check for the wrong reason.
+
+    Both halves are asserted, because they catch different drifts. Membership is the
+    predicate `link_markers` actually applies, so it is what "the fixture will link"
+    means. But membership ALONE is too weak here: retargeting a factory label at CR-2's
+    dual-colour detail would satisfy `"on-target" in ("incomplete", "on-target")` while
+    the factory silently drew the minority colour, and every synthetic expectation built
+    on `default_attempt_cells` would encode the wrong reading. The factory's five labels
+    are all scalar-mapped and must stay that way, so the exact mapping is pinned too.
+    """
     for outcome, label in SHOTS_OUTCOME_TO_LABEL.items():
-        assert DETAIL_TO_OUTCOME[OUTCOME_LABEL_TO_DETAIL[label]] == outcome
+        detail = OUTCOME_LABEL_TO_DETAIL[label]
+        assert outcome in DETAIL_COMPATIBLE_OUTCOMES[detail]
+        assert DETAIL_TO_OUTCOME[detail] == outcome, (
+            f"the factory's {label!r} must map to exactly {outcome!r}; a dual-colour detail "
+            f"would make the synthetic fixtures ambiguous"
+        )
 
 
 # --- row extraction on synthetic fixtures -----------------------------------------

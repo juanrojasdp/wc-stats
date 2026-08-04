@@ -23,7 +23,7 @@
       "title": "MatchBundleSchemaVersion",
       "description": "Stamped from /contract/version.json. One global integer, declared exactly once (AD-2).",
       "type": "integer",
-      "const": 2
+      "const": 3
     },
     "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
     "metadata": { "$ref": "#/$defs/MatchMetadata" },
@@ -195,7 +195,7 @@
         "at": { "$ref": "#/$defs/MinuteStamp" },
         "ownGoal": {
           "title": "GoalOwnGoal",
-          "$comment": "PMSR prints no own-goal marking anywhere in the 104-report corpus (verified 2026-07-22). v1 therefore always emits false; a source that distinguishes own goals is an AD-14 change request.",
+          "$comment": "The corpus DOES mark own goals: Story 1.6 proved the lineup block's red-football glyph is an own-goal marking, 14 across the 104 reports, verified by goal reconciliation 104/104. This corrects the 2026-07-22 reading of \"no own-goal marking anywhere\", which was made before the glyphs were decoded. v1 pipelines still emit false until Story 1.16 flips the emission; that flip needs no schema change, only this comment stopped being true.",
           "type": "boolean"
         },
         "penalty": {
