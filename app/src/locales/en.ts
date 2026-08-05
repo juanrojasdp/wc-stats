@@ -513,6 +513,9 @@ export const en: Dictionary = {
       sortDescending: "descending",
       sortCleared: "The table's original order has been restored.",
       position: "Position",
+      // Story 2.11c — the receiving log's two enum columns.
+      eventType: "Event type",
+      movementType: "Movement type",
     },
     cluster: {
       dialogLabel: "Events at this point",
@@ -774,6 +777,13 @@ export const en: Dictionary = {
       "in-behind": "In behind",
       "no-movement": "No movement",
     },
+    // Story 2.11c — the ReceivingEvent discriminator. See the es.ts note for
+    // why the Spanish is the singular of the two section titles; in EN the two
+    // codes are already plain words.
+    receivingEventType: {
+      offer: "Offer",
+      movement: "Movement",
+    },
     defensiveAction: {
       "forced-turnover": "Forced turnover",
       "possession-regain": "Possession regain",
@@ -916,8 +926,8 @@ export const en: Dictionary = {
   expert: {
     pill: "EXPERT",
     heading: "Per-player data",
-    // Tables only — the "full logs" half of the mockup's copy is Story 2.11c's.
-    summary: "In possession · Out of possession · Physical — per-player tables",
+    // The mockup's copy, verbatim — 2.11c landed the logs block. See es.ts.
+    summary: "In possession · Out of possession · Physical — per-player tables and full event logs",
     // Review patch (2.11b): "home team" was false below md, where the rows are
     // filtered to one side. See the es.ts note.
     tableCaption: "Sorted by team and shirt number.",
@@ -937,6 +947,21 @@ export const en: Dictionary = {
     emptyRows: {
       headline: "No per-player rows to show.",
       explanation: "The report includes the per-player pages, but there are no rows to show here.",
+    },
+    // Story 2.11c — the full event logs block. See the es.ts note for why the
+    // six labels must differ from the section titles they compose against, and
+    // why `offers`/`movement` are "table" rather than "log".
+    logs: {
+      heading: "Full event logs",
+      shotLog: "Shot log",
+      crossLog: "Cross log",
+      passMatrix: "Pass matrix",
+      offers: "Offers table",
+      movement: "Movement table",
+      defensive: "Defensive-actions log",
+      receivingHeading: "Receiving log",
+      receivingOrder: "Sorted by minute, then home before away.",
+      receivingName: "Receiving log table",
     },
     field: {
       passesAttempted: "Passes attempted",

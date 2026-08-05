@@ -55,6 +55,14 @@ import {
   outOfPossessionPhaseKey,
 } from "@/viz/phases-model";
 import { OFFER_MOVEMENT_TYPES, offerMovementKey } from "@/viz/receiving-model";
+import { RECEIVING_EVENT_TYPES, receivingEventTypeKey } from "@/viz/receiving-log-model";
+/*
+ * The link table is imported from the component that renders it, so the hrefs
+ * this suite pins ARE the shipped ones. `environment: "node"` loads
+ * ExpertLayer.tsx without trouble — nothing at its module top level touches the
+ * DOM.
+ */
+import { LOG_LINKS } from "@/components/ExpertLayer";
 import {
   CORNER_DELIVERY_STYLES,
   CORNER_DELIVERY_TYPES,
@@ -1204,12 +1212,243 @@ describe("the expert.* namespace (Story 2.11b, AD-7)", () => {
     expect(en.match.bundle.crashedExpertExplanation).not.toContain("tactical");
   });
 
-  it("describes the tables ONLY in the summary — 2.11c's logs are not shipped", () => {
-    // The mockup's copy ends "— tablas por jugador y registros completos".
-    // Those "registros completos" are the five event logs Story 2.11c mounts
-    // into this shell; claiming them now would point the reader at nothing.
-    expect(es.expert.summary).not.toContain("registros completos");
-    expect(en.expert.summary).not.toContain("full logs");
+  it("names the logs in the summary now that 2.11c has shipped them", () => {
+    /*
+     * INVERTED BY STORY 2.11c, which is what this pin was waiting for. 2.11b
+     * shipped the tables-only form deliberately, because "registros completos"
+     * named content the reader could not find; the logs block IS that content,
+     * so the leaf is now the mobile mockup's copy verbatim in both locales.
+     */
+    expect(es.expert.summary).toBe(
+      "En posesión · Sin posesión · Físico — tablas por jugador y registros completos"
+    );
+    expect(en.expert.summary).toBe(
+      "In possession · Out of possession · Physical — per-player tables and full event logs"
+    );
+    // Lower-cased on both sides: the heading is sentence-capitalised, the
+    // summary carries the same words mid-sentence.
+    expect(es.expert.summary.toLowerCase()).toContain(es.expert.logs.heading.toLowerCase());
+    expect(en.expert.summary.toLowerCase()).toContain(en.expert.logs.heading.toLowerCase());
+  });
+});
+
+/*
+ * ------------------- STORY 2.11c — THE FULL EVENT LOGS BLOCK -------------------
+ *
+ * Tasks 4.4 / 4.4a / 4.4b. Three of these guard failure modes that NOTHING else
+ * in the chain can see: a typo'd fragment (sectionIdFromHash is exact-match and
+ * returns null SILENTLY), a link label that duplicates the section title it is
+ * composed against (the hint would print the same phrase twice on one line), and
+ * a fourth table resolving the same caption string as three shipped ones.
+ */
+describe("Story 2.11c's receiving log and log links", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("has exactly one entry per ReceivingEventType value, in both locales", () => {
+    // The list is IMPORTED from the model that owns it, never hand-copied here
+    // — the 2.9 review patched exactly that mistake.
+    expect(Object.keys(es.enums.receivingEventType).sort()).toEqual(
+      [...RECEIVING_EVENT_TYPES].sort()
+    );
+    expect(Object.keys(en.enums.receivingEventType).sort()).toEqual(
+      [...RECEIVING_EVENT_TYPES].sort()
+    );
+  });
+
+  it("resolves every discriminator label in both locales", () => {
+    for (const code of RECEIVING_EVENT_TYPES) {
+      for (const locale of locales) {
+        const label = t(receivingEventTypeKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label).not.toContain("enums.receivingEventType");
+      }
+    }
+  });
+
+  it("resolves the movement column through enums.offerMovement, minting no second set", () => {
+    // The log's movementType column reuses the shipped labels via
+    // `offerMovementKey`; a seventh set would turn the OFFER_MOVEMENT_TYPES pin
+    // above red.
+    expect(Object.keys(es.enums.receivingEventType)).not.toContain("in-front");
+    for (const code of OFFER_MOVEMENT_TYPES) {
+      for (const locale of locales) {
+        expect(t(offerMovementKey(code), locale), `${code} in ${locale}`).not.toBe("");
+      }
+    }
+  });
+
+  it("keeps the receiving log's order string OUT of viz.table.caption's cluster", () => {
+    /*
+     * `viz.table.caption` is literally "Ordenado por minuto." and is resolved by
+     * three tables already; AC 3 forbids a fourth consumer. The receiving log
+     * states its REAL order — minute, then home before away.
+     */
+    for (const locale of locales) {
+      expect(t("expert.logs.receivingOrder", locale), locale).not.toBe(
+        t("viz.table.caption", locale)
+      );
+      expect(t("expert.logs.receivingOrder", locale), locale).not.toBe(
+        t("expert.tableCaption", locale)
+      );
+    }
+  });
+
+  it("gives every one of the six links a label DISTINCT from its section title", () => {
+    /*
+     * Task 2.3's hand check, made permanent. The rendered hint is
+     * `${section title} · Ver los datos` printed beside the label, so a label
+     * equal to its own title prints the same phrase twice on one line. Two of
+     * the six were byte-identical to their titles in a first draft
+     * ("Ofrecimientos para recibir", "Desmarques"), which is why this exists.
+     */
+    expect(LOG_LINKS).toHaveLength(6);
+    for (const link of LOG_LINKS) {
+      for (const locale of locales) {
+        const label = t(link.labelKey, locale);
+        const title = t(link.titleKey, locale);
+        expect(label, `${link.id} in ${locale}`).not.toBe("");
+        expect(label, `${link.id} in ${locale}`).not.toBe(title);
+      }
+    }
+  });
+
+  it("keeps the six link labels distinct from each other, in both locales", () => {
+    for (const locale of locales) {
+      const labels = LOG_LINKS.map((link) => t(link.labelKey, locale));
+      expect(new Set(labels).size, locale).toBe(LOG_LINKS.length);
+    }
+  });
+
+  it("points every href at a real SectionId — the story's largest silent failure", () => {
+    /*
+     * TASK 4.4a, and the cheapest test in the story. A typo like
+     * `#pass-network` yields a dead anchor that no type, no lint and no other
+     * test catches, because `sectionIdFromHash` is whole-string equality against
+     * the eleven SectionIds and returns `null` SILENTLY.
+     */
+    for (const link of LOG_LINKS) {
+      expect(link.href.startsWith("#"), link.id).toBe(true);
+      expect(SECTION_IDS as readonly string[], link.id).toContain(link.href.slice(1));
+    }
+  });
+
+  it("makes the new caption distinct from all 27 shipped ones — COMPOSED, not by key", () => {
+    /*
+     * TASK 4.4b, AND THE REASON IT IS SPELLED OUT: a key-level test would go RED
+     * ON A PRE-EXISTING CONDITION. Four es keys already resolve byte-identical
+     * to "Ordenado por equipo y dorsal." — viz.table.captionNodes,
+     * viz.offers.tableCaption, viz.movement.tableCaption and
+     * expert.tableCaption (three in en, where expert.tableCaption diverges).
+     * That is harmless because every rendered <caption> except
+     * expert.tableCaption's is disambiguated by its `${title} — ` prefix, so the
+     * property AC 3 actually claims is about the COMPOSED strings.
+     *
+     * This list mirrors each component's own composition, one entry per rendered
+     * <DataTable>: 27 before this story, 28 after. `DefensiveActionsSection`'s
+     * caption is conditional, so BOTH branches are listed and the count is
+     * checked against the branch the fixtures take.
+     */
+    const SEPARATOR = " — ";
+    const SPACE = " ";
+
+    function composedCaptions(locale: Locale): string[] {
+      const title = (key: Parameters<typeof t>[0]) => t(key, locale);
+      const shotMaps = title("viz.shotMap.title");
+      const crossMaps = title("viz.crossMap.title");
+      const passNetwork = title("viz.passNetwork.title");
+      const offers = title("viz.offers.title");
+      const movement = title("viz.movement.title");
+      const defensive = title("viz.defensiveActions.title");
+      const momentum = title("tactical.sections.momentum.title");
+      const phases = title("tactical.sections.phases.title");
+      const pressing = title("tactical.sections.pressing.title");
+      const setPlays = title("tactical.sections.set-plays.title");
+      const goalkeeping = title("tactical.sections.goalkeeping.title");
+      return [
+        // ShotMapsSection (2)
+        `${shotMaps}${SEPARATOR}${title("viz.table.caption")}`,
+        `${crossMaps}${SEPARATOR}${title("viz.table.caption")}`,
+        // PassNetworksSection (2)
+        `${passNetwork}${SEPARATOR}${title("viz.table.captionNodes")}`,
+        `${passNetwork}${SEPARATOR}${title("viz.table.captionEdges")}`,
+        // OffersToReceiveSection (2)
+        `${offers}${SEPARATOR}${title("viz.offers.totalsCaption")}`,
+        `${offers}${SEPARATOR}${title("viz.offers.tableCaption")}`,
+        // MovementToReceiveSection (2)
+        `${movement}${SEPARATOR}${title("viz.movement.totalsCaption")}`,
+        `${movement}${SEPARATOR}${title("viz.movement.tableCaption")}`,
+        // DefensiveActionsSection (1) — the clocked branch the fixtures take.
+        `${defensive}${SEPARATOR}${title("viz.table.caption")}`,
+        // MomentumSection (1)
+        `${momentum}${SEPARATOR}${title("viz.momentum.metricNote")}${SPACE}${title(
+          "viz.momentum.tableCaption"
+        )}`,
+        // PhasesSection (2)
+        `${phases}${SEPARATOR}${title("viz.phases.inPossession")}${SEPARATOR}${title(
+          "viz.phases.tableCaption"
+        )}`,
+        `${phases}${SEPARATOR}${title("viz.phases.outOfPossession")}${SEPARATOR}${title(
+          "viz.phases.tableCaption"
+        )}`,
+        // PressingSection (3)
+        `${pressing}${SEPARATOR}${title("viz.pressing.pressRates")}${SEPARATOR}${title(
+          "viz.pressing.tableCaption"
+        )}`,
+        `${pressing}${SEPARATOR}${title("viz.pressing.blocks")}${SEPARATOR}${title(
+          "viz.pressing.tableCaption"
+        )}`,
+        `${pressing}${SEPARATOR}${title("viz.pressing.metreTableCaption")}`,
+        // SetPlaysSection (4)
+        `${setPlays}${SEPARATOR}${title("viz.setPlays.totalsCaption")}`,
+        `${setPlays}${SEPARATOR}${title("viz.setPlays.freeKickCaption")}`,
+        `${setPlays}${SEPARATOR}${title("viz.setPlays.cornerCaption")}`,
+        `${setPlays}${SEPARATOR}${title("viz.setPlays.cornerTypeSideCaption")}`,
+        // GoalkeepingSection (7)
+        `${goalkeeping}${SEPARATOR}${title("viz.goalkeeping.summaryCaption")}`,
+        `${goalkeeping}${SEPARATOR}${title("viz.goalkeeping.timelineCaption")}`,
+        `${goalkeeping}${SEPARATOR}${title("viz.goalkeeping.preventionCaption")}`,
+        `${goalkeeping}${SEPARATOR}${title("viz.goalkeeping.distributionCaption")}`,
+        `${goalkeeping}${SEPARATOR}${title("viz.goalkeeping.aerialCaption")}`,
+        `${goalkeeping}${SEPARATOR}${title("viz.goalkeeping.headlineCaption")}`,
+        `${goalkeeping}${SEPARATOR}${title("viz.goalkeeping.bodyTypeCaption")}`,
+        // ExpertLayer's Domain G table (1) — the ONE unprefixed caption.
+        title("expert.tableCaption"),
+      ];
+    }
+
+    for (const locale of locales) {
+      const shipped = composedCaptions(locale);
+      expect(shipped, locale).toHaveLength(27);
+      expect(new Set(shipped).size, `the 27 shipped captions in ${locale}`).toBe(27);
+
+      const receiving = `${t("expert.logs.receivingHeading", locale)}${SEPARATOR}${t(
+        "expert.logs.receivingOrder",
+        locale
+      )}`;
+      expect(shipped, `the new caption in ${locale}`).not.toContain(receiving);
+      expect(new Set([...shipped, receiving]).size, locale).toBe(28);
+    }
+  });
+
+  it("keeps the receiving heading and the block heading distinct", () => {
+    // The <h3> names the block, the <h4> names the one table inside it; the
+    // table's caption is built from the <h4>'s string, so they must not collide.
+    for (const locale of locales) {
+      expect(t("expert.logs.heading", locale), locale).not.toBe(
+        t("expert.logs.receivingHeading", locale)
+      );
+      expect(t("expert.logs.receivingName", locale), locale).not.toBe("");
+    }
+  });
+
+  it("mints NO empty-state copy for the logs block (Task 2.5)", () => {
+    /*
+     * FD-1: when `anyReceivingEvents` is false the heading and table are absent
+     * entirely — never an em dash, never an empty panel. The six links stay
+     * unconditional, so there is no absence string to mint for them either.
+     */
+    expect(Object.keys(es.expert.logs).sort()).toEqual(Object.keys(en.expert.logs).sort());
+    expect(Object.keys(es.expert.logs)).not.toContain("empty");
   });
 });
 

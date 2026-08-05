@@ -804,6 +804,18 @@ export const es = {
        * has shipped since Story 2.4.
        */
       position: "Posición",
+      /*
+       * Story 2.11c — the receiving log's two enum columns (ruling 3).
+       *
+       * "Tipo de desmarque" is REQUIRED, not a choice: it is already the
+       * shipped Spanish for exactly this classification, in
+       * viz.movement.totalsCaption ("Totales por equipo y tipo de desmarque.")
+       * and viz.movement.barNote ("...entre los seis tipos de desmarque.").
+       * Minting "Tipo de movimiento" would put a second Spanish name on one
+       * enum. The EN head stays "Movement type", matching viz.movement.title.
+       */
+      eventType: "Tipo de evento",
+      movementType: "Tipo de desmarque",
     },
     cluster: {
       dialogLabel: "Eventos en este punto",
@@ -1317,6 +1329,35 @@ export const es = {
       "no-movement": "Sin desmarque",
     },
     /*
+     * Story 2.11c — the ReceivingEvent DISCRIMINATOR, and the only new enum
+     * namespace the receiving log needs (ruling 3). The log merges the two
+     * surfaces that share one array, so without this column a reader cannot
+     * tell an offer row from a movement row on any of the 270.
+     *
+     * THE SPANISH IS DERIVED FROM SHIPPED COPY, not chosen. The two values name
+     * the two SECTIONS the array feeds, so the labels are the singular of those
+     * two section titles: viz.offers.title is "Ofrecimientos para recibir" and
+     * viz.movement.title is "Desmarques". That makes the column
+     * self-documenting — a reader maps a row to a section — and it agrees with
+     * enums.offerMovement's own docblock, which states that "desmarque is the
+     * regional term for the movement itself, so the enum labels name the
+     * DIRECTION and the section title carries the noun".
+     *
+     * A KNOWING NEAR-COLLISION, recorded rather than papered over: a row can
+     * read event type "Desmarque" beside movement type "Sin desmarque". That is
+     * what the source says — the movement-to-receive map records an event whose
+     * movement classification is "no movement". Splitting the terms would be a
+     * ruling, not a dev choice.
+     *
+     * (2.18 decision 3 is the ruling that binds "ofrecimientos" for the OFFER
+     * side; 2.11b's Task 3.8 read the opposite and "Ofrecimientos" shipped as a
+     * declared departure from it, re-affirmed at that story's code review.)
+     */
+    receivingEventType: {
+      offer: "Ofrecimiento",
+      movement: "Desmarque",
+    },
+    /*
      * All FOUR DefensiveActionType codes are labelled even though only two can
      * ever be plotted: `block` and `possession-contest` are aggregate panels
      * with no coordinates anywhere in the corpus, but the log table and any
@@ -1564,14 +1605,9 @@ export const es = {
     pill: "EXPERTO",
     // Ruled by the mobile mockup's own <h2>, verbatim.
     heading: "Datos por jugador",
-    /*
-     * THE TABLES ONLY. The mockup's copy ends "— tablas por jugador y
-     * registros completos", and those "registros completos" are Story 2.11c's
-     * five event logs, which do not exist yet. Shipping the full mockup string
-     * would be a claim about content the reader cannot find. 2.11c updates
-     * this leaf when it lands.
-     */
-    summary: "En posesión · Sin posesión · Físico — tablas por jugador",
+    // The mobile mockup's copy, VERBATIM. Story 2.11c landed the logs block, so
+    // "registros completos" now names content the reader can reach.
+    summary: "En posesión · Sin posesión · Físico — tablas por jugador y registros completos",
     /*
      * UX-DR12 requires every table to STATE its default order, and this one
      * never mutates on sort (2.11a decision 7).
@@ -1626,6 +1662,38 @@ export const es = {
     emptyRows: {
       headline: "Sin filas por jugador para mostrar.",
       explanation: "El informe incluye las páginas por jugador, pero no hay filas que mostrar aquí.",
+    },
+    /*
+     * STORY 2.11c — THE FULL EVENT LOGS BLOCK (AC 1, UX-DR18).
+     *
+     * SIX LINK LABELS, and none of them may equal the viz.*.title it is
+     * composed against: the rendered hint is `${section title} · Ver los datos`
+     * printed beside the label, so a label equal to its own title would print
+     * the same phrase twice on one line. i18n.test.ts asserts all six, in both
+     * locales, so this stays true.
+     *
+     * `offers` and `movement` are "Tabla de ..." rather than "Registro de ..."
+     * on purpose (ruling 6): those two are Story 2.9's AGGREGATE surfaces, not
+     * event logs, and AC 1 does not enumerate them — they are here as pointers.
+     *
+     * receivingOrder states the ONE table this block renders, and deliberately
+     * does NOT reuse viz.table.caption ("Ordenado por minuto."), which three
+     * tables already resolve and which would be a fourth indistinguishable
+     * caption. It is composed with receivingHeading at the call site, so the
+     * rendered <caption> names its own table like the other ten sections do.
+     */
+    logs: {
+      heading: "Registros completos",
+      shotLog: "Registro de tiros",
+      crossLog: "Registro de centros",
+      passMatrix: "Matriz de pases",
+      offers: "Tabla de ofrecimientos",
+      movement: "Tabla de desmarques",
+      defensive: "Registro de acciones defensivas",
+      receivingHeading: "Registro de recepciones",
+      receivingOrder: "Ordenado por minuto, luego local antes que visitante.",
+      // Names the table in the ONE polite sort announcement the page owns.
+      receivingName: "Tabla del registro de recepciones",
     },
     /*
      * The 40 keyed column heads, in the contract's required[] order.
