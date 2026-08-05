@@ -55,14 +55,20 @@ import {
   outOfPossessionPhaseKey,
 } from "@/viz/phases-model";
 import { OFFER_MOVEMENT_TYPES, offerMovementKey } from "@/viz/receiving-model";
-import { RECEIVING_EVENT_TYPES, receivingEventTypeKey } from "@/viz/receiving-log-model";
+import {
+  RECEIVING_EVENT_TYPES,
+  receivingEventTypeKey,
+  receivingLogRows,
+} from "@/viz/receiving-log-model";
+import type { ReceivingEvent } from "@/lib/contract/contract-types";
 /*
- * The link table is imported from the component that renders it, so the hrefs
- * this suite pins ARE the shipped ones. `environment: "node"` loads
- * ExpertLayer.tsx without trouble — nothing at its module top level touches the
- * DOM.
+ * The link table is imported from `lib/expert-logs`, the PURE module that owns
+ * it, so the hrefs this suite pins ARE the shipped ones without dragging a
+ * `"use client"` component — and `DataTable` -> `SortAnnouncer` -> `radix-ui`
+ * behind it — into `environment: "node"`. It lived in `ExpertLayer.tsx` until
+ * the 2.11c code review; see that file's docblock for why it moved.
  */
-import { LOG_LINKS } from "@/components/ExpertLayer";
+import { LOG_LINKS } from "@/lib/expert-logs";
 import {
   CORNER_DELIVERY_STYLES,
   CORNER_DELIVERY_TYPES,
@@ -1266,15 +1272,45 @@ describe("Story 2.11c's receiving log and log links", () => {
   });
 
   it("resolves the movement column through enums.offerMovement, minting no second set", () => {
-    // The log's movementType column reuses the shipped labels via
-    // `offerMovementKey`; a seventh set would turn the OFFER_MOVEMENT_TYPES pin
-    // above red.
-    expect(Object.keys(es.enums.receivingEventType)).not.toContain("in-front");
-    for (const code of OFFER_MOVEMENT_TYPES) {
+    /*
+     * DRIVEN THROUGH `receivingLogRows`, NOT through `offerMovementKey`
+     * directly. An earlier version of this test re-ran the pre-existing
+     * OFFER_MOVEMENT_TYPES label loop and never touched the receiving model at
+     * all — so if the model started emitting `enums.receivingMovement.*` it
+     * would still have passed, while claiming in its own name to cover exactly
+     * that. Patched at the 2.11c code review.
+     *
+     * One constructed event per movement code, through the model's real entry
+     * point: the key it emits must BE the shipped `offerMovementKey` key, and
+     * must resolve non-empty in both locales.
+     */
+    const HOME = { teamId: "home-id", teamCode: "HOM" };
+    const AWAY = { teamId: "away-id", teamCode: "AWY" };
+    const events = OFFER_MOVEMENT_TYPES.map(
+      (code) =>
+        ({
+          teamId: HOME.teamId,
+          playerId: "p-1",
+          playerName: "Alguien",
+          type: "offer",
+          movementType: code,
+          at: { minute: 10, stoppageMinute: null },
+          x: 50,
+          y: 50,
+        }) as unknown as ReceivingEvent
+    );
+    const rows = receivingLogRows(events, HOME, AWAY);
+    expect(rows).toHaveLength(OFFER_MOVEMENT_TYPES.length);
+    for (const [index, code] of OFFER_MOVEMENT_TYPES.entries()) {
+      const emitted = rows[index].movementTypeKey;
+      expect(emitted, code).toBe(offerMovementKey(code));
       for (const locale of locales) {
-        expect(t(offerMovementKey(code), locale), `${code} in ${locale}`).not.toBe("");
+        expect(t(emitted!, locale), `${code} in ${locale}`).not.toBe("");
       }
     }
+    // And the discriminator namespace stays two-valued — it never absorbs a
+    // movement code.
+    expect(Object.keys(es.enums.receivingEventType)).not.toContain("in-front");
   });
 
   it("keeps the receiving log's order string OUT of viz.table.caption's cluster", () => {
@@ -1312,6 +1348,22 @@ describe("Story 2.11c's receiving log and log links", () => {
     }
   });
 
+  it("keeps every LOG_LINKS id unique — two DOM ids and a React key ride on it", () => {
+    /*
+     * Added at the 2.11c code review. `id` is the only field the rest of this
+     * suite did not pin, and three things are built from it: the `<li>`'s React
+     * key, the anchor's own `expert-log-link-${id}`, and the hint's
+     * `expert-log-hint-${id}`. A repeated id therefore gives duplicate DOM ids
+     * and makes one link's `aria-labelledby` resolve against ANOTHER link's
+     * hint — silently, since duplicate ids are not an error anywhere.
+     */
+    const ids = LOG_LINKS.map((link) => link.id);
+    expect(new Set(ids).size).toBe(LOG_LINKS.length);
+    for (const id of ids) {
+      expect(id, id).not.toBe("");
+    }
+  });
+
   it("keeps the six link labels distinct from each other, in both locales", () => {
     for (const locale of locales) {
       const labels = LOG_LINKS.map((link) => t(link.labelKey, locale));
@@ -1343,10 +1395,14 @@ describe("Story 2.11c's receiving log and log links", () => {
      * expert.tableCaption's is disambiguated by its `${title} — ` prefix, so the
      * property AC 3 actually claims is about the COMPOSED strings.
      *
-     * This list mirrors each component's own composition, one entry per rendered
+     * This list mirrors each component's own composition, one entry per RENDERED
      * <DataTable>: 27 before this story, 28 after. `DefensiveActionsSection`'s
-     * caption is conditional, so BOTH branches are listed and the count is
-     * checked against the branch the fixtures take.
+     * caption is conditional, so only the branch the fixtures actually take is
+     * listed — the clocked one. Listing both would put 28 entries in a list the
+     * assertion below pins at 27, and the unlisted branch
+     * (`viz.defensiveActions.tableCaptionNoClock`) is distinct from every entry
+     * here anyway, so nothing is lost. (An earlier version of this comment
+     * claimed both branches were listed; corrected at the 2.11c code review.)
      */
     const SEPARATOR = " — ";
     const SPACE = " ";

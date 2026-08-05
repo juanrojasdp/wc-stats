@@ -6,6 +6,7 @@ import { DataTable } from "@/components/DataTable";
 import { EmptyStatePanel } from "@/components/EmptyStatePanel";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { MatchBundle } from "@/lib/contract/contract-types";
+import { LOG_LINKS } from "@/lib/expert-logs";
 import { formatDecimal, formatInteger, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
@@ -69,86 +70,17 @@ const CONTENT_ID = "expert-content";
 const SUMMARY_ID = "expert-summary";
 const EXPERT_HASH = "#expert";
 const LOGS_HEADING_ID = "expert-logs-heading";
-const RECEIVING_HEADING_ID = "expert-receiving-heading";
 
 /*
  * THE FULL EVENT LOGS BLOCK (Story 2.11c, AC 1 / UX-DR18).
  *
- * RULING 1 — "the same tables that serve as the viz data-table alternatives"
- * means ONE RENDERED INSTANCE REACHED FROM TWO ENTRY POINTS, not two instances.
- * UX-DR18 assigns this layer "full event logs DOUBLING AS viz alternatives" and
- * EXPERIENCE.md repeats the phrase; "doubling as" is one artifact serving two
- * roles. Removing the viz disclosures was ruled out ON THE SPEC — UX-DR9
- * requires every panel to carry "Ver los datos" opening its equivalent table,
- * and NFR-2/UX-DR16 make that the accessibility floor. So these slots are LINKS.
- *
- * RULING 2 — THEY ARE HONEST ANCHORS, AND THIS FILE BUILDS NO
- * DISCLOSURE-OPENING PLUMBING. A plain anchor does not deliver a reader to a
- * table: every match-page table sits behind a `ViewDataDisclosure` whose `open`
- * is a private `useState(false)` with no prop, no ref and a `useId()` region
- * that is not authorable and does not exist in the DOM while closed;
- * `PitchPanel` forwards only `panelTitle` and `trailing`; `sectionIdFromHash` is
- * whole-string equality against the eleven SectionIds, so a finer fragment
- * resolves to null SILENTLY; and `#shot-maps` is ambiguous, holding two
- * independent disclosures. Real plumbing is ~12 files across every match-page
- * section and inherits the ledgered "an unchanged hash never re-fires
- * hashchange" defect, which is fatal to a link list. So each link STATES where
- * the table is and that "Ver los datos" opens it, and the gap is FILED.
- *
- * SIX ENTRIES, NOT FIVE (ruling 6). AC 1 enumerates five logs; four of them are
- * linked here (the receiving log has no existing home and is rendered below),
- * and Story 2.9's two AGGREGATE surfaces are added as pointers — which is why
- * their labels read "Tabla de ..." rather than "Registro de ...". Cheap to
- * reverse: delete two entries, two locale keys and two test rows.
- *
- * `href` is NOT one of the sixteen gated prop names, so these fragment literals
- * are legal. i18n.test.ts pins every one of them to SECTION_IDS, because
- * `sectionIdFromHash` fails SILENTLY on a typo and nothing else would catch it.
+ * The link table itself lives in `@/lib/expert-logs` — a pure module, so
+ * `i18n.test.ts` can pin the six hrefs and labels without importing this
+ * component (ruled at the 2.11c code review). Read that file's docblock for
+ * rulings 1, 2 and 6: the slots are LINKS to the shipped viz disclosures, they
+ * are honest anchors that open nothing, and there are six of them rather than
+ * AC 1's five.
  */
-export interface ExpertLogLink {
-  /** Stable per-row identity — the `aria-describedby` target's id is built from it. */
-  id: string;
-  /** The link's own label. NEVER equal to `titleKey`'s value (i18n.test.ts asserts it). */
-  labelKey: DictionaryKey;
-  /** An in-page fragment; the id part is a member of SECTION_IDS. */
-  href: string;
-  /** The section the table lives in, composed into the link's description. */
-  titleKey: DictionaryKey;
-}
-
-export const LOG_LINKS: readonly ExpertLogLink[] = [
-  { id: "shot-log", labelKey: "expert.logs.shotLog", href: "#shot-maps", titleKey: "viz.shotMap.title" },
-  {
-    id: "cross-log",
-    labelKey: "expert.logs.crossLog",
-    href: "#shot-maps",
-    titleKey: "viz.crossMap.title",
-  },
-  {
-    id: "pass-matrix",
-    labelKey: "expert.logs.passMatrix",
-    href: "#pass-networks",
-    titleKey: "viz.passNetwork.title",
-  },
-  {
-    id: "offers",
-    labelKey: "expert.logs.offers",
-    href: "#offers-to-receive",
-    titleKey: "viz.offers.title",
-  },
-  {
-    id: "movement",
-    labelKey: "expert.logs.movement",
-    href: "#movement-to-receive",
-    titleKey: "viz.movement.title",
-  },
-  {
-    id: "defensive",
-    labelKey: "expert.logs.defensive",
-    href: "#defensive-actions",
-    titleKey: "viz.defensiveActions.title",
-  },
-];
 
 /** The three column groups, in the order the `<md` tabs present them. */
 type ColumnGroup = "inPossession" | "outOfPossession" | "physical";
@@ -968,21 +900,45 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
             <h3 id={LOGS_HEADING_ID} className="type-title text-ink-primary">
               {logsHeading}
             </h3>
+            {/*
+             * `role="list"` is NOT redundant here. Tailwind v4's preflight sets
+             * `list-style: none` on every `ul`, and WebKit drops the list role
+             * when it does — so in Safari/VoiceOver this element stops being a
+             * list. That matters for this `ul` specifically: it carries
+             * `aria-labelledby`, and the receiving log below is deliberately
+             * kept OUT of it so a reader enumerating the list gets six entries
+             * rather than an 87-row table. Without the role there is no list to
+             * enumerate and neither decision buys anything.
+             */}
             <ul
+              role="list"
               aria-labelledby={LOGS_HEADING_ID}
               className="mt-tile-gap flex flex-col gap-1"
             >
               {LOG_LINKS.map((link) => {
+                const linkId = `expert-log-link-${link.id}`;
                 const hintId = `expert-log-hint-${link.id}`;
                 /*
-                 * THE HINT MUST REACH THE ACCESSIBLE NAME, and a bare adjacent
-                 * <span> does not: a screen-reader user in links-list mode would
-                 * get six anchors naming neither location nor control, which is
-                 * the exact failure ruling 2 exists to avoid and would make AC 1
-                 * false for the readers AC 1 is for. `aria-describedby` is not
-                 * one of the sixteen gated prop names, so an id-valued
-                 * expression is legal; `aria-label` is gated AND would REPLACE
-                 * the link text rather than extend it.
+                 * THE HINT REACHES THE ACCESSIBLE NAME, via `aria-labelledby`
+                 * pointing at the anchor ITSELF and then at the hint — so the
+                 * computed name is "Registro de tiros Mapa de tiros · Ver los
+                 * datos" and a screen-reader user in links-list mode gets the
+                 * location and the control, not a bare label. That is the whole
+                 * of ruling 2, and an unqualified "Registro de tiros" would be a
+                 * promise the anchor does not keep.
+                 *
+                 * `aria-describedby` WAS WRONG HERE and was patched at the 2.11c
+                 * code review: a description is not part of the accessible name,
+                 * and links-list mode enumerates names only — so the six anchors
+                 * listed exactly as if the hint were not there, which is the
+                 * failure the hint exists to prevent. `aria-labelledby` is NOT
+                 * one of the sixteen gated prop names (only `aria-label` is), so
+                 * an id-valued expression is legal; `aria-label` would also have
+                 * REPLACED the link text rather than extended it.
+                 *
+                 * Self-reference first, so the label leads and the hint extends
+                 * it. The visible text is unchanged and the hint stays a
+                 * separate `<span>`, so sighted layout is exactly as verified.
                  *
                  * `viz.viewData` is reused rather than paraphrased — it is the
                  * exact visible string on every one of those controls, so a
@@ -1001,8 +957,9 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
                      * auto-expands the target section below lg.
                      */}
                     <a
+                      id={linkId}
                       href={link.href}
-                      aria-describedby={hintId}
+                      aria-labelledby={`${linkId} ${hintId}`}
                       className="inline-flex min-h-11 items-center type-body text-accent-cyan hover:underline"
                     >
                       {t(link.labelKey)}
@@ -1027,10 +984,14 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
              */}
             {showReceiving ? (
               <>
-                <h4
-                  id={RECEIVING_HEADING_ID}
-                  className="mt-tile-gap type-stat-label text-ink-secondary"
-                >
+                {/*
+                 * No id: nothing references this heading. The table below is
+                 * named by its own composed `caption` and by `tableName`, and
+                 * `DataTable` wires both itself. A dangling id here read as an
+                 * unfinished `aria-labelledby` and was removed at the 2.11c code
+                 * review.
+                 */}
+                <h4 className="mt-tile-gap type-stat-label text-ink-secondary">
                   {receivingHeading}
                 </h4>
                 {/*

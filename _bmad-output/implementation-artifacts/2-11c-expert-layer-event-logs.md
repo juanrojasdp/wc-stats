@@ -4,7 +4,7 @@ baseline_commit: 4682639
 
 # Story 2.11c: Expert Layer — Full Event Logs
 
-Status: review
+Status: done
 
 <!-- Re-baselined from 163fa20 to 4682639 (post change-set CS-1) at create-story, 2026-08-04.
      The two rulings that shape this story were made by Juan at create-story and are stated in
@@ -521,6 +521,153 @@ locales, the new model and the tests is touched.
 - [x] **5.4** `sprint-status.yaml`: `2-11c-expert-layer-event-logs: review`, and append a dated note
   in the house style. Update `last_updated`.
 
+### Review Findings
+
+Code review 2026-08-05 — three adversarial layers (Blind Hunter, Edge Case Hunter, Acceptance
+Auditor) over the uncommitted working tree against `baseline_commit: 4682639`. The Acceptance
+Auditor independently re-ran `lint`/`typecheck`/`vitest` (**743/26, green**) and re-derived AC 3's
+27→28 from source rather than from the Completion Notes. **No AC violation, no ruling violation, no
+scope-boundary breach, no falsified `[x]`.** 21 findings after dedupe; 17 dismissed after reading
+the code at each location — including three that changed rating on inspection (see below).
+
+- [x] [Review][Decision] **`aria-describedby` does not deliver Task 3.4's stated goal** — Task 3.4
+  requires that "the hint must reach the accessible name" and picks `aria-describedby` to do it,
+  rejecting `aria-label` because it is one of the sixteen gated prop names. But a description is not
+  part of the accessible *name*, and the links-list mode the task names (NVDA/JAWS/VoiceOver)
+  enumerates names only — so the six anchors still list as bare labels, which is the exact failure
+  ruling 2 exists to avoid. `aria-labelledby={`${selfId} ${hintId}`}` is **not** gated and would
+  work, as would folding the location into the link text. The mechanism is spec-ruled, so changing
+  it is Juan's call, not a dev fix. [`app/src/components/ExpertLayer.tsx:977-1005`]
+  **RULED (Juan, 2026-08-05): `aria-labelledby`, self + hint.** Give the `<a>` its own per-row id
+  and set `aria-labelledby={`${linkId} ${hintId}`}`, so the accessible NAME becomes "Registro de
+  tiros Mapa de tiros · Ver los datos" and links-list mode gets the location and the control. The
+  visible layout, the hint `<span>` and the composed hint string are unchanged; `aria-labelledby`
+  is not among the sixteen gated prop names, so the i18n gate is unaffected. This is Task 3.4's
+  stated goal, finally true — the ruling stands, the mechanism was wrong. **Becomes a patch.**
+- [x] [Review][Decision] **`LOG_LINKS` is exported from a `"use client"` component and imported by
+  the i18n unit suite** — every comparable frozen list in the project lives in a pure module
+  (`SECTION_IDS` in `lib/tactical-sections.ts`, `OFFER_MOVEMENT_TYPES` in `viz/receiving-model.ts`)
+  precisely so it is testable without the component graph. This pulls `lib/i18n.test.ts` through
+  `DataTable` → `SortAnnouncer` → `radix-ui` under `environment: "node"`. Green today; it breaks
+  opaquely the day anything in that chain touches `window` at module scope, and it widens
+  `ExpertLayer`'s public API purely for a test. Moving it adds a file the story's Project Structure
+  Notes did not list, so the placement is a decision. [`app/src/components/ExpertLayer.tsx:113-150`,
+  `app/src/lib/i18n.test.ts:58`]
+  **RULED (Juan, 2026-08-05): move it to a pure module.** New `app/src/lib/expert-logs.ts` holds
+  `ExpertLogLink` and `LOG_LINKS`; `ExpertLayer.tsx` and `i18n.test.ts` both import from it, and
+  `ExpertLayer` stops exporting them. This matches the `SECTION_IDS` / `OFFER_MOVEMENT_TYPES`
+  precedent, narrows `ExpertLayer`'s public API back to the component, and decouples the i18n suite
+  from `DataTable` → `SortAnnouncer` → `radix-ui`. `lib/` rather than `viz/` because the list is
+  navigation config, not a viz model. One file beyond the story's declared list, ruled deliberately.
+  **Becomes a patch.** The matching ledger entry is superseded — see the correction filed below it.
+- [x] [Review][Patch] **`es.ts` docblock states a false fact about the EN head** — the comment
+  justifying `viz.table.movementType` reads "The EN head stays 'Movement type', matching
+  `viz.movement.title`." `en.viz.movement.title` is **"Movement to receive"** (`en.ts:613`), not
+  "Movement type". Verified. The comment is the stated justification for the whole label choice.
+  [`app/src/locales/es.ts` — `viz.table.movementType`]
+- [x] [Review][Patch] **The AC 3 test's docblock describes something the test does not do** —
+  it claims "`DefensiveActionsSection`'s caption is conditional, so BOTH branches are listed and the
+  count is checked against the branch the fixtures take." Only the clocked branch is listed, and
+  listing both would contradict the `toHaveLength(27)` three lines below. The assertion is correct;
+  the comment is not. [`app/src/lib/i18n.test.ts` — `composedCaptions` docblock]
+- [x] [Review][Patch] **`RECEIVING_HEADING_ID` is a dead identifier** — declared and stamped on the
+  `<h4>`, referenced by nothing (grep returns exactly those two hits). Reads as an abandoned
+  `aria-labelledby` and the next reader will assume the `<h4>` names something.
+  [`app/src/components/ExpertLayer.tsx:72,1031`]
+- [x] [Review][Patch] **The distinct-player test measures `playerName` where Task 4.1 measured
+  `playerId`** — `new Set(rows.map(r => r.playerName)).size` against `[29, 29, 32]`. Names and ids
+  are 1:1 on all three fixtures today, so it is green by coincidence; two players sharing a printed
+  name would fail it for a reason unrelated to the model. The ids are readable straight off
+  `bundle.events.receiving`. [`app/src/viz/receiving-log-model.test.ts`]
+- [x] [Review][Patch] **A test's name does not match what it asserts** — "resolves the movement
+  column through `enums.offerMovement`, minting no second set" never touches `receivingLogRows` or
+  `movementTypeKeyOf`; it re-runs the pre-existing `OFFER_MOVEMENT_TYPES` label loop. If
+  `movementTypeKeyOf` started returning `enums.receivingMovement.*`, it would still pass.
+  [`app/src/lib/i18n.test.ts`]
+- [x] [Review][Patch] **`LOG_LINKS[].id` uniqueness is unpinned** — the suite pins length 6, label ≠
+  title, labels mutually distinct, and `href` ∈ `SECTION_IDS`, but never `id`. A repeated `id` gives
+  a duplicate React key on the `<li>` and two DOM elements sharing one `hintId`, so one link's
+  description silently points at the other's span. One-line test. [`app/src/lib/i18n.test.ts`]
+- [x] [Review][Patch] **The `<ul>` loses its list role in Safari/VoiceOver** — Tailwind v4's
+  preflight sets `list-style: none` on `ul`, which drops the list role in WebKit. This is the one
+  `<ul>` in the codebase that *argues from* list semantics: it carries `aria-labelledby`, and the
+  receiving table is deliberately kept outside it because "nesting an 87-row table inside a labelled
+  list item would make the list unreadable to a screen reader enumerating it." `role="list"` appears
+  nowhere in `app/src`, so this is additive. [`app/src/components/ExpertLayer.tsx:971`]
+- [x] [Review][Patch] **Four `as unknown as ReceivingEvent` casts sit on legal shapes** — the block's
+  own comment authorises the cast because the shapes "are not constructible through the types". True
+  for the two `delete`-shaped cases; false for `BASE_EVENT`, `{...BASE_EVENT, movementType: null}`,
+  `{...BASE_EVENT, at: {minute: 90, stoppageMinute: 2}}` and `{...BASE_EVENT, playerName: ""}`. On a
+  legal shape the cast suppresses real contract drift — drop `"offer"` from `ReceivingEventType` and
+  every one of these still compiles. [`app/src/viz/receiving-log-model.test.ts`]
+- [x] [Review][Patch] **`href` is typed `string` where `` `#${SectionId}` `` would make the typo a
+  compile error** — the story calls the `SECTION_IDS` pin "the cheapest test in the story" and "the
+  story's largest silent failure"; typing the field deletes the failure mode outright. The diff
+  already uses this technique 40 lines away (`RECEIVING_EVENT_ORDER: Record<ReceivingEventType,
+  true>`, chosen on exactly the "makes a contract change a COMPILE ERROR" argument).
+  [`app/src/components/ExpertLayer.tsx:113`]
+- [x] [Review][Patch] **The Change Log records a status transition that did not happen** — it says
+  "status ready-for-dev -> review", but `sprint-status.yaml` at `HEAD` had this story at `backlog`;
+  create-story never moved it. Task 5.4's required end state is correct. [this file, Change Log]
+- [x] [Review][Defer] **The receiving caption asserts a minute ordering the table may not have** —
+  when no event carries `at`, `showMinute` closes and the caption still reads "Ordenado por minuto,
+  luego local antes que visitante." `DefensiveActionsSection` branches to
+  `viz.defensiveActions.tableCaptionNoClock` for exactly this. Unreachable today: 270/270 fixture
+  events carry `at`, and on corpus data `events.receiving` is null so the whole log self-removes.
+  [`app/src/components/ExpertLayer.tsx:770-775`] — deferred, latent; the fix mints locale copy that
+  Task 2.5 barred.
+- [x] [Review][Defer] **`events.receiving === undefined` throws an unnamed `TypeError`** — both new
+  entry points guard `=== null` / `!== null` then read `.length`, so an absent key crashes the layer
+  with no module name. Copied faithfully from `defensive-actions-model.ts:228,377`, whose comment
+  documents `!== null` ONLY as deliberate for `[]` semantics. Same class: a null array element, and
+  an absent `metadata.*.teamCode` reaching `.toUpperCase()`.
+  [`app/src/viz/receiving-log-model.ts:176,213`] — deferred, family-wide pattern.
+- [x] [Review][Defer] **`formatGoalMinute` renders `"33+undefined′"` and `"90+0′"`** — it branches on
+  `at.stoppageMinute !== null`, so an absent key (`undefined`) and a literal `0` both take the
+  stoppage path. One line below, `?? null` normalises the sort key correctly, so the label and the
+  sort disagree. [`app/src/lib/match-hero.ts:73`] — deferred, pre-existing in a shared helper every
+  log calls.
+- [x] [Review][Defer] **Unknown enum codes fabricate dictionary keys with no runtime guard** —
+  `receivingEventTypeKey` and `offerMovementKey` interpolate blindly and cast. Verified as the
+  documented house convention across seven sibling models (`expert-model.ts:175` states it).
+  [`app/src/viz/receiving-log-model.ts:73`] — deferred, family-wide convention.
+- [x] [Review][Defer] **Whitespace-only `playerName` defeats the presence gate** — `playerNameOf`
+  tests `=== ""` only, so `"   "` keeps the whole player column open for a table of blank cells.
+  Copied verbatim from the sibling, as Task 1.4 required.
+  [`app/src/viz/receiving-log-model.ts:132`] — deferred, family-wide.
+- [x] [Review][Defer] **`home.teamId === away.teamId` silently mislabels every row** — `resolveSide`
+  returns `home` on the first branch for all events and `sideRank` returns 0 for all, so every row
+  prints the home code, the side pre-sort is a no-op and the caption's "then home before away" is
+  meaningless — with no throw. [`app/src/viz/marker-model.ts`] — deferred, pre-existing, affects
+  every log.
+- [x] [Review][Defer] **The 87–96 row table has no row header** — no column sets `rowHeader: true`,
+  so all ~609 body cells are `<td>` and a screen reader announcing a cell gets the column head with
+  no row identity. The Domain G table 400 lines up in the same file sets it on the player column for
+  exactly that reason; the three shipped logs do not, so the family is consistent and this is the
+  wrong story to break it. (`sticky` is correctly absent — Task 3.6's reasoning holds.)
+  [`app/src/components/ExpertLayer.tsx:700-760`] — deferred, family-wide.
+- [x] [Review][Defer] **Two links share `#shot-maps`, so the second consecutive click is a silent
+  no-op below lg** — browsers do not fire `hashchange` for an unchanged hash, which is the ledgered
+  defect the block's own comment names. Both the ambiguity and the re-entry defect are already filed
+  by Task 5.3. [`app/src/components/ExpertLayer.tsx:120,126`] — deferred, already ledgered.
+- [x] [Review][Defer] **Nothing exercises the closed-gate four-column render** — all three column
+  gates are true on all three fixtures and the harness has no jsdom, so the only shape corpus-real
+  data would ever take is the least verified thing in the change. The model-level `any*` helpers are
+  tested; the table they produce is not. [`app/src/components/ExpertLayer.tsx:700-760`] — deferred,
+  harness limit the story acknowledges in Task 4's own title.
+
+**Dismissed after reading the code (17).** The `expert.summary` / "Registros completos" over-claim
+and the link-vs-table gap (rulings 1, 2, 6, 7 — ruled by Juan); the `<md` selector not filtering the
+log (Task 3.10, ruled and measured); the hard-coded fixture counts (Task 4.1 — "hard-coding them is
+the point"); `as DictionaryKey` being removable (**re-rated**: it is the documented house convention
+in all seven sibling models); model allocation count and the pre-`open` gate computation (copied
+sibling patterns); the two hoisted heading identifiers, the `<h4>`'s `type-stat-label` styling and
+the link-list `gap-1` (taste; targets measure 44px); `assertPlottable` not being byte-verbatim (the
+message noun changed — an improvement); `-0` rendering as `-0,00`; duplicate DOM ids on a second
+mount and dead links when the Tactical boundary trips (unreachable by construction); and four
+low-value test-vacuity complaints (`toHaveLength(27)`, `not.toContain("in-front")`, the compile-time
+key-set equality, and `composedCaptions` re-implementing composition — Task 4.4b directed it).
+
 ---
 
 ## Dev Notes
@@ -1013,7 +1160,10 @@ and is listed below by explicit path.
 
 ### Change Log
 
-- **2026-08-05 — Story 2.11c implemented, status ready-for-dev -> review.** New pure model
+- **2026-08-05 — Story 2.11c implemented, status backlog -> review.** (`sprint-status.yaml` at
+  `HEAD` carried this story at `backlog`; create-story moved the file's own Status line to
+  `ready-for-dev` but never synced the sprint file, so the transition recorded here is the real one.
+  Corrected at the code review — the earlier entry claimed `ready-for-dev -> review`.) New pure model
   `receiving-log-model.ts` (the app's first and only reader of `bundle.events.receiving`) with its
   co-located test; the full-event-logs block in `ExpertLayer.tsx` (an `<h3>`, six `aria-describedby`
   anchors and the receiving log's gated 7-column table inside its own `overflow-x-auto` wrapper);

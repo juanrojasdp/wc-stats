@@ -155,16 +155,29 @@ describe("receivingLogRows over the fixtures", () => {
     ]);
   });
 
-  it("covers 29 / 29 / 32 distinct players — the fixtures' distinct playerId count", () => {
-    // `playerId` is deliberately NOT a row field (Task 1.2's ten names are
-    // fixed), and the fixtures carry one name per id, so the name count is the
-    // measurable proxy: 29 / 29 / 32 in both.
-    const distinct = ALL.map((bundle) => {
+  it("covers 29 / 29 / 32 distinct players — measured on playerId, as Task 4.1 states", () => {
+    /*
+     * `playerId` is deliberately NOT a row field (Task 1.2's ten names are
+     * fixed), so it is read straight off the ARTIFACT rather than through a
+     * row. An earlier version counted distinct `playerName` instead and called
+     * it a proxy; that passed only because names and ids happen to be 1:1 on
+     * these three fixtures, and it would have gone red for two players sharing
+     * a printed name — a fact about the corpus, not about this model. Patched
+     * at the 2.11c code review.
+     *
+     * Both counts are asserted, and their EQUALITY is asserted too: that is the
+     * property that made the old proxy sound, so if it ever stops holding this
+     * test says so instead of failing mysteriously.
+     */
+    const byId = ALL.map((bundle) => new Set(eventsOf(bundle).map((e) => e.playerId)).size);
+    expect(byId).toEqual([29, 29, 32]);
+
+    const byName = ALL.map((bundle) => {
       const { home, away } = sides(bundle);
       const rows = receivingLogRows(eventsOf(bundle), home, away);
       return new Set(rows.map((row) => row.playerName)).size;
     });
-    expect(distinct).toEqual([29, 29, 32]);
+    expect(byName, "one name per id on today's fixtures").toEqual(byId);
   });
 
   it("renders m074's extra time — minutes span 5 to 118, and 118 is not an error", () => {
@@ -317,11 +330,21 @@ describe("the failure modes (Task 4.3)", () => {
  *
  * THE CAST IS AUTHORISED HERE AND ONLY HERE, on the precedent
  * defensive-actions-model.test.ts sets: `ReceivingEvent` declares `at` and
- * `playerName` required and non-nullable, so these shapes are not constructible
- * through the types — but bundles reach the App as `as`-cast UNVALIDATED JSON,
- * which is exactly the path these simulate.
+ * `playerName` required and non-nullable, so a shape MISSING one of them is not
+ * constructible through the types — but bundles reach the App as `as`-cast
+ * UNVALIDATED JSON, which is exactly the path those simulate.
+ *
+ * IT IS AUTHORISED ONLY WHERE IT IS NEEDED, which is narrower than it first
+ * looks and was tightened at the 2.11c code review. `BASE_EVENT` itself and the
+ * three variants that only CHANGE a field (`movementType: null`, a stoppage
+ * `at`, an empty `playerName`) are all fully legal `ReceivingEvent`s, so they
+ * are typed rather than cast. Casting them would have suppressed exactly the
+ * drift this suite exists to catch: drop `"offer"` from `ReceivingEventType`,
+ * or widen `MinuteStamp`, and a cast keeps every one of them compiling.
+ * The cast survives only on the `delete`-shaped cases and the non-finite
+ * coordinate, where no legal type describes the shape.
  */
-const BASE_EVENT = {
+const BASE_EVENT: ReceivingEvent = {
   teamId: HOME.teamId,
   playerId: "p-1",
   playerName: "Alguien",
@@ -330,13 +353,13 @@ const BASE_EVENT = {
   at: { minute: 33, stoppageMinute: null },
   x: 55.25,
   y: 40.5,
-} as unknown as ReceivingEvent;
+};
 
 describe("the constructed shapes (Task 4.2)", () => {
   it("drops the movement column when movementType is null on every row", () => {
     // Non-null on 270/270 fixture rows: this branch is unreachable from any
     // fixture render, and it is the contract's ONLY nullable field.
-    const unclassified = { ...BASE_EVENT, movementType: null } as unknown as ReceivingEvent;
+    const unclassified: ReceivingEvent = { ...BASE_EVENT, movementType: null };
     const rows = receivingLogRows([unclassified], HOME, AWAY);
     expect(rows[0].movementTypeKey).toBeNull();
     expect(anyMovementType(rows)).toBe(false);
@@ -353,7 +376,7 @@ describe("the constructed shapes (Task 4.2)", () => {
   });
 
   it("keeps the movement column the moment ONE row carries a classification", () => {
-    const unclassified = { ...BASE_EVENT, movementType: null } as unknown as ReceivingEvent;
+    const unclassified: ReceivingEvent = { ...BASE_EVENT, movementType: null };
     expect(anyMovementType(receivingLogRows([unclassified, BASE_EVENT], HOME, AWAY))).toBe(true);
   });
 
@@ -374,10 +397,10 @@ describe("the constructed shapes (Task 4.2)", () => {
   });
 
   it("labels a stoppage-time event '90+2′' — null on 270/270 fixtures", () => {
-    const stoppage = {
+    const stoppage: ReceivingEvent = {
       ...BASE_EVENT,
       at: { minute: 90, stoppageMinute: 2 },
-    } as unknown as ReceivingEvent;
+    };
     const [row] = receivingLogRows([stoppage], HOME, AWAY);
     expect(row.minuteLabel).toBe("90+2′");
     expect(row.minute).toBe(90);
@@ -386,7 +409,7 @@ describe("the constructed shapes (Task 4.2)", () => {
 
   it("treats an absent AND an empty playerName as null, matching playerNameOf", () => {
     const { playerName: _dropped, ...nameless } = BASE_EVENT as unknown as Record<string, unknown>;
-    const empty = { ...BASE_EVENT, playerName: "" } as unknown as ReceivingEvent;
+    const empty: ReceivingEvent = { ...BASE_EVENT, playerName: "" };
     const rows = receivingLogRows(
       [nameless as unknown as ReceivingEvent, empty],
       HOME,

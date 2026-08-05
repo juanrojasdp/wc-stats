@@ -812,7 +812,11 @@ export const es = {
        * viz.movement.totalsCaption ("Totales por equipo y tipo de desmarque.")
        * and viz.movement.barNote ("...entre los seis tipos de desmarque.").
        * Minting "Tipo de movimiento" would put a second Spanish name on one
-       * enum. The EN head stays "Movement type", matching viz.movement.title.
+       * enum. The EN head is "Movement type" — the noun viz.movement.barNote
+       * already uses ("the six movement types"); note that viz.movement.title
+       * itself reads "Movement to receive", which is the SECTION's name and not
+       * a column head. (An earlier draft of this comment claimed the EN head
+       * matched viz.movement.title; corrected at the 2.11c code review.)
        */
       eventType: "Tipo de evento",
       movementType: "Tipo de desmarque",
