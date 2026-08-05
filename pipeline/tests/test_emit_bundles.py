@@ -62,9 +62,9 @@ def decimals():
 
 @pytest.fixture(scope="module")
 def bundles(corpus, decimals):
-    """Every bundle this story CAN build, over the real corpus."""
+    """Every Match Bundle, built from the real staged corpus."""
     entities, matches = corpus
-    return [emit.build_bundle_partial(m, entities, decimals) for m in matches]
+    return [emit.build_bundle(m, entities, decimals) for m in matches]
 
 
 # ----------------------------------------------------------------- a synthetic spine
@@ -199,7 +199,80 @@ def make_spine(*, shots=None, momentum_max=90, score=None, shootout=None,
             "defensive_actions": {"defensive_action_events": [], "counts": {},
                                   "regain_table_rows": [], "warnings": []},
             "receiving": {"counts": {}, "movement": {}, "offers": {}},
-            "goalkeeping": {}, "tactical_identity": {},
+            "goalkeeping": {s: _goalkeeping_side() for s in ("home", "away")},
+            "tactical_identity": {s: _tactical_side() for s in ("home", "away")},
+        },
+    }
+
+
+def _panel(line_height, team_length, team_width):
+    return {"line_height": line_height, "team_length": team_length,
+            "team_width": team_width}
+
+
+def _tactical_side(high=7.0, mid=25.0, low=11.0):
+    """`defensive_block` MIRRORS the three block phases — asserted by the emitter."""
+    return {
+        "defensive_block": {"high": high, "mid": mid, "low": low},
+        "line_height_team_length": {
+            "in_possession": {"build-up-low": _panel(19.0, 40.0, 56.0),
+                              "build-up-mid": _panel(39.0, 33.0, 57.0),
+                              "final-third-phase": _panel(54.0, 35.0, 47.0)},
+            "out_of_possession": {"high-block-press": _panel(46.0, 38.0, 43.0),
+                                  "mid-block": _panel(38.0, 30.0, 42.0),
+                                  "low-block": _panel(19.0, 26.0, 35.0)},
+        },
+        "phases_in_possession": {
+            "attacking_transition": 10.0, "build_up_opposed": 13.0,
+            "build_up_unopposed": 47.0, "counter_attack": 1.0, "final_third": 11.0,
+            "long_ball": 3.0, "progression": 16.0, "set_piece": 5.0,
+        },
+        "phases_out_of_possession": {
+            "counter_press": 8.0, "defensive_transition": 12.0, "high_block": high,
+            "high_press": 9.0, "low_block": low, "low_press": 0.0, "mid_block": mid,
+            "mid_press": 3.0, "recovery": 5.0,
+        },
+    }
+
+
+def _counts3(complete=1, incomplete=0, total=1):
+    return {"complete": complete, "incomplete": incomplete, "total": total,
+            "printed_total": total}
+
+
+def _goalkeeping_side(keepers=None, slots=3, total=None):
+    series = [1] * slots
+    return {
+        "total_involvements": sum(series) if total is None else total,
+        "involvement_series": series,
+        "involvement_clock": {
+            "extra_time_slot": None, "second_extra_slot": None, "second_half_slot": 2,
+            "stamps": [{"minute": i + 1, "stoppage_minute": None} for i in range(slots)],
+        },
+        "goalkeepers": keepers if keepers is not None else [
+            {"name": "A KEEPER", "player_id": "alpha-one-aaa", "shirt_number": 1,
+             "substituted_off": None, "substituted_on": None},
+        ],
+        "distribution": {
+            "total": _counts3(), "feet": _counts3(), "hands": _counts3(),
+            "throw": _counts3(), "line_breaks": 2,
+            # Null on 208/208 corpus team-innings; nullable since CS-2.
+            "feet_techniques": None, "hands_techniques": None, "throw_techniques": None,
+        },
+        "goal_prevention": {
+            "attempts_faced": 3, "attempts_faced_printed": 3, "save_percentage": 100.0,
+            "total_interventions": 3, "by_body_type": None,
+            "by_intervention_type": {"deflect_and_retain": 0, "no_save_attempt": 1,
+                                     "save_and_deflect": 0, "save_and_retain": 2,
+                                     "save_attempt": 0},
+        },
+        "aerial_control": {
+            "total_interventions": 1, "punches": _counts3(0, 0, 0), "claims": _counts3(),
+            "tipped_palmed": _counts3(0, 0, 0), "crosses_faced_attempted": 8,
+            "crosses_faced_completed": None,
+            "delivery_types_faced": {"inswing": 1, "outswing": 5, "driven": 0,
+                                     "lofted": 2, "cutback": 0, "push_cross": 0,
+                                     "total": 8},
         },
     }
 
@@ -716,13 +789,20 @@ def _stage(tmp_path: Path, matches, entities) -> Path:
     return spine
 
 
-def test_main_reports_the_cs2_block_as_a_finding(tmp_path, capsys):
-    """Exit 1: a finding someone must rule on, not a broken harness."""
+def test_main_emits_cleanly_now_that_cs2_has_landed(tmp_path, capsys):
+    """This test used to assert the CS-2 BLOCK — exit 1 naming both unbuildable mappers.
+
+    CS-2 landed, so the same input now emits. Kept rather than deleted because it is the
+    one place the block's removal is asserted rather than assumed.
+    """
     spine = _stage(tmp_path, [make_spine()], make_entities())
     code = emit.main(["--spine-dir", str(spine), "--data-dir", str(tmp_path / "data")])
-    assert code == 1
-    err = capsys.readouterr().err
-    assert "tacticalIdentity" in err and "goalkeeping" in err and "CS-2" in err
+    assert code == 0, capsys.readouterr().err
+    written = sorted((tmp_path / "data" / "matches").glob("*.json"))
+    assert [p.name for p in written] == ["m001-alpha-beta.json"]
+    bundle = json.loads(written[0].read_text(encoding="utf-8"))
+    assert bundle["tacticalIdentity"]["home"]["shapeByPhase"]["inPossession"]["buildUpLow"]
+    assert len(bundle["goalkeeping"]) == 2, "one entry per TEAM, home first"
 
 
 def test_main_returns_two_when_the_spine_cannot_be_read(tmp_path, capsys):
@@ -742,10 +822,14 @@ def test_a_failed_run_writes_nothing_at_all(tmp_path):
     """All 104 or none. A half-emitted `data/matches/` is worse than an empty one, because
     `check_committed_data` would then pin a partial namespace as the immutability
     baseline."""
-    spine = _stage(tmp_path, [make_spine()], make_entities())
+    broken = make_spine()
+    # A corpus-impossible mirror: defensiveBlockDistribution must equal the three block
+    # phases, and the emitter refuses to write anything at all when it does not.
+    broken["domains"]["tactical_identity"]["home"]["defensive_block"]["mid"] = 99.0
+    spine = _stage(tmp_path, [make_spine(), broken], make_entities())
     data = tmp_path / "data"
     assert emit.main(["--spine-dir", str(spine), "--data-dir", str(data)]) == 1
-    assert not data.exists()
+    assert not data.exists(), "the GOOD bundle must not be written either"
 
 
 # ================================================ Task 7 — the write path, end to end
@@ -898,15 +982,18 @@ def test_an_empty_spine_is_a_finding_never_a_vacuous_pass(tmp_path, valid_builde
 
 
 # ============================================================ the real corpus
-def test_every_bundle_the_story_can_build_is_valid_apart_from_the_two_blocked_keys(bundles):
-    """The strongest single statement this story can make before CS-2: all 104 bundles are
-    schema-valid on every one of the nine unblocked root keys."""
+def test_every_corpus_bundle_is_schema_valid(bundles):
+    """AC 1/2, over the whole corpus: 104 bundles, zero violations.
+
+    This assertion INVERTED when change-set CS-2 landed. Before it, the two blocked mappers
+    made `tacticalIdentity` and `goalkeeping` missing on every bundle, and the test pinned
+    exactly those two violations and nothing else so the block could not silently widen.
+    CS-2 reshaped both, so the honest assertion is now the strict one.
+    """
     for bundle in bundles:
         violations = iter_violations(bundle, BUNDLE)
-        assert violations == [
-            "/: 'goalkeeping' is a required property",
-            "/: 'tacticalIdentity' is a required property",
-        ], f'{bundle["matchId"]}: {violations}'
+        assert violations == [], f'{bundle["matchId"]}: {violations}'
+    assert len(bundles) == 104
 
 
 def test_the_corpus_emits_one_bundle_per_match(bundles):

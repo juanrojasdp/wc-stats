@@ -379,13 +379,31 @@ def test_an_absent_data_baseline_reports_unavailable_and_never_success(tmp_path)
     assert "all pinned" not in notes[0]
 
 
-def test_the_repository_has_no_committed_match_bundles_yet():
-    """Pins the premise the test above rests on, so it fails when 1.16 lands.
+def test_the_committed_data_baseline_is_populated_and_every_id_in_it_is_pinned():
+    """The POPULATED branch, switched over by Story 1.16 exactly as invited.
 
-    When `data/matches/` starts existing this test goes red, which is the correct
-    prompt to switch the primary assertion to the populated branch.
+    This test used to assert `data/matches/` did NOT exist, pinning the premise that the
+    registry was the only immutability source. Its own docstring said going red when
+    1.16 landed was "the correct prompt to switch the primary assertion to the populated
+    branch", and this is that switch.
+
+    It now asserts the second pinning source actually ENGAGES: `check_committed_data`
+    returns the "all pinned" note over the real committed bundles rather than the
+    "baseline unavailable ... This is NOT a pass" line. That is the AC-3 gate Story 1.15
+    could not close, because there was nothing to close it against.
     """
-    assert not (Path(__file__).resolve().parents[2] / "data" / "matches").is_dir()
+    from pipeline.precompute import slug_registry
+
+    data_dir = Path(__file__).resolve().parents[2] / "data"
+    bundles = sorted((data_dir / "matches").glob("*.json"))
+    assert len(bundles) == 104, f"expected 104 committed bundles, found {len(bundles)}"
+
+    notes = check_committed_data(slug_registry.PINS, data_dir)
+    assert len(notes) == 1, notes
+    assert "all pinned" in notes[0], notes[0]
+    assert "baseline unavailable" not in notes[0]
+    assert "This is NOT a pass" not in notes[0]
+    assert "104 bundle(s)" in notes[0], notes[0]
 
 
 def test_a_populated_data_baseline_whose_ids_are_all_pinned_reports_what_it_checked(

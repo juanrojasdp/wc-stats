@@ -60,6 +60,39 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-05
+# 2026-08-05: story 2-11c CODE REVIEW — 3 layers, 21 findings after dedupe, triaged to 2 decisions
+#             (both ruled by Juan), 12 patches (all applied), 9 deferred, 17 dismissed. Status
+#             review -> done. THE IMPLEMENTATION HELD: the Acceptance Auditor re-ran the chain
+#             independently and re-derived AC 3's 27 -> 28 FROM SOURCE rather than from the
+#             Completion Notes, and checked all 27 composed captions against the components that
+#             build them. No AC violation, no ruling violation, no scope-boundary breach, no
+#             falsified [x]. All nine deferrals are family-wide patterns this story COPIED
+#             faithfully, not damage it did — the `=== null` guard is byte-for-byte
+#             defensive-actions-model.ts:228,377, and `as DictionaryKey` is the documented house
+#             convention in all seven sibling models. Both are recorded as ledger items against the
+#             family, not as defects here.
+#             THE ONE FINDING THAT CHANGED SHIPPED BEHAVIOUR IS AN a11y CORRECTION TO A RULED
+#             MECHANISM. Task 3.4 required the link hint to "reach the accessible name" and chose
+#             `aria-describedby` to do it — but a description is NOT part of the accessible name,
+#             and the links-list mode the task names enumerates names only, so the six anchors
+#             listed exactly as if the hint were absent. That is the precise failure ruling 2 exists
+#             to prevent, and the spec's stated reason for rejecting `aria-label` (it is one of the
+#             sixteen gated prop names) never applied to `aria-labelledby`, which is not. Ruled:
+#             self + hint, so the computed name is now "Registro de tiros Mapa de tiros · Ver los
+#             datos". Visible layout, hint span and composed string all unchanged.
+#             ALSO RULED: LOG_LINKS moved out of the "use client" component into the pure
+#             lib/expert-logs.ts, so i18n.test.ts stops reaching it through DataTable ->
+#             SortAnnouncer -> radix-ui under environment "node" — green today, opaque the day
+#             anything in that chain touches window at module scope. Matches the SECTION_IDS
+#             precedent. `href` is typed `#${SectionId}` in the move, which turns the story's
+#             self-described "largest silent failure mode" from a runtime test into a compile error.
+#             CONCURRENT-SESSION NOTE, and it is the hazard the story's own Project Structure Notes
+#             predicted: 2.11c's slice was committed mid-review as f2ea99d (cleanly, as its own
+#             commit — NOT swept into another story's), after which ab0a87f landed story 1.16 and
+#             REGENERATED all three fixtures plus the contract schemas. Every hard-coded receiving
+#             number survived that regeneration untouched: the two story suites are 120/120 green.
+#             The 3 red assertions in the full run are goalkeeping-model.test.ts keeper names, a
+#             file this review never touched, mid-edit and UNCOMMITTED by that session. Left alone.
 # 2026-08-05: story 2-11c implemented and moved to review — the Expert Layer's FULL EVENT LOGS, and
 #             the whole story turned on ruling 1 holding under contact: ONE rendered table reached
 #             from TWO entry points. Net build is ONE new table on the match route (27 -> 28,
@@ -2404,7 +2437,7 @@ development_status:
   # CS-2 is Task 0 of the story and is NOT part of its commit. D3/D4 need no contract change.
   # Consequence for Epic 2, owned by 2.10/2.19 not by 1.16: #pressing's metre block is deleted or
   # re-shaped by D1, and CorpusNullableGoalkeeperRecord collapses to a re-export under D2.
-  1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: in-progress
+  1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: review
   1-17-tournament-index-results-standings-leaderboards: backlog
   1-18-team-player-profile-artifacts: backlog
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
@@ -2427,7 +2460,7 @@ development_status:
   # 2026-08-04 note above. 2.11b depends on 2.11a; 2.11c depends on both. epics.md is NOT edited.
   2-11a-sortable-data-table-contract: done
   2-11b-expert-layer-per-player-tables: done
-  2-11c-expert-layer-event-logs: review
+  2-11c-expert-layer-event-logs: done
   2-12-tournament-hub-results-standings: backlog
   2-13-tournament-leaderboards: backlog
   2-14-header-search: backlog

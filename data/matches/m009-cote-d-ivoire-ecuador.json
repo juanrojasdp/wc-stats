@@ -1,0 +1,7067 @@
+{
+  "events": {
+    "crosses": null,
+    "defensiveActions": null,
+    "passNetworkEdges": [
+      {
+        "fromPlayerId": "fofana-yahia-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "fofana-yahia-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "fofana-yahia-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "fofana-yahia-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "fofana-yahia-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "fofana-yahia-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "agbadou-emmanuel-civ",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "fofana-yahia-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "oulai-christ-inao-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "wahi-elye-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "agbadou-emmanuel-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "toure-bazoumana-civ",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "bonny-ange-yoan-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "konan-ghislain-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "oulai-christ-inao-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-yahia-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "doue-guela-civ",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "agbadou-emmanuel-civ",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "bonny-ange-yoan-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "singo-wilfried-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-yahia-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "doue-guela-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "agbadou-emmanuel-civ",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "fofana-seko-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "toure-bazoumana-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "wahi-elye-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "doue-guela-civ",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "agbadou-emmanuel-civ",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "toure-bazoumana-civ",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "bonny-ange-yoan-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kessie-franck-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "sangare-ibrahim-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "wahi-elye-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "doue-guela-civ",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "agbadou-emmanuel-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "bonny-ange-yoan-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "sangare-ibrahim-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "diomande-yan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "oulai-christ-inao-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "wahi-elye-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "wahi-elye-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "wahi-elye-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-yahia-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 14
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "wahi-elye-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "agbadou-emmanuel-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doue-guela-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "wahi-elye-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "doue-guela-civ",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "toure-bazoumana-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "bonny-ange-yoan-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "pepe-nicolas-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-yahia-civ",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 19
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 14
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "doue-guela-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "toure-bazoumana-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kossounou-odilon-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "agbadou-emmanuel-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "sangare-ibrahim-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "toure-bazoumana-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "toure-bazoumana-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-seko-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "toure-bazoumana-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "wahi-elye-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "toure-bazoumana-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kossounou-odilon-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "fofana-yahia-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kossounou-odilon-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bonny-ange-yoan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "doue-guela-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bonny-ange-yoan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bonny-ange-yoan-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "oulai-christ-inao-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diallo-amad-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diallo-amad-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "diallo-amad-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "diallo-amad-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "doue-guela-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diallo-amad-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "pepe-nicolas-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "diallo-amad-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "agbadou-emmanuel-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "diallo-amad-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "oulai-christ-inao-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sangare-ibrahim-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sangare-ibrahim-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "singo-wilfried-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sangare-ibrahim-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sangare-ibrahim-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sangare-ibrahim-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "bonny-ange-yoan-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sangare-ibrahim-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sangare-ibrahim-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "oulai-christ-inao-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "oulai-christ-inao-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "konan-ghislain-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oulai-christ-inao-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "kessie-franck-civ",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oulai-christ-inao-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diomande-yan-civ",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "oulai-christ-inao-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "diallo-amad-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "oulai-christ-inao-civ",
+        "teamId": "cote-d-ivoire",
+        "toPlayerId": "sangare-ibrahim-civ",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "galindez-hernan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "hincapie-piero-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "galindez-hernan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "ordonez-joel-ecu",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "galindez-hernan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "galindez-hernan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "minda-alan-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "galindez-hernan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "galindez-hernan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "galindez-hernan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "galindez-hernan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "angulo-nilson-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hincapie-piero-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hincapie-piero-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "hincapie-piero-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "valencia-enner-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hincapie-piero-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "minda-alan-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hincapie-piero-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hincapie-piero-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hincapie-piero-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hincapie-piero-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "angulo-nilson-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ordonez-joel-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "ordonez-joel-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 15
+      },
+      {
+        "fromPlayerId": "ordonez-joel-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "ordonez-joel-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ordonez-joel-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "franco-alan-ecu",
+        "volume": 14
+      },
+      {
+        "fromPlayerId": "ordonez-joel-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "ordonez-joel-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "preciado-angelo-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "ordonez-joel-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "porozo-jackson-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "hincapie-piero-ecu",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "ordonez-joel-ecu",
+        "volume": 18
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "minda-alan-ecu",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 16
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "franco-alan-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "pacho-willian-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "porozo-jackson-ecu",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "yeboah-john-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "minda-alan-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "yeboah-john-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "yeboah-john-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "yeboah-john-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "franco-alan-ecu",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "yeboah-john-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "valencia-enner-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "valencia-enner-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "hincapie-piero-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "valencia-enner-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "valencia-enner-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "valencia-enner-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "valencia-enner-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "minda-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "hincapie-piero-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "minda-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "ordonez-joel-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "minda-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "minda-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "minda-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "hincapie-piero-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "ordonez-joel-ecu",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 17
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "yeboah-john-ecu",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "valencia-enner-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "minda-alan-ecu",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "franco-alan-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "preciado-angelo-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "angulo-nilson-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vite-pedro-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "porozo-jackson-ecu",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "plata-gonzalo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "plata-gonzalo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "hincapie-piero-ecu",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "plata-gonzalo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "yeboah-john-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "plata-gonzalo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "valencia-enner-ecu",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "plata-gonzalo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "plata-gonzalo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "franco-alan-ecu",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "plata-gonzalo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "plata-gonzalo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "preciado-angelo-ecu",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "franco-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "franco-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "ordonez-joel-ecu",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "franco-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "franco-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "yeboah-john-ecu",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "franco-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "franco-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "franco-alan-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "ordonez-joel-ecu",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "yeboah-john-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "minda-alan-ecu",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "vite-pedro-ecu",
+        "volume": 14
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "franco-alan-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "rodriguez-kevin-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "preciado-angelo-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "angulo-nilson-ecu",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "caicedo-moises-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "porozo-jackson-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "rodriguez-kevin-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "rodriguez-kevin-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "hincapie-piero-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "rodriguez-kevin-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "preciado-angelo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "ordonez-joel-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "preciado-angelo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "plata-gonzalo-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "preciado-angelo-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "porozo-jackson-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "angulo-nilson-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "hincapie-piero-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "angulo-nilson-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "caicedo-moises-ecu",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "angulo-nilson-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "rodriguez-kevin-ecu",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "porozo-jackson-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "galindez-hernan-ecu",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "porozo-jackson-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "ordonez-joel-ecu",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "porozo-jackson-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "pacho-willian-ecu",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "porozo-jackson-ecu",
+        "teamId": "ecuador",
+        "toPlayerId": "rodriguez-kevin-ecu",
+        "volume": 1
+      }
+    ],
+    "passNetworkNodes": null,
+    "receiving": null,
+    "shootoutAttempts": null,
+    "shots": [
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete",
+        "ownGoal": false,
+        "playerId": "fofana-seko-civ",
+        "playerName": "Seko FOFANA",
+        "teamId": "cote-d-ivoire",
+        "x": 80.74,
+        "y": 54.13
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "wahi-elye-civ",
+        "playerName": "Elye WAHI",
+        "teamId": "cote-d-ivoire",
+        "x": 93.77,
+        "y": 60.74
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "fofana-seko-civ",
+        "playerName": "Seko FOFANA",
+        "teamId": "cote-d-ivoire",
+        "x": 79.29,
+        "y": 49.59
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "pepe-nicolas-civ",
+        "playerName": "Nicolas PEPE",
+        "teamId": "cote-d-ivoire",
+        "x": 89.28,
+        "y": 59.09
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "singo-wilfried-civ",
+        "playerName": "Wilfried SINGO",
+        "teamId": "cote-d-ivoire",
+        "x": 90.59,
+        "y": 44.42
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "ball-progression",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete",
+        "ownGoal": false,
+        "playerId": "pepe-nicolas-civ",
+        "playerName": "Nicolas PEPE",
+        "teamId": "cote-d-ivoire",
+        "x": 81.9,
+        "y": 61.16
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "diomande-yan-civ",
+        "playerName": "Yan DIOMANDE",
+        "teamId": "cote-d-ivoire",
+        "x": 84.65,
+        "y": 56.61
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "wahi-elye-civ",
+        "playerName": "Elye WAHI",
+        "teamId": "cote-d-ivoire",
+        "x": 92.47,
+        "y": 54.13
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "fofana-seko-civ",
+        "playerName": "Seko FOFANA",
+        "teamId": "cote-d-ivoire",
+        "x": 77.55,
+        "y": 41.12
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "tackle",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "diomande-yan-civ",
+        "playerName": "Yan DIOMANDE",
+        "teamId": "cote-d-ivoire",
+        "x": 92.32,
+        "y": 33.06
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "deflected-on-target-saved",
+        "ownGoal": false,
+        "playerId": "fofana-seko-civ",
+        "playerName": "Seko FOFANA",
+        "teamId": "cote-d-ivoire",
+        "x": 80.88,
+        "y": 36.98
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "konan-ghislain-civ",
+        "playerName": "Ghislain KONAN",
+        "teamId": "cote-d-ivoire",
+        "x": 94.35,
+        "y": 34.3
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "diallo-amad-civ",
+        "playerName": "Amad DIALLO",
+        "teamId": "cote-d-ivoire",
+        "x": 85.23,
+        "y": 55.79
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "diallo-amad-civ",
+        "playerName": "Amad DIALLO",
+        "teamId": "cote-d-ivoire",
+        "x": 79.0,
+        "y": 45.04
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 7
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "oulai-christ-inao-civ",
+        "playerName": "Christ Inao OULAI",
+        "teamId": "cote-d-ivoire",
+        "x": 81.9,
+        "y": 60.12
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "caicedo-moises-ecu",
+        "playerName": "Moises CAICEDO",
+        "teamId": "ecuador",
+        "x": 80.16,
+        "y": 60.54
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "yeboah-john-ecu",
+        "playerName": "John YEBOAH",
+        "teamId": "ecuador",
+        "x": 82.48,
+        "y": 68.18
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "tackle",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "yeboah-john-ecu",
+        "playerName": "John YEBOAH",
+        "teamId": "ecuador",
+        "x": 83.78,
+        "y": 65.08
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "minda-alan-ecu",
+        "playerName": "Alan MINDA",
+        "teamId": "ecuador",
+        "x": 78.42,
+        "y": 40.91
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "minda-alan-ecu",
+        "playerName": "Alan MINDA",
+        "teamId": "ecuador",
+        "x": 91.89,
+        "y": 36.57
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "yeboah-john-ecu",
+        "playerName": "John YEBOAH",
+        "teamId": "ecuador",
+        "x": 83.78,
+        "y": 56.82
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "valencia-enner-ecu",
+        "playerName": "Enner VALENCIA",
+        "teamId": "ecuador",
+        "x": 99.13,
+        "y": 33.47
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "vite-pedro-ecu",
+        "playerName": "Pedro VITE",
+        "teamId": "ecuador",
+        "x": 81.32,
+        "y": 59.3
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "plata-gonzalo-ecu",
+        "playerName": "Gonzalo PLATA",
+        "teamId": "ecuador",
+        "x": 80.16,
+        "y": 58.06
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "ordonez-joel-ecu",
+        "playerName": "Joel ORDONEZ",
+        "teamId": "ecuador",
+        "x": 94.35,
+        "y": 53.1
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "ordonez-joel-ecu",
+        "playerName": "Joel ORDONEZ",
+        "teamId": "ecuador",
+        "x": 90.73,
+        "y": 44.42
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 9
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "hincapie-piero-ecu",
+        "playerName": "Piero HINCAPIE",
+        "teamId": "ecuador",
+        "x": 95.95,
+        "y": 42.77
+      }
+    ]
+  },
+  "goalkeeping": [
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 3
+        },
+        "crossesFacedAttempted": 14,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 0,
+          "driven": 0,
+          "inswing": 6,
+          "lofted": 1,
+          "outswing": 7,
+          "pushCross": 0,
+          "total": 14
+        },
+        "punches": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 4
+      },
+      "distribution": {
+        "feet": {
+          "complete": 11,
+          "incomplete": 13,
+          "total": 24
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "handsTechniques": null,
+        "lineBreaks": 16,
+        "throw": {
+          "complete": 3,
+          "incomplete": 0,
+          "total": 3
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 15,
+          "incomplete": 13,
+          "total": 28
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 13,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 10,
+          "saveAndDeflect": 1,
+          "saveAndRetain": 0,
+          "saveAttempt": 2
+        },
+        "savePercentage": 0.0,
+        "totalInterventions": 1
+      },
+      "goalkeepers": [
+        {
+          "playerId": "fofana-yahia-civ",
+          "playerName": "Yahia FOFANA",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 7
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 8
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 9
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "cote-d-ivoire",
+      "totalInvolvements": 46
+    },
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 15,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 2,
+          "driven": 0,
+          "inswing": 2,
+          "lofted": 2,
+          "outswing": 4,
+          "pushCross": 5,
+          "total": 15
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 0
+      },
+      "distribution": {
+        "feet": {
+          "complete": 20,
+          "incomplete": 11,
+          "total": 31
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "handsTechniques": null,
+        "lineBreaks": 20,
+        "throw": {
+          "complete": 6,
+          "incomplete": 0,
+          "total": 6
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 26,
+          "incomplete": 11,
+          "total": 37
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 16,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 1,
+          "noSaveAttempt": 10,
+          "saveAndDeflect": 0,
+          "saveAndRetain": 2,
+          "saveAttempt": 3
+        },
+        "savePercentage": 75.0,
+        "totalInterventions": 2
+      },
+      "goalkeepers": [
+        {
+          "playerId": "galindez-hernan-ecu",
+          "playerName": "Hernan GALINDEZ",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 7
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 8
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 9
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "ecuador",
+      "totalInvolvements": 57
+    }
+  ],
+  "keyStatistics": {
+    "away": {
+      "ballProgressions": 16,
+      "completedLineBreaks": 106,
+      "crosses": 14,
+      "defensiveLineBreaks": 8,
+      "defensivePressures": 280,
+      "directPressures": 61,
+      "distanceCovered": 108.4,
+      "expectedGoals": 1.36,
+      "forcedTurnovers": 49,
+      "goals": 0,
+      "passCompletion": 85.0,
+      "passes": 513,
+      "passesCompleted": 438,
+      "possession": 49.9,
+      "receptionsInFinalThird": 97,
+      "secondBalls": 60,
+      "shots": 12,
+      "shotsOnTarget": 1,
+      "sprintDistance": 5.7
+    },
+    "contestedPossession": 8.2,
+    "home": {
+      "ballProgressions": 39,
+      "completedLineBreaks": 113,
+      "crosses": 15,
+      "defensiveLineBreaks": 11,
+      "defensivePressures": 288,
+      "directPressures": 31,
+      "distanceCovered": 109.6,
+      "expectedGoals": 1.88,
+      "forcedTurnovers": 44,
+      "goals": 1,
+      "passCompletion": 88.0,
+      "passes": 471,
+      "passesCompleted": 413,
+      "possession": 41.9,
+      "receptionsInFinalThird": 120,
+      "secondBalls": 63,
+      "shots": 15,
+      "shotsOnTarget": 4,
+      "sprintDistance": 5.8
+    }
+  },
+  "matchId": "m009-cote-d-ivoire-ecuador",
+  "metadata": {
+    "awayTeam": {
+      "name": "Ecuador",
+      "teamCode": "ecu",
+      "teamId": "ecuador"
+    },
+    "date": "2026-06-14",
+    "goals": [
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Amad DIALLO",
+        "scorerPlayerId": "diallo-amad-civ",
+        "teamId": "cote-d-ivoire"
+      }
+    ],
+    "group": "e",
+    "homeTeam": {
+      "name": "Côte d'Ivoire",
+      "teamCode": "civ",
+      "teamId": "cote-d-ivoire"
+    },
+    "kickoff": "2026-06-14T19:00:00-04:00",
+    "knockoutScore": {
+      "decidedBy": "regulation",
+      "scoreAfter90": {
+        "away": 0,
+        "home": 1
+      },
+      "scoreAfterET": null,
+      "shootoutScore": null,
+      "winnerTeamId": "cote-d-ivoire"
+    },
+    "lineups": {
+      "away": {
+        "formation": "4-4-2",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Hernan GALINDEZ",
+            "playerId": "galindez-hernan-ecu",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Piero HINCAPIE",
+            "playerId": "hincapie-piero-ecu",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Joel ORDONEZ",
+            "playerId": "ordonez-joel-ecu",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Willian PACHO",
+            "playerId": "pacho-willian-ecu",
+            "position": "df",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "John YEBOAH",
+            "playerId": "yeboah-john-ecu",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": {
+              "minute": 62,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Enner VALENCIA",
+            "playerId": "valencia-enner-ecu",
+            "position": "fw",
+            "shirtNumber": 13,
+            "substitutedOff": {
+              "minute": 77,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alan MINDA",
+            "playerId": "minda-alan-ecu",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": {
+              "minute": 56,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Pedro VITE",
+            "playerId": "vite-pedro-ecu",
+            "position": "mf",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Gonzalo PLATA",
+            "playerId": "plata-gonzalo-ecu",
+            "position": "fw",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alan FRANCO",
+            "playerId": "franco-alan-ecu",
+            "position": "mf",
+            "shirtNumber": 21,
+            "substitutedOff": {
+              "minute": 62,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Moises CAICEDO",
+            "playerId": "caicedo-moises-ecu",
+            "position": "mf",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Moises RAMIREZ",
+            "playerId": "ramirez-moises-ecu",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Gonzalo VALLE",
+            "playerId": "valle-gonzalo-ecu",
+            "position": "gk",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Felix TORRES",
+            "playerId": "torres-felix-ecu",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jordy ALCIVAR",
+            "playerId": "alcivar-jordy-ecu",
+            "position": "mf",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Pervis ESTUPINAN",
+            "playerId": "estupinan-pervis-ecu",
+            "position": "df",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Anthony VALENCIA",
+            "playerId": "valencia-anthony-ecu",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kendry PAEZ",
+            "playerId": "paez-kendry-ecu",
+            "position": "mf",
+            "shirtNumber": 10,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kevin RODRIGUEZ",
+            "playerId": "rodriguez-kevin-ecu",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 77,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jordy CAICEDO",
+            "playerId": "caicedo-jordy-ecu",
+            "position": "fw",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Angelo PRECIADO",
+            "playerId": "preciado-angelo-ecu",
+            "position": "df",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 62,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Denil CASTILLO",
+            "playerId": "castillo-denil-ecu",
+            "position": "mf",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nilson ANGULO",
+            "playerId": "angulo-nilson-ecu",
+            "position": "fw",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 56,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jeremy AREVALO",
+            "playerId": "arevalo-jeremy-ecu",
+            "position": "fw",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 73,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Jackson POROZO",
+            "playerId": "porozo-jackson-ecu",
+            "position": "df",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 62,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Yaimar MEDINA",
+            "playerId": "medina-yaimar-ecu",
+            "position": "df",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      },
+      "home": {
+        "formation": "4-4-2",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Yahia FOFANA",
+            "playerId": "fofana-yahia-civ",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ghislain KONAN",
+            "playerId": "konan-ghislain-civ",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Wilfried SINGO",
+            "playerId": "singo-wilfried-civ",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 28,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Seko FOFANA",
+            "playerId": "fofana-seko-civ",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": {
+              "minute": 77,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 38,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Franck KESSIE",
+            "playerId": "kessie-franck-civ",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Yan DIOMANDE",
+            "playerId": "diomande-yan-civ",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Elye WAHI",
+            "playerId": "wahi-elye-civ",
+            "position": "fw",
+            "shirtNumber": 12,
+            "substitutedOff": {
+              "minute": 56,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 40,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Guela DOUE",
+            "playerId": "doue-guela-civ",
+            "position": "df",
+            "shirtNumber": 17,
+            "substitutedOff": {
+              "minute": 89,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nicolas PEPE",
+            "playerId": "pepe-nicolas-civ",
+            "position": "fw",
+            "shirtNumber": 19,
+            "substitutedOff": {
+              "minute": 77,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Emmanuel AGBADOU",
+            "playerId": "agbadou-emmanuel-civ",
+            "position": "df",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Bazoumana TOURE",
+            "playerId": "toure-bazoumana-civ",
+            "position": "fw",
+            "shirtNumber": 24,
+            "substitutedOff": {
+              "minute": 56,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Mohamed KONE",
+            "playerId": "kone-mohamed-civ",
+            "position": "gk",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alban LAFONT",
+            "playerId": "lafont-alban-civ",
+            "position": "gk",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ousmane DIOMANDE",
+            "playerId": "diomande-ousmane-civ",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jean Michael SERI",
+            "playerId": "seri-jean-michael-civ",
+            "position": "mf",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Odilon KOSSOUNOU",
+            "playerId": "kossounou-odilon-civ",
+            "position": "df",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 89,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ange-Yoan BONNY",
+            "playerId": "bonny-ange-yoan-civ",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 56,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Simon ADINGRA",
+            "playerId": "adingra-simon-civ",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Christopher OPERI",
+            "playerId": "operi-christopher-civ",
+            "position": "df",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Oumar DIAKITE",
+            "playerId": "diakite-oumar-civ",
+            "position": "fw",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 90,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Amad DIALLO",
+            "playerId": "diallo-amad-civ",
+            "position": "fw",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 56,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ibrahim SANGARE",
+            "playerId": "sangare-ibrahim-civ",
+            "position": "mf",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 77,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Evan NDICKA",
+            "playerId": "ndicka-evan-civ",
+            "position": "df",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Evann GUESSAND",
+            "playerId": "guessand-evann-civ",
+            "position": "fw",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Parfait GUIAGON",
+            "playerId": "guiagon-parfait-civ",
+            "position": "mf",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Christ Inao OULAI",
+            "playerId": "oulai-christ-inao-civ",
+            "position": "mf",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 77,
+              "stoppageMinute": null
+            }
+          }
+        ]
+      }
+    },
+    "matchNumber": 9,
+    "matchdayRound": "group-md1",
+    "score": {
+      "away": 0,
+      "home": 1
+    },
+    "stage": "group",
+    "venue": "Philadelphia Stadium"
+  },
+  "momentum": {
+    "samples": [
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 7,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 14,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 13
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "away": 2,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 6
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 7
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 8
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 9
+        },
+        "away": 0,
+        "home": 0
+      }
+    ]
+  },
+  "players": [
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 44.0,
+        "lineBreaksAttempted": 16,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 54.0,
+        "passesAttempted": 28,
+        "passesCompleted": 15,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 4
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 4,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4345.4,
+        "distanceZone2": 929.9,
+        "distanceZone3": 60.9,
+        "distanceZone4": 59.9,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 3,
+        "sprints": 1,
+        "topSpeed": 23.6,
+        "totalDistance": 5396.1
+      },
+      "playerId": "fofana-yahia-civ",
+      "playerName": "Yahia FOFANA",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 68.0,
+        "lineBreaksAttempted": 19,
+        "lineBreaksCompleted": 13,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 1,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 13,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 80.0,
+        "passesAttempted": 49,
+        "passesCompleted": 39,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 23
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 4,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 4,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 17,
+        "pushingOn": 32,
+        "pushingOnIntoPressing": 15,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4338.7,
+        "distanceZone2": 3720.1,
+        "distanceZone3": 1373.0,
+        "distanceZone4": 457.0,
+        "distanceZone5": 154.3,
+        "highSpeedRuns": 121,
+        "sprints": 41,
+        "topSpeed": 29.5,
+        "totalDistance": 10043.1
+      },
+      "playerId": "konan-ghislain-civ",
+      "playerName": "Ghislain KONAN",
+      "position": "df",
+      "shirtNumber": 3,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 7,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 90.0,
+        "lineBreaksAttempted": 21,
+        "lineBreaksCompleted": 19,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 16,
+          "outToIn": 0
+        },
+        "offersReceived": 8,
+        "passCompletion": 98.0,
+        "passesAttempted": 45,
+        "passesCompleted": 44,
+        "stepIns": 5,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 18
+      },
+      "outOfPossession": {
+        "blocks": 5,
+        "clearances": 7,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 7,
+        "possessionRegains": 7,
+        "pressingDirect": 6,
+        "pressingIndirect": 3,
+        "pushingOn": 18,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3947.7,
+        "distanceZone2": 4019.4,
+        "distanceZone3": 1087.3,
+        "distanceZone4": 362.1,
+        "distanceZone5": 194.8,
+        "highSpeedRuns": 88,
+        "sprints": 32,
+        "topSpeed": 33.3,
+        "totalDistance": 9611.2
+      },
+      "playerId": "singo-wilfried-civ",
+      "playerName": "Wilfried SINGO",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 4,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 33.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 8,
+          "inFront": 5,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 1
+        },
+        "offersReceived": 7,
+        "passCompletion": 89.0,
+        "passesAttempted": 36,
+        "passesCompleted": 32,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 16
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 3,
+        "pressingDirect": 1,
+        "pressingIndirect": 21,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2872.2,
+        "distanceZone2": 3825.1,
+        "distanceZone3": 1616.4,
+        "distanceZone4": 580.3,
+        "distanceZone5": 157.2,
+        "highSpeedRuns": 130,
+        "sprints": 37,
+        "topSpeed": 30.1,
+        "totalDistance": 9051.2
+      },
+      "playerId": "fofana-seko-civ",
+      "playerName": "Seko FOFANA",
+      "position": "mf",
+      "shirtNumber": 6,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 100.0,
+        "passesAttempted": 3,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 1,
+        "interceptions": 2,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 0,
+        "pressingIndirect": 1,
+        "pushingOn": 1,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 372.8,
+        "distanceZone2": 438.3,
+        "distanceZone3": 188.9,
+        "distanceZone4": 77.0,
+        "distanceZone5": 25.0,
+        "highSpeedRuns": 15,
+        "sprints": 6,
+        "topSpeed": 28.5,
+        "totalDistance": 1102.0
+      },
+      "playerId": "kossounou-odilon-civ",
+      "playerName": "Odilon KOSSOUNOU",
+      "position": "df",
+      "shirtNumber": 7,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 89.0,
+        "lineBreaksAttempted": 19,
+        "lineBreaksCompleted": 17,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 19,
+          "inFront": 9,
+          "inToOut": 2,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 9,
+        "passCompletion": 93.0,
+        "passesAttempted": 59,
+        "passesCompleted": 55,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 31
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 4,
+        "pressingDirect": 2,
+        "pressingIndirect": 25,
+        "pushingOn": 47,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 4,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3757.2,
+        "distanceZone2": 5299.1,
+        "distanceZone3": 1545.8,
+        "distanceZone4": 604.7,
+        "distanceZone5": 107.3,
+        "highSpeedRuns": 140,
+        "sprints": 45,
+        "topSpeed": 29.2,
+        "totalDistance": 11314.1
+      },
+      "playerId": "kessie-franck-civ",
+      "playerName": "Franck KESSIE",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 11,
+          "inBetween": 8,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 67.0,
+        "passesAttempted": 6,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 19
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 0,
+        "pressingIndirect": 20,
+        "pushingOn": 14,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1571.9,
+        "distanceZone2": 1614.2,
+        "distanceZone3": 619.7,
+        "distanceZone4": 346.9,
+        "distanceZone5": 77.5,
+        "highSpeedRuns": 57,
+        "sprints": 23,
+        "topSpeed": 31.4,
+        "totalDistance": 4230.2
+      },
+      "playerId": "bonny-ange-yoan-civ",
+      "playerName": "Ange-Yoan BONNY",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 9,
+        "crossesAttempted": 6,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 69.0,
+        "lineBreaksAttempted": 13,
+        "lineBreaksCompleted": 9,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 2,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 24,
+          "outToIn": 1
+        },
+        "offersReceived": 24,
+        "passCompletion": 89.0,
+        "passesAttempted": 47,
+        "passesCompleted": 42,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 9,
+        "totalOffers": 37
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 4,
+        "pressingDirect": 5,
+        "pressingIndirect": 26,
+        "pushingOn": 25,
+        "pushingOnIntoPressing": 19,
+        "tacklesMade": 4,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3971.3,
+        "distanceZone2": 3439.7,
+        "distanceZone3": 1081.1,
+        "distanceZone4": 525.7,
+        "distanceZone5": 378.6,
+        "highSpeedRuns": 94,
+        "sprints": 52,
+        "topSpeed": 33.6,
+        "totalDistance": 9396.3
+      },
+      "playerId": "diomande-yan-civ",
+      "playerName": "Yan DIOMANDE",
+      "position": "fw",
+      "shirtNumber": 11,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 15,
+          "inBetween": 14,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 9,
+        "passCompletion": 56.0,
+        "passesAttempted": 9,
+        "passesCompleted": 5,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 31
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 36,
+        "pushingOn": 35,
+        "pushingOnIntoPressing": 22,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2186.0,
+        "distanceZone2": 2772.1,
+        "distanceZone3": 1017.2,
+        "distanceZone4": 391.8,
+        "distanceZone5": 152.4,
+        "highSpeedRuns": 80,
+        "sprints": 30,
+        "topSpeed": 32.7,
+        "totalDistance": 6519.4
+      },
+      "playerId": "wahi-elye-civ",
+      "playerName": "Elye WAHI",
+      "position": "fw",
+      "shirtNumber": 12,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 7,
+        "crossesAttempted": 2,
+        "crossesCompleted": 1,
+        "goals": 1,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 6,
+          "inFront": 4,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 4
+        },
+        "offersReceived": 13,
+        "passCompletion": 93.0,
+        "passesAttempted": 15,
+        "passesCompleted": 14,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 7,
+        "totalOffers": 20
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 0,
+        "pressingIndirect": 4,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1838.9,
+        "distanceZone2": 1412.7,
+        "distanceZone3": 621.5,
+        "distanceZone4": 270.3,
+        "distanceZone5": 189.6,
+        "highSpeedRuns": 55,
+        "sprints": 25,
+        "topSpeed": 30.3,
+        "totalDistance": 4333.0
+      },
+      "playerId": "diallo-amad-civ",
+      "playerName": "Amad DIALLO",
+      "position": "fw",
+      "shirtNumber": 15,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 2,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 95.0,
+        "lineBreaksAttempted": 19,
+        "lineBreaksCompleted": 18,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 3,
+          "inFront": 5,
+          "inToOut": 1,
+          "noMovement": 11,
+          "outToIn": 2
+        },
+        "offersReceived": 9,
+        "passCompletion": 94.0,
+        "passesAttempted": 53,
+        "passesCompleted": 50,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 27
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 3,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 1,
+        "possessionRegains": 7,
+        "pressingDirect": 5,
+        "pressingIndirect": 17,
+        "pushingOn": 24,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3509.8,
+        "distanceZone2": 3856.3,
+        "distanceZone3": 1143.3,
+        "distanceZone4": 440.0,
+        "distanceZone5": 191.6,
+        "highSpeedRuns": 99,
+        "sprints": 35,
+        "topSpeed": 32.5,
+        "totalDistance": 9141.1
+      },
+      "playerId": "doue-guela-civ",
+      "playerName": "Guela DOUE",
+      "position": "df",
+      "shirtNumber": 17,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 100.0,
+        "passesAttempted": 9,
+        "passesCompleted": 9,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 6,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 886.7,
+        "distanceZone2": 968.0,
+        "distanceZone3": 365.3,
+        "distanceZone4": 148.1,
+        "distanceZone5": 35.3,
+        "highSpeedRuns": 30,
+        "sprints": 10,
+        "topSpeed": 29.2,
+        "totalDistance": 2403.3
+      },
+      "playerId": "sangare-ibrahim-civ",
+      "playerName": "Ibrahim SANGARE",
+      "position": "mf",
+      "shirtNumber": 18,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 5,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 17,
+          "inBetween": 24,
+          "inFront": 8,
+          "inToOut": 3,
+          "noMovement": 3,
+          "outToIn": 2
+        },
+        "offersReceived": 16,
+        "passCompletion": 93.0,
+        "passesAttempted": 30,
+        "passesCompleted": 28,
+        "stepIns": 3,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 57
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 4,
+        "pressingIndirect": 42,
+        "pushingOn": 37,
+        "pushingOnIntoPressing": 25,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2885.3,
+        "distanceZone2": 3342.1,
+        "distanceZone3": 1301.0,
+        "distanceZone4": 679.5,
+        "distanceZone5": 212.4,
+        "highSpeedRuns": 114,
+        "sprints": 48,
+        "topSpeed": 31.9,
+        "totalDistance": 8420.2
+      },
+      "playerId": "pepe-nicolas-civ",
+      "playerName": "Nicolas PEPE",
+      "position": "fw",
+      "shirtNumber": 19,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 86.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 12,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 5,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 93.0,
+        "passesAttempted": 61,
+        "passesCompleted": 57,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 7,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 6,
+        "possessionRegains": 7,
+        "pressingDirect": 1,
+        "pressingIndirect": 4,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 5,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3776.8,
+        "distanceZone2": 4299.6,
+        "distanceZone3": 969.4,
+        "distanceZone4": 380.3,
+        "distanceZone5": 101.9,
+        "highSpeedRuns": 87,
+        "sprints": 29,
+        "topSpeed": 32.6,
+        "totalDistance": 9528.0
+      },
+      "playerId": "agbadou-emmanuel-civ",
+      "playerName": "Emmanuel AGBADOU",
+      "position": "df",
+      "shirtNumber": 20,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 11,
+          "inBetween": 3,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 7,
+          "outToIn": 3
+        },
+        "offersReceived": 6,
+        "passCompletion": 58.0,
+        "passesAttempted": 12,
+        "passesCompleted": 7,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 24
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 31,
+        "pushingOn": 27,
+        "pushingOnIntoPressing": 22,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2179.9,
+        "distanceZone2": 3136.7,
+        "distanceZone3": 1003.5,
+        "distanceZone4": 343.4,
+        "distanceZone5": 204.2,
+        "highSpeedRuns": 84,
+        "sprints": 32,
+        "topSpeed": 34.6,
+        "totalDistance": 6867.8
+      },
+      "playerId": "toure-bazoumana-civ",
+      "playerName": "Bazoumana TOURE",
+      "position": "fw",
+      "shirtNumber": 24,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 5,
+          "inFront": 3,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 100.0,
+        "passesAttempted": 9,
+        "passesCompleted": 9,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 4,
+        "pushingOn": 6,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 770.8,
+        "distanceZone2": 1006.4,
+        "distanceZone3": 257.2,
+        "distanceZone4": 128.7,
+        "distanceZone5": 72.1,
+        "highSpeedRuns": 26,
+        "sprints": 11,
+        "topSpeed": 28.6,
+        "totalDistance": 2235.3
+      },
+      "playerId": "oulai-christ-inao-civ",
+      "playerName": "Christ Inao OULAI",
+      "position": "mf",
+      "shirtNumber": 26,
+      "teamId": "cote-d-ivoire"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 45.0,
+        "lineBreaksAttempted": 20,
+        "lineBreaksCompleted": 9,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 12,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 70.0,
+        "passesAttempted": 37,
+        "passesCompleted": 26,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 6,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3873.6,
+        "distanceZone2": 752.1,
+        "distanceZone3": 35.0,
+        "distanceZone4": 1.0,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 4,
+        "sprints": 0,
+        "topSpeed": 20.2,
+        "totalDistance": 4661.8
+      },
+      "playerId": "galindez-hernan-ecu",
+      "playerName": "Hernan GALINDEZ",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 33.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 10,
+          "inBetween": 2,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 8,
+          "outToIn": 0
+        },
+        "offersReceived": 8,
+        "passCompletion": 68.0,
+        "passesAttempted": 31,
+        "passesCompleted": 21,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 22
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 3,
+        "possessionRegains": 7,
+        "pressingDirect": 8,
+        "pressingIndirect": 22,
+        "pushingOn": 31,
+        "pushingOnIntoPressing": 18,
+        "tacklesMade": 8,
+        "tacklesWon": 3
+      },
+      "physical": {
+        "distanceZone1": 4104.2,
+        "distanceZone2": 4091.8,
+        "distanceZone3": 1355.2,
+        "distanceZone4": 760.0,
+        "distanceZone5": 401.7,
+        "highSpeedRuns": 121,
+        "sprints": 54,
+        "topSpeed": 31.5,
+        "totalDistance": 10712.8
+      },
+      "playerId": "hincapie-piero-ecu",
+      "playerName": "Piero HINCAPIE",
+      "position": "df",
+      "shirtNumber": 3,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 92.0,
+        "passesAttempted": 62,
+        "passesCompleted": 57,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 7
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 9,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 6,
+        "possessionRegains": 4,
+        "pressingDirect": 3,
+        "pressingIndirect": 6,
+        "pushingOn": 37,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 3,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4063.7,
+        "distanceZone2": 3745.5,
+        "distanceZone3": 985.4,
+        "distanceZone4": 440.7,
+        "distanceZone5": 94.7,
+        "highSpeedRuns": 86,
+        "sprints": 31,
+        "topSpeed": 28.1,
+        "totalDistance": 9330.1
+      },
+      "playerId": "ordonez-joel-ecu",
+      "playerName": "Joel ORDONEZ",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 73.0,
+        "lineBreaksAttempted": 22,
+        "lineBreaksCompleted": 16,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 7,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 91.0,
+        "passesAttempted": 79,
+        "passesCompleted": 72,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 8
+      },
+      "outOfPossession": {
+        "blocks": 6,
+        "clearances": 2,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 5,
+        "possessionRegains": 5,
+        "pressingDirect": 7,
+        "pressingIndirect": 10,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4307.1,
+        "distanceZone2": 3180.2,
+        "distanceZone3": 904.1,
+        "distanceZone4": 367.2,
+        "distanceZone5": 141.0,
+        "highSpeedRuns": 81,
+        "sprints": 32,
+        "topSpeed": 32.7,
+        "totalDistance": 8899.7
+      },
+      "playerId": "pacho-willian-ecu",
+      "playerName": "Willian PACHO",
+      "position": "df",
+      "shirtNumber": 6,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 12,
+          "inBetween": 5,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 7,
+          "outToIn": 2
+        },
+        "offersReceived": 12,
+        "passCompletion": 77.0,
+        "passesAttempted": 26,
+        "passesCompleted": 20,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 28
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 5,
+        "pressingIndirect": 15,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2416.9,
+        "distanceZone2": 2687.9,
+        "distanceZone3": 1043.4,
+        "distanceZone4": 472.9,
+        "distanceZone5": 122.3,
+        "highSpeedRuns": 86,
+        "sprints": 39,
+        "topSpeed": 31.0,
+        "totalDistance": 6743.4
+      },
+      "playerId": "yeboah-john-ecu",
+      "playerName": "John YEBOAH",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 75.0,
+        "passesAttempted": 4,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 5,
+        "pushingOn": 9,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 799.0,
+        "distanceZone2": 843.5,
+        "distanceZone3": 486.4,
+        "distanceZone4": 232.3,
+        "distanceZone5": 66.2,
+        "highSpeedRuns": 38,
+        "sprints": 17,
+        "topSpeed": 30.1,
+        "totalDistance": 2427.2
+      },
+      "playerId": "rodriguez-kevin-ecu",
+      "playerName": "Kevin RODRIGUEZ",
+      "position": "fw",
+      "shirtNumber": 11,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 10,
+          "inBetween": 2,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 80.0,
+        "passesAttempted": 10,
+        "passesCompleted": 8,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 13
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 4,
+        "pressingIndirect": 25,
+        "pushingOn": 26,
+        "pushingOnIntoPressing": 16,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3247.4,
+        "distanceZone2": 3380.3,
+        "distanceZone3": 609.9,
+        "distanceZone4": 303.0,
+        "distanceZone5": 102.7,
+        "highSpeedRuns": 54,
+        "sprints": 25,
+        "topSpeed": 33.1,
+        "totalDistance": 7643.2
+      },
+      "playerId": "valencia-enner-ecu",
+      "playerName": "Enner VALENCIA",
+      "position": "fw",
+      "shirtNumber": 13,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 1,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 16,
+          "inBetween": 5,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 8,
+          "outToIn": 2
+        },
+        "offersReceived": 10,
+        "passCompletion": 75.0,
+        "passesAttempted": 16,
+        "passesCompleted": 12,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 32
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 27,
+        "pushingOn": 18,
+        "pushingOnIntoPressing": 14,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2404.0,
+        "distanceZone2": 2437.2,
+        "distanceZone3": 844.3,
+        "distanceZone4": 377.1,
+        "distanceZone5": 108.1,
+        "highSpeedRuns": 80,
+        "sprints": 31,
+        "topSpeed": 35.5,
+        "totalDistance": 6170.8
+      },
+      "playerId": "minda-alan-ecu",
+      "playerName": "Alan MINDA",
+      "position": "mf",
+      "shirtNumber": 14,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 20,
+        "lineBreaksCompleted": 20,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 17,
+          "inFront": 37,
+          "inToOut": 5,
+          "noMovement": 11,
+          "outToIn": 2
+        },
+        "offersReceived": 31,
+        "passCompletion": 91.0,
+        "passesAttempted": 74,
+        "passesCompleted": 67,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 72
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 3,
+        "possessionRegains": 5,
+        "pressingDirect": 10,
+        "pressingIndirect": 28,
+        "pushingOn": 40,
+        "pushingOnIntoPressing": 17,
+        "tacklesMade": 4,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3569.2,
+        "distanceZone2": 5022.3,
+        "distanceZone3": 2135.7,
+        "distanceZone4": 665.9,
+        "distanceZone5": 80.4,
+        "highSpeedRuns": 183,
+        "sprints": 44,
+        "topSpeed": 28.5,
+        "totalDistance": 11473.7
+      },
+      "playerId": "vite-pedro-ecu",
+      "playerName": "Pedro VITE",
+      "position": "mf",
+      "shirtNumber": 15,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 3,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 2,
+          "outToIn": 1
+        },
+        "offersReceived": 6,
+        "passCompletion": 58.0,
+        "passesAttempted": 12,
+        "passesCompleted": 7,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 10,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 3,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 1359.4,
+        "distanceZone2": 1448.8,
+        "distanceZone3": 467.1,
+        "distanceZone4": 167.0,
+        "distanceZone5": 203.6,
+        "highSpeedRuns": 40,
+        "sprints": 18,
+        "topSpeed": 33.2,
+        "totalDistance": 3645.9
+      },
+      "playerId": "preciado-angelo-ecu",
+      "playerName": "Angelo PRECIADO",
+      "position": "df",
+      "shirtNumber": 17,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 4,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 82.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 9,
+        "offersByMovementType": {
+          "inBehind": 10,
+          "inBetween": 11,
+          "inFront": 1,
+          "inToOut": 5,
+          "noMovement": 9,
+          "outToIn": 2
+        },
+        "offersReceived": 18,
+        "passCompletion": 82.0,
+        "passesAttempted": 38,
+        "passesCompleted": 31,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 3,
+        "totalOffers": 38
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 3,
+        "pressingDirect": 5,
+        "pressingIndirect": 36,
+        "pushingOn": 30,
+        "pushingOnIntoPressing": 18,
+        "tacklesMade": 3,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3956.0,
+        "distanceZone2": 4926.1,
+        "distanceZone3": 1407.4,
+        "distanceZone4": 613.7,
+        "distanceZone5": 159.9,
+        "highSpeedRuns": 128,
+        "sprints": 51,
+        "topSpeed": 31.0,
+        "totalDistance": 11063.1
+      },
+      "playerId": "plata-gonzalo-ecu",
+      "playerName": "Gonzalo PLATA",
+      "position": "fw",
+      "shirtNumber": 19,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 2,
+        "passCompletion": 75.0,
+        "passesAttempted": 8,
+        "passesCompleted": 6,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 5,
+        "pressingIndirect": 9,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1642.2,
+        "distanceZone2": 1561.5,
+        "distanceZone3": 855.0,
+        "distanceZone4": 282.2,
+        "distanceZone5": 247.6,
+        "highSpeedRuns": 61,
+        "sprints": 27,
+        "topSpeed": 31.5,
+        "totalDistance": 4588.5
+      },
+      "playerId": "angulo-nilson-ecu",
+      "playerName": "Nilson ANGULO",
+      "position": "fw",
+      "shirtNumber": 20,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 89.0,
+        "lineBreaksAttempted": 18,
+        "lineBreaksCompleted": 16,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 1,
+          "inFront": 5,
+          "inToOut": 2,
+          "noMovement": 13,
+          "outToIn": 0
+        },
+        "offersReceived": 14,
+        "passCompletion": 96.0,
+        "passesAttempted": 46,
+        "passesCompleted": 44,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 25
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 4,
+        "pressingDirect": 1,
+        "pressingIndirect": 7,
+        "pushingOn": 21,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 4,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 2589.2,
+        "distanceZone2": 2942.2,
+        "distanceZone3": 932.5,
+        "distanceZone4": 405.5,
+        "distanceZone5": 147.5,
+        "highSpeedRuns": 86,
+        "sprints": 35,
+        "topSpeed": 32.2,
+        "totalDistance": 7017.0
+      },
+      "playerId": "franco-alan-ecu",
+      "playerName": "Alan FRANCO",
+      "position": "mf",
+      "shirtNumber": 21,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 4,
+        "crossesCompleted": 2,
+        "goals": 0,
+        "lineBreakCompletion": 85.0,
+        "lineBreaksAttempted": 20,
+        "lineBreaksCompleted": 17,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 23,
+          "inFront": 31,
+          "inToOut": 3,
+          "noMovement": 1,
+          "outToIn": 1
+        },
+        "offersReceived": 28,
+        "passCompletion": 90.0,
+        "passesAttempted": 58,
+        "passesCompleted": 52,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 62
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 4,
+        "possessionRegains": 8,
+        "pressingDirect": 10,
+        "pressingIndirect": 17,
+        "pushingOn": 31,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 5,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3838.6,
+        "distanceZone2": 4720.6,
+        "distanceZone3": 1609.4,
+        "distanceZone4": 482.2,
+        "distanceZone5": 165.6,
+        "highSpeedRuns": 129,
+        "sprints": 34,
+        "topSpeed": 30.5,
+        "totalDistance": 10816.5
+      },
+      "playerId": "caicedo-moises-ecu",
+      "playerName": "Moises CAICEDO",
+      "position": "mf",
+      "shirtNumber": 23,
+      "teamId": "ecuador"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 100.0,
+        "passesAttempted": 12,
+        "passesCompleted": 12,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 0
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 2,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1345.1,
+        "distanceZone2": 1344.2,
+        "distanceZone3": 306.6,
+        "distanceZone4": 136.5,
+        "distanceZone5": 94.0,
+        "highSpeedRuns": 28,
+        "sprints": 13,
+        "topSpeed": 32.7,
+        "totalDistance": 3226.4
+      },
+      "playerId": "porozo-jackson-ecu",
+      "playerName": "Jackson POROZO",
+      "position": "df",
+      "shirtNumber": 25,
+      "teamId": "ecuador"
+    }
+  ],
+  "schemaVersion": 4,
+  "setPlays": {
+    "away": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 4,
+        "lofted": 0,
+        "outswing": 1
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 3,
+          "right": 2,
+          "total": 5
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        }
+      },
+      "cornersBySide": {
+        "left": 3,
+        "right": 2,
+        "total": 5
+      },
+      "freeKicks": {
+        "direct": 10,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 0
+      },
+      "totalCorners": 5,
+      "totalFreeKicks": 10,
+      "totalPenalties": 0,
+      "totalSetPlays": 29,
+      "totalThrowIns": 14
+    },
+    "home": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 1,
+        "lofted": 0,
+        "outswing": 1
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 1,
+          "right": 1,
+          "total": 2
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 1,
+          "right": 0,
+          "total": 1
+        }
+      },
+      "cornersBySide": {
+        "left": 2,
+        "right": 1,
+        "total": 3
+      },
+      "freeKicks": {
+        "direct": 13,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 0
+      },
+      "totalCorners": 3,
+      "totalFreeKicks": 13,
+      "totalPenalties": 0,
+      "totalSetPlays": 30,
+      "totalThrowIns": 14
+    }
+  },
+  "storyStats": {
+    "away": {
+      "distanceCovered": 108.4,
+      "expectedGoals": 1.36,
+      "possession": 49.9,
+      "shots": 12,
+      "topSpeed": 35.5
+    },
+    "home": {
+      "distanceCovered": 109.6,
+      "expectedGoals": 1.88,
+      "possession": 41.9,
+      "shots": 15,
+      "topSpeed": 34.6
+    }
+  },
+  "tacticalIdentity": {
+    "away": {
+      "defensiveBlockDistribution": {
+        "high": 4,
+        "low": 24,
+        "mid": 19
+      },
+      "phasesInPossession": {
+        "attackingTransition": 14,
+        "buildUpOpposed": 12,
+        "buildUpUnopposed": 38,
+        "counterAttack": 0,
+        "finalThird": 11,
+        "longBall": 5,
+        "progression": 20,
+        "setPiece": 4
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 12,
+        "defensiveTransition": 16,
+        "highBlock": 4,
+        "highPress": 6,
+        "lowBlock": 24,
+        "lowPress": 1,
+        "midBlock": 19,
+        "midPress": 4,
+        "recovery": 4
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 19,
+            "teamLength": 39,
+            "teamWidth": 56
+          },
+          "buildUpMid": {
+            "lineHeight": 40,
+            "teamLength": 34,
+            "teamWidth": 57
+          },
+          "finalThirdPhase": {
+            "lineHeight": 53,
+            "teamLength": 37,
+            "teamWidth": 45
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 47,
+            "teamLength": 38,
+            "teamWidth": 42
+          },
+          "lowBlock": {
+            "lineHeight": 15,
+            "teamLength": 24,
+            "teamWidth": 37
+          },
+          "midBlock": {
+            "lineHeight": 36,
+            "teamLength": 30,
+            "teamWidth": 41
+          }
+        }
+      }
+    },
+    "home": {
+      "defensiveBlockDistribution": {
+        "high": 11,
+        "low": 12,
+        "mid": 27
+      },
+      "phasesInPossession": {
+        "attackingTransition": 16,
+        "buildUpOpposed": 14,
+        "buildUpUnopposed": 27,
+        "counterAttack": 1,
+        "finalThird": 22,
+        "longBall": 3,
+        "progression": 18,
+        "setPiece": 5
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 9,
+        "defensiveTransition": 14,
+        "highBlock": 11,
+        "highPress": 5,
+        "lowBlock": 12,
+        "lowPress": 0,
+        "midBlock": 27,
+        "midPress": 5,
+        "recovery": 4
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 21,
+            "teamLength": 41,
+            "teamWidth": 56
+          },
+          "buildUpMid": {
+            "lineHeight": 41,
+            "teamLength": 34,
+            "teamWidth": 56
+          },
+          "finalThirdPhase": {
+            "lineHeight": 55,
+            "teamLength": 35,
+            "teamWidth": 45
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 47,
+            "teamLength": 36,
+            "teamWidth": 40
+          },
+          "lowBlock": {
+            "lineHeight": 17,
+            "teamLength": 26,
+            "teamWidth": 35
+          },
+          "midBlock": {
+            "lineHeight": 37,
+            "teamLength": 26,
+            "teamWidth": 39
+          }
+        }
+      }
+    }
+  }
+}

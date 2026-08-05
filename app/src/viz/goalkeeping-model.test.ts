@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import type { GoalkeeperRecord, MatchBundle } from "@/lib/contract/contract-types";
+import type { TeamGoalkeeping, MatchBundle } from "@/lib/contract/contract-types";
 import type { LogSide } from "@/viz/marker-model";
 import {
   AERIAL_TYPES,
@@ -67,7 +67,7 @@ function group(bundle: MatchBundle) {
   return goalkeepingByTeam(bundle.goalkeeping, home, away);
 }
 
-function records(bundle: MatchBundle): GoalkeeperRecord[] {
+function records(bundle: MatchBundle): TeamGoalkeeping[] {
   const goalkeeping = bundle.goalkeeping;
   if (goalkeeping === null) {
     throw new Error(`fixture ${bundle.matchId} carries no goalkeeping block`);
@@ -210,9 +210,9 @@ describe("the four summaries on fixture data (Tasks 5.3-5.5)", () => {
         expect(block.records, slug).toHaveLength(sources.length);
         for (const source of sources) {
           const matching = block.records.find(
-            (record) => record.playerId === source.playerId
+            (record) => record.playerId === source.goalkeepers[0].playerId
           );
-          expect(matching, `${slug}: no block for ${source.playerId}`).toBeDefined();
+          expect(matching, `${slug}: no block for ${source.goalkeepers[0].playerId}`).toBeDefined();
           expect(matching!.goalPrevention.savePercentage, slug).toBe(
             source.goalPrevention.savePercentage
           );
@@ -311,12 +311,12 @@ describe("involvementSeries (Task 5.1, ruled decision 7)", () => {
     const duplicated = {
       ...records(m001)[0],
       involvementTimeline: [
-        { minute: 45, involvements: 2 },
-        { minute: 45, involvements: 1 },
-        { minute: 45, involvements: 3 },
-        { minute: 46, involvements: 0 },
+        { at: { minute: 45, stoppageMinute: null }, involvements: 2 },
+        { at: { minute: 45, stoppageMinute: null }, involvements: 1 },
+        { at: { minute: 45, stoppageMinute: null }, involvements: 3 },
+        { at: { minute: 46, stoppageMinute: null }, involvements: 0 },
       ],
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([duplicated], home, away);
     const points = grouping.home.records[0].involvement;
     expect(points).toHaveLength(4);
@@ -411,10 +411,10 @@ describe("totalInvolvements is printed verbatim (ruled decision 14)", () => {
       ...records(m001)[0],
       totalInvolvements: 47,
       involvementTimeline: [
-        { minute: 10, involvements: 20 },
-        { minute: 20, involvements: 24 },
+        { at: { minute: 10, stoppageMinute: null }, involvements: 20 },
+        { at: { minute: 20, stoppageMinute: null }, involvements: 24 },
       ],
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([short], home, away);
     const keeper = grouping.home.records[0];
     // The headline is the report's own number; the timeline sums to 44.
@@ -438,13 +438,13 @@ describe("the CORPUS shape no fixture can produce (Task 5.8)", () => {
    * ALL FIVE GATED FIELDS null — the shape on 208/208 corpus team-innings, and
    * the shape 0/6 fixture keepers have.
    *
-   * `as unknown as GoalkeeperRecord` is AUTHORISED HERE AND ONLY HERE, for the
+   * `as unknown as TeamGoalkeeping` is AUTHORISED HERE AND ONLY HERE, for the
    * reason Story 2.9's Task 3.7 established: bundles reach the App as `as`-cast
    * unvalidated JSON, so the test simulates the real path rather than
    * fabricating an impossible one. The generated types declare all five
    * NON-nullable, which is precisely the contract defect this story files.
    */
-  const corpusShaped = (): GoalkeeperRecord => {
+  const corpusShaped = (): TeamGoalkeeping => {
     const base = records(m001)[0];
     return {
       ...base,
@@ -456,7 +456,7 @@ describe("the CORPUS shape no fixture can produce (Task 5.8)", () => {
       },
       goalPrevention: { ...base.goalPrevention, byBodyType: null },
       aerialControl: { ...base.aerialControl, crossesFacedCompleted: null },
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
   };
 
   it("omits all five panels entirely rather than em-dashing them", () => {
@@ -506,7 +506,7 @@ describe("the CORPUS shape no fixture can produce (Task 5.8)", () => {
     const partial = {
       ...base,
       goalPrevention: { ...base.goalPrevention, byBodyType: null },
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([partial], home, away);
     const keeper = grouping.home.records[0];
     expect(keeper.distribution.feetTechniques.present).toBe(true);
@@ -519,43 +519,58 @@ describe("the CORPUS shape no fixture can produce (Task 5.8)", () => {
    * team-innings (M21 home, M41 away, M53 away, M62 away, M66 home, M88 home,
    * M98 away) and on ZERO fixtures, so it is constructed.
    */
-  it("renders BOTH keepers' records for a two-keeper team, summing nothing", () => {
+  it("carries BOTH keepers on ONE team block, summing and splitting nothing", () => {
+    /*
+     * CS-2 (contract decision 18) INVERTED what this test asserts, and the inversion is
+     * the point. It used to demand two records per team and assert nothing was summed
+     * across them. But the source is per TEAM: all four goalkeeping page families are
+     * titled `{team}`, no goalkeeper name appears on any of them, and the 7 of 208 corpus
+     * team-innings that used two keepers still print ONE team-level block each. The old
+     * shape asked for an attribution the report does not make, and Story 1.16 could not
+     * emit it at all.
+     *
+     * So the guarantee is now STRONGER, not weaker: there is one block, both names are
+     * carried as context, and the figures cannot be split between the keepers because
+     * they were never per-keeper. AD-5's "never sum" becomes true by construction.
+     */
     const { home, away } = sides(m001);
     const first = records(m001)[0];
     const awayKeeper = records(m001)[1];
-    const second = {
-      ...awayKeeper,
-      teamId: home.teamId,
-      playerId: "second-keeper",
-      playerName: "Luis MALAGON",
-    } as unknown as GoalkeeperRecord;
-    // Interleaved deliberately: the away record sits BETWEEN the home team's
-    // two, so a grouping that leaned on array adjacency would fail here.
-    const grouping = goalkeepingByTeam([first, awayKeeper, second], home, away);
+    const twoKeepers = {
+      ...first,
+      goalkeepers: [
+        ...first.goalkeepers,
+        {
+          playerId: "malagon-luis-mex",
+          playerName: "Luis MALAGON",
+          shirtNumber: 12,
+          substitutedOn: { minute: 78, stoppageMinute: null },
+          substitutedOff: null,
+        },
+      ],
+    } as unknown as TeamGoalkeeping;
+    // Interleaved deliberately: a grouping leaning on array adjacency would fail here.
+    const grouping = goalkeepingByTeam([awayKeeper, twoKeepers], home, away);
 
-    expect(grouping.home.recordCount).toBe(2);
-    expect(grouping.home.keeperNames).toEqual(["Raul RANGEL", "Luis MALAGON"]);
-    expect(grouping.home.records).toHaveLength(2);
+    // ONE block for the team, not one per keeper.
+    expect(grouping.home.recordCount).toBe(1);
+    expect(grouping.home.records).toHaveLength(1);
 
-    // NOTHING IS SUMMED ACROSS THEM. Each record keeps its own numbers — AD-5
-    // forbids the App summing, and adding two keepers' save percentages would
-    // be arithmetic nonsense.
+    // Both names are carried as CONTEXT on that single block.
+    expect(grouping.home.keeperNames).toEqual(["Raul RANGEL / Luis MALAGON"]);
+
+    // The team's figures are the team's, verbatim, and there is no per-keeper copy of
+    // them to sum, average or attribute.
     expect(grouping.home.records[0].totalInvolvements).toBe(first.totalInvolvements);
-    expect(grouping.home.records[1].totalInvolvements).toBe(second.totalInvolvements);
     expect(grouping.home.records[0].goalPrevention.savePercentage).toBe(
       first.goalPrevention.savePercentage
     );
-    expect(grouping.home.records[1].goalPrevention.savePercentage).toBe(
-      second.goalPrevention.savePercentage
-    );
 
-    // Both keepers' timelines are separate row sets in the table, each labelled.
-    const rows = involvementTimelineRows(grouping.home);
-    expect(new Set(rows.map((row) => row.playerName)).size).toBe(2);
-    expect(involvementSummaryRows(grouping.home)).toHaveLength(2);
-
-    // Away is untouched by the home team's two records.
-    expect(grouping.away.recordCount).toBe(1);
+    // One timeline and one summary row, because there is one block.
+    expect(
+      new Set(involvementTimelineRows(grouping.home).map((row) => row.playerName)).size
+    ).toBe(1);
+    expect(involvementSummaryRows(grouping.home)).toHaveLength(1);
   });
 
   it("gives two keepers distinct React keys even on a duplicated playerId", () => {
@@ -564,7 +579,7 @@ describe("the CORPUS shape no fixture can produce (Task 5.8)", () => {
     const clone = {
       ...first,
       playerName: "Luis MALAGON",
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([first, clone], home, away);
     const keys = grouping.home.records.map((record) => record.key);
     expect(new Set(keys).size).toBe(2);
@@ -587,7 +602,7 @@ describe("the CORPUS shape no fixture can produce (Task 5.8)", () => {
   it("keys two keepers apart even when playerId AND playerName are identical", () => {
     const { home, away } = sides(m001);
     const first = records(m001)[0];
-    const indistinguishable = { ...first } as unknown as GoalkeeperRecord;
+    const indistinguishable = { ...first } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([first, indistinguishable], home, away);
 
     expect(grouping.home.recordCount).toBe(2);
@@ -615,7 +630,7 @@ describe("the CORPUS shape no fixture can produce (Task 5.8)", () => {
     const crossesOnly = {
       ...base,
       aerialControl: { ...base.aerialControl, crossesFacedCompleted: null },
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([crossesOnly], home, away);
     const keeper = grouping.home.records[0];
 
@@ -675,7 +690,7 @@ describe("zero-state guards (Task 5.7)", () => {
     const empty = {
       ...records(m001)[0],
       involvementTimeline: [],
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([empty], home, away);
     const keeper = grouping.home.records[0];
     expect(keeper.involvement).toEqual([]);
@@ -704,7 +719,7 @@ describe("zero-state guards (Task 5.7)", () => {
         },
         byBodyType: null,
       },
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([blank], home, away);
     const prevention = grouping.home.records[0].goalPrevention;
     expect(prevention.attemptsFaced).toBe(0);
@@ -839,7 +854,7 @@ describe("the distribution, aerial and prevention tables (decision 19)", () => {
       },
       goalPrevention: { ...base.goalPrevention, byBodyType: null },
       aerialControl: { ...base.aerialControl, crossesFacedCompleted: null },
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const grouping = goalkeepingByTeam([corpusShaped], home, away);
     const team = grouping.home;
 
@@ -872,7 +887,7 @@ describe("the distribution, aerial and prevention tables (decision 19)", () => {
       teamId: home.teamId,
       playerId: "second-keeper",
       playerName: "Luis MALAGON",
-    } as unknown as GoalkeeperRecord;
+    } as unknown as TeamGoalkeeping;
     const team = goalkeepingByTeam([first, second], home, away).home;
 
     for (const rows of [distributionTableRows(team), aerialTableRows(team)]) {

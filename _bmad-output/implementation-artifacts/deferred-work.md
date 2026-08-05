@@ -1817,3 +1817,219 @@ figure, the measurement won and the disagreement is recorded as a finding.
   discharged: `test_the_unavailable_data_baseline_line_is_always_printed_and_never_suppressed`
   stages into `tmp_path` and passes `--data-dir` under it, verified by reading the helper
   rather than assumed, so it stays green when `data/matches/` appears.
+
+
+## Deferred from: code review of 2-11c-expert-layer-event-logs (2026-08-05)
+
+Ten items, all verified at their location before filing. None is caused by story 2.11c's change;
+each is either a faithful copy of a shipped family pattern, a pre-existing shared helper, or a
+harness limit the story already acknowledges. Recorded here so a later story can act on the family
+rather than on one log.
+
+- **`events.receiving === undefined` throws an unnamed `TypeError`.** `receivingLogRows` and
+  `anyReceivingEvents` guard `=== null` / `!== null` and then read `.length`, so an absent key on
+  an `as`-cast bundle crashes the Expert Layer without naming the module — the opposite of what
+  `assertPlottable` and `resolveSide` exist to do. This is copied faithfully from
+  `defensive-actions-model.ts:228,377`, whose own comment documents `!== null` ONLY as deliberate,
+  so `[]` survives as "ready with zero rows". The same class covers a null element inside the array
+  and an absent `metadata.*.teamCode` reaching `.toUpperCase()`. **Deferred: changing one log's
+  guard while five siblings keep the old one is worse than either state. Owner: whichever story
+  next hardens the `as`-cast bundle seam.**
+
+- **`formatGoalMinute` renders `"33+undefined'"` and `"90+0'"`.** It branches on
+  `at.stoppageMinute !== null` (`lib/match-hero.ts:73`), so an absent key (`undefined`) and a
+  literal `0` both take the stoppage path. One line below in every caller, `?? null` normalises the
+  sort key correctly — so the label and the sort key disagree on exactly the malformed shapes the
+  callers' docblocks invoke to justify their other guards. **Deferred: a shared helper on the goal
+  clock, called by the hero and by all four logs. Owner: whichever story next touches
+  `match-hero.ts`.**
+
+- **Unknown enum codes fabricate dictionary keys with no runtime guard.** `receivingEventTypeKey`
+  interpolates and casts, as do `offerMovementKey`, `defensiveActionKey`, `shotOutcomeKey` and the
+  seven in `goalkeeping-model.ts`. `expert-model.ts:175` states it as the house convention. A code
+  outside the union prints the raw key in production and throws from inside `render`/`sort.valueOf`
+  in dev — i.e. lazily, when a reader opens the table. **Deferred: the convention is uniform across
+  seven models; breaking it in one is churn. Owner: the next contract change-set that widens an
+  enum.**
+
+- **Whitespace-only `playerName` defeats the presence gate.** `playerNameOf` tests `name === ""`
+  only, so `"   "` keeps the entire player column open for a table whose only names are blanks.
+  Copied verbatim from `defensive-actions-model.ts:131`, as story 2.11c's Task 1.4 required.
+  **Deferred: a one-character fix (`.trim()`) in two files, but it changes a shipped gate's
+  behaviour. Owner: whichever story next adds a fourth log, alongside the `anyPlayerName` lift.**
+
+- **`home.teamId === away.teamId` silently mislabels every row of every log.** `resolveSide` returns
+  `home` on its first branch for every event and `sideRank` returns 0 for all of them, so all rows
+  print the home code, the side pre-sort becomes a no-op, and every "then home before away" caption
+  on the page is meaningless — with no throw. `groupScorers` in `match-hero.ts` already fails loud
+  on precisely this invariant ("both ids equal"); `resolveSide` does not. **Deferred: `marker-model`
+  is shared by every marker surface. Owner: whichever story next touches `resolveSide`.**
+
+- **The receiving log's caption can assert a minute ordering the table does not have.** When no
+  event carries `at`, `showMinute` closes the column and the caption still reads "Ordenado por
+  minuto, luego local antes que visitante." `DefensiveActionsSection` branches to
+  `viz.defensiveActions.tableCaptionNoClock` for exactly this case; the receiving log copies the
+  gate idiom but not the caption branch. Unreachable today — 270/270 fixture events carry `at`, and
+  on corpus data `events.receiving` is null so `anyReceivingEvents` removes the whole log.
+  **Deferred: the fix mints a `receivingOrderNoClock` key in both locales, which Task 2.5 barred.
+  Owner: whichever story first sees a clock-less receiving event.**
+
+- **No log table sets `rowHeader`, so a screen reader gets no row identity.** The receiving log's
+  ~609 body cells are all `<td>`; announcing a cell gives the column head and nothing else. The
+  Domain G table 400 lines up in the same component sets `rowHeader: true` on its player column for
+  exactly that reason, and the shot, cross and defensive logs do not — so the four logs are
+  consistent with each other and inconsistent with their neighbour. Note the interaction: the
+  natural row header is the player column, which is itself gated, so the fix needs a fallback.
+  **Deferred: a four-table a11y change, not a one-log one. Owner: 2.19 or whichever story next
+  audits table semantics.**
+
+- **Two Expert log links share `#shot-maps`, making the ledgered hash re-entry defect reachable.**
+  The shot-log and cross-log entries point at the same anchor, and browsers do not fire
+  `hashchange` for an unchanged hash — so below `lg`, clicking the second one after the first is a
+  silent no-op. Both halves are already filed (grep *"Hash re-entry has three unhandled paths"* and
+  2.11c's own disclosure-plumbing entry); this records that the six-link list is what makes path
+  (a) reachable from the UI rather than theoretical. **Owner: 2.19 or whichever story next needs
+  deep-linking into a disclosure.**
+
+- **Nothing exercises the receiving log's closed-gate four-column render.** All three column gates
+  return true on all three fixtures and the harness has no jsdom, so `receivingColumns` with
+  `showPlayer` / `showMinute` / `showMovementType` false has never executed anywhere — and that
+  four-column table is the only shape corpus-real data would ever take. The model-level `any*`
+  helpers are tested; the columns they produce are not. The same gap covers the `showReceiving ===
+  false` absence, the composed `${title} - ${viz.viewData}` hint, and the composed caption at the
+  call site. **Deferred: it needs a component-render harness the project does not have. Owner:
+  whichever story introduces jsdom or a render-test seam.**
+
+- **`LOG_LINKS` lives in a `"use client"` component and is imported by `lib/i18n.test.ts`.** Every
+  comparable frozen list lives in a pure module (`SECTION_IDS`, `OFFER_MOVEMENT_TYPES`) so it is
+  testable without the component graph. The import drags the i18n suite through `DataTable` ->
+  `SortAnnouncer` -> `radix-ui` under `environment: "node"`. Green today; it fails opaquely — as
+  "the i18n suite is red" — the day anything in that chain touches `window` at module scope.
+  **Deferred pending Juan's placement call at the 2.11c review; recorded here so the coupling is
+  not rediscovered.**
+- **CORRECTION, same session: the `LOG_LINKS` placement entry above is SUPERSEDED — it was fixed,
+  not deferred.** Juan ruled at the 2.11c code review (2026-08-05) that the list moves to a pure
+  module, `app/src/lib/expert-logs.ts`, with `ExpertLayer.tsx` and `lib/i18n.test.ts` both importing
+  from it and `ExpertLayer` no longer exporting it. The entry is left standing rather than edited,
+  per this ledger's append-only rule; read the two together. **No owner — discharged.**
+
+
+---
+
+## Filed by change-set CS-2 (Story 1.16's prerequisite)
+
+CS-2 landed on 2026-08-05 as one atomic AD-14 commit, `schemaVersion` 3 → 4, logged as
+decision 18 in `contract/README.md`. Spec: `cs-2-change-set-spec.md`. It unblocked the two
+mappers that made Story 1.16 BLOCKED-PENDING-CS-2, and the entries below are what it closed,
+what it changed beyond its filed scope, and what it left open.
+
+### Closed by CS-2
+
+- **The `PossessionSplitMetres` shape note (1.7) and its App-side consequence (2.10) are
+  DISCHARGED.** `tacticalIdentity.{lineHeight,teamLength}` became
+  `tacticalIdentity.shapeByPhase`: three panels per possession state with three measures
+  each, including the `teamWidth` v3 did not model at all. All **3,744** corpus metre values
+  now have a destination, against the **832** v3 modelled. **Closed.**
+
+- **Domain E's AD-14 (a)-(d) filings (1.9) and Story 2.10's five-required-nulls correction
+  are DISCHARGED.** `GoalkeepingBlock` is per-TEAM with the keeper list as context, the five
+  unfulfillable sub-fields are nullable, and `GoalkeeperInvolvementSample.minute` became
+  `at: MinuteStamp`. **Closed.**
+
+- **Story 2.10's `GoalkeeperInvolvementSample.minute` BLOCKER for the 2.19 cutover is
+  DISCHARGED.** It was filed as a blocker, not an open note, and it is fixed: 2,506 of 21,764
+  slots sit in stoppage, so minutes were not unique and an App indexing by minute collapsed
+  samples. **Closed, and 2.19 owes no App change for it** — `goalkeeping-model.ts` already
+  indexes by SAMPLE.
+
+- **`CorpusNullableGoalkeeperRecord` collapsed to a re-export**, exactly as Story 2.10
+  predicted it would ("either the schema marks these five nullable (and this alias collapses
+  to a re-export) or the extraction starts filling them"). The first branch happened. Its
+  presence gates go from workaround to contract. **Closed.**
+
+- **The `GoalRecord.ownGoal` row in `contract/README.md`'s deliberately-empty table is
+  RETIRED.** Its own text said it was kept "until 1.16 flips it"; 1.16 emits all 14 corpus
+  own goals with `ownGoal: true`, credited to the benefiting team. **Closed.**
+
+- **The `/data` pinning baseline (1.15) is DISCHARGED.** `check_committed_data` now prints
+  *"committed /data baseline: 104 bundle(s), 89,358 id reference(s), all pinned"* in place of
+  *"baseline unavailable … This is NOT a pass"*, and
+  `test_the_repository_has_no_committed_match_bundles_yet` was switched to its populated
+  branch exactly as its own docstring invited. That is the AC-3 gate 1.15 could not close.
+  **Closed.**
+
+### Two additions to CS-2's filed scope, both deliberate
+
+- **`team-profile.schema.json` was reshaped in step, and it was not in the filed scope.**
+  `AggregateLineHeight` / `AggregateTeamLength` aggregate the identical non-existent shape.
+  Story 1.18 owns team profiles and has emitted nothing yet, so correcting it inside a bump
+  that was happening anyway costs one edit; leaving it hands 1.18 the exact blocker that
+  stopped 1.16 dead. **Deferred: nothing — recorded so the extra file in the diff is not read
+  as scope creep. Owner: none.**
+
+- **`app/` was repaired in the same commit, which the story's own scope boundary excluded.**
+  Measured before deciding: removing `lineHeight`/`teamLength` breaks `phases-model.ts` and
+  `PressingSection.tsx`; the per-team goalkeeping block breaks `goalkeeping-model.ts`. Six
+  files. Landing the schema alone would have left `main` with a red build until a later story
+  repaired it, so **Juan authorized the scope expansion** rather than accept a red main.
+  **Deferred: nothing. Owner: none.**
+
+### Filed, not fixed
+
+- **`#pressing`'s metre presentation is RETIRED, not re-shaped, and the surface is owed.**
+  `metreRows`' own docblock anticipated this: *"when it rules, THIS PRESENTATION IS DELETED
+  OR RE-SHAPED — it is not a surface to build on."* The four values it rendered were the
+  synthetic ones — m001's 44.4 matched no panel and no mean of the real 19/39/54. The 18 real
+  values now ship in `tacticalIdentity.shapeByPhase`, but re-presenting them needs six panel
+  labels (`buildUpLow`, `buildUpMid`, `finalThirdPhase`, `highBlockPress`, `midBlock`,
+  `lowBlock`) that exist in NEITHER locale, and minting user-visible copy is a ruling CS-2
+  does not have. The `viz.pressing.metre.*` locale keys are left in place, unused, rather
+  than deleted — deleting them touches `i18n.test.ts`, which a concurrent session was editing.
+  **Deferred: re-present `shapeByPhase` on #pressing, with the six panel labels it needs.
+  Owner: Story 2.19, or whichever story next re-opens #pressing.**
+
+- **`check_committed_data` reported a NULL `winnerTeamId` as an unpinned id, and only the
+  first real emission could surface it.** The walk treated any non-string value under a
+  committed id key as a finding, with a comment reasoning that a `playerId: null` must not go
+  uncounted. That is right for the six non-nullable id keys and wrong for `winnerTeamId`,
+  which is `anyOf [TeamId, null]` and is null on every tie decided in regulation without a
+  winner — **20 drawn group matches**. The gate therefore failed on correct data the moment
+  `data/matches/` existed. Fixed with a `NULLABLE_ID_KEYS` set that admits null for that key
+  alone. `pipeline/precompute/identity.py` was outside Story 1.16's declared scope; the fix
+  is disclosed rather than silent. **Closed, and recorded as an out-of-scope edit.**
+
+- **`test_every_pass_network_node_is_at_least_as_involved_as_its_own_edges` still holds at
+  `>=`, and CS-2 does not change that.** Under matrix derivation `involvement` is identically
+  the sum of a node's incident edge volumes (verified 3,289/3,289), but the test parametrizes
+  over `data/fixtures/`, whose edge lists are a hand-authored subset. **Deferred: lands with
+  the fixture regeneration. Owner: 1.18/1.19.**
+
+- **The fixtures got LESS synthetic and that changes what they prove.** All three match
+  fixtures have real corpus twins, so `shapeByPhase` was sourced from the ACTUAL staged panel
+  values rather than re-synthesized — m001 home in-possession `lineHeight` now reads the real
+  19 / 39 / 54 — and the Mexico team profile's aggregate is a real mean over five real
+  matches. The five goalkeeping technique blocks stay POPULATED in the fixtures deliberately,
+  because Story 2.10's presence gates need a populated branch to exercise; the corpus emits
+  them null. **Deferred: nothing. Owner: none — recorded because `data/fixtures/README.md`'s
+  synthetic inventory shrank, and a reader comparing fixture to corpus should know which way.**
+
+- **`GoalPrevention`'s `byBodyType` denominator claim remains UNVERIFIABLE.** CS-2 re-grounded
+  the `byInterventionType` half on the corpus (208/208 true), but `byBodyType` is null on
+  208/208 so its "sums to totalInterventions" claim stands on the fixtures' authority alone.
+  The description now says so explicitly rather than implying both halves are equally
+  evidenced. **Deferred: unverifiable until a source for `byBodyType` exists. Owner: none.**
+
+### Coordination hazard hit during implementation, recorded
+
+- **A concurrent session began editing `app/` again mid-change-set**, after Story 2.11c was
+  committed specifically to clear the tree for CS-2. At verification time
+  `app/src/components/ExpertLayer.tsx` was mid-refactor (−75 lines, `LOG_LINKS` and
+  `RECEIVING_HEADING_ID` moved to a new untracked `app/src/lib/expert-logs.ts`) and **did not
+  compile**. Its files do not overlap CS-2's six, so CS-2 staged only its own paths by
+  explicit path and verified the full App chain in an **isolated git worktree** carrying
+  exactly its own files — the precedent 2.11a and 2.18 both set. In isolation the chain is
+  green: `tsc --noEmit`, `eslint --max-warnings 0`, `check:types` in **both** trees, and the
+  suite at 709 passed / 31 skipped / 0 failed. **The 31 skips are static-output tests that
+  need a built `out/`, which the worktree has not got — they are not CS-2 failures.**
+  **Deferred: nothing. Owner: none — recorded so a reviewer re-running the chain in the
+  shared tree and seeing ExpertLayer errors knows they are not CS-2's.**

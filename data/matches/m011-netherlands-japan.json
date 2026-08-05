@@ -1,0 +1,6830 @@
+{
+  "events": {
+    "crosses": null,
+    "defensiveActions": null,
+    "passNetworkEdges": [
+      {
+        "fromPlayerId": "verbruggen-bart-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "verbruggen-bart-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "verbruggen-bart-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-de-ven-micky-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "verbruggen-bart-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "verbruggen-bart-ned",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 24
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gravenberch-ryan-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "reijnders-tijjani-ned",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-de-ven-micky-ned",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 21
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "dumfries-denzel-ned",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "summerville-crysencio-ned",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "ake-nathan-ned",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "verbruggen-bart-ned",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 35
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gravenberch-ryan-ned",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "reijnders-tijjani-ned",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-de-ven-micky-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 15
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "dumfries-denzel-ned",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "van-hecke-jan-paul-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "summerville-crysencio-ned",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "verbruggen-bart-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-de-ven-micky-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "malen-donyell-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "dumfries-denzel-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "summerville-crysencio-ned",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "gravenberch-ryan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "depay-memphis-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gravenberch-ryan-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "reijnders-tijjani-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-de-ven-micky-ned",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "malen-donyell-ned",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "dumfries-denzel-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gakpo-cody-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "timber-quinten-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "reijnders-tijjani-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "verbruggen-bart-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "reijnders-tijjani-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "reijnders-tijjani-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "reijnders-tijjani-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gravenberch-ryan-ned",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "reijnders-tijjani-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "reijnders-tijjani-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-de-ven-micky-ned",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "reijnders-tijjani-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "reijnders-tijjani-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "dumfries-denzel-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "verbruggen-bart-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 16
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "reijnders-tijjani-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "malen-donyell-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "ake-nathan-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "van-de-ven-micky-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "depay-memphis-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "malen-donyell-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "malen-donyell-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "malen-donyell-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "summerville-crysencio-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "verbruggen-bart-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 16
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gravenberch-ryan-ned",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "reijnders-tijjani-ned",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-de-ven-micky-ned",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "dumfries-denzel-ned",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "summerville-crysencio-ned",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "ake-nathan-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "depay-memphis-ned",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-jong-frenkie-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "timber-quinten-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "dumfries-denzel-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "verbruggen-bart-ned",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "dumfries-denzel-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "dumfries-denzel-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gravenberch-ryan-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "dumfries-denzel-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "malen-donyell-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "dumfries-denzel-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "dumfries-denzel-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "summerville-crysencio-ned",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "dumfries-denzel-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "koopmeiners-teun-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "dumfries-denzel-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "timber-quinten-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "summerville-crysencio-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "summerville-crysencio-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "summerville-crysencio-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gravenberch-ryan-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "summerville-crysencio-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "summerville-crysencio-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "dumfries-denzel-ned",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "ake-nathan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-dijk-virgil-ned",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "ake-nathan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-hecke-jan-paul-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ake-nathan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "van-de-ven-micky-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ake-nathan-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "depay-memphis-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "verbruggen-bart-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "depay-memphis-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "depay-memphis-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "depay-memphis-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "timber-quinten-ned",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "koopmeiners-teun-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "timber-quinten-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "timber-quinten-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "gakpo-cody-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "timber-quinten-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "de-jong-frenkie-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "timber-quinten-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "dumfries-denzel-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "timber-quinten-ned",
+        "teamId": "netherlands",
+        "toPlayerId": "koopmeiners-teun-ned",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "suzuki-zion-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "suzuki-zion-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kubo-takefusa-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "suzuki-zion-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "suzuki-zion-jpn",
+        "teamId": "japan",
+        "toPlayerId": "watanabe-tsuyoshi-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "suzuki-zion-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "suzuki-zion-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "suzuki-zion-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sugawara-yukinari-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "suzuki-zion-jpn",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kubo-takefusa-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "doan-ritsu-jpn",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "nakamura-keito-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "watanabe-tsuyoshi-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ueda-ayase-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-junya-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "taniguchi-shogo-jpn",
+        "teamId": "japan",
+        "toPlayerId": "tomiyasu-takehiro-jpn",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kubo-takefusa-jpn",
+        "teamId": "japan",
+        "toPlayerId": "suzuki-zion-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kubo-takefusa-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kubo-takefusa-jpn",
+        "teamId": "japan",
+        "toPlayerId": "doan-ritsu-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kubo-takefusa-jpn",
+        "teamId": "japan",
+        "toPlayerId": "nakamura-keito-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kubo-takefusa-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kubo-takefusa-jpn",
+        "teamId": "japan",
+        "toPlayerId": "watanabe-tsuyoshi-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kubo-takefusa-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ueda-ayase-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doan-ritsu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doan-ritsu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kubo-takefusa-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doan-ritsu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "maeda-daizen-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "doan-ritsu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "watanabe-tsuyoshi-jpn",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "doan-ritsu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "maeda-daizen-jpn",
+        "teamId": "japan",
+        "toPlayerId": "nakamura-keito-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "maeda-daizen-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "maeda-daizen-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kubo-takefusa-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "doan-ritsu-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "maeda-daizen-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ueda-ayase-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sugawara-yukinari-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan",
+        "toPlayerId": "tomiyasu-takehiro-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "suzuki-zion-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 17
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kubo-takefusa-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "doan-ritsu-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "maeda-daizen-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "nakamura-keito-jpn",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "watanabe-tsuyoshi-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ueda-ayase-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "watanabe-tsuyoshi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "suzuki-zion-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "watanabe-tsuyoshi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "watanabe-tsuyoshi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kubo-takefusa-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "watanabe-tsuyoshi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "doan-ritsu-jpn",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "watanabe-tsuyoshi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "watanabe-tsuyoshi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ueda-ayase-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "watanabe-tsuyoshi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "watanabe-tsuyoshi-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "ueda-ayase-jpn",
+        "teamId": "japan",
+        "toPlayerId": "doan-ritsu-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ueda-ayase-jpn",
+        "teamId": "japan",
+        "toPlayerId": "maeda-daizen-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ueda-ayase-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ueda-ayase-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ito-hiroki-jpn",
+        "teamId": "japan",
+        "toPlayerId": "suzuki-zion-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ito-hiroki-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "ito-hiroki-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kubo-takefusa-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ito-hiroki-jpn",
+        "teamId": "japan",
+        "toPlayerId": "maeda-daizen-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ito-hiroki-jpn",
+        "teamId": "japan",
+        "toPlayerId": "nakamura-keito-jpn",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "ito-hiroki-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "ito-hiroki-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "suzuki-zion-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kubo-takefusa-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "doan-ritsu-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "maeda-daizen-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "nakamura-keito-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "watanabe-tsuyoshi-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sugawara-yukinari-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-junya-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sano-kaishu-jpn",
+        "teamId": "japan",
+        "toPlayerId": "tomiyasu-takehiro-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sugawara-yukinari-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sugawara-yukinari-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-junya-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sugawara-yukinari-jpn",
+        "teamId": "japan",
+        "toPlayerId": "tomiyasu-takehiro-jpn",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "ito-junya-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ito-junya-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ueda-ayase-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ito-junya-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ito-junya-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sugawara-yukinari-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "ito-junya-jpn",
+        "teamId": "japan",
+        "toPlayerId": "tomiyasu-takehiro-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "tomiyasu-takehiro-jpn",
+        "teamId": "japan",
+        "toPlayerId": "taniguchi-shogo-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "tomiyasu-takehiro-jpn",
+        "teamId": "japan",
+        "toPlayerId": "kamada-daichi-jpn",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "tomiyasu-takehiro-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-hiroki-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tomiyasu-takehiro-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sano-kaishu-jpn",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tomiyasu-takehiro-jpn",
+        "teamId": "japan",
+        "toPlayerId": "sugawara-yukinari-jpn",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "tomiyasu-takehiro-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-junya-jpn",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "shiogai-kento-jpn",
+        "teamId": "japan",
+        "toPlayerId": "ito-junya-jpn",
+        "volume": 1
+      }
+    ],
+    "passNetworkNodes": null,
+    "receiving": null,
+    "shootoutAttempts": null,
+    "shots": [
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "ball-progression",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "malen-donyell-ned",
+        "playerName": "Donyell MALEN",
+        "teamId": "netherlands",
+        "x": 86.82,
+        "y": 39.88
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "malen-donyell-ned",
+        "playerName": "Donyell MALEN",
+        "teamId": "netherlands",
+        "x": 93.92,
+        "y": 53.31
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "van-de-ven-micky-ned",
+        "playerName": "Micky VAN DE VEN",
+        "teamId": "netherlands",
+        "x": 93.48,
+        "y": 64.05
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "gakpo-cody-ned",
+        "playerName": "Cody GAKPO",
+        "teamId": "netherlands",
+        "x": 89.43,
+        "y": 54.34
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "van-dijk-virgil-ned",
+        "playerName": "Virgil VAN DIJK",
+        "teamId": "netherlands",
+        "x": 91.89,
+        "y": 40.29
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "summerville-crysencio-ned",
+        "playerName": "Crysencio SUMMERVILLE",
+        "teamId": "netherlands",
+        "x": 85.37,
+        "y": 72.31
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "gakpo-cody-ned",
+        "playerName": "Cody GAKPO",
+        "teamId": "netherlands",
+        "x": 93.77,
+        "y": 29.34
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "van-hecke-jan-paul-ned",
+        "playerName": "Jan Paul VAN HECKE",
+        "teamId": "netherlands",
+        "x": 96.81,
+        "y": 56.61
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-saved",
+        "ownGoal": false,
+        "playerId": "koopmeiners-teun-ned",
+        "playerName": "Teun KOOPMEINERS",
+        "teamId": "netherlands",
+        "x": 91.02,
+        "y": 50.0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "koopmeiners-teun-ned",
+        "playerName": "Teun KOOPMEINERS",
+        "teamId": "netherlands",
+        "x": 94.79,
+        "y": 39.26
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "ito-hiroki-jpn",
+        "playerName": "Hiroki ITO",
+        "teamId": "japan",
+        "x": 77.55,
+        "y": 30.16
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "nakamura-keito-jpn",
+        "playerName": "Keito NAKAMURA",
+        "teamId": "japan",
+        "x": 87.84,
+        "y": 35.95
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "ueda-ayase-jpn",
+        "playerName": "Ayase UEDA",
+        "teamId": "japan",
+        "x": 90.88,
+        "y": 67.56
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "deflected-on-target-goal",
+        "ownGoal": false,
+        "playerId": "nakamura-keito-jpn",
+        "playerName": "Keito NAKAMURA",
+        "teamId": "japan",
+        "x": 83.78,
+        "y": 38.02
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "kubo-takefusa-jpn",
+        "playerName": "Takefusa KUBO",
+        "teamId": "japan",
+        "x": 72.63,
+        "y": 55.17
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "nakamura-keito-jpn",
+        "playerName": "Keito NAKAMURA",
+        "teamId": "japan",
+        "x": 82.77,
+        "y": 26.86
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete",
+        "ownGoal": false,
+        "playerId": "ogawa-koki-jpn",
+        "playerName": "Koki OGAWA",
+        "teamId": "japan",
+        "x": 87.26,
+        "y": 56.61
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "sugawara-yukinari-jpn",
+        "playerName": "Yukinari SUGAWARA",
+        "teamId": "japan",
+        "x": 88.7,
+        "y": 60.95
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-assist",
+        "ownGoal": false,
+        "playerId": "ogawa-koki-jpn",
+        "playerName": "Koki OGAWA",
+        "teamId": "japan",
+        "x": 91.17,
+        "y": 53.93
+      }
+    ]
+  },
+  "goalkeeping": [
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 24,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 1,
+          "driven": 1,
+          "inswing": 3,
+          "lofted": 2,
+          "outswing": 13,
+          "pushCross": 4,
+          "total": 24
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 0
+      },
+      "distribution": {
+        "feet": {
+          "complete": 20,
+          "incomplete": 10,
+          "total": 30
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "handsTechniques": null,
+        "lineBreaks": 11,
+        "throw": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 2
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 22,
+          "incomplete": 10,
+          "total": 32
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 10,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 4,
+          "saveAndDeflect": 1,
+          "saveAndRetain": 1,
+          "saveAttempt": 4
+        },
+        "savePercentage": 50.0,
+        "totalInterventions": 2
+      },
+      "goalkeepers": [
+        {
+          "playerId": "verbruggen-bart-ned",
+          "playerName": "Bart VERBRUGGEN",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "netherlands",
+      "totalInvolvements": 43
+    },
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 23,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 2,
+          "driven": 1,
+          "inswing": 4,
+          "lofted": 1,
+          "outswing": 12,
+          "pushCross": 3,
+          "total": 23
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 0
+      },
+      "distribution": {
+        "feet": {
+          "complete": 9,
+          "incomplete": 9,
+          "total": 18
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 2,
+          "total": 2
+        },
+        "handsTechniques": null,
+        "lineBreaks": 9,
+        "throw": {
+          "complete": 4,
+          "incomplete": 0,
+          "total": 4
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 13,
+          "incomplete": 11,
+          "total": 24
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 11,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 3,
+          "saveAndDeflect": 2,
+          "saveAndRetain": 4,
+          "saveAttempt": 2
+        },
+        "savePercentage": 67.0,
+        "totalInterventions": 6
+      },
+      "goalkeepers": [
+        {
+          "playerId": "suzuki-zion-jpn",
+          "playerName": "Zion SUZUKI",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "japan",
+      "totalInvolvements": 36
+    }
+  ],
+  "keyStatistics": {
+    "away": {
+      "ballProgressions": 21,
+      "completedLineBreaks": 72,
+      "crosses": 24,
+      "defensiveLineBreaks": 13,
+      "defensivePressures": 316,
+      "directPressures": 46,
+      "distanceCovered": 109.4,
+      "expectedGoals": 0.34,
+      "forcedTurnovers": 28,
+      "goals": 2,
+      "passCompletion": 85.0,
+      "passes": 356,
+      "passesCompleted": 302,
+      "possession": 37.4,
+      "receptionsInFinalThird": 120,
+      "secondBalls": 50,
+      "shots": 9,
+      "shotsOnTarget": 2,
+      "sprintDistance": 5.1
+    },
+    "contestedPossession": 7.7,
+    "home": {
+      "ballProgressions": 23,
+      "completedLineBreaks": 88,
+      "crosses": 23,
+      "defensiveLineBreaks": 13,
+      "defensivePressures": 194,
+      "directPressures": 30,
+      "distanceCovered": 102.9,
+      "expectedGoals": 0.63,
+      "forcedTurnovers": 33,
+      "goals": 2,
+      "passCompletion": 89.0,
+      "passes": 529,
+      "passesCompleted": 473,
+      "possession": 54.9,
+      "receptionsInFinalThird": 156,
+      "secondBalls": 49,
+      "shots": 10,
+      "shotsOnTarget": 6,
+      "sprintDistance": 4.6
+    }
+  },
+  "matchId": "m011-netherlands-japan",
+  "metadata": {
+    "awayTeam": {
+      "name": "Japan",
+      "teamCode": "jpn",
+      "teamId": "japan"
+    },
+    "date": "2026-06-14",
+    "goals": [
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Virgil VAN DIJK",
+        "scorerPlayerId": "van-dijk-virgil-ned",
+        "teamId": "netherlands"
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Keito NAKAMURA",
+        "scorerPlayerId": "nakamura-keito-jpn",
+        "teamId": "japan"
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Crysencio SUMMERVILLE",
+        "scorerPlayerId": "summerville-crysencio-ned",
+        "teamId": "netherlands"
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Daichi KAMADA",
+        "scorerPlayerId": "kamada-daichi-jpn",
+        "teamId": "japan"
+      }
+    ],
+    "group": "f",
+    "homeTeam": {
+      "name": "Netherlands",
+      "teamCode": "ned",
+      "teamId": "netherlands"
+    },
+    "kickoff": "2026-06-14T15:00:00-05:00",
+    "knockoutScore": {
+      "decidedBy": "regulation",
+      "scoreAfter90": {
+        "away": 2,
+        "home": 2
+      },
+      "scoreAfterET": null,
+      "shootoutScore": null,
+      "winnerTeamId": null
+    },
+    "lineups": {
+      "away": {
+        "formation": "3-4-3",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Zion SUZUKI",
+            "playerId": "suzuki-zion-jpn",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Shogo TANIGUCHI",
+            "playerId": "taniguchi-shogo-jpn",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Takefusa KUBO",
+            "playerId": "kubo-takefusa-jpn",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": {
+              "minute": 75,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ritsu DOAN",
+            "playerId": "doan-ritsu-jpn",
+            "position": "mf",
+            "shirtNumber": 10,
+            "substitutedOff": {
+              "minute": 75,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Daizen MAEDA",
+            "playerId": "maeda-daizen-jpn",
+            "position": "mf",
+            "shirtNumber": 11,
+            "substitutedOff": {
+              "minute": 66,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 57,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Keito NAKAMURA",
+            "playerId": "nakamura-keito-jpn",
+            "position": "mf",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 89,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Daichi KAMADA",
+            "playerId": "kamada-daichi-jpn",
+            "position": "mf",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tsuyoshi WATANABE",
+            "playerId": "watanabe-tsuyoshi-jpn",
+            "position": "df",
+            "shirtNumber": 16,
+            "substitutedOff": {
+              "minute": 75,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ayase UEDA",
+            "playerId": "ueda-ayase-jpn",
+            "position": "fw",
+            "shirtNumber": 18,
+            "substitutedOff": {
+              "minute": 84,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Hiroki ITO",
+            "playerId": "ito-hiroki-jpn",
+            "position": "df",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kaishu SANO",
+            "playerId": "sano-kaishu-jpn",
+            "position": "mf",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Keisuke OSAKO",
+            "playerId": "osako-keisuke-jpn",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tomoki HAYAKAWA",
+            "playerId": "hayakawa-tomoki-jpn",
+            "position": "gk",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Yukinari SUGAWARA",
+            "playerId": "sugawara-yukinari-jpn",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 75,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kou ITAKURA",
+            "playerId": "itakura-kou-jpn",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Yuto NAGATOMO",
+            "playerId": "nagatomo-yuto-jpn",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Shuto MACHINO",
+            "playerId": "machino-shuto-jpn",
+            "position": "fw",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ao TANAKA",
+            "playerId": "tanaka-ao-jpn",
+            "position": "mf",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Keisuke GOTO",
+            "playerId": "goto-keisuke-jpn",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Junya ITO",
+            "playerId": "ito-junya-jpn",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 66,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Yuito SUZUKI",
+            "playerId": "suzuki-yuito-jpn",
+            "position": "mf",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Koki OGAWA",
+            "playerId": "ogawa-koki-jpn",
+            "position": "fw",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 75,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ayumu SEKO",
+            "playerId": "seko-ayumu-jpn",
+            "position": "df",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Takehiro TOMIYASU",
+            "playerId": "tomiyasu-takehiro-jpn",
+            "position": "df",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 75,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Junnosuke SUZUKI",
+            "playerId": "suzuki-junnosuke-jpn",
+            "position": "df",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kento SHIOGAI",
+            "playerId": "shiogai-kento-jpn",
+            "position": "fw",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 84,
+              "stoppageMinute": null
+            }
+          }
+        ]
+      },
+      "home": {
+        "formation": "4-1-2-3",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Bart VERBRUGGEN",
+            "playerId": "verbruggen-bart-ned",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 51,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Virgil VAN DIJK",
+            "playerId": "van-dijk-virgil-ned",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jan Paul VAN HECKE",
+            "playerId": "van-hecke-jan-paul-ned",
+            "position": "df",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ryan GRAVENBERCH",
+            "playerId": "gravenberch-ryan-ned",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": {
+              "minute": 81,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Cody GAKPO",
+            "playerId": "gakpo-cody-ned",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": {
+              "minute": 84,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tijjani REIJNDERS",
+            "playerId": "reijnders-tijjani-ned",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": {
+              "minute": 71,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 91,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Micky VAN DE VEN",
+            "playerId": "van-de-ven-micky-ned",
+            "position": "df",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Donyell MALEN",
+            "playerId": "malen-donyell-ned",
+            "position": "fw",
+            "shirtNumber": 18,
+            "substitutedOff": {
+              "minute": 70,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Frenkie DE JONG",
+            "playerId": "de-jong-frenkie-ned",
+            "position": "mf",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Denzel DUMFRIES",
+            "playerId": "dumfries-denzel-ned",
+            "position": "df",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 61,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [
+              {
+                "minute": 64,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Crysencio SUMMERVILLE",
+            "playerId": "summerville-crysencio-ned",
+            "position": "fw",
+            "shirtNumber": 24,
+            "substitutedOff": {
+              "minute": 70,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Robin ROEFS",
+            "playerId": "roefs-robin-ned",
+            "position": "gk",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Mark FLEKKEN",
+            "playerId": "flekken-mark-ned",
+            "position": "gk",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lutsharel GEERTRUIDA",
+            "playerId": "geertruida-lutsharel-ned",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Marten DE ROON",
+            "playerId": "de-roon-marten-ned",
+            "position": "mf",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nathan AKE",
+            "playerId": "ake-nathan-ned",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 81,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Justin KLUIVERT",
+            "playerId": "kluivert-justin-ned",
+            "position": "mf",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Wout WEGHORST",
+            "playerId": "weghorst-wout-ned",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 83,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Memphis DEPAY",
+            "playerId": "depay-memphis-ned",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 70,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Mats WIEFFER",
+            "playerId": "wieffer-mats-ned",
+            "position": "df",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Guus TIL",
+            "playerId": "til-guus-ned",
+            "position": "mf",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Noa LANG",
+            "playerId": "lang-noa-ned",
+            "position": "fw",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Brian BROBBEY",
+            "playerId": "brobbey-brian-ned",
+            "position": "fw",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 84,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Teun KOOPMEINERS",
+            "playerId": "koopmeiners-teun-ned",
+            "position": "mf",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 70,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jorrel HATO",
+            "playerId": "hato-jorrel-ned",
+            "position": "df",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Quinten TIMBER",
+            "playerId": "timber-quinten-ned",
+            "position": "mf",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 71,
+              "stoppageMinute": null
+            }
+          }
+        ]
+      }
+    },
+    "matchNumber": 11,
+    "matchdayRound": "group-md1",
+    "score": {
+      "away": 2,
+      "home": 2
+    },
+    "stage": "group",
+    "venue": "Dallas Stadium"
+  },
+  "momentum": {
+    "samples": [
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 9,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 14
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 12
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 9,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 14
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 11
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 11
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 10
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 0,
+        "home": 18
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 12,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 13,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 6
+        },
+        "away": 0,
+        "home": 0
+      }
+    ]
+  },
+  "players": [
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 45.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 69.0,
+        "passesAttempted": 32,
+        "passesCompleted": 22,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 4,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3771.9,
+        "distanceZone2": 912.4,
+        "distanceZone3": 49.2,
+        "distanceZone4": 24.7,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 3,
+        "sprints": 3,
+        "topSpeed": 24.2,
+        "totalDistance": 4758.3
+      },
+      "playerId": "verbruggen-bart-ned",
+      "playerName": "Bart VERBRUGGEN",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 82.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 8,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 93.0,
+        "passesAttempted": 102,
+        "passesCompleted": 95,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 8
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 7,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 3,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 4,
+        "possessionRegains": 5,
+        "pressingDirect": 1,
+        "pressingIndirect": 1,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4368.5,
+        "distanceZone2": 2750.4,
+        "distanceZone3": 926.8,
+        "distanceZone4": 263.1,
+        "distanceZone5": 104.4,
+        "highSpeedRuns": 66,
+        "sprints": 23,
+        "topSpeed": 32.9,
+        "totalDistance": 8413.2
+      },
+      "playerId": "van-dijk-virgil-ned",
+      "playerName": "Virgil VAN DIJK",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 89.0,
+        "passesAttempted": 9,
+        "passesCompleted": 8,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 3,
+        "pushingOn": 10,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 584.8,
+        "distanceZone2": 893.3,
+        "distanceZone3": 107.5,
+        "distanceZone4": 50.7,
+        "distanceZone5": 25.6,
+        "highSpeedRuns": 10,
+        "sprints": 5,
+        "topSpeed": 30.5,
+        "totalDistance": 1661.9
+      },
+      "playerId": "ake-nathan-ned",
+      "playerName": "Nathan AKE",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 69.0,
+        "lineBreaksAttempted": 16,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 93.0,
+        "passesAttempted": 92,
+        "passesCompleted": 86,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 7
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 5,
+        "duelsWonAerial": 5,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 6,
+        "possessionInterrupted": 6,
+        "possessionRegains": 7,
+        "pressingDirect": 2,
+        "pressingIndirect": 6,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3988.1,
+        "distanceZone2": 4251.2,
+        "distanceZone3": 1044.8,
+        "distanceZone4": 274.9,
+        "distanceZone5": 75.5,
+        "highSpeedRuns": 83,
+        "sprints": 23,
+        "topSpeed": 31.2,
+        "totalDistance": 9634.5
+      },
+      "playerId": "van-hecke-jan-paul-ned",
+      "playerName": "Jan Paul VAN HECKE",
+      "position": "df",
+      "shirtNumber": 6,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 2,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 75.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 9,
+        "offersByMovementType": {
+          "inBehind": 13,
+          "inBetween": 12,
+          "inFront": 8,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 9,
+        "passCompletion": 87.0,
+        "passesAttempted": 23,
+        "passesCompleted": 20,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 36
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 4,
+        "pressingDirect": 1,
+        "pressingIndirect": 11,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3444.9,
+        "distanceZone2": 3298.7,
+        "distanceZone3": 1033.1,
+        "distanceZone4": 421.1,
+        "distanceZone5": 115.1,
+        "highSpeedRuns": 91,
+        "sprints": 25,
+        "topSpeed": 35.6,
+        "totalDistance": 8313.0
+      },
+      "playerId": "gravenberch-ryan-ned",
+      "playerName": "Ryan GRAVENBERCH",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 5,
+          "inFront": 1,
+          "inToOut": 2,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 100.0,
+        "passesAttempted": 7,
+        "passesCompleted": 7,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 13,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1025.7,
+        "distanceZone2": 1214.5,
+        "distanceZone3": 557.0,
+        "distanceZone4": 223.5,
+        "distanceZone5": 70.5,
+        "highSpeedRuns": 53,
+        "sprints": 20,
+        "topSpeed": 31.3,
+        "totalDistance": 3091.1
+      },
+      "playerId": "depay-memphis-ned",
+      "playerName": "Memphis DEPAY",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 3,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 1,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 85.0,
+        "passesAttempted": 33,
+        "passesCompleted": 28,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 13
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 17,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3591.6,
+        "distanceZone2": 2973.7,
+        "distanceZone3": 877.3,
+        "distanceZone4": 560.7,
+        "distanceZone5": 157.3,
+        "highSpeedRuns": 82,
+        "sprints": 37,
+        "topSpeed": 32.2,
+        "totalDistance": 8160.5
+      },
+      "playerId": "gakpo-cody-ned",
+      "playerName": "Cody GAKPO",
+      "position": "fw",
+      "shirtNumber": 11,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 7,
+        "crossesCompleted": 4,
+        "goals": 0,
+        "lineBreakCompletion": 57.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 11,
+          "inBetween": 25,
+          "inFront": 20,
+          "inToOut": 4,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 10,
+        "passCompletion": 76.0,
+        "passesAttempted": 25,
+        "passesCompleted": 19,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 64
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 5,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2888.6,
+        "distanceZone2": 3176.6,
+        "distanceZone3": 1079.5,
+        "distanceZone4": 365.2,
+        "distanceZone5": 150.7,
+        "highSpeedRuns": 89,
+        "sprints": 25,
+        "topSpeed": 29.8,
+        "totalDistance": 7660.7
+      },
+      "playerId": "reijnders-tijjani-ned",
+      "playerName": "Tijjani REIJNDERS",
+      "position": "mf",
+      "shirtNumber": 14,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 70.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 94.0,
+        "passesAttempted": 52,
+        "passesCompleted": 49,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 3,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 4,
+        "pressingIndirect": 21,
+        "pushingOn": 18,
+        "pushingOnIntoPressing": 17,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4484.3,
+        "distanceZone2": 3380.1,
+        "distanceZone3": 827.7,
+        "distanceZone4": 421.9,
+        "distanceZone5": 199.3,
+        "highSpeedRuns": 74,
+        "sprints": 31,
+        "topSpeed": 32.4,
+        "totalDistance": 9313.4
+      },
+      "playerId": "van-de-ven-micky-ned",
+      "playerName": "Micky VAN DE VEN",
+      "position": "df",
+      "shirtNumber": 15,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 4,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 6,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 50.0,
+        "passesAttempted": 6,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 4,
+        "totalOffers": 17
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 12,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2989.9,
+        "distanceZone2": 2374.2,
+        "distanceZone3": 614.7,
+        "distanceZone4": 313.9,
+        "distanceZone5": 50.5,
+        "highSpeedRuns": 52,
+        "sprints": 21,
+        "topSpeed": 29.0,
+        "totalDistance": 6343.1
+      },
+      "playerId": "malen-donyell-ned",
+      "playerName": "Donyell MALEN",
+      "position": "fw",
+      "shirtNumber": 18,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 0.0,
+        "passesAttempted": 0,
+        "passesCompleted": 0,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 4,
+        "pushingOn": 1,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 504.6,
+        "distanceZone2": 540.7,
+        "distanceZone3": 210.3,
+        "distanceZone4": 42.0,
+        "distanceZone5": 2.7,
+        "highSpeedRuns": 20,
+        "sprints": 3,
+        "topSpeed": 25.5,
+        "totalDistance": 1300.2
+      },
+      "playerId": "brobbey-brian-ned",
+      "playerName": "Brian BROBBEY",
+      "position": "fw",
+      "shirtNumber": 19,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 3,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 100.0,
+        "passesAttempted": 1,
+        "passesCompleted": 1,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 3,
+        "pressingIndirect": 14,
+        "pushingOn": 14,
+        "pushingOnIntoPressing": 10,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 770.7,
+        "distanceZone2": 1623.2,
+        "distanceZone3": 799.8,
+        "distanceZone4": 204.4,
+        "distanceZone5": 37.5,
+        "highSpeedRuns": 68,
+        "sprints": 18,
+        "topSpeed": 29.7,
+        "totalDistance": 3435.7
+      },
+      "playerId": "koopmeiners-teun-ned",
+      "playerName": "Teun KOOPMEINERS",
+      "position": "mf",
+      "shirtNumber": 20,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 4,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 87.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 13,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 7,
+          "inFront": 29,
+          "inToOut": 0,
+          "noMovement": 20,
+          "outToIn": 1
+        },
+        "offersReceived": 42,
+        "passCompletion": 96.0,
+        "passesAttempted": 73,
+        "passesCompleted": 70,
+        "stepIns": 3,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 58
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 4,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 11,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 4,
+        "possessionRegains": 3,
+        "pressingDirect": 8,
+        "pressingIndirect": 15,
+        "pushingOn": 29,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 8,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3795.9,
+        "distanceZone2": 4922.3,
+        "distanceZone3": 1193.1,
+        "distanceZone4": 320.0,
+        "distanceZone5": 66.8,
+        "highSpeedRuns": 99,
+        "sprints": 27,
+        "topSpeed": 29.3,
+        "totalDistance": 10298.1
+      },
+      "playerId": "de-jong-frenkie-ned",
+      "playerName": "Frenkie DE JONG",
+      "position": "mf",
+      "shirtNumber": 21,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 3,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 80.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 0,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 90.0,
+        "passesAttempted": 42,
+        "passesCompleted": 38,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 17
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 2,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 3,
+        "possessionRegains": 2,
+        "pressingDirect": 0,
+        "pressingIndirect": 19,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 12,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4003.5,
+        "distanceZone2": 4069.4,
+        "distanceZone3": 1409.9,
+        "distanceZone4": 517.2,
+        "distanceZone5": 129.0,
+        "highSpeedRuns": 116,
+        "sprints": 37,
+        "topSpeed": 31.1,
+        "totalDistance": 10129.0
+      },
+      "playerId": "dumfries-denzel-ned",
+      "playerName": "Denzel DUMFRIES",
+      "position": "df",
+      "shirtNumber": 22,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 4,
+        "crossesAttempted": 3,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 82.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 9,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 2,
+          "inFront": 10,
+          "inToOut": 1,
+          "noMovement": 4,
+          "outToIn": 2
+        },
+        "offersReceived": 16,
+        "passCompletion": 82.0,
+        "passesAttempted": 28,
+        "passesCompleted": 23,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 4,
+        "totalOffers": 27
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 15,
+        "pushingOn": 12,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2797.6,
+        "distanceZone2": 2977.4,
+        "distanceZone3": 937.4,
+        "distanceZone4": 398.8,
+        "distanceZone5": 245.6,
+        "highSpeedRuns": 81,
+        "sprints": 30,
+        "topSpeed": 34.3,
+        "totalDistance": 7356.9
+      },
+      "playerId": "summerville-crysencio-ned",
+      "playerName": "Crysencio SUMMERVILLE",
+      "position": "fw",
+      "shirtNumber": 24,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 2,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 3,
+          "inFront": 3,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 1
+        },
+        "offersReceived": 5,
+        "passCompletion": 100.0,
+        "passesAttempted": 4,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 15
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 3,
+        "pressingIndirect": 8,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 969.4,
+        "distanceZone2": 1318.6,
+        "distanceZone3": 572.7,
+        "distanceZone4": 192.1,
+        "distanceZone5": 20.8,
+        "highSpeedRuns": 53,
+        "sprints": 14,
+        "topSpeed": 30.7,
+        "totalDistance": 3073.6
+      },
+      "playerId": "timber-quinten-ned",
+      "playerName": "Quinten TIMBER",
+      "position": "mf",
+      "shirtNumber": 26,
+      "teamId": "netherlands"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 11.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 54.0,
+        "passesAttempted": 24,
+        "passesCompleted": 13,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 6,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3538.2,
+        "distanceZone2": 1234.8,
+        "distanceZone3": 66.1,
+        "distanceZone4": 1.9,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 7,
+        "sprints": 0,
+        "topSpeed": 20.2,
+        "totalDistance": 4841.0
+      },
+      "playerId": "suzuki-zion-jpn",
+      "playerName": "Zion SUZUKI",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 2,
+          "inFront": 2,
+          "inToOut": 2,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 79.0,
+        "passesAttempted": 14,
+        "passesCompleted": 11,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 4,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 881.6,
+        "distanceZone2": 1236.2,
+        "distanceZone3": 289.9,
+        "distanceZone4": 72.4,
+        "distanceZone5": 49.9,
+        "highSpeedRuns": 25,
+        "sprints": 8,
+        "topSpeed": 28.5,
+        "totalDistance": 2529.9
+      },
+      "playerId": "sugawara-yukinari-jpn",
+      "playerName": "Yukinari SUGAWARA",
+      "position": "df",
+      "shirtNumber": 2,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 7,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 100.0,
+        "passesAttempted": 49,
+        "passesCompleted": 49,
+        "stepIns": 2,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 9,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 5,
+        "possessionRegains": 4,
+        "pressingDirect": 2,
+        "pressingIndirect": 3,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3881.8,
+        "distanceZone2": 4246.2,
+        "distanceZone3": 847.1,
+        "distanceZone4": 198.8,
+        "distanceZone5": 64.0,
+        "highSpeedRuns": 66,
+        "sprints": 19,
+        "topSpeed": 30.8,
+        "totalDistance": 9237.9
+      },
+      "playerId": "taniguchi-shogo-jpn",
+      "playerName": "Shogo TANIGUCHI",
+      "position": "df",
+      "shirtNumber": 3,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 2,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 3
+        },
+        "offersReceived": 5,
+        "passCompletion": 75.0,
+        "passesAttempted": 16,
+        "passesCompleted": 12,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 20
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 46,
+        "pushingOn": 17,
+        "pushingOnIntoPressing": 12,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3160.2,
+        "distanceZone2": 2971.3,
+        "distanceZone3": 1104.2,
+        "distanceZone4": 391.8,
+        "distanceZone5": 181.4,
+        "highSpeedRuns": 85,
+        "sprints": 32,
+        "topSpeed": 31.2,
+        "totalDistance": 7808.8
+      },
+      "playerId": "kubo-takefusa-jpn",
+      "playerName": "Takefusa KUBO",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 56.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 1,
+          "inFront": 4,
+          "inToOut": 2,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 6,
+        "passCompletion": 89.0,
+        "passesAttempted": 19,
+        "passesCompleted": 17,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 19
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 3,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 7,
+        "pressingIndirect": 23,
+        "pushingOn": 32,
+        "pushingOnIntoPressing": 20,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3088.8,
+        "distanceZone2": 3316.8,
+        "distanceZone3": 863.1,
+        "distanceZone4": 509.7,
+        "distanceZone5": 138.2,
+        "highSpeedRuns": 60,
+        "sprints": 32,
+        "topSpeed": 30.8,
+        "totalDistance": 7916.6
+      },
+      "playerId": "doan-ritsu-jpn",
+      "playerName": "Ritsu DOAN",
+      "position": "mf",
+      "shirtNumber": 10,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 17,
+          "inBetween": 3,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 80.0,
+        "passesAttempted": 5,
+        "passesCompleted": 4,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 23
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 0,
+        "pressingDirect": 6,
+        "pressingIndirect": 38,
+        "pushingOn": 33,
+        "pushingOnIntoPressing": 24,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2795.4,
+        "distanceZone2": 2876.5,
+        "distanceZone3": 1522.4,
+        "distanceZone4": 785.7,
+        "distanceZone5": 272.4,
+        "highSpeedRuns": 132,
+        "sprints": 66,
+        "topSpeed": 33.5,
+        "totalDistance": 8252.4
+      },
+      "playerId": "maeda-daizen-jpn",
+      "playerName": "Daizen MAEDA",
+      "position": "mf",
+      "shirtNumber": 11,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 2,
+        "crossesAttempted": 3,
+        "crossesCompleted": 1,
+        "goals": 1,
+        "lineBreakCompletion": 89.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 12,
+          "inBetween": 2,
+          "inFront": 8,
+          "inToOut": 1,
+          "noMovement": 18,
+          "outToIn": 1
+        },
+        "offersReceived": 17,
+        "passCompletion": 88.0,
+        "passesAttempted": 34,
+        "passesCompleted": 30,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 42
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 4,
+        "pressingDirect": 4,
+        "pressingIndirect": 25,
+        "pushingOn": 36,
+        "pushingOnIntoPressing": 26,
+        "tacklesMade": 4,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3768.2,
+        "distanceZone2": 4897.5,
+        "distanceZone3": 1923.5,
+        "distanceZone4": 608.7,
+        "distanceZone5": 115.4,
+        "highSpeedRuns": 163,
+        "sprints": 53,
+        "topSpeed": 29.6,
+        "totalDistance": 11313.4
+      },
+      "playerId": "nakamura-keito-jpn",
+      "playerName": "Keito NAKAMURA",
+      "position": "mf",
+      "shirtNumber": 13,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 7,
+        "crossesCompleted": 4,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 3,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 71.0,
+        "passesAttempted": 14,
+        "passesCompleted": 10,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 15
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 9,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1090.9,
+        "distanceZone2": 1119.0,
+        "distanceZone3": 385.7,
+        "distanceZone4": 208.9,
+        "distanceZone5": 90.4,
+        "highSpeedRuns": 31,
+        "sprints": 17,
+        "topSpeed": 33.0,
+        "totalDistance": 2894.8
+      },
+      "playerId": "ito-junya-jpn",
+      "playerName": "Junya ITO",
+      "position": "mf",
+      "shirtNumber": 14,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 59.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 10,
+          "inFront": 31,
+          "inToOut": 2,
+          "noMovement": 16,
+          "outToIn": 2
+        },
+        "offersReceived": 29,
+        "passCompletion": 79.0,
+        "passesAttempted": 62,
+        "passesCompleted": 49,
+        "stepIns": 2,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 65
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 6,
+        "pressingIndirect": 21,
+        "pushingOn": 45,
+        "pushingOnIntoPressing": 10,
+        "tacklesMade": 6,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3929.0,
+        "distanceZone2": 4880.8,
+        "distanceZone3": 1282.7,
+        "distanceZone4": 400.4,
+        "distanceZone5": 76.0,
+        "highSpeedRuns": 100,
+        "sprints": 27,
+        "topSpeed": 31.4,
+        "totalDistance": 10568.9
+      },
+      "playerId": "kamada-daichi-jpn",
+      "playerName": "Daichi KAMADA",
+      "position": "mf",
+      "shirtNumber": 15,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 2,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 71.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 0,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 87.0,
+        "passesAttempted": 23,
+        "passesCompleted": 20,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 4,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 5,
+        "possessionRegains": 5,
+        "pressingDirect": 1,
+        "pressingIndirect": 4,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3090.9,
+        "distanceZone2": 3105.0,
+        "distanceZone3": 884.1,
+        "distanceZone4": 255.3,
+        "distanceZone5": 118.9,
+        "highSpeedRuns": 77,
+        "sprints": 22,
+        "topSpeed": 32.9,
+        "totalDistance": 7454.2
+      },
+      "playerId": "watanabe-tsuyoshi-jpn",
+      "playerName": "Tsuyoshi WATANABE",
+      "position": "df",
+      "shirtNumber": 16,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 17,
+          "inBetween": 19,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 80.0,
+        "passesAttempted": 5,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 38
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 5,
+        "pressingIndirect": 54,
+        "pushingOn": 28,
+        "pushingOnIntoPressing": 25,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3353.9,
+        "distanceZone2": 3830.2,
+        "distanceZone3": 1142.4,
+        "distanceZone4": 421.4,
+        "distanceZone5": 114.1,
+        "highSpeedRuns": 98,
+        "sprints": 29,
+        "topSpeed": 29.0,
+        "totalDistance": 8862.1
+      },
+      "playerId": "ueda-ayase-jpn",
+      "playerName": "Ayase UEDA",
+      "position": "fw",
+      "shirtNumber": 18,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 8,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 0,
+          "outToIn": 1
+        },
+        "offersReceived": 0,
+        "passCompletion": 0.0,
+        "passesAttempted": 0,
+        "passesCompleted": 0,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 13
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 9,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 963.8,
+        "distanceZone2": 937.5,
+        "distanceZone3": 292.3,
+        "distanceZone4": 185.8,
+        "distanceZone5": 57.9,
+        "highSpeedRuns": 28,
+        "sprints": 15,
+        "topSpeed": 28.1,
+        "totalDistance": 2437.4
+      },
+      "playerId": "ogawa-koki-jpn",
+      "playerName": "Koki OGAWA",
+      "position": "fw",
+      "shirtNumber": 19,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 3,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 75.0,
+        "lineBreaksAttempted": 16,
+        "lineBreaksCompleted": 12,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 1,
+          "inFront": 5,
+          "inToOut": 0,
+          "noMovement": 7,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 91.0,
+        "passesAttempted": 43,
+        "passesCompleted": 39,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 14
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 5,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 4,
+        "possessionRegains": 5,
+        "pressingDirect": 3,
+        "pressingIndirect": 3,
+        "pushingOn": 19,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4189.3,
+        "distanceZone2": 4110.7,
+        "distanceZone3": 1024.5,
+        "distanceZone4": 314.4,
+        "distanceZone5": 159.6,
+        "highSpeedRuns": 97,
+        "sprints": 22,
+        "topSpeed": 32.0,
+        "totalDistance": 9798.5
+      },
+      "playerId": "ito-hiroki-jpn",
+      "playerName": "Hiroki ITO",
+      "position": "df",
+      "shirtNumber": 21,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 71.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 95.0,
+        "passesAttempted": 20,
+        "passesCompleted": 19,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 2,
+        "pressingIndirect": 1,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 704.6,
+        "distanceZone2": 1459.9,
+        "distanceZone3": 418.8,
+        "distanceZone4": 78.2,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 36,
+        "sprints": 8,
+        "topSpeed": 24.1,
+        "totalDistance": 2661.6
+      },
+      "playerId": "tomiyasu-takehiro-jpn",
+      "playerName": "Takehiro TOMIYASU",
+      "position": "df",
+      "shirtNumber": 22,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 83.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 11,
+          "inFront": 19,
+          "inToOut": 1,
+          "noMovement": 12,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 89.0,
+        "passesAttempted": 27,
+        "passesCompleted": 24,
+        "stepIns": 2,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 43
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 2,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 4,
+        "possessionRegains": 5,
+        "pressingDirect": 4,
+        "pressingIndirect": 26,
+        "pushingOn": 26,
+        "pushingOnIntoPressing": 12,
+        "tacklesMade": 4,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3849.4,
+        "distanceZone2": 5036.5,
+        "distanceZone3": 1499.9,
+        "distanceZone4": 515.6,
+        "distanceZone5": 165.0,
+        "highSpeedRuns": 125,
+        "sprints": 37,
+        "topSpeed": 29.3,
+        "totalDistance": 11066.3
+      },
+      "playerId": "sano-kaishu-jpn",
+      "playerName": "Kaishu SANO",
+      "position": "mf",
+      "shirtNumber": 24,
+      "teamId": "japan"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 5,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 1
+        },
+        "offersReceived": 0,
+        "passCompletion": 100.0,
+        "passesAttempted": 1,
+        "passesCompleted": 1,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 4,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 467.1,
+        "distanceZone2": 768.2,
+        "distanceZone3": 279.1,
+        "distanceZone4": 125.8,
+        "distanceZone5": 115.2,
+        "highSpeedRuns": 20,
+        "sprints": 11,
+        "topSpeed": 32.8,
+        "totalDistance": 1755.4
+      },
+      "playerId": "shiogai-kento-jpn",
+      "playerName": "Kento SHIOGAI",
+      "position": "fw",
+      "shirtNumber": 26,
+      "teamId": "japan"
+    }
+  ],
+  "schemaVersion": 4,
+  "setPlays": {
+    "away": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 1,
+        "lofted": 0,
+        "outswing": 3
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 1,
+          "right": 3,
+          "total": 4
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        }
+      },
+      "cornersBySide": {
+        "left": 1,
+        "right": 3,
+        "total": 4
+      },
+      "freeKicks": {
+        "direct": 7,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 1
+      },
+      "totalCorners": 4,
+      "totalFreeKicks": 8,
+      "totalPenalties": 0,
+      "totalSetPlays": 31,
+      "totalThrowIns": 19
+    },
+    "home": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 2,
+        "lofted": 0,
+        "outswing": 3
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 2,
+          "right": 3,
+          "total": 5
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        }
+      },
+      "cornersBySide": {
+        "left": 2,
+        "right": 3,
+        "total": 5
+      },
+      "freeKicks": {
+        "direct": 7,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 0
+      },
+      "totalCorners": 5,
+      "totalFreeKicks": 7,
+      "totalPenalties": 0,
+      "totalSetPlays": 33,
+      "totalThrowIns": 21
+    }
+  },
+  "storyStats": {
+    "away": {
+      "distanceCovered": 109.4,
+      "expectedGoals": 0.34,
+      "possession": 37.4,
+      "shots": 9,
+      "topSpeed": 33.5
+    },
+    "home": {
+      "distanceCovered": 102.9,
+      "expectedGoals": 0.63,
+      "possession": 54.9,
+      "shots": 10,
+      "topSpeed": 35.6
+    }
+  },
+  "tacticalIdentity": {
+    "away": {
+      "defensiveBlockDistribution": {
+        "high": 1,
+        "low": 50,
+        "mid": 18
+      },
+      "phasesInPossession": {
+        "attackingTransition": 12,
+        "buildUpOpposed": 9,
+        "buildUpUnopposed": 44,
+        "counterAttack": 1,
+        "finalThird": 20,
+        "longBall": 3,
+        "progression": 17,
+        "setPiece": 6
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 6,
+        "defensiveTransition": 8,
+        "highBlock": 1,
+        "highPress": 2,
+        "lowBlock": 50,
+        "lowPress": 0,
+        "midBlock": 18,
+        "midPress": 3,
+        "recovery": 4
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 22,
+            "teamLength": 38,
+            "teamWidth": 55
+          },
+          "buildUpMid": {
+            "lineHeight": 44,
+            "teamLength": 31,
+            "teamWidth": 59
+          },
+          "finalThirdPhase": {
+            "lineHeight": 63,
+            "teamLength": 29,
+            "teamWidth": 47
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 45,
+            "teamLength": 36,
+            "teamWidth": 43
+          },
+          "lowBlock": {
+            "lineHeight": 20,
+            "teamLength": 17,
+            "teamWidth": 37
+          },
+          "midBlock": {
+            "lineHeight": 37,
+            "teamLength": 22,
+            "teamWidth": 41
+          }
+        }
+      }
+    },
+    "home": {
+      "defensiveBlockDistribution": {
+        "high": 2,
+        "low": 33,
+        "mid": 25
+      },
+      "phasesInPossession": {
+        "attackingTransition": 8,
+        "buildUpOpposed": 19,
+        "buildUpUnopposed": 46,
+        "counterAttack": 1,
+        "finalThird": 24,
+        "longBall": 3,
+        "progression": 14,
+        "setPiece": 6
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 7,
+        "defensiveTransition": 12,
+        "highBlock": 2,
+        "highPress": 2,
+        "lowBlock": 33,
+        "lowPress": 0,
+        "midBlock": 25,
+        "midPress": 2,
+        "recovery": 5
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 24,
+            "teamLength": 38,
+            "teamWidth": 53
+          },
+          "buildUpMid": {
+            "lineHeight": 50,
+            "teamLength": 28,
+            "teamWidth": 54
+          },
+          "finalThirdPhase": {
+            "lineHeight": 63,
+            "teamLength": 27,
+            "teamWidth": 45
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 46,
+            "teamLength": 40,
+            "teamWidth": 44
+          },
+          "lowBlock": {
+            "lineHeight": 18,
+            "teamLength": 20,
+            "teamWidth": 36
+          },
+          "midBlock": {
+            "lineHeight": 39,
+            "teamLength": 24,
+            "teamWidth": 42
+          }
+        }
+      }
+    }
+  }
+}

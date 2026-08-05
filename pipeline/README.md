@@ -1801,3 +1801,63 @@ guessed shape**:
 
 Everything else is complete: **all 104 bundles build and validate on every one of the nine
 unblocked root keys, with `tacticalIdentity` and `goalkeeping` the only violations.**
+
+
+### CS-2 landed: the two blocked mappers, and what emission actually produces
+
+Change-set CS-2 (`schemaVersion` 3 → 4, `contract/README.md` logged decision 18) reshaped
+`PossessionSplitMetres` into the per-phase panels the corpus prints and made
+`GoalkeepingBlock` per-team with five sub-fields nullable. Both mappers are now written and
+**all 104 bundles emit and validate with zero violations.**
+
+#### Domain C → `tacticalIdentity`
+
+`shapeByPhase` carries **18 values per team** — three panels per possession state, three
+measures each — where v3 modelled four. `defensiveBlockDistribution` is asserted **equal** to
+`phasesOutOfPossession.{high,mid,low}Block`; the schema cannot say so (decision 12 forbids
+`if`/`then`), the two copies exist because #pressing renders block height as its own concept,
+and they are verified equal on 208/208 corpus team-innings. A mismatch fails the run.
+
+#### Domain E → `goalkeeping`
+
+One entry per **TEAM**, home first, with `goalkeepers[]` carried as context — 1 entry on 201
+team-innings, 2 on 7. The team's figures are never summed or split between two keepers
+(AD-5); under the per-team shape that is true by construction rather than by convention.
+
+Three things the emitter asserts rather than assumes:
+
+- **The two parallel lists are zipped.** `involvement_series` and
+  `involvement_clock.stamps[]` are indexed by position — Story 1.9 chose that shape and
+  recorded that the emit boundary would have to zip them. A length mismatch fails the run.
+- **`Σ(involvement_series) <= total_involvements` is a BOUND, not an equality.** The printed
+  total exceeds the plotted sum by **0–5 on all 208** team-innings, cause unresolved (exact
+  on only 59). Both are emitted verbatim and are NOT reconciled — the standing 1.8/1.12 rule.
+- **The five CS-2-nullable fields emit `null` on 208/208.** Their absence is not an
+  extraction defect: they are raster donut-slice labels and one unvalidatable marker colour.
+
+#### What the run produces
+
+```
+python -m pipeline.precompute.emit --expect-matches 104   -> exit 0, 104 bundles
+python -m pipeline.precompute.run  --expect-records 104   -> exit 0, PASS
+```
+
+The second one is the handoff that matters: `check_committed_data` now prints
+
+```
+data baseline   : committed /data baseline: 104 bundle(s), 89358 id reference(s), all pinned
+```
+
+in place of Story 1.15's *"baseline unavailable … This is NOT a pass"*. That is the AC-3 gate
+1.15 could not close, and the second pinning source is now live.
+
+**One defect only the first real emission could surface, and it is worth knowing about.**
+`check_committed_data` treated any non-string value under a committed id key as an unpinned
+id — correct for the six non-nullable keys, wrong for `winnerTeamId`, which is
+`anyOf [TeamId, null]` and is null on the **20 drawn group ties**. The gate failed on correct
+data the moment `data/matches/` existed. `NULLABLE_ID_KEYS` now admits null for that key
+alone; a null `playerId` is still a finding.
+
+Measured corpus budget after CS-2: **maximum 14,242 gzip-9 bytes (`m082-belgium-senegal`),
+2.85% of the 500,000-byte ceiling** — up from 11,784 before the two domains were added, and
+still nowhere near the gate.

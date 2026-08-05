@@ -1,0 +1,6804 @@
+{
+  "events": {
+    "crosses": null,
+    "defensiveActions": null,
+    "passNetworkEdges": [
+      {
+        "fromPlayerId": "crepeau-maxime-can",
+        "teamId": "canada",
+        "toPlayerId": "de-fougerolles-luc-can",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "crepeau-maxime-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "crepeau-maxime-can",
+        "teamId": "canada",
+        "toPlayerId": "millar-liam-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "crepeau-maxime-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "crepeau-maxime-can",
+        "teamId": "canada",
+        "toPlayerId": "laryea-richie-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "johnston-alistair-can",
+        "teamId": "canada",
+        "toPlayerId": "crepeau-maxime-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "johnston-alistair-can",
+        "teamId": "canada",
+        "toPlayerId": "de-fougerolles-luc-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "johnston-alistair-can",
+        "teamId": "canada",
+        "toPlayerId": "eustaquio-stephen-can",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "johnston-alistair-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "johnston-alistair-can",
+        "teamId": "canada",
+        "toPlayerId": "oluwaseyi-tani-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "johnston-alistair-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "johnston-alistair-can",
+        "teamId": "canada",
+        "toPlayerId": "buchanan-tajon-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "johnston-alistair-can",
+        "teamId": "canada",
+        "toPlayerId": "ahmed-ali-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-fougerolles-luc-can",
+        "teamId": "canada",
+        "toPlayerId": "crepeau-maxime-can",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "de-fougerolles-luc-can",
+        "teamId": "canada",
+        "toPlayerId": "johnston-alistair-can",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "de-fougerolles-luc-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-fougerolles-luc-can",
+        "teamId": "canada",
+        "toPlayerId": "millar-liam-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-fougerolles-luc-can",
+        "teamId": "canada",
+        "toPlayerId": "oluwaseyi-tani-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-fougerolles-luc-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "de-fougerolles-luc-can",
+        "teamId": "canada",
+        "toPlayerId": "buchanan-tajon-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-fougerolles-luc-can",
+        "teamId": "canada",
+        "toPlayerId": "ahmed-ali-can",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "crepeau-maxime-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "johnston-alistair-can",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "de-fougerolles-luc-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "david-jonathan-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "millar-liam-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "oluwaseyi-tani-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "buchanan-tajon-can",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "laryea-richie-can",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "eustaquio-stephen-can",
+        "teamId": "canada",
+        "toPlayerId": "ahmed-ali-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "crepeau-maxime-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "johnston-alistair-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "de-fougerolles-luc-can",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "eustaquio-stephen-can",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "david-jonathan-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "millar-liam-can",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "oluwaseyi-tani-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "buchanan-tajon-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "laryea-richie-can",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "ahmed-ali-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "osorio-jonathan-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kone-ismael-can",
+        "teamId": "canada",
+        "toPlayerId": "david-promise-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "david-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "johnston-alistair-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "david-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "de-fougerolles-luc-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "david-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "david-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "millar-liam-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "david-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "oluwaseyi-tani-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "david-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "buchanan-tajon-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "millar-liam-can",
+        "teamId": "canada",
+        "toPlayerId": "eustaquio-stephen-can",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "millar-liam-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "millar-liam-can",
+        "teamId": "canada",
+        "toPlayerId": "david-jonathan-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "millar-liam-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "millar-liam-can",
+        "teamId": "canada",
+        "toPlayerId": "laryea-richie-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "oluwaseyi-tani-can",
+        "teamId": "canada",
+        "toPlayerId": "eustaquio-stephen-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oluwaseyi-tani-can",
+        "teamId": "canada",
+        "toPlayerId": "david-jonathan-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oluwaseyi-tani-can",
+        "teamId": "canada",
+        "toPlayerId": "millar-liam-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oluwaseyi-tani-can",
+        "teamId": "canada",
+        "toPlayerId": "buchanan-tajon-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oluwaseyi-tani-can",
+        "teamId": "canada",
+        "toPlayerId": "ahmed-ali-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "crepeau-maxime-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "johnston-alistair-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "de-fougerolles-luc-can",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "eustaquio-stephen-can",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "millar-liam-can",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "laryea-richie-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "shaffelburg-jacob-can",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "cornelius-derek-can",
+        "teamId": "canada",
+        "toPlayerId": "osorio-jonathan-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "buchanan-tajon-can",
+        "teamId": "canada",
+        "toPlayerId": "johnston-alistair-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "buchanan-tajon-can",
+        "teamId": "canada",
+        "toPlayerId": "eustaquio-stephen-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "buchanan-tajon-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "de-fougerolles-luc-can",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "eustaquio-stephen-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "david-jonathan-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "millar-liam-can",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "oluwaseyi-tani-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "larin-cyle-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "shaffelburg-jacob-can",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "laryea-richie-can",
+        "teamId": "canada",
+        "toPlayerId": "osorio-jonathan-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "shaffelburg-jacob-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "shaffelburg-jacob-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "shaffelburg-jacob-can",
+        "teamId": "canada",
+        "toPlayerId": "laryea-richie-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "shaffelburg-jacob-can",
+        "teamId": "canada",
+        "toPlayerId": "david-promise-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ahmed-ali-can",
+        "teamId": "canada",
+        "toPlayerId": "johnston-alistair-can",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ahmed-ali-can",
+        "teamId": "canada",
+        "toPlayerId": "de-fougerolles-luc-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ahmed-ali-can",
+        "teamId": "canada",
+        "toPlayerId": "eustaquio-stephen-can",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "ahmed-ali-can",
+        "teamId": "canada",
+        "toPlayerId": "kone-ismael-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ahmed-ali-can",
+        "teamId": "canada",
+        "toPlayerId": "oluwaseyi-tani-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ahmed-ali-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "osorio-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "cornelius-derek-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "osorio-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "shaffelburg-jacob-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "osorio-jonathan-can",
+        "teamId": "canada",
+        "toPlayerId": "ahmed-ali-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "david-promise-can",
+        "teamId": "canada",
+        "toPlayerId": "larin-cyle-can",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vasilj-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vasilj-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "kolasinac-sead-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vasilj-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "tahirovic-benjamin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vasilj-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "dedic-amar-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vasilj-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "katic-nikola-bih",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "vasilj-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "lukic-jovo-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "vasilj-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "gigovic-armin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "muharemovic-tarik-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "vasilj-nikola-bih",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "muharemovic-tarik-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "kolasinac-sead-bih",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "muharemovic-tarik-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "tahirovic-benjamin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "muharemovic-tarik-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "katic-nikola-bih",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "muharemovic-tarik-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bajraktarevic-esmir-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "muharemovic-tarik-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bazdar-samed-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "muharemovic-tarik-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "sunjic-ivan-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "muharemovic-tarik-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "alajbegovic-kerim-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kolasinac-sead-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kolasinac-sead-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "tahirovic-benjamin-bih",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "kolasinac-sead-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "memic-amar-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kolasinac-sead-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bajraktarevic-esmir-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kolasinac-sead-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "lukic-jovo-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kolasinac-sead-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "gigovic-armin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kolasinac-sead-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "alajbegovic-kerim-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "vasilj-nikola-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "kolasinac-sead-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "dedic-amar-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "demirovic-ermedin-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "basic-ivan-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "memic-amar-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bajraktarevic-esmir-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "tahirovic-benjamin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "gigovic-armin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "dedic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "dedic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "tahirovic-benjamin-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "dedic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "basic-ivan-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "dedic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "katic-nikola-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "dedic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bajraktarevic-esmir-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "dedic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "gigovic-armin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "dedic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "sunjic-ivan-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "demirovic-ermedin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "vasilj-nikola-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "demirovic-ermedin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "tahirovic-benjamin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "demirovic-ermedin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "dedic-amar-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "demirovic-ermedin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "basic-ivan-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "demirovic-ermedin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bajraktarevic-esmir-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "demirovic-ermedin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "gigovic-armin-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "demirovic-ermedin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "sunjic-ivan-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "demirovic-ermedin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "alajbegovic-kerim-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "basic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "vasilj-nikola-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "basic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "basic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "kolasinac-sead-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "basic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "dedic-amar-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "basic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "demirovic-ermedin-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "basic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "katic-nikola-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "basic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bajraktarevic-esmir-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "basic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "lukic-jovo-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "memic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "basic-ivan-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "memic-amar-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "lukic-jovo-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "katic-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "vasilj-nikola-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "katic-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "katic-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "kolasinac-sead-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "katic-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "tahirovic-benjamin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "katic-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "dedic-amar-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "katic-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "basic-ivan-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "katic-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "memic-amar-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "katic-nikola-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "lukic-jovo-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bajraktarevic-esmir-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bajraktarevic-esmir-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "tahirovic-benjamin-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bajraktarevic-esmir-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "dedic-amar-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bajraktarevic-esmir-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "lukic-jovo-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lukic-jovo-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lukic-jovo-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "kolasinac-sead-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lukic-jovo-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "basic-ivan-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gigovic-armin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gigovic-armin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "dedic-amar-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "gigovic-armin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "demirovic-ermedin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gigovic-armin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "memic-amar-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gigovic-armin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "katic-nikola-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gigovic-armin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bazdar-samed-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gigovic-armin-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "sunjic-ivan-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bazdar-samed-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "gigovic-armin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bazdar-samed-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "alajbegovic-kerim-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sunjic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sunjic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "kolasinac-sead-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sunjic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "tahirovic-benjamin-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sunjic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "gigovic-armin-bih",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sunjic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bazdar-samed-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sunjic-ivan-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "burnic-dzenis-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "burnic-dzenis-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "bazdar-samed-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "burnic-dzenis-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "alajbegovic-kerim-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "alajbegovic-kerim-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "muharemovic-tarik-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "alajbegovic-kerim-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "kolasinac-sead-bih",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "alajbegovic-kerim-bih",
+        "teamId": "bosnia-and-herzegovina",
+        "toPlayerId": "demirovic-ermedin-bih",
+        "volume": 2
+      }
+    ],
+    "passNetworkNodes": null,
+    "receiving": null,
+    "shootoutAttempts": null,
+    "shots": [
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "david-jonathan-can",
+        "playerName": "Jonathan DAVID",
+        "teamId": "canada",
+        "x": 87.69,
+        "y": 51.03
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "david-jonathan-can",
+        "playerName": "Jonathan DAVID",
+        "teamId": "canada",
+        "x": 89.86,
+        "y": 67.98
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "kone-ismael-can",
+        "playerName": "Ismael KONE",
+        "teamId": "canada",
+        "x": 81.46,
+        "y": 53.72
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "oluwaseyi-tani-can",
+        "playerName": "Tani OLUWASEYI",
+        "teamId": "canada",
+        "x": 88.41,
+        "y": 67.56
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "david-jonathan-can",
+        "playerName": "Jonathan DAVID",
+        "teamId": "canada",
+        "x": 95.08,
+        "y": 61.78
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "other",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "johnston-alistair-can",
+        "playerName": "Alistair JOHNSTON",
+        "teamId": "canada",
+        "x": 89.28,
+        "y": 70.25
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "cornelius-derek-can",
+        "playerName": "Derek CORNELIUS",
+        "teamId": "canada",
+        "x": 90.59,
+        "y": 55.58
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "laryea-richie-can",
+        "playerName": "Richie LARYEA",
+        "teamId": "canada",
+        "x": 93.63,
+        "y": 34.71
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "eustaquio-stephen-can",
+        "playerName": "Stephen EUSTAQUIO",
+        "teamId": "canada",
+        "x": 80.74,
+        "y": 35.74
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-goal-prevented",
+        "ownGoal": false,
+        "playerId": "oluwaseyi-tani-can",
+        "playerName": "Tani OLUWASEYI",
+        "teamId": "canada",
+        "x": 94.93,
+        "y": 59.71
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "deflected-on-target-goal",
+        "ownGoal": false,
+        "playerId": "larin-cyle-can",
+        "playerName": "Cyle LARIN",
+        "teamId": "canada",
+        "x": 85.08,
+        "y": 48.14
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "david-promise-can",
+        "playerName": "Promise DAVID",
+        "teamId": "canada",
+        "x": 79.58,
+        "y": 43.59
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 6
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "larin-cyle-can",
+        "playerName": "Cyle LARIN",
+        "teamId": "canada",
+        "x": 92.9,
+        "y": 45.87
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "memic-amar-bih",
+        "playerName": "Amar MEMIC",
+        "teamId": "bosnia-and-herzegovina",
+        "x": 87.55,
+        "y": 54.13
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "lukic-jovo-bih",
+        "playerName": "Jovo LUKIC",
+        "teamId": "bosnia-and-herzegovina",
+        "x": 90.01,
+        "y": 39.05
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "lukic-jovo-bih",
+        "playerName": "Jovo LUKIC",
+        "teamId": "bosnia-and-herzegovina",
+        "x": 85.66,
+        "y": 50.62
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "lukic-jovo-bih",
+        "playerName": "Jovo LUKIC",
+        "teamId": "bosnia-and-herzegovina",
+        "x": 97.97,
+        "y": 51.86
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "tahirovic-benjamin-bih",
+        "playerName": "Benjamin TAHIROVIC",
+        "teamId": "bosnia-and-herzegovina",
+        "x": 83.2,
+        "y": 25.62
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "demirovic-ermedin-bih",
+        "playerName": "Ermedin DEMIROVIC",
+        "teamId": "bosnia-and-herzegovina",
+        "x": 78.28,
+        "y": 74.59
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "muharemovic-tarik-bih",
+        "playerName": "Tarik MUHAREMOVIC",
+        "teamId": "bosnia-and-herzegovina",
+        "x": 94.35,
+        "y": 47.73
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-player-on-ball-error",
+        "ownGoal": false,
+        "playerId": "burnic-dzenis-bih",
+        "playerName": "Dzenis BURNIC",
+        "teamId": "bosnia-and-herzegovina",
+        "x": 78.28,
+        "y": 42.15
+      }
+    ]
+  },
+  "goalkeeping": [
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 8,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 0,
+          "driven": 0,
+          "inswing": 4,
+          "lofted": 1,
+          "outswing": 2,
+          "pushCross": 1,
+          "total": 8
+        },
+        "punches": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 2
+        },
+        "tippedPalmed": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "totalInterventions": 3
+      },
+      "distribution": {
+        "feet": {
+          "complete": 17,
+          "incomplete": 7,
+          "total": 24
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "handsTechniques": null,
+        "lineBreaks": 8,
+        "throw": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 2
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 19,
+          "incomplete": 7,
+          "total": 26
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 8,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 6,
+          "saveAndDeflect": 0,
+          "saveAndRetain": 2,
+          "saveAttempt": 0
+        },
+        "savePercentage": 67.0,
+        "totalInterventions": 2
+      },
+      "goalkeepers": [
+        {
+          "playerId": "crepeau-maxime-can",
+          "playerName": "Maxime CREPEAU",
+          "shirtNumber": 16,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "canada",
+      "totalInvolvements": 38
+    },
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 3,
+          "incomplete": 0,
+          "total": 3
+        },
+        "crossesFacedAttempted": 30,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 2,
+          "driven": 1,
+          "inswing": 5,
+          "lofted": 2,
+          "outswing": 15,
+          "pushCross": 5,
+          "total": 30
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 3
+      },
+      "distribution": {
+        "feet": {
+          "complete": 11,
+          "incomplete": 13,
+          "total": 24
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 6,
+          "total": 6
+        },
+        "handsTechniques": null,
+        "lineBreaks": 21,
+        "throw": {
+          "complete": 3,
+          "incomplete": 0,
+          "total": 3
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 14,
+          "incomplete": 19,
+          "total": 33
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 13,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 10,
+          "saveAndDeflect": 1,
+          "saveAndRetain": 1,
+          "saveAttempt": 1
+        },
+        "savePercentage": 67.0,
+        "totalInterventions": 2
+      },
+      "goalkeepers": [
+        {
+          "playerId": "vasilj-nikola-bih",
+          "playerName": "Nikola VASILJ",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "bosnia-and-herzegovina",
+      "totalInvolvements": 53
+    }
+  ],
+  "keyStatistics": {
+    "away": {
+      "ballProgressions": 22,
+      "completedLineBreaks": 61,
+      "crosses": 8,
+      "defensiveLineBreaks": 4,
+      "defensivePressures": 203,
+      "directPressures": 35,
+      "distanceCovered": 109.5,
+      "expectedGoals": 0.76,
+      "forcedTurnovers": 51,
+      "goals": 1,
+      "passCompletion": 67.0,
+      "passes": 279,
+      "passesCompleted": 186,
+      "possession": 29.9,
+      "receptionsInFinalThird": 51,
+      "secondBalls": 79,
+      "shots": 8,
+      "shotsOnTarget": 3,
+      "sprintDistance": 5.2
+    },
+    "contestedPossession": 17.3,
+    "home": {
+      "ballProgressions": 30,
+      "completedLineBreaks": 84,
+      "crosses": 30,
+      "defensiveLineBreaks": 16,
+      "defensivePressures": 160,
+      "directPressures": 38,
+      "distanceCovered": 111.3,
+      "expectedGoals": 1.49,
+      "forcedTurnovers": 50,
+      "goals": 1,
+      "passCompletion": 77.0,
+      "passes": 412,
+      "passesCompleted": 316,
+      "possession": 52.8,
+      "receptionsInFinalThird": 143,
+      "secondBalls": 94,
+      "shots": 13,
+      "shotsOnTarget": 4,
+      "sprintDistance": 5.8
+    }
+  },
+  "matchId": "m003-canada-bosnia-and-herzegovina",
+  "metadata": {
+    "awayTeam": {
+      "name": "Bosnia and Herzegovina",
+      "teamCode": "bih",
+      "teamId": "bosnia-and-herzegovina"
+    },
+    "date": "2026-06-12",
+    "goals": [
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Jovo LUKIC",
+        "scorerPlayerId": "lukic-jovo-bih",
+        "teamId": "bosnia-and-herzegovina"
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Cyle LARIN",
+        "scorerPlayerId": "larin-cyle-can",
+        "teamId": "canada"
+      }
+    ],
+    "group": "b",
+    "homeTeam": {
+      "name": "Canada",
+      "teamCode": "can",
+      "teamId": "canada"
+    },
+    "kickoff": "2026-06-12T15:00:00-04:00",
+    "knockoutScore": {
+      "decidedBy": "regulation",
+      "scoreAfter90": {
+        "away": 1,
+        "home": 1
+      },
+      "scoreAfterET": null,
+      "shootoutScore": null,
+      "winnerTeamId": null
+    },
+    "lineups": {
+      "away": {
+        "formation": "4-4-2",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nikola VASILJ",
+            "playerId": "vasilj-nikola-bih",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tarik MUHAREMOVIC",
+            "playerId": "muharemovic-tarik-bih",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Sead KOLASINAC",
+            "playerId": "kolasinac-sead-bih",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": {
+              "minute": 84,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Benjamin TAHIROVIC",
+            "playerId": "tahirovic-benjamin-bih",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Amar DEDIC",
+            "playerId": "dedic-amar-bih",
+            "position": "df",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 44,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Ermedin DEMIROVIC",
+            "playerId": "demirovic-ermedin-bih",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ivan BASIC",
+            "playerId": "basic-ivan-bih",
+            "position": "mf",
+            "shirtNumber": 13,
+            "substitutedOff": {
+              "minute": 62,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Amar MEMIC",
+            "playerId": "memic-amar-bih",
+            "position": "mf",
+            "shirtNumber": 15,
+            "substitutedOff": {
+              "minute": 74,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 93,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Nikola KATIC",
+            "playerId": "katic-nikola-bih",
+            "position": "df",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Esmir BAJRAKTAREVIC",
+            "playerId": "bajraktarevic-esmir-bih",
+            "position": "fw",
+            "shirtNumber": 20,
+            "substitutedOff": {
+              "minute": 74,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 46,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [
+              {
+                "minute": 21,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Jovo LUKIC",
+            "playerId": "lukic-jovo-bih",
+            "position": "fw",
+            "shirtNumber": 25,
+            "substitutedOff": {
+              "minute": 62,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Mladen JURKAS",
+            "playerId": "jurkas-mladen-bih",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Martin ZLOMISLIC",
+            "playerId": "zlomislic-martin-bih",
+            "position": "gk",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nihad MUJAKIC",
+            "playerId": "mujakic-nihad-bih",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Dennis HADZIKADUNIC",
+            "playerId": "hadzikadunic-dennis-bih",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Armin GIGOVIC",
+            "playerId": "gigovic-armin-bih",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 62,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Samed BAZDAR",
+            "playerId": "bazdar-samed-bih",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 62,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Edin DZEKO",
+            "playerId": "dzeko-edin-bih",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ivan SUNJIC",
+            "playerId": "sunjic-ivan-bih",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 74,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Amir HADZIAHMETOVIC",
+            "playerId": "hadziahmetovic-amir-bih",
+            "position": "mf",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Dzenis BURNIC",
+            "playerId": "burnic-dzenis-bih",
+            "position": "mf",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 84,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kerim ALAJBEGOVIC",
+            "playerId": "alajbegovic-kerim-bih",
+            "position": "fw",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 74,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Stjepan RADELJIC",
+            "playerId": "radeljic-stjepan-bih",
+            "position": "df",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Haris TABAKOVIC",
+            "playerId": "tabakovic-haris-bih",
+            "position": "fw",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Arjan MALIC",
+            "playerId": "malic-arjan-bih",
+            "position": "df",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ermin MAHMIC",
+            "playerId": "mahmic-ermin-bih",
+            "position": "mf",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      },
+      "home": {
+        "formation": "4-4-2",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Maxime CREPEAU",
+            "playerId": "crepeau-maxime-can",
+            "position": "gk",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 11,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Alistair JOHNSTON",
+            "playerId": "johnston-alistair-can",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 53,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Luc DE FOUGEROLLES",
+            "playerId": "de-fougerolles-luc-can",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Stephen EUSTAQUIO",
+            "playerId": "eustaquio-stephen-can",
+            "position": "mf",
+            "shirtNumber": 7,
+            "substitutedOff": {
+              "minute": 90,
+              "stoppageMinute": 1
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ismael KONE",
+            "playerId": "kone-ismael-can",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jonathan DAVID",
+            "playerId": "david-jonathan-can",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": {
+              "minute": 61,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Liam MILLAR",
+            "playerId": "millar-liam-can",
+            "position": "mf",
+            "shirtNumber": 11,
+            "substitutedOff": {
+              "minute": 61,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tani OLUWASEYI",
+            "playerId": "oluwaseyi-tani-can",
+            "position": "fw",
+            "shirtNumber": 12,
+            "substitutedOff": {
+              "minute": 76,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Derek CORNELIUS",
+            "playerId": "cornelius-derek-can",
+            "position": "df",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tajon BUCHANAN",
+            "playerId": "buchanan-tajon-can",
+            "position": "fw",
+            "shirtNumber": 17,
+            "substitutedOff": {
+              "minute": 61,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Richie LARYEA",
+            "playerId": "laryea-richie-can",
+            "position": "df",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Dayne ST. CLAIR",
+            "playerId": "st-clair-dayne-can",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Owen GOODMAN",
+            "playerId": "goodman-owen-can",
+            "position": "gk",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alfie JONES",
+            "playerId": "jones-alfie-can",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Joel WATERMAN",
+            "playerId": "waterman-joel-can",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Mathieu CHOINIERE",
+            "playerId": "choiniere-mathieu-can",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 79,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Cyle LARIN",
+            "playerId": "larin-cyle-can",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 76,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jacob SHAFFELBURG",
+            "playerId": "shaffelburg-jacob-can",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 61,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Moise BOMBITO",
+            "playerId": "bombito-moise-can",
+            "position": "df",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alphonso DAVIES",
+            "playerId": "davies-alphonso-can",
+            "position": "df",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ali AHMED",
+            "playerId": "ahmed-ali-can",
+            "position": "fw",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 61,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jonathan OSORIO",
+            "playerId": "osorio-jonathan-can",
+            "position": "mf",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 90,
+              "stoppageMinute": 1
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Niko SIGUR",
+            "playerId": "sigur-niko-can",
+            "position": "df",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Promise DAVID",
+            "playerId": "david-promise-can",
+            "position": "fw",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 61,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nathan SALIBA",
+            "playerId": "saliba-nathan-can",
+            "position": "mf",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jayden NELSON",
+            "playerId": "nelson-jayden-can",
+            "position": "fw",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      }
+    },
+    "matchNumber": 3,
+    "matchdayRound": "group-md1",
+    "score": {
+      "away": 1,
+      "home": 1
+    },
+    "stage": "group",
+    "venue": "Toronto Stadium"
+  },
+  "momentum": {
+    "samples": [
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 9,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 1,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "away": 0,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 6
+        },
+        "away": 0,
+        "home": 0
+      }
+    ]
+  },
+  "players": [
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 58.0,
+        "lineBreaksAttempted": 24,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 4,
+          "inFront": 4,
+          "inToOut": 1,
+          "noMovement": 10,
+          "outToIn": 0
+        },
+        "offersReceived": 9,
+        "passCompletion": 66.0,
+        "passesAttempted": 47,
+        "passesCompleted": 31,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 19
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 6,
+        "duelsWonAerial": 5,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 3,
+        "possessionRegains": 5,
+        "pressingDirect": 2,
+        "pressingIndirect": 7,
+        "pushingOn": 17,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3769.8,
+        "distanceZone2": 4243.0,
+        "distanceZone3": 1797.4,
+        "distanceZone4": 526.3,
+        "distanceZone5": 383.6,
+        "highSpeedRuns": 145,
+        "sprints": 48,
+        "topSpeed": 33.3,
+        "totalDistance": 10720.1
+      },
+      "playerId": "johnston-alistair-can",
+      "playerName": "Alistair JOHNSTON",
+      "position": "df",
+      "shirtNumber": 2,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 56.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 7,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 88.0,
+        "passesAttempted": 43,
+        "passesCompleted": 38,
+        "stepIns": 2,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 10,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 4,
+        "possessionRegains": 13,
+        "pressingDirect": 3,
+        "pressingIndirect": 4,
+        "pushingOn": 14,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 3,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3594.7,
+        "distanceZone2": 4713.9,
+        "distanceZone3": 1312.4,
+        "distanceZone4": 609.9,
+        "distanceZone5": 145.4,
+        "highSpeedRuns": 125,
+        "sprints": 38,
+        "topSpeed": 31.6,
+        "totalDistance": 10376.3
+      },
+      "playerId": "de-fougerolles-luc-can",
+      "playerName": "Luc DE FOUGEROLLES",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 9,
+        "crossesCompleted": 4,
+        "goals": 0,
+        "lineBreakCompletion": 69.0,
+        "lineBreaksAttempted": 13,
+        "lineBreaksCompleted": 9,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 11,
+          "inFront": 6,
+          "inToOut": 3,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 12,
+        "passCompletion": 86.0,
+        "passesAttempted": 49,
+        "passesCompleted": 42,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 35
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 10,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 3,
+        "possessionRegains": 3,
+        "pressingDirect": 2,
+        "pressingIndirect": 18,
+        "pushingOn": 10,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3350.9,
+        "distanceZone2": 4854.8,
+        "distanceZone3": 2542.4,
+        "distanceZone4": 862.4,
+        "distanceZone5": 108.0,
+        "highSpeedRuns": 204,
+        "sprints": 58,
+        "topSpeed": 29.8,
+        "totalDistance": 11718.5
+      },
+      "playerId": "eustaquio-stephen-can",
+      "playerName": "Stephen EUSTAQUIO",
+      "position": "mf",
+      "shirtNumber": 7,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 4,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 65.0,
+        "lineBreaksAttempted": 23,
+        "lineBreaksCompleted": 15,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 7,
+          "inFront": 14,
+          "inToOut": 1,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 7,
+        "passCompletion": 84.0,
+        "passesAttempted": 58,
+        "passesCompleted": 49,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 27
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 10,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 3,
+        "pressingDirect": 4,
+        "pressingIndirect": 16,
+        "pushingOn": 12,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 7,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3922.5,
+        "distanceZone2": 4958.0,
+        "distanceZone3": 1443.4,
+        "distanceZone4": 436.4,
+        "distanceZone5": 115.4,
+        "highSpeedRuns": 124,
+        "sprints": 28,
+        "topSpeed": 28.5,
+        "totalDistance": 10875.7
+      },
+      "playerId": "kone-ismael-can",
+      "playerName": "Ismael KONE",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 2,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 0.0,
+        "passesAttempted": 0,
+        "passesCompleted": 0,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 8
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 2,
+        "pushingOn": 1,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 823.9,
+        "distanceZone2": 802.0,
+        "distanceZone3": 228.5,
+        "distanceZone4": 144.1,
+        "distanceZone5": 69.7,
+        "highSpeedRuns": 21,
+        "sprints": 10,
+        "topSpeed": 31.3,
+        "totalDistance": 2068.2
+      },
+      "playerId": "larin-cyle-can",
+      "playerName": "Cyle LARIN",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 0,
+        "crossesAttempted": 3,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 10,
+          "inBetween": 5,
+          "inFront": 0,
+          "inToOut": 2,
+          "noMovement": 1,
+          "outToIn": 3
+        },
+        "offersReceived": 5,
+        "passCompletion": 80.0,
+        "passesAttempted": 10,
+        "passesCompleted": 8,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 21
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 4,
+        "pressingIndirect": 9,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2594.0,
+        "distanceZone2": 3247.8,
+        "distanceZone3": 1071.1,
+        "distanceZone4": 314.3,
+        "distanceZone5": 205.3,
+        "highSpeedRuns": 84,
+        "sprints": 32,
+        "topSpeed": 31.7,
+        "totalDistance": 7432.5
+      },
+      "playerId": "david-jonathan-can",
+      "playerName": "Jonathan DAVID",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 5,
+        "crossesAttempted": 4,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 17,
+          "inBetween": 1,
+          "inFront": 2,
+          "inToOut": 1,
+          "noMovement": 10,
+          "outToIn": 0
+        },
+        "offersReceived": 10,
+        "passCompletion": 66.0,
+        "passesAttempted": 29,
+        "passesCompleted": 19,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 4,
+        "totalOffers": 31
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 1,
+        "possessionRegains": 3,
+        "pressingDirect": 6,
+        "pressingIndirect": 5,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 6,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2529.1,
+        "distanceZone2": 2804.1,
+        "distanceZone3": 1023.5,
+        "distanceZone4": 464.7,
+        "distanceZone5": 289.0,
+        "highSpeedRuns": 86,
+        "sprints": 41,
+        "topSpeed": 32.8,
+        "totalDistance": 7110.3
+      },
+      "playerId": "millar-liam-can",
+      "playerName": "Liam MILLAR",
+      "position": "mf",
+      "shirtNumber": 11,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 3,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 33.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 34,
+          "inBetween": 12,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 8,
+        "passCompletion": 46.0,
+        "passesAttempted": 13,
+        "passesCompleted": 6,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 48
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 6,
+        "duelsWonPhysical": 1,
+        "interceptions": 2,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 8,
+        "possessionInterrupted": 0,
+        "possessionRegains": 4,
+        "pressingDirect": 2,
+        "pressingIndirect": 18,
+        "pushingOn": 20,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3147.6,
+        "distanceZone2": 2887.1,
+        "distanceZone3": 1050.5,
+        "distanceZone4": 459.8,
+        "distanceZone5": 299.6,
+        "highSpeedRuns": 89,
+        "sprints": 42,
+        "topSpeed": 33.4,
+        "totalDistance": 7844.6
+      },
+      "playerId": "oluwaseyi-tani-can",
+      "playerName": "Tani OLUWASEYI",
+      "position": "fw",
+      "shirtNumber": 12,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 47.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 81.0,
+        "passesAttempted": 52,
+        "passesCompleted": 42,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 13,
+        "duelsWonAerial": 8,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 8,
+        "possessionInterrupted": 10,
+        "possessionRegains": 17,
+        "pressingDirect": 1,
+        "pressingIndirect": 4,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 4,
+        "tacklesWon": 3
+      },
+      "physical": {
+        "distanceZone1": 4167.6,
+        "distanceZone2": 3441.6,
+        "distanceZone3": 1026.4,
+        "distanceZone4": 346.5,
+        "distanceZone5": 83.1,
+        "highSpeedRuns": 86,
+        "sprints": 23,
+        "topSpeed": 28.2,
+        "totalDistance": 9065.3
+      },
+      "playerId": "cornelius-derek-can",
+      "playerName": "Derek CORNELIUS",
+      "position": "df",
+      "shirtNumber": 13,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 1,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 71.0,
+        "passesAttempted": 7,
+        "passesCompleted": 5,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 18
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 2,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 1441.7,
+        "distanceZone2": 1679.6,
+        "distanceZone3": 515.2,
+        "distanceZone4": 227.2,
+        "distanceZone5": 181.7,
+        "highSpeedRuns": 46,
+        "sprints": 20,
+        "topSpeed": 31.6,
+        "totalDistance": 4045.5
+      },
+      "playerId": "shaffelburg-jacob-can",
+      "playerName": "Jacob SHAFFELBURG",
+      "position": "mf",
+      "shirtNumber": 14,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 38.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 73.0,
+        "passesAttempted": 26,
+        "passesCompleted": 19,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 3,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3767.7,
+        "distanceZone2": 1394.0,
+        "distanceZone3": 167.5,
+        "distanceZone4": 25.2,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 18,
+        "sprints": 2,
+        "topSpeed": 24.1,
+        "totalDistance": 5354.4
+      },
+      "playerId": "crepeau-maxime-can",
+      "playerName": "Maxime CREPEAU",
+      "position": "gk",
+      "shirtNumber": 16,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 6,
+        "crossesAttempted": 3,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 10,
+          "inBetween": 2,
+          "inFront": 2,
+          "inToOut": 1,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 80.0,
+        "passesAttempted": 10,
+        "passesCompleted": 8,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 5,
+        "totalOffers": 18
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 7,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2537.5,
+        "distanceZone2": 3041.0,
+        "distanceZone3": 800.7,
+        "distanceZone4": 460.2,
+        "distanceZone5": 271.6,
+        "highSpeedRuns": 69,
+        "sprints": 35,
+        "topSpeed": 31.2,
+        "totalDistance": 7110.9
+      },
+      "playerId": "buchanan-tajon-can",
+      "playerName": "Tajon BUCHANAN",
+      "position": "fw",
+      "shirtNumber": 17,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 4,
+        "crossesAttempted": 3,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 33.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 4,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 69.0,
+        "passesAttempted": 16,
+        "passesCompleted": 11,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 17
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 15,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 1524.3,
+        "distanceZone2": 1433.9,
+        "distanceZone3": 556.8,
+        "distanceZone4": 312.5,
+        "distanceZone5": 75.6,
+        "highSpeedRuns": 47,
+        "sprints": 26,
+        "topSpeed": 26.6,
+        "totalDistance": 3903.0
+      },
+      "playerId": "ahmed-ali-can",
+      "playerName": "Ali AHMED",
+      "position": "fw",
+      "shirtNumber": 20,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 75.0,
+        "passesAttempted": 4,
+        "passesCompleted": 3,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 182.7,
+        "distanceZone2": 298.2,
+        "distanceZone3": 123.2,
+        "distanceZone4": 40.0,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 10,
+        "sprints": 4,
+        "topSpeed": 23.0,
+        "totalDistance": 644.0
+      },
+      "playerId": "osorio-jonathan-can",
+      "playerName": "Jonathan OSORIO",
+      "position": "mf",
+      "shirtNumber": 21,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 81.0,
+        "lineBreaksAttempted": 16,
+        "lineBreaksCompleted": 13,
+        "offersByMovementType": {
+          "inBehind": 17,
+          "inBetween": 3,
+          "inFront": 2,
+          "inToOut": 3,
+          "noMovement": 7,
+          "outToIn": 1
+        },
+        "offersReceived": 9,
+        "passCompletion": 76.0,
+        "passesAttempted": 45,
+        "passesCompleted": 34,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 33
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 3,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 3,
+        "possessionRegains": 7,
+        "pressingDirect": 6,
+        "pressingIndirect": 12,
+        "pushingOn": 7,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 6,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3996.4,
+        "distanceZone2": 4089.9,
+        "distanceZone3": 1081.4,
+        "distanceZone4": 433.5,
+        "distanceZone5": 370.3,
+        "highSpeedRuns": 95,
+        "sprints": 36,
+        "topSpeed": 34.6,
+        "totalDistance": 9971.5
+      },
+      "playerId": "laryea-richie-can",
+      "playerName": "Richie LARYEA",
+      "position": "df",
+      "shirtNumber": 22,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 1
+        },
+        "offersReceived": 1,
+        "passCompletion": 33.0,
+        "passesAttempted": 3,
+        "passesCompleted": 1,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 4
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 0,
+        "pressingIndirect": 3,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 1676.4,
+        "distanceZone2": 994.4,
+        "distanceZone3": 284.5,
+        "distanceZone4": 112.8,
+        "distanceZone5": 29.8,
+        "highSpeedRuns": 26,
+        "sprints": 9,
+        "topSpeed": 30.0,
+        "totalDistance": 3097.9
+      },
+      "playerId": "david-promise-can",
+      "playerName": "Promise DAVID",
+      "position": "fw",
+      "shirtNumber": 24,
+      "teamId": "canada"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 24.0,
+        "lineBreaksAttempted": 21,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 42.0,
+        "passesAttempted": 33,
+        "passesCompleted": 14,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 9,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3990.0,
+        "distanceZone2": 1201.2,
+        "distanceZone3": 78.8,
+        "distanceZone4": 17.3,
+        "distanceZone5": 11.3,
+        "highSpeedRuns": 8,
+        "sprints": 2,
+        "topSpeed": 26.3,
+        "totalDistance": 5298.5
+      },
+      "playerId": "vasilj-nikola-bih",
+      "playerName": "Nikola VASILJ",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 80.0,
+        "passesAttempted": 30,
+        "passesCompleted": 24,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 5,
+        "clearances": 14,
+        "duelsWonAerial": 7,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 8,
+        "possessionInterrupted": 11,
+        "possessionRegains": 10,
+        "pressingDirect": 2,
+        "pressingIndirect": 4,
+        "pushingOn": 7,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4085.5,
+        "distanceZone2": 4176.9,
+        "distanceZone3": 1112.2,
+        "distanceZone4": 328.4,
+        "distanceZone5": 121.0,
+        "highSpeedRuns": 87,
+        "sprints": 24,
+        "topSpeed": 30.7,
+        "totalDistance": 9823.9
+      },
+      "playerId": "muharemovic-tarik-bih",
+      "playerName": "Tarik MUHAREMOVIC",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 83.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 4,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 1
+        },
+        "offersReceived": 5,
+        "passCompletion": 66.0,
+        "passesAttempted": 32,
+        "passesCompleted": 21,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 5,
+        "clearances": 6,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 4,
+        "possessionRegains": 7,
+        "pressingDirect": 6,
+        "pressingIndirect": 7,
+        "pushingOn": 14,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 6,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3777.8,
+        "distanceZone2": 3618.8,
+        "distanceZone3": 869.7,
+        "distanceZone4": 442.4,
+        "distanceZone5": 259.0,
+        "highSpeedRuns": 77,
+        "sprints": 32,
+        "topSpeed": 32.0,
+        "totalDistance": 8967.6
+      },
+      "playerId": "kolasinac-sead-bih",
+      "playerName": "Sead KOLASINAC",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 38.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 8,
+          "inFront": 10,
+          "inToOut": 2,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 10,
+        "passCompletion": 73.0,
+        "passesAttempted": 22,
+        "passesCompleted": 16,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 21
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 6,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 10,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 6,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 27,
+        "pushingOn": 20,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 4,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4139.6,
+        "distanceZone2": 4376.0,
+        "distanceZone3": 1723.2,
+        "distanceZone4": 595.8,
+        "distanceZone5": 76.5,
+        "highSpeedRuns": 143,
+        "sprints": 35,
+        "topSpeed": 28.4,
+        "totalDistance": 10911.0
+      },
+      "playerId": "tahirovic-benjamin-bih",
+      "playerName": "Benjamin TAHIROVIC",
+      "position": "mf",
+      "shirtNumber": 6,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 71.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 74.0,
+        "passesAttempted": 31,
+        "passesCompleted": 23,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 7,
+        "clearances": 10,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 11,
+        "possessionRegains": 9,
+        "pressingDirect": 3,
+        "pressingIndirect": 21,
+        "pushingOn": 22,
+        "pushingOnIntoPressing": 15,
+        "tacklesMade": 4,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3967.9,
+        "distanceZone2": 3992.5,
+        "distanceZone3": 982.1,
+        "distanceZone4": 408.9,
+        "distanceZone5": 173.7,
+        "highSpeedRuns": 94,
+        "sprints": 35,
+        "topSpeed": 32.5,
+        "totalDistance": 9525.1
+      },
+      "playerId": "dedic-amar-bih",
+      "playerName": "Amar DEDIC",
+      "position": "df",
+      "shirtNumber": 7,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 4,
+          "inFront": 7,
+          "inToOut": 1,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 81.0,
+        "passesAttempted": 16,
+        "passesCompleted": 13,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 2,
+        "possessionRegains": 3,
+        "pressingDirect": 3,
+        "pressingIndirect": 8,
+        "pushingOn": 7,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 1360.4,
+        "distanceZone2": 1640.7,
+        "distanceZone3": 544.3,
+        "distanceZone4": 318.0,
+        "distanceZone5": 135.0,
+        "highSpeedRuns": 45,
+        "sprints": 22,
+        "topSpeed": 29.5,
+        "totalDistance": 3998.3
+      },
+      "playerId": "gigovic-armin-bih",
+      "playerName": "Armin GIGOVIC",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 40.0,
+        "passesAttempted": 5,
+        "passesCompleted": 2,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 4,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1445.6,
+        "distanceZone2": 1428.9,
+        "distanceZone3": 437.5,
+        "distanceZone4": 213.4,
+        "distanceZone5": 124.5,
+        "highSpeedRuns": 28,
+        "sprints": 13,
+        "topSpeed": 29.8,
+        "totalDistance": 3649.9
+      },
+      "playerId": "bazdar-samed-bih",
+      "playerName": "Samed BAZDAR",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 2,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 1
+        },
+        "offersReceived": 0,
+        "passCompletion": 77.0,
+        "passesAttempted": 13,
+        "passesCompleted": 10,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 3,
+        "duelsWonAerial": 7,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 7,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 3,
+        "pressingIndirect": 24,
+        "pushingOn": 12,
+        "pushingOnIntoPressing": 10,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4373.2,
+        "distanceZone2": 3826.8,
+        "distanceZone3": 1068.6,
+        "distanceZone4": 640.9,
+        "distanceZone5": 214.4,
+        "highSpeedRuns": 91,
+        "sprints": 43,
+        "topSpeed": 33.0,
+        "totalDistance": 10123.8
+      },
+      "playerId": "demirovic-ermedin-bih",
+      "playerName": "Ermedin DEMIROVIC",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 5,
+        "crossesCompleted": 5,
+        "goals": 0,
+        "lineBreakCompletion": 83.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 8,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 82.0,
+        "passesAttempted": 22,
+        "passesCompleted": 18,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 4,
+        "pressingIndirect": 7,
+        "pushingOn": 20,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2373.2,
+        "distanceZone2": 3256.0,
+        "distanceZone3": 938.3,
+        "distanceZone4": 279.8,
+        "distanceZone5": 137.6,
+        "highSpeedRuns": 82,
+        "sprints": 24,
+        "topSpeed": 31.2,
+        "totalDistance": 6984.8
+      },
+      "playerId": "basic-ivan-bih",
+      "playerName": "Ivan BASIC",
+      "position": "mf",
+      "shirtNumber": 13,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 2,
+          "inFront": 6,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 77.0,
+        "passesAttempted": 13,
+        "passesCompleted": 10,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 8
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 0,
+        "pressingIndirect": 6,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 828.9,
+        "distanceZone2": 1115.3,
+        "distanceZone3": 443.9,
+        "distanceZone4": 108.0,
+        "distanceZone5": 30.1,
+        "highSpeedRuns": 37,
+        "sprints": 10,
+        "topSpeed": 26.5,
+        "totalDistance": 2526.1
+      },
+      "playerId": "sunjic-ivan-bih",
+      "playerName": "Ivan SUNJIC",
+      "position": "mf",
+      "shirtNumber": 14,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 1
+        },
+        "offersReceived": 1,
+        "passCompletion": 38.0,
+        "passesAttempted": 8,
+        "passesCompleted": 3,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 3,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 5,
+        "possessionRegains": 2,
+        "pressingDirect": 0,
+        "pressingIndirect": 16,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3184.3,
+        "distanceZone2": 3156.9,
+        "distanceZone3": 1140.3,
+        "distanceZone4": 539.6,
+        "distanceZone5": 448.2,
+        "highSpeedRuns": 82,
+        "sprints": 45,
+        "topSpeed": 33.9,
+        "totalDistance": 8469.3
+      },
+      "playerId": "memic-amar-bih",
+      "playerName": "Amar MEMIC",
+      "position": "mf",
+      "shirtNumber": 15,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 67.0,
+        "passesAttempted": 3,
+        "passesCompleted": 2,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 5,
+        "pushingOn": 7,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 506.5,
+        "distanceZone2": 631.8,
+        "distanceZone3": 160.1,
+        "distanceZone4": 37.9,
+        "distanceZone5": 15.6,
+        "highSpeedRuns": 15,
+        "sprints": 3,
+        "topSpeed": 26.7,
+        "totalDistance": 1352.0
+      },
+      "playerId": "burnic-dzenis-bih",
+      "playerName": "Dzenis BURNIC",
+      "position": "mf",
+      "shirtNumber": 17,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 56.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 68.0,
+        "passesAttempted": 22,
+        "passesCompleted": 15,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 5,
+        "clearances": 12,
+        "duelsWonAerial": 11,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 12,
+        "possessionInterrupted": 7,
+        "possessionRegains": 11,
+        "pressingDirect": 8,
+        "pressingIndirect": 5,
+        "pushingOn": 15,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 7,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4186.7,
+        "distanceZone2": 3905.5,
+        "distanceZone3": 1286.0,
+        "distanceZone4": 422.8,
+        "distanceZone5": 149.3,
+        "highSpeedRuns": 111,
+        "sprints": 39,
+        "topSpeed": 30.3,
+        "totalDistance": 9950.4
+      },
+      "playerId": "katic-nikola-bih",
+      "playerName": "Nikola KATIC",
+      "position": "df",
+      "shirtNumber": 18,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 2,
+        "passCompletion": 100.0,
+        "passesAttempted": 4,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 4,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 987.1,
+        "distanceZone2": 980.5,
+        "distanceZone3": 234.3,
+        "distanceZone4": 93.0,
+        "distanceZone5": 57.8,
+        "highSpeedRuns": 25,
+        "sprints": 7,
+        "topSpeed": 31.6,
+        "totalDistance": 2352.7
+      },
+      "playerId": "alajbegovic-kerim-bih",
+      "playerName": "Kerim ALAJBEGOVIC",
+      "position": "fw",
+      "shirtNumber": 19,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 5,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 6,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 1
+        },
+        "offersReceived": 7,
+        "passCompletion": 43.0,
+        "passesAttempted": 14,
+        "passesCompleted": 6,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 5,
+        "totalOffers": 23
+      },
+      "outOfPossession": {
+        "blocks": 6,
+        "clearances": 4,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 6,
+        "possessionRegains": 6,
+        "pressingDirect": 1,
+        "pressingIndirect": 16,
+        "pushingOn": 30,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3073.1,
+        "distanceZone2": 3844.6,
+        "distanceZone3": 941.8,
+        "distanceZone4": 413.3,
+        "distanceZone5": 328.5,
+        "highSpeedRuns": 87,
+        "sprints": 36,
+        "topSpeed": 34.8,
+        "totalDistance": 8601.3
+      },
+      "playerId": "bajraktarevic-esmir-bih",
+      "playerName": "Esmir BAJRAKTAREVIC",
+      "position": "fw",
+      "shirtNumber": 20,
+      "teamId": "bosnia-and-herzegovina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 3,
+          "inFront": 0,
+          "inToOut": 4,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 45.0,
+        "passesAttempted": 11,
+        "passesCompleted": 5,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 4,
+        "duelsWonAerial": 9,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 10,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 14,
+        "pushingOn": 17,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2732.0,
+        "distanceZone2": 2813.6,
+        "distanceZone3": 930.9,
+        "distanceZone4": 357.3,
+        "distanceZone5": 159.5,
+        "highSpeedRuns": 79,
+        "sprints": 27,
+        "topSpeed": 32.1,
+        "totalDistance": 6993.3
+      },
+      "playerId": "lukic-jovo-bih",
+      "playerName": "Jovo LUKIC",
+      "position": "fw",
+      "shirtNumber": 25,
+      "teamId": "bosnia-and-herzegovina"
+    }
+  ],
+  "schemaVersion": 4,
+  "setPlays": {
+    "away": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 3,
+        "lofted": 0,
+        "outswing": 1
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 1,
+          "right": 3,
+          "total": 4
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        }
+      },
+      "cornersBySide": {
+        "left": 1,
+        "right": 3,
+        "total": 4
+      },
+      "freeKicks": {
+        "direct": 10,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 1
+      },
+      "totalCorners": 4,
+      "totalFreeKicks": 11,
+      "totalPenalties": 0,
+      "totalSetPlays": 41,
+      "totalThrowIns": 26
+    },
+    "home": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 1,
+        "lofted": 0,
+        "outswing": 5
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 1,
+          "right": 4,
+          "total": 5
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 1,
+          "total": 1
+        },
+        "short": {
+          "left": 1,
+          "right": 2,
+          "total": 3
+        }
+      },
+      "cornersBySide": {
+        "left": 2,
+        "right": 7,
+        "total": 9
+      },
+      "freeKicks": {
+        "direct": 20,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 0
+      },
+      "totalCorners": 9,
+      "totalFreeKicks": 20,
+      "totalPenalties": 0,
+      "totalSetPlays": 61,
+      "totalThrowIns": 32
+    }
+  },
+  "storyStats": {
+    "away": {
+      "distanceCovered": 109.5,
+      "expectedGoals": 0.76,
+      "possession": 29.9,
+      "shots": 8,
+      "topSpeed": 34.8
+    },
+    "home": {
+      "distanceCovered": 111.3,
+      "expectedGoals": 1.49,
+      "possession": 52.8,
+      "shots": 13,
+      "topSpeed": 34.6
+    }
+  },
+  "tacticalIdentity": {
+    "away": {
+      "defensiveBlockDistribution": {
+        "high": 1,
+        "low": 31,
+        "mid": 14
+      },
+      "phasesInPossession": {
+        "attackingTransition": 36,
+        "buildUpOpposed": 8,
+        "buildUpUnopposed": 16,
+        "counterAttack": 3,
+        "finalThird": 5,
+        "longBall": 10,
+        "progression": 12,
+        "setPiece": 11
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 13,
+        "defensiveTransition": 17,
+        "highBlock": 1,
+        "highPress": 2,
+        "lowBlock": 31,
+        "lowPress": 1,
+        "midBlock": 14,
+        "midPress": 2,
+        "recovery": 5
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 18,
+            "teamLength": 37,
+            "teamWidth": 46
+          },
+          "buildUpMid": {
+            "lineHeight": 41,
+            "teamLength": 33,
+            "teamWidth": 48
+          },
+          "finalThirdPhase": {
+            "lineHeight": 56,
+            "teamLength": 35,
+            "teamWidth": 37
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 49,
+            "teamLength": 36,
+            "teamWidth": 39
+          },
+          "lowBlock": {
+            "lineHeight": 17,
+            "teamLength": 18,
+            "teamWidth": 35
+          },
+          "midBlock": {
+            "lineHeight": 36,
+            "teamLength": 24,
+            "teamWidth": 40
+          }
+        }
+      }
+    },
+    "home": {
+      "defensiveBlockDistribution": {
+        "high": 5,
+        "low": 5,
+        "mid": 11
+      },
+      "phasesInPossession": {
+        "attackingTransition": 17,
+        "buildUpOpposed": 10,
+        "buildUpUnopposed": 30,
+        "counterAttack": 2,
+        "finalThird": 19,
+        "longBall": 3,
+        "progression": 17,
+        "setPiece": 11
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 20,
+        "defensiveTransition": 36,
+        "highBlock": 5,
+        "highPress": 6,
+        "lowBlock": 5,
+        "lowPress": 1,
+        "midBlock": 11,
+        "midPress": 6,
+        "recovery": 6
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 23,
+            "teamLength": 38,
+            "teamWidth": 49
+          },
+          "buildUpMid": {
+            "lineHeight": 47,
+            "teamLength": 30,
+            "teamWidth": 53
+          },
+          "finalThirdPhase": {
+            "lineHeight": 62,
+            "teamLength": 30,
+            "teamWidth": 40
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 49,
+            "teamLength": 35,
+            "teamWidth": 38
+          },
+          "lowBlock": {
+            "lineHeight": 16,
+            "teamLength": 24,
+            "teamWidth": 32
+          },
+          "midBlock": {
+            "lineHeight": 35,
+            "teamLength": 28,
+            "teamWidth": 37
+          }
+        }
+      }
+    }
+  }
+}

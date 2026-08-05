@@ -830,6 +830,245 @@ def build_story_stats(key_statistics: "dict", players: "list[dict]",
     return check_total(out, "StoryStatsBlock", "StoryStatsBlock")
 
 
+# ------------------------------------------------------------------------------ Domain C
+_IN_POSSESSION_PHASES = {
+    "buildUpUnopposed": "build_up_unopposed", "buildUpOpposed": "build_up_opposed",
+    "progression": "progression", "finalThird": "final_third", "longBall": "long_ball",
+    "attackingTransition": "attacking_transition", "counterAttack": "counter_attack",
+    "setPiece": "set_piece",
+}
+_OUT_OF_POSSESSION_PHASES = {
+    "highPress": "high_press", "midPress": "mid_press", "lowPress": "low_press",
+    "highBlock": "high_block", "midBlock": "mid_block", "lowBlock": "low_block",
+    "recovery": "recovery", "defensiveTransition": "defensive_transition",
+    "counterPress": "counter_press",
+}
+# The panel keys the Phases of Play page prints, contract name -> corpus name.
+_IN_POSSESSION_PANELS = {
+    "buildUpLow": "build-up-low", "buildUpMid": "build-up-mid",
+    "finalThirdPhase": "final-third-phase",
+}
+_OUT_OF_POSSESSION_PANELS = {
+    "highBlockPress": "high-block-press", "midBlock": "mid-block", "lowBlock": "low-block",
+}
+
+
+def _shape_metrics(panel: "dict") -> "dict":
+    return check_total(
+        {"lineHeight": panel["line_height"], "teamLength": panel["team_length"],
+         "teamWidth": panel["team_width"]},
+        "ShapeMetrics", "ShapeMetrics",
+    )
+
+
+def build_tactical_identity(match: "dict") -> "dict":
+    """Domain C -> `tacticalIdentity` (RULED D1, unblocked by CS-2).
+
+    The corpus prints **three panels per possession state with three measures each** — 18
+    values per team, 3,744 corpus-wide — against the four `PossessionSplitMetres` modelled
+    before CS-2. No aggregation is implied by the data and none is invented here: m001 home
+    in-possession `line_height` is 19 / 39 / 54, and the pre-CS-2 fixture's single 44.4
+    matched no panel and no mean of them because it was synthetic.
+
+    `defensiveBlockDistribution` MUST equal `phasesOutOfPossession.{high,mid,low}Block` —
+    the schema cannot say so (decision 12 forbids `if`/`then`), and the two copies exist
+    because #pressing renders block height as its own concept. Verified equal on 208/208
+    corpus team-innings; asserted here so they cannot drift.
+    """
+    match_id = match["spine"]["match_id"]
+    out: dict[str, dict] = {}
+    for side in ("home", "away"):
+        block = match["domains"]["tactical_identity"][side]
+        panels = block["line_height_team_length"]
+        phases_out = {t: block["phases_out_of_possession"][s]
+                      for t, s in _OUT_OF_POSSESSION_PHASES.items()}
+        distribution = {"high": block["defensive_block"]["high"],
+                        "mid": block["defensive_block"]["mid"],
+                        "low": block["defensive_block"]["low"]}
+        mirrored = {"high": phases_out["highBlock"], "mid": phases_out["midBlock"],
+                    "low": phases_out["lowBlock"]}
+        if distribution != mirrored:
+            raise EmitError(
+                f"{side} defensiveBlockDistribution {distribution!r} does not mirror "
+                f"phasesOutOfPossession {mirrored!r}; the two copies of the same three "
+                f"numbers have drifted",
+                match_id,
+            )
+        out[side] = check_total(
+            {
+                "phasesInPossession": check_total(
+                    {t: block["phases_in_possession"][s]
+                     for t, s in _IN_POSSESSION_PHASES.items()},
+                    "InPossessionPhases", f"InPossessionPhases[{side}]"),
+                "phasesOutOfPossession": check_total(
+                    phases_out, "OutOfPossessionPhases", f"OutOfPossessionPhases[{side}]"),
+                "shapeByPhase": check_total(
+                    {
+                        "inPossession": check_total(
+                            {t: _shape_metrics(panels["in_possession"][s])
+                             for t, s in _IN_POSSESSION_PANELS.items()},
+                            "InPossessionShapePanels", f"InPossessionShapePanels[{side}]"),
+                        "outOfPossession": check_total(
+                            {t: _shape_metrics(panels["out_of_possession"][s])
+                             for t, s in _OUT_OF_POSSESSION_PANELS.items()},
+                            "OutOfPossessionShapePanels",
+                            f"OutOfPossessionShapePanels[{side}]"),
+                    },
+                    "ShapeByPhase", f"ShapeByPhase[{side}]"),
+                "defensiveBlockDistribution": check_total(
+                    distribution, "DefensiveBlockDistribution",
+                    f"DefensiveBlockDistribution[{side}]"),
+            },
+            "TeamTacticalIdentity", f"TeamTacticalIdentity[{side}]",
+        )
+    return check_total(out, "TacticalIdentityBlock", "TacticalIdentityBlock")
+
+
+# ------------------------------------------------------------------------------ Domain E
+def _completion_counts(node: "dict", where: str) -> "dict":
+    """`CompletionCounts`. The spine's `printed_total` is DROPPED — the contract models
+    `total` alone, and `printed_total` is the extractor's own cross-check field."""
+    return check_total(
+        {"complete": node["complete"], "incomplete": node["incomplete"],
+         "total": node["total"]},
+        "CompletionCounts", where,
+    )
+
+
+_INTERVENTION_TYPES = {
+    "saveAndRetain": "save_and_retain", "saveAndDeflect": "save_and_deflect",
+    "deflectAndRetain": "deflect_and_retain", "saveAttempt": "save_attempt",
+    "noSaveAttempt": "no_save_attempt",
+}
+_DELIVERY_TYPES_FACED = {
+    "inswing": "inswing", "outswing": "outswing", "driven": "driven", "lofted": "lofted",
+    "cutback": "cutback", "pushCross": "push_cross", "total": "total",
+}
+
+
+def build_goalkeeping(match: "dict") -> "list[dict]":
+    """Domain E -> `goalkeeping` (RULED D2, unblocked by CS-2).
+
+    **Per TEAM, home first.** The source is per-team: all four page families are titled
+    `{team}`, no goalkeeper name appears on any of them, and 7 of 208 corpus team-innings
+    used two keepers while still printing one team-level block each. The keeper list is
+    carried as CONTEXT and the figures are never summed or split across two keepers (AD-5).
+
+    **The five CS-2-nullable fields emit `null` on 208/208** — `feetTechniques`,
+    `handsTechniques`, `throwTechniques`, `byBodyType`, `crossesFacedCompleted`. Their
+    absence is not an extraction defect: they are raster donut-slice labels and one
+    unvalidatable marker colour, and only the donut centre total reaches the text layer.
+
+    **The two parallel lists are zipped here**, which Story 1.9 chose the shape for and
+    recorded so the zip would be expected rather than surprising: `involvement_series` and
+    `involvement_clock.stamps` are indexed by position, one sample per slot.
+
+    `Σ(involvement_series) <= total_involvements` is the shipped bound and is NOT an
+    equality — the printed total exceeds the plotted sum by 0-5 on all 208 innings, cause
+    unresolved. Both are emitted verbatim and are not reconciled (the standing 1.8/1.12
+    rule).
+    """
+    match_id = match["spine"]["match_id"]
+    out: list[dict] = []
+    for side in ("home", "away"):
+        team_id = match["spine"][f"{side}_team_id"]
+        block = match["domains"]["goalkeeping"][side]
+        series = block["involvement_series"]
+        stamps = block["involvement_clock"]["stamps"]
+        if len(series) != len(stamps):
+            raise EmitError(
+                f"{side} involvement_series has {len(series)} slot(s) but "
+                f"involvement_clock.stamps has {len(stamps)}; the two parallel lists "
+                f"cannot be zipped",
+                match_id,
+            )
+        total = block["total_involvements"]
+        if sum(series) > total:
+            raise EmitError(
+                f"{side} plotted involvements {sum(series)} exceed the printed total "
+                f"{total}; the bound is sum <= total",
+                match_id,
+            )
+        keepers = block["goalkeepers"]
+        if not keepers:
+            raise EmitError(f"{side} goalkeeping block names no goalkeeper", match_id)
+
+        distribution = block["distribution"]
+        prevention = block["goal_prevention"]
+        aerial = block["aerial_control"]
+        out.append(check_total(
+            {
+                "teamId": team_id,
+                "goalkeepers": [
+                    check_total(
+                        {
+                            "playerId": k["player_id"],
+                            "playerName": k["name"],
+                            "shirtNumber": k["shirt_number"],
+                            "substitutedOn": _stamp(k["substituted_on"]),
+                            "substitutedOff": _stamp(k["substituted_off"]),
+                        },
+                        "GoalkeeperRef", f'GoalkeeperRef[{k["player_id"]}]')
+                    for k in keepers
+                ],
+                "totalInvolvements": total,
+                "involvementTimeline": [
+                    check_total(
+                        {"at": _stamp(stamp), "involvements": count},
+                        "GoalkeeperInvolvementSample", "GoalkeeperInvolvementSample")
+                    for stamp, count in zip(stamps, series)
+                ],
+                "distribution": check_total(
+                    {
+                        "total": _completion_counts(distribution["total"],
+                                                    f"distribution.total[{side}]"),
+                        "feet": _completion_counts(distribution["feet"],
+                                                   f"distribution.feet[{side}]"),
+                        "hands": _completion_counts(distribution["hands"],
+                                                    f"distribution.hands[{side}]"),
+                        "throw": _completion_counts(distribution["throw"],
+                                                    f"distribution.throw[{side}]"),
+                        "feetTechniques": distribution["feet_techniques"],
+                        "handsTechniques": distribution["hands_techniques"],
+                        "throwTechniques": distribution["throw_techniques"],
+                        "lineBreaks": distribution["line_breaks"],
+                    },
+                    "GoalkeeperDistribution", f"GoalkeeperDistribution[{side}]"),
+                "goalPrevention": check_total(
+                    {
+                        "attemptsFaced": prevention["attempts_faced"],
+                        "savePercentage": prevention["save_percentage"],
+                        "totalInterventions": prevention["total_interventions"],
+                        "byInterventionType": {
+                            t: prevention["by_intervention_type"][s]
+                            for t, s in _INTERVENTION_TYPES.items()
+                        },
+                        "byBodyType": prevention["by_body_type"],
+                    },
+                    "GoalPrevention", f"GoalPrevention[{side}]"),
+                "aerialControl": check_total(
+                    {
+                        "totalInterventions": aerial["total_interventions"],
+                        "punches": _completion_counts(aerial["punches"],
+                                                      f"aerial.punches[{side}]"),
+                        "claims": _completion_counts(aerial["claims"],
+                                                     f"aerial.claims[{side}]"),
+                        "tippedPalmed": _completion_counts(aerial["tipped_palmed"],
+                                                           f"aerial.tippedPalmed[{side}]"),
+                        "crossesFacedAttempted": aerial["crosses_faced_attempted"],
+                        "crossesFacedCompleted": aerial["crosses_faced_completed"],
+                        "deliveryTypesFaced": check_total(
+                            {t: aerial["delivery_types_faced"][s]
+                             for t, s in _DELIVERY_TYPES_FACED.items()},
+                            "CrossDeliveryTypeCounts", f"deliveryTypesFaced[{side}]"),
+                    },
+                    "AerialControl", f"AerialControl[{side}]"),
+            },
+            "TeamGoalkeeping", f"TeamGoalkeeping[{side}]",
+        ))
+    return out
+
+
 # ------------------------------------------------------------------------------ Domain D
 def build_shots(match: "dict") -> "list[dict]":
     """`events.shots[]`.
@@ -1047,32 +1286,12 @@ def precision_by_key(decimals: "dict[str, int]") -> "dict[str, int]":
 
 
 def build_bundle(match_spine: "dict", entities: "dict", decimals: "dict[str, int]") -> "dict":
-    """One Match Bundle from one staged spine file.
+    """One complete Match Bundle from one staged spine file.
 
-    Raises `EmitError` naming CS-2 while `tacticalIdentity` and `goalkeeping` are blocked.
-    They are deliberately NOT stubbed with a guessed shape.
-    """
-    blocked = ", ".join(BLOCKED_ON_CS2)
-    raise EmitError(
-        f"{blocked} cannot be built against schemaVersion {schema_version()}: "
-        f"PossessionSplitMetres models 4 metres per team against a corpus that prints 18, "
-        f"and five contract-required non-nullable goalkeeping sub-fields are null on "
-        f"208/208 team-innings. Both need change-set CS-2 (RULED D1 and D2); this story is "
-        f"BLOCKED-PENDING-CS-2 and the two mappers are deliberately not stubbed with a "
-        f"guessed shape.",
-        match_spine["spine"]["match_id"],
-    )
-
-
-def build_bundle_partial(match_spine: "dict", entities: "dict",
-                         decimals: "dict[str, int]") -> "dict":
-    """Every root key this story CAN build, with the two CS-2-blocked mappers omitted.
-
-    Not a public entry point and not something that may be written to `/data`: a bundle
-    missing two required root keys is schema-invalid by construction. It exists so the nine
-    unblocked mappers, the precision layer, the budget gate and the canonical writer are
-    all testable and reviewable before CS-2 lands, which is the honest intermediate state
-    the story's sequencing note describes.
+    All eleven required root keys. `tacticalIdentity` and `goalkeeping` were blocked until
+    change-set CS-2 (logged decision 18) reshaped `PossessionSplitMetres` into the
+    per-phase panels the corpus actually prints and made `GoalkeepingBlock` per-team with
+    the five unfulfillable sub-fields nullable.
     """
     codes = {t["team_id"]: t["team_code"] for t in entities["teams"]}
     spine = match_spine["spine"]
@@ -1087,11 +1306,25 @@ def build_bundle_partial(match_spine: "dict", entities: "dict",
                                         spine["away_team_id"], spine["match_id"]),
         "momentum": build_momentum(match_spine),
         "keyStatistics": key_statistics,
+        "tacticalIdentity": build_tactical_identity(match_spine),
         "events": build_events(match_spine),
+        "goalkeeping": build_goalkeeping(match_spine),
         "setPlays": build_set_plays(match_spine),
         "players": players,
     }
     return round_bundle(bundle, decimals)
+
+
+def build_bundle_partial(match_spine: "dict", entities: "dict",
+                         decimals: "dict[str, int]") -> "dict":
+    """Deprecated alias for `build_bundle`, kept for one story.
+
+    While CS-2 was outstanding this built the nine unblocked root keys so the mapping
+    boundary, the precision layer, the budget gate and the writer could all be tested
+    against a bundle that was schema-invalid on exactly the two blocked keys. CS-2 has
+    landed, so there is no longer a partial shape to build.
+    """
+    return build_bundle(match_spine, entities, decimals)
 
 
 # ---------------------------------------------------------------------------------- CLI

@@ -10,7 +10,6 @@ import {
   BLOCK_LEVELS,
   IN_POSSESSION_PHASES,
   IN_POSSESSION_PROPERTY,
-  METRE_UNIT,
   OUT_OF_POSSESSION_PHASES,
   OUT_OF_POSSESSION_PROPERTY,
   PRESS_PHASES,
@@ -18,7 +17,6 @@ import {
   blockRows,
   distributionChartHeightClass,
   inPossessionPhaseKey,
-  metreRows,
   outOfPossessionPhaseKey,
   percentAxisMax,
   percentTicks,
@@ -284,44 +282,14 @@ describe("pressRows and blockRows (Task 2.4)", () => {
   });
 });
 
-describe("metreRows (Task 2.5)", () => {
-  it("returns four rows per team in a fixed measure/state order", () => {
-    for (const { slug, bundle } of FIXTURES) {
-      const rows = metreRows(bundle.tacticalIdentity);
-      expect(rows, slug).toHaveLength(4);
-      expect(rows.map((row) => row.key)).toEqual([
-        "lineHeight-inPossession",
-        "lineHeight-outOfPossession",
-        "teamLength-inPossession",
-        "teamLength-outOfPossession",
-      ]);
-    }
-  });
-
-  it("reads the contracted values verbatim and invents no aggregation", () => {
-    const rows = metreRows(m001.tacticalIdentity);
-    expect(rows[0].home).toBe(m001.tacticalIdentity.home.lineHeight.inPossession);
-    expect(rows[0].away).toBe(m001.tacticalIdentity.away.lineHeight.inPossession);
-    expect(rows[3].home).toBe(m001.tacticalIdentity.home.teamLength.outOfPossession);
-    /*
-     * m001 home in-possession line height is 44.4 — and the staged corpus record
-     * prints 19 / 39 / 54 across its three panels, so this value matches NO
-     * panel and no mean of them (ruled decision 5). Pinned here so the number a
-     * reader sees on screen is traceable to the gap filed to Story 1.16.
-     */
-    expect(rows[0].home).toBeCloseTo(44.4, 6);
-  });
-
-  it("carries the metre unit as locale-layer metadata, never a baked string", () => {
-    expect(METRE_UNIT.lineHeight).toBe("m");
-    expect(METRE_UNIT.teamLength).toBe("m");
-    for (const row of metreRows(m001.tacticalIdentity)) {
-      expect(row.unitKey).toBe("enums.unit.m");
-      expect(row.labelKey.startsWith("viz.pressing.metre.")).toBe(true);
-    }
-  });
-});
-
+/*
+ * The `metreRows` suite was RETIRED with the model it covered, by change-set CS-2
+ * (contract logged decision 18). It pinned the four `lineHeight`/`teamLength` values and
+ * asserted m001 home in-possession was 44.4 "so the number a reader sees on screen is
+ * traceable to the gap filed to Story 1.16" - that gap is now closed, and the 44.4 is
+ * gone with it. `tacticalIdentity.shapeByPhase` carries the 18 real values; re-presenting
+ * them is filed to 2.19 with the six panel labels it needs.
+ */
 describe("percentTicks and percentAxisMax (Task 2.6, ruled decision 9)", () => {
   /*
    * PROPERTY TEST over 1-160. The corpus in-possession SUM reaches 149, so a

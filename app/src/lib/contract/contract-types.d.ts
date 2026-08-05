@@ -12,7 +12,7 @@ export interface AerialControl {
   claims: CompletionCounts;
   tippedPalmed: CompletionCounts;
   crossesFacedAttempted: Count;
-  crossesFacedCompleted: Count;
+  crossesFacedCompleted: CrossesFacedCompleted;
   deliveryTypesFaced: CrossDeliveryTypeCounts;
 }
 
@@ -38,9 +38,10 @@ export interface AggregateInPossessionPhases {
   setPiece: Percentage;
 }
 
-export interface AggregateLineHeight {
-  inPossession: Metres;
-  outOfPossession: Metres;
+export interface AggregateInPossessionShapePanels {
+  buildUpLow: AggregateShapeMetrics;
+  buildUpMid: AggregateShapeMetrics;
+  finalThirdPhase: AggregateShapeMetrics;
 }
 
 export interface AggregateMetric {
@@ -67,22 +68,39 @@ export interface AggregateOutOfPossessionPhases {
   counterPress: Percentage;
 }
 
+export interface AggregateOutOfPossessionShapePanels {
+  highBlockPress: AggregateShapeMetrics;
+  midBlock: AggregateShapeMetrics;
+  lowBlock: AggregateShapeMetrics;
+}
+
+/**
+ * Team shape by phase of play, averaged across the team's matches. Not a partition and not aggregable across panels — each panel is its own measurement.
+ */
+export interface AggregateShapeByPhase {
+  inPossession: AggregateInPossessionShapePanels;
+  outOfPossession: AggregateOutOfPossessionShapePanels;
+}
+
+/**
+ * The three distances for one phase panel, averaged across the team's matches.
+ */
+export interface AggregateShapeMetrics {
+  lineHeight: Metres;
+  teamLength: Metres;
+  teamWidth: Metres;
+}
+
 /**
  * Tournament-wide tactical identity. Every value is a match-count-weighted mean over the team's matches; the semantics are recorded in contract/README.md.
  */
 export interface AggregateTacticalIdentity {
   phasesInPossession: AggregateInPossessionPhases;
   phasesOutOfPossession: AggregateOutOfPossessionPhases;
-  lineHeight: AggregateLineHeight;
-  teamLength: AggregateTeamLength;
+  shapeByPhase: AggregateShapeByPhase;
   defensiveBlockDistribution: AggregateBlockDistribution;
   possession: Percentage;
   pressingIntensity: PressingIntensity;
-}
-
-export interface AggregateTeamLength {
-  inPossession: Metres;
-  outOfPossession: Metres;
 }
 
 /**
@@ -108,6 +126,8 @@ export type Boards = Leaderboard[];
  * Body part used for a shot, from the shots event table's Body Part column.
  */
 export type BodyPart = "right-foot" | "left-foot" | "head" | "upper-body" | "lower-body";
+
+export type ByBodyType = InterventionBodyTypeCounts | null;
 
 export interface CardRecord {
   type: CardType;
@@ -138,6 +158,9 @@ export interface CompletionCounts {
  */
 export type CornerDeliveryStyle = "inswing" | "outswing" | "driven" | "lofted";
 
+/**
+ * Corners by delivery style. NOT a partition of totalCorners: the four styles sum to totalCorners on only 96 of 208 corpus team-innings, and on the other 112 they sum to LESS (never more). Do not normalize, do not render as slices of a whole, and do not treat a shortfall as missing data — a corner whose style the source did not classify is simply absent from this breakdown. Use `cornersByDeliveryType`, which does partition totalCorners on 208/208. CS-2 added this text: the shape was correct but the constraint was never stated, so a consumer had no way to know.
+ */
 export interface CornerDeliveryStyleCounts {
   inswing: Count;
   outswing: Count;
@@ -212,6 +235,8 @@ export type CrossPlayerName = string;
  * Cross events, or null when the report does not carry the crosses page.
  */
 export type Crosses = CrossEvents | null;
+
+export type CrossesFacedCompleted = Count | null;
 
 /**
  * How a knockout tie was decided.
@@ -319,6 +344,8 @@ export interface FeetTechniqueCounts {
   other: Count;
 }
 
+export type FeetTechniques = FeetTechniqueCounts | null;
+
 /**
  * This team's results in chronological order. The Hub renders result chips straight from it; it is a derived value, so it is a field (AD-5).
  */
@@ -341,7 +368,7 @@ export interface FormationUsageRow {
 }
 
 /**
- * Free kicks by type. These are NESTED, not siblings: directOnTarget and directOffTarget are subdivisions of direct, so direct == directOnTarget + directOffTarget (holds across all six fixture team-innings) and direct + indirect == totalFreeKicks. Summing all four fields double-counts the direct ones — a stacked chart must use either {direct, indirect} or {directOnTarget, directOffTarget, indirect}.
+ * Free kicks by type. `direct + indirect == totalFreeKicks` holds on all 208 corpus team-innings and is the ONLY safe relation here. CORRECTED BY CS-2: the previous text claimed directOnTarget and directOffTarget are subdivisions of direct, so that `direct == directOnTarget + directOffTarget`. That is CORPUS-FALSE — it holds on 0 of 208 team-innings, and 160 of them carry `directOnTarget + directOffTarget == 0` while `direct > 0`. It held 6/6 in the hand-authored fixtures, which is how it came to be written. Do not assert it, do not sum the on/off pair into `direct`, and do not treat a zero pair as missing data: the source simply does not always break `direct` down.
  */
 export interface FreeKickCounts {
   direct: Count;
@@ -368,14 +395,14 @@ export type GoalOwnGoal = boolean;
 export type GoalPenalty = boolean;
 
 /**
- * Domain E goal prevention for one goalkeeper. NOTE the two breakdowns have DIFFERENT denominators, which is a property of the source page, not an error: byInterventionType sums to attemptsFaced (every attempt faced is categorised, including no-save-attempt), while byBodyType sums to totalInterventions (only attempts the keeper actually intervened on have a body part). Verified across all six fixture goalkeepers. An App rendering the two panels side by side must label them with their own totals rather than implying a shared one.
+ * Domain E goal prevention for one TEAM. NOTE the two breakdowns have DIFFERENT denominators, which is a property of the source page, not an error: byInterventionType sums to attemptsFaced (every attempt faced is categorised, including no-save-attempt), while byBodyType sums to totalInterventions (only attempts the keeper actually intervened on have a body part). An App rendering the two panels side by side must label them with their own totals rather than implying a shared one. CS-2 re-grounded this claim on the corpus rather than the fixtures: `sum(byInterventionType) == attemptsFaced` is now verified TRUE on all 208 corpus team-innings (delta histogram exactly {0: 208}), which discharges the measurement Story 2.10's review routed to Story 1.16 by name. The byBodyType half remains UNVERIFIED against real data and cannot be checked, because byBodyType is null on 208/208 — it is stated here on the fixtures' authority alone and must not be relied on until a source for it exists.
  */
 export interface GoalPrevention {
   attemptsFaced: Count;
   savePercentage: Percentage;
   totalInterventions: Count;
   byInterventionType: InterventionTypeCounts;
-  byBodyType: InterventionBodyTypeCounts;
+  byBodyType: ByBodyType;
 }
 
 /**
@@ -400,37 +427,38 @@ export interface GoalkeeperDistribution {
   feet: CompletionCounts;
   hands: CompletionCounts;
   throw: CompletionCounts;
-  feetTechniques: FeetTechniqueCounts;
-  handsTechniques: HandsTechniqueCounts;
-  throwTechniques: ThrowTechniqueCounts;
+  feetTechniques: FeetTechniques;
+  handsTechniques: HandsTechniques;
+  throwTechniques: ThrowTechniques;
   lineBreaks: Count;
 }
 
 export interface GoalkeeperInvolvementSample {
-  minute: Minute;
+  at: MinuteStamp;
   involvements: Count;
 }
 
 /**
- * Involvements bucketed along the match clock, as the Goalkeeping Involvement page's timeline chart plots them.
+ * Involvements bucketed along the match clock, as the Goalkeeping Involvement page's timeline chart plots them. Index by SAMPLE, never by minute.
  */
 export type GoalkeeperInvolvementTimeline = GoalkeeperInvolvementSample[];
 
 export type GoalkeeperName = string;
 
 /**
- * Domain E, one goalkeeper.
+ * A goalkeeper who appeared for this team, carried as CONTEXT for the team-level block. Never a key to split the block by: the source does not attribute its figures per keeper.
  */
-export interface GoalkeeperRecord {
-  teamId: TeamId;
+export interface GoalkeeperRef {
   playerId: PlayerId;
   playerName: GoalkeeperName;
-  totalInvolvements: Count;
-  involvementTimeline: GoalkeeperInvolvementTimeline;
-  distribution: GoalkeeperDistribution;
-  goalPrevention: GoalPrevention;
-  aerialControl: AerialControl;
+  shirtNumber: ShirtNumber;
+  substitutedOn: GoalkeeperSubstitutedOn;
+  substitutedOff: GoalkeeperSubstitutedOff;
 }
+
+export type GoalkeeperSubstitutedOff = MinuteStamp | null;
+
+export type GoalkeeperSubstitutedOn = MinuteStamp | null;
 
 /**
  * Per-goalkeeper records, or null when the report does not carry the goalkeeping pages at all. An empty array means the pages were present and listed no goalkeeper; null means there was nothing to read. The App renders those two states differently, so they must never be collapsed.
@@ -438,9 +466,9 @@ export interface GoalkeeperRecord {
 export type Goalkeeping = GoalkeepingBlock | null;
 
 /**
- * One entry per goalkeeper who appeared, both teams, ordered home team first.
+ * One entry per TEAM, ordered home team first. CS-2 changed this from one entry per goalkeeper: the source is per-team and never names a keeper.
  */
-export type GoalkeepingBlock = GoalkeeperRecord[];
+export type GoalkeepingBlock = TeamGoalkeeping[];
 
 /**
  * Every goal in the match, chronological. The Momentum Timeline's goal markers come from here, never from the momentum series.
@@ -476,6 +504,8 @@ export interface HandsTechniqueCounts {
   dropKick: Count;
 }
 
+export type HandsTechniques = HandsTechniqueCounts | null;
+
 /**
  * Sort direction the ranks already reflect. Carried so the App can label the board correctly without a hard-coded metric table of its own.
  */
@@ -506,6 +536,15 @@ export interface InPossessionPhases {
   attackingTransition: Percentage;
   counterAttack: Percentage;
   setPiece: Percentage;
+}
+
+/**
+ * The three in-possession phase panels the Phases of Play page prints, each with its own three distances.
+ */
+export interface InPossessionShapePanels {
+  buildUpLow: ShapeMetrics;
+  buildUpMid: ShapeMetrics;
+  finalThirdPhase: ShapeMetrics;
 }
 
 /**
@@ -626,7 +665,7 @@ export interface Leaderboards {
   boards: Boards;
 }
 
-export type LeaderboardsSchemaVersion = 3;
+export type LeaderboardsSchemaVersion = 4;
 
 export interface Lineup {
   formation: Formation;
@@ -685,7 +724,7 @@ export interface MatchBundle {
 /**
  * Stamped from /contract/version.json. One global integer, declared exactly once (AD-2).
  */
-export type MatchBundleSchemaVersion = 3;
+export type MatchBundleSchemaVersion = 4;
 
 /**
  * Calendar date of the match, venue-local, ISO 8601 (AD-7).
@@ -894,6 +933,15 @@ export interface OutOfPossessionPhases {
   recovery: Percentage;
   defensiveTransition: Percentage;
   counterPress: Percentage;
+}
+
+/**
+ * The three out-of-possession phase panels the Phases of Play page prints, each with its own three distances.
+ */
+export interface OutOfPossessionShapePanels {
+  highBlockPress: ShapeMetrics;
+  midBlock: ShapeMetrics;
+  lowBlock: ShapeMetrics;
 }
 
 /**
@@ -1110,7 +1158,7 @@ export interface PlayerProfile {
 
 export type PlayerProfileName = string;
 
-export type PlayerProfileSchemaVersion = 3;
+export type PlayerProfileSchemaVersion = 4;
 
 /**
  * Domain G, one player. Every field the Expert Layer's per-player tables show is here — there is no reduced variant.
@@ -1153,14 +1201,6 @@ export type Position = "gk" | "df" | "mf" | "fw";
  */
 export type PossessionContestType =
   "pass" | "attempt-at-goal" | "cross" | "clearance" | "physical-duel" | "aerial-duel";
-
-/**
- * A distance measured separately in and out of possession.
- */
-export interface PossessionSplitMetres {
-  inPossession: Metres;
-  outOfPossession: Metres;
-}
 
 /**
  * Mean defensive pressures applied per match.
@@ -1218,6 +1258,23 @@ export type ResultVenue = string;
 export interface SetPlaysBlock {
   home: TeamSetPlays;
   away: TeamSetPlays;
+}
+
+/**
+ * Team shape by phase of play, in and out of possession. The report does not aggregate these; neither does the contract.
+ */
+export interface ShapeByPhase {
+  inPossession: InPossessionShapePanels;
+  outOfPossession: OutOfPossessionShapePanels;
+}
+
+/**
+ * The three distances the report prints for one phase panel. `teamWidth` had no destination in v3 at all, so 1,248 measured corpus values were being discarded.
+ */
+export interface ShapeMetrics {
+  lineHeight: Metres;
+  teamLength: Metres;
+  teamWidth: Metres;
 }
 
 /**
@@ -1418,6 +1475,26 @@ export interface TeamEntity {
 export type TeamEntityName = string;
 
 /**
+ * Every goalkeeper who appeared for this team, in appearance order. One entry on 201 of 208 corpus team-innings, two on 7.
+ *
+ * @minItems 1
+ */
+export type TeamGoalkeepers = [GoalkeeperRef, ...GoalkeeperRef[]];
+
+/**
+ * Domain E for one team. The figures are the team's; `goalkeepers` names who kept goal and is context only. NEVER sum or split these figures across two keepers (AD-5). `totalInvolvements` is the PRINTED total and exceeds the plotted sum of `involvementTimeline` by 0-5 on all 208 corpus team-innings, cause unresolved — both are emitted verbatim and are NOT reconciled, so the bound is `sum(involvementTimeline) <= totalInvolvements` and it is not an equality.
+ */
+export interface TeamGoalkeeping {
+  teamId: TeamId;
+  goalkeepers: TeamGoalkeepers;
+  totalInvolvements: Count;
+  involvementTimeline: GoalkeeperInvolvementTimeline;
+  distribution: GoalkeeperDistribution;
+  goalPrevention: GoalPrevention;
+  aerialControl: AerialControl;
+}
+
+/**
  * Entity id and URL slug of a team (AD-3). Lowercase ASCII kebab, accent-stripped. An id once emitted never changes.
  */
 export type TeamId = string;
@@ -1504,7 +1581,7 @@ export type TeamProfileGoalDifference = number;
 
 export type TeamProfileName = string;
 
-export type TeamProfileSchemaVersion = 3;
+export type TeamProfileSchemaVersion = 4;
 
 /**
  * A team's tournament record. The IA specifies team search results as name plus tournament record, and <title>/OG for a team route as name plus record — so this is a derived aggregate that must be a field (AD-5).
@@ -1556,8 +1633,7 @@ export interface TeamSetPlays {
 export interface TeamTacticalIdentity {
   phasesInPossession: InPossessionPhases;
   phasesOutOfPossession: OutOfPossessionPhases;
-  lineHeight: PossessionSplitMetres;
-  teamLength: PossessionSplitMetres;
+  shapeByPhase: ShapeByPhase;
   defensiveBlockDistribution: DefensiveBlockDistribution;
 }
 
@@ -1588,6 +1664,8 @@ export interface ThrowTechniqueCounts {
   chest: Count;
 }
 
+export type ThrowTechniques = ThrowTechniqueCounts | null;
+
 /**
  * The tournament index. Three load-bearing jobs, all served by this one file: (1) results and standings by stage and group; (2) the route manifest generateStaticParams reads at build time (AD-11), where AR-4 asserts one profile artifact per listed entity; (3) the source for the header typeahead and for the <title>/OG metadata composed at build time.
  */
@@ -1604,7 +1682,7 @@ export interface Tournament {
  */
 export type TournamentName = string;
 
-export type TournamentSchemaVersion = 3;
+export type TournamentSchemaVersion = 4;
 
 export interface TrendPoint {
   matchId: MatchId;

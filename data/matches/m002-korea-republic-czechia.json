@@ -1,0 +1,6862 @@
+{
+  "events": {
+    "crosses": null,
+    "defensiveActions": null,
+    "passNetworkEdges": [
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "seol-youngwoo-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "oh-hyeongyu-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kim-seunggyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "eom-jisung-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-hanbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-seunggyu-kor",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "lee-hanbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-hanbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "lee-hanbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "lee-hanbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "lee-hanbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-hanbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "seol-youngwoo-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-hanbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "oh-hyeongyu-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-seunggyu-kor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 14
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "son-heungmin-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-taeseok-kor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lee-gihyuk-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-heechan-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-seunggyu-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "son-heungmin-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-taeseok-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "kim-minjae-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-heechan-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 16
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "son-heungmin-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 15
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-taeseok-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "seol-youngwoo-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-heechan-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "son-heungmin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "son-heungmin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "son-heungmin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "son-heungmin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "son-heungmin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-taeseok-kor",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "son-heungmin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 16
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "son-heungmin-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-taeseok-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "seol-youngwoo-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "paik-seungho-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-heechan-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "lee-jaesung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lee-jaesung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lee-jaesung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-jaesung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "son-heungmin-kor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "lee-jaesung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "lee-jaesung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-taeseok-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-jaesung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-jaesung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "seol-youngwoo-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-taeseok-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-taeseok-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-taeseok-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-taeseok-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-taeseok-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "son-heungmin-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-taeseok-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-taeseok-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lee-taeseok-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "seol-youngwoo-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "son-heungmin-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-taeseok-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "seol-youngwoo-kor",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "lee-kangin-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "oh-hyeongyu-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-seunggyu-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-minjae-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-inbeom-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "son-heungmin-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-jaesung-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-taeseok-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "park-jinseob-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "seol-youngwoo-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-jingyu-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hwang-heechan-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-seunggyu-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hwang-heechan-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hwang-heechan-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hwang-heechan-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "paik-seungho-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hwang-heechan-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "park-jinseob-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hwang-heechan-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "eom-jisung-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "park-jinseob-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "park-jinseob-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-gihyuk-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "park-jinseob-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-heechan-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "park-jinseob-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "oh-hyeongyu-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oh-hyeongyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oh-hyeongyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-kangin-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "oh-hyeongyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "kim-jingyu-kor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kim-jingyu-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "seol-youngwoo-kor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "eom-jisung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "lee-hanbeom-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "eom-jisung-kor",
+        "teamId": "korea-republic",
+        "toPlayerId": "hwang-heechan-kor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kovar-matej-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hranac-robin-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kovar-matej-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kovar-matej-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kovar-matej-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "kovar-matej-cze",
+        "teamId": "czechia",
+        "toPlayerId": "zeleny-jaroslav-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "kovar-matej-cze",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "zeleny-jaroslav-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "soucek-tomas-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sojka-alexandr-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hlozek-adam-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hranac-robin-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sadilek-michal-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "coufal-vladimir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "kovar-matej-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "coufal-vladimir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hranac-robin-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "coufal-vladimir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "coufal-vladimir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "provod-lukas-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "coufal-vladimir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "soucek-tomas-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "coufal-vladimir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sojka-alexandr-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "coufal-vladimir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sadilek-michal-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "coufal-vladimir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chory-tomas-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "chaloupek-stepan-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hranac-robin-cze",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "chaloupek-stepan-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "chaloupek-stepan-cze",
+        "teamId": "czechia",
+        "toPlayerId": "schick-patrik-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "chaloupek-stepan-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sulc-pavel-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "chaloupek-stepan-cze",
+        "teamId": "czechia",
+        "toPlayerId": "provod-lukas-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "chaloupek-stepan-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sojka-alexandr-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "chaloupek-stepan-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sadilek-michal-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "kovar-matej-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hranac-robin-cze",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "provod-lukas-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "zeleny-jaroslav-cze",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "soucek-tomas-cze",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sojka-alexandr-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "schick-patrik-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sulc-pavel-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sulc-pavel-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sulc-pavel-cze",
+        "teamId": "czechia",
+        "toPlayerId": "provod-lukas-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sulc-pavel-cze",
+        "teamId": "czechia",
+        "toPlayerId": "zeleny-jaroslav-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sulc-pavel-cze",
+        "teamId": "czechia",
+        "toPlayerId": "soucek-tomas-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sulc-pavel-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sojka-alexandr-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "provod-lukas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "kovar-matej-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "provod-lukas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hranac-robin-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "provod-lukas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "provod-lukas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "provod-lukas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "provod-lukas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sulc-pavel-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "provod-lukas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "zeleny-jaroslav-cze",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "provod-lukas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sojka-alexandr-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "zeleny-jaroslav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "zeleny-jaroslav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "zeleny-jaroslav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "schick-patrik-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "zeleny-jaroslav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sulc-pavel-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "zeleny-jaroslav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "provod-lukas-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "zeleny-jaroslav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "soucek-tomas-cze",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "zeleny-jaroslav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sojka-alexandr-cze",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "zeleny-jaroslav-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sadilek-michal-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "kovar-matej-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hranac-robin-cze",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sulc-pavel-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "provod-lukas-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "zeleny-jaroslav-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sojka-alexandr-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chytil-mojmir-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "soucek-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chory-tomas-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "kovar-matej-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hranac-robin-cze",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "schick-patrik-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sulc-pavel-cze",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "provod-lukas-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "zeleny-jaroslav-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "soucek-tomas-cze",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "sojka-alexandr-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hlozek-adam-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hlozek-adam-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hlozek-adam-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chytil-mojmir-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "chytil-mojmir-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sadilek-michal-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sadilek-michal-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sadilek-michal-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chaloupek-stepan-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "sadilek-michal-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sadilek-michal-cze",
+        "teamId": "czechia",
+        "toPlayerId": "soucek-tomas-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sadilek-michal-cze",
+        "teamId": "czechia",
+        "toPlayerId": "hlozek-adam-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "sadilek-michal-cze",
+        "teamId": "czechia",
+        "toPlayerId": "chory-tomas-cze",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "chory-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "coufal-vladimir-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "chory-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "krejci-ladislav-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "chory-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "soucek-tomas-cze",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "chory-tomas-cze",
+        "teamId": "czechia",
+        "toPlayerId": "sadilek-michal-cze",
+        "volume": 1
+      }
+    ],
+    "passNetworkNodes": null,
+    "receiving": null,
+    "shootoutAttempts": null,
+    "shots": [
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "son-heungmin-kor",
+        "playerName": "SON Heungmin",
+        "teamId": "korea-republic",
+        "x": 87.11,
+        "y": 40.91
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "lee-hanbeom-kor",
+        "playerName": "LEE Hanbeom",
+        "teamId": "korea-republic",
+        "x": 94.21,
+        "y": 53.72
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "lee-kangin-kor",
+        "playerName": "LEE Kangin",
+        "teamId": "korea-republic",
+        "x": 73.21,
+        "y": 32.85
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "son-heungmin-kor",
+        "playerName": "SON Heungmin",
+        "teamId": "korea-republic",
+        "x": 90.59,
+        "y": 54.13
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "son-heungmin-kor",
+        "playerName": "SON Heungmin",
+        "teamId": "korea-republic",
+        "x": 74.95,
+        "y": 50.41
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "son-heungmin-kor",
+        "playerName": "SON Heungmin",
+        "teamId": "korea-republic",
+        "x": 80.31,
+        "y": 45.25
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-defensive-event",
+        "ownGoal": false,
+        "playerId": "son-heungmin-kor",
+        "playerName": "SON Heungmin",
+        "teamId": "korea-republic",
+        "x": 89.86,
+        "y": 47.11
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "hwang-inbeom-kor",
+        "playerName": "HWANG Inbeom",
+        "teamId": "korea-republic",
+        "x": 71.18,
+        "y": 47.93
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "hwang-inbeom-kor",
+        "playerName": "HWANG Inbeom",
+        "teamId": "korea-republic",
+        "x": 84.36,
+        "y": 68.8
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "other",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "lee-jaesung-kor",
+        "playerName": "LEE Jaesung",
+        "teamId": "korea-republic",
+        "x": 95.37,
+        "y": 55.99
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "son-heungmin-kor",
+        "playerName": "SON Heungmin",
+        "teamId": "korea-republic",
+        "x": 92.32,
+        "y": 36.36
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target-saved",
+        "ownGoal": false,
+        "playerId": "lee-jaesung-kor",
+        "playerName": "LEE Jaesung",
+        "teamId": "korea-republic",
+        "x": 91.31,
+        "y": 60.12
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "hwang-inbeom-kor",
+        "playerName": "HWANG Inbeom",
+        "teamId": "korea-republic",
+        "x": 90.44,
+        "y": 35.54
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "oh-hyeongyu-kor",
+        "playerName": "OH Hyeongyu",
+        "teamId": "korea-republic",
+        "x": 93.77,
+        "y": 55.58
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "kim-jingyu-kor",
+        "playerName": "KIM Jingyu",
+        "teamId": "korea-republic",
+        "x": 82.33,
+        "y": 58.06
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "soucek-tomas-cze",
+        "playerName": "Tomas SOUCEK",
+        "teamId": "czechia",
+        "x": 94.21,
+        "y": 53.1
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "sulc-pavel-cze",
+        "playerName": "Pavel SULC",
+        "teamId": "czechia",
+        "x": 71.18,
+        "y": 63.64
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "other",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "krejci-ladislav-cze",
+        "playerName": "Ladislav KREJCI",
+        "teamId": "czechia",
+        "x": 94.64,
+        "y": 57.23
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "hlozek-adam-cze",
+        "playerName": "Adam HLOZEK",
+        "teamId": "czechia",
+        "x": 95.95,
+        "y": 43.59
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "interception",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "sadilek-michal-cze",
+        "playerName": "Michal SADILEK",
+        "teamId": "czechia",
+        "x": 69.44,
+        "y": 20.45
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "sadilek-michal-cze",
+        "playerName": "Michal SADILEK",
+        "teamId": "czechia",
+        "x": 86.39,
+        "y": 55.79
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "bodyPart": "upper-body",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-player-on-ball-error",
+        "ownGoal": false,
+        "playerId": "hlozek-adam-cze",
+        "playerName": "Adam HLOZEK",
+        "teamId": "czechia",
+        "x": 92.9,
+        "y": 43.59
+      }
+    ]
+  },
+  "goalkeeping": [
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 15,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 1,
+          "driven": 0,
+          "inswing": 2,
+          "lofted": 1,
+          "outswing": 10,
+          "pushCross": 1,
+          "total": 15
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 0
+      },
+      "distribution": {
+        "feet": {
+          "complete": 19,
+          "incomplete": 13,
+          "total": 32
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 1,
+          "total": 1
+        },
+        "handsTechniques": null,
+        "lineBreaks": 17,
+        "throw": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 2
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 21,
+          "incomplete": 14,
+          "total": 35
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 7,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 3,
+          "saveAndDeflect": 1,
+          "saveAndRetain": 2,
+          "saveAttempt": 1
+        },
+        "savePercentage": 75.0,
+        "totalInterventions": 3
+      },
+      "goalkeepers": [
+        {
+          "playerId": "kim-seunggyu-kor",
+          "playerName": "KIM Seunggyu",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "korea-republic",
+      "totalInvolvements": 42
+    },
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "crossesFacedAttempted": 17,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 0,
+          "driven": 3,
+          "inswing": 4,
+          "lofted": 1,
+          "outswing": 6,
+          "pushCross": 3,
+          "total": 17
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 1
+      },
+      "distribution": {
+        "feet": {
+          "complete": 9,
+          "incomplete": 17,
+          "total": 26
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "handsTechniques": null,
+        "lineBreaks": 23,
+        "throw": {
+          "complete": 6,
+          "incomplete": 0,
+          "total": 6
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 15,
+          "incomplete": 17,
+          "total": 32
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 15,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 7,
+          "saveAndDeflect": 5,
+          "saveAndRetain": 1,
+          "saveAttempt": 2
+        },
+        "savePercentage": 67.0,
+        "totalInterventions": 6
+      },
+      "goalkeepers": [
+        {
+          "playerId": "kovar-matej-cze",
+          "playerName": "Matej KOVAR",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "czechia",
+      "totalInvolvements": 49
+    }
+  ],
+  "keyStatistics": {
+    "away": {
+      "ballProgressions": 10,
+      "completedLineBreaks": 54,
+      "crosses": 15,
+      "defensiveLineBreaks": 5,
+      "defensivePressures": 301,
+      "directPressures": 54,
+      "distanceCovered": 117.6,
+      "expectedGoals": 0.64,
+      "forcedTurnovers": 40,
+      "goals": 1,
+      "passCompletion": 74.0,
+      "passes": 327,
+      "passesCompleted": 241,
+      "possession": 34.2,
+      "receptionsInFinalThird": 77,
+      "secondBalls": 78,
+      "shots": 7,
+      "shotsOnTarget": 4,
+      "sprintDistance": 6.0
+    },
+    "contestedPossession": 10.1,
+    "home": {
+      "ballProgressions": 27,
+      "completedLineBreaks": 92,
+      "crosses": 17,
+      "defensiveLineBreaks": 10,
+      "defensivePressures": 147,
+      "directPressures": 22,
+      "distanceCovered": 111.8,
+      "expectedGoals": 1.77,
+      "forcedTurnovers": 30,
+      "goals": 2,
+      "passCompletion": 89.0,
+      "passes": 542,
+      "passesCompleted": 483,
+      "possession": 55.8,
+      "receptionsInFinalThird": 125,
+      "secondBalls": 49,
+      "shots": 15,
+      "shotsOnTarget": 6,
+      "sprintDistance": 5.4
+    }
+  },
+  "matchId": "m002-korea-republic-czechia",
+  "metadata": {
+    "awayTeam": {
+      "name": "Czechia",
+      "teamCode": "cze",
+      "teamId": "czechia"
+    },
+    "date": "2026-06-11",
+    "goals": [
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Ladislav KREJCI",
+        "scorerPlayerId": "krejci-ladislav-cze",
+        "teamId": "czechia"
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "HWANG Inbeom",
+        "scorerPlayerId": "hwang-inbeom-kor",
+        "teamId": "korea-republic"
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "OH Hyeongyu",
+        "scorerPlayerId": "oh-hyeongyu-kor",
+        "teamId": "korea-republic"
+      }
+    ],
+    "group": "a",
+    "homeTeam": {
+      "name": "Korea Republic",
+      "teamCode": "kor",
+      "teamId": "korea-republic"
+    },
+    "kickoff": "2026-06-11T20:00:00-06:00",
+    "knockoutScore": {
+      "decidedBy": "regulation",
+      "scoreAfter90": {
+        "away": 1,
+        "home": 2
+      },
+      "scoreAfterET": null,
+      "shootoutScore": null,
+      "winnerTeamId": "korea-republic"
+    },
+    "lineups": {
+      "away": {
+        "formation": "5-2-3",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Matej KOVAR",
+            "playerId": "kovar-matej-cze",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Robin HRANAC",
+            "playerId": "hranac-robin-cze",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Vladimir COUFAL",
+            "playerId": "coufal-vladimir-cze",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Stepan CHALOUPEK",
+            "playerId": "chaloupek-stepan-cze",
+            "position": "df",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 59,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Ladislav KREJCI",
+            "playerId": "krejci-ladislav-cze",
+            "position": "df",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Patrik SCHICK",
+            "playerId": "schick-patrik-cze",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": {
+              "minute": 64,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Pavel SULC",
+            "playerId": "sulc-pavel-cze",
+            "position": "fw",
+            "shirtNumber": 15,
+            "substitutedOff": {
+              "minute": 64,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lukas PROVOD",
+            "playerId": "provod-lukas-cze",
+            "position": "mf",
+            "shirtNumber": 17,
+            "substitutedOff": {
+              "minute": 64,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jaroslav ZELENY",
+            "playerId": "zeleny-jaroslav-cze",
+            "position": "df",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tomas SOUCEK",
+            "playerId": "soucek-tomas-cze",
+            "position": "mf",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alexandr SOJKA",
+            "playerId": "sojka-alexandr-cze",
+            "position": "mf",
+            "shirtNumber": 24,
+            "substitutedOff": {
+              "minute": 85,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jindrich STANEK",
+            "playerId": "stanek-jindrich-cze",
+            "position": "gk",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lukas HORNICEK",
+            "playerId": "hornicek-lukas-cze",
+            "position": "gk",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "David ZIMA",
+            "playerId": "zima-david-cze",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tomas HOLES",
+            "playerId": "holes-tomas-cze",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Vladimir DARIDA",
+            "playerId": "darida-vladimir-cze",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Adam HLOZEK",
+            "playerId": "hlozek-adam-cze",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 64,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jan KUCHTA",
+            "playerId": "kuchta-jan-cze",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lukas CERV",
+            "playerId": "cerv-lukas-cze",
+            "position": "mf",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Mojmir CHYTIL",
+            "playerId": "chytil-mojmir-cze",
+            "position": "fw",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 85,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "David JURASEK",
+            "playerId": "jurasek-david-cze",
+            "position": "df",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Michal SADILEK",
+            "playerId": "sadilek-michal-cze",
+            "position": "mf",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 64,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tomas CHORY",
+            "playerId": "chory-tomas-cze",
+            "position": "fw",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 64,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "David DOUDERA",
+            "playerId": "doudera-david-cze",
+            "position": "df",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Hugo SOCHUREK",
+            "playerId": "sochurek-hugo-cze",
+            "position": "mf",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Denis VISINSKY",
+            "playerId": "visinsky-denis-cze",
+            "position": "fw",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      },
+      "home": {
+        "formation": "3-4-3",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "KIM Seunggyu",
+            "playerId": "kim-seunggyu-kor",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "LEE Hanbeom",
+            "playerId": "lee-hanbeom-kor",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 96,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "LEE Gihyuk",
+            "playerId": "lee-gihyuk-kor",
+            "position": "mf",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "KIM Minjae",
+            "playerId": "kim-minjae-kor",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 67,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "HWANG Inbeom",
+            "playerId": "hwang-inbeom-kor",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": {
+              "minute": 84,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "SON Heungmin",
+            "playerId": "son-heungmin-kor",
+            "position": "fw",
+            "shirtNumber": 7,
+            "substitutedOff": {
+              "minute": 69,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "PAIK Seungho",
+            "playerId": "paik-seungho-kor",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": {
+              "minute": 84,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "LEE Jaesung",
+            "playerId": "lee-jaesung-kor",
+            "position": "mf",
+            "shirtNumber": 10,
+            "substitutedOff": {
+              "minute": 62,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "LEE Taeseok",
+            "playerId": "lee-taeseok-kor",
+            "position": "df",
+            "shirtNumber": 13,
+            "substitutedOff": {
+              "minute": 69,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "LEE Kangin",
+            "playerId": "lee-kangin-kor",
+            "position": "mf",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "SEOL Youngwoo",
+            "playerId": "seol-youngwoo-kor",
+            "position": "df",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "SONG Bumkeun",
+            "playerId": "song-bumkeun-kor",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "JO Hyeonwoo",
+            "playerId": "jo-hyeonwoo-kor",
+            "position": "gk",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "KIM Taehyeon",
+            "playerId": "kim-taehyeon-kor",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "CHO Guesung",
+            "playerId": "cho-guesung-kor",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "HWANG Heechan",
+            "playerId": "hwang-heechan-kor",
+            "position": "mf",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 62,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "CHO Wije",
+            "playerId": "cho-wije-kor",
+            "position": "df",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "KIM Moonhwan",
+            "playerId": "kim-moonhwan-kor",
+            "position": "df",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "PARK Jinseob",
+            "playerId": "park-jinseob-kor",
+            "position": "df",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 84,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "BAE Junho",
+            "playerId": "bae-junho-kor",
+            "position": "mf",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 80,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "OH Hyeongyu",
+            "playerId": "oh-hyeongyu-kor",
+            "position": "fw",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 69,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "YANG Hyunjun",
+            "playerId": "yang-hyunjun-kor",
+            "position": "mf",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "CASTROP Jens",
+            "playerId": "castrop-jens-kor",
+            "position": "df",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "KIM Jingyu",
+            "playerId": "kim-jingyu-kor",
+            "position": "mf",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 84,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "EOM Jisung",
+            "playerId": "eom-jisung-kor",
+            "position": "mf",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 69,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "LEE Donggyeong",
+            "playerId": "lee-donggyeong-kor",
+            "position": "mf",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      }
+    },
+    "matchNumber": 2,
+    "matchdayRound": "group-md1",
+    "score": {
+      "away": 1,
+      "home": 2
+    },
+    "stage": "group",
+    "venue": "Guadalajara Stadium"
+  },
+  "momentum": {
+    "samples": [
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 10,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 13,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 7,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 0,
+        "home": 16
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 7,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 3,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 6
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 7
+        },
+        "away": 0,
+        "home": 0
+      }
+    ]
+  },
+  "players": [
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 35.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 12,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 60.0,
+        "passesAttempted": 35,
+        "passesCompleted": 21,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 5,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3920.1,
+        "distanceZone2": 1372.3,
+        "distanceZone3": 170.6,
+        "distanceZone4": 49.0,
+        "distanceZone5": 15.3,
+        "highSpeedRuns": 16,
+        "sprints": 5,
+        "topSpeed": 26.9,
+        "totalDistance": 5527.3
+      },
+      "playerId": "kim-seunggyu-kor",
+      "playerName": "KIM Seunggyu",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 79.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 0,
+          "inFront": 9,
+          "inToOut": 0,
+          "noMovement": 18,
+          "outToIn": 0
+        },
+        "offersReceived": 14,
+        "passCompletion": 88.0,
+        "passesAttempted": 60,
+        "passesCompleted": 53,
+        "stepIns": 3,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 30
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 5,
+        "duelsWonAerial": 5,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 5,
+        "possessionRegains": 8,
+        "pressingDirect": 5,
+        "pressingIndirect": 7,
+        "pushingOn": 22,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3841.1,
+        "distanceZone2": 4522.5,
+        "distanceZone3": 1362.5,
+        "distanceZone4": 450.1,
+        "distanceZone5": 84.4,
+        "highSpeedRuns": 117,
+        "sprints": 39,
+        "topSpeed": 30.1,
+        "totalDistance": 10260.7
+      },
+      "playerId": "lee-hanbeom-kor",
+      "playerName": "LEE Hanbeom",
+      "position": "df",
+      "shirtNumber": 2,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 93.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 13,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 7,
+          "inToOut": 0,
+          "noMovement": 18,
+          "outToIn": 0
+        },
+        "offersReceived": 10,
+        "passCompletion": 97.0,
+        "passesAttempted": 58,
+        "passesCompleted": 56,
+        "stepIns": 2,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 25
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 13,
+        "duelsWonAerial": 5,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 9,
+        "possessionRegains": 7,
+        "pressingDirect": 1,
+        "pressingIndirect": 3,
+        "pushingOn": 9,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3552.1,
+        "distanceZone2": 4578.5,
+        "distanceZone3": 1783.8,
+        "distanceZone4": 624.7,
+        "distanceZone5": 120.2,
+        "highSpeedRuns": 158,
+        "sprints": 51,
+        "topSpeed": 29.2,
+        "totalDistance": 10659.3
+      },
+      "playerId": "lee-gihyuk-kor",
+      "playerName": "LEE Gihyuk",
+      "position": "mf",
+      "shirtNumber": 3,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 86.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 10,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 98.0,
+        "passesAttempted": 50,
+        "passesCompleted": 49,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 5,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 2,
+        "possessionRegains": 9,
+        "pressingDirect": 3,
+        "pressingIndirect": 1,
+        "pushingOn": 6,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3830.0,
+        "distanceZone2": 4407.7,
+        "distanceZone3": 1303.7,
+        "distanceZone4": 428.6,
+        "distanceZone5": 154.4,
+        "highSpeedRuns": 113,
+        "sprints": 35,
+        "topSpeed": 31.9,
+        "totalDistance": 10124.4
+      },
+      "playerId": "kim-minjae-kor",
+      "playerName": "KIM Minjae",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 1,
+        "lineBreakCompletion": 73.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 10,
+          "inFront": 29,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 28,
+        "passCompletion": 89.0,
+        "passesAttempted": 79,
+        "passesCompleted": 70,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 46
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 3,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 2,
+        "possessionRegains": 3,
+        "pressingDirect": 4,
+        "pressingIndirect": 15,
+        "pushingOn": 14,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2970.3,
+        "distanceZone2": 4727.8,
+        "distanceZone3": 1319.4,
+        "distanceZone4": 405.7,
+        "distanceZone5": 92.8,
+        "highSpeedRuns": 111,
+        "sprints": 36,
+        "topSpeed": 28.5,
+        "totalDistance": 9516.0
+      },
+      "playerId": "hwang-inbeom-kor",
+      "playerName": "HWANG Inbeom",
+      "position": "mf",
+      "shirtNumber": 6,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 6,
+        "ballProgressions": 3,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 14,
+          "inBetween": 11,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 14,
+        "passCompletion": 91.0,
+        "passesAttempted": 22,
+        "passesCompleted": 20,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 30
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 16,
+        "pushingOn": 10,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2970.0,
+        "distanceZone2": 2600.4,
+        "distanceZone3": 605.8,
+        "distanceZone4": 486.1,
+        "distanceZone5": 366.6,
+        "highSpeedRuns": 58,
+        "sprints": 38,
+        "topSpeed": 35.2,
+        "totalDistance": 7029.0
+      },
+      "playerId": "son-heungmin-kor",
+      "playerName": "SON Heungmin",
+      "position": "fw",
+      "shirtNumber": 7,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 86.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 12,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 11,
+          "inFront": 29,
+          "inToOut": 1,
+          "noMovement": 6,
+          "outToIn": 1
+        },
+        "offersReceived": 30,
+        "passCompletion": 90.0,
+        "passesAttempted": 63,
+        "passesCompleted": 57,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 50
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 4,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 0,
+        "pressingIndirect": 9,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3288.3,
+        "distanceZone2": 4562.8,
+        "distanceZone3": 1263.7,
+        "distanceZone4": 216.9,
+        "distanceZone5": 19.0,
+        "highSpeedRuns": 115,
+        "sprints": 20,
+        "topSpeed": 29.3,
+        "totalDistance": 9350.8
+      },
+      "playerId": "paik-seungho-kor",
+      "playerName": "PAIK Seungho",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 11,
+          "inBetween": 3,
+          "inFront": 12,
+          "inToOut": 2,
+          "noMovement": 4,
+          "outToIn": 1
+        },
+        "offersReceived": 19,
+        "passCompletion": 78.0,
+        "passesAttempted": 32,
+        "passesCompleted": 25,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 33
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 14,
+        "pushingOn": 20,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2523.8,
+        "distanceZone2": 3042.0,
+        "distanceZone3": 1270.6,
+        "distanceZone4": 534.4,
+        "distanceZone5": 200.4,
+        "highSpeedRuns": 110,
+        "sprints": 44,
+        "topSpeed": 29.2,
+        "totalDistance": 7571.2
+      },
+      "playerId": "lee-jaesung-kor",
+      "playerName": "LEE Jaesung",
+      "position": "mf",
+      "shirtNumber": 10,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 2,
+          "inFront": 4,
+          "inToOut": 3,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 100.0,
+        "passesAttempted": 10,
+        "passesCompleted": 10,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 3,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1295.5,
+        "distanceZone2": 1476.8,
+        "distanceZone3": 450.5,
+        "distanceZone4": 167.6,
+        "distanceZone5": 92.5,
+        "highSpeedRuns": 45,
+        "sprints": 13,
+        "topSpeed": 29.9,
+        "totalDistance": 3482.9
+      },
+      "playerId": "hwang-heechan-kor",
+      "playerName": "HWANG Heechan",
+      "position": "mf",
+      "shirtNumber": 11,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 4,
+        "crossesCompleted": 2,
+        "goals": 0,
+        "lineBreakCompletion": 80.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 21,
+          "inBetween": 1,
+          "inFront": 4,
+          "inToOut": 0,
+          "noMovement": 8,
+          "outToIn": 3
+        },
+        "offersReceived": 11,
+        "passCompletion": 85.0,
+        "passesAttempted": 33,
+        "passesCompleted": 28,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 37
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 4,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 3,
+        "possessionRegains": 5,
+        "pressingDirect": 1,
+        "pressingIndirect": 5,
+        "pushingOn": 12,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2565.8,
+        "distanceZone2": 3389.9,
+        "distanceZone3": 1122.4,
+        "distanceZone4": 458.1,
+        "distanceZone5": 170.1,
+        "highSpeedRuns": 90,
+        "sprints": 35,
+        "topSpeed": 31.9,
+        "totalDistance": 7706.3
+      },
+      "playerId": "lee-taeseok-kor",
+      "playerName": "LEE Taeseok",
+      "position": "df",
+      "shirtNumber": 13,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 2,
+          "inToOut": 1,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 80.0,
+        "passesAttempted": 5,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 2,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 1,
+        "possessionRegains": 5,
+        "pressingDirect": 0,
+        "pressingIndirect": 1,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 570.8,
+        "distanceZone2": 708.3,
+        "distanceZone3": 251.1,
+        "distanceZone4": 117.3,
+        "distanceZone5": 4.8,
+        "highSpeedRuns": 22,
+        "sprints": 7,
+        "topSpeed": 25.7,
+        "totalDistance": 1652.4
+      },
+      "playerId": "park-jinseob-kor",
+      "playerName": "PARK Jinseob",
+      "position": "df",
+      "shirtNumber": 16,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 67.0,
+        "passesAttempted": 6,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 9,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1145.8,
+        "distanceZone2": 1288.6,
+        "distanceZone3": 350.8,
+        "distanceZone4": 188.9,
+        "distanceZone5": 66.5,
+        "highSpeedRuns": 31,
+        "sprints": 15,
+        "topSpeed": 29.1,
+        "totalDistance": 3040.6
+      },
+      "playerId": "oh-hyeongyu-kor",
+      "playerName": "OH Hyeongyu",
+      "position": "fw",
+      "shirtNumber": 18,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 8,
+        "crossesAttempted": 4,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 12,
+          "inFront": 13,
+          "inToOut": 2,
+          "noMovement": 9,
+          "outToIn": 4
+        },
+        "offersReceived": 22,
+        "passCompletion": 100.0,
+        "passesAttempted": 38,
+        "passesCompleted": 38,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 8,
+        "totalOffers": 43
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 25,
+        "pushingOn": 12,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3935.8,
+        "distanceZone2": 4107.1,
+        "distanceZone3": 1153.5,
+        "distanceZone4": 288.7,
+        "distanceZone5": 44.9,
+        "highSpeedRuns": 88,
+        "sprints": 22,
+        "topSpeed": 28.8,
+        "totalDistance": 9529.9
+      },
+      "playerId": "lee-kangin-kor",
+      "playerName": "LEE Kangin",
+      "position": "mf",
+      "shirtNumber": 19,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 3,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 16,
+          "inBetween": 2,
+          "inFront": 2,
+          "inToOut": 2,
+          "noMovement": 11,
+          "outToIn": 1
+        },
+        "offersReceived": 12,
+        "passCompletion": 95.0,
+        "passesAttempted": 44,
+        "passesCompleted": 42,
+        "stepIns": 2,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 34
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 4,
+        "pressingIndirect": 11,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4222.8,
+        "distanceZone2": 4452.2,
+        "distanceZone3": 1488.9,
+        "distanceZone4": 738.3,
+        "distanceZone5": 381.7,
+        "highSpeedRuns": 115,
+        "sprints": 53,
+        "topSpeed": 31.8,
+        "totalDistance": 11283.9
+      },
+      "playerId": "seol-youngwoo-kor",
+      "playerName": "SEOL Youngwoo",
+      "position": "df",
+      "shirtNumber": 22,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 2,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 75.0,
+        "passesAttempted": 4,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 0,
+        "pressingIndirect": 4,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 513.7,
+        "distanceZone2": 812.6,
+        "distanceZone3": 428.1,
+        "distanceZone4": 106.4,
+        "distanceZone5": 29.7,
+        "highSpeedRuns": 28,
+        "sprints": 8,
+        "topSpeed": 29.6,
+        "totalDistance": 1890.4
+      },
+      "playerId": "kim-jingyu-kor",
+      "playerName": "KIM Jingyu",
+      "position": "mf",
+      "shirtNumber": 24,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 100.0,
+        "passesAttempted": 3,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 2,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1143.0,
+        "distanceZone2": 1216.0,
+        "distanceZone3": 508.6,
+        "distanceZone4": 178.4,
+        "distanceZone5": 134.3,
+        "highSpeedRuns": 40,
+        "sprints": 13,
+        "topSpeed": 30.6,
+        "totalDistance": 3180.4
+      },
+      "playerId": "eom-jisung-kor",
+      "playerName": "EOM Jisung",
+      "position": "mf",
+      "shirtNumber": 25,
+      "teamId": "korea-republic"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 35.0,
+        "lineBreaksAttempted": 23,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 47.0,
+        "passesAttempted": 32,
+        "passesCompleted": 15,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 8,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3765.0,
+        "distanceZone2": 1160.1,
+        "distanceZone3": 99.0,
+        "distanceZone4": 15.3,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 12,
+        "sprints": 1,
+        "topSpeed": 22.3,
+        "totalDistance": 5039.3
+      },
+      "playerId": "kovar-matej-cze",
+      "playerName": "Matej KOVAR",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 33.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 85.0,
+        "passesAttempted": 33,
+        "passesCompleted": 28,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 1,
+        "possessionRegains": 4,
+        "pressingDirect": 4,
+        "pressingIndirect": 8,
+        "pushingOn": 29,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3919.4,
+        "distanceZone2": 3947.6,
+        "distanceZone3": 1120.3,
+        "distanceZone4": 475.3,
+        "distanceZone5": 107.3,
+        "highSpeedRuns": 107,
+        "sprints": 41,
+        "topSpeed": 29.3,
+        "totalDistance": 9570.0
+      },
+      "playerId": "hranac-robin-cze",
+      "playerName": "Robin HRANAC",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 7,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 25.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 17,
+          "inBetween": 2,
+          "inFront": 6,
+          "inToOut": 0,
+          "noMovement": 9,
+          "outToIn": 0
+        },
+        "offersReceived": 13,
+        "passCompletion": 75.0,
+        "passesAttempted": 32,
+        "passesCompleted": 24,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 34
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 4,
+        "possessionRegains": 2,
+        "pressingDirect": 5,
+        "pressingIndirect": 7,
+        "pushingOn": 36,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3854.4,
+        "distanceZone2": 4950.5,
+        "distanceZone3": 1740.5,
+        "distanceZone4": 635.7,
+        "distanceZone5": 209.7,
+        "highSpeedRuns": 145,
+        "sprints": 48,
+        "topSpeed": 30.6,
+        "totalDistance": 11390.8
+      },
+      "playerId": "coufal-vladimir-cze",
+      "playerName": "Vladimir COUFAL",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 68.0,
+        "passesAttempted": 22,
+        "passesCompleted": 15,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 4
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 8,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 5,
+        "possessionRegains": 9,
+        "pressingDirect": 15,
+        "pressingIndirect": 7,
+        "pushingOn": 31,
+        "pushingOnIntoPressing": 13,
+        "tacklesMade": 5,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 4076.3,
+        "distanceZone2": 4497.6,
+        "distanceZone3": 1553.7,
+        "distanceZone4": 536.0,
+        "distanceZone5": 210.1,
+        "highSpeedRuns": 141,
+        "sprints": 46,
+        "topSpeed": 34.0,
+        "totalDistance": 10873.7
+      },
+      "playerId": "chaloupek-stepan-cze",
+      "playerName": "Stepan CHALOUPEK",
+      "position": "df",
+      "shirtNumber": 6,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 47.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 5,
+          "inToOut": 0,
+          "noMovement": 7,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 69.0,
+        "passesAttempted": 45,
+        "passesCompleted": 31,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 13
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 5,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 6,
+        "possessionRegains": 3,
+        "pressingDirect": 4,
+        "pressingIndirect": 9,
+        "pushingOn": 19,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 4,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3953.9,
+        "distanceZone2": 4861.5,
+        "distanceZone3": 1665.8,
+        "distanceZone4": 366.1,
+        "distanceZone5": 30.4,
+        "highSpeedRuns": 136,
+        "sprints": 27,
+        "topSpeed": 26.5,
+        "totalDistance": 10877.7
+      },
+      "playerId": "krejci-ladislav-cze",
+      "playerName": "Ladislav KREJCI",
+      "position": "df",
+      "shirtNumber": 7,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 67.0,
+        "passesAttempted": 3,
+        "passesCompleted": 2,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 16,
+        "pushingOn": 12,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 1305.4,
+        "distanceZone2": 1609.6,
+        "distanceZone3": 564.0,
+        "distanceZone4": 218.1,
+        "distanceZone5": 70.4,
+        "highSpeedRuns": 49,
+        "sprints": 20,
+        "topSpeed": 30.8,
+        "totalDistance": 3767.4
+      },
+      "playerId": "hlozek-adam-cze",
+      "playerName": "Adam HLOZEK",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 13,
+          "inBetween": 5,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 60.0,
+        "passesAttempted": 5,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 18
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 25,
+        "pushingOn": 31,
+        "pushingOnIntoPressing": 16,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2319.8,
+        "distanceZone2": 4219.3,
+        "distanceZone3": 1066.3,
+        "distanceZone4": 377.3,
+        "distanceZone5": 64.8,
+        "highSpeedRuns": 90,
+        "sprints": 28,
+        "topSpeed": 28.9,
+        "totalDistance": 8047.6
+      },
+      "playerId": "schick-patrik-cze",
+      "playerName": "Patrik SCHICK",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 100.0,
+        "passesAttempted": 2,
+        "passesCompleted": 2,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 3,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 535.6,
+        "distanceZone2": 719.4,
+        "distanceZone3": 191.3,
+        "distanceZone4": 118.2,
+        "distanceZone5": 62.7,
+        "highSpeedRuns": 17,
+        "sprints": 8,
+        "topSpeed": 29.7,
+        "totalDistance": 1627.3
+      },
+      "playerId": "chytil-mojmir-cze",
+      "playerName": "Mojmir CHYTIL",
+      "position": "fw",
+      "shirtNumber": 13,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 12,
+          "inBetween": 5,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 81.0,
+        "passesAttempted": 16,
+        "passesCompleted": 13,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 20
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 3,
+        "pressingDirect": 7,
+        "pressingIndirect": 39,
+        "pushingOn": 25,
+        "pushingOnIntoPressing": 17,
+        "tacklesMade": 4,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 2664.4,
+        "distanceZone2": 3320.1,
+        "distanceZone3": 1346.8,
+        "distanceZone4": 360.2,
+        "distanceZone5": 176.9,
+        "highSpeedRuns": 120,
+        "sprints": 31,
+        "topSpeed": 31.2,
+        "totalDistance": 7868.4
+      },
+      "playerId": "sulc-pavel-cze",
+      "playerName": "Pavel SULC",
+      "position": "fw",
+      "shirtNumber": 15,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 14,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 80.0,
+        "passesAttempted": 20,
+        "passesCompleted": 16,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 21
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 3,
+        "pressingIndirect": 24,
+        "pushingOn": 17,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 3,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2419.7,
+        "distanceZone2": 3515.7,
+        "distanceZone3": 1282.9,
+        "distanceZone4": 517.2,
+        "distanceZone5": 192.6,
+        "highSpeedRuns": 109,
+        "sprints": 45,
+        "topSpeed": 33.3,
+        "totalDistance": 7928.0
+      },
+      "playerId": "provod-lukas-cze",
+      "playerName": "Lukas PROVOD",
+      "position": "mf",
+      "shirtNumber": 17,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 3,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 75.0,
+        "passesAttempted": 12,
+        "passesCompleted": 9,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 7
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 13,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 10,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1014.3,
+        "distanceZone2": 1688.5,
+        "distanceZone3": 771.3,
+        "distanceZone4": 364.4,
+        "distanceZone5": 84.2,
+        "highSpeedRuns": 71,
+        "sprints": 30,
+        "topSpeed": 29.3,
+        "totalDistance": 3922.7
+      },
+      "playerId": "sadilek-michal-cze",
+      "playerName": "Michal SADILEK",
+      "position": "mf",
+      "shirtNumber": 18,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 4,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 100.0,
+        "passesAttempted": 4,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 5,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 0,
+        "pressingIndirect": 10,
+        "pushingOn": 14,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1351.1,
+        "distanceZone2": 1265.9,
+        "distanceZone3": 459.4,
+        "distanceZone4": 213.2,
+        "distanceZone5": 49.5,
+        "highSpeedRuns": 36,
+        "sprints": 18,
+        "topSpeed": 28.3,
+        "totalDistance": 3339.2
+      },
+      "playerId": "chory-tomas-cze",
+      "playerName": "Tomas CHORY",
+      "position": "fw",
+      "shirtNumber": 19,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 2,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 78.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 1
+        },
+        "offersReceived": 4,
+        "passCompletion": 79.0,
+        "passesAttempted": 34,
+        "passesCompleted": 27,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 4,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 4,
+        "pressingDirect": 1,
+        "pressingIndirect": 20,
+        "pushingOn": 34,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4053.7,
+        "distanceZone2": 4705.6,
+        "distanceZone3": 1263.4,
+        "distanceZone4": 629.5,
+        "distanceZone5": 195.5,
+        "highSpeedRuns": 96,
+        "sprints": 49,
+        "topSpeed": 30.4,
+        "totalDistance": 10847.7
+      },
+      "playerId": "zeleny-jaroslav-cze",
+      "playerName": "Jaroslav ZELENY",
+      "position": "df",
+      "shirtNumber": 20,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 75.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 5,
+          "inFront": 4,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 79.0,
+        "passesAttempted": 33,
+        "passesCompleted": 26,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 4,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 2,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 22,
+        "pushingOn": 30,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3337.2,
+        "distanceZone2": 6080.7,
+        "distanceZone3": 1821.5,
+        "distanceZone4": 512.0,
+        "distanceZone5": 76.5,
+        "highSpeedRuns": 153,
+        "sprints": 30,
+        "topSpeed": 27.5,
+        "totalDistance": 11828.0
+      },
+      "playerId": "soucek-tomas-cze",
+      "playerName": "Tomas SOUCEK",
+      "position": "mf",
+      "shirtNumber": 22,
+      "teamId": "czechia"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 11,
+          "inFront": 14,
+          "inToOut": 3,
+          "noMovement": 4,
+          "outToIn": 1
+        },
+        "offersReceived": 13,
+        "passCompletion": 76.0,
+        "passesAttempted": 34,
+        "passesCompleted": 26,
+        "stepIns": 1,
+        "switchesOfPlay": 2,
+        "takeOns": 2,
+        "totalOffers": 38
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 10,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 3,
+        "pressingDirect": 7,
+        "pressingIndirect": 44,
+        "pushingOn": 41,
+        "pushingOnIntoPressing": 24,
+        "tacklesMade": 4,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3149.1,
+        "distanceZone2": 4759.4,
+        "distanceZone3": 1949.2,
+        "distanceZone4": 682.0,
+        "distanceZone5": 160.9,
+        "highSpeedRuns": 163,
+        "sprints": 50,
+        "topSpeed": 29.9,
+        "totalDistance": 10700.6
+      },
+      "playerId": "sojka-alexandr-cze",
+      "playerName": "Alexandr SOJKA",
+      "position": "mf",
+      "shirtNumber": 24,
+      "teamId": "czechia"
+    }
+  ],
+  "schemaVersion": 4,
+  "setPlays": {
+    "away": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 2,
+        "lofted": 0,
+        "outswing": 3
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 2,
+          "right": 3,
+          "total": 5
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        }
+      },
+      "cornersBySide": {
+        "left": 2,
+        "right": 3,
+        "total": 5
+      },
+      "freeKicks": {
+        "direct": 9,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 2
+      },
+      "totalCorners": 5,
+      "totalFreeKicks": 11,
+      "totalPenalties": 0,
+      "totalSetPlays": 32,
+      "totalThrowIns": 16
+    },
+    "home": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 2,
+        "lofted": 0,
+        "outswing": 0
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 1,
+          "right": 1,
+          "total": 2
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 1,
+          "right": 1,
+          "total": 2
+        }
+      },
+      "cornersBySide": {
+        "left": 2,
+        "right": 2,
+        "total": 4
+      },
+      "freeKicks": {
+        "direct": 16,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 2
+      },
+      "totalCorners": 4,
+      "totalFreeKicks": 18,
+      "totalPenalties": 0,
+      "totalSetPlays": 48,
+      "totalThrowIns": 26
+    }
+  },
+  "storyStats": {
+    "away": {
+      "distanceCovered": 117.6,
+      "expectedGoals": 0.64,
+      "possession": 34.2,
+      "shots": 7,
+      "topSpeed": 34.0
+    },
+    "home": {
+      "distanceCovered": 111.8,
+      "expectedGoals": 1.77,
+      "possession": 55.8,
+      "shots": 15,
+      "topSpeed": 35.2
+    }
+  },
+  "tacticalIdentity": {
+    "away": {
+      "defensiveBlockDistribution": {
+        "high": 5,
+        "low": 26,
+        "mid": 18
+      },
+      "phasesInPossession": {
+        "attackingTransition": 17,
+        "buildUpOpposed": 13,
+        "buildUpUnopposed": 32,
+        "counterAttack": 1,
+        "finalThird": 12,
+        "longBall": 10,
+        "progression": 13,
+        "setPiece": 8
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 7,
+        "defensiveTransition": 10,
+        "highBlock": 5,
+        "highPress": 5,
+        "lowBlock": 26,
+        "lowPress": 1,
+        "midBlock": 18,
+        "midPress": 7,
+        "recovery": 4
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 18,
+            "teamLength": 39,
+            "teamWidth": 50
+          },
+          "buildUpMid": {
+            "lineHeight": 42,
+            "teamLength": 33,
+            "teamWidth": 49
+          },
+          "finalThirdPhase": {
+            "lineHeight": 59,
+            "teamLength": 34,
+            "teamWidth": 42
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 48,
+            "teamLength": 36,
+            "teamWidth": 46
+          },
+          "lowBlock": {
+            "lineHeight": 19,
+            "teamLength": 23,
+            "teamWidth": 38
+          },
+          "midBlock": {
+            "lineHeight": 38,
+            "teamLength": 28,
+            "teamWidth": 45
+          }
+        }
+      }
+    },
+    "home": {
+      "defensiveBlockDistribution": {
+        "high": 6,
+        "low": 20,
+        "mid": 13
+      },
+      "phasesInPossession": {
+        "attackingTransition": 10,
+        "buildUpOpposed": 19,
+        "buildUpUnopposed": 38,
+        "counterAttack": 2,
+        "finalThird": 14,
+        "longBall": 5,
+        "progression": 12,
+        "setPiece": 8
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 11,
+        "defensiveTransition": 17,
+        "highBlock": 6,
+        "highPress": 4,
+        "lowBlock": 20,
+        "lowPress": 0,
+        "midBlock": 13,
+        "midPress": 3,
+        "recovery": 5
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 22,
+            "teamLength": 37,
+            "teamWidth": 57
+          },
+          "buildUpMid": {
+            "lineHeight": 45,
+            "teamLength": 31,
+            "teamWidth": 55
+          },
+          "finalThirdPhase": {
+            "lineHeight": 59,
+            "teamLength": 32,
+            "teamWidth": 44
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 51,
+            "teamLength": 34,
+            "teamWidth": 42
+          },
+          "lowBlock": {
+            "lineHeight": 19,
+            "teamLength": 25,
+            "teamWidth": 36
+          },
+          "midBlock": {
+            "lineHeight": 38,
+            "teamLength": 25,
+            "teamWidth": 41
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7313 @@
+{
+  "events": {
+    "crosses": null,
+    "defensiveActions": null,
+    "passNetworkEdges": [
+      {
+        "fromPlayerId": "selvik-egil-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "selvik-egil-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "selvik-egil-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "selvik-egil-nor",
+        "teamId": "norway",
+        "toPlayerId": "bjorkan-fredrik-andre-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "selvik-egil-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorstvedt-kristian-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "selvik-egil-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "selvik-egil-nor",
+        "teamId": "norway",
+        "toPlayerId": "schjelderup-andreas-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "selvik-egil-nor",
+        "teamId": "norway",
+        "toPlayerId": "falchener-henrik-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "selvik-egil-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "bjorkan-fredrik-andre-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "schjelderup-andreas-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "falchener-henrik-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorsby-morten-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "holmgren-pedersen-marcus-nor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "ostigard-leo-nor",
+        "teamId": "norway",
+        "toPlayerId": "langas-sondre-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 14
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "bjorkan-fredrik-andre-nor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorstvedt-kristian-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "schjelderup-andreas-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "bobb-oscar-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "falchener-henrik-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorsby-morten-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "berg-patrick-nor",
+        "teamId": "norway",
+        "toPlayerId": "holmgren-pedersen-marcus-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "strand-larsen-jorgen-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "strand-larsen-jorgen-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "strand-larsen-jorgen-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "strand-larsen-jorgen-nor",
+        "teamId": "norway",
+        "toPlayerId": "schjelderup-andreas-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "strand-larsen-jorgen-nor",
+        "teamId": "norway",
+        "toPlayerId": "bobb-oscar-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "strand-larsen-jorgen-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorsby-morten-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "strand-larsen-jorgen-nor",
+        "teamId": "norway",
+        "toPlayerId": "hauge-jens-petter-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "selvik-egil-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorstvedt-kristian-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "bobb-oscar-nor",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "falchener-henrik-nor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorsby-morten-nor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "hauge-jens-petter-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "aursnes-fredrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "langas-sondre-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bjorkan-fredrik-andre-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "bjorkan-fredrik-andre-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "bjorkan-fredrik-andre-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bjorkan-fredrik-andre-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "bjorkan-fredrik-andre-nor",
+        "teamId": "norway",
+        "toPlayerId": "schjelderup-andreas-nor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "thorstvedt-kristian-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorstvedt-kristian-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorstvedt-kristian-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "thorstvedt-kristian-nor",
+        "teamId": "norway",
+        "toPlayerId": "bjorkan-fredrik-andre-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorstvedt-kristian-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorstvedt-kristian-nor",
+        "teamId": "norway",
+        "toPlayerId": "bobb-oscar-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "bjorkan-fredrik-andre-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "schjelderup-andreas-nor",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "bobb-oscar-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "falchener-henrik-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorsby-morten-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "holmgren-pedersen-marcus-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway",
+        "toPlayerId": "nusa-antonio-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "schjelderup-andreas-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "schjelderup-andreas-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "schjelderup-andreas-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "schjelderup-andreas-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "schjelderup-andreas-nor",
+        "teamId": "norway",
+        "toPlayerId": "bjorkan-fredrik-andre-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "schjelderup-andreas-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "schjelderup-andreas-nor",
+        "teamId": "norway",
+        "toPlayerId": "bobb-oscar-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "schjelderup-andreas-nor",
+        "teamId": "norway",
+        "toPlayerId": "holmgren-pedersen-marcus-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "selvik-egil-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorstvedt-kristian-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "schjelderup-andreas-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "falchener-henrik-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bobb-oscar-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorsby-morten-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "falchener-henrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "selvik-egil-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "falchener-henrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "falchener-henrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "falchener-henrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "falchener-henrik-nor",
+        "teamId": "norway",
+        "toPlayerId": "bobb-oscar-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorsby-morten-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "thorsby-morten-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorsby-morten-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "thorsby-morten-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorsby-morten-nor",
+        "teamId": "norway",
+        "toPlayerId": "bobb-oscar-nor",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "thorsby-morten-nor",
+        "teamId": "norway",
+        "toPlayerId": "falchener-henrik-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorsby-morten-nor",
+        "teamId": "norway",
+        "toPlayerId": "holmgren-pedersen-marcus-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thorsby-morten-nor",
+        "teamId": "norway",
+        "toPlayerId": "langas-sondre-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "holmgren-pedersen-marcus-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "holmgren-pedersen-marcus-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "holmgren-pedersen-marcus-nor",
+        "teamId": "norway",
+        "toPlayerId": "schjelderup-andreas-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "holmgren-pedersen-marcus-nor",
+        "teamId": "norway",
+        "toPlayerId": "thorsby-morten-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "nusa-antonio-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hauge-jens-petter-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hauge-jens-petter-nor",
+        "teamId": "norway",
+        "toPlayerId": "strand-larsen-jorgen-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "langas-sondre-nor",
+        "teamId": "norway",
+        "toPlayerId": "selvik-egil-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "langas-sondre-nor",
+        "teamId": "norway",
+        "toPlayerId": "ostigard-leo-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "langas-sondre-nor",
+        "teamId": "norway",
+        "toPlayerId": "berg-patrick-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "langas-sondre-nor",
+        "teamId": "norway",
+        "toPlayerId": "aursnes-fredrik-nor",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "langas-sondre-nor",
+        "teamId": "norway",
+        "toPlayerId": "aasgaard-thelo-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "langas-sondre-nor",
+        "teamId": "norway",
+        "toPlayerId": "hauge-jens-petter-nor",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "maignan-mike-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "maignan-mike-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "maignan-mike-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "maignan-mike-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "maignan-mike-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "maignan-mike-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "maignan-mike-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "maignan-mike-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "upamecano-dayot-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "maignan-mike-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "mbappe-kylian-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kounde-jules-fra",
+        "teamId": "france",
+        "toPlayerId": "cherki-rayan-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "mbappe-kylian-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "gusto-malo-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "kone-manu-fra",
+        "teamId": "france",
+        "toPlayerId": "cherki-rayan-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "dembele-ousmane-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "dembele-ousmane-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "dembele-ousmane-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "dembele-ousmane-fra",
+        "teamId": "france",
+        "toPlayerId": "mbappe-kylian-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "dembele-ousmane-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "dembele-ousmane-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "dembele-ousmane-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "dembele-ousmane-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "maignan-mike-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "mbappe-kylian-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "gusto-malo-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "tchouameni-aurelien-fra",
+        "teamId": "france",
+        "toPlayerId": "konate-ibrahima-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mbappe-kylian-fra",
+        "teamId": "france",
+        "toPlayerId": "cherki-rayan-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "maignan-mike-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "mbappe-kylian-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "olise-michael-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "maignan-mike-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "mbappe-kylian-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "barcola-bradley-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "hernandez-theo-fra",
+        "teamId": "france",
+        "toPlayerId": "cherki-rayan-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "mbappe-kylian-fra",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "gusto-malo-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "barcola-bradley-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "doue-desire-fra",
+        "teamId": "france",
+        "toPlayerId": "cherki-rayan-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "maignan-mike-fra",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "upamecano-dayot-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "dembele-ousmane-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "olise-michael-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lacroix-maxence-fra",
+        "teamId": "france",
+        "toPlayerId": "konate-ibrahima-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gusto-malo-fra",
+        "teamId": "france",
+        "toPlayerId": "maignan-mike-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gusto-malo-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gusto-malo-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "gusto-malo-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gusto-malo-fra",
+        "teamId": "france",
+        "toPlayerId": "konate-ibrahima-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gusto-malo-fra",
+        "teamId": "france",
+        "toPlayerId": "cherki-rayan-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "barcola-bradley-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "barcola-bradley-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "barcola-bradley-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "barcola-bradley-fra",
+        "teamId": "france",
+        "toPlayerId": "cherki-rayan-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "konate-ibrahima-fra",
+        "teamId": "france",
+        "toPlayerId": "maignan-mike-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "konate-ibrahima-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "konate-ibrahima-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "konate-ibrahima-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "konate-ibrahima-fra",
+        "teamId": "france",
+        "toPlayerId": "gusto-malo-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "kounde-jules-fra",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "kone-manu-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "tchouameni-aurelien-fra",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "mbappe-kylian-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "hernandez-theo-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "doue-desire-fra",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "lacroix-maxence-fra",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "gusto-malo-fra",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "cherki-rayan-fra",
+        "teamId": "france",
+        "toPlayerId": "konate-ibrahima-fra",
+        "volume": 1
+      }
+    ],
+    "passNetworkNodes": null,
+    "receiving": null,
+    "shootoutAttempts": null,
+    "shots": [
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "thorstvedt-kristian-nor",
+        "playerName": "Kristian THORSTVEDT",
+        "teamId": "norway",
+        "x": 75.09,
+        "y": 49.79
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "strand-larsen-jorgen-nor",
+        "playerName": "Jorgen STRAND LARSEN",
+        "teamId": "norway",
+        "x": 91.02,
+        "y": 46.49
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "aasgaard-thelo-nor",
+        "playerName": "Thelo AASGAARD",
+        "teamId": "norway",
+        "x": 76.83,
+        "y": 40.5
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "aasgaard-thelo-nor",
+        "playerName": "Thelo AASGAARD",
+        "teamId": "norway",
+        "x": 86.53,
+        "y": 40.29
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "penalty",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "strand-larsen-jorgen-nor",
+        "playerName": "Jorgen STRAND LARSEN",
+        "teamId": "norway",
+        "x": 89.72,
+        "y": 48.76
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "ostigard-leo-nor",
+        "playerName": "Leo OSTIGARD",
+        "teamId": "norway",
+        "x": 95.22,
+        "y": 43.59
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "ball-progression",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "deflected-on-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "bobb-oscar-nor",
+        "playerName": "Oscar BOBB",
+        "teamId": "norway",
+        "x": 88.99,
+        "y": 71.28
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "bobb-oscar-nor",
+        "playerName": "Oscar BOBB",
+        "teamId": "norway",
+        "x": 89.14,
+        "y": 63.22
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "berg-patrick-nor",
+        "playerName": "Patrick BERG",
+        "teamId": "norway",
+        "x": 81.46,
+        "y": 44.42
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "aursnes-fredrik-nor",
+        "playerName": "Fredrik AURSNES",
+        "teamId": "norway",
+        "x": 76.69,
+        "y": 43.8
+      },
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "mbappe-kylian-fra",
+        "playerName": "Kylian MBAPPE",
+        "teamId": "france",
+        "x": 93.77,
+        "y": 72.52
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "kone-manu-fra",
+        "playerName": "Manu KONE",
+        "teamId": "france",
+        "x": 84.94,
+        "y": 61.36
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "deflected-on-target-saved",
+        "ownGoal": false,
+        "playerId": "doue-desire-fra",
+        "playerName": "Desire DOUE",
+        "teamId": "france",
+        "x": 73.06,
+        "y": 42.15
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "dembele-ousmane-fra",
+        "playerName": "Ousmane DEMBELE",
+        "teamId": "france",
+        "x": 87.98,
+        "y": 67.15
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "other",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "doue-desire-fra",
+        "playerName": "Desire DOUE",
+        "teamId": "france",
+        "x": 76.11,
+        "y": 38.02
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "olise-michael-fra",
+        "playerName": "Michael OLISE",
+        "teamId": "france",
+        "x": 91.75,
+        "y": 38.43
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "mbappe-kylian-fra",
+        "playerName": "Kylian MBAPPE",
+        "teamId": "france",
+        "x": 92.47,
+        "y": 32.02
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "dembele-ousmane-fra",
+        "playerName": "Ousmane DEMBELE",
+        "teamId": "france",
+        "x": 80.02,
+        "y": 60.33
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "olise-michael-fra",
+        "playerName": "Michael OLISE",
+        "teamId": "france",
+        "x": 87.4,
+        "y": 50.62
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "doue-desire-fra",
+        "playerName": "Desire DOUE",
+        "teamId": "france",
+        "x": 75.09,
+        "y": 54.55
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "hernandez-theo-fra",
+        "playerName": "Theo HERNANDEZ",
+        "teamId": "france",
+        "x": 77.12,
+        "y": 30.58
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "dembele-ousmane-fra",
+        "playerName": "Ousmane DEMBELE",
+        "teamId": "france",
+        "x": 86.53,
+        "y": 64.46
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "tchouameni-aurelien-fra",
+        "playerName": "Aurelien TCHOUAMENI",
+        "teamId": "france",
+        "x": 81.75,
+        "y": 52.07
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "olise-michael-fra",
+        "playerName": "Michael OLISE",
+        "teamId": "france",
+        "x": 84.07,
+        "y": 60.12
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "mbappe-kylian-fra",
+        "playerName": "Kylian MBAPPE",
+        "teamId": "france",
+        "x": 81.46,
+        "y": 37.6
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "ball-progression",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "mbappe-kylian-fra",
+        "playerName": "Kylian MBAPPE",
+        "teamId": "france",
+        "x": 86.68,
+        "y": 44.01
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "hernandez-theo-fra",
+        "playerName": "Theo HERNANDEZ",
+        "teamId": "france",
+        "x": 80.45,
+        "y": 28.51
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "doue-desire-fra",
+        "playerName": "Desire DOUE",
+        "teamId": "france",
+        "x": 90.44,
+        "y": 51.24
+      }
+    ]
+  },
+  "goalkeeping": [
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 16,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 1,
+          "driven": 0,
+          "inswing": 6,
+          "lofted": 3,
+          "outswing": 3,
+          "pushCross": 3,
+          "total": 16
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 0
+      },
+      "distribution": {
+        "feet": {
+          "complete": 15,
+          "incomplete": 11,
+          "total": 26
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "handsTechniques": null,
+        "lineBreaks": 17,
+        "throw": {
+          "complete": 5,
+          "incomplete": 0,
+          "total": 5
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 20,
+          "incomplete": 11,
+          "total": 31
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 18,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 7,
+          "saveAndDeflect": 3,
+          "saveAndRetain": 2,
+          "saveAttempt": 6
+        },
+        "savePercentage": 56.0,
+        "totalInterventions": 5
+      },
+      "goalkeepers": [
+        {
+          "playerId": "selvik-egil-nor",
+          "playerName": "Egil SELVIK",
+          "shirtNumber": 13,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "norway",
+      "totalInvolvements": 53
+    },
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 9,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 0,
+          "driven": 0,
+          "inswing": 4,
+          "lofted": 1,
+          "outswing": 1,
+          "pushCross": 3,
+          "total": 9
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 0
+      },
+      "distribution": {
+        "feet": {
+          "complete": 13,
+          "incomplete": 8,
+          "total": 21
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "handsTechniques": null,
+        "lineBreaks": 7,
+        "throw": {
+          "complete": 4,
+          "incomplete": 0,
+          "total": 4
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 17,
+          "incomplete": 8,
+          "total": 25
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 10,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 6,
+          "saveAndDeflect": 2,
+          "saveAndRetain": 1,
+          "saveAttempt": 1
+        },
+        "savePercentage": 75.0,
+        "totalInterventions": 3
+      },
+      "goalkeepers": [
+        {
+          "playerId": "maignan-mike-fra",
+          "playerName": "Mike MAIGNAN",
+          "shirtNumber": 16,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "france",
+      "totalInvolvements": 36
+    }
+  ],
+  "keyStatistics": {
+    "away": {
+      "ballProgressions": 28,
+      "completedLineBreaks": 98,
+      "crosses": 16,
+      "defensiveLineBreaks": 21,
+      "defensivePressures": 234,
+      "directPressures": 45,
+      "distanceCovered": 109.1,
+      "expectedGoals": 1.05,
+      "forcedTurnovers": 43,
+      "goals": 4,
+      "passCompletion": 90.0,
+      "passes": 549,
+      "passesCompleted": 492,
+      "possession": 51.2,
+      "receptionsInFinalThird": 184,
+      "secondBalls": 68,
+      "shots": 18,
+      "shotsOnTarget": 9,
+      "sprintDistance": 5.6
+    },
+    "contestedPossession": 7.8,
+    "home": {
+      "ballProgressions": 24,
+      "completedLineBreaks": 75,
+      "crosses": 9,
+      "defensiveLineBreaks": 4,
+      "defensivePressures": 297,
+      "directPressures": 43,
+      "distanceCovered": 113.5,
+      "expectedGoals": 1.45,
+      "forcedTurnovers": 38,
+      "goals": 1,
+      "passCompletion": 82.0,
+      "passes": 449,
+      "passesCompleted": 367,
+      "possession": 41.0,
+      "receptionsInFinalThird": 96,
+      "secondBalls": 64,
+      "shots": 10,
+      "shotsOnTarget": 5,
+      "sprintDistance": 6.0
+    }
+  },
+  "matchId": "m061-norway-france",
+  "metadata": {
+    "awayTeam": {
+      "name": "France",
+      "teamCode": "fra",
+      "teamId": "france"
+    },
+    "date": "2026-06-26",
+    "goals": [
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Ousmane DEMBELE",
+        "scorerPlayerId": "dembele-ousmane-fra",
+        "teamId": "france"
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Ousmane DEMBELE",
+        "scorerPlayerId": "dembele-ousmane-fra",
+        "teamId": "france"
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Thelo AASGAARD",
+        "scorerPlayerId": "aasgaard-thelo-nor",
+        "teamId": "norway"
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Ousmane DEMBELE",
+        "scorerPlayerId": "dembele-ousmane-fra",
+        "teamId": "france"
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Desire DOUE",
+        "scorerPlayerId": "doue-desire-fra",
+        "teamId": "france"
+      }
+    ],
+    "group": "i",
+    "homeTeam": {
+      "name": "Norway",
+      "teamCode": "nor",
+      "teamId": "norway"
+    },
+    "kickoff": "2026-06-26T15:00:00-04:00",
+    "knockoutScore": {
+      "decidedBy": "regulation",
+      "scoreAfter90": {
+        "away": 4,
+        "home": 1
+      },
+      "scoreAfterET": null,
+      "shootoutScore": null,
+      "winnerTeamId": "france"
+    },
+    "lineups": {
+      "away": {
+        "formation": "4-2-3-1",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Mike MAIGNAN",
+            "playerId": "maignan-mike-fra",
+            "position": "gk",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Dayot UPAMECANO",
+            "playerId": "upamecano-dayot-fra",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": {
+              "minute": 76,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jules KOUNDE",
+            "playerId": "kounde-jules-fra",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": {
+              "minute": 87,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Manu KONE",
+            "playerId": "kone-manu-fra",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 7,
+                "stoppageMinute": null
+              },
+              {
+                "minute": 20,
+                "stoppageMinute": null
+              },
+              {
+                "minute": 32,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Ousmane DEMBELE",
+            "playerId": "dembele-ousmane-fra",
+            "position": "fw",
+            "shirtNumber": 7,
+            "substitutedOff": {
+              "minute": 65,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 74,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Aurelien TCHOUAMENI",
+            "playerId": "tchouameni-aurelien-fra",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kylian MBAPPE",
+            "playerId": "mbappe-kylian-fra",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": {
+              "minute": 87,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Michael OLISE",
+            "playerId": "olise-michael-fra",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": {
+              "minute": 65,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Theo HERNANDEZ",
+            "playerId": "hernandez-theo-fra",
+            "position": "df",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 90,
+                "stoppageMinute": 4
+              }
+            ],
+            "name": "Desire DOUE",
+            "playerId": "doue-desire-fra",
+            "position": "fw",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Maxence LACROIX",
+            "playerId": "lacroix-maxence-fra",
+            "position": "df",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Brice SAMBA",
+            "playerId": "samba-brice-fra",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Robin RISSER",
+            "playerId": "risser-robin-fra",
+            "position": "gk",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Malo GUSTO",
+            "playerId": "gusto-malo-fra",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 87,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lucas DIGNE",
+            "playerId": "digne-lucas-fra",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Marcus THURAM",
+            "playerId": "thuram-marcus-fra",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Bradley BARCOLA",
+            "playerId": "barcola-bradley-fra",
+            "position": "fw",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 65,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ngolo KANTE",
+            "playerId": "kante-ngolo-fra",
+            "position": "mf",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Adrien RABIOT",
+            "playerId": "rabiot-adrien-fra",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ibrahima KONATE",
+            "playerId": "konate-ibrahima-fra",
+            "position": "df",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 76,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "William SALIBA",
+            "playerId": "saliba-william-fra",
+            "position": "df",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Warren ZAIRE-EMERY",
+            "playerId": "zaire-emery-warren-fra",
+            "position": "mf",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lucas HERNANDEZ",
+            "playerId": "hernandez-lucas-fra",
+            "position": "df",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jean-Philippe MATETA",
+            "playerId": "mateta-jean-philippe-fra",
+            "position": "fw",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 87,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Rayan CHERKI",
+            "playerId": "cherki-rayan-fra",
+            "position": "mf",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 65,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Maghnes AKLIOUCHE",
+            "playerId": "akliouche-maghnes-fra",
+            "position": "mf",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      },
+      "home": {
+        "formation": "4-1-2-3",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Egil SELVIK",
+            "playerId": "selvik-egil-nor",
+            "position": "gk",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Leo OSTIGARD",
+            "playerId": "ostigard-leo-nor",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 10,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Patrick BERG",
+            "playerId": "berg-patrick-nor",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jorgen STRAND LARSEN",
+            "playerId": "strand-larsen-jorgen-nor",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Fredrik AURSNES",
+            "playerId": "aursnes-fredrik-nor",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Fredrik Andre BJORKAN",
+            "playerId": "bjorkan-fredrik-andre-nor",
+            "position": "df",
+            "shirtNumber": 15,
+            "substitutedOff": {
+              "minute": 45,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kristian THORSTVEDT",
+            "playerId": "thorstvedt-kristian-nor",
+            "position": "mf",
+            "shirtNumber": 18,
+            "substitutedOff": {
+              "minute": 45,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 21,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Thelo AASGAARD",
+            "playerId": "aasgaard-thelo-nor",
+            "position": "mf",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Andreas SCHJELDERUP",
+            "playerId": "schjelderup-andreas-nor",
+            "position": "mf",
+            "shirtNumber": 21,
+            "substitutedOff": {
+              "minute": 83,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Oscar BOBB",
+            "playerId": "bobb-oscar-nor",
+            "position": "mf",
+            "shirtNumber": 22,
+            "substitutedOff": {
+              "minute": 83,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Henrik FALCHENER",
+            "playerId": "falchener-henrik-nor",
+            "position": "df",
+            "shirtNumber": 25,
+            "substitutedOff": {
+              "minute": 67,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Orjan NYLAND",
+            "playerId": "nyland-orjan-nor",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Sander TANGVIK",
+            "playerId": "tangvik-sander-nor",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Morten THORSBY",
+            "playerId": "thorsby-morten-nor",
+            "position": "mf",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 45,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kristoffer AJER",
+            "playerId": "ajer-kristoffer-nor",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "David MOLLER WOLFE",
+            "playerId": "moller-wolfe-david-nor",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alexander SORLOTH",
+            "playerId": "sorloth-alexander-nor",
+            "position": "fw",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Sander BERGE",
+            "playerId": "berge-sander-nor",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Erling HAALAND",
+            "playerId": "haaland-erling-nor",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Martin ODEGAARD",
+            "playerId": "odegaard-martin-nor",
+            "position": "mf",
+            "shirtNumber": 10,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Marcus HOLMGREN PEDERSEN",
+            "playerId": "holmgren-pedersen-marcus-nor",
+            "position": "df",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 45,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Torbjorn HEGGEM",
+            "playerId": "heggem-torbjorn-nor",
+            "position": "df",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Antonio NUSA",
+            "playerId": "nusa-antonio-nor",
+            "position": "fw",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 83,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jens Petter HAUGE",
+            "playerId": "hauge-jens-petter-nor",
+            "position": "mf",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 83,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Sondre LANGAS",
+            "playerId": "langas-sondre-nor",
+            "position": "df",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 67,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Julian RYERSON",
+            "playerId": "ryerson-julian-nor",
+            "position": "fw",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      }
+    },
+    "matchNumber": 61,
+    "matchdayRound": "group-md3",
+    "score": {
+      "away": 4,
+      "home": 1
+    },
+    "stage": "group",
+    "venue": "Boston Stadium"
+  },
+  "momentum": {
+    "samples": [
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 13,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 15,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 10
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 10,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 3,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 4
+        },
+        "away": 9,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 5
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 9,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 18
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 14,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 0
+      }
+    ]
+  },
+  "players": [
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 9,
+          "inFront": 10,
+          "inToOut": 1,
+          "noMovement": 3,
+          "outToIn": 2
+        },
+        "offersReceived": 6,
+        "passCompletion": 94.0,
+        "passesAttempted": 18,
+        "passesCompleted": 17,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 33
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 0,
+        "pressingDirect": 3,
+        "pressingIndirect": 30,
+        "pushingOn": 19,
+        "pushingOnIntoPressing": 17,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1753.8,
+        "distanceZone2": 2715.4,
+        "distanceZone3": 1148.2,
+        "distanceZone4": 389.1,
+        "distanceZone5": 146.0,
+        "highSpeedRuns": 107,
+        "sprints": 30,
+        "topSpeed": 29.8,
+        "totalDistance": 6152.6
+      },
+      "playerId": "thorsby-morten-nor",
+      "playerName": "Morten THORSBY",
+      "position": "mf",
+      "shirtNumber": 2,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 69.0,
+        "lineBreaksAttempted": 16,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 7,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 81.0,
+        "passesAttempted": 62,
+        "passesCompleted": 50,
+        "stepIns": 1,
+        "switchesOfPlay": 2,
+        "takeOns": 0,
+        "totalOffers": 8
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 4,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 2,
+        "possessionRegains": 4,
+        "pressingDirect": 2,
+        "pressingIndirect": 2,
+        "pushingOn": 1,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4018.5,
+        "distanceZone2": 4383.8,
+        "distanceZone3": 1008.5,
+        "distanceZone4": 354.4,
+        "distanceZone5": 198.9,
+        "highSpeedRuns": 82,
+        "sprints": 26,
+        "topSpeed": 31.8,
+        "totalDistance": 9964.1
+      },
+      "playerId": "ostigard-leo-nor",
+      "playerName": "Leo OSTIGARD",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 5,
+        "crossesCompleted": 2,
+        "goals": 0,
+        "lineBreakCompletion": 58.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 11,
+          "inFront": 27,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 22,
+        "passCompletion": 88.0,
+        "passesAttempted": 57,
+        "passesCompleted": 50,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 42
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 3,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 5,
+        "possessionRegains": 2,
+        "pressingDirect": 3,
+        "pressingIndirect": 32,
+        "pushingOn": 37,
+        "pushingOnIntoPressing": 22,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3596.4,
+        "distanceZone2": 5303.8,
+        "distanceZone3": 1719.5,
+        "distanceZone4": 683.5,
+        "distanceZone5": 377.9,
+        "highSpeedRuns": 148,
+        "sprints": 46,
+        "topSpeed": 31.9,
+        "totalDistance": 11681.2
+      },
+      "playerId": "berg-patrick-nor",
+      "playerName": "Patrick BERG",
+      "position": "mf",
+      "shirtNumber": 6,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 16,
+          "inBetween": 21,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 9,
+        "passCompletion": 76.0,
+        "passesAttempted": 21,
+        "passesCompleted": 16,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 38
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 4,
+        "pressingIndirect": 46,
+        "pushingOn": 37,
+        "pushingOnIntoPressing": 30,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4390.3,
+        "distanceZone2": 3607.2,
+        "distanceZone3": 1088.4,
+        "distanceZone4": 544.2,
+        "distanceZone5": 181.9,
+        "highSpeedRuns": 101,
+        "sprints": 41,
+        "topSpeed": 30.6,
+        "totalDistance": 9812.0
+      },
+      "playerId": "strand-larsen-jorgen-nor",
+      "playerName": "Jorgen STRAND LARSEN",
+      "position": "fw",
+      "shirtNumber": 11,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 59.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 65.0,
+        "passesAttempted": 31,
+        "passesCompleted": 20,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 6,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4119.4,
+        "distanceZone2": 807.5,
+        "distanceZone3": 58.1,
+        "distanceZone4": 4.6,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 5,
+        "sprints": 0,
+        "topSpeed": 22.5,
+        "totalDistance": 4989.6
+      },
+      "playerId": "selvik-egil-nor",
+      "playerName": "Egil SELVIK",
+      "position": "gk",
+      "shirtNumber": 13,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 71.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 10,
+          "inBetween": 2,
+          "inFront": 13,
+          "inToOut": 0,
+          "noMovement": 14,
+          "outToIn": 1
+        },
+        "offersReceived": 16,
+        "passCompletion": 89.0,
+        "passesAttempted": 61,
+        "passesCompleted": 54,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 40
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 4,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 3,
+        "possessionRegains": 6,
+        "pressingDirect": 3,
+        "pressingIndirect": 12,
+        "pushingOn": 29,
+        "pushingOnIntoPressing": 12,
+        "tacklesMade": 8,
+        "tacklesWon": 4
+      },
+      "physical": {
+        "distanceZone1": 3809.2,
+        "distanceZone2": 4949.3,
+        "distanceZone3": 1426.3,
+        "distanceZone4": 668.1,
+        "distanceZone5": 292.8,
+        "highSpeedRuns": 128,
+        "sprints": 44,
+        "topSpeed": 32.9,
+        "totalDistance": 11145.8
+      },
+      "playerId": "aursnes-fredrik-nor",
+      "playerName": "Fredrik AURSNES",
+      "position": "mf",
+      "shirtNumber": 14,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 1,
+          "inFront": 6,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 8,
+        "passCompletion": 90.0,
+        "passesAttempted": 21,
+        "passesCompleted": 19,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 18
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 3,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 3,
+        "possessionRegains": 3,
+        "pressingDirect": 2,
+        "pressingIndirect": 19,
+        "pushingOn": 29,
+        "pushingOnIntoPressing": 16,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1743.6,
+        "distanceZone2": 2710.8,
+        "distanceZone3": 756.3,
+        "distanceZone4": 399.3,
+        "distanceZone5": 166.8,
+        "highSpeedRuns": 70,
+        "sprints": 29,
+        "topSpeed": 31.0,
+        "totalDistance": 5776.8
+      },
+      "playerId": "bjorkan-fredrik-andre-nor",
+      "playerName": "Fredrik Andre BJORKAN",
+      "position": "df",
+      "shirtNumber": 15,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 22.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 0,
+          "inFront": 4,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 59.0,
+        "passesAttempted": 22,
+        "passesCompleted": 13,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 13
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 2,
+        "pressingIndirect": 5,
+        "pushingOn": 21,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2281.5,
+        "distanceZone2": 2003.6,
+        "distanceZone3": 521.9,
+        "distanceZone4": 294.0,
+        "distanceZone5": 161.5,
+        "highSpeedRuns": 47,
+        "sprints": 24,
+        "topSpeed": 35.6,
+        "totalDistance": 5262.5
+      },
+      "playerId": "holmgren-pedersen-marcus-nor",
+      "playerName": "Marcus HOLMGREN PEDERSEN",
+      "position": "df",
+      "shirtNumber": 16,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 11,
+          "inFront": 6,
+          "inToOut": 1,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 62.0,
+        "passesAttempted": 13,
+        "passesCompleted": 8,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 25
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 3,
+        "possessionRegains": 0,
+        "pressingDirect": 4,
+        "pressingIndirect": 26,
+        "pushingOn": 18,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2172.4,
+        "distanceZone2": 2491.3,
+        "distanceZone3": 1075.7,
+        "distanceZone4": 495.1,
+        "distanceZone5": 32.8,
+        "highSpeedRuns": 92,
+        "sprints": 29,
+        "topSpeed": 27.9,
+        "totalDistance": 6267.2
+      },
+      "playerId": "thorstvedt-kristian-nor",
+      "playerName": "Kristian THORSTVEDT",
+      "position": "mf",
+      "shirtNumber": 18,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 91.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 21,
+          "inFront": 20,
+          "inToOut": 3,
+          "noMovement": 5,
+          "outToIn": 2
+        },
+        "offersReceived": 21,
+        "passCompletion": 88.0,
+        "passesAttempted": 43,
+        "passesCompleted": 38,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 59
+      },
+      "outOfPossession": {
+        "blocks": 6,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 4,
+        "possessionRegains": 6,
+        "pressingDirect": 3,
+        "pressingIndirect": 16,
+        "pushingOn": 20,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 4,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3584.6,
+        "distanceZone2": 5313.6,
+        "distanceZone3": 1533.3,
+        "distanceZone4": 584.2,
+        "distanceZone5": 169.2,
+        "highSpeedRuns": 127,
+        "sprints": 39,
+        "topSpeed": 29.1,
+        "totalDistance": 11185.0
+      },
+      "playerId": "aasgaard-thelo-nor",
+      "playerName": "Thelo AASGAARD",
+      "position": "mf",
+      "shirtNumber": 19,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 2,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 33.0,
+        "passesAttempted": 3,
+        "passesCompleted": 1,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 4
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 6,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 524.4,
+        "distanceZone2": 557.5,
+        "distanceZone3": 213.2,
+        "distanceZone4": 61.8,
+        "distanceZone5": 32.9,
+        "highSpeedRuns": 18,
+        "sprints": 7,
+        "topSpeed": 30.4,
+        "totalDistance": 1389.8
+      },
+      "playerId": "nusa-antonio-nor",
+      "playerName": "Antonio NUSA",
+      "position": "fw",
+      "shirtNumber": 20,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 7,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 80.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 2,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 14,
+          "outToIn": 2
+        },
+        "offersReceived": 5,
+        "passCompletion": 83.0,
+        "passesAttempted": 29,
+        "passesCompleted": 24,
+        "stepIns": 5,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 28
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 3,
+        "pressingDirect": 6,
+        "pressingIndirect": 18,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3568.7,
+        "distanceZone2": 3754.3,
+        "distanceZone3": 1308.8,
+        "distanceZone4": 606.6,
+        "distanceZone5": 87.1,
+        "highSpeedRuns": 119,
+        "sprints": 42,
+        "topSpeed": 27.7,
+        "totalDistance": 9325.5
+      },
+      "playerId": "schjelderup-andreas-nor",
+      "playerName": "Andreas SCHJELDERUP",
+      "position": "mf",
+      "shirtNumber": 21,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 4,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 83.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 12,
+          "inBetween": 12,
+          "inFront": 7,
+          "inToOut": 3,
+          "noMovement": 10,
+          "outToIn": 1
+        },
+        "offersReceived": 16,
+        "passCompletion": 88.0,
+        "passesAttempted": 32,
+        "passesCompleted": 28,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 4,
+        "totalOffers": 45
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 7,
+        "pressingIndirect": 32,
+        "pushingOn": 25,
+        "pushingOnIntoPressing": 16,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3310.9,
+        "distanceZone2": 3990.4,
+        "distanceZone3": 1274.0,
+        "distanceZone4": 360.4,
+        "distanceZone5": 147.1,
+        "highSpeedRuns": 111,
+        "sprints": 35,
+        "topSpeed": 34.2,
+        "totalDistance": 9082.9
+      },
+      "playerId": "bobb-oscar-nor",
+      "playerName": "Oscar BOBB",
+      "position": "mf",
+      "shirtNumber": 22,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 2
+        },
+        "offersReceived": 0,
+        "passCompletion": 67.0,
+        "passesAttempted": 3,
+        "passesCompleted": 2,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 9,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 414.6,
+        "distanceZone2": 754.1,
+        "distanceZone3": 349.5,
+        "distanceZone4": 153.2,
+        "distanceZone5": 47.3,
+        "highSpeedRuns": 26,
+        "sprints": 14,
+        "topSpeed": 29.2,
+        "totalDistance": 1718.7
+      },
+      "playerId": "hauge-jens-petter-nor",
+      "playerName": "Jens Petter HAUGE",
+      "position": "mf",
+      "shirtNumber": 23,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 90.0,
+        "passesAttempted": 10,
+        "passesCompleted": 9,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 4
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 0,
+        "pushingOn": 1,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1202.3,
+        "distanceZone2": 1201.6,
+        "distanceZone3": 226.5,
+        "distanceZone4": 122.1,
+        "distanceZone5": 128.3,
+        "highSpeedRuns": 26,
+        "sprints": 11,
+        "topSpeed": 35.5,
+        "totalDistance": 2880.7
+      },
+      "playerId": "langas-sondre-nor",
+      "playerName": "Sondre LANGAS",
+      "position": "df",
+      "shirtNumber": 24,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 78.0,
+        "passesAttempted": 23,
+        "passesCompleted": 18,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 0
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 4,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 4,
+        "possessionRegains": 3,
+        "pressingDirect": 1,
+        "pressingIndirect": 1,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2763.1,
+        "distanceZone2": 2942.1,
+        "distanceZone3": 729.6,
+        "distanceZone4": 269.1,
+        "distanceZone5": 188.2,
+        "highSpeedRuns": 64,
+        "sprints": 23,
+        "topSpeed": 33.2,
+        "totalDistance": 6892.0
+      },
+      "playerId": "falchener-henrik-nor",
+      "playerName": "Henrik FALCHENER",
+      "position": "df",
+      "shirtNumber": 25,
+      "teamId": "norway"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 100.0,
+        "passesAttempted": 8,
+        "passesCompleted": 8,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 3,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 0,
+        "pushingOn": 1,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 401.8,
+        "distanceZone2": 430.2,
+        "distanceZone3": 91.2,
+        "distanceZone4": 30.2,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 7,
+        "sprints": 3,
+        "topSpeed": 23.4,
+        "totalDistance": 953.5
+      },
+      "playerId": "gusto-malo-fra",
+      "playerName": "Malo GUSTO",
+      "position": "df",
+      "shirtNumber": 2,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 57.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 91.0,
+        "passesAttempted": 43,
+        "passesCompleted": 39,
+        "stepIns": 0,
+        "switchesOfPlay": 2,
+        "takeOns": 2,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 6,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 1,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 6,
+        "possessionRegains": 6,
+        "pressingDirect": 3,
+        "pressingIndirect": 1,
+        "pushingOn": 6,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3312.4,
+        "distanceZone2": 3360.1,
+        "distanceZone3": 846.8,
+        "distanceZone4": 336.7,
+        "distanceZone5": 114.3,
+        "highSpeedRuns": 70,
+        "sprints": 24,
+        "topSpeed": 31.9,
+        "totalDistance": 7970.3
+      },
+      "playerId": "upamecano-dayot-fra",
+      "playerName": "Dayot UPAMECANO",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 71.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 6,
+          "inFront": 7,
+          "inToOut": 2,
+          "noMovement": 5,
+          "outToIn": 1
+        },
+        "offersReceived": 11,
+        "passCompletion": 88.0,
+        "passesAttempted": 57,
+        "passesCompleted": 50,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 29
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 4,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 5,
+        "possessionRegains": 2,
+        "pressingDirect": 7,
+        "pressingIndirect": 14,
+        "pushingOn": 22,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 4,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3621.5,
+        "distanceZone2": 3847.6,
+        "distanceZone3": 1321.4,
+        "distanceZone4": 567.6,
+        "distanceZone5": 225.8,
+        "highSpeedRuns": 119,
+        "sprints": 44,
+        "topSpeed": 32.8,
+        "totalDistance": 9583.8
+      },
+      "playerId": "kounde-jules-fra",
+      "playerName": "Jules KOUNDE",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 5,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 1,
+          "inFront": 9,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 93.0,
+        "passesAttempted": 56,
+        "passesCompleted": 52,
+        "stepIns": 4,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 10,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 3,
+        "possessionRegains": 2,
+        "pressingDirect": 5,
+        "pressingIndirect": 17,
+        "pushingOn": 25,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 6,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3704.0,
+        "distanceZone2": 4741.1,
+        "distanceZone3": 1749.1,
+        "distanceZone4": 444.1,
+        "distanceZone5": 102.6,
+        "highSpeedRuns": 139,
+        "sprints": 33,
+        "topSpeed": 27.5,
+        "totalDistance": 10740.9
+      },
+      "playerId": "kone-manu-fra",
+      "playerName": "Manu KONE",
+      "position": "mf",
+      "shirtNumber": 6,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 1,
+        "crossesAttempted": 4,
+        "crossesCompleted": 1,
+        "goals": 3,
+        "lineBreakCompletion": 65.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 0,
+          "inFront": 7,
+          "inToOut": 1,
+          "noMovement": 4,
+          "outToIn": 2
+        },
+        "offersReceived": 13,
+        "passCompletion": 78.0,
+        "passesAttempted": 40,
+        "passesCompleted": 31,
+        "stepIns": 1,
+        "switchesOfPlay": 2,
+        "takeOns": 0,
+        "totalOffers": 23
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 23,
+        "pushingOn": 21,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2761.4,
+        "distanceZone2": 2796.1,
+        "distanceZone3": 1136.9,
+        "distanceZone4": 519.6,
+        "distanceZone5": 79.1,
+        "highSpeedRuns": 92,
+        "sprints": 31,
+        "topSpeed": 28.4,
+        "totalDistance": 7293.0
+      },
+      "playerId": "dembele-ousmane-fra",
+      "playerName": "Ousmane DEMBELE",
+      "position": "fw",
+      "shirtNumber": 7,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 9,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 4,
+          "inFront": 22,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 14,
+        "passCompletion": 97.0,
+        "passesAttempted": 63,
+        "passesCompleted": 61,
+        "stepIns": 0,
+        "switchesOfPlay": 2,
+        "takeOns": 0,
+        "totalOffers": 33
+      },
+      "outOfPossession": {
+        "blocks": 5,
+        "clearances": 3,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 6,
+        "possessionRegains": 8,
+        "pressingDirect": 7,
+        "pressingIndirect": 14,
+        "pushingOn": 33,
+        "pushingOnIntoPressing": 16,
+        "tacklesMade": 12,
+        "tacklesWon": 5
+      },
+      "physical": {
+        "distanceZone1": 4484.2,
+        "distanceZone2": 4156.4,
+        "distanceZone3": 1724.3,
+        "distanceZone4": 667.9,
+        "distanceZone5": 138.2,
+        "highSpeedRuns": 150,
+        "sprints": 53,
+        "topSpeed": 29.8,
+        "totalDistance": 11170.9
+      },
+      "playerId": "tchouameni-aurelien-fra",
+      "playerName": "Aurelien TCHOUAMENI",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 4,
+        "ballProgressions": 4,
+        "crossesAttempted": 3,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 78.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 29,
+          "inBetween": 10,
+          "inFront": 6,
+          "inToOut": 2,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 14,
+        "passCompletion": 93.0,
+        "passesAttempted": 30,
+        "passesCompleted": 28,
+        "stepIns": 1,
+        "switchesOfPlay": 4,
+        "takeOns": 3,
+        "totalOffers": 51
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 3,
+        "pressingDirect": 1,
+        "pressingIndirect": 12,
+        "pushingOn": 9,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 2,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3945.0,
+        "distanceZone2": 2528.7,
+        "distanceZone3": 664.5,
+        "distanceZone4": 363.6,
+        "distanceZone5": 439.0,
+        "highSpeedRuns": 55,
+        "sprints": 29,
+        "topSpeed": 37.6,
+        "totalDistance": 7940.7
+      },
+      "playerId": "mbappe-kylian-fra",
+      "playerName": "Kylian MBAPPE",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 4,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 80.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 12,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 16,
+          "inFront": 21,
+          "inToOut": 3,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 16,
+        "passCompletion": 84.0,
+        "passesAttempted": 44,
+        "passesCompleted": 37,
+        "stepIns": 2,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 53
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 26,
+        "pushingOn": 10,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2711.4,
+        "distanceZone2": 3850.2,
+        "distanceZone3": 1371.0,
+        "distanceZone4": 502.5,
+        "distanceZone5": 400.0,
+        "highSpeedRuns": 122,
+        "sprints": 39,
+        "topSpeed": 33.4,
+        "totalDistance": 8835.1
+      },
+      "playerId": "olise-michael-fra",
+      "playerName": "Michael OLISE",
+      "position": "fw",
+      "shirtNumber": 11,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 1,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 89.0,
+        "passesAttempted": 9,
+        "passesCompleted": 8,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 15,
+        "pushingOn": 9,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1325.9,
+        "distanceZone2": 982.7,
+        "distanceZone3": 297.5,
+        "distanceZone4": 117.2,
+        "distanceZone5": 89.3,
+        "highSpeedRuns": 23,
+        "sprints": 11,
+        "topSpeed": 36.3,
+        "totalDistance": 2812.6
+      },
+      "playerId": "barcola-bradley-fra",
+      "playerName": "Bradley BARCOLA",
+      "position": "fw",
+      "shirtNumber": 12,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 91.0,
+        "passesAttempted": 11,
+        "passesCompleted": 10,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 2,
+        "pressingIndirect": 0,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 944.8,
+        "distanceZone2": 773.5,
+        "distanceZone3": 209.9,
+        "distanceZone4": 40.2,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 18,
+        "sprints": 3,
+        "topSpeed": 24.7,
+        "totalDistance": 1968.4
+      },
+      "playerId": "konate-ibrahima-fra",
+      "playerName": "Ibrahima KONATE",
+      "position": "df",
+      "shirtNumber": 15,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 43.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 5,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 68.0,
+        "passesAttempted": 25,
+        "passesCompleted": 17,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 4,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3865.3,
+        "distanceZone2": 980.4,
+        "distanceZone3": 64.9,
+        "distanceZone4": 8.5,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 4,
+        "sprints": 1,
+        "topSpeed": 21.7,
+        "totalDistance": 4919.1
+      },
+      "playerId": "maignan-mike-fra",
+      "playerName": "Mike MAIGNAN",
+      "position": "gk",
+      "shirtNumber": 16,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 2,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 94.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 16,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 0,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 98.0,
+        "passesAttempted": 49,
+        "passesCompleted": 48,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 14
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 1,
+        "duelsWonAerial": 4,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 2,
+        "possessionRegains": 7,
+        "pressingDirect": 3,
+        "pressingIndirect": 11,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4085.2,
+        "distanceZone2": 3901.2,
+        "distanceZone3": 1029.0,
+        "distanceZone4": 463.2,
+        "distanceZone5": 223.8,
+        "highSpeedRuns": 98,
+        "sprints": 37,
+        "topSpeed": 33.6,
+        "totalDistance": 9702.3
+      },
+      "playerId": "hernandez-theo-fra",
+      "playerName": "Theo HERNANDEZ",
+      "position": "df",
+      "shirtNumber": 19,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 4,
+        "ballProgressions": 6,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 54.0,
+        "lineBreaksAttempted": 13,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 13,
+          "inBetween": 5,
+          "inFront": 7,
+          "inToOut": 1,
+          "noMovement": 10,
+          "outToIn": 4
+        },
+        "offersReceived": 14,
+        "passCompletion": 83.0,
+        "passesAttempted": 47,
+        "passesCompleted": 39,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 6,
+        "totalOffers": 40
+      },
+      "outOfPossession": {
+        "blocks": 5,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 4,
+        "pressingDirect": 1,
+        "pressingIndirect": 36,
+        "pushingOn": 23,
+        "pushingOnIntoPressing": 19,
+        "tacklesMade": 3,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4027.4,
+        "distanceZone2": 4241.6,
+        "distanceZone3": 1634.8,
+        "distanceZone4": 897.1,
+        "distanceZone5": 387.9,
+        "highSpeedRuns": 136,
+        "sprints": 64,
+        "topSpeed": 32.3,
+        "totalDistance": 11188.7
+      },
+      "playerId": "doue-desire-fra",
+      "playerName": "Desire DOUE",
+      "position": "fw",
+      "shirtNumber": 20,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 2,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 0.0,
+        "passesAttempted": 0,
+        "passesCompleted": 0,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 4,
+        "pushingOn": 1,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 379.4,
+        "distanceZone2": 512.6,
+        "distanceZone3": 108.7,
+        "distanceZone4": 68.5,
+        "distanceZone5": 16.6,
+        "highSpeedRuns": 10,
+        "sprints": 6,
+        "topSpeed": 28.8,
+        "totalDistance": 1085.7
+      },
+      "playerId": "mateta-jean-philippe-fra",
+      "playerName": "Jean-Philippe MATETA",
+      "position": "fw",
+      "shirtNumber": 22,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 3,
+          "inFront": 5,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 100.0,
+        "passesAttempted": 21,
+        "passesCompleted": 21,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 3,
+        "pressingIndirect": 13,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1142.6,
+        "distanceZone2": 1645.6,
+        "distanceZone3": 472.8,
+        "distanceZone4": 244.1,
+        "distanceZone5": 87.1,
+        "highSpeedRuns": 45,
+        "sprints": 16,
+        "topSpeed": 29.4,
+        "totalDistance": 3592.1
+      },
+      "playerId": "cherki-rayan-fra",
+      "playerName": "Rayan CHERKI",
+      "position": "mf",
+      "shirtNumber": 24,
+      "teamId": "france"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 62.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 93.0,
+        "passesAttempted": 46,
+        "passesCompleted": 43,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 7
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 5,
+        "possessionRegains": 4,
+        "pressingDirect": 3,
+        "pressingIndirect": 3,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4122.4,
+        "distanceZone2": 3912.2,
+        "distanceZone3": 967.8,
+        "distanceZone4": 293.0,
+        "distanceZone5": 68.1,
+        "highSpeedRuns": 90,
+        "sprints": 26,
+        "topSpeed": 29.1,
+        "totalDistance": 9363.5
+      },
+      "playerId": "lacroix-maxence-fra",
+      "playerName": "Maxence LACROIX",
+      "position": "df",
+      "shirtNumber": 26,
+      "teamId": "france"
+    }
+  ],
+  "schemaVersion": 4,
+  "setPlays": {
+    "away": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 3,
+        "lofted": 0,
+        "outswing": 0
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 1,
+          "right": 2,
+          "total": 3
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 2,
+          "right": 0,
+          "total": 2
+        }
+      },
+      "cornersBySide": {
+        "left": 3,
+        "right": 2,
+        "total": 5
+      },
+      "freeKicks": {
+        "direct": 9,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 1
+      },
+      "totalCorners": 5,
+      "totalFreeKicks": 10,
+      "totalPenalties": 0,
+      "totalSetPlays": 27,
+      "totalThrowIns": 12
+    },
+    "home": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 4,
+        "lofted": 0,
+        "outswing": 0
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 4,
+          "right": 0,
+          "total": 4
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        }
+      },
+      "cornersBySide": {
+        "left": 4,
+        "right": 0,
+        "total": 4
+      },
+      "freeKicks": {
+        "direct": 10,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 2
+      },
+      "totalCorners": 4,
+      "totalFreeKicks": 12,
+      "totalPenalties": 1,
+      "totalSetPlays": 40,
+      "totalThrowIns": 23
+    }
+  },
+  "storyStats": {
+    "away": {
+      "distanceCovered": 109.1,
+      "expectedGoals": 1.05,
+      "possession": 51.2,
+      "shots": 18,
+      "topSpeed": 37.6
+    },
+    "home": {
+      "distanceCovered": 113.5,
+      "expectedGoals": 1.45,
+      "possession": 41.0,
+      "shots": 10,
+      "topSpeed": 35.6
+    }
+  },
+  "tacticalIdentity": {
+    "away": {
+      "defensiveBlockDistribution": {
+        "high": 7,
+        "low": 13,
+        "mid": 29
+      },
+      "phasesInPossession": {
+        "attackingTransition": 14,
+        "buildUpOpposed": 19,
+        "buildUpUnopposed": 34,
+        "counterAttack": 3,
+        "finalThird": 26,
+        "longBall": 1,
+        "progression": 14,
+        "setPiece": 5
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 11,
+        "defensiveTransition": 13,
+        "highBlock": 7,
+        "highPress": 7,
+        "lowBlock": 13,
+        "lowPress": 1,
+        "midBlock": 29,
+        "midPress": 3,
+        "recovery": 2
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 18,
+            "teamLength": 38,
+            "teamWidth": 58
+          },
+          "buildUpMid": {
+            "lineHeight": 46,
+            "teamLength": 30,
+            "teamWidth": 58
+          },
+          "finalThirdPhase": {
+            "lineHeight": 60,
+            "teamLength": 30,
+            "teamWidth": 45
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 50,
+            "teamLength": 37,
+            "teamWidth": 42
+          },
+          "lowBlock": {
+            "lineHeight": 17,
+            "teamLength": 29,
+            "teamWidth": 37
+          },
+          "midBlock": {
+            "lineHeight": 36,
+            "teamLength": 28,
+            "teamWidth": 40
+          }
+        }
+      }
+    },
+    "home": {
+      "defensiveBlockDistribution": {
+        "high": 6,
+        "low": 36,
+        "mid": 17
+      },
+      "phasesInPossession": {
+        "attackingTransition": 13,
+        "buildUpOpposed": 13,
+        "buildUpUnopposed": 37,
+        "counterAttack": 1,
+        "finalThird": 14,
+        "longBall": 5,
+        "progression": 14,
+        "setPiece": 6
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 9,
+        "defensiveTransition": 14,
+        "highBlock": 6,
+        "highPress": 4,
+        "lowBlock": 36,
+        "lowPress": 0,
+        "midBlock": 17,
+        "midPress": 3,
+        "recovery": 5
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 18,
+            "teamLength": 38,
+            "teamWidth": 52
+          },
+          "buildUpMid": {
+            "lineHeight": 42,
+            "teamLength": 30,
+            "teamWidth": 55
+          },
+          "finalThirdPhase": {
+            "lineHeight": 56,
+            "teamLength": 36,
+            "teamWidth": 40
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 51,
+            "teamLength": 36,
+            "teamWidth": 41
+          },
+          "lowBlock": {
+            "lineHeight": 17,
+            "teamLength": 21,
+            "teamWidth": 34
+          },
+          "midBlock": {
+            "lineHeight": 38,
+            "teamLength": 24,
+            "teamWidth": 39
+          }
+        }
+      }
+    }
+  }
+}

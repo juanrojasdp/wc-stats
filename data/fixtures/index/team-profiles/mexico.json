@@ -81,16 +81,12 @@
     "points": 9,
     "won": 3
   },
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "tacticalIdentity": {
     "defensiveBlockDistribution": {
       "high": 7.0,
       "low": 11.0,
       "mid": 25.0
-    },
-    "lineHeight": {
-      "inPossession": 44.4,
-      "outOfPossession": 34.5
     },
     "phasesInPossession": {
       "attackingTransition": 10.0,
@@ -115,9 +111,41 @@
     },
     "possession": 59.3,
     "pressingIntensity": 185.8,
-    "teamLength": {
-      "inPossession": 47.7,
-      "outOfPossession": 33.9
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 19.4,
+          "teamLength": 40.6,
+          "teamWidth": 53.4
+        },
+        "buildUpMid": {
+          "lineHeight": 41.8,
+          "teamLength": 32.2,
+          "teamWidth": 53.6
+        },
+        "finalThirdPhase": {
+          "lineHeight": 56.6,
+          "teamLength": 33.4,
+          "teamWidth": 44.6
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 47.8,
+          "teamLength": 36.8,
+          "teamWidth": 41.4
+        },
+        "lowBlock": {
+          "lineHeight": 18.6,
+          "teamLength": 24.2,
+          "teamWidth": 35.8
+        },
+        "midBlock": {
+          "lineHeight": 37.8,
+          "teamLength": 27.2,
+          "teamWidth": 40.8
+        }
+      }
     }
   },
   "teamCode": "mex",

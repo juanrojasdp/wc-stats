@@ -258,84 +258,26 @@ export function blockRows(identity: TacticalIdentityBlock): PhaseRow[] {
 
 /* -------------------------------- The metres ------------------------------ */
 
-/** The two contracted distance measures. Also the METRE_UNIT lookup's key. */
-export type MetreMeasure = "lineHeight" | "teamLength";
-
-/** The possession state a distance was measured in. */
-export type PossessionState = "inPossession" | "outOfPossession";
-
-export interface MetreRow {
-  key: string;
-  measure: MetreMeasure;
-  state: PossessionState;
-  labelKey: DictionaryKey;
-  unitKey: DictionaryKey;
-  home: number;
-  away: number;
-}
-
-/**
- * Units are LOCALE-LAYER METADATA keyed by metric code (AD-7: "Units are
- * locale-layer metadata keyed by metric code, never artifact strings"),
- * following KEY_STAT_UNIT's shipped shape. `Partial` because a measure without
- * a unit is legal; both of these carry metres.
+/*
+ * RETIRED BY CHANGE-SET CS-2 (contract logged decision 18), which is exactly what
+ * `metreRows`' own docblock said would happen: "When it rules, THIS PRESENTATION IS
+ * DELETED OR RE-SHAPED - it is not a surface to build on."
+ *
+ * The four values it rendered were `tacticalIdentity[side].lineHeight/.teamLength`, a
+ * shape the source never printed. The corpus prints THREE PANELS PER POSSESSION STATE
+ * WITH THREE MEASURES EACH - 18 values per team, 3,744 corpus-wide against the contract's
+ * 832 - including a `teamWidth` v3 did not model at all. m001 home in-possession
+ * `lineHeight` is 19 / 39 / 54 and the old fixture's single 44.4 matched no panel and no
+ * mean of them, because it was synthetic. So this surface was rendering invented numbers.
+ *
+ * `tacticalIdentity[side].shapeByPhase` now carries all 18 REAL values. Re-presenting them
+ * needs six panel labels that do not exist in either locale, and minting user-visible copy
+ * is a ruling this change-set does not have. The values ship in the artifact; the surface
+ * that renders them is filed.
+ *
+ * FILED: re-present shapeByPhase on #pressing. Owner: Story 2.19, or whichever story next
+ * re-opens #pressing - see deferred-work.md, "Filed by change-set CS-2".
  */
-export const METRE_UNIT: Partial<Record<MetreMeasure, "m">> = {
-  lineHeight: "m",
-  teamLength: "m",
-};
-
-const METRE_MEASURES: readonly MetreMeasure[] = ["lineHeight", "teamLength"];
-const POSSESSION_STATES: readonly PossessionState[] = ["inPossession", "outOfPossession"];
-
-function metreLabelKey(measure: MetreMeasure, state: PossessionState): DictionaryKey {
-  return `viz.pressing.metre.${measure}.${state}` as DictionaryKey;
-}
-
-/**
- * The four contracted metre values per team (#pressing, ruled decision 5).
- *
- * THESE ARE THE ONE PART OF DOMAIN C WITH NO REAL COUNTERPART, and that is
- * measured rather than inferred. The 8+9 phases and the block distribution are
- * REAL — every fixture value matches the staged record exactly, and
- * data/fixtures/README.md lists "All of Domain C phase percentages" under
- * "Real, from the source reports". The metres are NOT in that list:
- *
- *  - The corpus prints THREE PANELS PER POSSESSION STATE with THREE MEASURES
- *    each (in possession: build-up-low / build-up-mid / final-third-phase; out
- *    of possession: high-block-press / low-block / mid-block), including
- *    `team_width`, WHICH THE CONTRACT DOES NOT MODEL AT ALL.
- *  - m001 home in-possession staged `line_height` is 19 / 39 / 54 against the
- *    fixture's single 44.4 — it matches no panel and no mean of them.
- *  - Corpus ranges: line_height 10-71 m, team_length 13-51 m, team_width
- *    28-60 m.
- *
- * RULED: render the four contracted values EXACTLY as the contract names them.
- * They are `required` and non-nullable, and the App's job is to render what the
- * bundle carries. INVENT NO AGGREGATION, add no third measure, and write no
- * copy claiming which phase they describe.
- *
- * BINDING FORWARD: Story 1.16 owns the aggregation rule (deferred-work.md, grep
- * "the line-height/team-length pages are per-phase panels"). When it rules,
- * THIS PRESENTATION IS DELETED OR RE-SHAPED — it is not a surface to build on.
- */
-export function metreRows(identity: TacticalIdentityBlock): MetreRow[] {
-  const rows: MetreRow[] = [];
-  for (const measure of METRE_MEASURES) {
-    for (const state of POSSESSION_STATES) {
-      rows.push({
-        key: `${measure}-${state}`,
-        measure,
-        state,
-        labelKey: metreLabelKey(measure, state),
-        unitKey: "enums.unit.m",
-        home: identity.home[measure][state],
-        away: identity.away[measure][state],
-      });
-    }
-  }
-  return rows;
-}
 
 /* --------------------------------- The axis -------------------------------- */
 

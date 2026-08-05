@@ -15,12 +15,10 @@ import {
   PRESS_PHASES,
   blockRows,
   distributionChartHeightClass,
-  metreRows,
   percentAxisMax,
   percentTicks,
   pressRows,
   rowsPeak,
-  type MetreRow,
   type PhaseRow,
 } from "@/viz/phases-model";
 
@@ -120,7 +118,6 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
   // Eager, outside the disclosure (ruled decision 18).
   const press = pressRows(tacticalIdentity);
   const blocks = blockRows(tacticalIdentity);
-  const metres = metreRows(tacticalIdentity);
 
   const axisValueLabel = t("viz.pressing.axisRate");
   const axisCategoryLabel = t("viz.pressing.axisPhase");
@@ -165,55 +162,6 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
           heightClass={heightClass}
         />
       </div>
-    );
-  }
-
-  /* -------------------------------- The metres ------------------------------- */
-
-  /**
-   * One team's four distances.
-   *
-   * RULED DECISION 11, MADE TRUE RATHER THAN ASSERTED: this is TWO PER-TEAM
-   * BLOCKS in decision 17's grid, never a mirrored or centred-label tile pair.
-   * #pressing's metre values are the one place this story would otherwise build
-   * the very head-to-head stat-tile shape decision 11 rests on not existing —
-   * and with it would come the expectation of UX-DR7's ▲ «líder» treatment on
-   * "longitud del equipo 47 m vs 36 m", an editorial judgement the source does
-   * not make. NO LEADER TREATMENT ANYWHERE IN THIS STORY: `resolveLeader` is
-   * neither imported nor re-implemented here, and the departure is filed for UX
-   * sign-off.
-   */
-  function metreBlock(ref: SideRef, accent: "a" | "b", read: (row: MetreRow) => number) {
-    const figureSummary = `${figurePrefix} ${t("viz.pressing.metres")}${CLAUSE_SEPARATOR}${ref.name}`;
-    return (
-      <figure
-        role="figure"
-        aria-label={figureSummary}
-        className="min-w-0 rounded-md bg-surface-raised p-tile-gap"
-      >
-        {/* A team code is a LABEL, never a heading. */}
-        <span className={cn("type-label-caps", ACCENT_CLASS[accent])}>{ref.teamCode}</span>
-        <dl className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5">
-          {metres.map((row) => (
-            <div key={row.key} className="contents">
-              <dt className="type-caption text-ink-secondary">{t(row.labelKey)}</dt>
-              <dd className="type-caption tabular-nums text-ink-primary">
-                {formatDecimal(read(row), locale, 1)}
-                {UNIT_SEPARATOR}
-                {/*
-                 * THE UNIT COMES FROM THE ROW, keyed by measure code (AD-7:
-                 * "Units are locale-layer metadata keyed by metric code, never
-                 * artifact strings"). Hardcoding `t("enums.unit.m")` here made
-                 * the model's `unitKey` / `METRE_UNIT` mechanism exist only in
-                 * its own test: a measure added with a different unit would be
-                 * modelled correctly, rendered in metres, and stay green.
-                 */}
-                {t(row.unitKey)}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </figure>
     );
   }
 
@@ -271,9 +219,6 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
   const rateColumns = labelledPairColumns<PhaseRow>(t("viz.table.phase"), (value) =>
     formatPercent(value, locale, 1)
   );
-  const metreColumns = labelledPairColumns<MetreRow>(t("viz.table.measure"), (value) =>
-    formatDecimal(value, locale, 1)
-  );
 
   const pressCaption =
     `${title}${CAPTION_SEPARATOR}${t("viz.pressing.pressRates")}` +
@@ -281,8 +226,6 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
   const blockCaption =
     `${title}${CAPTION_SEPARATOR}${t("viz.pressing.blocks")}` +
     `${CAPTION_SEPARATOR}${t("viz.pressing.tableCaption")}`;
-  const metreCaption =
-    `${title}${CAPTION_SEPARATOR}${t("viz.pressing.metreTableCaption")}`;
 
   function rateTable(caption: string, rows: PhaseRow[]) {
     return <DataTable caption={caption} columns={rateColumns} rows={rows} surface="canvas" />;
@@ -292,7 +235,6 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
     <div className="flex flex-col gap-tile-gap">
       {rateTable(pressCaption, press)}
       {rateTable(blockCaption, blocks)}
-      <DataTable caption={metreCaption} columns={metreColumns} rows={metres} surface="canvas" />
     </div>
   );
 
@@ -303,26 +245,6 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
       {/* Each handle carries a skeleton fallback at ITS OWN height — see above. */}
       {chartFor(press, t("viz.pressing.pressRates"), PRESS_HEIGHT, PressChart)}
       {chartFor(blocks, t("viz.pressing.blocks"), BLOCK_HEIGHT, BlockChart)}
-      <div className="flex flex-col gap-1">
-        <p className="type-stat-label text-ink-secondary">{t("viz.pressing.metres")}</p>
-        {/*
-         * RULED DECISION 5. These four numbers are the ONLY part of Domain C
-         * with no real counterpart: the corpus prints three panels per
-         * possession state with three measures each (including team_width,
-         * which the contract does not model), and m001's staged line_height of
-         * 19/39/54 matches neither the fixture's single 44.4 nor any mean of
-         * them. They render because they are required, contracted fields and
-         * the App's job is to render what the bundle carries — with NO invented
-         * aggregation and no copy claiming which phase they describe. Story
-         * 1.16 owns the aggregation rule.
-         */}
-        <p className="type-caption text-ink-secondary">{t("viz.pressing.metreNote")}</p>
-        {/* Ruled decision 17: stacked at <md, both visible, no tabs. */}
-        <div className="grid grid-cols-1 gap-tile-gap md:grid-cols-2">
-          {metreBlock(home, "a", (row) => row.home)}
-          {metreBlock(away, "b", (row) => row.away)}
-        </div>
-      </div>
       <ViewDataDisclosure
         panelTitle={title}
         surface="canvas"

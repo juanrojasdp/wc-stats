@@ -194,10 +194,15 @@ corpus, each emits `null` in v1, and each is a change request rather than a gap 
 | --- | --- | --- |
 | `ShotEvent.expectedGoals` | xG appears **only** as a team total on the Key Statistics page. The shots event table has no xG column, in any of the 104 reports. | Per-shot xG is `null`. A shot tooltip must not promise it. |
 | `EventTables.shootoutAttempts` | PMSR prints only the aggregate cover line — `"(Switzerland win 4-3 on Penalties)"`. There is no per-attempt table anywhere, checked against all four shoot-out ties (M74, M75, M88, M96). | Real data emits `null`; the aggregate is in `knockoutScore.shootoutScore`. **The `m074` fixture carries attempt rows anyway**, per this story's fixture plan, so Epic 2 can build the surface — but it must handle `null`, because that is what production will send. |
-| `GoalRecord.ownGoal` / `ShotEvent.ownGoal` | Originally recorded (2026-07-22) as "no own-goal wording anywhere in the corpus" — **disproved by Story 1.6**: the red-football lineup glyph IS an own-goal marking, 14 across the corpus, verified by goal reconciliation 104/104. | v1 pipelines still emit `false` pending Story 1.16's emission flip. The matching stale schema `$comment` on `GoalOwnGoal` was corrected by change-set CS-1 (decision 17), so this row is no longer a "deliberately empty" shape — it is a shape whose EMISSION is pending, kept in this table until 1.16 flips it. The `m074` fixture carries a synthetic own goal to exercise the shape. |
 
 `null` and `[]` mean different things throughout the contract, and the App renders them
 differently: `null` is "not in the report", `[]` is "zero events". Do not collapse them.
+
+> **`GoalRecord.ownGoal` / `ShotEvent.ownGoal` left this table on 2026-08-05.** The row was
+> explicitly kept "until 1.16 flips it"; Story 1.16 emits all 14 corpus own goals with
+> `ownGoal: true`, credited to the benefiting team while `scorerPlayerId` names the scorer.
+> It was never a deliberately-empty shape, so removing it discharges the row rather than
+> correcting a false claim.
 
 ---
 
@@ -528,6 +533,122 @@ values-subset check `TypeError`d on an array value), and the hardcoded version a
 `shotOutcomeDetail` tripwires in `app/src/lib/i18n.test.ts` and `glossary.test.ts` stay green
 and undeleted: CS-1 ships the enum, not its Spanish copy. Those two tripwires are now the only
 thing standing between the 24-value enum and an unlabelled detail reaching a user.
+
+
+### 18. Domain C's metres and Domain E's goalkeeping are reshaped to what the report prints — schemaVersion 3 → 4
+
+**Change-set CS-2, requested by Story 1.16 (Epic 1), 2026-08-05.** Unlike CS-1 this one was
+not a widening: two shapes in v3 modelled data the corpus does not contain, and both were
+**non-nullable**, so Story 1.16 could not emit a single valid Match Bundle. The contract was
+blocking its own producer.
+
+#### (a) `PossessionSplitMetres` → `ShapeByPhase` — this blocked EVERY bundle
+
+`TeamTacticalIdentity` required `lineHeight` and `teamLength`, each a `PossessionSplitMetres`
+with non-nullable `inPossession` and `outOfPossession` metres: **four values per team, 832
+corpus-wide.** There is no `null` escape anywhere on that path.
+
+The Phases of Play page prints **three panels per possession state with three measures each**:
+
+```
+in_possession     = {build-up-low, build-up-mid, final-third-phase}
+out_of_possession = {high-block-press, mid-block, low-block}
+each panel        = {line_height, team_length, team_width}
+```
+
+**Eighteen values per team, 3,744 corpus-wide**, verified 104 × 2 sides × 2 pages × 3 panels
+× 3 measures. `team_width` had **no destination in the contract at all** — 1,248 measured
+values with nowhere to go.
+
+**No aggregation was implied by the data, and none was invented.** m001 home in-possession
+`line_height` is **19 / 39 / 54**, and the v3 fixture's single **44.4** matched no panel and
+no mean of them (37.3) — it was synthetic, which is what
+`data/fixtures/README.md` said all along. Aggregating would have minted a number the report
+never prints, on a surface whose own shipped Spanish copy stated that the report does not
+define which phase the distances describe.
+
+`ShapeByPhase` / `InPossessionShapePanels` / `OutOfPossessionShapePanels` / `ShapeMetrics`
+replace it. `team-profile.schema.json`'s `AggregateLineHeight` / `AggregateTeamLength` are
+reshaped in step, **before** Story 1.18 inherits the identical blocker — it has emitted
+nothing yet, so the correction is free now and expensive later.
+
+#### (b) `GoalkeepingBlock` becomes per-TEAM, and five sub-fields become nullable
+
+Three separate problems, one change-set, because fixing any one alone still leaves
+`goalkeeping` unemittable:
+
+1. **Five contract-required, non-nullable sub-fields are `null` on 208/208 team-innings** —
+   `distribution.{feet,hands,throw}Techniques`, `goalPrevention.byBodyType`,
+   `aerialControl.crossesFacedCompleted`. They are raster donut-slice labels and one
+   unvalidatable marker colour; only the donut **centre total** reaches the text layer
+   (Story 1.9, AD-14 (c)). No `GoalkeeperRecord` could be built at all, independent of who
+   owned it. Each is now `anyOf [<counts>, null]`.
+
+2. **The record was per-keeper; the source is per-team.** Verified over 104 reports / 936
+   goalkeeping pages: all four page families are titled `{team}`, **no goalkeeper name
+   appears on any of them**, and **7 of 208 team-innings used two keepers while still
+   printing one team-level block each** (M21 home, M41 away, M53 away, M62 away, M66 home,
+   M88 home, M98 away — hand-verified on M53, where Mexico's RANGEL came off at 78' and the
+   page still prints one chart, one total, no name). `GoalkeeperRecord` becomes
+   `TeamGoalkeeping`, keyed by `teamId`, with a `goalkeepers: GoalkeeperRef[]` list carried
+   as **context**. AD-5 forbids splitting or summing the team's figures between two keepers,
+   which is exactly what the per-keeper shape invited.
+
+3. **`GoalkeeperInvolvementSample.minute` could not represent the clock.** A bare `Minute`
+   (0–120, no stoppage field) against **95–145 slots per team-inning and 2,506 of 21,764
+   slots in stoppage** — minutes are **not unique** on real data, so an App indexing by
+   minute silently collapses samples. It is now `at: MinuteStamp`, exactly the repair
+   Story 1.8's v1 → v2 bump made for `MomentumSample.at`. The spine already carried the fix
+   as `involvement_clock.stamps[]`.
+
+#### (c) Riding along: three `description` corrections, all measured
+
+- **`FreeKickCounts` asserted a nesting that is corpus-FALSE.** It claimed
+  `direct == directOnTarget + directOffTarget`; measured over 208 team-innings it holds on
+  **0**, and **160** carry `on + off == 0` while `direct > 0`. It held 6/6 in the
+  hand-authored fixtures, which is how it came to be written. Asserting it makes a correct
+  bundle look broken. `direct + indirect == totalFreeKicks` (208/208) is the only safe
+  relation and is now the only one stated.
+- **`cornersByDeliveryStyle` had no constraint text at all**, and is **not** a partition:
+  the four styles sum to `totalCorners` on only **96/208** (112 under, never over). The
+  shape was correct but a consumer had no way to know, so the text is added rather than
+  corrected. `cornersByDeliveryType` **does** partition on 208/208 and is named as the one
+  to use.
+- **`GoalPrevention`'s denominator claim is re-grounded on the corpus.** It rested on "all
+  six fixture goalkeepers". `sum(byInterventionType) == attemptsFaced` is now verified
+  **TRUE on all 208 corpus team-innings** (delta histogram exactly `{0: 208}`), which
+  discharges the measurement Story 2.10's review routed to Story 1.16 by name. The
+  `byBodyType` half is now explicitly flagged as **unverifiable** — `byBodyType` is null on
+  208/208, so it stands on the fixtures' authority alone.
+
+#### What this cost, and the App repair that rode with it
+
+The six declarations moved (`version.json` plus five per-artifact `const` stamps), both
+hardcoded asserts in `pipeline/tests/test_contract_schemas.py`, all seven fixtures re-pinned,
+**both** generated type trees regenerated, and the prose in `data/fixtures/README.md`.
+
+**The seven fixtures got LESS synthetic, not more.** All three match fixtures have real
+corpus twins, so `shapeByPhase` was sourced from the **actual staged values** rather than
+re-synthesized, and the Mexico team profile's aggregate is a real mean over the five matches
+the spine carries for that team.
+
+**`app/` was repaired in this same commit**, which the v3 shapes made unavoidable: removing
+`lineHeight`/`teamLength` breaks `phases-model.ts` and `PressingSection.tsx`, and the
+per-team goalkeeping block breaks `goalkeeping-model.ts`. Landing the schema alone would
+have left `main` with a red build. Two consequences worth recording:
+
+- **`#pressing`'s metre presentation is RETIRED, not re-shaped.** `metreRows`' own docblock
+  said "when it rules, THIS PRESENTATION IS DELETED OR RE-SHAPED — it is not a surface to
+  build on." The four values it rendered were the synthetic ones. Re-presenting the 18 real
+  values needs six panel labels that exist in neither locale, and minting user-visible copy
+  is a ruling this change-set does not have. The values ship in the artifact; the surface is
+  filed to Story 2.19.
+- **`CorpusNullableGoalkeeperRecord` collapsed to a re-export**, exactly as Story 2.10
+  predicted it would. Its hand-written widening of the five fields is now the contract's own
+  shape, and its presence gates go from workaround to contract.
+
+> A version bump touches **six** declarations in `/contract`, not one — see the note under
+> decision 17. CS-2 followed that corrected recipe rather than the one CS-1 was filed with.
 
 ---
 

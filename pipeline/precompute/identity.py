@@ -501,6 +501,14 @@ COMMITTED_ID_KEYS: dict[str, str] = {
     "toPlayerId": "players",
 }
 
+# The id keys `/contract` declares nullable. Only `winnerTeamId` is one: it is
+# `anyOf [TeamId, null]` and is null on every tie decided in regulation without a winner
+# (20 drawn group matches in this corpus). Every other key above is a bare non-nullable
+# `$ref`, so a null there stays a finding. Kept as its own set rather than as a `None`
+# entry in COMMITTED_ID_KEYS, because that map's values name the pin namespace and a
+# nullable id still belongs to `teams` when it is present.
+NULLABLE_ID_KEYS: frozenset = frozenset({"winnerTeamId"})
+
 DATA_BASELINE_UNAVAILABLE = (
     "committed /data baseline unavailable: no match bundles found under {path} — "
     "the registry is the ONLY immutability source for this run. This is NOT a pass."
@@ -535,7 +543,15 @@ def check_committed_data(pins: "dict[str, dict[str, str]]", data_dir: "str | Pat
                 kind = COMMITTED_ID_KEYS.get(key)
                 if kind is not None:
                     seen += 1
-                    if not isinstance(value, str):
+                    if value is None and key in NULLABLE_ID_KEYS:
+                        # A contract-nullable id key legitimately carries null, and it is
+                        # not an unpinned id. `winnerTeamId` is null on every match decided
+                        # in regulation without a winner — 20 drawn group ties in this
+                        # corpus — and reporting those as unpinned made the first real
+                        # emission fail the pinning gate on correct data. Only the NULLABLE
+                        # keys get this pass; a null `playerId` is still a finding.
+                        pass
+                    elif not isinstance(value, str):
                         # Reported, not skipped: a bundle carrying `playerId: null` would
                         # otherwise go uncounted and the run would print "all pinned".
                         unpinned.append(

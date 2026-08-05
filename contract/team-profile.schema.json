@@ -20,7 +20,7 @@
     "schemaVersion": {
       "title": "TeamProfileSchemaVersion",
       "type": "integer",
-      "const": 3
+      "const": 4
     },
     "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
     "name": {
@@ -47,6 +47,18 @@
   },
 
   "$defs": {
+    "AggregateShapeMetrics": {
+      "title": "AggregateShapeMetrics",
+      "description": "The three distances for one phase panel, averaged across the team's matches.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lineHeight", "teamLength", "teamWidth"],
+      "properties": {
+        "lineHeight": { "$ref": "common.schema.json#/$defs/Metres" },
+        "teamLength": { "$ref": "common.schema.json#/$defs/Metres" },
+        "teamWidth": { "$ref": "common.schema.json#/$defs/Metres" }
+      }
+    },
     "TournamentRecord": {
       "title": "TeamTournamentRecord",
       "description": "A team's record across the tournament. `points` counts group-stage points only; knockout ties award none.",
@@ -88,8 +100,7 @@
       "required": [
         "phasesInPossession",
         "phasesOutOfPossession",
-        "lineHeight",
-        "teamLength",
+        "shapeByPhase",
         "defensiveBlockDistribution",
         "possession",
         "pressingIntensity"
@@ -147,24 +158,36 @@
             "counterPress": { "$ref": "common.schema.json#/$defs/Percentage" }
           }
         },
-        "lineHeight": {
-          "title": "AggregateLineHeight",
+        "shapeByPhase": {
+          "title": "AggregateShapeByPhase",
+          "$comment": "CS-2 reshaped this in step with the Match Bundle's ShapeByPhase. It previously aggregated `lineHeight`/`teamLength` as two in/out-of-possession pairs — four metre values per team — which is a shape the source never prints: the corpus prints three panels per possession state with three measures each, including a teamWidth the contract did not model. Story 1.18 owns team profiles and has emitted nothing yet, so this is corrected BEFORE it inherits the identical blocker that stopped Story 1.16 dead on the Match Bundle. The aggregate is a per-panel, per-measure mean across the team's matches.",
+          "description": "Team shape by phase of play, averaged across the team's matches. Not a partition and not aggregable across panels — each panel is its own measurement.",
           "type": "object",
           "additionalProperties": false,
           "required": ["inPossession", "outOfPossession"],
           "properties": {
-            "inPossession": { "$ref": "common.schema.json#/$defs/Metres" },
-            "outOfPossession": { "$ref": "common.schema.json#/$defs/Metres" }
-          }
-        },
-        "teamLength": {
-          "title": "AggregateTeamLength",
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["inPossession", "outOfPossession"],
-          "properties": {
-            "inPossession": { "$ref": "common.schema.json#/$defs/Metres" },
-            "outOfPossession": { "$ref": "common.schema.json#/$defs/Metres" }
+            "inPossession": {
+              "title": "AggregateInPossessionShapePanels",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["buildUpLow", "buildUpMid", "finalThirdPhase"],
+              "properties": {
+                "buildUpLow": { "$ref": "#/$defs/AggregateShapeMetrics" },
+                "buildUpMid": { "$ref": "#/$defs/AggregateShapeMetrics" },
+                "finalThirdPhase": { "$ref": "#/$defs/AggregateShapeMetrics" }
+              }
+            },
+            "outOfPossession": {
+              "title": "AggregateOutOfPossessionShapePanels",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["highBlockPress", "midBlock", "lowBlock"],
+              "properties": {
+                "highBlockPress": { "$ref": "#/$defs/AggregateShapeMetrics" },
+                "midBlock": { "$ref": "#/$defs/AggregateShapeMetrics" },
+                "lowBlock": { "$ref": "#/$defs/AggregateShapeMetrics" }
+              }
+            }
           }
         },
         "defensiveBlockDistribution": {

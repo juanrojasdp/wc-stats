@@ -1,0 +1,7167 @@
+{
+  "events": {
+    "crosses": null,
+    "defensiveActions": null,
+    "passNetworkEdges": [
+      {
+        "fromPlayerId": "bounou-yassine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bounou-yassine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bounou-yassine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "bounou-yassine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "halhal-redouane-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "bounou-yassine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bounou-yassine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "rahimi-soufiane-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bounou-yassine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-mourabet-samir-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "bounou-yassine-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "diaz-brahim-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "saibari-ismael-mar",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-kaabi-ayoub-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "halhal-redouane-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "bounou-yassine-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "diaz-brahim-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "saibari-ismael-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "halhal-redouane-mar",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "mazraoui-noussair-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "ounahi-azzedine-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "rahimi-soufiane-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-mourabet-samir-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "amrabat-sofyan-mar",
+        "teamId": "morocco",
+        "toPlayerId": "yassine-gessime-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diaz-brahim-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "diaz-brahim-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "diaz-brahim-mar",
+        "teamId": "morocco",
+        "toPlayerId": "saibari-ismael-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "diaz-brahim-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "diaz-brahim-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "saibari-ismael-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "saibari-ismael-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "saibari-ismael-mar",
+        "teamId": "morocco",
+        "toPlayerId": "diaz-brahim-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "saibari-ismael-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "saibari-ismael-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "saibari-ismael-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "riad-chadi-mar",
+        "teamId": "morocco",
+        "toPlayerId": "bounou-yassine-mar",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "riad-chadi-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "riad-chadi-mar",
+        "teamId": "morocco",
+        "toPlayerId": "diaz-brahim-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "riad-chadi-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "riad-chadi-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "riad-chadi-mar",
+        "teamId": "morocco",
+        "toPlayerId": "halhal-redouane-mar",
+        "volume": 15
+      },
+      {
+        "fromPlayerId": "riad-chadi-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 19
+      },
+      {
+        "fromPlayerId": "riad-chadi-mar",
+        "teamId": "morocco",
+        "toPlayerId": "rahimi-soufiane-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "el-kaabi-ayoub-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "el-kaabi-ayoub-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "el-kaabi-ayoub-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "diaz-brahim-mar",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "saibari-ismael-mar",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-kaabi-ayoub-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "halhal-redouane-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "mazraoui-noussair-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "el-khannouss-bilal-mar",
+        "teamId": "morocco",
+        "toPlayerId": "rahimi-soufiane-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 17
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "diaz-brahim-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "saibari-ismael-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-kaabi-ayoub-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "halhal-redouane-mar",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "rahimi-soufiane-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "el-aynaoui-neil-mar",
+        "teamId": "morocco",
+        "toPlayerId": "yassine-gessime-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "bounou-yassine-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 15
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "diaz-brahim-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "saibari-ismael-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-kaabi-ayoub-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "ounahi-azzedine-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "halhal-redouane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "yassine-gessime-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "salah-eddine-anass-mar",
+        "teamId": "morocco",
+        "toPlayerId": "bounou-yassine-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "salah-eddine-anass-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "salah-eddine-anass-mar",
+        "teamId": "morocco",
+        "toPlayerId": "diaz-brahim-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "salah-eddine-anass-mar",
+        "teamId": "morocco",
+        "toPlayerId": "saibari-ismael-mar",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "salah-eddine-anass-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 15
+      },
+      {
+        "fromPlayerId": "salah-eddine-anass-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 15
+      },
+      {
+        "fromPlayerId": "salah-eddine-anass-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "salah-eddine-anass-mar",
+        "teamId": "morocco",
+        "toPlayerId": "halhal-redouane-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mazraoui-noussair-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mazraoui-noussair-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ounahi-azzedine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ounahi-azzedine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-khannouss-bilal-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ounahi-azzedine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-aynaoui-neil-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ounahi-azzedine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "rahimi-soufiane-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ounahi-azzedine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "el-mourabet-samir-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ounahi-azzedine-mar",
+        "teamId": "morocco",
+        "toPlayerId": "yassine-gessime-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "rahimi-soufiane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "rahimi-soufiane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "rahimi-soufiane-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "el-mourabet-samir-mar",
+        "teamId": "morocco",
+        "toPlayerId": "amrabat-sofyan-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "el-mourabet-samir-mar",
+        "teamId": "morocco",
+        "toPlayerId": "riad-chadi-mar",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "el-mourabet-samir-mar",
+        "teamId": "morocco",
+        "toPlayerId": "ounahi-azzedine-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "el-mourabet-samir-mar",
+        "teamId": "morocco",
+        "toPlayerId": "yassine-gessime-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "yassine-gessime-mar",
+        "teamId": "morocco",
+        "toPlayerId": "hakimi-achraf-mar",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "yassine-gessime-mar",
+        "teamId": "morocco",
+        "toPlayerId": "halhal-redouane-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "yassine-gessime-mar",
+        "teamId": "morocco",
+        "toPlayerId": "salah-eddine-anass-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "yassine-gessime-mar",
+        "teamId": "morocco",
+        "toPlayerId": "ounahi-azzedine-mar",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "placide-johny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "placide-johny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "delcroix-hannes-hai",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "placide-johny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "experience-martin-hai",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "placide-johny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "providence-ruben-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "placide-johny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "placide-johny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "duverne-jean-kevin-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "placide-johny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "arcus-carlens-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "placide-johny-hai",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "delcroix-hannes-hai",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "experience-martin-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "jean-jacques-danley-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "isidor-wilson-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "duverne-jean-kevin-hai",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "arcus-carlens-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "deedson-louicius-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "pierrot-frantzdy-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ade-ricardo-hai",
+        "teamId": "haiti",
+        "toPlayerId": "simon-dominique-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "delcroix-hannes-hai",
+        "teamId": "haiti",
+        "toPlayerId": "placide-johny-hai",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "delcroix-hannes-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "delcroix-hannes-hai",
+        "teamId": "haiti",
+        "toPlayerId": "experience-martin-hai",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "delcroix-hannes-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "delcroix-hannes-hai",
+        "teamId": "haiti",
+        "toPlayerId": "providence-ruben-hai",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "delcroix-hannes-hai",
+        "teamId": "haiti",
+        "toPlayerId": "jean-jacques-danley-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "delcroix-hannes-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "delcroix-hannes-hai",
+        "teamId": "haiti",
+        "toPlayerId": "nazon-duckens-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "experience-martin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "experience-martin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "delcroix-hannes-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "experience-martin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "experience-martin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "providence-ruben-hai",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "experience-martin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "jean-jacques-danley-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "experience-martin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "experience-martin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "nazon-duckens-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "placide-johny-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "delcroix-hannes-hai",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "experience-martin-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "providence-ruben-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "joseph-lenny-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "jean-jacques-danley-hai",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "isidor-wilson-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "duverne-jean-kevin-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "nazon-duckens-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bellegarde-jean-ricner-hai",
+        "teamId": "haiti",
+        "toPlayerId": "simon-dominique-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "providence-ruben-hai",
+        "teamId": "haiti",
+        "toPlayerId": "delcroix-hannes-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "providence-ruben-hai",
+        "teamId": "haiti",
+        "toPlayerId": "experience-martin-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "providence-ruben-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "providence-ruben-hai",
+        "teamId": "haiti",
+        "toPlayerId": "joseph-lenny-hai",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "providence-ruben-hai",
+        "teamId": "haiti",
+        "toPlayerId": "isidor-wilson-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "joseph-lenny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "placide-johny-hai",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "joseph-lenny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "providence-ruben-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "joseph-lenny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "jean-jacques-danley-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "joseph-lenny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "joseph-lenny-hai",
+        "teamId": "haiti",
+        "toPlayerId": "duverne-jean-kevin-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "jean-jacques-danley-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "jean-jacques-danley-hai",
+        "teamId": "haiti",
+        "toPlayerId": "delcroix-hannes-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "jean-jacques-danley-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "jean-jacques-danley-hai",
+        "teamId": "haiti",
+        "toPlayerId": "providence-ruben-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "jean-jacques-danley-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "jean-jacques-danley-hai",
+        "teamId": "haiti",
+        "toPlayerId": "duverne-jean-kevin-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "isidor-wilson-hai",
+        "teamId": "haiti",
+        "toPlayerId": "joseph-lenny-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "isidor-wilson-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "casimir-josue-hai",
+        "teamId": "haiti",
+        "toPlayerId": "delcroix-hannes-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "casimir-josue-hai",
+        "teamId": "haiti",
+        "toPlayerId": "experience-martin-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "casimir-josue-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "casimir-josue-hai",
+        "teamId": "haiti",
+        "toPlayerId": "joseph-lenny-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "casimir-josue-hai",
+        "teamId": "haiti",
+        "toPlayerId": "jean-jacques-danley-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "casimir-josue-hai",
+        "teamId": "haiti",
+        "toPlayerId": "duverne-jean-kevin-hai",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "casimir-josue-hai",
+        "teamId": "haiti",
+        "toPlayerId": "pierrot-frantzdy-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "duverne-jean-kevin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "duverne-jean-kevin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "duverne-jean-kevin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "jean-jacques-danley-hai",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "duverne-jean-kevin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "isidor-wilson-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "duverne-jean-kevin-hai",
+        "teamId": "haiti",
+        "toPlayerId": "casimir-josue-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "arcus-carlens-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "arcus-carlens-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "arcus-carlens-hai",
+        "teamId": "haiti",
+        "toPlayerId": "deedson-louicius-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "arcus-carlens-hai",
+        "teamId": "haiti",
+        "toPlayerId": "simon-dominique-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "nazon-duckens-hai",
+        "teamId": "haiti",
+        "toPlayerId": "simon-dominique-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "deedson-louicius-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "pierrot-frantzdy-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "pierrot-frantzdy-hai",
+        "teamId": "haiti",
+        "toPlayerId": "deedson-louicius-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "simon-dominique-hai",
+        "teamId": "haiti",
+        "toPlayerId": "ade-ricardo-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "simon-dominique-hai",
+        "teamId": "haiti",
+        "toPlayerId": "delcroix-hannes-hai",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "simon-dominique-hai",
+        "teamId": "haiti",
+        "toPlayerId": "bellegarde-jean-ricner-hai",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "simon-dominique-hai",
+        "teamId": "haiti",
+        "toPlayerId": "arcus-carlens-hai",
+        "volume": 1
+      }
+    ],
+    "passNetworkNodes": null,
+    "receiving": null,
+    "shootoutAttempts": null,
+    "shots": [
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "el-kaabi-ayoub-mar",
+        "playerName": "Ayoub EL KAABI",
+        "teamId": "morocco",
+        "x": 95.95,
+        "y": 74.59
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "saibari-ismael-mar",
+        "playerName": "Ismael SAIBARI",
+        "teamId": "morocco",
+        "x": 93.77,
+        "y": 51.03
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "saibari-ismael-mar",
+        "playerName": "Ismael SAIBARI",
+        "teamId": "morocco",
+        "x": 85.52,
+        "y": 37.19
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target-saved",
+        "ownGoal": false,
+        "playerId": "saibari-ismael-mar",
+        "playerName": "Ismael SAIBARI",
+        "teamId": "morocco",
+        "x": 83.06,
+        "y": 52.27
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "bodyPart": "upper-body",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-player-on-ball-error",
+        "ownGoal": false,
+        "playerId": "el-kaabi-ayoub-mar",
+        "playerName": "Ayoub EL KAABI",
+        "teamId": "morocco",
+        "x": 92.32,
+        "y": 61.16
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "hakimi-achraf-mar",
+        "playerName": "Achraf HAKIMI",
+        "teamId": "morocco",
+        "x": 86.24,
+        "y": 43.59
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "other",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "el-kaabi-ayoub-mar",
+        "playerName": "Ayoub EL KAABI",
+        "teamId": "morocco",
+        "x": 88.7,
+        "y": 52.27
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "saibari-ismael-mar",
+        "playerName": "Ismael SAIBARI",
+        "teamId": "morocco",
+        "x": 91.6,
+        "y": 44.01
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "bodyPart": "lower-body",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "hakimi-achraf-mar",
+        "playerName": "Achraf HAKIMI",
+        "teamId": "morocco",
+        "x": 100.0,
+        "y": 48.55
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "saibari-ismael-mar",
+        "playerName": "Ismael SAIBARI",
+        "teamId": "morocco",
+        "x": 85.52,
+        "y": 51.45
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "diaz-brahim-mar",
+        "playerName": "Brahim DIAZ",
+        "teamId": "morocco",
+        "x": 91.17,
+        "y": 39.46
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "el-khannouss-bilal-mar",
+        "playerName": "Bilal EL KHANNOUSS",
+        "teamId": "morocco",
+        "x": 79.15,
+        "y": 39.05
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "el-aynaoui-neil-mar",
+        "playerName": "Neil EL AYNAOUI",
+        "teamId": "morocco",
+        "x": 90.59,
+        "y": 56.41
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "el-khannouss-bilal-mar",
+        "playerName": "Bilal EL KHANNOUSS",
+        "teamId": "morocco",
+        "x": 79.73,
+        "y": 52.69
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "hakimi-achraf-mar",
+        "playerName": "Achraf HAKIMI",
+        "teamId": "morocco",
+        "x": 75.67,
+        "y": 47.73
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "other",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "hakimi-achraf-mar",
+        "playerName": "Achraf HAKIMI",
+        "teamId": "morocco",
+        "x": 77.26,
+        "y": 49.17
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "rahimi-soufiane-mar",
+        "playerName": "Soufiane RAHIMI",
+        "teamId": "morocco",
+        "x": 93.19,
+        "y": 53.72
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-assist",
+        "ownGoal": false,
+        "playerId": "riad-chadi-mar",
+        "playerName": "Chadi RIAD",
+        "teamId": "morocco",
+        "x": 94.5,
+        "y": 60.33
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "deflected-on-target-goal",
+        "ownGoal": false,
+        "playerId": "rahimi-soufiane-mar",
+        "playerName": "Soufiane RAHIMI",
+        "teamId": "morocco",
+        "x": 91.75,
+        "y": 45.45
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "hakimi-achraf-mar",
+        "playerName": "Achraf HAKIMI",
+        "teamId": "morocco",
+        "x": 91.02,
+        "y": 10.95
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "ounahi-azzedine-mar",
+        "playerName": "Azzedine OUNAHI",
+        "teamId": "morocco",
+        "x": 82.91,
+        "y": 27.89
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "yassine-gessime-mar",
+        "playerName": "Gessime YASSINE",
+        "teamId": "morocco",
+        "x": 94.64,
+        "y": 56.41
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "bellegarde-jean-ricner-hai",
+        "playerName": "Jean-Ricner BELLEGARDE",
+        "teamId": "haiti",
+        "x": 71.33,
+        "y": 45.04
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-player-on-ball-error",
+        "ownGoal": false,
+        "playerId": "joseph-lenny-hai",
+        "playerName": "Lenny JOSEPH",
+        "teamId": "haiti",
+        "x": 96.52,
+        "y": 52.69
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "ball-progression",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "joseph-lenny-hai",
+        "playerName": "Lenny JOSEPH",
+        "teamId": "haiti",
+        "x": 92.04,
+        "y": 70.25
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "isidor-wilson-hai",
+        "playerName": "Wilson ISIDOR",
+        "teamId": "haiti",
+        "x": 78.42,
+        "y": 66.74
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "bellegarde-jean-ricner-hai",
+        "playerName": "Jean-Ricner BELLEGARDE",
+        "teamId": "haiti",
+        "x": 85.37,
+        "y": 18.59
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "nazon-duckens-hai",
+        "playerName": "Duckens NAZON",
+        "teamId": "haiti",
+        "x": 77.12,
+        "y": 36.78
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "bellegarde-jean-ricner-hai",
+        "playerName": "Jean-Ricner BELLEGARDE",
+        "teamId": "haiti",
+        "x": 91.17,
+        "y": 43.39
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 8
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "deedson-louicius-hai",
+        "playerName": "Louicius DEEDSON",
+        "teamId": "haiti",
+        "x": 87.84,
+        "y": 74.38
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 8
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target-saved",
+        "ownGoal": false,
+        "playerId": "ade-ricardo-hai",
+        "playerName": "Ricardo ADE",
+        "teamId": "haiti",
+        "x": 79.87,
+        "y": 58.68
+      }
+    ]
+  },
+  "goalkeeping": [
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 3,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 0,
+          "driven": 0,
+          "inswing": 1,
+          "lofted": 0,
+          "outswing": 1,
+          "pushCross": 1,
+          "total": 3
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 0
+      },
+      "distribution": {
+        "feet": {
+          "complete": 15,
+          "incomplete": 4,
+          "total": 19
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "handsTechniques": null,
+        "lineBreaks": 6,
+        "throw": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 2
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 18,
+          "incomplete": 4,
+          "total": 22
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 10,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 7,
+          "saveAndDeflect": 1,
+          "saveAndRetain": 1,
+          "saveAttempt": 1
+        },
+        "savePercentage": 50.0,
+        "totalInterventions": 2
+      },
+      "goalkeepers": [
+        {
+          "playerId": "bounou-yassine-mar",
+          "playerName": "Yassine BOUNOU",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 7
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 8
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "morocco",
+      "totalInvolvements": 34
+    },
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "crossesFacedAttempted": 31,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 2,
+          "driven": 1,
+          "inswing": 3,
+          "lofted": 2,
+          "outswing": 11,
+          "pushCross": 12,
+          "total": 31
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 1
+      },
+      "distribution": {
+        "feet": {
+          "complete": 19,
+          "incomplete": 14,
+          "total": 33
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 2,
+          "total": 2
+        },
+        "handsTechniques": null,
+        "lineBreaks": 20,
+        "throw": {
+          "complete": 3,
+          "incomplete": 0,
+          "total": 3
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 22,
+          "incomplete": 16,
+          "total": 38
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 24,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 11,
+          "saveAndDeflect": 6,
+          "saveAndRetain": 3,
+          "saveAttempt": 4
+        },
+        "savePercentage": 64.0,
+        "totalInterventions": 9
+      },
+      "goalkeepers": [
+        {
+          "playerId": "placide-johny-hai",
+          "playerName": "Johny PLACIDE",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 7
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 8
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "haiti",
+      "totalInvolvements": 64
+    }
+  ],
+  "keyStatistics": {
+    "away": {
+      "ballProgressions": 32,
+      "completedLineBreaks": 49,
+      "crosses": 3,
+      "defensiveLineBreaks": 3,
+      "defensivePressures": 331,
+      "directPressures": 50,
+      "distanceCovered": 107.5,
+      "expectedGoals": 0.65,
+      "forcedTurnovers": 50,
+      "goals": 2,
+      "passCompletion": 80.0,
+      "passes": 265,
+      "passesCompleted": 212,
+      "possession": 31.5,
+      "receptionsInFinalThird": 40,
+      "secondBalls": 59,
+      "shots": 9,
+      "shotsOnTarget": 2,
+      "sprintDistance": 5.9
+    },
+    "contestedPossession": 8.4,
+    "home": {
+      "ballProgressions": 39,
+      "completedLineBreaks": 124,
+      "crosses": 31,
+      "defensiveLineBreaks": 19,
+      "defensivePressures": 172,
+      "directPressures": 57,
+      "distanceCovered": 111.2,
+      "expectedGoals": 2.12,
+      "forcedTurnovers": 38,
+      "goals": 4,
+      "passCompletion": 89.0,
+      "passes": 557,
+      "passesCompleted": 495,
+      "possession": 60.1,
+      "receptionsInFinalThird": 157,
+      "secondBalls": 64,
+      "shots": 22,
+      "shotsOnTarget": 11,
+      "sprintDistance": 6.8
+    }
+  },
+  "matchId": "m050-morocco-haiti",
+  "metadata": {
+    "awayTeam": {
+      "name": "Haiti",
+      "teamCode": "hai",
+      "teamId": "haiti"
+    },
+    "date": "2026-06-24",
+    "goals": [
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "ownGoal": true,
+        "penalty": false,
+        "scorerName": "Yassine BOUNOU",
+        "scorerPlayerId": "bounou-yassine-mar",
+        "teamId": "haiti"
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Achraf HAKIMI",
+        "scorerPlayerId": "hakimi-achraf-mar",
+        "teamId": "morocco"
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Wilson ISIDOR",
+        "scorerPlayerId": "isidor-wilson-hai",
+        "teamId": "haiti"
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Ismael SAIBARI",
+        "scorerPlayerId": "saibari-ismael-mar",
+        "teamId": "morocco"
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Soufiane RAHIMI",
+        "scorerPlayerId": "rahimi-soufiane-mar",
+        "teamId": "morocco"
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Gessime YASSINE",
+        "scorerPlayerId": "yassine-gessime-mar",
+        "teamId": "morocco"
+      }
+    ],
+    "group": "c",
+    "homeTeam": {
+      "name": "Morocco",
+      "teamCode": "mar",
+      "teamId": "morocco"
+    },
+    "kickoff": "2026-06-24T18:00:00-04:00",
+    "knockoutScore": {
+      "decidedBy": "regulation",
+      "scoreAfter90": {
+        "away": 2,
+        "home": 4
+      },
+      "scoreAfterET": null,
+      "shootoutScore": null,
+      "winnerTeamId": "morocco"
+    },
+    "lineups": {
+      "away": {
+        "formation": "4-4-2",
+        "starters": [
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 79,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Johny PLACIDE",
+            "playerId": "placide-johny-hai",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ricardo ADE",
+            "playerId": "ade-ricardo-hai",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Hannes DELCROIX",
+            "playerId": "delcroix-hannes-hai",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Martin EXPERIENCE",
+            "playerId": "experience-martin-hai",
+            "position": "df",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jean-Ricner BELLEGARDE",
+            "playerId": "bellegarde-jean-ricner-hai",
+            "position": "mf",
+            "shirtNumber": 10,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ruben PROVIDENCE",
+            "playerId": "providence-ruben-hai",
+            "position": "fw",
+            "shirtNumber": 15,
+            "substitutedOff": {
+              "minute": 67,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lenny JOSEPH",
+            "playerId": "joseph-lenny-hai",
+            "position": "fw",
+            "shirtNumber": 16,
+            "substitutedOff": {
+              "minute": 83,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Danley JEAN JACQUES",
+            "playerId": "jean-jacques-danley-hai",
+            "position": "mf",
+            "shirtNumber": 17,
+            "substitutedOff": {
+              "minute": 80,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 43,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Wilson ISIDOR",
+            "playerId": "isidor-wilson-hai",
+            "position": "fw",
+            "shirtNumber": 18,
+            "substitutedOff": {
+              "minute": 67,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 93,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Josue CASIMIR",
+            "playerId": "casimir-josue-hai",
+            "position": "fw",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jean-Kevin DUVERNE",
+            "playerId": "duverne-jean-kevin-hai",
+            "position": "df",
+            "shirtNumber": 22,
+            "substitutedOff": {
+              "minute": 80,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alexandre PIERRE",
+            "playerId": "pierre-alexandre-hai",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Josue DUVERGER",
+            "playerId": "duverger-josue-hai",
+            "position": "gk",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Carlens ARCUS",
+            "playerId": "arcus-carlens-hai",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 80,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Keeto THERMONCY",
+            "playerId": "thermoncy-keeto-hai",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Carl SAINTE",
+            "playerId": "sainte-carl-hai",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Derrick ETIENNE",
+            "playerId": "etienne-derrick-hai",
+            "position": "fw",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 79,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Duckens NAZON",
+            "playerId": "nazon-duckens-hai",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 67,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Louicius DEEDSON",
+            "playerId": "deedson-louicius-hai",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 67,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Markhus LACROIX",
+            "playerId": "lacroix-markhus-hai",
+            "position": "df",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Garven METUSALA",
+            "playerId": "metusala-garven-hai",
+            "position": "df",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Yassin FORTUNE",
+            "playerId": "fortune-yassin-hai",
+            "position": "fw",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Frantzdy PIERROT",
+            "playerId": "pierrot-frantzdy-hai",
+            "position": "fw",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 83,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Wilguens PAUGAIN",
+            "playerId": "paugain-wilguens-hai",
+            "position": "df",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Dominique SIMON",
+            "playerId": "simon-dominique-hai",
+            "position": "mf",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 80,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Woodensky PIERRE",
+            "playerId": "pierre-woodensky-hai",
+            "position": "mf",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      },
+      "home": {
+        "formation": "4-2-3-1",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Yassine BOUNOU",
+            "playerId": "bounou-yassine-mar",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 39,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Achraf HAKIMI",
+            "playerId": "hakimi-achraf-mar",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Sofyan AMRABAT",
+            "playerId": "amrabat-sofyan-mar",
+            "position": "mf",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Brahim DIAZ",
+            "playerId": "diaz-brahim-mar",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": {
+              "minute": 70,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 45,
+                "stoppageMinute": 1
+              }
+            ],
+            "name": "Ismael SAIBARI",
+            "playerId": "saibari-ismael-mar",
+            "position": "mf",
+            "shirtNumber": 11,
+            "substitutedOff": {
+              "minute": 70,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Chadi RIAD",
+            "playerId": "riad-chadi-mar",
+            "position": "df",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ayoub EL KAABI",
+            "playerId": "el-kaabi-ayoub-mar",
+            "position": "fw",
+            "shirtNumber": 20,
+            "substitutedOff": {
+              "minute": 70,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Bilal EL KHANNOUSS",
+            "playerId": "el-khannouss-bilal-mar",
+            "position": "mf",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Neil EL AYNAOUI",
+            "playerId": "el-aynaoui-neil-mar",
+            "position": "mf",
+            "shirtNumber": 24,
+            "substitutedOff": {
+              "minute": 83,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Redouane HALHAL",
+            "playerId": "halhal-redouane-mar",
+            "position": "df",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Anass SALAH EDDINE",
+            "playerId": "salah-eddine-anass-mar",
+            "position": "df",
+            "shirtNumber": 26,
+            "substitutedOff": {
+              "minute": 83,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Munir EL KAJOUI",
+            "playerId": "el-kajoui-munir-mar",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ahmed Reda TAGNAOUTI",
+            "playerId": "tagnaouti-ahmed-reda-mar",
+            "position": "gk",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Noussair MAZRAOUI",
+            "playerId": "mazraoui-noussair-mar",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 83,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Marwane SAADANE",
+            "playerId": "saadane-marwane-mar",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ayyoub BOUADDI",
+            "playerId": "bouaddi-ayyoub-mar",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Chemsdine TALBI",
+            "playerId": "talbi-chemsdine-mar",
+            "position": "mf",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Azzedine OUNAHI",
+            "playerId": "ounahi-azzedine-mar",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 70,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 78,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Soufiane RAHIMI",
+            "playerId": "rahimi-soufiane-mar",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 70,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Zakaria EL OUAHDI",
+            "playerId": "el-ouahdi-zakaria-mar",
+            "position": "df",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Issa DIOP",
+            "playerId": "diop-issa-mar",
+            "position": "df",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Samir EL MOURABET",
+            "playerId": "el-mourabet-samir-mar",
+            "position": "mf",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 83,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 89,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Gessime YASSINE",
+            "playerId": "yassine-gessime-mar",
+            "position": "mf",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 70,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Amine SBAI",
+            "playerId": "sbai-amine-mar",
+            "position": "fw",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Youssef BELAMMARI",
+            "playerId": "belammari-youssef-mar",
+            "position": "df",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ayoube AMAIMOUNI",
+            "playerId": "amaimouni-ayoube-mar",
+            "position": "fw",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      }
+    },
+    "matchNumber": 50,
+    "matchdayRound": "group-md3",
+    "score": {
+      "away": 2,
+      "home": 4
+    },
+    "stage": "group",
+    "venue": "Atlanta Stadium"
+  },
+  "momentum": {
+    "samples": [
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 5
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 10
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 10
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 6
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 7
+        },
+        "away": 7,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 8
+        },
+        "away": 0,
+        "home": 0
+      }
+    ]
+  },
+  "players": [
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 33.0,
+        "lineBreaksAttempted": 6,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 82.0,
+        "passesAttempted": 22,
+        "passesCompleted": 18,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 4,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3585.0,
+        "distanceZone2": 702.3,
+        "distanceZone3": 18.9,
+        "distanceZone4": 0.0,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 3,
+        "sprints": 0,
+        "topSpeed": 17.2,
+        "totalDistance": 4306.2
+      },
+      "playerId": "bounou-yassine-mar",
+      "playerName": "Yassine BOUNOU",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 5,
+        "ballProgressions": 10,
+        "crossesAttempted": 11,
+        "crossesCompleted": 5,
+        "goals": 1,
+        "lineBreakCompletion": 82.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 18,
+          "inBetween": 7,
+          "inFront": 14,
+          "inToOut": 2,
+          "noMovement": 21,
+          "outToIn": 1
+        },
+        "offersReceived": 26,
+        "passCompletion": 89.0,
+        "passesAttempted": 70,
+        "passesCompleted": 62,
+        "stepIns": 2,
+        "switchesOfPlay": 4,
+        "takeOns": 8,
+        "totalOffers": 63
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 6,
+        "pressingIndirect": 2,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 3,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4171.7,
+        "distanceZone2": 3672.1,
+        "distanceZone3": 1327.9,
+        "distanceZone4": 578.1,
+        "distanceZone5": 410.1,
+        "highSpeedRuns": 111,
+        "sprints": 51,
+        "topSpeed": 34.4,
+        "totalDistance": 10159.9
+      },
+      "playerId": "hakimi-achraf-mar",
+      "playerName": "Achraf HAKIMI",
+      "position": "df",
+      "shirtNumber": 2,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 100.0,
+        "passesAttempted": 6,
+        "passesCompleted": 6,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 2,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 521.2,
+        "distanceZone2": 567.6,
+        "distanceZone3": 155.5,
+        "distanceZone4": 54.4,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 11,
+        "sprints": 4,
+        "topSpeed": 23.8,
+        "totalDistance": 1298.7
+      },
+      "playerId": "mazraoui-noussair-mar",
+      "playerName": "Noussair MAZRAOUI",
+      "position": "df",
+      "shirtNumber": 3,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 92.0,
+        "lineBreaksAttempted": 13,
+        "lineBreaksCompleted": 12,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 10,
+          "inFront": 29,
+          "inToOut": 0,
+          "noMovement": 8,
+          "outToIn": 0
+        },
+        "offersReceived": 24,
+        "passCompletion": 93.0,
+        "passesAttempted": 70,
+        "passesCompleted": 65,
+        "stepIns": 0,
+        "switchesOfPlay": 2,
+        "takeOns": 0,
+        "totalOffers": 48
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 4,
+        "possessionRegains": 3,
+        "pressingDirect": 13,
+        "pressingIndirect": 13,
+        "pushingOn": 12,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 7,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3773.6,
+        "distanceZone2": 4753.4,
+        "distanceZone3": 1768.0,
+        "distanceZone4": 558.1,
+        "distanceZone5": 195.9,
+        "highSpeedRuns": 164,
+        "sprints": 48,
+        "topSpeed": 32.4,
+        "totalDistance": 11049.0
+      },
+      "playerId": "amrabat-sofyan-mar",
+      "playerName": "Sofyan AMRABAT",
+      "position": "mf",
+      "shirtNumber": 4,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 3,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 100.0,
+        "passesAttempted": 7,
+        "passesCompleted": 7,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 5,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 987.3,
+        "distanceZone2": 1073.5,
+        "distanceZone3": 347.9,
+        "distanceZone4": 174.5,
+        "distanceZone5": 41.4,
+        "highSpeedRuns": 30,
+        "sprints": 10,
+        "topSpeed": 28.1,
+        "totalDistance": 2624.5
+      },
+      "playerId": "ounahi-azzedine-mar",
+      "playerName": "Azzedine OUNAHI",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 1,
+        "crossesAttempted": 3,
+        "crossesCompleted": 2,
+        "goals": 1,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 3,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 2
+        },
+        "offersReceived": 8,
+        "passCompletion": 80.0,
+        "passesAttempted": 5,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 16
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 7,
+        "pushingOn": 10,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1149.3,
+        "distanceZone2": 1009.6,
+        "distanceZone3": 471.4,
+        "distanceZone4": 283.1,
+        "distanceZone5": 92.0,
+        "highSpeedRuns": 40,
+        "sprints": 20,
+        "topSpeed": 29.8,
+        "totalDistance": 3005.4
+      },
+      "playerId": "rahimi-soufiane-mar",
+      "playerName": "Soufiane RAHIMI",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 5,
+        "crossesAttempted": 3,
+        "crossesCompleted": 2,
+        "goals": 0,
+        "lineBreakCompletion": 73.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 11,
+          "inBetween": 13,
+          "inFront": 3,
+          "inToOut": 1,
+          "noMovement": 5,
+          "outToIn": 2
+        },
+        "offersReceived": 15,
+        "passCompletion": 79.0,
+        "passesAttempted": 24,
+        "passesCompleted": 19,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 5,
+        "totalOffers": 35
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 19,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2894.5,
+        "distanceZone2": 3119.5,
+        "distanceZone3": 1139.2,
+        "distanceZone4": 501.1,
+        "distanceZone5": 170.4,
+        "highSpeedRuns": 102,
+        "sprints": 34,
+        "topSpeed": 32.4,
+        "totalDistance": 7824.6
+      },
+      "playerId": "diaz-brahim-mar",
+      "playerName": "Brahim DIAZ",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 5,
+        "ballProgressions": 3,
+        "crossesAttempted": 6,
+        "crossesCompleted": 2,
+        "goals": 1,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 29,
+          "inBetween": 16,
+          "inFront": 5,
+          "inToOut": 10,
+          "noMovement": 6,
+          "outToIn": 2
+        },
+        "offersReceived": 18,
+        "passCompletion": 78.0,
+        "passesAttempted": 23,
+        "passesCompleted": 18,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 68
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 2,
+        "pressingIndirect": 19,
+        "pushingOn": 17,
+        "pushingOnIntoPressing": 13,
+        "tacklesMade": 3,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2441.9,
+        "distanceZone2": 3436.1,
+        "distanceZone3": 1340.3,
+        "distanceZone4": 991.8,
+        "distanceZone5": 355.9,
+        "highSpeedRuns": 121,
+        "sprints": 75,
+        "topSpeed": 32.5,
+        "totalDistance": 8566.0
+      },
+      "playerId": "saibari-ismael-mar",
+      "playerName": "Ismael SAIBARI",
+      "position": "mf",
+      "shirtNumber": 11,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 5,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 83.0,
+        "passesAttempted": 6,
+        "passesCompleted": 5,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 494.5,
+        "distanceZone2": 564.6,
+        "distanceZone3": 303.1,
+        "distanceZone4": 93.7,
+        "distanceZone5": 21.5,
+        "highSpeedRuns": 24,
+        "sprints": 7,
+        "topSpeed": 27.2,
+        "totalDistance": 1477.3
+      },
+      "playerId": "el-mourabet-samir-mar",
+      "playerName": "Samir EL MOURABET",
+      "position": "mf",
+      "shirtNumber": 15,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 86.0,
+        "passesAttempted": 7,
+        "passesCompleted": 6,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 7
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 3,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 970.3,
+        "distanceZone2": 1044.9,
+        "distanceZone3": 319.3,
+        "distanceZone4": 256.1,
+        "distanceZone5": 21.1,
+        "highSpeedRuns": 23,
+        "sprints": 15,
+        "topSpeed": 26.2,
+        "totalDistance": 2611.7
+      },
+      "playerId": "yassine-gessime-mar",
+      "playerName": "Gessime YASSINE",
+      "position": "mf",
+      "shirtNumber": 16,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 13,
+        "lineBreaksCompleted": 13,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 5,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 95.0,
+        "passesAttempted": 66,
+        "passesCompleted": 63,
+        "stepIns": 2,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 6,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 4,
+        "possessionRegains": 9,
+        "pressingDirect": 3,
+        "pressingIndirect": 3,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 3,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4265.0,
+        "distanceZone2": 4285.2,
+        "distanceZone3": 1097.3,
+        "distanceZone4": 372.4,
+        "distanceZone5": 55.6,
+        "highSpeedRuns": 102,
+        "sprints": 29,
+        "topSpeed": 32.2,
+        "totalDistance": 10075.5
+      },
+      "playerId": "riad-chadi-mar",
+      "playerName": "Chadi RIAD",
+      "position": "df",
+      "shirtNumber": 18,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 43,
+          "inBetween": 8,
+          "inFront": 1,
+          "inToOut": 3,
+          "noMovement": 1,
+          "outToIn": 3
+        },
+        "offersReceived": 10,
+        "passCompletion": 70.0,
+        "passesAttempted": 10,
+        "passesCompleted": 7,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 3,
+        "totalOffers": 59
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 4,
+        "possessionRegains": 1,
+        "pressingDirect": 7,
+        "pressingIndirect": 18,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 6,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2652.8,
+        "distanceZone2": 3801.8,
+        "distanceZone3": 1307.1,
+        "distanceZone4": 658.1,
+        "distanceZone5": 290.0,
+        "highSpeedRuns": 108,
+        "sprints": 59,
+        "topSpeed": 32.3,
+        "totalDistance": 8709.8
+      },
+      "playerId": "el-kaabi-ayoub-mar",
+      "playerName": "Ayoub EL KAABI",
+      "position": "fw",
+      "shirtNumber": 20,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 9,
+        "crossesAttempted": 6,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 76.0,
+        "lineBreaksAttempted": 33,
+        "lineBreaksCompleted": 25,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 9,
+          "inFront": 13,
+          "inToOut": 3,
+          "noMovement": 31,
+          "outToIn": 6
+        },
+        "offersReceived": 31,
+        "passCompletion": 80.0,
+        "passesAttempted": 75,
+        "passesCompleted": 60,
+        "stepIns": 2,
+        "switchesOfPlay": 1,
+        "takeOns": 7,
+        "totalOffers": 69
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 10,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 3,
+        "possessionRegains": 3,
+        "pressingDirect": 4,
+        "pressingIndirect": 9,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 8,
+        "tacklesMade": 5,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 4927.4,
+        "distanceZone2": 3366.2,
+        "distanceZone3": 1427.4,
+        "distanceZone4": 795.2,
+        "distanceZone5": 287.1,
+        "highSpeedRuns": 124,
+        "sprints": 58,
+        "topSpeed": 30.1,
+        "totalDistance": 10803.3
+      },
+      "playerId": "el-khannouss-bilal-mar",
+      "playerName": "Bilal EL KHANNOUSS",
+      "position": "mf",
+      "shirtNumber": 23,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 80.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 12,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 21,
+          "inFront": 45,
+          "inToOut": 3,
+          "noMovement": 19,
+          "outToIn": 2
+        },
+        "offersReceived": 32,
+        "passCompletion": 88.0,
+        "passesAttempted": 56,
+        "passesCompleted": 49,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 98
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 4,
+        "pressingDirect": 4,
+        "pressingIndirect": 8,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 8,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 2923.8,
+        "distanceZone2": 4454.1,
+        "distanceZone3": 1839.5,
+        "distanceZone4": 691.8,
+        "distanceZone5": 385.9,
+        "highSpeedRuns": 142,
+        "sprints": 54,
+        "topSpeed": 34.1,
+        "totalDistance": 10295.1
+      },
+      "playerId": "el-aynaoui-neil-mar",
+      "playerName": "Neil EL AYNAOUI",
+      "position": "mf",
+      "shirtNumber": 24,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 88.0,
+        "lineBreaksAttempted": 16,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 10,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 94.0,
+        "passesAttempted": 53,
+        "passesCompleted": 50,
+        "stepIns": 3,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 11
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 2,
+        "duelsWonAerial": 6,
+        "duelsWonPhysical": 1,
+        "interceptions": 2,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 7,
+        "possessionInterrupted": 1,
+        "possessionRegains": 4,
+        "pressingDirect": 3,
+        "pressingIndirect": 1,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4158.0,
+        "distanceZone2": 4119.8,
+        "distanceZone3": 1056.0,
+        "distanceZone4": 390.7,
+        "distanceZone5": 183.5,
+        "highSpeedRuns": 85,
+        "sprints": 32,
+        "topSpeed": 32.8,
+        "totalDistance": 9908.1
+      },
+      "playerId": "halhal-redouane-mar",
+      "playerName": "Redouane HALHAL",
+      "position": "df",
+      "shirtNumber": 25,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 93.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 2,
+          "inFront": 8,
+          "inToOut": 0,
+          "noMovement": 5,
+          "outToIn": 0
+        },
+        "offersReceived": 10,
+        "passCompletion": 98.0,
+        "passesAttempted": 57,
+        "passesCompleted": 56,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 18
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 6,
+        "pressingDirect": 7,
+        "pressingIndirect": 6,
+        "pushingOn": 10,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 3,
+        "tacklesWon": 3
+      },
+      "physical": {
+        "distanceZone1": 3421.4,
+        "distanceZone2": 3431.5,
+        "distanceZone3": 983.4,
+        "distanceZone4": 380.4,
+        "distanceZone5": 241.9,
+        "highSpeedRuns": 84,
+        "sprints": 32,
+        "topSpeed": 32.4,
+        "totalDistance": 8458.6
+      },
+      "playerId": "salah-eddine-anass-mar",
+      "playerName": "Anass SALAH EDDINE",
+      "position": "df",
+      "shirtNumber": 26,
+      "teamId": "morocco"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 30.0,
+        "lineBreaksAttempted": 20,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 58.0,
+        "passesAttempted": 38,
+        "passesCompleted": 22,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 7,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3748.7,
+        "distanceZone2": 808.0,
+        "distanceZone3": 102.7,
+        "distanceZone4": 13.3,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 9,
+        "sprints": 2,
+        "topSpeed": 23.6,
+        "totalDistance": 4672.6
+      },
+      "playerId": "placide-johny-hai",
+      "playerName": "Johny PLACIDE",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 88.0,
+        "passesAttempted": 8,
+        "passesCompleted": 7,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 1,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 621.7,
+        "distanceZone2": 518.4,
+        "distanceZone3": 237.2,
+        "distanceZone4": 209.7,
+        "distanceZone5": 89.6,
+        "highSpeedRuns": 24,
+        "sprints": 12,
+        "topSpeed": 30.2,
+        "totalDistance": 1676.5
+      },
+      "playerId": "arcus-carlens-hai",
+      "playerName": "Carlens ARCUS",
+      "position": "df",
+      "shirtNumber": 2,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 71.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 87.0,
+        "passesAttempted": 39,
+        "passesCompleted": 34,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 4
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 6,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 4,
+        "possessionRegains": 4,
+        "pressingDirect": 2,
+        "pressingIndirect": 7,
+        "pushingOn": 17,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3792.6,
+        "distanceZone2": 3654.9,
+        "distanceZone3": 1251.8,
+        "distanceZone4": 477.6,
+        "distanceZone5": 161.3,
+        "highSpeedRuns": 101,
+        "sprints": 35,
+        "topSpeed": 30.7,
+        "totalDistance": 9338.1
+      },
+      "playerId": "ade-ricardo-hai",
+      "playerName": "Ricardo ADE",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 71.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 91.0,
+        "passesAttempted": 35,
+        "passesCompleted": 32,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 1
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 8,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 7,
+        "possessionRegains": 5,
+        "pressingDirect": 2,
+        "pressingIndirect": 5,
+        "pushingOn": 14,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3791.1,
+        "distanceZone2": 4411.2,
+        "distanceZone3": 1132.3,
+        "distanceZone4": 353.9,
+        "distanceZone5": 162.1,
+        "highSpeedRuns": 96,
+        "sprints": 28,
+        "topSpeed": 31.9,
+        "totalDistance": 9850.7
+      },
+      "playerId": "delcroix-hannes-hai",
+      "playerName": "Hannes DELCROIX",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 62.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 2,
+          "inFront": 3,
+          "inToOut": 1,
+          "noMovement": 10,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 75.0,
+        "passesAttempted": 20,
+        "passesCompleted": 15,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 20
+      },
+      "outOfPossession": {
+        "blocks": 6,
+        "clearances": 2,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 5,
+        "possessionRegains": 6,
+        "pressingDirect": 7,
+        "pressingIndirect": 27,
+        "pushingOn": 36,
+        "pushingOnIntoPressing": 23,
+        "tacklesMade": 6,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3657.6,
+        "distanceZone2": 4555.9,
+        "distanceZone3": 1473.3,
+        "distanceZone4": 654.6,
+        "distanceZone5": 425.2,
+        "highSpeedRuns": 123,
+        "sprints": 58,
+        "topSpeed": 31.7,
+        "totalDistance": 10766.6
+      },
+      "playerId": "experience-martin-hai",
+      "playerName": "Martin EXPERIENCE",
+      "position": "df",
+      "shirtNumber": 8,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 33.0,
+        "passesAttempted": 3,
+        "passesCompleted": 1,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 0
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 6,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1243.3,
+        "distanceZone2": 929.3,
+        "distanceZone3": 308.0,
+        "distanceZone4": 65.6,
+        "distanceZone5": 50.8,
+        "highSpeedRuns": 27,
+        "sprints": 8,
+        "topSpeed": 27.7,
+        "totalDistance": 2597.1
+      },
+      "playerId": "nazon-duckens-hai",
+      "playerName": "Duckens NAZON",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 88.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 10,
+          "inFront": 9,
+          "inToOut": 0,
+          "noMovement": 5,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 89.0,
+        "passesAttempted": 27,
+        "passesCompleted": 24,
+        "stepIns": 3,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 26
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 10,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 4,
+        "pressingDirect": 10,
+        "pressingIndirect": 28,
+        "pushingOn": 39,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 6,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3813.5,
+        "distanceZone2": 5022.1,
+        "distanceZone3": 1639.5,
+        "distanceZone4": 498.9,
+        "distanceZone5": 119.2,
+        "highSpeedRuns": 141,
+        "sprints": 40,
+        "topSpeed": 31.7,
+        "totalDistance": 11093.2
+      },
+      "playerId": "bellegarde-jean-ricner-hai",
+      "playerName": "Jean-Ricner BELLEGARDE",
+      "position": "mf",
+      "shirtNumber": 10,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 50.0,
+        "passesAttempted": 2,
+        "passesCompleted": 1,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 4,
+        "pushingOn": 6,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1126.1,
+        "distanceZone2": 861.2,
+        "distanceZone3": 334.3,
+        "distanceZone4": 175.8,
+        "distanceZone5": 119.7,
+        "highSpeedRuns": 28,
+        "sprints": 15,
+        "topSpeed": 31.4,
+        "totalDistance": 2617.0
+      },
+      "playerId": "deedson-louicius-hai",
+      "playerName": "Louicius DEEDSON",
+      "position": "fw",
+      "shirtNumber": 11,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 6,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 5,
+          "inFront": 1,
+          "inToOut": 3,
+          "noMovement": 13,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 83.0,
+        "passesAttempted": 12,
+        "passesCompleted": 10,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 6,
+        "totalOffers": 27
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 3,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 4,
+        "possessionRegains": 2,
+        "pressingDirect": 5,
+        "pressingIndirect": 43,
+        "pushingOn": 29,
+        "pushingOnIntoPressing": 25,
+        "tacklesMade": 7,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 2734.2,
+        "distanceZone2": 2959.8,
+        "distanceZone3": 1146.3,
+        "distanceZone4": 546.4,
+        "distanceZone5": 201.5,
+        "highSpeedRuns": 105,
+        "sprints": 37,
+        "topSpeed": 33.9,
+        "totalDistance": 7588.2
+      },
+      "playerId": "providence-ruben-hai",
+      "playerName": "Ruben PROVIDENCE",
+      "position": "fw",
+      "shirtNumber": 15,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 6,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 3,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 69.0,
+        "passesAttempted": 13,
+        "passesCompleted": 9,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 5,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 3,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 26,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3526.9,
+        "distanceZone2": 3014.7,
+        "distanceZone3": 877.0,
+        "distanceZone4": 436.1,
+        "distanceZone5": 152.0,
+        "highSpeedRuns": 74,
+        "sprints": 35,
+        "topSpeed": 32.2,
+        "totalDistance": 8006.8
+      },
+      "playerId": "joseph-lenny-hai",
+      "playerName": "Lenny JOSEPH",
+      "position": "fw",
+      "shirtNumber": 16,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 4,
+          "inFront": 6,
+          "inToOut": 1,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 78.0,
+        "passesAttempted": 18,
+        "passesCompleted": 14,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 13
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 4,
+        "possessionRegains": 7,
+        "pressingDirect": 8,
+        "pressingIndirect": 20,
+        "pushingOn": 27,
+        "pushingOnIntoPressing": 10,
+        "tacklesMade": 9,
+        "tacklesWon": 5
+      },
+      "physical": {
+        "distanceZone1": 3169.9,
+        "distanceZone2": 3818.0,
+        "distanceZone3": 1537.9,
+        "distanceZone4": 560.7,
+        "distanceZone5": 216.9,
+        "highSpeedRuns": 121,
+        "sprints": 40,
+        "topSpeed": 32.2,
+        "totalDistance": 9303.4
+      },
+      "playerId": "jean-jacques-danley-hai",
+      "playerName": "Danley JEAN JACQUES",
+      "position": "mf",
+      "shirtNumber": 17,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 6,
+          "inFront": 1,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 100.0,
+        "passesAttempted": 3,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 16
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 37,
+        "pushingOn": 19,
+        "pushingOnIntoPressing": 12,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3103.2,
+        "distanceZone2": 3208.1,
+        "distanceZone3": 1270.8,
+        "distanceZone4": 484.9,
+        "distanceZone5": 239.5,
+        "highSpeedRuns": 114,
+        "sprints": 41,
+        "topSpeed": 33.7,
+        "totalDistance": 8306.5
+      },
+      "playerId": "isidor-wilson-hai",
+      "playerName": "Wilson ISIDOR",
+      "position": "fw",
+      "shirtNumber": 18,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 60.0,
+        "passesAttempted": 5,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 0
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 5,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 383.2,
+        "distanceZone2": 675.3,
+        "distanceZone3": 102.4,
+        "distanceZone4": 69.4,
+        "distanceZone5": 9.4,
+        "highSpeedRuns": 12,
+        "sprints": 3,
+        "topSpeed": 26.4,
+        "totalDistance": 1239.7
+      },
+      "playerId": "pierrot-frantzdy-hai",
+      "playerName": "Frantzdy PIERROT",
+      "position": "fw",
+      "shirtNumber": 20,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 4,
+          "inFront": 3,
+          "inToOut": 3,
+          "noMovement": 4,
+          "outToIn": 3
+        },
+        "offersReceived": 9,
+        "passCompletion": 87.0,
+        "passesAttempted": 15,
+        "passesCompleted": 13,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 23
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 5,
+        "pressingIndirect": 37,
+        "pushingOn": 38,
+        "pushingOnIntoPressing": 23,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4278.7,
+        "distanceZone2": 3346.2,
+        "distanceZone3": 1329.4,
+        "distanceZone4": 666.9,
+        "distanceZone5": 284.4,
+        "highSpeedRuns": 124,
+        "sprints": 46,
+        "topSpeed": 33.5,
+        "totalDistance": 9905.5
+      },
+      "playerId": "casimir-josue-hai",
+      "playerName": "Josue CASIMIR",
+      "position": "fw",
+      "shirtNumber": 21,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 4,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 0,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 9,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 90.0,
+        "passesAttempted": 21,
+        "passesCompleted": 19,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 4,
+        "totalOffers": 15
+      },
+      "outOfPossession": {
+        "blocks": 5,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 3,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 6,
+        "possessionRegains": 4,
+        "pressingDirect": 5,
+        "pressingIndirect": 30,
+        "pushingOn": 40,
+        "pushingOnIntoPressing": 22,
+        "tacklesMade": 5,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3475.3,
+        "distanceZone2": 3395.1,
+        "distanceZone3": 1129.2,
+        "distanceZone4": 537.2,
+        "distanceZone5": 252.7,
+        "highSpeedRuns": 102,
+        "sprints": 39,
+        "topSpeed": 33.5,
+        "totalDistance": 8789.6
+      },
+      "playerId": "duverne-jean-kevin-hai",
+      "playerName": "Jean-Kevin DUVERNE",
+      "position": "df",
+      "shirtNumber": 22,
+      "teamId": "haiti"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 83.0,
+        "passesAttempted": 6,
+        "passesCompleted": 5,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 4
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 5,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 539.6,
+        "distanceZone2": 650.7,
+        "distanceZone3": 449.4,
+        "distanceZone4": 125.9,
+        "distanceZone5": 14.4,
+        "highSpeedRuns": 35,
+        "sprints": 7,
+        "topSpeed": 26.0,
+        "totalDistance": 1780.0
+      },
+      "playerId": "simon-dominique-hai",
+      "playerName": "Dominique SIMON",
+      "position": "mf",
+      "shirtNumber": 25,
+      "teamId": "haiti"
+    }
+  ],
+  "schemaVersion": 4,
+  "setPlays": {
+    "away": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 0,
+        "lofted": 0,
+        "outswing": 1
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 0,
+          "right": 1,
+          "total": 1
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        }
+      },
+      "cornersBySide": {
+        "left": 0,
+        "right": 1,
+        "total": 1
+      },
+      "freeKicks": {
+        "direct": 10,
+        "directOffTarget": 1,
+        "directOnTarget": 1,
+        "indirect": 5
+      },
+      "totalCorners": 1,
+      "totalFreeKicks": 15,
+      "totalPenalties": 0,
+      "totalSetPlays": 31,
+      "totalThrowIns": 15
+    },
+    "home": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 1,
+        "lofted": 0,
+        "outswing": 3
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 1,
+          "right": 3,
+          "total": 4
+        },
+        "edgeOfPenaltyArea": {
+          "left": 1,
+          "right": 0,
+          "total": 1
+        },
+        "short": {
+          "left": 1,
+          "right": 3,
+          "total": 4
+        }
+      },
+      "cornersBySide": {
+        "left": 3,
+        "right": 6,
+        "total": 9
+      },
+      "freeKicks": {
+        "direct": 18,
+        "directOffTarget": 0,
+        "directOnTarget": 1,
+        "indirect": 0
+      },
+      "totalCorners": 9,
+      "totalFreeKicks": 18,
+      "totalPenalties": 0,
+      "totalSetPlays": 52,
+      "totalThrowIns": 25
+    }
+  },
+  "storyStats": {
+    "away": {
+      "distanceCovered": 107.5,
+      "expectedGoals": 0.65,
+      "possession": 31.5,
+      "shots": 9,
+      "topSpeed": 33.9
+    },
+    "home": {
+      "distanceCovered": 111.2,
+      "expectedGoals": 2.12,
+      "possession": 60.1,
+      "shots": 22,
+      "topSpeed": 34.4
+    }
+  },
+  "tacticalIdentity": {
+    "away": {
+      "defensiveBlockDistribution": {
+        "high": 3,
+        "low": 20,
+        "mid": 33
+      },
+      "phasesInPossession": {
+        "attackingTransition": 23,
+        "buildUpOpposed": 11,
+        "buildUpUnopposed": 29,
+        "counterAttack": 2,
+        "finalThird": 7,
+        "longBall": 8,
+        "progression": 14,
+        "setPiece": 7
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 7,
+        "defensiveTransition": 11,
+        "highBlock": 3,
+        "highPress": 6,
+        "lowBlock": 20,
+        "lowPress": 1,
+        "midBlock": 33,
+        "midPress": 5,
+        "recovery": 4
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 23,
+            "teamLength": 37,
+            "teamWidth": 56
+          },
+          "buildUpMid": {
+            "lineHeight": 39,
+            "teamLength": 33,
+            "teamWidth": 58
+          },
+          "finalThirdPhase": {
+            "lineHeight": 56,
+            "teamLength": 34,
+            "teamWidth": 44
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 49,
+            "teamLength": 37,
+            "teamWidth": 42
+          },
+          "lowBlock": {
+            "lineHeight": 14,
+            "teamLength": 28,
+            "teamWidth": 33
+          },
+          "midBlock": {
+            "lineHeight": 37,
+            "teamLength": 25,
+            "teamWidth": 40
+          }
+        }
+      }
+    },
+    "home": {
+      "defensiveBlockDistribution": {
+        "high": 3,
+        "low": 5,
+        "mid": 22
+      },
+      "phasesInPossession": {
+        "attackingTransition": 11,
+        "buildUpOpposed": 16,
+        "buildUpUnopposed": 35,
+        "counterAttack": 2,
+        "finalThird": 20,
+        "longBall": 1,
+        "progression": 21,
+        "setPiece": 9
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 15,
+        "defensiveTransition": 23,
+        "highBlock": 3,
+        "highPress": 10,
+        "lowBlock": 5,
+        "lowPress": 0,
+        "midBlock": 22,
+        "midPress": 6,
+        "recovery": 5
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 20,
+            "teamLength": 38,
+            "teamWidth": 56
+          },
+          "buildUpMid": {
+            "lineHeight": 40,
+            "teamLength": 31,
+            "teamWidth": 56
+          },
+          "finalThirdPhase": {
+            "lineHeight": 56,
+            "teamLength": 37,
+            "teamWidth": 39
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 47,
+            "teamLength": 36,
+            "teamWidth": 40
+          },
+          "lowBlock": {
+            "lineHeight": 18,
+            "teamLength": 21,
+            "teamWidth": 46
+          },
+          "midBlock": {
+            "lineHeight": 38,
+            "teamLength": 25,
+            "teamWidth": 42
+          }
+        }
+      }
+    }
+  }
+}

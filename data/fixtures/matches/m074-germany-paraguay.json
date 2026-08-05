@@ -4667,110 +4667,192 @@
         "savePercentage": 66.7,
         "totalInterventions": 2
       },
-      "involvementTimeline": [
+      "goalkeepers": [
         {
-          "involvements": 1,
-          "minute": 0
-        },
-        {
-          "involvements": 4,
-          "minute": 5
-        },
-        {
-          "involvements": 0,
-          "minute": 10
-        },
-        {
-          "involvements": 3,
-          "minute": 15
-        },
-        {
-          "involvements": 1,
-          "minute": 20
-        },
-        {
-          "involvements": 1,
-          "minute": 25
-        },
-        {
-          "involvements": 3,
-          "minute": 30
-        },
-        {
-          "involvements": 2,
-          "minute": 35
-        },
-        {
-          "involvements": 1,
-          "minute": 40
-        },
-        {
-          "involvements": 1,
-          "minute": 45
-        },
-        {
-          "involvements": 3,
-          "minute": 50
-        },
-        {
-          "involvements": 3,
-          "minute": 55
-        },
-        {
-          "involvements": 2,
-          "minute": 60
-        },
-        {
-          "involvements": 2,
-          "minute": 65
-        },
-        {
-          "involvements": 4,
-          "minute": 70
-        },
-        {
-          "involvements": 3,
-          "minute": 75
-        },
-        {
-          "involvements": 1,
-          "minute": 80
-        },
-        {
-          "involvements": 0,
-          "minute": 85
-        },
-        {
-          "involvements": 3,
-          "minute": 90
-        },
-        {
-          "involvements": 0,
-          "minute": 95
-        },
-        {
-          "involvements": 2,
-          "minute": 100
-        },
-        {
-          "involvements": 3,
-          "minute": 105
-        },
-        {
-          "involvements": 0,
-          "minute": 110
-        },
-        {
-          "involvements": 3,
-          "minute": 115
-        },
-        {
-          "involvements": 1,
-          "minute": 120
+          "playerId": "neuer-manuel-ger",
+          "playerName": "Manuel NEUER",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
         }
       ],
-      "playerId": "neuer-manuel-ger",
-      "playerName": "Manuel NEUER",
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 0,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 95,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 100,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 105,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 110,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 115,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 120,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        }
+      ],
       "teamId": "germany",
       "totalInvolvements": 47
     },
@@ -4865,110 +4947,192 @@
         "savePercentage": 83.3,
         "totalInterventions": 5
       },
-      "involvementTimeline": [
+      "goalkeepers": [
         {
-          "involvements": 4,
-          "minute": 0
-        },
-        {
-          "involvements": 2,
-          "minute": 5
-        },
-        {
-          "involvements": 4,
-          "minute": 10
-        },
-        {
-          "involvements": 3,
-          "minute": 15
-        },
-        {
-          "involvements": 2,
-          "minute": 20
-        },
-        {
-          "involvements": 3,
-          "minute": 25
-        },
-        {
-          "involvements": 3,
-          "minute": 30
-        },
-        {
-          "involvements": 1,
-          "minute": 35
-        },
-        {
-          "involvements": 2,
-          "minute": 40
-        },
-        {
-          "involvements": 0,
-          "minute": 45
-        },
-        {
-          "involvements": 2,
-          "minute": 50
-        },
-        {
-          "involvements": 0,
-          "minute": 55
-        },
-        {
-          "involvements": 3,
-          "minute": 60
-        },
-        {
-          "involvements": 0,
-          "minute": 65
-        },
-        {
-          "involvements": 2,
-          "minute": 70
-        },
-        {
-          "involvements": 1,
-          "minute": 75
-        },
-        {
-          "involvements": 4,
-          "minute": 80
-        },
-        {
-          "involvements": 1,
-          "minute": 85
-        },
-        {
-          "involvements": 3,
-          "minute": 90
-        },
-        {
-          "involvements": 1,
-          "minute": 95
-        },
-        {
-          "involvements": 0,
-          "minute": 100
-        },
-        {
-          "involvements": 0,
-          "minute": 105
-        },
-        {
-          "involvements": 0,
-          "minute": 110
-        },
-        {
-          "involvements": 0,
-          "minute": 115
-        },
-        {
-          "involvements": 1,
-          "minute": 120
+          "playerId": "gill-orlando-par",
+          "playerName": "Orlando GILL",
+          "shirtNumber": 12,
+          "substitutedOff": null,
+          "substitutedOn": null
         }
       ],
-      "playerId": "gill-orlando-par",
-      "playerName": "Orlando GILL",
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 0,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 95,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 100,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 105,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 110,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 115,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 120,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        }
+      ],
       "teamId": "paraguay",
       "totalInvolvements": 42
     }
@@ -8869,7 +9033,7 @@
       "teamId": "paraguay"
     }
   ],
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "setPlays": {
     "away": {
       "cornersByDeliveryStyle": {
@@ -8977,10 +9141,6 @@
         "low": 50.0,
         "mid": 16.0
       },
-      "lineHeight": {
-        "inPossession": 53.5,
-        "outOfPossession": 45.7
-      },
       "phasesInPossession": {
         "attackingTransition": 29.0,
         "buildUpOpposed": 8.0,
@@ -9002,9 +9162,41 @@
         "midPress": 2.0,
         "recovery": 4.0
       },
-      "teamLength": {
-        "inPossession": 40.2,
-        "outOfPossession": 33.6
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 17.0,
+            "teamLength": 31.0,
+            "teamWidth": 38.0
+          },
+          "buildUpMid": {
+            "lineHeight": 44.0,
+            "teamLength": 33.0,
+            "teamWidth": 53.0
+          },
+          "finalThirdPhase": {
+            "lineHeight": 55.0,
+            "teamLength": 36.0,
+            "teamWidth": 38.0
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 50.0,
+            "teamLength": 38.0,
+            "teamWidth": 37.0
+          },
+          "lowBlock": {
+            "lineHeight": 16.0,
+            "teamLength": 20.0,
+            "teamWidth": 33.0
+          },
+          "midBlock": {
+            "lineHeight": 35.0,
+            "teamLength": 27.0,
+            "teamWidth": 36.0
+          }
+        }
       }
     },
     "home": {
@@ -9012,10 +9204,6 @@
         "high": 2.0,
         "low": 9.0,
         "mid": 4.0
-      },
-      "lineHeight": {
-        "inPossession": 48.5,
-        "outOfPossession": 38.1
       },
       "phasesInPossession": {
         "attackingTransition": 8.0,
@@ -9038,9 +9226,41 @@
         "midPress": 3.0,
         "recovery": 6.0
       },
-      "teamLength": {
-        "inPossession": 36.2,
-        "outOfPossession": 34.5
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 21.0,
+            "teamLength": 38.0,
+            "teamWidth": 46.0
+          },
+          "buildUpMid": {
+            "lineHeight": 50.0,
+            "teamLength": 30.0,
+            "teamWidth": 48.0
+          },
+          "finalThirdPhase": {
+            "lineHeight": 66.0,
+            "teamLength": 26.0,
+            "teamWidth": 43.0
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 53.0,
+            "teamLength": 32.0,
+            "teamWidth": 36.0
+          },
+          "lowBlock": {
+            "lineHeight": 14.0,
+            "teamLength": 26.0,
+            "teamWidth": 31.0
+          },
+          "midBlock": {
+            "lineHeight": 36.0,
+            "teamLength": 31.0,
+            "teamWidth": 35.0
+          }
+        }
       }
     }
   }

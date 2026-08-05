@@ -1,0 +1,7094 @@
+{
+  "events": {
+    "crosses": null,
+    "defensiveActions": null,
+    "passNetworkEdges": [
+      {
+        "fromPlayerId": "martinez-emiliano-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "martinez-emiliano-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "martinez-emiliano-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "tagliafico-nicolas-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-emiliano-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tagliafico-nicolas-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "tagliafico-nicolas-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "tagliafico-nicolas-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tagliafico-nicolas-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tagliafico-nicolas-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-emiliano-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "tagliafico-nicolas-arg",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "de-paul-rodrigo-arg",
+        "volume": 19
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 27
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "molina-nahuel-arg",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "montiel-gonzalo-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "gonzalez-nico-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "paredes-leandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lautaro-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-emiliano-arg",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "tagliafico-nicolas-arg",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "de-paul-rodrigo-arg",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "martinez-lisandro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "gonzalez-nico-arg",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "de-paul-rodrigo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-emiliano-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-paul-rodrigo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 15
+      },
+      {
+        "fromPlayerId": "de-paul-rodrigo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "de-paul-rodrigo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "de-paul-rodrigo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "de-paul-rodrigo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-paul-rodrigo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-paul-rodrigo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "molina-nahuel-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "tagliafico-nicolas-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "de-paul-rodrigo-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "molina-nahuel-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "montiel-gonzalo-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "gonzalez-nico-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "alvarez-julian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lautaro-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "de-paul-rodrigo-arg",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "molina-nahuel-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "messi-lionel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lautaro-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-emiliano-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 25
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "de-paul-rodrigo-arg",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "molina-nahuel-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "romero-cristian-arg",
+        "teamId": "argentina",
+        "toPlayerId": "montiel-gonzalo-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "tagliafico-nicolas-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "de-paul-rodrigo-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mac-allister-alexis-arg",
+        "teamId": "argentina",
+        "toPlayerId": "montiel-gonzalo-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "tagliafico-nicolas-arg",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 19
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "de-paul-rodrigo-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "molina-nahuel-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "montiel-gonzalo-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "gonzalez-nico-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lautaro-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "molina-nahuel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-emiliano-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "molina-nahuel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "molina-nahuel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-lisandro-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "molina-nahuel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "de-paul-rodrigo-arg",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "molina-nahuel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "molina-nahuel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "molina-nahuel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "romero-cristian-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "molina-nahuel-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "montiel-gonzalo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "montiel-gonzalo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "alvarez-julian-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "montiel-gonzalo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "montiel-gonzalo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "mac-allister-alexis-arg",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "montiel-gonzalo-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "gonzalez-nico-arg",
+        "teamId": "argentina",
+        "toPlayerId": "martinez-emiliano-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gonzalez-nico-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gonzalez-nico-arg",
+        "teamId": "argentina",
+        "toPlayerId": "messi-lionel-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "gonzalez-nico-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "martinez-lautaro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "paredes-leandro-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "martinez-lautaro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "fernandez-enzo-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "martinez-lautaro-arg",
+        "teamId": "argentina",
+        "toPlayerId": "montiel-gonzalo-arg",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mostafa-shoubir-egy",
+        "teamId": "egypt",
+        "toPlayerId": "yasser-ibrahim-egy",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "mostafa-shoubir-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "mostafa-shoubir-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mostafa-shoubir-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-shoubir-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-hany-egy",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "emam-ashour-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "haissem-hassan-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "hamdy-fathy-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt",
+        "toPlayerId": "omar-marmoush-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-shoubir-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "yasser-ibrahim-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "emam-ashour-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-zico-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "haissem-hassan-egy",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "mohamed-hany-egy",
+        "teamId": "egypt",
+        "toPlayerId": "omar-marmoush-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ramy-rabia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-shoubir-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ramy-rabia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "yasser-ibrahim-egy",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "ramy-rabia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "emam-ashour-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ramy-rabia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "haissem-hassan-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "ramy-rabia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "ramy-rabia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "ramy-rabia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "hamdy-fathy-egy",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "emam-ashour-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "emam-ashour-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-zico-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "emam-ashour-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "emam-ashour-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "emam-ashour-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "mohamed-salah-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-hany-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mohamed-salah-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mohamed-salah-egy",
+        "teamId": "egypt",
+        "toPlayerId": "emam-ashour-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mohamed-salah-egy",
+        "teamId": "egypt",
+        "toPlayerId": "haissem-hassan-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "mohamed-salah-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mohamed-salah-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mohamed-salah-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "mohamed-salah-egy",
+        "teamId": "egypt",
+        "toPlayerId": "hamdy-fathy-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mostafa-zico-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-hany-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mostafa-zico-egy",
+        "teamId": "egypt",
+        "toPlayerId": "emam-ashour-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mostafa-zico-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mostafa-zico-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mostafa-zico-egy",
+        "teamId": "egypt",
+        "toPlayerId": "trezeguet-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "haissem-hassan-egy",
+        "teamId": "egypt",
+        "toPlayerId": "yasser-ibrahim-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "haissem-hassan-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-hany-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "haissem-hassan-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "haissem-hassan-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "haissem-hassan-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-shoubir-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "yasser-ibrahim-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-hany-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "emam-ashour-egy",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-zico-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "trezeguet-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "karim-hafez-egy",
+        "teamId": "egypt",
+        "toPlayerId": "hamdy-fathy-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "yasser-ibrahim-egy",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-hany-egy",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-zico-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "haissem-hassan-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mohanad-lashin-egy",
+        "teamId": "egypt",
+        "toPlayerId": "trezeguet-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-shoubir-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "yasser-ibrahim-egy",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-hany-egy",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "emam-ashour-egy",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mostafa-zico-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "haissem-hassan-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "marawan-attia-egy",
+        "teamId": "egypt",
+        "toPlayerId": "omar-marmoush-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "trezeguet-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "trezeguet-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "trezeguet-egy",
+        "teamId": "egypt",
+        "toPlayerId": "omar-marmoush-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hamdy-fathy-egy",
+        "teamId": "egypt",
+        "toPlayerId": "yasser-ibrahim-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hamdy-fathy-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "hamdy-fathy-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hamdy-fathy-egy",
+        "teamId": "egypt",
+        "toPlayerId": "karim-hafez-egy",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "hamdy-fathy-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "hamdy-fathy-egy",
+        "teamId": "egypt",
+        "toPlayerId": "marawan-attia-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "hamdy-fathy-egy",
+        "teamId": "egypt",
+        "toPlayerId": "zizo-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "omar-marmoush-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohamed-salah-egy",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "omar-marmoush-egy",
+        "teamId": "egypt",
+        "toPlayerId": "mohanad-lashin-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "zizo-egy",
+        "teamId": "egypt",
+        "toPlayerId": "ramy-rabia-egy",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "zizo-egy",
+        "teamId": "egypt",
+        "toPlayerId": "trezeguet-egy",
+        "volume": 1
+      }
+    ],
+    "passNetworkNodes": null,
+    "receiving": null,
+    "shootoutAttempts": null,
+    "shots": [
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "penalty",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "messi-lionel-arg",
+        "playerName": "Lionel MESSI",
+        "teamId": "argentina",
+        "x": 89.43,
+        "y": 51.45
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "mac-allister-alexis-arg",
+        "playerName": "Alexis MAC ALLISTER",
+        "teamId": "argentina",
+        "x": 92.76,
+        "y": 50.83
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "fernandez-enzo-arg",
+        "playerName": "Enzo FERNANDEZ",
+        "teamId": "argentina",
+        "x": 82.77,
+        "y": 53.72
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "messi-lionel-arg",
+        "playerName": "Lionel MESSI",
+        "teamId": "argentina",
+        "x": 71.62,
+        "y": 45.45
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "messi-lionel-arg",
+        "playerName": "Lionel MESSI",
+        "teamId": "argentina",
+        "x": 82.33,
+        "y": 64.26
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "alvarez-julian-arg",
+        "playerName": "Julian ALVAREZ",
+        "teamId": "argentina",
+        "x": 90.3,
+        "y": 48.35
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "alvarez-julian-arg",
+        "playerName": "Julian ALVAREZ",
+        "teamId": "argentina",
+        "x": 79.58,
+        "y": 39.26
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "de-paul-rodrigo-arg",
+        "playerName": "Rodrigo DE PAUL",
+        "teamId": "argentina",
+        "x": 81.75,
+        "y": 61.78
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "ball-progression",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "paredes-leandro-arg",
+        "playerName": "Leandro PAREDES",
+        "teamId": "argentina",
+        "x": 78.71,
+        "y": 75.62
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "paredes-leandro-arg",
+        "playerName": "Leandro PAREDES",
+        "teamId": "argentina",
+        "x": 74.95,
+        "y": 69.63
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "mac-allister-alexis-arg",
+        "playerName": "Alexis MAC ALLISTER",
+        "teamId": "argentina",
+        "x": 95.51,
+        "y": 39.05
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-player-on-ball-error",
+        "ownGoal": false,
+        "playerId": "martinez-lisandro-arg",
+        "playerName": "Lisandro MARTINEZ",
+        "teamId": "argentina",
+        "x": 78.28,
+        "y": 40.91
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "martinez-lautaro-arg",
+        "playerName": "Lautaro MARTINEZ",
+        "teamId": "argentina",
+        "x": 92.9,
+        "y": 41.53
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "martinez-lautaro-arg",
+        "playerName": "Lautaro MARTINEZ",
+        "teamId": "argentina",
+        "x": 91.31,
+        "y": 52.07
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "messi-lionel-arg",
+        "playerName": "Lionel MESSI",
+        "teamId": "argentina",
+        "x": 89.43,
+        "y": 49.17
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "romero-cristian-arg",
+        "playerName": "Cristian ROMERO",
+        "teamId": "argentina",
+        "x": 93.48,
+        "y": 52.69
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "martinez-lautaro-arg",
+        "playerName": "Lautaro MARTINEZ",
+        "teamId": "argentina",
+        "x": 95.22,
+        "y": 56.82
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "messi-lionel-arg",
+        "playerName": "Lionel MESSI",
+        "teamId": "argentina",
+        "x": 90.01,
+        "y": 59.09
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "fernandez-enzo-arg",
+        "playerName": "Enzo FERNANDEZ",
+        "teamId": "argentina",
+        "x": 91.31,
+        "y": 43.39
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "yasser-ibrahim-egy",
+        "playerName": "YASSER IBRAHIM",
+        "teamId": "egypt",
+        "x": 93.63,
+        "y": 46.69
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "interception",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "karim-hafez-egy",
+        "playerName": "KARIM HAFEZ",
+        "teamId": "egypt",
+        "x": 65.97,
+        "y": 38.22
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "mostafa-zico-egy",
+        "playerName": "MOSTAFA ZICO",
+        "teamId": "egypt",
+        "x": 92.61,
+        "y": 51.45
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "trezeguet-egy",
+        "playerName": "TREZEGUET",
+        "teamId": "egypt",
+        "x": 95.08,
+        "y": 30.16
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "trezeguet-egy",
+        "playerName": "TREZEGUET",
+        "teamId": "egypt",
+        "x": 92.04,
+        "y": 45.87
+      }
+    ]
+  },
+  "goalkeeping": [
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "crossesFacedAttempted": 8,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 1,
+          "driven": 0,
+          "inswing": 1,
+          "lofted": 2,
+          "outswing": 4,
+          "pushCross": 0,
+          "total": 8
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 1
+      },
+      "distribution": {
+        "feet": {
+          "complete": 13,
+          "incomplete": 4,
+          "total": 17
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 2,
+          "total": 2
+        },
+        "handsTechniques": null,
+        "lineBreaks": 5,
+        "throw": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 14,
+          "incomplete": 6,
+          "total": 20
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 5,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 4,
+          "saveAndDeflect": 0,
+          "saveAndRetain": 0,
+          "saveAttempt": 1
+        },
+        "savePercentage": 0.0,
+        "totalInterventions": 0
+      },
+      "goalkeepers": [
+        {
+          "playerId": "martinez-emiliano-arg",
+          "playerName": "Emiliano MARTINEZ",
+          "shirtNumber": 23,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 7
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 8
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 9
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 10
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "argentina",
+      "totalInvolvements": 26
+    },
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 2
+        },
+        "crossesFacedAttempted": 26,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 2,
+          "driven": 0,
+          "inswing": 8,
+          "lofted": 2,
+          "outswing": 11,
+          "pushCross": 3,
+          "total": 26
+        },
+        "punches": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 2
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 4
+      },
+      "distribution": {
+        "feet": {
+          "complete": 21,
+          "incomplete": 7,
+          "total": 28
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "handsTechniques": null,
+        "lineBreaks": 11,
+        "throw": {
+          "complete": 3,
+          "incomplete": 0,
+          "total": 3
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 24,
+          "incomplete": 7,
+          "total": 31
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 19,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 10,
+          "saveAndDeflect": 5,
+          "saveAndRetain": 1,
+          "saveAttempt": 3
+        },
+        "savePercentage": 57.0,
+        "totalInterventions": 6
+      },
+      "goalkeepers": [
+        {
+          "playerId": "mostafa-shoubir-egy",
+          "playerName": "MOSTAFA SHOUBIR",
+          "shirtNumber": 23,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 5
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 6
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 7
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 8
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 9
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 10
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "egypt",
+      "totalInvolvements": 57
+    }
+  ],
+  "keyStatistics": {
+    "away": {
+      "ballProgressions": 35,
+      "completedLineBreaks": 80,
+      "crosses": 8,
+      "defensiveLineBreaks": 4,
+      "defensivePressures": 380,
+      "directPressures": 39,
+      "distanceCovered": 115.9,
+      "expectedGoals": 0.76,
+      "forcedTurnovers": 27,
+      "goals": 2,
+      "passCompletion": 83.0,
+      "passes": 382,
+      "passesCompleted": 316,
+      "possession": 34.4,
+      "receptionsInFinalThird": 54,
+      "secondBalls": 39,
+      "shots": 5,
+      "shotsOnTarget": 2,
+      "sprintDistance": 5.7
+    },
+    "contestedPossession": 8.5,
+    "home": {
+      "ballProgressions": 32,
+      "completedLineBreaks": 129,
+      "crosses": 26,
+      "defensiveLineBreaks": 12,
+      "defensivePressures": 190,
+      "directPressures": 36,
+      "distanceCovered": 110.4,
+      "expectedGoals": 2.63,
+      "forcedTurnovers": 39,
+      "goals": 3,
+      "passCompletion": 90.0,
+      "passes": 618,
+      "passesCompleted": 558,
+      "possession": 57.1,
+      "receptionsInFinalThird": 231,
+      "secondBalls": 65,
+      "shots": 19,
+      "shotsOnTarget": 7,
+      "sprintDistance": 5.5
+    }
+  },
+  "matchId": "m095-argentina-egypt",
+  "metadata": {
+    "awayTeam": {
+      "name": "Egypt",
+      "teamCode": "egy",
+      "teamId": "egypt"
+    },
+    "date": "2026-07-07",
+    "goals": [
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "YASSER IBRAHIM",
+        "scorerPlayerId": "yasser-ibrahim-egy",
+        "teamId": "egypt"
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "MOSTAFA ZICO",
+        "scorerPlayerId": "mostafa-zico-egy",
+        "teamId": "egypt"
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Cristian ROMERO",
+        "scorerPlayerId": "romero-cristian-arg",
+        "teamId": "argentina"
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Lionel MESSI",
+        "scorerPlayerId": "messi-lionel-arg",
+        "teamId": "argentina"
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Enzo FERNANDEZ",
+        "scorerPlayerId": "fernandez-enzo-arg",
+        "teamId": "argentina"
+      }
+    ],
+    "group": null,
+    "homeTeam": {
+      "name": "Argentina",
+      "teamCode": "arg",
+      "teamId": "argentina"
+    },
+    "kickoff": "2026-07-07T12:00:00-04:00",
+    "knockoutScore": {
+      "decidedBy": "regulation",
+      "scoreAfter90": {
+        "away": 2,
+        "home": 3
+      },
+      "scoreAfterET": null,
+      "shootoutScore": null,
+      "winnerTeamId": "argentina"
+    },
+    "lineups": {
+      "away": {
+        "formation": "4-2-3-1",
+        "starters": [
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 93,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "MOSTAFA SHOUBIR",
+            "playerId": "mostafa-shoubir-egy",
+            "position": "gk",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 15,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "YASSER IBRAHIM",
+            "playerId": "yasser-ibrahim-egy",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "MOHAMED HANY",
+            "playerId": "mohamed-hany-egy",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "RAMY RABIA",
+            "playerId": "ramy-rabia-egy",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "EMAM ASHOUR",
+            "playerId": "emam-ashour-egy",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": {
+              "minute": 45,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "MOHAMED SALAH",
+            "playerId": "mohamed-salah-egy",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 67,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "MOSTAFA ZICO",
+            "playerId": "mostafa-zico-egy",
+            "position": "mf",
+            "shirtNumber": 11,
+            "substitutedOff": {
+              "minute": 80,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 102,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "HAISSEM HASSAN",
+            "playerId": "haissem-hassan-egy",
+            "position": "fw",
+            "shirtNumber": 12,
+            "substitutedOff": {
+              "minute": 73,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "KARIM HAFEZ",
+            "playerId": "karim-hafez-egy",
+            "position": "df",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "MOHANAD LASHIN",
+            "playerId": "mohanad-lashin-egy",
+            "position": "mf",
+            "shirtNumber": 17,
+            "substitutedOff": {
+              "minute": 90,
+              "stoppageMinute": 6
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 98,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "MARAWAN ATTIA",
+            "playerId": "marawan-attia-egy",
+            "position": "mf",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "MOHAMED ELSHENAWY",
+            "playerId": "mohamed-elshenawy-egy",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "MAHDY SOLIMAN",
+            "playerId": "mahdy-soliman-egy",
+            "position": "gk",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "MOHAMED ALAA",
+            "playerId": "mohamed-alaa-egy",
+            "position": "gk",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "HOSSAM ABDELMAGUID",
+            "playerId": "hossam-abdelmaguid-egy",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "MOHAMED ABDELMONEIM",
+            "playerId": "mohamed-abdelmoneim-egy",
+            "position": "df",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "TREZEGUET",
+            "playerId": "trezeguet-egy",
+            "position": "fw",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 73,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "HAMZA ABDELKARIM",
+            "playerId": "hamza-abdelkarim-egy",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "AHMED FATOUH",
+            "playerId": "ahmed-fatouh-egy",
+            "position": "df",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 93,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "HAMDY FATHY",
+            "playerId": "hamdy-fathy-egy",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 45,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "NABIL DONGA",
+            "playerId": "nabil-donga-egy",
+            "position": "mf",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "IBRAHIM ADEL",
+            "playerId": "ibrahim-adel-egy",
+            "position": "fw",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "MAHMOUD SABER",
+            "playerId": "mahmoud-saber-egy",
+            "position": "mf",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "OMAR MARMOUSH",
+            "playerId": "omar-marmoush-egy",
+            "position": "fw",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 80,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "TAREK ALAA",
+            "playerId": "tarek-alaa-egy",
+            "position": "df",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "ZIZO",
+            "playerId": "zizo-egy",
+            "position": "fw",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 90,
+              "stoppageMinute": 6
+            }
+          }
+        ]
+      },
+      "home": {
+        "formation": "4-1-3-2",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Emiliano MARTINEZ",
+            "playerId": "martinez-emiliano-arg",
+            "position": "gk",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nicolas TAGLIAFICO",
+            "playerId": "tagliafico-nicolas-arg",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": {
+              "minute": 66,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Leandro PAREDES",
+            "playerId": "paredes-leandro-arg",
+            "position": "mf",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lisandro MARTINEZ",
+            "playerId": "martinez-lisandro-arg",
+            "position": "df",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Rodrigo DE PAUL",
+            "playerId": "de-paul-rodrigo-arg",
+            "position": "mf",
+            "shirtNumber": 7,
+            "substitutedOff": {
+              "minute": 66,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Julian ALVAREZ",
+            "playerId": "alvarez-julian-arg",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": {
+              "minute": 90,
+              "stoppageMinute": 5
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 84,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Lionel MESSI",
+            "playerId": "messi-lionel-arg",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 79,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Cristian ROMERO",
+            "playerId": "romero-cristian-arg",
+            "position": "df",
+            "shirtNumber": 13,
+            "substitutedOff": {
+              "minute": 90,
+              "stoppageMinute": 5
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alexis MAC ALLISTER",
+            "playerId": "mac-allister-alexis-arg",
+            "position": "mf",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 90,
+                "stoppageMinute": 2
+              }
+            ],
+            "name": "Enzo FERNANDEZ",
+            "playerId": "fernandez-enzo-arg",
+            "position": "mf",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nahuel MOLINA",
+            "playerId": "molina-nahuel-arg",
+            "position": "df",
+            "shirtNumber": 26,
+            "substitutedOff": {
+              "minute": 73,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Juan MUSSO",
+            "playerId": "musso-juan-arg",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Geronimo RULLI",
+            "playerId": "rulli-geronimo-arg",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Marcos SENESI",
+            "playerId": "senesi-marcos-arg",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Gonzalo MONTIEL",
+            "playerId": "montiel-gonzalo-arg",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 73,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Valentin BARCO",
+            "playerId": "barco-valentin-arg",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Giovani LO CELSO",
+            "playerId": "lo-celso-giovani-arg",
+            "position": "mf",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Exequiel PALACIOS",
+            "playerId": "palacios-exequiel-arg",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nico GONZALEZ",
+            "playerId": "gonzalez-nico-arg",
+            "position": "mf",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 66,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Thiago ALMADA",
+            "playerId": "almada-thiago-arg",
+            "position": "fw",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Giuliano SIMEONE",
+            "playerId": "simeone-giuliano-arg",
+            "position": "fw",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nico PAZ",
+            "playerId": "paz-nico-arg",
+            "position": "fw",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nicolas OTAMENDI",
+            "playerId": "otamendi-nicolas-arg",
+            "position": "df",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 90,
+              "stoppageMinute": 5
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jose Manuel LOPEZ",
+            "playerId": "lopez-jose-manuel-arg",
+            "position": "fw",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lautaro MARTINEZ",
+            "playerId": "martinez-lautaro-arg",
+            "position": "fw",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 66,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Facundo MEDINA",
+            "playerId": "medina-facundo-arg",
+            "position": "df",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 90,
+              "stoppageMinute": 5
+            }
+          }
+        ]
+      }
+    },
+    "matchNumber": 95,
+    "matchdayRound": "r16",
+    "score": {
+      "away": 2,
+      "home": 3
+    },
+    "stage": "r16",
+    "venue": "Atlanta Stadium"
+  },
+  "momentum": {
+    "samples": [
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 9,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 1,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 10
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 5
+        },
+        "away": 6,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 6
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 13
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 10
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 12
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 13
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 9
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 15
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 8,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 5
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 6
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 7
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 8
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 9
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 10
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 11
+        },
+        "away": 0,
+        "home": 0
+      }
+    ]
+  },
+  "players": [
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 16,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 7,
+        "passCompletion": 87.0,
+        "passesAttempted": 30,
+        "passesCompleted": 26,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 20
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 3,
+        "pressingIndirect": 9,
+        "pushingOn": 20,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2834.8,
+        "distanceZone2": 3025.5,
+        "distanceZone3": 1117.8,
+        "distanceZone4": 472.7,
+        "distanceZone5": 168.5,
+        "highSpeedRuns": 92,
+        "sprints": 35,
+        "topSpeed": 29.5,
+        "totalDistance": 7619.4
+      },
+      "playerId": "tagliafico-nicolas-arg",
+      "playerName": "Nicolas TAGLIAFICO",
+      "position": "df",
+      "shirtNumber": 3,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 1,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 93.0,
+        "passesAttempted": 15,
+        "passesCompleted": 14,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 2,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1206.6,
+        "distanceZone2": 1331.8,
+        "distanceZone3": 539.9,
+        "distanceZone4": 252.5,
+        "distanceZone5": 36.5,
+        "highSpeedRuns": 52,
+        "sprints": 15,
+        "topSpeed": 29.2,
+        "totalDistance": 3367.2
+      },
+      "playerId": "montiel-gonzalo-arg",
+      "playerName": "Gonzalo MONTIEL",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 7,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 94.0,
+        "lineBreaksAttempted": 35,
+        "lineBreaksCompleted": 33,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 19,
+          "inToOut": 0,
+          "noMovement": 15,
+          "outToIn": 0
+        },
+        "offersReceived": 23,
+        "passCompletion": 97.0,
+        "passesAttempted": 119,
+        "passesCompleted": 116,
+        "stepIns": 6,
+        "switchesOfPlay": 2,
+        "takeOns": 1,
+        "totalOffers": 35
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 5,
+        "pressingIndirect": 4,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 4,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4401.9,
+        "distanceZone2": 4435.2,
+        "distanceZone3": 1217.1,
+        "distanceZone4": 309.3,
+        "distanceZone5": 95.8,
+        "highSpeedRuns": 110,
+        "sprints": 22,
+        "topSpeed": 30.2,
+        "totalDistance": 10459.3
+      },
+      "playerId": "paredes-leandro-arg",
+      "playerName": "Leandro PAREDES",
+      "position": "mf",
+      "shirtNumber": 5,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 3,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 93.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 5,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 94.0,
+        "passesAttempted": 51,
+        "passesCompleted": 48,
+        "stepIns": 2,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 8
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 10,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 4,
+        "possessionRegains": 10,
+        "pressingDirect": 3,
+        "pressingIndirect": 7,
+        "pushingOn": 23,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 5,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 4863.1,
+        "distanceZone2": 3272.9,
+        "distanceZone3": 918.2,
+        "distanceZone4": 477.1,
+        "distanceZone5": 128.0,
+        "highSpeedRuns": 76,
+        "sprints": 38,
+        "topSpeed": 30.4,
+        "totalDistance": 9659.2
+      },
+      "playerId": "martinez-lisandro-arg",
+      "playerName": "Lisandro MARTINEZ",
+      "position": "df",
+      "shirtNumber": 6,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 4,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 7,
+          "inFront": 27,
+          "inToOut": 1,
+          "noMovement": 6,
+          "outToIn": 3
+        },
+        "offersReceived": 26,
+        "passCompletion": 89.0,
+        "passesAttempted": 55,
+        "passesCompleted": 49,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 53
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 20,
+        "pushingOn": 24,
+        "pushingOnIntoPressing": 10,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3046.4,
+        "distanceZone2": 2768.7,
+        "distanceZone3": 1004.7,
+        "distanceZone4": 584.5,
+        "distanceZone5": 181.5,
+        "highSpeedRuns": 81,
+        "sprints": 48,
+        "topSpeed": 31.2,
+        "totalDistance": 7585.9
+      },
+      "playerId": "de-paul-rodrigo-arg",
+      "playerName": "Rodrigo DE PAUL",
+      "position": "mf",
+      "shirtNumber": 7,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 80.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 19,
+          "inBetween": 14,
+          "inFront": 9,
+          "inToOut": 3,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 15,
+        "passCompletion": 86.0,
+        "passesAttempted": 37,
+        "passesCompleted": 32,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 49
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 5,
+        "pressingIndirect": 31,
+        "pushingOn": 35,
+        "pushingOnIntoPressing": 19,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3416.7,
+        "distanceZone2": 4850.5,
+        "distanceZone3": 1562.6,
+        "distanceZone4": 685.4,
+        "distanceZone5": 215.5,
+        "highSpeedRuns": 146,
+        "sprints": 55,
+        "topSpeed": 30.5,
+        "totalDistance": 10730.7
+      },
+      "playerId": "alvarez-julian-arg",
+      "playerName": "Julian ALVAREZ",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 5,
+        "ballProgressions": 10,
+        "crossesAttempted": 12,
+        "crossesCompleted": 4,
+        "goals": 1,
+        "lineBreakCompletion": 68.0,
+        "lineBreaksAttempted": 22,
+        "lineBreaksCompleted": 15,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 5,
+          "inFront": 9,
+          "inToOut": 1,
+          "noMovement": 5,
+          "outToIn": 2
+        },
+        "offersReceived": 14,
+        "passCompletion": 77.0,
+        "passesAttempted": 53,
+        "passesCompleted": 41,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 9,
+        "totalOffers": 31
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 21,
+        "pushingOn": 16,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 5283.6,
+        "distanceZone2": 1821.6,
+        "distanceZone3": 727.3,
+        "distanceZone4": 379.4,
+        "distanceZone5": 63.5,
+        "highSpeedRuns": 67,
+        "sprints": 28,
+        "topSpeed": 30.0,
+        "totalDistance": 8275.4
+      },
+      "playerId": "messi-lionel-arg",
+      "playerName": "Lionel MESSI",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 1
+        },
+        "offersReceived": 3,
+        "passCompletion": 97.0,
+        "passesAttempted": 61,
+        "passesCompleted": 59,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 5,
+        "duelsWonAerial": 5,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 10,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 4,
+        "possessionRegains": 7,
+        "pressingDirect": 2,
+        "pressingIndirect": 1,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 2,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 4688.5,
+        "distanceZone2": 2710.4,
+        "distanceZone3": 780.4,
+        "distanceZone4": 248.0,
+        "distanceZone5": 72.9,
+        "highSpeedRuns": 63,
+        "sprints": 23,
+        "topSpeed": 31.5,
+        "totalDistance": 8500.2
+      },
+      "playerId": "romero-cristian-arg",
+      "playerName": "Cristian ROMERO",
+      "position": "df",
+      "shirtNumber": 13,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 3,
+        "crossesCompleted": 2,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 100.0,
+        "passesAttempted": 10,
+        "passesCompleted": 10,
+        "stepIns": 2,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 2,
+        "pressingIndirect": 3,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1356.3,
+        "distanceZone2": 1292.2,
+        "distanceZone3": 456.8,
+        "distanceZone4": 276.8,
+        "distanceZone5": 147.4,
+        "highSpeedRuns": 34,
+        "sprints": 19,
+        "topSpeed": 33.4,
+        "totalDistance": 3529.5
+      },
+      "playerId": "gonzalez-nico-arg",
+      "playerName": "Nico GONZALEZ",
+      "position": "mf",
+      "shirtNumber": 15,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 0.0,
+        "passesAttempted": 0,
+        "passesCompleted": 0,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 0
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 214.9,
+        "distanceZone2": 234.6,
+        "distanceZone3": 89.2,
+        "distanceZone4": 0.0,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 7,
+        "sprints": 0,
+        "topSpeed": 19.7,
+        "totalDistance": 538.8
+      },
+      "playerId": "otamendi-nicolas-arg",
+      "playerName": "Nicolas OTAMENDI",
+      "position": "df",
+      "shirtNumber": 19,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 14,
+          "inBetween": 11,
+          "inFront": 16,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 2
+        },
+        "offersReceived": 14,
+        "passCompletion": 85.0,
+        "passesAttempted": 40,
+        "passesCompleted": 34,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 43
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 21,
+        "pushingOn": 24,
+        "pushingOnIntoPressing": 12,
+        "tacklesMade": 6,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4130.6,
+        "distanceZone2": 5065.6,
+        "distanceZone3": 1352.2,
+        "distanceZone4": 461.1,
+        "distanceZone5": 218.2,
+        "highSpeedRuns": 121,
+        "sprints": 37,
+        "topSpeed": 30.2,
+        "totalDistance": 11227.7
+      },
+      "playerId": "mac-allister-alexis-arg",
+      "playerName": "Alexis MAC ALLISTER",
+      "position": "mf",
+      "shirtNumber": 20,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 4,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 50.0,
+        "passesAttempted": 6,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 9,
+        "pushingOn": 4,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1211.3,
+        "distanceZone2": 1515.8,
+        "distanceZone3": 470.9,
+        "distanceZone4": 200.3,
+        "distanceZone5": 95.8,
+        "highSpeedRuns": 34,
+        "sprints": 17,
+        "topSpeed": 29.0,
+        "totalDistance": 3494.1
+      },
+      "playerId": "martinez-lautaro-arg",
+      "playerName": "Lautaro MARTINEZ",
+      "position": "fw",
+      "shirtNumber": 22,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 12,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 70.0,
+        "passesAttempted": 20,
+        "passesCompleted": 14,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 3,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4195.7,
+        "distanceZone2": 601.3,
+        "distanceZone3": 145.3,
+        "distanceZone4": 85.8,
+        "distanceZone5": 22.6,
+        "highSpeedRuns": 14,
+        "sprints": 5,
+        "topSpeed": 27.6,
+        "totalDistance": 5050.6
+      },
+      "playerId": "martinez-emiliano-arg",
+      "playerName": "Emiliano MARTINEZ",
+      "position": "gk",
+      "shirtNumber": 23,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 4,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 92.0,
+        "lineBreaksAttempted": 25,
+        "lineBreaksCompleted": 23,
+        "offersByMovementType": {
+          "inBehind": 12,
+          "inBetween": 19,
+          "inFront": 28,
+          "inToOut": 4,
+          "noMovement": 6,
+          "outToIn": 2
+        },
+        "offersReceived": 37,
+        "passCompletion": 92.0,
+        "passesAttempted": 84,
+        "passesCompleted": 77,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 3,
+        "totalOffers": 71
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 5,
+        "pressingIndirect": 18,
+        "pushingOn": 29,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 4,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4153.6,
+        "distanceZone2": 5365.8,
+        "distanceZone3": 1547.2,
+        "distanceZone4": 562.3,
+        "distanceZone5": 286.3,
+        "highSpeedRuns": 128,
+        "sprints": 47,
+        "topSpeed": 32.6,
+        "totalDistance": 11915.2
+      },
+      "playerId": "fernandez-enzo-arg",
+      "playerName": "Enzo FERNANDEZ",
+      "position": "mf",
+      "shirtNumber": 24,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 0.0,
+        "passesAttempted": 0,
+        "passesCompleted": 0,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 0
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 233.5,
+        "distanceZone2": 289.7,
+        "distanceZone3": 16.6,
+        "distanceZone4": 16.4,
+        "distanceZone5": 5.4,
+        "highSpeedRuns": 2,
+        "sprints": 1,
+        "topSpeed": 25.7,
+        "totalDistance": 561.7
+      },
+      "playerId": "medina-facundo-arg",
+      "playerName": "Facundo MEDINA",
+      "position": "df",
+      "shirtNumber": 25,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 86.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 14,
+          "inBetween": 2,
+          "inFront": 6,
+          "inToOut": 0,
+          "noMovement": 10,
+          "outToIn": 0
+        },
+        "offersReceived": 8,
+        "passCompletion": 95.0,
+        "passesAttempted": 37,
+        "passesCompleted": 35,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 32
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 5,
+        "pressingDirect": 3,
+        "pressingIndirect": 8,
+        "pushingOn": 23,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 4,
+        "tacklesWon": 3
+      },
+      "physical": {
+        "distanceZone1": 3139.4,
+        "distanceZone2": 3015.4,
+        "distanceZone3": 1066.9,
+        "distanceZone4": 482.5,
+        "distanceZone5": 208.2,
+        "highSpeedRuns": 80,
+        "sprints": 42,
+        "topSpeed": 30.7,
+        "totalDistance": 7912.4
+      },
+      "playerId": "molina-nahuel-arg",
+      "playerName": "Nahuel MOLINA",
+      "position": "df",
+      "shirtNumber": 26,
+      "teamId": "argentina"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 14,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 5,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 75.0,
+        "passesAttempted": 36,
+        "passesCompleted": 27,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 8,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 7,
+        "possessionRegains": 5,
+        "pressingDirect": 2,
+        "pressingIndirect": 6,
+        "pushingOn": 7,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 4114.6,
+        "distanceZone2": 4442.2,
+        "distanceZone3": 1021.9,
+        "distanceZone4": 358.8,
+        "distanceZone5": 106.8,
+        "highSpeedRuns": 80,
+        "sprints": 28,
+        "topSpeed": 28.1,
+        "totalDistance": 10044.4
+      },
+      "playerId": "yasser-ibrahim-egy",
+      "playerName": "YASSER IBRAHIM",
+      "position": "df",
+      "shirtNumber": 2,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 4,
+        "crossesAttempted": 2,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 62.0,
+        "lineBreaksAttempted": 13,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 3,
+          "inFront": 5,
+          "inToOut": 0,
+          "noMovement": 13,
+          "outToIn": 2
+        },
+        "offersReceived": 8,
+        "passCompletion": 87.0,
+        "passesAttempted": 45,
+        "passesCompleted": 39,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 4,
+        "totalOffers": 28
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 7,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 4,
+        "possessionRegains": 2,
+        "pressingDirect": 2,
+        "pressingIndirect": 30,
+        "pushingOn": 19,
+        "pushingOnIntoPressing": 17,
+        "tacklesMade": 4,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4027.5,
+        "distanceZone2": 4277.2,
+        "distanceZone3": 1015.4,
+        "distanceZone4": 499.0,
+        "distanceZone5": 145.4,
+        "highSpeedRuns": 93,
+        "sprints": 43,
+        "topSpeed": 29.9,
+        "totalDistance": 9964.5
+      },
+      "playerId": "mohamed-hany-egy",
+      "playerName": "MOHAMED HANY",
+      "position": "df",
+      "shirtNumber": 3,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 70.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 8,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 88.0,
+        "passesAttempted": 33,
+        "passesCompleted": 29,
+        "stepIns": 2,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 9
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 6,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 6,
+        "possessionRegains": 4,
+        "pressingDirect": 2,
+        "pressingIndirect": 4,
+        "pushingOn": 17,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 3,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3949.4,
+        "distanceZone2": 3917.1,
+        "distanceZone3": 1013.8,
+        "distanceZone4": 324.7,
+        "distanceZone5": 149.4,
+        "highSpeedRuns": 94,
+        "sprints": 25,
+        "topSpeed": 31.4,
+        "totalDistance": 9354.4
+      },
+      "playerId": "ramy-rabia-egy",
+      "playerName": "RAMY RABIA",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 1
+        },
+        "offersReceived": 3,
+        "passCompletion": 100.0,
+        "passesAttempted": 3,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 11,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1127.1,
+        "distanceZone2": 1198.9,
+        "distanceZone3": 496.8,
+        "distanceZone4": 303.0,
+        "distanceZone5": 99.6,
+        "highSpeedRuns": 45,
+        "sprints": 21,
+        "topSpeed": 29.2,
+        "totalDistance": 3225.5
+      },
+      "playerId": "trezeguet-egy",
+      "playerName": "TREZEGUET",
+      "position": "fw",
+      "shirtNumber": 7,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 5,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 25.0,
+        "lineBreaksAttempted": 8,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 4,
+          "inFront": 6,
+          "inToOut": 3,
+          "noMovement": 12,
+          "outToIn": 2
+        },
+        "offersReceived": 13,
+        "passCompletion": 72.0,
+        "passesAttempted": 25,
+        "passesCompleted": 18,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 5,
+        "totalOffers": 27
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 9,
+        "pushingOn": 9,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1959.5,
+        "distanceZone2": 2221.7,
+        "distanceZone3": 707.0,
+        "distanceZone4": 247.0,
+        "distanceZone5": 60.3,
+        "highSpeedRuns": 61,
+        "sprints": 19,
+        "topSpeed": 29.0,
+        "totalDistance": 5195.5
+      },
+      "playerId": "emam-ashour-egy",
+      "playerName": "EMAM ASHOUR",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 5,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 20,
+          "inFront": 0,
+          "inToOut": 4,
+          "noMovement": 6,
+          "outToIn": 4
+        },
+        "offersReceived": 16,
+        "passCompletion": 92.0,
+        "passesAttempted": 24,
+        "passesCompleted": 22,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 4,
+        "totalOffers": 43
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 49,
+        "pushingOn": 36,
+        "pushingOnIntoPressing": 27,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4007.7,
+        "distanceZone2": 4961.8,
+        "distanceZone3": 1270.6,
+        "distanceZone4": 642.8,
+        "distanceZone5": 203.6,
+        "highSpeedRuns": 106,
+        "sprints": 54,
+        "topSpeed": 32.1,
+        "totalDistance": 11086.5
+      },
+      "playerId": "mohamed-salah-egy",
+      "playerName": "MOHAMED SALAH",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 8,
+          "inBetween": 9,
+          "inFront": 0,
+          "inToOut": 2,
+          "noMovement": 4,
+          "outToIn": 2
+        },
+        "offersReceived": 5,
+        "passCompletion": 75.0,
+        "passesAttempted": 12,
+        "passesCompleted": 9,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 25
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 3,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 4,
+        "possessionRegains": 2,
+        "pressingDirect": 4,
+        "pressingIndirect": 46,
+        "pushingOn": 30,
+        "pushingOnIntoPressing": 22,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2938.4,
+        "distanceZone2": 4758.8,
+        "distanceZone3": 1894.3,
+        "distanceZone4": 580.1,
+        "distanceZone5": 245.5,
+        "highSpeedRuns": 159,
+        "sprints": 41,
+        "topSpeed": 30.9,
+        "totalDistance": 10417.0
+      },
+      "playerId": "mostafa-zico-egy",
+      "playerName": "MOSTAFA ZICO",
+      "position": "mf",
+      "shirtNumber": 11,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 10,
+        "crossesAttempted": 3,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 80.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 1,
+          "inFront": 6,
+          "inToOut": 3,
+          "noMovement": 14,
+          "outToIn": 2
+        },
+        "offersReceived": 12,
+        "passCompletion": 83.0,
+        "passesAttempted": 12,
+        "passesCompleted": 10,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 9,
+        "totalOffers": 27
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 0,
+        "pressingIndirect": 27,
+        "pushingOn": 20,
+        "pushingOnIntoPressing": 13,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3424.1,
+        "distanceZone2": 3349.3,
+        "distanceZone3": 1354.9,
+        "distanceZone4": 519.6,
+        "distanceZone5": 204.4,
+        "highSpeedRuns": 105,
+        "sprints": 35,
+        "topSpeed": 32.9,
+        "totalDistance": 8852.3
+      },
+      "playerId": "haissem-hassan-egy",
+      "playerName": "HAISSEM HASSAN",
+      "position": "fw",
+      "shirtNumber": 12,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 80.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 4,
+          "inFront": 4,
+          "inToOut": 0,
+          "noMovement": 9,
+          "outToIn": 1
+        },
+        "offersReceived": 6,
+        "passCompletion": 83.0,
+        "passesAttempted": 18,
+        "passesCompleted": 15,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 19
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 3,
+        "pressingIndirect": 35,
+        "pushingOn": 31,
+        "pushingOnIntoPressing": 18,
+        "tacklesMade": 4,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 2136.1,
+        "distanceZone2": 2581.9,
+        "distanceZone3": 810.2,
+        "distanceZone4": 224.6,
+        "distanceZone5": 87.4,
+        "highSpeedRuns": 73,
+        "sprints": 18,
+        "topSpeed": 29.1,
+        "totalDistance": 5840.2
+      },
+      "playerId": "hamdy-fathy-egy",
+      "playerName": "HAMDY FATHY",
+      "position": "mf",
+      "shirtNumber": 14,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 3,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 74.0,
+        "lineBreaksAttempted": 19,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 0,
+          "inFront": 10,
+          "inToOut": 0,
+          "noMovement": 13,
+          "outToIn": 0
+        },
+        "offersReceived": 14,
+        "passCompletion": 88.0,
+        "passesAttempted": 50,
+        "passesCompleted": 44,
+        "stepIns": 2,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 26
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 6,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 4,
+        "possessionRegains": 3,
+        "pressingDirect": 3,
+        "pressingIndirect": 7,
+        "pushingOn": 25,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4073.4,
+        "distanceZone2": 4739.7,
+        "distanceZone3": 1511.3,
+        "distanceZone4": 497.7,
+        "distanceZone5": 76.3,
+        "highSpeedRuns": 143,
+        "sprints": 34,
+        "topSpeed": 28.6,
+        "totalDistance": 10898.4
+      },
+      "playerId": "karim-hafez-egy",
+      "playerName": "KARIM HAFEZ",
+      "position": "df",
+      "shirtNumber": 15,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 3,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 62.0,
+        "lineBreaksAttempted": 13,
+        "lineBreaksCompleted": 8,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 12,
+          "inToOut": 1,
+          "noMovement": 7,
+          "outToIn": 1
+        },
+        "offersReceived": 15,
+        "passCompletion": 83.0,
+        "passesAttempted": 35,
+        "passesCompleted": 29,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 22
+      },
+      "outOfPossession": {
+        "blocks": 6,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 8,
+        "possessionRegains": 0,
+        "pressingDirect": 11,
+        "pressingIndirect": 52,
+        "pushingOn": 58,
+        "pushingOnIntoPressing": 31,
+        "tacklesMade": 4,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3954.1,
+        "distanceZone2": 4536.2,
+        "distanceZone3": 1491.4,
+        "distanceZone4": 496.5,
+        "distanceZone5": 65.4,
+        "highSpeedRuns": 126,
+        "sprints": 36,
+        "topSpeed": 30.8,
+        "totalDistance": 10543.6
+      },
+      "playerId": "mohanad-lashin-egy",
+      "playerName": "MOHANAD LASHIN",
+      "position": "mf",
+      "shirtNumber": 17,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 63.0,
+        "lineBreaksAttempted": 19,
+        "lineBreaksCompleted": 12,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 11,
+          "inFront": 37,
+          "inToOut": 4,
+          "noMovement": 13,
+          "outToIn": 2
+        },
+        "offersReceived": 27,
+        "passCompletion": 84.0,
+        "passesAttempted": 50,
+        "passesCompleted": 42,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 71
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 7,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 6,
+        "possessionRegains": 3,
+        "pressingDirect": 9,
+        "pressingIndirect": 59,
+        "pushingOn": 56,
+        "pushingOnIntoPressing": 27,
+        "tacklesMade": 7,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3859.2,
+        "distanceZone2": 5012.4,
+        "distanceZone3": 2012.5,
+        "distanceZone4": 713.0,
+        "distanceZone5": 292.5,
+        "highSpeedRuns": 171,
+        "sprints": 55,
+        "topSpeed": 32.6,
+        "totalDistance": 11889.6
+      },
+      "playerId": "marawan-attia-egy",
+      "playerName": "MARAWAN ATTIA",
+      "position": "mf",
+      "shirtNumber": 19,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 1,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 60.0,
+        "passesAttempted": 5,
+        "passesCompleted": 3,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 5,
+        "pushingOn": 3,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 842.2,
+        "distanceZone2": 755.2,
+        "distanceZone3": 189.8,
+        "distanceZone4": 137.4,
+        "distanceZone5": 100.6,
+        "highSpeedRuns": 14,
+        "sprints": 12,
+        "topSpeed": 33.4,
+        "totalDistance": 2025.3
+      },
+      "playerId": "omar-marmoush-egy",
+      "playerName": "OMAR MARMOUSH",
+      "position": "fw",
+      "shirtNumber": 22,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 45.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 77.0,
+        "passesAttempted": 31,
+        "passesCompleted": 24,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 2
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 6,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4396.3,
+        "distanceZone2": 1192.1,
+        "distanceZone3": 175.9,
+        "distanceZone4": 67.4,
+        "distanceZone5": 5.9,
+        "highSpeedRuns": 15,
+        "sprints": 4,
+        "topSpeed": 26.2,
+        "totalDistance": 5837.6
+      },
+      "playerId": "mostafa-shoubir-egy",
+      "playerName": "MOSTAFA SHOUBIR",
+      "position": "gk",
+      "shirtNumber": 23,
+      "teamId": "egypt"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 1,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 67.0,
+        "passesAttempted": 3,
+        "passesCompleted": 2,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 1,
+        "pressingIndirect": 1,
+        "pushingOn": 1,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 162.1,
+        "distanceZone2": 338.0,
+        "distanceZone3": 141.5,
+        "distanceZone4": 72.6,
+        "distanceZone5": 48.9,
+        "highSpeedRuns": 11,
+        "sprints": 4,
+        "topSpeed": 29.1,
+        "totalDistance": 763.1
+      },
+      "playerId": "zizo-egy",
+      "playerName": "ZIZO",
+      "position": "fw",
+      "shirtNumber": 25,
+      "teamId": "egypt"
+    }
+  ],
+  "schemaVersion": 4,
+  "setPlays": {
+    "away": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 0,
+        "lofted": 0,
+        "outswing": 0
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 1,
+          "total": 1
+        }
+      },
+      "cornersBySide": {
+        "left": 0,
+        "right": 1,
+        "total": 1
+      },
+      "freeKicks": {
+        "direct": 13,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 3
+      },
+      "totalCorners": 1,
+      "totalFreeKicks": 16,
+      "totalPenalties": 0,
+      "totalSetPlays": 42,
+      "totalThrowIns": 25
+    },
+    "home": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 4,
+        "lofted": 0,
+        "outswing": 1
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 1,
+          "right": 4,
+          "total": 5
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 1,
+          "total": 1
+        }
+      },
+      "cornersBySide": {
+        "left": 1,
+        "right": 5,
+        "total": 6
+      },
+      "freeKicks": {
+        "direct": 10,
+        "directOffTarget": 1,
+        "directOnTarget": 0,
+        "indirect": 0
+      },
+      "totalCorners": 6,
+      "totalFreeKicks": 10,
+      "totalPenalties": 1,
+      "totalSetPlays": 36,
+      "totalThrowIns": 19
+    }
+  },
+  "storyStats": {
+    "away": {
+      "distanceCovered": 115.9,
+      "expectedGoals": 0.76,
+      "possession": 34.4,
+      "shots": 5,
+      "topSpeed": 33.4
+    },
+    "home": {
+      "distanceCovered": 110.4,
+      "expectedGoals": 2.63,
+      "possession": 57.1,
+      "shots": 19,
+      "topSpeed": 33.4
+    }
+  },
+  "tacticalIdentity": {
+    "away": {
+      "defensiveBlockDistribution": {
+        "high": 3,
+        "low": 40,
+        "mid": 14
+      },
+      "phasesInPossession": {
+        "attackingTransition": 13,
+        "buildUpOpposed": 18,
+        "buildUpUnopposed": 31,
+        "counterAttack": 2,
+        "finalThird": 9,
+        "longBall": 5,
+        "progression": 17,
+        "setPiece": 10
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 7,
+        "defensiveTransition": 9,
+        "highBlock": 3,
+        "highPress": 4,
+        "lowBlock": 40,
+        "lowPress": 2,
+        "midBlock": 14,
+        "midPress": 4,
+        "recovery": 3
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 16,
+            "teamLength": 40,
+            "teamWidth": 55
+          },
+          "buildUpMid": {
+            "lineHeight": 38,
+            "teamLength": 33,
+            "teamWidth": 57
+          },
+          "finalThirdPhase": {
+            "lineHeight": 54,
+            "teamLength": 37,
+            "teamWidth": 47
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 48,
+            "teamLength": 33,
+            "teamWidth": 40
+          },
+          "lowBlock": {
+            "lineHeight": 18,
+            "teamLength": 21,
+            "teamWidth": 34
+          },
+          "midBlock": {
+            "lineHeight": 37,
+            "teamLength": 26,
+            "teamWidth": 38
+          }
+        }
+      }
+    },
+    "home": {
+      "defensiveBlockDistribution": {
+        "high": 9,
+        "low": 13,
+        "mid": 18
+      },
+      "phasesInPossession": {
+        "attackingTransition": 9,
+        "buildUpOpposed": 25,
+        "buildUpUnopposed": 39,
+        "counterAttack": 0,
+        "finalThird": 24,
+        "longBall": 2,
+        "progression": 14,
+        "setPiece": 5
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 8,
+        "defensiveTransition": 13,
+        "highBlock": 9,
+        "highPress": 10,
+        "lowBlock": 13,
+        "lowPress": 0,
+        "midBlock": 18,
+        "midPress": 7,
+        "recovery": 4
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 22,
+            "teamLength": 37,
+            "teamWidth": 53
+          },
+          "buildUpMid": {
+            "lineHeight": 46,
+            "teamLength": 31,
+            "teamWidth": 52
+          },
+          "finalThirdPhase": {
+            "lineHeight": 58,
+            "teamLength": 32,
+            "teamWidth": 44
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 48,
+            "teamLength": 37,
+            "teamWidth": 41
+          },
+          "lowBlock": {
+            "lineHeight": 18,
+            "teamLength": 27,
+            "teamWidth": 36
+          },
+          "midBlock": {
+            "lineHeight": 35,
+            "teamLength": 29,
+            "teamWidth": 41
+          }
+        }
+      }
+    }
+  }
+}

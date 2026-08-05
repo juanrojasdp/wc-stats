@@ -9,7 +9,7 @@ baseline_commit: 4682639
 
 # Story 1.16: Match Bundle Emission — Canonical Serialization, Version Stamp & Budget Gate
 
-Status: in-progress
+Status: review
 
 ## Story
 
@@ -247,10 +247,10 @@ They are raster donut-slice labels and one unvalidatable marker colour — only 
 
 > **Sequencing.** Tasks 1, 2, 3, 5, 6, 7, 8, 9, 10 and 11 are implementable today. **Task 4.7 (`tacticalIdentity`) and Task 4.9 (`goalkeeping`) cannot be written until CS-2 is committed** — their target shapes do not exist yet. Do everything else first; the emitter is complete apart from two domain mappers, and a bundle that is schema-invalid on exactly those two is a useful, honest intermediate state. **Do not stub them with a guessed shape.**
 
-- [ ] **Task 0: Land change-set CS-2 — the prerequisite, and NOT part of this story's commit** (blocks Tasks 4.7 and 4.9)
-  - [ ] 0.1 Write CS-2's spec from the PREREQUISITE section above (five changes, the six-declaration recipe, the coordination rule). It is its own spec file and its own atomic commit, exactly as CS-1 was — `/contract`, `data/fixtures/` and `app/src/lib/contract/` are all outside this story's scope boundary, which is precisely why it is separate.
-  - [ ] 0.2 Confirm no Epic 2 session is in flight before landing it, or get Juan's explicit go-ahead. A bump re-pins seven fixtures and regenerates both type trees.
-  - [ ] 0.3 After it lands: `contract/version.json == {"schemaVersion": 4}`, all five per-artifact `const` stamps moved, both `test_contract_schemas.py:170-172` asserts updated, `npm run check:types` green in **`contract/` and `app/`**, full `pipeline/tests` green. Only then start Tasks 4.7 and 4.9.
+- [x] **Task 0: Land change-set CS-2 — the prerequisite, and NOT part of this story's commit** (blocks Tasks 4.7 and 4.9)
+  - [x] 0.1 Write CS-2's spec from the PREREQUISITE section above (five changes, the six-declaration recipe, the coordination rule). It is its own spec file and its own atomic commit, exactly as CS-1 was — `/contract`, `data/fixtures/` and `app/src/lib/contract/` are all outside this story's scope boundary, which is precisely why it is separate.
+  - [x] 0.2 Confirm no Epic 2 session is in flight before landing it, or get Juan's explicit go-ahead. A bump re-pins seven fixtures and regenerates both type trees.
+  - [x] 0.3 After it lands: `contract/version.json == {"schemaVersion": 4}`, all five per-artifact `const` stamps moved, both `test_contract_schemas.py:170-172` asserts updated, `npm run check:types` green in **`contract/` and `app/`**, full `pipeline/tests` green. Only then start Tasks 4.7 and 4.9.
 
 - [x] **Task 1: Re-derive the probe before writing any emission code** (no AC; do this first)
   - [x] 1.1 Confirm the baseline: `git log --oneline -3` must show CS-1 (`093a1b2`) at or below `HEAD`. Confirm `contract/version.json` reads `{"schemaVersion": 3}` **before CS-2** / `{"schemaVersion": 4}` after, that `ShotOutcomeDetail` has 24 values, and that `x-maps-to-outcome["deflected-on-target-defensive-event"]` is an **array**. If any is false, **stop** — the story is written against the post-CS-1 contract. **Read the version with `schema_version()`; never hardcode either integer.**
@@ -298,7 +298,7 @@ They are raster donut-slice labels and one unvalidatable marker colour — only 
   - [x] 3.2 The four extract modules already carry their contract field lists as **"the Story 1.16 emit-time checklist, not an import"** — `domain_e.py:127` (`GOAL_PREVENTION_COLUMNS`), `domain_f.py:96` (`FreeKickCounts`/`CornerCounts`), `domain_g.py:74` (`PlayerPhysical`), plus `INTERVENTION_TYPES`. **Read them; do not import them** (AD-1 keeps `/contract` an emit-time checklist, not an import target). They are ordered 1:1 with the contract's own field order.
   - [x] 3.3 Assert the boundary is total. The cheap form is *no key contains `_`* — but it is **not sufficient**: single-word snake keys are indistinguishable from correct camelCase, so it misses `linked` and `ordinal` (two of the five keys `ShotEvent` must drop). **Assert instead that every emitted object's key set EQUALS its `$def`'s declared `properties` key set.** Same cost, total coverage, and it also catches a camelCased-but-misnamed field that the underscore check never can. `ShotEvent` is `additionalProperties: false` over exactly 12 properties; the spine's shot events carry five with no destination — `linked`, `ordinal`, `source`, `shirt_number`, `time_raw`.
 
-- [ ] **Task 4: Domains A, B, C, F, G and `storyStats`** (AC: 1, 2)
+- [x] **Task 4: Domains A, B, C, F, G and `storyStats`** (AC: 1, 2)
   - [x] 4.1 **Domain A → `metadata`.** Rename-only for `stage`, `group`, `venue`, `date`, `kickoff`, `score`, `lineups`. `matchNumber` from the match id / `entities.matches[]`. `matchdayRound` from `spine.matchday_round`.
   - [x] 4.2 **`metadata.goals[]`** — assembled, not copied. Goals and own goals are nested **inside** the owning `LineupEntry` in the spine (294 + 14 = 308 records corpus-wide). Emit in **chronological order** by `(minute, stoppageMinute)`. `ownGoal: true` records are credited to the team that **benefited** while `scorerPlayerId` names the scorer — that inversion is AD-6's one live trap here (`contract/README.md:95-98`). `penalty` per **RULED D3** — derived from the shots join, failing loud on any unmatched penalty-goal shot. Goals, own goals and cards are already `{minute, stoppage_minute}` / `{at, type}` shaped in the spine, so `at: MinuteStamp` is a pure rename.
     - **`own_goals` must be DROPPED from the lineup entry, not renamed.** `LineupEntry` is `additionalProperties: false` over exactly `{playerId, name, shirtNumber, position, substitutedOn, substitutedOff, goals, cards}` — there is **no own-goals slot**, and `LineupEntry.goals`' own description says *"Own goals are NOT listed here; they appear in `metadata.goals` attributed to the benefiting team."* The spine carries `own_goals` beside `goals` on every entry. Task 3.3's no-underscore assertion catches the snake spelling, so the tempting repair is to camelCase it to `ownGoals` — which passes that assertion and fails jsonschema with an `additionalProperties` error pointing somewhere unhelpful. Own goals leave the entry entirely and reappear only in `metadata.goals`.
@@ -309,9 +309,9 @@ They are raster donut-slice labels and one unvalidatable marker colour — only 
   - [x] 4.5b **Two `FreeKickCounts`/corner relations in the contract are CORPUS-FALSE. Do not assert them, and do not "fix" the data to satisfy them.** `FreeKickCounts`' own `description` asserts `direct == directOnTarget + directOffTarget`; measured over 208 corpus team-innings it holds on **0**, with **160** carrying `on + off == 0` while `direct > 0`. `sum(cornersByDeliveryStyle) == totalCorners` holds on only **96/208** (112 under, never over). Both hold 6/6 in the fixtures, which is how they got written. `test_set_play_counts_are_internally_consistent` is one of the seven shipped invariants (`contract/README.md:413-420`) and carrying it across to the real emission makes a correct bundle look broken. **The corpus-true relations, and the only ones to assert:** `direct + indirect == totalFreeKicks`; `sum(cornersByDeliveryType[*].total) == totalCorners`; `left + right == total` per type and overall; `totalSetPlays == freeKicks + corners + throwIns + penalties`. Correcting the two false `description`s is a successor change-set, not this story.
   - [x] 4.6 **Domain G → `players[]`.** 3,289 rows; `players` is nullable but is populated on 104/104 — emit the array. `teamId` comes from the side key, not the row. Order home-then-away **from `metadata.homeTeam`/`awayTeam`, never from array order** (the rule Story 2.10 already shipped for `#goalkeeping`), then by shirt number. Both are prose in the schema description and enforced by nothing — assert them yourself.
   - [x] 4.6a **`players` has no uniqueness constraint and `PlayerId` carries none — assert it here.** `contract/match-bundle.schema.json` declares `players` a plain array with no `uniqueItems`. A duplicate `playerId` ships duplicate React keys and makes `DataTable`'s focus restore silently resolve to the wrong player's row. Story 2.11b's review routed the fix upstream to this story by name (*"the right fix is upstream … Owner: 1.16 or a contract pass; the app-side guard is only worth adding if the invariant is declined"*). The spine guarantees it — 1,248 players, 0 collisions, all pinned — so this is a cheap standing assertion, not new logic. Raise on a duplicate within one bundle's `players`, and within `metadata.lineups` too.
-  - [ ] 4.7 **Domain C → `tacticalIdentity`** per **RULED D1** — per-phase panels plus `team_width`, in the shape CS-2 lands. **This subtask cannot be written until CS-2 is committed**; everything else in Task 4 can.   `defensiveBlockDistribution.{high,mid,low}` must be emitted **equal** to `phasesOutOfPossession.{highBlock,midBlock,lowBlock}` — the schema cannot say this and `test_defensive_block_distribution_mirrors_the_three_block_phases` is the gate (`contract/README.md` decision 6).
+  - [x] 4.7 **Domain C → `tacticalIdentity`** per **RULED D1** — per-phase panels plus `team_width`, in the shape CS-2 lands. **This subtask cannot be written until CS-2 is committed**; everything else in Task 4 can.   `defensiveBlockDistribution.{high,mid,low}` must be emitted **equal** to `phasesOutOfPossession.{highBlock,midBlock,lowBlock}` — the schema cannot say this and `test_defensive_block_distribution_mirrors_the_three_block_phases` is the gate (`contract/README.md` decision 6).
   - [x] 4.8 **`storyStats`** — exactly five fields per team, four projected from `keyStatistics` and `topSpeed` as `max(players[].physical.topSpeed)` per team. Assert all five, including the one the shipped fixture test does not cover.
-  - [ ] 4.9 **Domain E → `goalkeeping`** per **RULED D2**, in the per-team shape CS-2 lands. **Blocked on Task 0.** What the spine gives you, per side: `total_involvements`, `involvement_series` + `involvement_clock.stamps[]`, `distribution` (`feet`/`hands`/`throw`/`total` counts + `line_breaks`), `goal_prevention` (`attempts_faced`, `save_percentage`, `total_interventions`, `by_intervention_type`), `aerial_control` (`punches`/`claims`/`tipped_palmed`, `crosses_faced_attempted`, `delivery_types_faced`), and `goalkeepers[]` — 1 entry on 201 innings and 2 on 7.
+  - [x] 4.9 **Domain E → `goalkeeping`** per **RULED D2**, in the per-team shape CS-2 lands. **Blocked on Task 0.** What the spine gives you, per side: `total_involvements`, `involvement_series` + `involvement_clock.stamps[]`, `distribution` (`feet`/`hands`/`throw`/`total` counts + `line_breaks`), `goal_prevention` (`attempts_faced`, `save_percentage`, `total_interventions`, `by_intervention_type`), `aerial_control` (`punches`/`claims`/`tipped_palmed`, `crosses_faced_attempted`, `delivery_types_faced`), and `goalkeepers[]` — 1 entry on 201 innings and 2 on 7.
     - **The five CS-2-nullable fields emit `null` on 208/208**: `feetTechniques`, `handsTechniques`, `throwTechniques`, `byBodyType`, `crossesFacedCompleted`. **Do not read their absence as an extraction defect** — Story 2.10 says so by name, and its surface already presence-gates them.
     - **Zip the two parallel lists.** `involvement_series` and `involvement_clock["stamps"]` are two lists indexed by position, deliberately (Story 1.9 chose that shape and recorded that *"Story 1.16's emit boundary has to zip them anyway; recorded so that zip is expected rather than surprising"*). One `GoalkeeperInvolvementSample` per slot, `at` from the stamp under CS-2's `MinuteStamp`.
     - **Never sum across the two keepers** on the 7 two-keeper innings (AD-5); carry both names as context, exactly as Story 2.10 renders them.
@@ -331,18 +331,18 @@ They are raster donut-slice labels and one unvalidatable marker colour — only 
   - [x] 6.3 Derive `decidedBy` from the periods actually played, and assert the invariant the schema documents but cannot encode: `regulation` → `scoreAfterET` and `shootoutScore` both `null`; `extra-time` → `scoreAfterET` non-null, `shootoutScore` `null`; `shootout` → both non-null. `winnerTeamId` is `null` iff `decidedBy == "regulation"` on a drawn group match. `test_knockout_score_agrees_with_decided_by` is the shipped gate (`contract/README.md` decision 12).
   - [x] 6.4 `metadata.score` is the cover's final score — after extra time when extra time was played, otherwise after 90 (`match-bundle.schema.json:211`). It is **not** `scoreAfter90`.
 
-- [ ] **Task 7: Validation, the budget gate, and byte-identity** (AC: 2, 3, 4, 5)
+- [x] **Task 7: Validation, the budget gate, and byte-identity** (AC: 2, 3, 4, 5)
   - [x] 7.1 Every bundle is validated with `pipeline.validate.schema.validate_artifact(bundle, "match-bundle.schema.json", instance_label=match_id)` **before** it is written. That function raises with **every** violation at once, not just the first, and `_leaf_violations` already flattens `anyOf` branches so a nullable-field error names the field rather than the union. **1.16 is its first production caller** — until now only tests called it.
   - [x] 7.2 Round via `serialize.round_to_precision` **before** validating and before serializing. Then serialize with `canonical_json`, measure `gzip_bytes` over that exact string, and write with `write_canonical`.
   - [x] 7.3 The budget gate: collect **every** breach, do not abort on the first (the `check_committed_data` precedent — `sorted(...)[:10]`, joined with `"; "`, `" …"` when truncated), then raise `BudgetExceededError` naming each bundle with both byte counts. Exit 1.
   - [x] 7.4 **Emitting zero bundles is a FAIL, never a vacuous pass** (`run.py:141-147`'s precedent). `--expect-matches 104`.
-  - [ ] 7.5 Byte-identity: emit twice into two directories and compare **bytes**, not parsed dicts. Assert no `\r\n`, UTF-8 decodable, trailing newline, and that no bundle carries a timestamp, an absolute path or a `code_version`.
+  - [x] 7.5 Byte-identity: emit twice into two directories and compare **bytes**, not parsed dicts. Assert no `\r\n`, UTF-8 decodable, trailing newline, and that no bundle carries a timestamp, an absolute path or a `code_version`.
 
-- [ ] **Task 8: The pinning handoff — two 1.15 tests flip by design** (AC: 1, 2)
-  - [ ] 8.1 `test_precompute_spine.py::test_the_repository_has_no_committed_match_bundles_yet` **goes red the moment `data/matches/` exists**, and its own docstring says that is *"the correct prompt to switch the primary assertion to the populated branch."* Story 1.15 filed this routed to 1.16 by name. Replace it with a test asserting the populated branch: `check_committed_data(PINS, "data")` returns the *"all pinned"* note over the real bundles.
+- [x] **Task 8: The pinning handoff — two 1.15 tests flip by design** (AC: 1, 2)
+  - [x] 8.1 `test_precompute_spine.py::test_the_repository_has_no_committed_match_bundles_yet` **goes red the moment `data/matches/` exists**, and its own docstring says that is *"the correct prompt to switch the primary assertion to the populated branch."* Story 1.15 filed this routed to 1.16 by name. Replace it with a test asserting the populated branch: `check_committed_data(PINS, "data")` returns the *"all pinned"* note over the real bundles.
   - [x] 8.2 `test_precompute_run.py::test_the_unavailable_data_baseline_line_is_always_printed_and_never_suppressed` pins the pre-1.16 state. It stages into `tmp_path`, so it stays green — **verify that, do not assume it.** If it reads the real `data/`, re-scope it to the populated branch alongside 8.1.
-  - [ ] 8.3 Run `python -m pipeline.precompute.run --expect-records 104` **after** the first emission and confirm the second pinning source engages: the *"committed /data baseline: 104 bundle(s), N id reference(s), all pinned"* line replaces *"baseline unavailable … This is NOT a pass"*. That is the AC-3 gate 1.15 could not close. Any id in a bundle that `PINS` does not carry raises `SlugRegistryError` — which is the check working. **Note its exact scope:** `COMMITTED_ID_KEYS` (`identity.py:494-502`) is a seven-key map — `matchId`, `teamId`, `winnerTeamId`, `playerId`, `scorerPlayerId`, `fromPlayerId`, `toPlayerId` — and an id under any other key is invisible to it. Those seven happen to cover every id key a Match Bundle carries, so the check is total *for this artifact*. Verify that yourself rather than assuming it, and say so in the Dev Agent Record — it stops being true the moment a successor change-set adds an id-bearing field.
-  - [ ] 8.4 **`data/matches/` is committed** (AD-13: artifacts in `/data` are committed). Confirm `.gitignore` does not cover it — it does not; only `work/` is ignored. **Never `git add -A`** — stage `data/matches/` and your `pipeline/` paths explicitly.
+  - [x] 8.3 Run `python -m pipeline.precompute.run --expect-records 104` **after** the first emission and confirm the second pinning source engages: the *"committed /data baseline: 104 bundle(s), N id reference(s), all pinned"* line replaces *"baseline unavailable … This is NOT a pass"*. That is the AC-3 gate 1.15 could not close. Any id in a bundle that `PINS` does not carry raises `SlugRegistryError` — which is the check working. **Note its exact scope:** `COMMITTED_ID_KEYS` (`identity.py:494-502`) is a seven-key map — `matchId`, `teamId`, `winnerTeamId`, `playerId`, `scorerPlayerId`, `fromPlayerId`, `toPlayerId` — and an id under any other key is invisible to it. Those seven happen to cover every id key a Match Bundle carries, so the check is total *for this artifact*. Verify that yourself rather than assuming it, and say so in the Dev Agent Record — it stops being true the moment a successor change-set adds an id-bearing field.
+  - [x] 8.4 **`data/matches/` is committed** (AD-13: artifacts in `/data` are committed). Confirm `.gitignore` does not cover it — it does not; only `work/` is ignored. **Never `git add -A`** — stage `data/matches/` and your `pipeline/` paths explicitly.
 
 - [x] **Task 9: The `test_fixtures.py` guard ruling — six unguarded sites, not one** (AC: 2)
   - [x] 9.1 **Ruled: add the guards and re-scope the invariant. This does not wait for 1.18/1.19.** `test_pass_network_edges_join_players_who_have_a_node` (`test_fixtures.py:497-503`) builds its node set from `bundle["events"]["passNetworkNodes"]` with no `or []`, so a `null` node table raises `TypeError` rather than failing cleanly. **Line 501 (`passNetworkEdges`) has the identical defect and is not on record.** The test globs `data/fixtures/`, so 1.16's emission does not trigger it — but the fix is three characters and the alternative is a landmine left armed for a fixture refresh.
@@ -350,7 +350,7 @@ They are raster donut-slice labels and one unvalidatable marker colour — only 
   - [x] 9.3 **Three more unguarded sites, none previously filed — six in total.** The full set is `:353` and `:488` (`bundle["events"]["shots"]`), `:473` and `:786` (`bundle["players"]` — **nullable at the top level of the schema**), plus `:500`/`:501` from 9.1. `:806` needs no guard of its own: it iterates `squad`, derived from `:786`. Guard all six the same way. Note `:450-453` guards the container but reads `row["x"]`/`row["y"]` unguarded, so a null coordinate is a `TypeError`; leave that one — under this story's emission no populated spatial table carries a null coordinate, and a guard there would hide a real defect. `:327` and `:891` read `shootoutAttempts` but are already truthiness-guarded, and `:872` uses `or []`.
   - [x] 9.4 **Do not re-pin `data/fixtures/`.** CS-1 just did. This task edits `pipeline/tests/test_fixtures.py` only.
 
-- [ ] **Task 10: Tests** (AC: 1, 2, 3, 4, 5)
+- [x] **Task 10: Tests** (AC: 1, 2, 3, 4, 5)
   - [x] 10.1 New `pipeline/tests/test_emit_bundles.py`. **No test reads `data/matches/` today**, so every assertion here is new. The one reader that already exists is `check_committed_data` (`pipeline/precompute/identity.py:522-523`, called from `run.py:189` with `--data-dir` defaulting to `data`) — that is Task 8's second pinning source, not a bundle test.
   - [x] 10.2 Per-bundle over the real emission: schema-valid; `schemaVersion == schema_version()`; all 11 root keys present; the four Domain D tables and `shootoutAttempts` are `null` (never `[]`); `momentum` is `null` or a series with ≥1 sample; no key contains `_`; no non-finite number.
   - [x] 10.3 **Byte-identity**: emit twice into two `tmp_path` dirs, compare bytes. The precedent is `test_cli.py:207-220` (*"Bytes, not parsed dicts — canonical serialization is the property under test"*), though it blanks its one timestamp field first. Seven re-run byte comparisons already exist and are closer models: `test_extract_report_domain_a.py:132-142`, `test_extract_report_domain_g.py:232-238`, `test_extract_report_domains_bc.py:203-213`, `test_extract_report_domains_ef.py:163-172`, `test_extract_report_pass_network.py:237`, `test_ingest_batch.py:315-327`, `test_ingest_record.py:643-650`. A bundle has **no** field to blank, so yours is a straight `read_bytes()` equality.
@@ -358,17 +358,17 @@ They are raster donut-slice labels and one unvalidatable marker colour — only 
   - [x] 10.5 **Precision**: assert every numeric leaf in an emitted bundle carries at most its `x-decimals` places, derived from the schema. Drive it red with a constructed 17-digit float.
   - [x] 10.6 **Derive expected values from the parsed corpus, never restate the implementation** (the 1.10 rule). A test asserting `emit(x) == emit(x)` proves only that the function is the function. Mutation-check the mappers: a swapped `home`/`away`, a dropped `+1` on the shot clock, and a `[]`-instead-of-`null` must each turn a test red.
   - [x] 10.6a **Test `emit.main()` itself, not just `emit_bundles`.** Story 1.15 shipped `run.main()` and both gate checks with **zero** tests and took a review finding for it; `test_precompute_run.py` is the retrofit and the model to copy — stage a synthetic spine under `tmp_path`, pass `--spine-dir`/`--data-dir` **under `tmp_path` and never at the real tree**, and assert each exit code: 0 clean, 1 on a budget breach / a schema violation / an `--expect-matches` miss, 2 on an unreadable spine or an `OSError` from the writer.
-  - [ ] 10.7 Run the **full** suite in the background (~45 min; 1,371 collected at story creation) and record the result. Chunking it times out.
+  - [x] 10.7 Run the **full** suite in the background (~45 min; 1,371 collected at story creation) and record the result. Chunking it times out.
 
-- [ ] **Task 11: Documentation, ledger and verification** (AC: all)
+- [x] **Task 11: Documentation, ledger and verification** (AC: all)
   - [x] 11.1 `pipeline/README.md` — a new section on emission, appended after the Story 1.15 section: the CLI, the mapping boundary, the four declared nulls with their reasons, the precision rule, the budget figures, and every ruling taken. **Append only**; it is a shared-contention file.
   - [x] 11.2 `deferred-work.md` — **append** a "Filed by Story 1.16 implementation" section at the END of the file. **The house filing convention, which 1.15's own review found it breaking:** one bold-headline bullet per finding, each closing with an explicit `Deferred:` clause and an explicit `Owner:`; **cite by quoted anchor phrase, never by line number** (Story 2.6 had to correct twelve citations after a twelve-line drift); **no `DW-nn` ids exist — do not invent one**; never edit another story's paragraph — record corrections as appended corrections.
     - **Close by name** every filing this story discharges: the four Domain D emission blockers (1.11, 1.12, 1.13, 1.14), the `time_raw` → `MinuteStamp` deferral (1.5), the shootout prose and the `/data` pinning baseline (1.15), and the `GoalOwnGoal` emission flip (1.6).
     - **File every residual**: the period-ambiguous shot rows (153 in the first-half band plus whatever the 89..106 measurement adds), the `second-yellow` gap, the goal-prevention measurement from Task 1.5a, and whatever D1–D4 leave open.
     - **Carry forward one filing routed here by name that this story does not discharge:** *"`domain_e_checks` reads its own payload by bare subscript, so a record staged by an older checkout raises `KeyError` rather than failing as a typed error … **Owner: whoever next touches the record-version contract (Story 1.16 is the natural point, since it is the first consumer that reads staged records it did not write)**."* This story is exactly that consumer. Either add a record-shape guard at the emitter's entry point — which is cheap and in scope, since you are already asserting every required source key is present — or re-file it explicitly with a named successor. **Do not let it fall through silently; it names this story.**
-  - [ ] 11.3 `contract/README.md:197` — retire the `GoalRecord.ownGoal` row once 4.3 lands. The row's own text says it is kept *"until 1.16 flips it"*, so this discharges it. Prose only, no schema change, no bump.
-  - [ ] 11.4 If any of D1–D4 is ruled as a contract change, that is a **separate successor change-set commit** with its own spec, executed per `contract/README.md:534-557`'s six-declaration recipe. **It does not ride this story's commit.**
-  - [ ] 11.5 Verification: full suite result; `python -m pipeline.precompute.emit --expect-matches 104` **exit 0**; `python -m pipeline.precompute.run --expect-records 104` **exit 0** showing the populated pinning branch; the corpus max gzip figure; the byte-identity re-run. **Landmine 12's exit-1 baseline applies to `pipeline.ingest.batch` ONLY** — `precompute.run` exits 0 on a clean run (1.15 recorded PASS) and so must `emit`. Record all of it in the Dev Agent Record.
+  - [x] 11.3 `contract/README.md:197` — retire the `GoalRecord.ownGoal` row once 4.3 lands. The row's own text says it is kept *"until 1.16 flips it"*, so this discharges it. Prose only, no schema change, no bump.
+  - [x] 11.4 If any of D1–D4 is ruled as a contract change, that is a **separate successor change-set commit** with its own spec, executed per `contract/README.md:534-557`'s six-declaration recipe. **It does not ride this story's commit.**
+  - [x] 11.5 Verification: full suite result; `python -m pipeline.precompute.emit --expect-matches 104` **exit 0**; `python -m pipeline.precompute.run --expect-records 104` **exit 0** showing the populated pinning branch; the corpus max gzip figure; the byte-identity re-run. **Landmine 12's exit-1 baseline applies to `pipeline.ingest.batch` ONLY** — `precompute.run` exits 0 on a clean run (1.15 recorded PASS) and so must `emit`. Record all of it in the Dev Agent Record.
   - [x] 11.6 **Two scope statements to make explicitly, because their absence reads as an omission.** (a) **This story registers no FR-15 gate check.** Every extraction story 1.5–1.14 carries a *"when the FR-15 gate re-runs"* AC; `epics.md:286-288` scopes that convention to extraction stories, and 1.15–1.18 all omit it correctly. `pipeline/validate/checks.py:90-91` nonetheless reserves a *"1.16 bundle emission"* slot — leave it reserved; the gate is per-report and emission is corpus-level. (b) **The emitter writes no run-manifest entry.** `ARCHITECTURE-SPINE.md:138` requires every typed pipeline error to land as a manifest entry, but that contract is per-report (AD-8) and this phase is all-or-nothing: there is no per-match terminal status to record. State the reasoning in the module docstring so a reviewer does not read the absence as a miss.
 
 ---
@@ -562,7 +562,76 @@ RULED D4 derivation, in three passes).
 
 ### Completion Notes List
 
-**STATUS: BLOCKED-PENDING-CS-2 on exactly two mappers, and on nothing else.** All 104
+**STATUS: COMPLETE. Change-set CS-2 landed and all 104 bundles emit and validate with ZERO
+violations.** `data/matches/` is committed, and `check_committed_data` reports *"104
+bundle(s), 89,358 id reference(s), all pinned"* — the AC-3 gate Story 1.15 could not close.
+
+The notes below are in two phases. **Phase 1** is everything CS-2 did not gate, built first
+on Juan's ruling while `app/` was still dirty with Story 2.11c's work. **Phase 2** is CS-2
+itself plus the two mappers it unblocked.
+
+---
+
+## PHASE 2 — change-set CS-2 and the two unblocked mappers
+
+**CS-2 landed as one atomic AD-14 commit**, `schemaVersion` 3 → 4, logged decision 18, spec
+in `cs-2-change-set-spec.md`. `PossessionSplitMetres` → `ShapeByPhase` (18 values per team,
+not 4); `GoalkeepingBlock` per-TEAM with the keeper list as context; the five unfulfillable
+sub-fields nullable; `GoalkeeperInvolvementSample.minute` → `at: MinuteStamp`. Three
+`description` corrections rode along.
+
+**TWO ADDITIONS TO THE FILED SCOPE, BOTH DELIBERATE AND BOTH RULED BY JUAN.**
+(a) `team-profile.schema.json` aggregates the identical non-existent shape, so it was
+reshaped in step — Story 1.18 has emitted nothing yet, and leaving it would hand 1.18 the
+exact blocker that stopped 1.16 dead. (b) **`app/` was repaired in the same commit.** The
+story rules `app/` off limits and routes the re-scope to 2.10/2.19, but measured, CS-2 breaks
+6 app files; landing the schema alone leaves `main` with a red build. Juan authorized the
+expansion after the blast radius was measured.
+
+**`#pressing`'s metre presentation is RETIRED, not re-shaped** — which `metreRows`' own
+docblock anticipated verbatim ("THIS PRESENTATION IS DELETED OR RE-SHAPED"). The four values
+it rendered were the synthetic ones. Re-presenting the 18 real ones needs six panel labels in
+neither locale, and minting copy is not this change-set's ruling. Filed to 2.19.
+
+**ONE DEFECT ONLY THE FIRST REAL EMISSION COULD SURFACE.** `check_committed_data` reported a
+NULL `winnerTeamId` as an unpinned id — right for the six non-nullable id keys, wrong for the
+one the contract declares nullable, which is null on the **20 drawn group ties**. The pinning
+gate therefore failed on correct data the moment `data/matches/` existed. Fixed with
+`NULLABLE_ID_KEYS`; `pipeline/precompute/identity.py` was outside the declared scope and the
+edit is disclosed rather than silent.
+
+**THE FIXTURES GOT LESS SYNTHETIC.** All three match fixtures have real corpus twins, so
+`shapeByPhase` was sourced from the ACTUAL staged panel values instead of re-synthesized —
+m001 home in-possession `lineHeight` now reads the real 19 / 39 / 54 in place of the single
+synthetic 44.4 that matched no panel and no mean of them.
+
+**VERIFIED.** `emit --expect-matches 104` exit **0**; `run --expect-records 104` exit **0**
+showing the populated pinning branch; **104 bundles, 17,871,730 bytes, byte-identical across
+two runs** and matching the committed tree, zero CRLF, all LF-terminated, UTF-8, no volatile
+or provenance keys. Corpus budget maximum **14,242 gzip-9 bytes (m082), 2.85%** of the
+ceiling. Both `check:types` green in `contract/` AND `app/`.
+
+**FULL REGRESSION SUITE: 1,481 collected — 1,480 passed, 1 skipped, 0 failed.** Run in seven
+chunks rather than one pass: a single 45-minute invocation is killed in this environment, so
+it was chunked and every one of the 43 test modules was executed. The tally reconciles
+exactly against the pre-change baseline — 1,371 collected + this story's 110 new tests
+(95 `test_emit_bundles` + 15 `test_emit_serialize`) = 1,481 — so no module was skipped or
+double-counted.
+
+**A CONCURRENT SESSION RE-DIRTIED `app/` DURING CS-2**, after 2.11c was committed specifically
+to clear it: `ExpertLayer.tsx` mid-refactor (−75 lines, symbols moved to a new untracked
+`expert-logs.ts`) and not compiling. Its files do not overlap CS-2's six, so the App chain was
+verified in an **isolated git worktree** carrying exactly CS-2's files — the 2.11a/2.18
+precedent. Green there: `tsc`, `eslint --max-warnings 0`, both `check:types`, suite **709
+passed / 31 skipped / 0 failed** (740 = 743 − the 3 retired metre tests; the 31 skips are
+static-output tests needing a built `out/`).
+
+---
+
+## PHASE 1 — everything CS-2 did not gate
+
+**All 104 bundles built and validated on every one of the nine unblocked root keys, with
+`tacticalIdentity` and `goalkeeping` the only violations.** All 104
 bundles build and validate against `/contract` on every one of the nine unblocked root
 keys. Measured over the whole corpus, the *only* schema violations are
 `'tacticalIdentity' is a required property` and `'goalkeeping' is a required property`,
@@ -657,6 +726,25 @@ New:
 - `pipeline/tests/test_emit_bundles.py`
 - `pipeline/tests/test_emit_serialize.py`
 
+Added by change-set CS-2 (same commit):
+- `_bmad-output/implementation-artifacts/cs-2-change-set-spec.md`
+- `data/matches/{match-id}.json` x 104 (emitted and COMMITTED, AD-13)
+
+Modified by change-set CS-2:
+- `contract/match-bundle.schema.json`, `contract/team-profile.schema.json`,
+  `contract/version.json`, `contract/README.md` (logged decision 18; the
+  `GoalRecord.ownGoal` row retired)
+- `contract/generated/{contract-types.d.ts,schema-version.ts}` (regenerated)
+- `app/src/lib/contract/{contract-types.d.ts,schema-version.ts}` (regenerated)
+- `app/src/viz/goalkeeping-model.ts` + `.test.ts` (per-team shape; the widened view
+  collapsed to a re-export)
+- `app/src/viz/phases-model.ts` + `.test.ts`, `app/src/components/PressingSection.tsx`
+  (metre presentation retired)
+- `data/fixtures/**` (seven fixtures re-pinned and reshaped) + `data/fixtures/README.md`
+- `pipeline/precompute/identity.py` (`NULLABLE_ID_KEYS` — out-of-scope fix, disclosed)
+- `pipeline/tests/test_contract_schemas.py` (the two hardcoded version asserts)
+- `pipeline/tests/test_precompute_spine.py` (Task 8.1, switched to the populated branch)
+
 Modified (additive / append-only):
 - `pipeline/precompute/errors.py` (four typed subclasses appended)
 - `pipeline/tests/test_fixtures.py` (six nullable guards + the re-scoped join invariant and its constructed test)
@@ -676,4 +764,7 @@ Not touched, by design: `app/`, `spike/`, `contract/**`, `data/fixtures/**`,
 | 2026-08-05 | Task 1 complete: every pinned number re-derived over the 104 staged spine files. Task 1.5a measured — the goal-prevention relation holds 208/208, closing Story 2.10's routed filing. D4's residual ambiguity corrected from 153 to 215 rows and filed as irreducible. |
 | 2026-08-05 | Tasks 2, 3, 5, 6, 9 and Task 4 except 4.7/4.9 implemented: `emit.py`, `serialize.py`, `budget.py`, four typed errors, the total mapping boundary, the shot clock, the penalty join, `knockoutScore`, and the `test_fixtures.py` guard ruling. 100 new tests, both gates driven red by construction. |
 | 2026-08-05 | Task 11.1 and 11.2: `pipeline/README.md` and `deferred-work.md` appended, append-only proven programmatically in both. |
-| 2026-08-05 | Story remains BLOCKED-PENDING-CS-2 on `tacticalIdentity` and `goalkeeping` only; all 104 bundles otherwise build and validate. |
+| 2026-08-05 | Story 2.11c committed (`f2ea99d`) on Juan's instruction to clear `app/` for CS-2, after independent verification (tsc, eslint, 743 tests). |
+| 2026-08-05 | Phase 1 committed (`ab0a87f`): everything CS-2 did not gate. |
+| 2026-08-05 | Change-set CS-2 landed: `schemaVersion` 3 -> 4 in six declarations, logged decision 18, `ShapeByPhase` and per-team `GoalkeepingBlock`, five fields nullable, `GoalkeeperInvolvementSample.at`, three description corrections, seven fixtures re-pinned from REAL corpus values, both type trees regenerated, `app/` repaired. Juan authorized the `app/` scope expansion. |
+| 2026-08-05 | Tasks 4.7, 4.9, 8.1, 8.3, 8.4, 11.3 and 11.5 closed. 104 bundles emitted and committed; the `/data` pinning baseline engages with 89,358 id references all pinned. |

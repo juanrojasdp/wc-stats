@@ -9,7 +9,7 @@ import type {
   FeetTechniqueCounts,
   GoalPrevention,
   GoalkeeperDistribution,
-  GoalkeeperRecord,
+  TeamGoalkeeping,
   Goalkeeping,
   HandsDistributionTechnique,
   HandsTechniqueCounts,
@@ -86,15 +86,7 @@ type Widen<T, K extends keyof T> = Omit<T, K> & { [P in K]: T[P] | null };
  * permanently open). NEVER CS-1, which is already scoped and touches none of
  * this. Filed to deferred-work.md by Task 9.1.
  */
-export interface CorpusNullableGoalkeeperRecord
-  extends Omit<GoalkeeperRecord, "distribution" | "goalPrevention" | "aerialControl"> {
-  distribution: Widen<
-    GoalkeeperDistribution,
-    "feetTechniques" | "handsTechniques" | "throwTechniques"
-  >;
-  goalPrevention: Widen<GoalPrevention, "byBodyType">;
-  aerialControl: Widen<AerialControl, "crossesFacedCompleted">;
-}
+export type CorpusNullableGoalkeeperRecord = TeamGoalkeeping;
 
 /**
  * THE SINGLE ENTRY CAST. Every consumer in this module reads the widened view;
@@ -102,8 +94,26 @@ export interface CorpusNullableGoalkeeperRecord
  * is ruled decision 3's own instruction, and this function is what makes it
  * possible to obey.
  */
-function widen(record: GoalkeeperRecord): CorpusNullableGoalkeeperRecord {
-  return record as CorpusNullableGoalkeeperRecord;
+function widen(record: TeamGoalkeeping): CorpusNullableGoalkeeperRecord {
+  return record;
+}
+
+/**
+ * The keepers who kept goal for this team, joined.
+ *
+ * CS-2 (contract decision 18) made the block PER TEAM, because the source is: all four
+ * goalkeeping page families are titled `{team}`, no goalkeeper name appears on any of
+ * them, and 7 of 208 corpus team-innings used two keepers while still printing ONE
+ * team-level block each. So identity moved off the record and onto `goalkeepers`, and both
+ * names are carried as CONTEXT — AD-5 forbids splitting the team's figures between them,
+ * which is exactly what the old per-keeper shape invited.
+ */
+function keeperNamesOf(record: CorpusNullableGoalkeeperRecord): string {
+  return record.goalkeepers.map((keeper) => keeper.playerName).join(" / ");
+}
+
+function keeperIds(record: CorpusNullableGoalkeeperRecord): string {
+  return record.goalkeepers.map((keeper) => keeper.playerId).join("-");
 }
 
 /* ------------------------------ Frozen enums ------------------------------ */
@@ -495,7 +505,7 @@ export function goalkeepingByTeam(
   home: LogSide,
   away: LogSide
 ): GoalkeepingGrouping {
-  const buckets: Record<"home" | "away", GoalkeeperRecord[]> = { home: [], away: [] };
+  const buckets: Record<"home" | "away", TeamGoalkeeping[]> = { home: [], away: [] };
   const records = goalkeeping ?? [];
   for (const record of records) {
     const side = resolveSide(record.teamId, home, away, "goalkeeping");
@@ -508,7 +518,7 @@ export function goalkeepingByTeam(
   };
 }
 
-function teamBlock(records: readonly GoalkeeperRecord[], side: LogSide): GoalkeepingTeamBlock {
+function teamBlock(records: readonly TeamGoalkeeping[], side: LogSide): GoalkeepingTeamBlock {
   const blocks = records.map((record, index) => keeperBlock(widen(record), side, index));
   return {
     key: `goalkeeping-${side.teamId}`,
@@ -547,9 +557,9 @@ function keeperBlock(
      * `playerId` still contributes, but it is a DISAMBIGUATOR here and never an
      * identity this surface keys on.
      */
-    key: `keeper-${side.teamId}-${index}-${record.playerId}-${record.playerName}`,
-    playerId: record.playerId,
-    playerName: record.playerName,
+    key: `keeper-${side.teamId}-${index}-${keeperIds(record)}`,
+    playerId: keeperIds(record),
+    playerName: keeperNamesOf(record),
     totalInvolvements: record.totalInvolvements,
     involvement: involvementSeries(record),
     distribution,
@@ -611,7 +621,7 @@ export function involvementSeries(
   }
   return timeline.map((sample, index) => ({
     index,
-    minute: sample.minute,
+    minute: sample.at.minute,
     involvements: sample.involvements,
   }));
 }

@@ -23,7 +23,7 @@
       "title": "MatchBundleSchemaVersion",
       "description": "Stamped from /contract/version.json. One global integer, declared exactly once (AD-2).",
       "type": "integer",
-      "const": 3
+      "const": 4
     },
     "matchId": { "$ref": "common.schema.json#/$defs/MatchId" },
     "metadata": { "$ref": "#/$defs/MatchMetadata" },
@@ -52,9 +52,9 @@
   "$defs": {
     "GoalkeepingBlock": {
       "title": "GoalkeepingBlock",
-      "description": "One entry per goalkeeper who appeared, both teams, ordered home team first.",
+      "description": "One entry per TEAM, ordered home team first. CS-2 changed this from one entry per goalkeeper: the source is per-team and never names a keeper.",
       "type": "array",
-      "items": { "$ref": "#/$defs/GoalkeeperRecord" }
+      "items": { "$ref": "#/$defs/TeamGoalkeeping" }
     },
     "PlayerRecords": {
       "title": "PlayerRecords",
@@ -463,15 +463,52 @@
         "counterPress": { "$ref": "common.schema.json#/$defs/Percentage" }
       }
     },
-    "PossessionSplitMetres": {
-      "title": "PossessionSplitMetres",
-      "description": "A distance measured separately in and out of possession.",
+    "ShapeMetrics": {
+      "title": "ShapeMetrics",
+      "description": "The three distances the report prints for one phase panel. `teamWidth` had no destination in v3 at all, so 1,248 measured corpus values were being discarded.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lineHeight", "teamLength", "teamWidth"],
+      "properties": {
+        "lineHeight": { "$ref": "common.schema.json#/$defs/Metres" },
+        "teamLength": { "$ref": "common.schema.json#/$defs/Metres" },
+        "teamWidth": { "$ref": "common.schema.json#/$defs/Metres" }
+      }
+    },
+    "InPossessionShapePanels": {
+      "title": "InPossessionShapePanels",
+      "description": "The three in-possession phase panels the Phases of Play page prints, each with its own three distances.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buildUpLow", "buildUpMid", "finalThirdPhase"],
+      "properties": {
+        "buildUpLow": { "$ref": "#/$defs/ShapeMetrics" },
+        "buildUpMid": { "$ref": "#/$defs/ShapeMetrics" },
+        "finalThirdPhase": { "$ref": "#/$defs/ShapeMetrics" }
+      }
+    },
+    "OutOfPossessionShapePanels": {
+      "title": "OutOfPossessionShapePanels",
+      "description": "The three out-of-possession phase panels the Phases of Play page prints, each with its own three distances.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["highBlockPress", "midBlock", "lowBlock"],
+      "properties": {
+        "highBlockPress": { "$ref": "#/$defs/ShapeMetrics" },
+        "midBlock": { "$ref": "#/$defs/ShapeMetrics" },
+        "lowBlock": { "$ref": "#/$defs/ShapeMetrics" }
+      }
+    },
+    "ShapeByPhase": {
+      "title": "ShapeByPhase",
+      "$comment": "CS-2 (logged decision 18) replaced `lineHeight`/`teamLength`, which were two PossessionSplitMetres modelling FOUR metre values per team. The corpus prints EIGHTEEN: three panels per possession state, three measures each, verified 104 x 2 sides x 2 pages x 3 panels x 3 measures = 3,744 values corpus-wide against the contract's 832. No aggregation was implied by the data � m001 home in-possession lineHeight is 19 / 39 / 54 and the v3 fixture's single 44.4 matched no panel and no mean of them, because it was synthetic. Story 1.16 could not emit the old shape at all: PossessionSplitMetres was non-nullable throughout, so it blocked EVERY bundle.",
+      "description": "Team shape by phase of play, in and out of possession. The report does not aggregate these; neither does the contract.",
       "type": "object",
       "additionalProperties": false,
       "required": ["inPossession", "outOfPossession"],
       "properties": {
-        "inPossession": { "$ref": "common.schema.json#/$defs/Metres" },
-        "outOfPossession": { "$ref": "common.schema.json#/$defs/Metres" }
+        "inPossession": { "$ref": "#/$defs/InPossessionShapePanels" },
+        "outOfPossession": { "$ref": "#/$defs/OutOfPossessionShapePanels" }
       }
     },
     "DefensiveBlockDistribution": {
@@ -495,15 +532,13 @@
       "required": [
         "phasesInPossession",
         "phasesOutOfPossession",
-        "lineHeight",
-        "teamLength",
+        "shapeByPhase",
         "defensiveBlockDistribution"
       ],
       "properties": {
         "phasesInPossession": { "$ref": "#/$defs/InPossessionPhases" },
         "phasesOutOfPossession": { "$ref": "#/$defs/OutOfPossessionPhases" },
-        "lineHeight": { "$ref": "#/$defs/PossessionSplitMetres" },
-        "teamLength": { "$ref": "#/$defs/PossessionSplitMetres" },
+        "shapeByPhase": { "$ref": "#/$defs/ShapeByPhase" },
         "defensiveBlockDistribution": { "$ref": "#/$defs/DefensiveBlockDistribution" }
       }
     },
@@ -860,11 +895,12 @@
     },
     "GoalkeeperInvolvementSample": {
       "title": "GoalkeeperInvolvementSample",
+      "$comment": "CS-2 replaced the bare `minute` with a MinuteStamp, for the same reason Story 1.8's bump did it for MomentumSample.at. A bare Minute (0-120, no stoppage field) CANNOT represent this clock: the corpus draws 95-145 slots per team-inning with 2,506 of 21,764 in stoppage, so minutes are NOT unique on real data and an App indexing by minute silently collapses samples. The spine already carried the fix as involvement_clock.stamps[].",
       "type": "object",
       "additionalProperties": false,
-      "required": ["minute", "involvements"],
+      "required": ["at", "involvements"],
       "properties": {
-        "minute": { "$ref": "common.schema.json#/$defs/Minute" },
+        "at": { "$ref": "#/$defs/MinuteStamp" },
         "involvements": { "$ref": "common.schema.json#/$defs/Count" }
       }
     },
@@ -889,55 +925,70 @@
         "hands": { "$ref": "#/$defs/CompletionCounts" },
         "throw": { "$ref": "#/$defs/CompletionCounts" },
         "feetTechniques": {
-          "title": "FeetTechniqueCounts",
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "playOnto",
-            "playInto",
-            "playAround",
-            "playThrough",
-            "playBeyond",
-            "other"
-          ],
-          "properties": {
-            "playOnto": { "$ref": "common.schema.json#/$defs/Count" },
-            "playInto": { "$ref": "common.schema.json#/$defs/Count" },
-            "playAround": { "$ref": "common.schema.json#/$defs/Count" },
-            "playThrough": { "$ref": "common.schema.json#/$defs/Count" },
-            "playBeyond": { "$ref": "common.schema.json#/$defs/Count" },
-            "other": { "$ref": "common.schema.json#/$defs/Count" }
-          }
+          "title": "FeetTechniques",
+          "$comment": "CS-2 made this nullable: it is null on 208/208 corpus team-innings. The technique split is a raster donut-slice LABEL and only the donut centre total reaches the text layer (Story 1.9, AD-14 (c)). Non-nullable, it made GoalkeeperRecord unbuildable from real data regardless of who owned the record.",
+          "anyOf": [{ "$ref": "#/$defs/FeetTechniqueCounts" }, { "type": "null" }]
         },
         "handsTechniques": {
-          "title": "HandsTechniqueCounts",
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["sideKick", "fromHands", "dropKick"],
-          "properties": {
-            "sideKick": { "$ref": "common.schema.json#/$defs/Count" },
-            "fromHands": { "$ref": "common.schema.json#/$defs/Count" },
-            "dropKick": { "$ref": "common.schema.json#/$defs/Count" }
-          }
+          "title": "HandsTechniques",
+          "$comment": "Null on 208/208; see feetTechniques.",
+          "anyOf": [{ "$ref": "#/$defs/HandsTechniqueCounts" }, { "type": "null" }]
         },
         "throwTechniques": {
-          "title": "ThrowTechniqueCounts",
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["overArm", "underArm", "sideArm", "chest"],
-          "properties": {
-            "overArm": { "$ref": "common.schema.json#/$defs/Count" },
-            "underArm": { "$ref": "common.schema.json#/$defs/Count" },
-            "sideArm": { "$ref": "common.schema.json#/$defs/Count" },
-            "chest": { "$ref": "common.schema.json#/$defs/Count" }
-          }
+          "title": "ThrowTechniques",
+          "$comment": "Null on 208/208; see feetTechniques.",
+          "anyOf": [{ "$ref": "#/$defs/ThrowTechniqueCounts" }, { "type": "null" }]
         },
         "lineBreaks": { "$ref": "common.schema.json#/$defs/Count" }
       }
     },
+    "FeetTechniqueCounts": {
+      "title": "FeetTechniqueCounts",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "playOnto",
+        "playInto",
+        "playAround",
+        "playThrough",
+        "playBeyond",
+        "other"
+      ],
+      "properties": {
+        "playOnto": { "$ref": "common.schema.json#/$defs/Count" },
+        "playInto": { "$ref": "common.schema.json#/$defs/Count" },
+        "playAround": { "$ref": "common.schema.json#/$defs/Count" },
+        "playThrough": { "$ref": "common.schema.json#/$defs/Count" },
+        "playBeyond": { "$ref": "common.schema.json#/$defs/Count" },
+        "other": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "HandsTechniqueCounts": {
+      "title": "HandsTechniqueCounts",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sideKick", "fromHands", "dropKick"],
+      "properties": {
+        "sideKick": { "$ref": "common.schema.json#/$defs/Count" },
+        "fromHands": { "$ref": "common.schema.json#/$defs/Count" },
+        "dropKick": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
+    "ThrowTechniqueCounts": {
+      "title": "ThrowTechniqueCounts",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overArm", "underArm", "sideArm", "chest"],
+      "properties": {
+        "overArm": { "$ref": "common.schema.json#/$defs/Count" },
+        "underArm": { "$ref": "common.schema.json#/$defs/Count" },
+        "sideArm": { "$ref": "common.schema.json#/$defs/Count" },
+        "chest": { "$ref": "common.schema.json#/$defs/Count" }
+      }
+    },
     "GoalPrevention": {
       "title": "GoalPrevention",
-      "description": "Domain E goal prevention for one goalkeeper. NOTE the two breakdowns have DIFFERENT denominators, which is a property of the source page, not an error: byInterventionType sums to attemptsFaced (every attempt faced is categorised, including no-save-attempt), while byBodyType sums to totalInterventions (only attempts the keeper actually intervened on have a body part). Verified across all six fixture goalkeepers. An App rendering the two panels side by side must label them with their own totals rather than implying a shared one.",
+      "description": "Domain E goal prevention for one TEAM. NOTE the two breakdowns have DIFFERENT denominators, which is a property of the source page, not an error: byInterventionType sums to attemptsFaced (every attempt faced is categorised, including no-save-attempt), while byBodyType sums to totalInterventions (only attempts the keeper actually intervened on have a body part). An App rendering the two panels side by side must label them with their own totals rather than implying a shared one. CS-2 re-grounded this claim on the corpus rather than the fixtures: `sum(byInterventionType) == attemptsFaced` is now verified TRUE on all 208 corpus team-innings (delta histogram exactly {0: 208}), which discharges the measurement Story 2.10's review routed to Story 1.16 by name. The byBodyType half remains UNVERIFIED against real data and cannot be checked, because byBodyType is null on 208/208 — it is stated here on the fixtures' authority alone and must not be relied on until a source for it exists.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -971,18 +1022,26 @@
           }
         },
         "byBodyType": {
-          "title": "InterventionBodyTypeCounts",
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["head", "hands", "upperBody", "lowerBody", "feet"],
-          "properties": {
-            "head": { "$ref": "common.schema.json#/$defs/Count" },
-            "hands": { "$ref": "common.schema.json#/$defs/Count" },
-            "upperBody": { "$ref": "common.schema.json#/$defs/Count" },
-            "lowerBody": { "$ref": "common.schema.json#/$defs/Count" },
-            "feet": { "$ref": "common.schema.json#/$defs/Count" }
-          }
+          "title": "ByBodyType",
+          "$comment": "CS-2 made this nullable: it is null on 208/208 corpus team-innings. It is an unvalidatable marker colour rather than a text-layer value (Story 1.9, AD-14 (c)).",
+          "anyOf": [
+            { "$ref": "#/$defs/InterventionBodyTypeCounts" },
+            { "type": "null" }
+          ]
         }
+      }
+    },
+    "InterventionBodyTypeCounts": {
+      "title": "InterventionBodyTypeCounts",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["head", "hands", "upperBody", "lowerBody", "feet"],
+      "properties": {
+        "head": { "$ref": "common.schema.json#/$defs/Count" },
+        "hands": { "$ref": "common.schema.json#/$defs/Count" },
+        "upperBody": { "$ref": "common.schema.json#/$defs/Count" },
+        "lowerBody": { "$ref": "common.schema.json#/$defs/Count" },
+        "feet": { "$ref": "common.schema.json#/$defs/Count" }
       }
     },
     "CrossDeliveryTypeCounts": {
@@ -1028,19 +1087,53 @@
         "claims": { "$ref": "#/$defs/CompletionCounts" },
         "tippedPalmed": { "$ref": "#/$defs/CompletionCounts" },
         "crossesFacedAttempted": { "$ref": "common.schema.json#/$defs/Count" },
-        "crossesFacedCompleted": { "$ref": "common.schema.json#/$defs/Count" },
+        "crossesFacedCompleted": {
+          "title": "CrossesFacedCompleted",
+          "$comment": "CS-2 made this nullable: it is null on 208/208 corpus team-innings. Only the attempted figure reaches the text layer.",
+          "anyOf": [{ "$ref": "common.schema.json#/$defs/Count" }, { "type": "null" }]
+        },
         "deliveryTypesFaced": { "$ref": "#/$defs/CrossDeliveryTypeCounts" }
       }
     },
-    "GoalkeeperRecord": {
-      "title": "GoalkeeperRecord",
-      "description": "Domain E, one goalkeeper.",
+    "GoalkeeperRef": {
+      "title": "GoalkeeperRef",
+      "description": "A goalkeeper who appeared for this team, carried as CONTEXT for the team-level block. Never a key to split the block by: the source does not attribute its figures per keeper.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "playerId",
+        "playerName",
+        "shirtNumber",
+        "substitutedOn",
+        "substitutedOff"
+      ],
+      "properties": {
+        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
+        "playerName": {
+          "title": "GoalkeeperName",
+          "type": "string",
+          "minLength": 1
+        },
+        "shirtNumber": { "$ref": "common.schema.json#/$defs/ShirtNumber" },
+        "substitutedOn": {
+          "title": "GoalkeeperSubstitutedOn",
+          "anyOf": [{ "$ref": "#/$defs/MinuteStamp" }, { "type": "null" }]
+        },
+        "substitutedOff": {
+          "title": "GoalkeeperSubstitutedOff",
+          "anyOf": [{ "$ref": "#/$defs/MinuteStamp" }, { "type": "null" }]
+        }
+      }
+    },
+    "TeamGoalkeeping": {
+      "title": "TeamGoalkeeping",
+      "$comment": "CS-2 replaced the per-keeper GoalkeeperRecord with this per-team block, because the SOURCE is per-team and v3 asked for an attribution the corpus does not print. Verified over 104 reports / 936 goalkeeping pages: all four page families are titled {team}, NO goalkeeper name appears on any of them, and 7 of 208 team-innings used two keepers while still printing ONE team-level block each (M21 home, M41 away, M53 away, M62 away, M66 home, M88 home, M98 away; hand-verified on M53, where Mexico's RANGEL came off at 78' and the page still prints one chart, one total, no name). The spine staged goalkeeping.{home,away} per team with goalkeepers[] carried alongside, deliberately never joined.",
+      "description": "Domain E for one team. The figures are the team's; `goalkeepers` names who kept goal and is context only. NEVER sum or split these figures across two keepers (AD-5). `totalInvolvements` is the PRINTED total and exceeds the plotted sum of `involvementTimeline` by 0-5 on all 208 corpus team-innings, cause unresolved — both are emitted verbatim and are NOT reconciled, so the bound is `sum(involvementTimeline) <= totalInvolvements` and it is not an equality.",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "teamId",
-        "playerId",
-        "playerName",
+        "goalkeepers",
         "totalInvolvements",
         "involvementTimeline",
         "distribution",
@@ -1049,16 +1142,17 @@
       ],
       "properties": {
         "teamId": { "$ref": "common.schema.json#/$defs/TeamId" },
-        "playerId": { "$ref": "common.schema.json#/$defs/PlayerId" },
-        "playerName": {
-          "title": "GoalkeeperName",
-          "type": "string",
-          "minLength": 1
+        "goalkeepers": {
+          "title": "TeamGoalkeepers",
+          "description": "Every goalkeeper who appeared for this team, in appearance order. One entry on 201 of 208 corpus team-innings, two on 7.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/GoalkeeperRef" }
         },
         "totalInvolvements": { "$ref": "common.schema.json#/$defs/Count" },
         "involvementTimeline": {
           "title": "GoalkeeperInvolvementTimeline",
-          "description": "Involvements bucketed along the match clock, as the Goalkeeping Involvement page's timeline chart plots them.",
+          "description": "Involvements bucketed along the match clock, as the Goalkeeping Involvement page's timeline chart plots them. Index by SAMPLE, never by minute.",
           "type": "array",
           "items": { "$ref": "#/$defs/GoalkeeperInvolvementSample" }
         },
@@ -1117,7 +1211,7 @@
         "cornersBySide": { "$ref": "#/$defs/TeamCornerSideCounts" },
         "freeKicks": {
           "title": "FreeKickCounts",
-          "description": "Free kicks by type. These are NESTED, not siblings: directOnTarget and directOffTarget are subdivisions of direct, so direct == directOnTarget + directOffTarget (holds across all six fixture team-innings) and direct + indirect == totalFreeKicks. Summing all four fields double-counts the direct ones — a stacked chart must use either {direct, indirect} or {directOnTarget, directOffTarget, indirect}.",
+          "description": "Free kicks by type. `direct + indirect == totalFreeKicks` holds on all 208 corpus team-innings and is the ONLY safe relation here. CORRECTED BY CS-2: the previous text claimed directOnTarget and directOffTarget are subdivisions of direct, so that `direct == directOnTarget + directOffTarget`. That is CORPUS-FALSE — it holds on 0 of 208 team-innings, and 160 of them carry `directOnTarget + directOffTarget == 0` while `direct > 0`. It held 6/6 in the hand-authored fixtures, which is how it came to be written. Do not assert it, do not sum the on/off pair into `direct`, and do not treat a zero pair as missing data: the source simply does not always break `direct` down.",
           "type": "object",
           "additionalProperties": false,
           "required": ["direct", "directOnTarget", "directOffTarget", "indirect"],
@@ -1141,6 +1235,7 @@
         },
         "cornersByDeliveryStyle": {
           "title": "CornerDeliveryStyleCounts",
+          "description": "Corners by delivery style. NOT a partition of totalCorners: the four styles sum to totalCorners on only 96 of 208 corpus team-innings, and on the other 112 they sum to LESS (never more). Do not normalize, do not render as slices of a whole, and do not treat a shortfall as missing data — a corner whose style the source did not classify is simply absent from this breakdown. Use `cornersByDeliveryType`, which does partition totalCorners on 208/208. CS-2 added this text: the shape was correct but the constraint was never stated, so a consumer had no way to know.",
           "type": "object",
           "additionalProperties": false,
           "required": ["inswing", "outswing", "driven", "lofted"],

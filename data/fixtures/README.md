@@ -23,8 +23,24 @@ green.
 | `index/team-profiles/mexico.json` | One full team profile |
 | `index/player-profiles/quinones-julian-mex.json` | One full player profile |
 
-Every file is stamped `schemaVersion: 3` and validates against `/contract`. The tests live in
+Every file is stamped `schemaVersion: 4` and validates against `/contract`. The tests live in
 `pipeline/tests/test_fixtures.py`.
+
+> **Change-set CS-2 (`schemaVersion` 3 -> 4).** Two v3 shapes modelled data the corpus does
+> not contain, and both were non-nullable, so Story 1.16 could not emit a single valid
+> bundle. `tacticalIdentity.{lineHeight,teamLength}` became `tacticalIdentity.shapeByPhase`
+> — three panels per possession state with three measures each, including the `teamWidth`
+> v3 did not model at all — and `goalkeeping` became one entry per TEAM with the keeper list
+> as context, five unfulfillable sub-fields nullable, and `involvementTimeline[].minute`
+> replaced by `at: MinuteStamp`. Logged decision 18.
+>
+> **THESE FIXTURES GOT LESS SYNTHETIC IN THAT MIGRATION, WHICH IS WORTH KNOWING.** All three
+> match fixtures have real corpus twins, so `shapeByPhase` was copied from the ACTUAL staged
+> values rather than re-synthesized: m001 home in-possession `lineHeight` now reads
+> 19 / 39 / 54, the real panel values, in place of the single synthetic 44.4 that matched no
+> panel and no mean of them. The Mexico team profile's aggregate is a real mean over the five
+> matches the spine carries for that team. The rest of the synthetic inventory below is
+> unchanged.
 
 > **Change-set CS-1 (`schemaVersion` 2 -> 3).** `ShotOutcomeDetail` went 22 -> 24 (the corpus
 > prints bare "Incomplete" and "On Target") and `x-maps-to-outcome`'s
@@ -84,6 +100,10 @@ Paraguay `7 (3)`. `pipeline/tests/test_fixtures.py` asserts it.
   above); this bullet used to cover all three and predates Story 1.8 resolving OQ-5.
 - **Cross, receiving, pass-network and defensive-action events** — counts are tied to the
   real Domain B totals where one exists (crosses, forced turnovers), the rest are shaped.
+- **Domain C's per-phase metres are NO LONGER SYNTHETIC** (CS-2). `tacticalIdentity.shapeByPhase`
+  carries the real staged panel values for all three match fixtures. Note the consequence:
+  these fixtures now populate a block that the corpus populates too, so they no longer
+  understate it.
 - **Domain E goalkeeping** in full, though the attempts faced and goals conceded are real,
   and every category count sums back to its stated total.
 - **Domain G in-possession and out-of-possession** per player.

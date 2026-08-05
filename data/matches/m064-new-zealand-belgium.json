@@ -1,0 +1,7657 @@
+{
+  "events": {
+    "crosses": null,
+    "defensiveActions": null,
+    "passNetworkEdges": [
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "payne-tim-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "wood-chris-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "singh-sarpreet-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "crocombe-max-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "payne-tim-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "payne-tim-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "payne-tim-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "payne-tim-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "singh-sarpreet-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "payne-tim-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "payne-tim-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "payne-tim-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "thomas-ryan-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "payne-tim-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "randall-jesse-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "crocombe-max-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "old-ben-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "callum-mccowatt-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "bindon-tyler-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "randall-jesse-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "crocombe-max-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "payne-tim-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "singh-sarpreet-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "bell-joe-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "thomas-ryan-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "crocombe-max-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "payne-tim-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "singh-sarpreet-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "thomas-ryan-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "old-ben-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "callum-mccowatt-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "stamenic-marko-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "randall-jesse-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "wood-chris-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "wood-chris-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "wood-chris-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "wood-chris-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "thomas-ryan-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "wood-chris-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "callum-mccowatt-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "singh-sarpreet-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "payne-tim-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "singh-sarpreet-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "singh-sarpreet-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "singh-sarpreet-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "singh-sarpreet-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "payne-tim-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "wood-chris-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "singh-sarpreet-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "thomas-ryan-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "de-vries-francis-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "old-ben-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "callum-mccowatt-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "randall-jesse-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "thomas-ryan-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "old-ben-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "callum-mccowatt-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "cacace-liberato-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "randall-jesse-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "crocombe-max-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "payne-tim-nzl",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "singh-sarpreet-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "thomas-ryan-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "old-ben-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "surman-finn-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "callum-mccowatt-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "thomas-ryan-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "payne-tim-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "thomas-ryan-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bell-joe-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "thomas-ryan-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thomas-ryan-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "singh-sarpreet-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "thomas-ryan-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "thomas-ryan-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-vries-francis-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-vries-francis-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-vries-francis-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "randall-jesse-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "boxall-michael-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "crocombe-max-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "boxall-michael-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "boxall-michael-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "boxall-michael-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "boxall-michael-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "boxall-michael-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "de-vries-francis-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "boxall-michael-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "randall-jesse-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "old-ben-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "old-ben-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "old-ben-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "wood-chris-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "old-ben-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "old-ben-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "old-ben-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "callum-mccowatt-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "callum-mccowatt-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "bindon-tyler-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "callum-mccowatt-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "callum-mccowatt-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "wood-chris-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "callum-mccowatt-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "callum-mccowatt-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "surman-finn-nzl",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "callum-mccowatt-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "callum-mccowatt-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "old-ben-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "randall-jesse-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "stamenic-marko-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "randall-jesse-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "just-elijah-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "randall-jesse-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "cacace-liberato-nzl",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "randall-jesse-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "de-vries-francis-nzl",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "randall-jesse-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "boxall-michael-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "randall-jesse-nzl",
+        "teamId": "new-zealand",
+        "toPlayerId": "callum-mccowatt-nzl",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-ketelaere-charles-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "courtois-thibaut-bel",
+        "teamId": "belgium",
+        "toPlayerId": "lukaku-romelu-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "courtois-thibaut-bel",
+        "volume": 11
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 13
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "doku-jeremy-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "theate-arthur-bel",
+        "teamId": "belgium",
+        "toPlayerId": "fernandez-pardo-matias-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "courtois-thibaut-bel",
+        "volume": 9
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "doku-jeremy-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-ketelaere-charles-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 16
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "saelemaekers-alexis-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "mechele-brandon-bel",
+        "teamId": "belgium",
+        "toPlayerId": "onana-amadou-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "courtois-thibaut-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 12
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "doku-jeremy-bel",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-ketelaere-charles-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "saelemaekers-alexis-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-cuyper-maxim-bel",
+        "teamId": "belgium",
+        "toPlayerId": "fernandez-pardo-matias-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "doku-jeremy-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-ketelaere-charles-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium",
+        "toPlayerId": "fernandez-pardo-matias-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "courtois-thibaut-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "doku-jeremy-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-ketelaere-charles-bel",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "saelemaekers-alexis-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "tielemans-youri-bel",
+        "teamId": "belgium",
+        "toPlayerId": "onana-amadou-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "doku-jeremy-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-ketelaere-charles-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium",
+        "toPlayerId": "fernandez-pardo-matias-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doku-jeremy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doku-jeremy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "doku-jeremy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "doku-jeremy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "doku-jeremy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "doku-jeremy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "doku-jeremy-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "saelemaekers-alexis-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "de-ketelaere-charles-bel",
+        "teamId": "belgium",
+        "toPlayerId": "fernandez-pardo-matias-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "courtois-thibaut-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 6
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 10
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-ketelaere-charles-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 5
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "lukaku-romelu-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "saelemaekers-alexis-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "vanaken-hans-bel",
+        "teamId": "belgium",
+        "toPlayerId": "onana-amadou-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "courtois-thibaut-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 7
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 8
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "trossard-leandro-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "doku-jeremy-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-ketelaere-charles-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "saelemaekers-alexis-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "raskin-nicolas-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "castagne-timothy-bel",
+        "teamId": "belgium",
+        "toPlayerId": "onana-amadou-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lukaku-romelu-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "lukaku-romelu-bel",
+        "teamId": "belgium",
+        "toPlayerId": "saelemaekers-alexis-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium",
+        "toPlayerId": "lukaku-romelu-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium",
+        "toPlayerId": "raskin-nicolas-bel",
+        "volume": 4
+      },
+      {
+        "fromPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium",
+        "toPlayerId": "onana-amadou-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium",
+        "toPlayerId": "fernandez-pardo-matias-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "raskin-nicolas-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "raskin-nicolas-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "raskin-nicolas-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "raskin-nicolas-bel",
+        "teamId": "belgium",
+        "toPlayerId": "fernandez-pardo-matias-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "onana-amadou-bel",
+        "teamId": "belgium",
+        "toPlayerId": "theate-arthur-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "onana-amadou-bel",
+        "teamId": "belgium",
+        "toPlayerId": "mechele-brandon-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "onana-amadou-bel",
+        "teamId": "belgium",
+        "toPlayerId": "tielemans-youri-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "onana-amadou-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "onana-amadou-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "fernandez-pardo-matias-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-cuyper-maxim-bel",
+        "volume": 3
+      },
+      {
+        "fromPlayerId": "fernandez-pardo-matias-bel",
+        "teamId": "belgium",
+        "toPlayerId": "de-bruyne-kevin-bel",
+        "volume": 2
+      },
+      {
+        "fromPlayerId": "fernandez-pardo-matias-bel",
+        "teamId": "belgium",
+        "toPlayerId": "vanaken-hans-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "fernandez-pardo-matias-bel",
+        "teamId": "belgium",
+        "toPlayerId": "castagne-timothy-bel",
+        "volume": 1
+      },
+      {
+        "fromPlayerId": "fernandez-pardo-matias-bel",
+        "teamId": "belgium",
+        "toPlayerId": "saelemaekers-alexis-bel",
+        "volume": 2
+      }
+    ],
+    "passNetworkNodes": null,
+    "receiving": null,
+    "shootoutAttempts": null,
+    "shots": [
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "just-elijah-nzl",
+        "playerName": "Elijah JUST",
+        "teamId": "new-zealand",
+        "x": 82.19,
+        "y": 33.06
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "other",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "payne-tim-nzl",
+        "playerName": "Tim PAYNE",
+        "teamId": "new-zealand",
+        "x": 83.35,
+        "y": 72.31
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "randall-jesse-nzl",
+        "playerName": "Jesse RANDALL",
+        "teamId": "new-zealand",
+        "x": 83.49,
+        "y": 36.98
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "just-elijah-nzl",
+        "playerName": "Elijah JUST",
+        "teamId": "new-zealand",
+        "x": 90.73,
+        "y": 62.4
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "bindon-tyler-nzl",
+        "playerName": "Tyler BINDON",
+        "teamId": "new-zealand",
+        "x": 95.95,
+        "y": 61.16
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "just-elijah-nzl",
+        "playerName": "Elijah JUST",
+        "teamId": "new-zealand",
+        "x": 86.1,
+        "y": 49.59
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "tielemans-youri-bel",
+        "playerName": "Youri TIELEMANS",
+        "teamId": "belgium",
+        "x": 73.21,
+        "y": 56.41
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "trossard-leandro-bel",
+        "playerName": "Leandro TROSSARD",
+        "teamId": "belgium",
+        "x": 95.66,
+        "y": 37.6
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "mechele-brandon-bel",
+        "playerName": "Brandon MECHELE",
+        "teamId": "belgium",
+        "x": 91.6,
+        "y": 50.0
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "de-bruyne-kevin-bel",
+        "playerName": "Kevin DE BRUYNE",
+        "teamId": "belgium",
+        "x": 76.69,
+        "y": 38.43
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "trossard-leandro-bel",
+        "playerName": "Leandro TROSSARD",
+        "teamId": "belgium",
+        "x": 86.1,
+        "y": 32.44
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "doku-jeremy-bel",
+        "playerName": "Jeremy DOKU",
+        "teamId": "belgium",
+        "x": 91.6,
+        "y": 27.27
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "trossard-leandro-bel",
+        "playerName": "Leandro TROSSARD",
+        "teamId": "belgium",
+        "x": 87.84,
+        "y": 35.12
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "deflected-on-target-goal",
+        "ownGoal": false,
+        "playerId": "trossard-leandro-bel",
+        "playerName": "Leandro TROSSARD",
+        "teamId": "belgium",
+        "x": 98.41,
+        "y": 50.62
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "vanaken-hans-bel",
+        "playerName": "Hans VANAKEN",
+        "teamId": "belgium",
+        "x": 90.44,
+        "y": 50.83
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "ball-progression",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "doku-jeremy-bel",
+        "playerName": "Jeremy DOKU",
+        "teamId": "belgium",
+        "x": 90.01,
+        "y": 25.21
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "de-bruyne-kevin-bel",
+        "playerName": "Kevin DE BRUYNE",
+        "teamId": "belgium",
+        "x": 89.72,
+        "y": 54.75
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "de-ketelaere-charles-bel",
+        "playerName": "Charles DE KETELAERE",
+        "teamId": "belgium",
+        "x": 88.27,
+        "y": 40.08
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "trossard-leandro-bel",
+        "playerName": "Leandro TROSSARD",
+        "teamId": "belgium",
+        "x": 81.03,
+        "y": 66.12
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "vanaken-hans-bel",
+        "playerName": "Hans VANAKEN",
+        "teamId": "belgium",
+        "x": 84.51,
+        "y": 39.26
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "bodyPart": "head",
+        "deliveryType": "other",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-player-on-ball-error",
+        "ownGoal": false,
+        "playerId": "theate-arthur-bel",
+        "playerName": "Arthur THEATE",
+        "teamId": "belgium",
+        "x": 94.64,
+        "y": 51.86
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "castagne-timothy-bel",
+        "playerName": "Timothy CASTAGNE",
+        "teamId": "belgium",
+        "x": 86.68,
+        "y": 68.8
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "de-bruyne-kevin-bel",
+        "playerName": "Kevin DE BRUYNE",
+        "teamId": "belgium",
+        "x": 75.82,
+        "y": 55.17
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "ball-progression",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete",
+        "ownGoal": false,
+        "playerId": "trossard-leandro-bel",
+        "playerName": "Leandro TROSSARD",
+        "teamId": "belgium",
+        "x": 91.6,
+        "y": 38.64
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "trossard-leandro-bel",
+        "playerName": "Leandro TROSSARD",
+        "teamId": "belgium",
+        "x": 91.02,
+        "y": 41.53
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "corner",
+        "expectedGoals": null,
+        "outcome": "incomplete",
+        "outcomeDetail": "incomplete-referee-event",
+        "ownGoal": false,
+        "playerId": "theate-arthur-bel",
+        "playerName": "Arthur THEATE",
+        "teamId": "belgium",
+        "x": 95.37,
+        "y": 39.46
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "de-bruyne-kevin-bel",
+        "playerName": "Kevin DE BRUYNE",
+        "teamId": "belgium",
+        "x": 80.16,
+        "y": 37.4
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "theate-arthur-bel",
+        "playerName": "Arthur THEATE",
+        "teamId": "belgium",
+        "x": 88.56,
+        "y": 42.77
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "deflected-off-target-defensive-event",
+        "ownGoal": false,
+        "playerId": "de-bruyne-kevin-bel",
+        "playerName": "Kevin DE BRUYNE",
+        "teamId": "belgium",
+        "x": 81.75,
+        "y": 44.63
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "fernandez-pardo-matias-bel",
+        "playerName": "Matias FERNANDEZ-PARDO",
+        "teamId": "belgium",
+        "x": 87.84,
+        "y": 39.67
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "de-bruyne-kevin-bel",
+        "playerName": "Kevin DE BRUYNE",
+        "teamId": "belgium",
+        "x": 85.81,
+        "y": 57.85
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "de-bruyne-kevin-bel",
+        "playerName": "Kevin DE BRUYNE",
+        "teamId": "belgium",
+        "x": 81.61,
+        "y": 43.59
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "fernandez-pardo-matias-bel",
+        "playerName": "Matias FERNANDEZ-PARDO",
+        "teamId": "belgium",
+        "x": 85.81,
+        "y": 45.04
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "blocked",
+        "outcomeDetail": "incomplete-blocked",
+        "ownGoal": false,
+        "playerId": "onana-amadou-bel",
+        "playerName": "Amadou ONANA",
+        "teamId": "belgium",
+        "x": 78.28,
+        "y": 47.11
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "de-cuyper-maxim-bel",
+        "playerName": "Maxim DE CUYPER",
+        "teamId": "belgium",
+        "x": 78.71,
+        "y": 53.51
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "saelemaekers-alexis-bel",
+        "playerName": "Alexis SAELEMAEKERS",
+        "teamId": "belgium",
+        "x": 92.18,
+        "y": 73.35
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "bodyPart": "head",
+        "deliveryType": "cross",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "lukaku-romelu-bel",
+        "playerName": "Romelu LUKAKU",
+        "teamId": "belgium",
+        "x": 95.8,
+        "y": 47.93
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "free-kick",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "onana-amadou-bel",
+        "playerName": "Amadou ONANA",
+        "teamId": "belgium",
+        "x": 71.62,
+        "y": 46.07
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "on-target",
+        "outcomeDetail": "on-target-saved",
+        "ownGoal": false,
+        "playerId": "de-cuyper-maxim-bel",
+        "playerName": "Maxim DE CUYPER",
+        "teamId": "belgium",
+        "x": 80.6,
+        "y": 40.08
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "bodyPart": "left-foot",
+        "deliveryType": "loose-ball",
+        "expectedGoals": null,
+        "outcome": "off-target",
+        "outcomeDetail": "off-target",
+        "ownGoal": false,
+        "playerId": "theate-arthur-bel",
+        "playerName": "Arthur THEATE",
+        "teamId": "belgium",
+        "x": 73.21,
+        "y": 53.93
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "bodyPart": "right-foot",
+        "deliveryType": "pass",
+        "expectedGoals": null,
+        "outcome": "goal",
+        "outcomeDetail": "on-target-goal",
+        "ownGoal": false,
+        "playerId": "saelemaekers-alexis-bel",
+        "playerName": "Alexis SAELEMAEKERS",
+        "teamId": "belgium",
+        "x": 85.23,
+        "y": 38.43
+      }
+    ]
+  },
+  "goalkeeping": [
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "crossesFacedAttempted": 25,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 1,
+          "driven": 3,
+          "inswing": 2,
+          "lofted": 4,
+          "outswing": 8,
+          "pushCross": 7,
+          "total": 25
+        },
+        "punches": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "tippedPalmed": {
+          "complete": 1,
+          "incomplete": 0,
+          "total": 1
+        },
+        "totalInterventions": 1
+      },
+      "distribution": {
+        "feet": {
+          "complete": 20,
+          "incomplete": 6,
+          "total": 26
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 1,
+          "total": 1
+        },
+        "handsTechniques": null,
+        "lineBreaks": 11,
+        "throw": {
+          "complete": 5,
+          "incomplete": 0,
+          "total": 5
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 25,
+          "incomplete": 7,
+          "total": 32
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 35,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 1,
+          "noSaveAttempt": 21,
+          "saveAndDeflect": 4,
+          "saveAndRetain": 0,
+          "saveAttempt": 9
+        },
+        "savePercentage": 50.0,
+        "totalInterventions": 4
+      },
+      "goalkeepers": [
+        {
+          "playerId": "crocombe-max-nzl",
+          "playerName": "Max CROCOMBE",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 5
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "new-zealand",
+      "totalInvolvements": 72
+    },
+    {
+      "aerialControl": {
+        "claims": {
+          "complete": 3,
+          "incomplete": 0,
+          "total": 3
+        },
+        "crossesFacedAttempted": 13,
+        "crossesFacedCompleted": null,
+        "deliveryTypesFaced": {
+          "cutback": 0,
+          "driven": 2,
+          "inswing": 7,
+          "lofted": 0,
+          "outswing": 4,
+          "pushCross": 0,
+          "total": 13
+        },
+        "punches": {
+          "complete": 2,
+          "incomplete": 0,
+          "total": 2
+        },
+        "tippedPalmed": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "totalInterventions": 5
+      },
+      "distribution": {
+        "feet": {
+          "complete": 21,
+          "incomplete": 9,
+          "total": 30
+        },
+        "feetTechniques": null,
+        "hands": {
+          "complete": 0,
+          "incomplete": 0,
+          "total": 0
+        },
+        "handsTechniques": null,
+        "lineBreaks": 15,
+        "throw": {
+          "complete": 6,
+          "incomplete": 1,
+          "total": 7
+        },
+        "throwTechniques": null,
+        "total": {
+          "complete": 27,
+          "incomplete": 10,
+          "total": 37
+        }
+      },
+      "goalPrevention": {
+        "attemptsFaced": 6,
+        "byBodyType": null,
+        "byInterventionType": {
+          "deflectAndRetain": 0,
+          "noSaveAttempt": 4,
+          "saveAndDeflect": 1,
+          "saveAndRetain": 0,
+          "saveAttempt": 1
+        },
+        "savePercentage": 50.0,
+        "totalInterventions": 1
+      },
+      "goalkeepers": [
+        {
+          "playerId": "courtois-thibaut-bel",
+          "playerName": "Thibaut COURTOIS",
+          "shirtNumber": 1,
+          "substitutedOff": null,
+          "substitutedOn": null
+        }
+      ],
+      "involvementTimeline": [
+        {
+          "at": {
+            "minute": 1,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 2,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 3,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 4,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 5,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 6,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 7,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 8,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 9,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 10,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 11,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 12,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 13,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 14,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 15,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 16,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 17,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 18,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 19,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 20,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 21,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 22,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 23,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 24,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 25,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 26,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 27,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 28,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 29,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 30,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 31,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 32,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 33,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 34,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 35,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 36,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 37,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 38,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 39,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 40,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 41,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 42,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 43,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 44,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 5
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 45,
+            "stoppageMinute": 6
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 46,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 47,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 48,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 49,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 50,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 51,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 52,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 53,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 54,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 55,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 56,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 57,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 58,
+            "stoppageMinute": null
+          },
+          "involvements": 3
+        },
+        {
+          "at": {
+            "minute": 59,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 60,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 61,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 62,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 63,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 64,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 65,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 66,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 67,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 68,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 69,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 70,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 71,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 72,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 73,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 74,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 75,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 76,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 77,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 78,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 79,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 80,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 81,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 82,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 83,
+            "stoppageMinute": null
+          },
+          "involvements": 2
+        },
+        {
+          "at": {
+            "minute": 84,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 85,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 86,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 87,
+            "stoppageMinute": null
+          },
+          "involvements": 4
+        },
+        {
+          "at": {
+            "minute": 88,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 89,
+            "stoppageMinute": null
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": null
+          },
+          "involvements": 1
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 1
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 2
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 3
+          },
+          "involvements": 0
+        },
+        {
+          "at": {
+            "minute": 90,
+            "stoppageMinute": 4
+          },
+          "involvements": 0
+        }
+      ],
+      "teamId": "belgium",
+      "totalInvolvements": 48
+    }
+  ],
+  "keyStatistics": {
+    "away": {
+      "ballProgressions": 38,
+      "completedLineBreaks": 118,
+      "crosses": 25,
+      "defensiveLineBreaks": 18,
+      "defensivePressures": 249,
+      "directPressures": 32,
+      "distanceCovered": 119.8,
+      "expectedGoals": 3.99,
+      "forcedTurnovers": 44,
+      "goals": 5,
+      "passCompletion": 90.0,
+      "passes": 530,
+      "passesCompleted": 475,
+      "possession": 50.1,
+      "receptionsInFinalThird": 203,
+      "secondBalls": 82,
+      "shots": 35,
+      "shotsOnTarget": 10,
+      "sprintDistance": 6.9
+    },
+    "contestedPossession": 9.4,
+    "home": {
+      "ballProgressions": 17,
+      "completedLineBreaks": 82,
+      "crosses": 13,
+      "defensiveLineBreaks": 5,
+      "defensivePressures": 321,
+      "directPressures": 51,
+      "distanceCovered": 117.6,
+      "expectedGoals": 0.3,
+      "forcedTurnovers": 32,
+      "goals": 1,
+      "passCompletion": 84.0,
+      "passes": 450,
+      "passesCompleted": 379,
+      "possession": 40.5,
+      "receptionsInFinalThird": 77,
+      "secondBalls": 50,
+      "shots": 6,
+      "shotsOnTarget": 2,
+      "sprintDistance": 6.9
+    }
+  },
+  "matchId": "m064-new-zealand-belgium",
+  "metadata": {
+    "awayTeam": {
+      "name": "Belgium",
+      "teamCode": "bel",
+      "teamId": "belgium"
+    },
+    "date": "2026-06-26",
+    "goals": [
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Leandro TROSSARD",
+        "scorerPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium"
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Leandro TROSSARD",
+        "scorerPlayerId": "trossard-leandro-bel",
+        "teamId": "belgium"
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Kevin DE BRUYNE",
+        "scorerPlayerId": "de-bruyne-kevin-bel",
+        "teamId": "belgium"
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Elijah JUST",
+        "scorerPlayerId": "just-elijah-nzl",
+        "teamId": "new-zealand"
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Romelu LUKAKU",
+        "scorerPlayerId": "lukaku-romelu-bel",
+        "teamId": "belgium"
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "ownGoal": false,
+        "penalty": false,
+        "scorerName": "Alexis SAELEMAEKERS",
+        "scorerPlayerId": "saelemaekers-alexis-bel",
+        "teamId": "belgium"
+      }
+    ],
+    "group": "g",
+    "homeTeam": {
+      "name": "New Zealand",
+      "teamCode": "nzl",
+      "teamId": "new-zealand"
+    },
+    "kickoff": "2026-06-26T20:00:00-07:00",
+    "knockoutScore": {
+      "decidedBy": "regulation",
+      "scoreAfter90": {
+        "away": 5,
+        "home": 1
+      },
+      "scoreAfterET": null,
+      "shootoutScore": null,
+      "winnerTeamId": "belgium"
+    },
+    "lineups": {
+      "away": {
+        "formation": "4-2-3-1",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Thibaut COURTOIS",
+            "playerId": "courtois-thibaut-bel",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Arthur THEATE",
+            "playerId": "theate-arthur-bel",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Brandon MECHELE",
+            "playerId": "mechele-brandon-bel",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Maxim DE CUYPER",
+            "playerId": "de-cuyper-maxim-bel",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 67,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Kevin DE BRUYNE",
+            "playerId": "de-bruyne-kevin-bel",
+            "position": "mf",
+            "shirtNumber": 7,
+            "substitutedOff": {
+              "minute": 72,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Youri TIELEMANS",
+            "playerId": "tielemans-youri-bel",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": {
+              "minute": 85,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 28,
+                "stoppageMinute": null
+              },
+              {
+                "minute": 50,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Leandro TROSSARD",
+            "playerId": "trossard-leandro-bel",
+            "position": "fw",
+            "shirtNumber": 10,
+            "substitutedOff": {
+              "minute": 72,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jeremy DOKU",
+            "playerId": "doku-jeremy-bel",
+            "position": "fw",
+            "shirtNumber": 11,
+            "substitutedOff": {
+              "minute": 56,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Charles DE KETELAERE",
+            "playerId": "de-ketelaere-charles-bel",
+            "position": "fw",
+            "shirtNumber": 17,
+            "substitutedOff": {
+              "minute": 85,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Hans VANAKEN",
+            "playerId": "vanaken-hans-bel",
+            "position": "mf",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Timothy CASTAGNE",
+            "playerId": "castagne-timothy-bel",
+            "position": "df",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Senne LAMMENS",
+            "playerId": "lammens-senne-bel",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Mike PENDERS",
+            "playerId": "penders-mike-bel",
+            "position": "gk",
+            "shirtNumber": 13,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Zeno DEBAST",
+            "playerId": "debast-zeno-bel",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Axel WITSEL",
+            "playerId": "witsel-axel-bel",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 86,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Romelu LUKAKU",
+            "playerId": "lukaku-romelu-bel",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 85,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Dodi LUKEBAKIO",
+            "playerId": "lukebakio-dodi-bel",
+            "position": "fw",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Thomas MEUNIER",
+            "playerId": "meunier-thomas-bel",
+            "position": "df",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Koni DE WINTER",
+            "playerId": "de-winter-koni-bel",
+            "position": "df",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Joaquin SEYS",
+            "playerId": "seys-joaquin-bel",
+            "position": "df",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Diego MOREIRA",
+            "playerId": "moreira-diego-bel",
+            "position": "mf",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [
+              {
+                "minute": 90,
+                "stoppageMinute": 4
+              }
+            ],
+            "name": "Alexis SAELEMAEKERS",
+            "playerId": "saelemaekers-alexis-bel",
+            "position": "mf",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 72,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nicolas RASKIN",
+            "playerId": "raskin-nicolas-bel",
+            "position": "mf",
+            "shirtNumber": 23,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 85,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Amadou ONANA",
+            "playerId": "onana-amadou-bel",
+            "position": "mf",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 72,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Matias FERNANDEZ-PARDO",
+            "playerId": "fernandez-pardo-matias-bel",
+            "position": "fw",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 56,
+              "stoppageMinute": null
+            }
+          }
+        ]
+      },
+      "home": {
+        "formation": "4-2-3-1",
+        "starters": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Max CROCOMBE",
+            "playerId": "crocombe-max-nzl",
+            "position": "gk",
+            "shirtNumber": 1,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tim PAYNE",
+            "playerId": "payne-tim-nzl",
+            "position": "df",
+            "shirtNumber": 2,
+            "substitutedOff": {
+              "minute": 64,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tyler BINDON",
+            "playerId": "bindon-tyler-nzl",
+            "position": "df",
+            "shirtNumber": 4,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Joe BELL",
+            "playerId": "bell-joe-nzl",
+            "position": "mf",
+            "shirtNumber": 6,
+            "substitutedOff": {
+              "minute": 64,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 46,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [],
+            "name": "Marko STAMENIC",
+            "playerId": "stamenic-marko-nzl",
+            "position": "mf",
+            "shirtNumber": 8,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Chris WOOD",
+            "playerId": "wood-chris-nzl",
+            "position": "fw",
+            "shirtNumber": 9,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Sarpreet SINGH",
+            "playerId": "singh-sarpreet-nzl",
+            "position": "mf",
+            "shirtNumber": 10,
+            "substitutedOff": {
+              "minute": 45,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [
+              {
+                "at": {
+                  "minute": 56,
+                  "stoppageMinute": null
+                },
+                "type": "yellow"
+              }
+            ],
+            "goals": [
+              {
+                "minute": 84,
+                "stoppageMinute": null
+              }
+            ],
+            "name": "Elijah JUST",
+            "playerId": "just-elijah-nzl",
+            "position": "mf",
+            "shirtNumber": 11,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Liberato CACACE",
+            "playerId": "cacace-liberato-nzl",
+            "position": "df",
+            "shirtNumber": 13,
+            "substitutedOff": {
+              "minute": 79,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Finn SURMAN",
+            "playerId": "surman-finn-nzl",
+            "position": "df",
+            "shirtNumber": 16,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ryan THOMAS",
+            "playerId": "thomas-ryan-nzl",
+            "position": "mf",
+            "shirtNumber": 23,
+            "substitutedOff": {
+              "minute": 45,
+              "stoppageMinute": null
+            },
+            "substitutedOn": null
+          }
+        ],
+        "substitutes": [
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alex PAULSEN",
+            "playerId": "paulsen-alex-nzl",
+            "position": "gk",
+            "shirtNumber": 12,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Michael WOUD",
+            "playerId": "woud-michael-nzl",
+            "position": "gk",
+            "shirtNumber": 22,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Francis DE VRIES",
+            "playerId": "de-vries-francis-nzl",
+            "position": "df",
+            "shirtNumber": 3,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 79,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Michael BOXALL",
+            "playerId": "boxall-michael-nzl",
+            "position": "df",
+            "shirtNumber": 5,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 64,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Logan ROGERSON",
+            "playerId": "rogerson-logan-nzl",
+            "position": "fw",
+            "shirtNumber": 7,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Alex RUFER",
+            "playerId": "rufer-alex-nzl",
+            "position": "mf",
+            "shirtNumber": 14,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Nando PIJNAKER",
+            "playerId": "pijnaker-nando-nzl",
+            "position": "df",
+            "shirtNumber": 15,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Kosta BARBAROUSES",
+            "playerId": "barbarouses-kosta-nzl",
+            "position": "fw",
+            "shirtNumber": 17,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ben WAINE",
+            "playerId": "waine-ben-nzl",
+            "position": "fw",
+            "shirtNumber": 18,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Ben OLD",
+            "playerId": "old-ben-nzl",
+            "position": "mf",
+            "shirtNumber": 19,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 45,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Callum McCOWATT",
+            "playerId": "callum-mccowatt-nzl",
+            "position": "mf",
+            "shirtNumber": 20,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 64,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Jesse RANDALL",
+            "playerId": "randall-jesse-nzl",
+            "position": "fw",
+            "shirtNumber": 21,
+            "substitutedOff": null,
+            "substitutedOn": {
+              "minute": 45,
+              "stoppageMinute": null
+            }
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Callan ELLIOT",
+            "playerId": "elliot-callan-nzl",
+            "position": "df",
+            "shirtNumber": 24,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Lachlan BAYLISS",
+            "playerId": "bayliss-lachlan-nzl",
+            "position": "mf",
+            "shirtNumber": 25,
+            "substitutedOff": null,
+            "substitutedOn": null
+          },
+          {
+            "cards": [],
+            "goals": [],
+            "name": "Tommy SMITH",
+            "playerId": "smith-tommy-nzl",
+            "position": "df",
+            "shirtNumber": 26,
+            "substitutedOff": null,
+            "substitutedOn": null
+          }
+        ]
+      }
+    },
+    "matchNumber": 64,
+    "matchdayRound": "group-md3",
+    "score": {
+      "away": 5,
+      "home": 1
+    },
+    "stage": "group",
+    "venue": "BC Place Vancouver"
+  },
+  "momentum": {
+    "samples": [
+      {
+        "at": {
+          "minute": 1,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 2,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 3,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 4,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 5,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 6,
+          "stoppageMinute": null
+        },
+        "away": 15,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 7,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 8,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 9,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 10,
+          "stoppageMinute": null
+        },
+        "away": 7,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 11,
+          "stoppageMinute": null
+        },
+        "away": 9,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 12,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 13,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 14,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 15,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 16,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 17,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 18,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 19,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 20,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 21,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 22,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 23,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 24,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 25,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 26,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 27,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 28,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 29,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 6
+      },
+      {
+        "at": {
+          "minute": 30,
+          "stoppageMinute": null
+        },
+        "away": 10,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 31,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 32,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 33,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 34,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 35,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 36,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 37,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 38,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 39,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 40,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 41,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 42,
+          "stoppageMinute": null
+        },
+        "away": 7,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 43,
+          "stoppageMinute": null
+        },
+        "away": 8,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 44,
+          "stoppageMinute": null
+        },
+        "away": 10,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 13
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 1
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 2
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 3
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 4
+        },
+        "away": 4,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 45,
+          "stoppageMinute": 5
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 46,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 47,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 48,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 49,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 50,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 51,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 52,
+          "stoppageMinute": null
+        },
+        "away": 6,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 53,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 54,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 55,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 56,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 57,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 58,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 59,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 60,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 61,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 62,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 63,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 64,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 65,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 66,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 67,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 3
+      },
+      {
+        "at": {
+          "minute": 68,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 69,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 70,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 71,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 72,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 73,
+          "stoppageMinute": null
+        },
+        "away": 5,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 74,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 75,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 5
+      },
+      {
+        "at": {
+          "minute": 76,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 77,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 78,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 79,
+          "stoppageMinute": null
+        },
+        "away": 7,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 80,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 81,
+          "stoppageMinute": null
+        },
+        "away": 1,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 82,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 7
+      },
+      {
+        "at": {
+          "minute": 83,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 84,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 85,
+          "stoppageMinute": null
+        },
+        "away": 3,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 86,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 1
+      },
+      {
+        "at": {
+          "minute": 87,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 88,
+          "stoppageMinute": null
+        },
+        "away": 2,
+        "home": 2
+      },
+      {
+        "at": {
+          "minute": 89,
+          "stoppageMinute": null
+        },
+        "away": 4,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": null
+        },
+        "away": 0,
+        "home": 4
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 1
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 2
+        },
+        "away": 5,
+        "home": 0
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 3
+        },
+        "away": 2,
+        "home": 8
+      },
+      {
+        "at": {
+          "minute": 90,
+          "stoppageMinute": 4
+        },
+        "away": 0,
+        "home": 0
+      }
+    ]
+  },
+  "players": [
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 55.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 78.0,
+        "passesAttempted": 32,
+        "passesCompleted": 25,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 6,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3457.7,
+        "distanceZone2": 838.7,
+        "distanceZone3": 52.9,
+        "distanceZone4": 0.0,
+        "distanceZone5": 0.0,
+        "highSpeedRuns": 5,
+        "sprints": 0,
+        "topSpeed": 19.3,
+        "totalDistance": 4349.3
+      },
+      "playerId": "crocombe-max-nzl",
+      "playerName": "Max CROCOMBE",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 1,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 6,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 0,
+        "passCompletion": 75.0,
+        "passesAttempted": 28,
+        "passesCompleted": 21,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 4,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 1,
+        "interceptions": 1,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 5,
+        "possessionRegains": 2,
+        "pressingDirect": 3,
+        "pressingIndirect": 17,
+        "pushingOn": 21,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2721.8,
+        "distanceZone2": 3256.7,
+        "distanceZone3": 1073.4,
+        "distanceZone4": 290.7,
+        "distanceZone5": 98.7,
+        "highSpeedRuns": 97,
+        "sprints": 24,
+        "topSpeed": 33.7,
+        "totalDistance": 7441.3
+      },
+      "playerId": "payne-tim-nzl",
+      "playerName": "Tim PAYNE",
+      "position": "df",
+      "shirtNumber": 2,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 0,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 62.0,
+        "passesAttempted": 8,
+        "passesCompleted": 5,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 6
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 4,
+        "pushingOn": 7,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 720.9,
+        "distanceZone2": 780.4,
+        "distanceZone3": 262.5,
+        "distanceZone4": 102.1,
+        "distanceZone5": 120.1,
+        "highSpeedRuns": 24,
+        "sprints": 10,
+        "topSpeed": 32.3,
+        "totalDistance": 1986.0
+      },
+      "playerId": "de-vries-francis-nzl",
+      "playerName": "Francis DE VRIES",
+      "position": "df",
+      "shirtNumber": 3,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 55.0,
+        "lineBreaksAttempted": 20,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 0,
+          "inFront": 4,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 75.0,
+        "passesAttempted": 56,
+        "passesCompleted": 42,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 13
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 11,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 2,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 7,
+        "possessionRegains": 8,
+        "pressingDirect": 4,
+        "pressingIndirect": 8,
+        "pushingOn": 22,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3547.7,
+        "distanceZone2": 5142.3,
+        "distanceZone3": 1318.5,
+        "distanceZone4": 550.5,
+        "distanceZone5": 244.9,
+        "highSpeedRuns": 116,
+        "sprints": 34,
+        "topSpeed": 29.8,
+        "totalDistance": 10804.0
+      },
+      "playerId": "bindon-tyler-nzl",
+      "playerName": "Tyler BINDON",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 1,
+        "passCompletion": 100.0,
+        "passesAttempted": 15,
+        "passesCompleted": 15,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 3
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 3,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 2,
+        "pressingIndirect": 4,
+        "pushingOn": 2,
+        "pushingOnIntoPressing": 2,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1102.3,
+        "distanceZone2": 1177.6,
+        "distanceZone3": 266.2,
+        "distanceZone4": 150.2,
+        "distanceZone5": 188.6,
+        "highSpeedRuns": 19,
+        "sprints": 12,
+        "topSpeed": 32.9,
+        "totalDistance": 2884.9
+      },
+      "playerId": "boxall-michael-nzl",
+      "playerName": "Michael BOXALL",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 75.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 7,
+          "inFront": 17,
+          "inToOut": 0,
+          "noMovement": 1,
+          "outToIn": 1
+        },
+        "offersReceived": 9,
+        "passCompletion": 86.0,
+        "passesAttempted": 37,
+        "passesCompleted": 32,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 26
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 6,
+        "duelsWonAerial": 2,
+        "duelsWonPhysical": 1,
+        "interceptions": 1,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 3,
+        "possessionInterrupted": 7,
+        "possessionRegains": 2,
+        "pressingDirect": 4,
+        "pressingIndirect": 23,
+        "pushingOn": 25,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2303.3,
+        "distanceZone2": 4103.3,
+        "distanceZone3": 1618.7,
+        "distanceZone4": 430.2,
+        "distanceZone5": 99.2,
+        "highSpeedRuns": 133,
+        "sprints": 34,
+        "topSpeed": 28.2,
+        "totalDistance": 8554.7
+      },
+      "playerId": "bell-joe-nzl",
+      "playerName": "Joe BELL",
+      "position": "mf",
+      "shirtNumber": 6,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 82.0,
+        "lineBreaksAttempted": 17,
+        "lineBreaksCompleted": 14,
+        "offersByMovementType": {
+          "inBehind": 2,
+          "inBetween": 0,
+          "inFront": 13,
+          "inToOut": 0,
+          "noMovement": 10,
+          "outToIn": 1
+        },
+        "offersReceived": 15,
+        "passCompletion": 97.0,
+        "passesAttempted": 60,
+        "passesCompleted": 58,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 26
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 4,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 4,
+        "possessionRegains": 2,
+        "pressingDirect": 6,
+        "pressingIndirect": 13,
+        "pushingOn": 24,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 4,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3556.9,
+        "distanceZone2": 4727.3,
+        "distanceZone3": 2003.6,
+        "distanceZone4": 682.9,
+        "distanceZone5": 171.0,
+        "highSpeedRuns": 157,
+        "sprints": 49,
+        "topSpeed": 29.7,
+        "totalDistance": 11141.7
+      },
+      "playerId": "stamenic-marko-nzl",
+      "playerName": "Marko STAMENIC",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 13,
+          "inBetween": 10,
+          "inFront": 0,
+          "inToOut": 1,
+          "noMovement": 1,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 89.0,
+        "passesAttempted": 9,
+        "passesCompleted": 8,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 25
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 2,
+        "pressingIndirect": 38,
+        "pushingOn": 39,
+        "pushingOnIntoPressing": 22,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4129.6,
+        "distanceZone2": 4102.9,
+        "distanceZone3": 1427.6,
+        "distanceZone4": 725.7,
+        "distanceZone5": 191.5,
+        "highSpeedRuns": 131,
+        "sprints": 57,
+        "topSpeed": 30.0,
+        "totalDistance": 10577.3
+      },
+      "playerId": "wood-chris-nzl",
+      "playerName": "Chris WOOD",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 33.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 7,
+          "inFront": 5,
+          "inToOut": 1,
+          "noMovement": 5,
+          "outToIn": 6
+        },
+        "offersReceived": 9,
+        "passCompletion": 77.0,
+        "passesAttempted": 13,
+        "passesCompleted": 10,
+        "stepIns": 0,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 30
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 1,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 3,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 15,
+        "pushingOn": 22,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1783.5,
+        "distanceZone2": 2820.9,
+        "distanceZone3": 1110.5,
+        "distanceZone4": 375.3,
+        "distanceZone5": 53.8,
+        "highSpeedRuns": 93,
+        "sprints": 30,
+        "topSpeed": 27.9,
+        "totalDistance": 6144.1
+      },
+      "playerId": "singh-sarpreet-nzl",
+      "playerName": "Sarpreet SINGH",
+      "position": "mf",
+      "shirtNumber": 10,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 3,
+        "ballProgressions": 5,
+        "crossesAttempted": 1,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 73.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 19,
+          "inFront": 12,
+          "inToOut": 1,
+          "noMovement": 6,
+          "outToIn": 3
+        },
+        "offersReceived": 19,
+        "passCompletion": 84.0,
+        "passesAttempted": 44,
+        "passesCompleted": 37,
+        "stepIns": 2,
+        "switchesOfPlay": 2,
+        "takeOns": 3,
+        "totalOffers": 48
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 7,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 10,
+        "pressingIndirect": 60,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 6,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3491.1,
+        "distanceZone2": 5582.9,
+        "distanceZone3": 2017.0,
+        "distanceZone4": 654.8,
+        "distanceZone5": 213.3,
+        "highSpeedRuns": 169,
+        "sprints": 56,
+        "topSpeed": 30.3,
+        "totalDistance": 11959.1
+      },
+      "playerId": "just-elijah-nzl",
+      "playerName": "Elijah JUST",
+      "position": "mf",
+      "shirtNumber": 11,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 2,
+        "crossesAttempted": 4,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 70.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 14,
+          "inBetween": 1,
+          "inFront": 6,
+          "inToOut": 0,
+          "noMovement": 12,
+          "outToIn": 0
+        },
+        "offersReceived": 9,
+        "passCompletion": 88.0,
+        "passesAttempted": 34,
+        "passesCompleted": 30,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 33
+      },
+      "outOfPossession": {
+        "blocks": 3,
+        "clearances": 3,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 5,
+        "possessionRegains": 3,
+        "pressingDirect": 2,
+        "pressingIndirect": 21,
+        "pushingOn": 27,
+        "pushingOnIntoPressing": 12,
+        "tacklesMade": 3,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3084.1,
+        "distanceZone2": 3853.9,
+        "distanceZone3": 1434.2,
+        "distanceZone4": 575.1,
+        "distanceZone5": 193.2,
+        "highSpeedRuns": 130,
+        "sprints": 44,
+        "topSpeed": 29.7,
+        "totalDistance": 9140.5
+      },
+      "playerId": "cacace-liberato-nzl",
+      "playerName": "Liberato CACACE",
+      "position": "df",
+      "shirtNumber": 13,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 92.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 11,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 20,
+          "outToIn": 0
+        },
+        "offersReceived": 14,
+        "passCompletion": 92.0,
+        "passesAttempted": 48,
+        "passesCompleted": 44,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 20
+      },
+      "outOfPossession": {
+        "blocks": 6,
+        "clearances": 5,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 9,
+        "possessionRegains": 4,
+        "pressingDirect": 4,
+        "pressingIndirect": 4,
+        "pushingOn": 7,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 3,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3833.4,
+        "distanceZone2": 4524.7,
+        "distanceZone3": 1400.1,
+        "distanceZone4": 498.2,
+        "distanceZone5": 264.7,
+        "highSpeedRuns": 118,
+        "sprints": 40,
+        "topSpeed": 32.3,
+        "totalDistance": 10521.1
+      },
+      "playerId": "surman-finn-nzl",
+      "playerName": "Finn SURMAN",
+      "position": "df",
+      "shirtNumber": 16,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 4,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 5,
+        "passCompletion": 71.0,
+        "passesAttempted": 14,
+        "passesCompleted": 10,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 0,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 3,
+        "pressingIndirect": 16,
+        "pushingOn": 14,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1873.2,
+        "distanceZone2": 2244.1,
+        "distanceZone3": 1033.6,
+        "distanceZone4": 456.7,
+        "distanceZone5": 211.2,
+        "highSpeedRuns": 79,
+        "sprints": 32,
+        "topSpeed": 32.2,
+        "totalDistance": 5818.8
+      },
+      "playerId": "old-ben-nzl",
+      "playerName": "Ben OLD",
+      "position": "mf",
+      "shirtNumber": 19,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 75.0,
+        "lineBreaksAttempted": 4,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 3,
+          "inBetween": 8,
+          "inFront": 3,
+          "inToOut": 1,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 85.0,
+        "passesAttempted": 26,
+        "passesCompleted": 22,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 15
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 2,
+        "pressingIndirect": 5,
+        "pushingOn": 9,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1050.8,
+        "distanceZone2": 1612.6,
+        "distanceZone3": 660.6,
+        "distanceZone4": 330.8,
+        "distanceZone5": 103.4,
+        "highSpeedRuns": 65,
+        "sprints": 19,
+        "topSpeed": 27.5,
+        "totalDistance": 3758.2
+      },
+      "playerId": "callum-mccowatt-nzl",
+      "playerName": "Callum McCOWATT",
+      "position": "mf",
+      "shirtNumber": 20,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 2,
+        "crossesAttempted": 4,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 16,
+          "inBetween": 6,
+          "inFront": 2,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 2
+        },
+        "offersReceived": 6,
+        "passCompletion": 77.0,
+        "passesAttempted": 13,
+        "passesCompleted": 10,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 32
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 11,
+        "pushingOn": 13,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1792.0,
+        "distanceZone2": 2372.3,
+        "distanceZone3": 896.6,
+        "distanceZone4": 517.2,
+        "distanceZone5": 269.1,
+        "highSpeedRuns": 76,
+        "sprints": 44,
+        "topSpeed": 33.5,
+        "totalDistance": 5847.2
+      },
+      "playerId": "randall-jesse-nzl",
+      "playerName": "Jesse RANDALL",
+      "position": "fw",
+      "shirtNumber": 21,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 33.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 6,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 1
+        },
+        "offersReceived": 6,
+        "passCompletion": 77.0,
+        "passesAttempted": 13,
+        "passesCompleted": 10,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 12
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 2,
+        "pressingDirect": 5,
+        "pressingIndirect": 31,
+        "pushingOn": 19,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 4,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 1792.9,
+        "distanceZone2": 2854.4,
+        "distanceZone3": 1432.7,
+        "distanceZone4": 529.3,
+        "distanceZone5": 90.7,
+        "highSpeedRuns": 110,
+        "sprints": 41,
+        "topSpeed": 29.1,
+        "totalDistance": 6700.0
+      },
+      "playerId": "thomas-ryan-nzl",
+      "playerName": "Ryan THOMAS",
+      "position": "mf",
+      "shirtNumber": 23,
+      "teamId": "new-zealand"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 9,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 8,
+          "outToIn": 0
+        },
+        "offersReceived": 6,
+        "passCompletion": 73.0,
+        "passesAttempted": 37,
+        "passesCompleted": 27,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 8
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 7,
+        "pressingDirect": 0,
+        "pressingIndirect": 0,
+        "pushingOn": 0,
+        "pushingOnIntoPressing": 0,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4043.0,
+        "distanceZone2": 898.8,
+        "distanceZone3": 126.1,
+        "distanceZone4": 21.2,
+        "distanceZone5": 10.0,
+        "highSpeedRuns": 9,
+        "sprints": 2,
+        "topSpeed": 26.5,
+        "totalDistance": 5099.0
+      },
+      "playerId": "courtois-thibaut-bel",
+      "playerName": "Thibaut COURTOIS",
+      "position": "gk",
+      "shirtNumber": 1,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 4,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 56.0,
+        "lineBreaksAttempted": 9,
+        "lineBreaksCompleted": 5,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 3,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 91.0,
+        "passesAttempted": 44,
+        "passesCompleted": 40,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 7
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 8,
+        "duelsWonAerial": 3,
+        "duelsWonPhysical": 1,
+        "interceptions": 1,
+        "looseBallReceptions": 4,
+        "possessionContestsWon": 4,
+        "possessionInterrupted": 4,
+        "possessionRegains": 5,
+        "pressingDirect": 3,
+        "pressingIndirect": 1,
+        "pushingOn": 18,
+        "pushingOnIntoPressing": 3,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3849.2,
+        "distanceZone2": 5097.6,
+        "distanceZone3": 1207.0,
+        "distanceZone4": 323.4,
+        "distanceZone5": 57.3,
+        "highSpeedRuns": 94,
+        "sprints": 29,
+        "topSpeed": 31.5,
+        "totalDistance": 10534.5
+      },
+      "playerId": "theate-arthur-bel",
+      "playerName": "Arthur THEATE",
+      "position": "df",
+      "shirtNumber": 3,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 5,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 91.0,
+        "lineBreaksAttempted": 22,
+        "lineBreaksCompleted": 20,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 0,
+          "inFront": 1,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 0
+        },
+        "offersReceived": 4,
+        "passCompletion": 93.0,
+        "passesAttempted": 59,
+        "passesCompleted": 55,
+        "stepIns": 4,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 7
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 7,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 3,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 4,
+        "possessionRegains": 6,
+        "pressingDirect": 2,
+        "pressingIndirect": 5,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3462.8,
+        "distanceZone2": 5182.7,
+        "distanceZone3": 1807.2,
+        "distanceZone4": 404.6,
+        "distanceZone5": 73.3,
+        "highSpeedRuns": 153,
+        "sprints": 30,
+        "topSpeed": 28.4,
+        "totalDistance": 10930.6
+      },
+      "playerId": "mechele-brandon-bel",
+      "playerName": "Brandon MECHELE",
+      "position": "df",
+      "shirtNumber": 4,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 1,
+        "crossesAttempted": 6,
+        "crossesCompleted": 2,
+        "goals": 0,
+        "lineBreakCompletion": 83.0,
+        "lineBreaksAttempted": 12,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 13,
+          "inBetween": 2,
+          "inFront": 14,
+          "inToOut": 1,
+          "noMovement": 7,
+          "outToIn": 0
+        },
+        "offersReceived": 14,
+        "passCompletion": 93.0,
+        "passesAttempted": 61,
+        "passesCompleted": 57,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 37
+      },
+      "outOfPossession": {
+        "blocks": 4,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 4,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 5,
+        "pressingDirect": 3,
+        "pressingIndirect": 5,
+        "pushingOn": 19,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3665.8,
+        "distanceZone2": 5126.0,
+        "distanceZone3": 1668.5,
+        "distanceZone4": 752.9,
+        "distanceZone5": 377.4,
+        "highSpeedRuns": 136,
+        "sprints": 56,
+        "topSpeed": 31.5,
+        "totalDistance": 11590.5
+      },
+      "playerId": "de-cuyper-maxim-bel",
+      "playerName": "Maxim DE CUYPER",
+      "position": "df",
+      "shirtNumber": 5,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 7,
+        "ballProgressions": 4,
+        "crossesAttempted": 4,
+        "crossesCompleted": 1,
+        "goals": 1,
+        "lineBreakCompletion": 72.0,
+        "lineBreaksAttempted": 18,
+        "lineBreaksCompleted": 13,
+        "offersByMovementType": {
+          "inBehind": 9,
+          "inBetween": 12,
+          "inFront": 12,
+          "inToOut": 6,
+          "noMovement": 3,
+          "outToIn": 0
+        },
+        "offersReceived": 18,
+        "passCompletion": 87.0,
+        "passesAttempted": 46,
+        "passesCompleted": 40,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 3,
+        "totalOffers": 42
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 20,
+        "pushingOn": 10,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 3010.1,
+        "distanceZone2": 3723.1,
+        "distanceZone3": 1466.0,
+        "distanceZone4": 574.7,
+        "distanceZone5": 198.8,
+        "highSpeedRuns": 109,
+        "sprints": 42,
+        "topSpeed": 31.7,
+        "totalDistance": 8972.8
+      },
+      "playerId": "de-bruyne-kevin-bel",
+      "playerName": "Kevin DE BRUYNE",
+      "position": "mf",
+      "shirtNumber": 7,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 4,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 87.0,
+        "lineBreaksAttempted": 15,
+        "lineBreaksCompleted": 13,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 7,
+          "inFront": 40,
+          "inToOut": 2,
+          "noMovement": 8,
+          "outToIn": 2
+        },
+        "offersReceived": 27,
+        "passCompletion": 91.0,
+        "passesAttempted": 56,
+        "passesCompleted": 51,
+        "stepIns": 4,
+        "switchesOfPlay": 2,
+        "takeOns": 0,
+        "totalOffers": 65
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 11,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 2,
+        "possessionRegains": 1,
+        "pressingDirect": 3,
+        "pressingIndirect": 20,
+        "pushingOn": 36,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2909.4,
+        "distanceZone2": 4984.2,
+        "distanceZone3": 1818.6,
+        "distanceZone4": 575.0,
+        "distanceZone5": 186.5,
+        "highSpeedRuns": 142,
+        "sprints": 43,
+        "topSpeed": 29.8,
+        "totalDistance": 10473.7
+      },
+      "playerId": "tielemans-youri-bel",
+      "playerName": "Youri TIELEMANS",
+      "position": "mf",
+      "shirtNumber": 8,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 0.0,
+        "lineBreaksAttempted": 0,
+        "lineBreaksCompleted": 0,
+        "offersByMovementType": {
+          "inBehind": 5,
+          "inBetween": 0,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 2,
+        "passCompletion": 100.0,
+        "passesAttempted": 4,
+        "passesCompleted": 4,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 5
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 0,
+        "pressingDirect": 0,
+        "pressingIndirect": 5,
+        "pushingOn": 5,
+        "pushingOnIntoPressing": 4,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 431.8,
+        "distanceZone2": 460.0,
+        "distanceZone3": 148.8,
+        "distanceZone4": 55.0,
+        "distanceZone5": 105.3,
+        "highSpeedRuns": 11,
+        "sprints": 5,
+        "topSpeed": 30.9,
+        "totalDistance": 1200.9
+      },
+      "playerId": "lukaku-romelu-bel",
+      "playerName": "Romelu LUKAKU",
+      "position": "fw",
+      "shirtNumber": 9,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 7,
+        "ballProgressions": 2,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 2,
+        "lineBreakCompletion": 60.0,
+        "lineBreaksAttempted": 5,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 19,
+          "inBetween": 2,
+          "inFront": 2,
+          "inToOut": 3,
+          "noMovement": 3,
+          "outToIn": 1
+        },
+        "offersReceived": 11,
+        "passCompletion": 87.0,
+        "passesAttempted": 31,
+        "passesCompleted": 27,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 1,
+        "totalOffers": 30
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 6,
+        "possessionContestsWon": 2,
+        "possessionInterrupted": 2,
+        "possessionRegains": 1,
+        "pressingDirect": 0,
+        "pressingIndirect": 26,
+        "pushingOn": 20,
+        "pushingOnIntoPressing": 11,
+        "tacklesMade": 0,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2771.7,
+        "distanceZone2": 3846.8,
+        "distanceZone3": 1475.4,
+        "distanceZone4": 572.0,
+        "distanceZone5": 211.5,
+        "highSpeedRuns": 122,
+        "sprints": 50,
+        "topSpeed": 33.2,
+        "totalDistance": 8877.3
+      },
+      "playerId": "trossard-leandro-bel",
+      "playerName": "Leandro TROSSARD",
+      "position": "fw",
+      "shirtNumber": 10,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 15,
+        "crossesAttempted": 3,
+        "crossesCompleted": 2,
+        "goals": 0,
+        "lineBreakCompletion": 64.0,
+        "lineBreaksAttempted": 11,
+        "lineBreaksCompleted": 7,
+        "offersByMovementType": {
+          "inBehind": 7,
+          "inBetween": 8,
+          "inFront": 8,
+          "inToOut": 3,
+          "noMovement": 11,
+          "outToIn": 2
+        },
+        "offersReceived": 9,
+        "passCompletion": 80.0,
+        "passesAttempted": 20,
+        "passesCompleted": 16,
+        "stepIns": 1,
+        "switchesOfPlay": 0,
+        "takeOns": 14,
+        "totalOffers": 39
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 1,
+        "interceptions": 0,
+        "looseBallReceptions": 8,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 0,
+        "possessionRegains": 2,
+        "pressingDirect": 2,
+        "pressingIndirect": 17,
+        "pushingOn": 10,
+        "pushingOnIntoPressing": 9,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 2874.0,
+        "distanceZone2": 2136.2,
+        "distanceZone3": 989.8,
+        "distanceZone4": 335.4,
+        "distanceZone5": 103.1,
+        "highSpeedRuns": 89,
+        "sprints": 27,
+        "topSpeed": 34.7,
+        "totalDistance": 6438.5
+      },
+      "playerId": "doku-jeremy-bel",
+      "playerName": "Jeremy DOKU",
+      "position": "fw",
+      "shirtNumber": 11,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 3,
+        "crossesAttempted": 2,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 57.0,
+        "lineBreaksAttempted": 7,
+        "lineBreaksCompleted": 4,
+        "offersByMovementType": {
+          "inBehind": 38,
+          "inBetween": 17,
+          "inFront": 1,
+          "inToOut": 3,
+          "noMovement": 5,
+          "outToIn": 2
+        },
+        "offersReceived": 22,
+        "passCompletion": 81.0,
+        "passesAttempted": 31,
+        "passesCompleted": 25,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 2,
+        "totalOffers": 66
+      },
+      "outOfPossession": {
+        "blocks": 5,
+        "clearances": 2,
+        "duelsWonAerial": 5,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 5,
+        "possessionInterrupted": 3,
+        "possessionRegains": 7,
+        "pressingDirect": 7,
+        "pressingIndirect": 32,
+        "pushingOn": 37,
+        "pushingOnIntoPressing": 26,
+        "tacklesMade": 3,
+        "tacklesWon": 2
+      },
+      "physical": {
+        "distanceZone1": 3510.0,
+        "distanceZone2": 3786.7,
+        "distanceZone3": 1351.3,
+        "distanceZone4": 738.2,
+        "distanceZone5": 230.6,
+        "highSpeedRuns": 112,
+        "sprints": 62,
+        "topSpeed": 31.8,
+        "totalDistance": 9616.7
+      },
+      "playerId": "de-ketelaere-charles-bel",
+      "playerName": "Charles DE KETELAERE",
+      "position": "fw",
+      "shirtNumber": 17,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 10,
+        "lineBreaksCompleted": 10,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 15,
+          "inFront": 12,
+          "inToOut": 5,
+          "noMovement": 2,
+          "outToIn": 0
+        },
+        "offersReceived": 13,
+        "passCompletion": 98.0,
+        "passesAttempted": 50,
+        "passesCompleted": 49,
+        "stepIns": 1,
+        "switchesOfPlay": 1,
+        "takeOns": 0,
+        "totalOffers": 40
+      },
+      "outOfPossession": {
+        "blocks": 2,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 5,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 2,
+        "pressingDirect": 1,
+        "pressingIndirect": 36,
+        "pushingOn": 36,
+        "pushingOnIntoPressing": 19,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 4000.4,
+        "distanceZone2": 4876.0,
+        "distanceZone3": 1876.7,
+        "distanceZone4": 735.0,
+        "distanceZone5": 197.9,
+        "highSpeedRuns": 161,
+        "sprints": 51,
+        "topSpeed": 29.5,
+        "totalDistance": 11686.0
+      },
+      "playerId": "vanaken-hans-bel",
+      "playerName": "Hans VANAKEN",
+      "position": "mf",
+      "shirtNumber": 20,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 1,
+        "ballProgressions": 0,
+        "crossesAttempted": 5,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 84.0,
+        "lineBreaksAttempted": 19,
+        "lineBreaksCompleted": 16,
+        "offersByMovementType": {
+          "inBehind": 27,
+          "inBetween": 2,
+          "inFront": 13,
+          "inToOut": 0,
+          "noMovement": 8,
+          "outToIn": 0
+        },
+        "offersReceived": 10,
+        "passCompletion": 94.0,
+        "passesAttempted": 52,
+        "passesCompleted": 49,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 50
+      },
+      "outOfPossession": {
+        "blocks": 6,
+        "clearances": 4,
+        "duelsWonAerial": 1,
+        "duelsWonPhysical": 0,
+        "interceptions": 1,
+        "looseBallReceptions": 9,
+        "possessionContestsWon": 1,
+        "possessionInterrupted": 4,
+        "possessionRegains": 3,
+        "pressingDirect": 2,
+        "pressingIndirect": 16,
+        "pushingOn": 21,
+        "pushingOnIntoPressing": 12,
+        "tacklesMade": 1,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 3667.3,
+        "distanceZone2": 5603.6,
+        "distanceZone3": 2019.9,
+        "distanceZone4": 957.4,
+        "distanceZone5": 339.1,
+        "highSpeedRuns": 170,
+        "sprints": 75,
+        "topSpeed": 32.6,
+        "totalDistance": 12587.3
+      },
+      "playerId": "castagne-timothy-bel",
+      "playerName": "Timothy CASTAGNE",
+      "position": "df",
+      "shirtNumber": 21,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 1,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 1,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 3,
+        "offersByMovementType": {
+          "inBehind": 6,
+          "inBetween": 3,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 6,
+          "outToIn": 1
+        },
+        "offersReceived": 6,
+        "passCompletion": 81.0,
+        "passesAttempted": 16,
+        "passesCompleted": 13,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 1,
+        "totalOffers": 16
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 1,
+        "pressingDirect": 0,
+        "pressingIndirect": 10,
+        "pushingOn": 8,
+        "pushingOnIntoPressing": 6,
+        "tacklesMade": 1,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 892.9,
+        "distanceZone2": 1252.0,
+        "distanceZone3": 403.0,
+        "distanceZone4": 187.4,
+        "distanceZone5": 197.7,
+        "highSpeedRuns": 31,
+        "sprints": 13,
+        "topSpeed": 32.3,
+        "totalDistance": 2932.9
+      },
+      "playerId": "saelemaekers-alexis-bel",
+      "playerName": "Alexis SAELEMAEKERS",
+      "position": "mf",
+      "shirtNumber": 22,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 0,
+        "ballProgressions": 0,
+        "crossesAttempted": 1,
+        "crossesCompleted": 1,
+        "goals": 0,
+        "lineBreakCompletion": 100.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 0,
+          "inBetween": 2,
+          "inFront": 4,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 1
+        },
+        "offersReceived": 4,
+        "passCompletion": 100.0,
+        "passesAttempted": 5,
+        "passesCompleted": 5,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 7
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 1,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 1,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 1,
+        "pressingDirect": 1,
+        "pressingIndirect": 5,
+        "pushingOn": 7,
+        "pushingOnIntoPressing": 1,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 380.0,
+        "distanceZone2": 673.2,
+        "distanceZone3": 215.3,
+        "distanceZone4": 139.5,
+        "distanceZone5": 7.8,
+        "highSpeedRuns": 19,
+        "sprints": 8,
+        "topSpeed": 25.4,
+        "totalDistance": 1415.8
+      },
+      "playerId": "raskin-nicolas-bel",
+      "playerName": "Nicolas RASKIN",
+      "position": "mf",
+      "shirtNumber": 23,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 0,
+        "crossesAttempted": 0,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 50.0,
+        "lineBreaksAttempted": 2,
+        "lineBreaksCompleted": 1,
+        "offersByMovementType": {
+          "inBehind": 1,
+          "inBetween": 4,
+          "inFront": 11,
+          "inToOut": 0,
+          "noMovement": 0,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 89.0,
+        "passesAttempted": 9,
+        "passesCompleted": 8,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 0,
+        "totalOffers": 16
+      },
+      "outOfPossession": {
+        "blocks": 1,
+        "clearances": 2,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 2,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 0,
+        "possessionRegains": 3,
+        "pressingDirect": 2,
+        "pressingIndirect": 5,
+        "pushingOn": 12,
+        "pushingOnIntoPressing": 5,
+        "tacklesMade": 2,
+        "tacklesWon": 1
+      },
+      "physical": {
+        "distanceZone1": 884.3,
+        "distanceZone2": 1321.5,
+        "distanceZone3": 479.8,
+        "distanceZone4": 146.5,
+        "distanceZone5": 55.6,
+        "highSpeedRuns": 40,
+        "sprints": 11,
+        "topSpeed": 30.4,
+        "totalDistance": 2887.8
+      },
+      "playerId": "onana-amadou-bel",
+      "playerName": "Amadou ONANA",
+      "position": "mf",
+      "shirtNumber": 24,
+      "teamId": "belgium"
+    },
+    {
+      "inPossession": {
+        "attemptsAtGoal": 2,
+        "ballProgressions": 2,
+        "crossesAttempted": 3,
+        "crossesCompleted": 0,
+        "goals": 0,
+        "lineBreakCompletion": 67.0,
+        "lineBreaksAttempted": 3,
+        "lineBreaksCompleted": 2,
+        "offersByMovementType": {
+          "inBehind": 4,
+          "inBetween": 2,
+          "inFront": 0,
+          "inToOut": 0,
+          "noMovement": 4,
+          "outToIn": 0
+        },
+        "offersReceived": 3,
+        "passCompletion": 100.0,
+        "passesAttempted": 9,
+        "passesCompleted": 9,
+        "stepIns": 0,
+        "switchesOfPlay": 0,
+        "takeOns": 2,
+        "totalOffers": 10
+      },
+      "outOfPossession": {
+        "blocks": 0,
+        "clearances": 0,
+        "duelsWonAerial": 0,
+        "duelsWonPhysical": 0,
+        "interceptions": 0,
+        "looseBallReceptions": 3,
+        "possessionContestsWon": 0,
+        "possessionInterrupted": 1,
+        "possessionRegains": 0,
+        "pressingDirect": 3,
+        "pressingIndirect": 14,
+        "pushingOn": 11,
+        "pushingOnIntoPressing": 7,
+        "tacklesMade": 2,
+        "tacklesWon": 0
+      },
+      "physical": {
+        "distanceZone1": 1818.1,
+        "distanceZone2": 1561.7,
+        "distanceZone3": 530.1,
+        "distanceZone4": 370.2,
+        "distanceZone5": 325.5,
+        "highSpeedRuns": 46,
+        "sprints": 32,
+        "topSpeed": 34.8,
+        "totalDistance": 4605.6
+      },
+      "playerId": "fernandez-pardo-matias-bel",
+      "playerName": "Matias FERNANDEZ-PARDO",
+      "position": "fw",
+      "shirtNumber": 26,
+      "teamId": "belgium"
+    }
+  ],
+  "schemaVersion": 4,
+  "setPlays": {
+    "away": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 2,
+        "lofted": 0,
+        "outswing": 1
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 4,
+          "right": 0,
+          "total": 4
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 1,
+          "right": 3,
+          "total": 4
+        }
+      },
+      "cornersBySide": {
+        "left": 5,
+        "right": 3,
+        "total": 8
+      },
+      "freeKicks": {
+        "direct": 10,
+        "directOffTarget": 1,
+        "directOnTarget": 0,
+        "indirect": 1
+      },
+      "totalCorners": 8,
+      "totalFreeKicks": 11,
+      "totalPenalties": 0,
+      "totalSetPlays": 34,
+      "totalThrowIns": 15
+    },
+    "home": {
+      "cornersByDeliveryStyle": {
+        "driven": 0,
+        "inswing": 5,
+        "lofted": 0,
+        "outswing": 0
+      },
+      "cornersByDeliveryType": {
+        "directToArea": {
+          "left": 4,
+          "right": 1,
+          "total": 5
+        },
+        "edgeOfPenaltyArea": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        },
+        "short": {
+          "left": 0,
+          "right": 0,
+          "total": 0
+        }
+      },
+      "cornersBySide": {
+        "left": 4,
+        "right": 1,
+        "total": 5
+      },
+      "freeKicks": {
+        "direct": 6,
+        "directOffTarget": 0,
+        "directOnTarget": 0,
+        "indirect": 1
+      },
+      "totalCorners": 5,
+      "totalFreeKicks": 7,
+      "totalPenalties": 0,
+      "totalSetPlays": 29,
+      "totalThrowIns": 17
+    }
+  },
+  "storyStats": {
+    "away": {
+      "distanceCovered": 119.8,
+      "expectedGoals": 3.99,
+      "possession": 50.1,
+      "shots": 35,
+      "topSpeed": 34.8
+    },
+    "home": {
+      "distanceCovered": 117.6,
+      "expectedGoals": 0.3,
+      "possession": 40.5,
+      "shots": 6,
+      "topSpeed": 33.7
+    }
+  },
+  "tacticalIdentity": {
+    "away": {
+      "defensiveBlockDistribution": {
+        "high": 3,
+        "low": 14,
+        "mid": 29
+      },
+      "phasesInPossession": {
+        "attackingTransition": 13,
+        "buildUpOpposed": 17,
+        "buildUpUnopposed": 27,
+        "counterAttack": 2,
+        "finalThird": 24,
+        "longBall": 4,
+        "progression": 18,
+        "setPiece": 7
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 8,
+        "defensiveTransition": 13,
+        "highBlock": 3,
+        "highPress": 4,
+        "lowBlock": 14,
+        "lowPress": 0,
+        "midBlock": 29,
+        "midPress": 5,
+        "recovery": 3
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 20,
+            "teamLength": 39,
+            "teamWidth": 53
+          },
+          "buildUpMid": {
+            "lineHeight": 42,
+            "teamLength": 34,
+            "teamWidth": 52
+          },
+          "finalThirdPhase": {
+            "lineHeight": 58,
+            "teamLength": 34,
+            "teamWidth": 39
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 48,
+            "teamLength": 36,
+            "teamWidth": 38
+          },
+          "lowBlock": {
+            "lineHeight": 18,
+            "teamLength": 20,
+            "teamWidth": 35
+          },
+          "midBlock": {
+            "lineHeight": 38,
+            "teamLength": 24,
+            "teamWidth": 38
+          }
+        }
+      }
+    },
+    "home": {
+      "defensiveBlockDistribution": {
+        "high": 4,
+        "low": 26,
+        "mid": 16
+      },
+      "phasesInPossession": {
+        "attackingTransition": 13,
+        "buildUpOpposed": 16,
+        "buildUpUnopposed": 34,
+        "counterAttack": 1,
+        "finalThird": 12,
+        "longBall": 3,
+        "progression": 20,
+        "setPiece": 5
+      },
+      "phasesOutOfPossession": {
+        "counterPress": 8,
+        "defensiveTransition": 13,
+        "highBlock": 4,
+        "highPress": 5,
+        "lowBlock": 26,
+        "lowPress": 1,
+        "midBlock": 16,
+        "midPress": 4,
+        "recovery": 7
+      },
+      "shapeByPhase": {
+        "inPossession": {
+          "buildUpLow": {
+            "lineHeight": 21,
+            "teamLength": 40,
+            "teamWidth": 54
+          },
+          "buildUpMid": {
+            "lineHeight": 40,
+            "teamLength": 32,
+            "teamWidth": 58
+          },
+          "finalThirdPhase": {
+            "lineHeight": 57,
+            "teamLength": 33,
+            "teamWidth": 47
+          }
+        },
+        "outOfPossession": {
+          "highBlockPress": {
+            "lineHeight": 47,
+            "teamLength": 37,
+            "teamWidth": 39
+          },
+          "lowBlock": {
+            "lineHeight": 16,
+            "teamLength": 28,
+            "teamWidth": 32
+          },
+          "midBlock": {
+            "lineHeight": 37,
+            "teamLength": 28,
+            "teamWidth": 38
+          }
+        }
+      }
+    }
+  }
+}

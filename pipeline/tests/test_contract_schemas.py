@@ -168,8 +168,8 @@ def test_version_json_declares_the_schema_version_and_nothing_else() -> None:
     it became `at: MinuteStamp` and the values narrowed to non-negative integers.
     """
     contents = json.loads((CONTRACT_DIR / "version.json").read_text(encoding="utf-8"))
-    assert contents == {"schemaVersion": 3}
-    assert schema_version() == 3
+    assert contents == {"schemaVersion": 4}
+    assert schema_version() == 4
 
 
 def test_every_artifact_schema_pins_schema_version_to_the_declared_version() -> None:
