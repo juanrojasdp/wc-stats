@@ -1,5 +1,5 @@
 # generated: 2026-07-22
-# last_updated: 2026-07-24
+# last_updated: 2026-08-05
 # project: wc-stats
 # project_key: NOKEY
 # tracking_system: file-system
@@ -59,7 +59,143 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-08-04
+last_updated: 2026-08-05
+# 2026-08-05: story 2-11c implemented and moved to review — the Expert Layer's FULL EVENT LOGS, and
+#             the whole story turned on ruling 1 holding under contact: ONE rendered table reached
+#             from TWO entry points. Net build is ONE new table on the match route (27 -> 28,
+#             MEASURED in the browser, not inferred: 28 <table> elements with 28 DISTINCT composed
+#             captions and zero duplicates, exactly one of which is new), plus a six-entry link list
+#             and one new pure model. Nothing existing was re-rendered, removed or restructured.
+#             THE START BLOCKER WAS CLEARED BEFORE A LINE WAS WRITTEN: the story forbids starting
+#             until 2.11b's review patches are committed, and they are — 9df15df, with app/ clean.
+#             Every fixture number the story hard-codes was RE-MEASURED and every one held: 270
+#             receiving events (87/87/96), all eight fields non-null on 270/270, discriminator split
+#             44/43 · 44/43 · 48/48, 29/29/32 distinct players, m074 spanning minutes 5-118.
+#             THE ONE REAL DEFECT FOUND WAS NOT THIS STORY'S, AND THE DIFFERENTIAL IS WHAT PROVES
+#             IT. At 390px in EN, expanding the layer takes document.body.scrollWidth to 412 against
+#             a clientWidth of 375 — a 37px body scroll, WCAG 1.4.10. Hiding this story's ENTIRE
+#             logs block leaves it at 412; hiding 2.11b's `aria-label="Column group"` ToggleGroup
+#             alone returns it to 375. That control is `w-fit` with `shrink-0` items and renders
+#             396px on the EN labels against 323px on the Spanish, which is exactly why 2.11b's
+#             review — measured in ES — could not see it. IN ES AT 390px THE PAGE IS CLEAN
+#             (375 == 375 with the layer expanded), so Task 3.6's wrapper is discharged on its own
+#             terms; at 320px the same control overflows in BOTH locales, again unchanged by hiding
+#             the logs block. FILED, not fixed: it is one class wide but it is a shipped
+#             narrow-layout control and a copy/layout ruling this story was not given.
+#             RULING 2 VERIFIED AS BEHAVIOUR RATHER THAN ASSERTED, because "honest anchor" is a
+#             claim about what a click does. At 390px a log link sets the hash, TacticalLayer's
+#             listener auto-expands the section (aria-expanded false -> true) and the section top
+#             lands at EXACTLY 72px (scroll-padding-top: 4.5rem), with the target disclosure still
+#             aria-expanded="false" and ZERO tables inside it. At 1236px the section is already
+#             expanded, so the same link is a pure scroll to the same 72px, same closed disclosure.
+#             That is the ruled behaviour, stated in each link's own hint via aria-describedby — not
+#             a bare sibling span, which would have left six anchors naming neither location nor
+#             control in links-list mode and made AC 1 false for the readers AC 1 exists for.
+#             TASK 3.10 MEASURED, not eyeballed: the <md team ToggleGroup filters the Domain G table
+#             (16 -> 15 rows on RSA) and does NOT touch the receiving log (87 rows, both teams,
+#             always) — and it does not read as governing it either, with an h3, six links and an h4
+#             between them. The split is carried by the log's own Equipo column and its caption,
+#             exactly as the shot, cross and defensive logs do.
+#             THE KNOWING NEAR-COLLISION SHIPPED AND IS ON SCREEN: row 1 of m001 reads event type
+#             "Desmarque" beside movement type "Sin desmarque". That is what the source says — the
+#             movement-to-receive map records an event whose movement classification is "no
+#             movement" — and papering over it would have been the defect. Both labels are derived
+#             from shipped copy, not chosen: the discriminator is the singular of the two section
+#             titles it names, and "Tipo de desmarque" was already the shipped Spanish for that
+#             classification in viz.movement.totalsCaption and barNote.
+#             ONE TRIPWIRE WAS INVERTED, DELIBERATELY: i18n.test.ts asserted es.expert.summary does
+#             NOT contain "registros completos" — a pin 2.11b left for exactly this story. It now
+#             asserts the mockup string verbatim in both locales. The three CS-1 tripwires were NOT
+#             touched: they still assert a false premise in their names but remain CORRECT as
+#             assertions, and 2.13/2.18 own deleting them.
+#             AC 3 is tested over COMPOSED captions, never keys, because four es keys already
+#             resolve byte-identical to "Ordenado por equipo y dorsal." — a key-level test would go
+#             red on a condition that predates the story. The suite now enumerates all 27 shipped
+#             compositions plus the new one and asserts 28 distinct, in BOTH locales.
+#             Suite 707/25 -> 743/26 (+36 tests, +1 file), full chain green: lint --max-warnings 0,
+#             tsc --noEmit, assert:schema-version, next build (all 8 pages), copy-data. Zero console
+#             messages across the whole browser pass. Ledger appended with the append-only property
+#             PROVEN programmatically (first 247,062 bytes byte-identical, 8,098 appended, no CRLF).
+#             NOT COMMITTED YET — staging is Juan's call, and the story bars `git add -A`.
+# 2026-08-04: story 2-11c context created from its STUB and moved to ready-for-dev — the Expert
+#             Layer's full event logs. Re-baselined 163fa20 -> 4682639 (across change-set CS-1).
+#             TWO RULINGS BY JUAN, both taken before a task was drafted, because the stub's open
+#             question ("Rule this before writing a line") gated the whole story.
+#             RULING 1 — AC 1's "the same tables that serve as the viz data-table alternatives"
+#             means ONE rendered instance reached from TWO entry points, not two instances. The
+#             Expert log slots are LINKS. Removing the viz disclosures was ruled out ON THE SPEC,
+#             not on taste: UX-DR9 (epics.md:112) requires every panel to carry "Ver los datos"
+#             opening its equivalent table, and NFR-2/UX-DR16 make that the accessibility floor.
+#             Duplication was rejected on cost — 18 tables, 10 new caption keys x 2 locales, 36
+#             entries in a reader's table list, and a page-wide re-creation of the exact defect
+#             ShotMapsSection documents fixing. UX-DR18's "full event logs DOUBLING AS viz
+#             alternatives" and EXPERIENCE.md's identical phrase settle it: one artifact, two roles.
+#             RULING 2 — the links are HONEST ANCHORS; this story builds no disclosure-opening
+#             plumbing. MEASURED AT CONTEXT TIME, and it is what made ruling 1 cost more than the
+#             stub assumed: a plain anchor does NOT deliver a reader to a table. ViewDataDisclosure's
+#             `open` is a private useState(false) with no prop, no ref and a useId() region that is
+#             not authorable and does not exist in the DOM while closed; PitchPanel forwards only
+#             panelTitle and trailing; sectionIdFromHash is whole-string equality against the eleven
+#             SectionIds, so #shot-maps-log resolves to null SILENTLY; and #shot-maps is ambiguous,
+#             holding two independent disclosures. Real plumbing = ~12 files, every match-page
+#             section, during 2.11b's settling — and it would inherit the three ledgered
+#             hash-re-entry defects, of which "an unchanged hash never re-fires hashchange" is fatal
+#             to a link list. So each link states where the table is and that "Ver los datos" opens
+#             it (via aria-describedby, not a bare sibling span), and the gap is FILED, not hidden.
+#             Net build: ONE new table on the page (27 -> 28), not eighteen.
+#             CS-1 CROSSED THE BASELINE AND CHANGES NOTHING HERE — measured, not assumed, and the
+#             routing brief's premise was false: THE SHOT LOG DOES NOT RENDER ShotOutcomeDetail. It
+#             renders `outcomeKey` from the stable five-value ShotOutcome (AD-14 CR-2 makes
+#             `outcome` authoritative and forbids deriving it from the detail). There is no
+#             enums.shotOutcomeDetail namespace in either locale — all 24 values are unlabelled, on
+#             purpose — and NO app/src code reads x-maps-to-outcome at all, so the new array-valued
+#             entry is a pipeline-only concern where all three consumers already normalise it.
+#             schemaVersion is read from the generated constant, never a literal, and is already 3.
+#             Filed: three CS-1 tripwires now assert a false premise in their own test NAMES ("CS-1
+#             has not landed"); they are still correct as assertions and must stay green — 2.13/2.18
+#             delete them deliberately.
+#             THREE LEDGER CORRECTIONS. (1) The receiving log is NOT "unbuildable" — that claim is
+#             true of the CORPUS and false of the BUILD. events.receiving ships 270 fixture events
+#             (m001 87, m002 87, m074 96) with all eight fields non-null on 270/270, re-measured at
+#             context time. Ruled by Juan: build it behind anyReceivingEvents(), the shape of the
+#             shipped anyExpectedGoals / anyContestType / anyPlayerName / anyMinute gates — it
+#             renders on fixtures and SELF-REMOVES on corpus data, so AC 1's fifth log is satisfied
+#             by construction with no re-scope and no waiver. Say "unpopulatable on corpus data;
+#             fixture-only today", never "unbuildable". 2.9's aggregate tables STAY (decision 19
+#             parity) — aggregates and events are different data, so this is additive.
+#             (2) The defensive log's three absent-on-corpus columns are REMOVED not em-dashed, and
+#             that ALREADY SHIPPED at 2.9's review; under ruling 1 this story does not re-render
+#             that log at all, so there is nothing here to implement.
+#             (3) THE CONSTRUCTED TEST THE STUB DEMANDS ALREADY EXISTS. The stub flags the trap
+#             correctly — all three gates return TRUE on fixtures, so the corpus-real shape is
+#             exercisable only by a constructed test — but 2.9's review WROTE it:
+#             defensive-actions-model.test.ts asserts anyPlayerName and anyMinute both false on
+#             CORPUS_SHAPED_EVENT and both flipping true. Confirm green; write no duplicate. The
+#             trap still binds the NEW model, where movementType is non-null on 270/270 and
+#             stoppageMinute is null on 270/270 — both branches constructed-test-only.
+#             ALSO FILED, not fixed: the contract's ReceivingEvent description is STALE, still
+#             claiming "Story 2.9 renders #offers-to-receive and #movement-to-receive from the same
+#             array" — 2.9 reversed that and reads bundle.players; events.receiving had NO reader in
+#             app/ at all until this story. /contract is not edited here.
+#             VALIDATION PASS with two fresh-context subagents found 16 issues, all applied: five
+#             factual (a misquoted caption string and an undercount — FOUR es keys share "Ordenado
+#             por equipo y dorsal.", not two; two of six link labels were byte-identical to the
+#             section titles they compose against, so the hint would have printed twice; the
+#             "Tipo de desmarque" rejection was backwards, since that IS the shipped house term;
+#             the "Ofrecimientos" ruling was misattributed to 2.11b Task 3.8, which ruled the
+#             OPPOSITE — it shipped as a declared departure and 2.18 decision 3 is what binds; and
+#             "five events slices" is seven) and eleven dev-readiness (ExpertLayer has NO home/away
+#             LogSide values, only codes without teamIds, so the prescribed call would not compile;
+#             building them above the useMemo fails `eslint --max-warnings 0` on exhaustive-deps and
+#             putting them IN the dep array defeats the memo; the logs block must be a SIBLING of
+#             the isAbsent ternary or a players:null bundle hides six links and an 87-row table
+#             behind an unrelated absence; the receiving table needs its own overflow-x-auto wrapper
+#             or it gives the whole match route horizontal body scroll at 390px; and the link hint
+#             needs aria-describedby or AC 1 is false for exactly the readers AC 1 exists for).
+#             DEV IS BLOCKED ON 2.11b's REVIEW COMMIT: sprint-status reads 2-11b done, but at
+#             context time ExpertLayer.tsx, expert-model.ts, DataTable.tsx and both locale files
+#             were still MODIFIED AND UNCOMMITTED in the working tree. Every quotation in the story
+#             is from that working-tree state. Never `git add -A`; commit by explicit path.
 # 2026-08-04: story 2-11b CODE REVIEW — 3 layers, 32 raw findings triaged to 4 decisions (all ruled
 #             by Juan's delegation), 14 patches applied, 3 deferred, 8 dismissed. Status -> DONE.
 #             THE HEADLINE FINDING WAS A SURFACE TOKEN THAT NO TEST COULD SEE: the sticky column run
@@ -2254,10 +2390,21 @@ development_status:
   1-13-offers-movement-to-receive-parsers: done
   1-14-pass-network-extraction-nodes-edges: done
   1-15-cross-match-identity-resolution-normalized-spine: done
-  # BLOCKED-pending CS-1 (Story 2.3 sign-off change-set: ShotOutcomeDetail enum + map +
-  # pipeline constant/test updates — see deferred-work.md "Filed by Story 2.3 sign-off").
-  # Do NOT start 1-16 before CS-1 lands as its atomic AD-14 bump commit.
-  1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: backlog
+  # CS-1 UNBLOCKED THIS (093a1b2, logged decision 17 — schemaVersion 2 -> 3, ShotOutcomeDetail
+  # 22 -> 24, one-to-many outcome map); context written against the POST-bump contract.
+  # >>> NOW BLOCKED-PENDING-CS-2. <<< The four open rulings were put to Juan with their measured
+  # evidence and all four were ruled (2026-08-04): D1 PossessionSplitMetres RESHAPES to per-phase
+  # panels + team_width; D2 goalkeeping takes one successor change-set (per-team block, the five
+  # 208/208-null sub-fields nullable, involvement minute -> MinuteStamp); D3 GoalRecord.penalty is
+  # DERIVED from the shots join (16/16 measured, fail loud on a miss); D4 ShotEvent.at DECOMPOSES
+  # against all four period boundaries (+1 in regular play, {minute: boundary, stoppageMinute: N}
+  # in stoppage). D1 and D2 are contract shape changes, so they land as change-set CS-2 — one
+  # atomic AD-14 commit with its own spec, schemaVersion 3 -> 4 in six declarations, seven fixtures
+  # re-pinned, BOTH type trees regenerated, riding the two corpus-false set-play descriptions.
+  # CS-2 is Task 0 of the story and is NOT part of its commit. D3/D4 need no contract change.
+  # Consequence for Epic 2, owned by 2.10/2.19 not by 1.16: #pressing's metre block is deleted or
+  # re-shaped by D1, and CorpusNullableGoalkeeperRecord collapses to a re-export under D2.
+  1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: in-progress
   1-17-tournament-index-results-standings-leaderboards: backlog
   1-18-team-player-profile-artifacts: backlog
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
@@ -2280,7 +2427,7 @@ development_status:
   # 2026-08-04 note above. 2.11b depends on 2.11a; 2.11c depends on both. epics.md is NOT edited.
   2-11a-sortable-data-table-contract: done
   2-11b-expert-layer-per-player-tables: done
-  2-11c-expert-layer-event-logs: backlog
+  2-11c-expert-layer-event-logs: review
   2-12-tournament-hub-results-standings: backlog
   2-13-tournament-leaderboards: backlog
   2-14-header-search: backlog
@@ -2298,3 +2445,59 @@ development_status:
 #             NOTE: 2.11a's code reached main inside 54f7093 and 0c407b3 (concurrent sessions'
 #             sweeping stage captured it), not under its own commit. The review patches on top are
 #             uncommitted as of this line.
+# 2026-08-04: story 1-16 context created and moved to ready-for-dev — Match Bundle emission, the
+#             story every extraction story filed against. Written against the POST-CS-1 contract
+#             (schemaVersion 3, HEAD 4682639). The creation probe measured the staged spine
+#             (work/spine/, 104 files) rather than trusting the ledger, and four findings changed
+#             the shape of the work. (1) tacticalIdentity BLOCKS EVERY BUNDLE and no ledger entry
+#             said so: it is required and non-nullable, lineHeight/teamLength are required inside
+#             it, PossessionSplitMetres requires both halves as non-nullable Metres, and the corpus
+#             prints THREE panels x THREE measures per state (3,744 values against the contract's
+#             832) plus an unmodelled team_width. There is no null escape on that path. (2)
+#             goalkeeping is unemittable for a bigger reason than the per-keeper/per-team mismatch:
+#             FIVE contract-required NON-nullable sub-fields are null on 208/208 (feet/hands/throw
+#             Techniques, byBodyType, crossesFacedCompleted). (3) Two blockers no ledger entry
+#             names — GoalRecord.penalty is required with no carrier (a clean 16/16 shots join was
+#             measured), and ShotEvent.at cannot be derived as the 1.5 filing assumes: cross-checked
+#             against Domain A's goal glyphs over 208 unique scorer-goal pairs, time_raw is the
+#             ELAPSED-minute floor, -1 on 204 and -2 on 4, so emitting it at face value shifts all
+#             2,571 shots by a minute; and 153 of 2,571 rows sit period-ambiguous in the 45..48 band
+#             with no drop to resolve them (24 of 208 innings carry a drop, resolving 32 rows).
+#             (4) TWO LEDGER CLAIMS CORRECTED: DefensiveActionEvent.contestType and
+#             ReceivingEvent.movementType are ALREADY nullable in the contract, so contestType is
+#             not an emission blocker and DefensiveActionEvent has THREE unfulfillable required
+#             fields, not four. Confirmed and carried unchanged: emit null never [] on all four
+#             Domain D families (2.8 fails closed both ways); involvement from the MATRIX, never
+#             Domain G; the >= to == fixture tightening belongs to 1.18/1.19, not here (it is red
+#             on 38 of 66 fixture nodes today). Budget measured: gzip -9 of the largest fixture is
+#             17,023 bytes, 3.4% of 500,000 — so the gate must be driven RED by a constructed
+#             bundle or it is the third gate-that-cannot-fail this project has shipped. Emission
+#             lands in pipeline/precompute/ (ARCHITECTURE-SPINE.md:178), not a new package.
+#             FOUR RULINGS ARE OPEN and are surfaced to Juan rather than guessed.
+#             Two fresh-context validation subagents then found six more defects that would have
+#             broken emission, all confirmed by re-measurement and all now folded in: (a) 14 shot
+#             rows carry time_raw >= 120 (m074/m082/m086/m088/m100/m104), so the +1 overflows
+#             Minute's maximum and SIX bundles could not be emitted — and D4 originally analysed
+#             only the 45..48 boundary while 319 rows sit in the 89..106 band where the 90/105/120
+#             boundaries live; (b) TeamSetPlays.cornersBySide is required and has NO source in the
+#             spine (contract decision 14 makes it precomputed precisely because AD-5 forbids the
+#             App summing three numbers) — without deriving it every bundle fails validation for
+#             both teams on all 104; (c) walk_subschemas does not resolve $ref, so the prescribed
+#             decimals_map found only the five integer declarations in match-bundle and would have
+#             rounded no float in the artifact while validating clean; (d) metadata.knockoutScore
+#             is required on all 104 matches including the 72 group ones; (e) LineupEntry is
+#             additionalProperties:false with no own-goals slot, so the spine's own_goals must be
+#             DROPPED, not camelCased; (f) FreeKickCounts' nesting relation and the corner-STYLE
+#             partition are corpus-false (0/208 and 96/208) yet are asserted by a shipped
+#             invariant test. The fact-checker also corrected four of the story's own numbers
+#             (gzip 16,943 -> 17,023 measured the prescribed way, 48 -> 38 fixture nodes, the
+#             metre values ARE integral so the ledger was right and the story's correction was
+#             wrong, and the shootout prose IS home-away — it is simply not winner-first).
+#             ALL FOUR RULINGS TAKEN BY JUAN THE SAME DAY, each as recommended, and folded into
+#             the story with its rejected alternatives recorded: D1 reshape (not aggregate, not
+#             nullable), D2 one successor change-set (not goalkeeping:null), D3 derive the penalty
+#             flag (not always-false, not nullable), D4 four-boundary decomposition (not
+#             minute-only, not nullable-at). Net effect: the story is BLOCKED-PENDING-CS-2, the
+#             same shape as its CS-1 block, and CS-2 is Task 0 with its own spec and its own
+#             atomic commit. Two of eleven mapping subtasks (4.7 tacticalIdentity, 4.9
+#             goalkeeping) wait on it; every other task is implementable today.

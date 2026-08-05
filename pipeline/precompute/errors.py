@@ -90,3 +90,52 @@ class SpineError(PrecomputeError):
     """
 
     what = "spine construction failed"
+
+
+class EmitError(PrecomputeError):
+    """Match Bundle emission could not complete (Story 1.16).
+
+    The general emission failure: a spine file that will not parse into a bundle, a
+    shoot-out prose string that will not decompose, a penalty-goal shot that joins no
+    lineup goal, a derived count that contradicts its own cross-check. Anything with a
+    sharper class below uses that class instead.
+    """
+
+    what = "bundle emission failed"
+
+
+class BudgetExceededError(PrecomputeError):
+    """A bundle breached the AD-4 / NFR-1 payload budget.
+
+    SM-C2 makes this a design conversation, never a serializer tweak: the resolution is a
+    split or a logged budget decision, and NEVER dropping a field, truncating an array or
+    lowering a precision to fit. The message MUST carry both byte counts per offending
+    bundle — "over budget" alone does not say whether the overage is one row or one order
+    of magnitude, and those need different answers.
+    """
+
+    what = "payload budget exceeded"
+
+
+class BundleValidationError(PrecomputeError):
+    """A bundle failed the `/contract` schema before it was written.
+
+    Distinct from `EmitError` because the bundle was BUILT successfully and is wrong
+    against the contract, which points at the mapping rather than at the source data.
+    Carries every violation at once — `validate_artifact` reports them all, and the whole
+    point of that is lost if this re-raises only the first.
+    """
+
+    what = "bundle is schema-invalid"
+
+
+class UnmappedFieldError(PrecomputeError):
+    """The snake_case -> camelCase boundary is not total for some object.
+
+    Either a source key reached the boundary with no declared target, or a contract-
+    required target was left unfilled. Both are silent-corruption risks that a schema
+    violation localizes badly or not at all, so the boundary asserts them itself and names
+    BOTH the offending key and the `$def` whose property set it was measured against.
+    """
+
+    what = "emit mapping is not total"

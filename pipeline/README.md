@@ -1585,3 +1585,219 @@ shape, `storyStats`, aggregation, leaderboards and profiles are all Story 1.16's
 aggregate exists yet to reference an id, and building one here would smuggle 1.17's work
 into a story whose deliverable is the namespace. What 1.15 owes that clause is the
 guarantee that makes it cheap — one id per entity, minted once, pinned.
+
+
+---
+
+## Story 1.16 — Match Bundle emission (`pipeline/precompute/emit.py`)
+
+AD-9's second phase, and the first module whose output another system consumes. It reads no
+PDF and resolves no identity: a pure function from the staged spine to `data/matches/`.
+
+### The CLI
+
+```
+pipeline\venv\Scripts\python.exe -m pipeline.precompute.emit --expect-matches 104
+```
+
+| flag | meaning |
+|---|---|
+| `--spine-dir` | staged spine to consume (default `work/spine`) |
+| `--data-dir` | where bundles are written (default `data`) |
+| `--expect-matches N` | assert exactly N bundles are emitted |
+| `--dry-run` | validate and measure, write nothing |
+
+Exit codes are the house contract: `0` clean, `1` a finding (a schema-invalid bundle, a
+budget breach, an unmapped required field, a match count that misses `--expect-matches`),
+`2` the harness could not run. **All 104 or none** — validation, rounding and the budget
+measurement all complete before the first byte is written, because a half-emitted
+`data/matches/` is worse than an empty one: `check_committed_data` would pin a partial
+namespace as the immutability baseline. Stale bundles a run did not produce are deleted,
+for the same reason.
+
+This phase writes **no run-manifest entry** and registers **no FR-15 gate check**. Both
+contracts are per-report (AD-8); emission is corpus-level and all-or-nothing, so there is no
+per-match terminal status to record. The reserved "1.16 bundle emission" slot in
+`pipeline/validate/checks.py` stays reserved.
+
+### The mapping boundary
+
+`snake_case` stays in `work/`; camelCase binds `/contract` and `/data`, and the mapping
+happens at this boundary only. It is **explicit per field, never a generic `re.sub`** — a
+generic mapper silently renames a key the contract does not have, and the failure surfaces
+as a schema violation pointing at the wrong place.
+
+Totality is asserted as **set equality against the `$def`'s declared properties**, not as
+"no key contains `_`". The cheap check is not sufficient: single-word snake keys are
+indistinguishable from correct camelCase, so it misses `linked` and `ordinal` — two of the
+five keys `ShotEvent` must drop (with `source`, `shirt_number` and `time_raw`). Set
+equality costs the same and also catches a camelCased-but-misnamed field.
+
+`own_goals` is **dropped** from each `LineupEntry`, not renamed: the entry has no own-goals
+slot, and own goals reappear only in `metadata.goals`, credited to the team that
+**benefited** while `scorerPlayerId` names the scorer (AD-6's one live trap here).
+
+### The five declared nulls, and why `null` rather than `[]`
+
+`null` and `[]` are distinct states (decision 9) and jsonschema will not tell you which one
+you wrote. Each of these is a declared null with its reason in the code, never a
+fall-through:
+
+| table | why |
+|---|---|
+| `events.crosses` | `deliveryType` null on 2,608/2,608; `playerId`, `playerName`, `at` have no carrier — four non-nullable required fields |
+| `events.defensiveActions` | `playerId`, `playerName`, `at` unfulfillable. `contestType` is **not** a blocker: it is required-but-nullable and the corpus-real null is what the contract expects |
+| `events.receiving` | no events at all — the family stages values, not events |
+| `events.passNetworkNodes` | `x`/`y` are `PitchX`/`PitchY` with no null branch, and there are 0 pitch frames on 208/208 pages |
+| `events.shootoutAttempts` | staged `None` on 104/104; PMSR prints only the aggregate cover line, which belongs in `knockoutScore.shootoutScore` |
+
+`passNetworkEdges` is emitted **populated beside a null node table** — schema-legal, and
+the ledger's binding. Edges are never deduplicated: a reciprocal pair is two edges, and
+6,835 corpus pairs print different volumes in the two directions.
+
+### The precision rule (`serialize.py`)
+
+`x-decimals` is the **entire** enforcement of AD-8's fixed precision. No `multipleOf`
+appears anywhere in `/contract` (deliberately), the keyword is ignored by every validator
+and by the codegen, and a bundle carrying 17-digit floats validates clean.
+
+The map is **derived at runtime, never transcribed**, and it is built across **both**
+contract documents. `walk_subschemas` does not resolve `$ref`: walking
+`match-bundle.schema.json` alone yields exactly five `x-decimals` declarations, all `0` and
+all integers, so a map built that way rounds no float in the artifact and passes its own
+test by vacuity. A Match Bundle reaches 11 shared `$defs` (the twelfth, `Rank`, is a
+leaderboard type) plus 5 inline: 16 names. `StoppageMinute` declares inside its `anyOf`
+integer branch rather than at the `$def` root.
+
+Rounding is not cosmetic — it is what makes byte-identity possible. An unrounded float
+carries whatever the arithmetic produced, so two code paths reaching one value by different
+routes serialize differently.
+
+### The payload budget (`budget.py`)
+
+`gzip -9` over the canonical bytes, `BUDGET_BYTES = 500_000` decimal. **The unit is not
+what the fixture guard measures**: `test_fixtures.py` asserts raw `st_size`, and the two
+coexist — that one is a cheap fixture-shape tripwire, this is the enforcing gate. Do not
+"align" them.
+
+Measured corpus maximum: **11,784 gzip-9 bytes (`m082-belgium-senegal`), 2.36% of the
+ceiling**; minimum 9,092 (`m089-paraguay-france`). The gate cannot fire on this corpus,
+which is precisely why it ships with a **constructed** over-budget test that drives it red.
+A gate that cannot fail reads greener than no gate while proving strictly less.
+
+Placement in `precompute/` rather than `validate/` is a deliberate departure:
+`ARCHITECTURE-SPINE.md:176` files budget asserts under `validate/`, but this is a property
+of the bytes this module writes, measured at the moment of writing, and `validate/` is the
+per-report FR-15 gate that never sees an emitted artifact.
+
+### RULED D4 — the shot clock, derived and measured
+
+**`time_raw` is not the football minute; it is one less.** The shots table prints the
+elapsed-minute floor, so second-half kickoff prints `45` and is football minute 46.
+Cross-checked against Domain A's goal glyphs over **208 clean 1:1 pairs**:
+`time_raw - (minute + stoppage)` is **-1 on 204** and **-2 on 4** (`m012` Gyokeres, `m032`
+Freeman, `m064` De Bruyne, `m095` Messi — those four are the two printed clocks disagreeing,
+not a rule failure).
+
+The rule: with `E = time_raw + 1` and the period's regular-play end boundary `B`,
+`E > B` is stoppage — `{minute: B, stoppageMinute: E - B}` — and otherwise it is plain
+`{minute: E, stoppageMinute: null}`. Verified against every goal stamp that carries
+stoppage, including `m082` `time_raw` 130 to **120+11**, reproducing the ledger's
+`PMSR-M82-BEL-V-SEN` figure exactly. This also keeps `at.minute` inside `Minute`'s 0..120
+maximum: 14 rows across six matches carry `time_raw >= 120`, and a naive `+1` makes them
+121..132 so those six bundles could not be emitted at all.
+
+**The period is the only unknown, and it comes from three sources in order.** The match's
+own momentum series is a complete per-minute clock, and its highest regular minute says
+whether extra time was played — exactly **95 matches end at 90 and 9 at 120**, nothing in
+between. In a two-period match every elapsed count above 90 is second-half stoppage with no
+competing reading. Within a team-inning, a **drop** in the printed clock proves a boundary
+was crossed, so a backward pass pushes the range default down for rows before a drop.
+Everything else defaults to regular play, which is the ruling's own wording.
+
+**Residual ambiguity, filed rather than buried.** Of 2,571 shot rows: **2,247 are
+structurally unambiguous** given the match's own clock, **109** are resolved by order
+evidence, and **215 are defaulted with no evidence either way** (199 at boundary 45, 14 at
+90, 2 at 105). The ambiguity is provably irreducible — the same `time_raw` resolves both
+ways in ground truth (`49` is `45+5` in m022/m023 but `50` in m028). Scored against the 208
+independent goal stamps the rule agrees on **198**, failing on the 4 source disagreements
+above and 6 genuine no-evidence rows. It is **not** closed by making the numbers agree.
+
+### RULED D3 — `GoalRecord.penalty` from the shots join
+
+`penalty` is required and `metadata.goals` is non-nullable, so this blocked all of Domain A;
+no penalty flag exists anywhere in the spine. The shots table carries
+`delivery_type: "penalty"`, and corpus-wide **22 penalty shots, 16 with `outcome == "goal"`,
+all 16 joining a lineup goal by the same `player_id` with 0 failures**. Two independently
+printed sources reconciled is not a guess — and it ships only because the join is
+re-derived here and **fails loud on any unmatched penalty-goal shot**.
+
+**5 of the 16 scorers scored more than once**, so a tiebreak is needed. It is exact, not
+nearest-wins: the shot's elapsed count must equal the lineup goal's. All five resolve
+uniquely (m010 Havertz's penalty is the `45+5` goal, elapsed 50 == `time_raw` 49 + 1), which
+independently confirms D4's clock from the other direction.
+
+### Set plays — one derivation and two relations that must NOT be asserted
+
+`cornersBySide` is **required**, the block is closed, and the spine has no side block —
+without the derivation every bundle fails validation for both teams on all 104 matches. It
+is summed across the three delivery types and cross-checked: `left + right == total` per
+type and overall, and `sum(type.total) == totalCorners`, both corpus-true on 208/208.
+
+Two relations the contract's own `description`s assert are **corpus-false** and are
+deliberately not asserted: `direct == directOnTarget + directOffTarget` holds on **0/208**
+(160 innings carry `on + off == 0` while `direct > 0`), and
+`sum(cornersByDeliveryStyle) == totalCorners` on **96/208** (112 under, never over). Both
+hold 6/6 in the hand-authored fixtures, which is how they came to be written. Asserting
+either makes a correct bundle look broken. The corpus-true relations, and the only ones
+asserted, are `direct + indirect == totalFreeKicks`, the two corner relations above, and
+`totalSetPlays == freeKicks + corners + throwIns + penalties`.
+
+### `knockoutScore` is required on all 104 matches
+
+It is a bare non-nullable `$ref` named in `MatchMetadata.required`; there is no
+"knockout matches only" branch, and reading Task 6 as scoped to the 32 knockout ties ships
+72 bundles missing a required key. Measured split: **95 `regulation`, 5 `extra-time`,
+4 `shootout`**.
+
+`scoreAfter90` is **derived from `metadata.goals`, not copied from the cover**. The cover
+prints one final score — after extra time when extra time was played — and no after-90
+line, so copying it would state the wrong number wherever an ET tie was not level at 90.
+The goal tally is cross-checked against the cover score for the full match first; a
+disagreement fails loud rather than picking a side.
+
+The shoot-out prose decomposes on exactly 4 matches. **`a`-`b` is home-away, not
+winner-first**: `m074` prints `3-4` with Paraguay (away) winning, and the committed fixture
+pins `{"home": 3, "away": 4}`. The named winner's own side is then asserted to hold the
+larger number, which is what proves the reading rather than assuming it.
+
+### `CardType` — `second-yellow` is emitted by nothing, deliberately
+
+The corpus exposes exactly two card fill RGBs across all 104 reports (**270 yellows,
+13 reds — 283 cards**) and a second yellow is indistinguishable from a straight red.
+"Yellow earlier plus red later" is a guess: a straight red after a booking is legal and
+common. The unused enum value is legal and stays; the gap is filed, not fixed.
+
+### `involvement` comes from the matrix, never from Domain G
+
+Recorded here because the node table does not ship today and the derivation must not be
+re-litigated when a successor change-set relaxes `x`/`y`. Domain G disagrees with the matrix
+on **1,290 of 3,289** rows one way and **3,145 of 3,289** the other, and sourcing from it
+would drive `involvement` below a node's own incident edges — arithmetically impossible.
+Under matrix derivation `involvement` is identically the sum of a node's incident edge
+volumes, verified on 3,289/3,289 rows with 0 mismatches.
+
+### BLOCKED-PENDING-CS-2
+
+Two mappers cannot be written against `schemaVersion 3` and are **not stubbed with a
+guessed shape**:
+
+* **`tacticalIdentity` (D1)** — `PossessionSplitMetres` models 4 metres per team against a
+  corpus printing 18 (3,744 values against the contract's 832), plus a `team_width` with no
+  destination in `/contract` at all. Non-nullable throughout, so this blocks every bundle.
+* **`goalkeeping` (D2)** — five contract-required non-nullable sub-fields are null on
+  208/208 team-innings, and the record is per-keeper while the source is per-team
+  (7 of 208 innings used two keepers and still print one team-level block).
+
+Everything else is complete: **all 104 bundles build and validate on every one of the nine
+unblocked root keys, with `tacticalIdentity` and `goalkeeping` the only violations.**

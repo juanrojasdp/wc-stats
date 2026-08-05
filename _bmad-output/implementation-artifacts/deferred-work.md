@@ -1548,3 +1548,272 @@ convention. All three are claim-accuracy defects in what 2.18 filed, not new def
   plus a mid-session locale toggle is an uncommon pair. **Owner: 2.19, or whichever story next
   re-opens `DataTable`'s announcement contract.**
 
+## Filed by Story 2.11c — the Expert Layer's full event logs (2026-08-05)
+
+- **The Expert log links land on the SECTION, not on an open table — the ruled limit, filed rather
+  than hidden.** Ruling 2 makes the six links honest anchors and builds no disclosure-opening
+  plumbing, so a link states where the table is and that "Ver los datos" opens it
+  (`aria-describedby`), and the reader still has to press that button. **Verified live at both
+  widths rather than asserted:** clicking `#defensive-actions` at 390px set the hash, let
+  `TacticalLayer`'s `hashchange` listener auto-expand the section (`aria-expanded` false -> true)
+  and landed the section top at exactly 72px (`scroll-padding-top: 4.5rem`), with the disclosure
+  still `aria-expanded="false"` and zero tables rendered inside it; at 1236px the section was
+  already expanded, so the link was a pure scroll to the same 72px, with the same closed
+  disclosure. **Four blockers, each measured at create-story and unchanged:** `ViewDataDisclosure`'s
+  `open` is a private `useState(false)` with no prop, no `defaultOpen`, no ref and a `useId()`
+  region id that is neither authorable nor present in the DOM while closed; `PitchPanel` forwards
+  exactly two props (`panelTitle`, `trailing`); `sectionIdFromHash` is whole-string equality against
+  the eleven `SectionId`s, so no finer fragment resolves and `#shot-maps-log` returns `null`
+  SILENTLY; and `#shot-maps` is ambiguous, holding two independent disclosures. Real plumbing is an
+  `openNonce` + authored id on `ViewDataDisclosure`, a per-panel key through `PitchPanel`, a finer
+  fragment grammar, a relaxed `sectionIdFromHash` and edits to all five section components — ~12
+  files across every match-page section — and it would inherit the three hash-re-entry defects
+  already filed above, of which "an unchanged hash never re-fires `hashchange`" is fatal to a link
+  list: clicking the same log link twice would be a silent no-op. **Deferred: the blast radius is
+  the whole match route, for navigation that is already honest. Owner: 2.19, or whichever story
+  next needs deep-linking into a disclosure.**
+
+- **CORRECTION, measured: the receiving-log AC is NOT unbuildable.** The entry above — *"Story
+  2.11's receiving-log AC is UNBUILDABLE and needs the same re-scope 2.9 took"* — is true of the
+  CORPUS and false of the BUILD, and this story shipped the log. The original entry is left
+  untouched; this bullet is the correction. **The fixtures carry 270 receiving events** — m001 87,
+  m002 87, m074 96 — with all eight fields non-null on 270/270, re-measured at implementation time
+  and pinned in `receiving-log-model.test.ts`. Every column `EXPERIENCE.md:221` names has a source
+  in the data the app serves today. Juan RULED (2026-08-04) the symmetric answer: build it behind
+  `anyReceivingEvents()`, the shape of the shipped `anyExpectedGoals` / `anyContestType` /
+  `anyPlayerName` / `anyMinute` gates — it renders on fixtures and SELF-REMOVES on corpus data,
+  where `events.receiving` is null, so AC 1's fifth log is satisfied by construction with no
+  re-scope and no waiver. **Say "unpopulatable on corpus data; fixture-only today", never
+  "unbuildable".** 2.9's aggregate tables STAY (decision 19 parity): aggregates and events are
+  different data, so the log is additive, never a duplicate. Also corrected: the entry says "all
+  eight required fields"; 1.13's own Task 7.1 enumerates SEVEN, since `teamId` is derivable from
+  the per-team page anchor. The conclusion about the corpus is unaffected.
+
+- **CORRECTION: the constructed defensive-gate test the 2.11 split asked for already exists.** 2.9's
+  code review wrote it. `defensive-actions-model.test.ts` builds a `CORPUS_SHAPED_EVENT` through the
+  authorised `as unknown as` cast and asserts `anyPlayerName(rows)` and `anyMinute(rows)` are both
+  `false`, then flips each to `true` with a clock-carrying and a name-carrying event. Confirmed
+  green in this story's run; no duplicate was written. **The trap itself still binds the NEW model**,
+  where the unreachable-from-fixtures branches are different ones — `movementType` is non-null on
+  270/270 and `stoppageMinute` is null on 270/270 — and both are covered by
+  `receiving-log-model.test.ts`'s constructed block.
+
+- **The contract's `ReceivingEvent` description is STALE.** It still claims *"Story 2.9 renders
+  #offers-to-receive and #movement-to-receive from the same array"*, which 2.9 REVERSED: those two
+  sections read `bundle.players`, and `events.receiving` had **no reader in `app/` at all** until
+  this story, which is now its first and only one. Stale in `contract/match-bundle.schema.json` and
+  in both generated `contract-types.d.ts` copies. **`/contract` is NOT edited by this story
+  (declared scope boundary). Owner: the next contract change-set.**
+
+- **`anyPlayerName` / `anyMinute` are family-agnostic and want lifting.** Both live in
+  `defensive-actions-model.ts` but are declared with STRUCTURAL parameters
+  (`readonly { playerName: string | null }[]`, `readonly { minuteLabel: string | null }[]`), and as
+  of this story they have a cross-family consumer: `ExpertLayer` imports them to gate the receiving
+  log's player and minute columns. `marker-model.ts` is the natural home — it already owns
+  `LogSide`, `resolveSide` and `sideRank`, the other three things every log model shares.
+  **Deferred: the lift touches a shipped module for no behaviour change, and this story's own scope
+  boundary bars re-opening settled files. Owner: whichever story next adds a fourth log.**
+
+- **Three CS-1 tripwires now assert a false premise in their own names.** `i18n.test.ts`'s *"does
+  NOT carry ShotOutcomeDetail labels — those ride CS-1"* and *"still mints NO ShotOutcomeDetail
+  namespace (decision 12 — CS-1 has not landed)"*, plus `glossary.test.ts`'s *"mints no
+  ShotOutcomeDetail id"*. CS-1 landed in `093a1b2` + `4682639` (`schemaVersion` 2 -> 3,
+  `ShotOutcomeDetail` 22 -> 24). **They are still CORRECT as assertions and must stay green** — no
+  `enums.shotOutcomeDetail` namespace exists in either locale, on purpose, because AD-14 decision
+  CR-2 makes `outcome` authoritative and forbids deriving marker encoding from the detail. Only
+  their RATIONALE is stale. Two comments say the same thing (`es.ts`, `glossary.ts`). **Owner:
+  2.13/2.18, which must delete them deliberately when detail labels ship.** Note the glossary one is
+  a blunt `expect(id).not.toContain("detail")` that will reject *any* future glossary id containing
+  "detail", not only a ShotOutcomeDetail one.
+
+- **The Expert Layer's `<md` column-group ToggleGroup overflows the DOCUMENT, and it is 2.11b's, not
+  2.11c's — proven by differential, not asserted.** Measured in a same-origin iframe against the
+  static export. At a 390px viewport in **EN**, expanding the layer takes
+  `document.body.scrollWidth` to **412** against a `clientWidth` of **375** — a 37px horizontal
+  body scroll, a WCAG 1.4.10 reflow failure. **Hiding this story's entire logs block leaves it at
+  412; hiding the `aria-label="Column group"` ToggleGroup alone returns it to 375.** The control is
+  `w-fit` with `shrink-0` items and renders 396px wide on the EN labels ("In possession" /
+  "Out of possession" / "Physical") against 323px on the Spanish ones, which is why 2.11b's review —
+  which measured in ES — did not see it. **In ES at 390px the page is clean: 375 == 375 with the
+  layer expanded**, so 2.11c's own AC is discharged. At **320px the same control overflows in BOTH
+  locales** (339 vs 305, again unchanged by hiding the logs block; the 5px present while collapsed
+  is 2.18's already-filed Key Statistics tile pair). The candidate fix is a single class —
+  `flex-wrap` on the ToggleGroup, or shortening the EN group labels — but changing a shipped
+  narrow-layout control is a UX ruling this story was not given, and no task authorises it.
+  **Deferred: pre-existing, one class wide, needs a copy/layout ruling. Owner: 2.19, or whichever
+  story next re-opens the Expert Layer's `<md` controls.**
+
+
+
+---
+
+## Filed by Story 1.16 implementation (Match Bundle emission)
+
+Every number below was re-derived from the 104 staged spine files at implementation time,
+not carried forward from the story's Dev Notes. Where a measurement disagreed with a pinned
+figure, the measurement won and the disagreement is recorded as a finding.
+
+### Closed by this story
+
+- **The four Domain D emission blockers are DISCHARGED as emission decisions (1.11, 1.12,
+  1.13, 1.14).** `events.crosses`, `events.defensiveActions`, `events.receiving` and
+  `events.passNetworkNodes` all emit a **declared `null`**, each with its reason in
+  `pipeline/precompute/emit.py::build_events`. Two ledger claims were **corrected against
+  the post-CS-1 contract and must not be carried forward**: `DefensiveActionEvent.contestType`
+  and `ReceivingEvent.movementType` are already `anyOf [<enum>, null]`, so `contestType` is
+  **not an emission blocker at all**, and `DefensiveActionEvent` has **three** unfulfillable
+  required fields (`playerId`, `playerName`, `at`), not four. **Closed.**
+
+- **The `time_raw` to `MinuteStamp` deferral (1.5) is DISCHARGED.** The decomposition is
+  implemented, derived and measured — see the Story 1.16 section of `pipeline/README.md` for
+  the rule and the residual. **Closed**, with the residual re-filed below as its own entry.
+
+- **The shoot-out prose decomposition (1.15) is DISCHARGED.** All four strings parse; the
+  `a`-`b` reading is home-away and is asserted rather than assumed. **Closed.**
+
+- **The `GoalOwnGoal` emission flip (1.6) is IMPLEMENTED but NOT yet discharged.** The
+  mapper emits all 14 corpus own goals with `ownGoal: true`, credited to the benefiting
+  team. The row at `contract/README.md:197` says it is kept *"until 1.16 flips it"* —
+  retiring it is deferred until bundles actually land in `data/matches/`, which waits on
+  CS-2. **Deferred: prose-only edit, blocked on real emission. Owner: Story 1.16 at CS-2.**
+
+- **The duplicate-`playerId` invariant that Story 2.11b's review routed here BY NAME is
+  DISCHARGED.** Asserted at the emitter for both `players[]` and `metadata.lineups`, and
+  measured clean on 104/104 bundles. The app-side guard 2.11b offered as a fallback is not
+  needed. **Closed.**
+
+- **The two goal-prevention denominators that Story 2.10's review routed here BY NAME
+  ("Owner: Story 1.16 (to measure)") are MEASURED, and the relation HOLDS.**
+  `sum(byInterventionType) == attemptsFaced` is true on **208/208** team-innings, delta
+  histogram exactly `{0: 208}`. So `GoalkeepingSection.tsx`'s printed denominator states
+  something its own visible numbers support, no successor `description` correction is
+  needed, and no 2.19 App fix is owed. The second half of the relation
+  (`byBodyType` sums to `totalInterventions`) is **not measurable from data** — `byBodyType`
+  is null on 208/208 — and remains open by construction rather than by omission.
+  **Closed on the measurable half; the unmeasurable half is subsumed by CS-2's D2a.**
+
+- **The `/data` pinning baseline (1.15) is NOT yet dischargeable.** `check_committed_data`
+  still prints *"baseline unavailable … This is NOT a pass"* because `data/matches/` cannot
+  be written until CS-2 lands. What IS discharged is the **scope question 1.15 left open**:
+  `COMMITTED_ID_KEYS` is a seven-key map and an id under any other key is invisible to it.
+  Measured over real bundles, **every key a Match Bundle carries whose name ends in `Id` is
+  exactly one of those seven, zero uncovered** — so the check is total *for this artifact*.
+  That is now pinned by `test_the_committed_id_check_is_total_for_a_match_bundle` rather
+  than noted, because it stops being true the moment a successor change-set adds an
+  id-bearing field. **Deferred: the baseline itself. Owner: Story 1.16 at CS-2.**
+
+### Corrections to figures this story re-derived
+
+- **CORRECTION — the shot-clock ambiguity is 215 rows, not 153.** Story 1.16's own Dev
+  Notes pin *"153 of 2,571 rows sit ambiguous in the `45..48` band with no drop"*. Measured
+  against each match's **own momentum clock** — which bounds every period's stoppage length
+  and which the original probe did not use — the correct partition of all 2,571 shot rows is
+  **2,247 structurally unambiguous, 109 resolved by order evidence, and 215 defaulted with
+  no evidence either way** (199 at boundary 45, 14 at boundary 90, 2 at boundary 105). The
+  original figure counted only the first-half band and only one resolution source. The
+  ambiguity is **provably irreducible**: the same `time_raw` resolves both ways in ground
+  truth — `49` is `45+5` in m022 and m023 but `50` in m028; `45` is `45+1` in m050 but `46`
+  in m051 and m085. No rule on `time_raw` alone can be correct.
+  **Deferred: nothing to fix — this is a source limitation, recorded so a reviewer does not
+  read the default as a claim. Owner: nobody; it closes only if a per-row period marker is
+  ever found in the PDF.**
+
+- **CORRECTION — the "24 team-innings carry a drop, resolving 32 rows" figure.** The drop
+  count reproduces exactly (**24 of 208**), but it produces **24 boundary crossings**, and
+  under the full four-boundary rule those innings carry **109** band rows whose period the
+  order evidence settles — not 32. The original 32 counted only rows in the `45..48` band.
+  **Deferred: bookkeeping only, no behaviour change. Owner: none.**
+
+### Filed, not fixed
+
+- **The four shot rows where the two printed clocks disagree by 2, not 1.** Over 208 clean
+  1:1 scorer-to-goal-shot pairs, `time_raw - (minute + stoppage)` is `-1` on 204 and `-2` on
+  four: `m012 gyokeres-viktor-swe` (58 vs 60), `m032 freeman-alex-usa` (42 vs 44),
+  `m064 de-bruyne-kevin-bel` (65 vs 67), `m095 messi-lionel-arg` (82 vs 84). The shots table
+  and the lineup goal glyphs are independently printed sources and they simply disagree on
+  these four. The emitter uses the shots table's own clock and does **not** reconcile them —
+  the standing 1.8/1.12 rule. Four rows of 2,571.
+  **Deferred: a source disagreement, not a defect. Owner: whoever next re-reads the shots
+  table's clock against Domain A, if the PMSR ever prints a tiebreaker.**
+
+- **`CardType.second-yellow` has no producer and cannot get one from this corpus.** Exactly
+  two card fill RGBs appear across all 104 reports — **270 yellows and 13 reds, 283 cards** —
+  and a second yellow is visually identical to a straight red. Inferring one from
+  "yellow earlier, red later" would be a guess: a straight red after a booking is legal and
+  common. The enum value stays (an unused enum value is legal, and removing it is a bump).
+  **Deferred: unfixable from the source. Owner: none unless a future PMSR revision
+  distinguishes the two.**
+
+- **`scoreAfter90` is derived from the goal records, and that is a departure worth naming.**
+  The cover prints ONE final score — after extra time when extra time was played
+  (`match-bundle.schema.json:211`) — and no separate after-90 line, while `scoreAfter90` is
+  required and non-nullable. Copying the cover score into it would state the wrong number
+  for any ET tie that was not level at 90. The emitter instead counts `metadata.goals` at
+  `minute <= 90`, after cross-checking the full-match goal tally against the cover score and
+  failing loud on a disagreement (clean on 104/104). This is a reconciliation of two printed
+  sources, not an invention, but it is a **derivation the contract does not describe**.
+  **Deferred: recorded so a reviewer does not read it as a copy. Owner: none; revisit if a
+  successor change-set makes `scoreAfter90` nullable.**
+
+- **The `>=` to `==` tightening of
+  `test_every_pass_network_node_is_at_least_as_involved_as_its_own_edges` was NOT taken, and
+  the reason is now measured on real data rather than argued.** Under matrix derivation
+  `involvement` is *identically* the sum of a node's incident edge volumes — verified here on
+  **3,289/3,289** rows with 0 mismatches. But that test parametrizes over `data/fixtures/`,
+  whose edge lists are a hand-authored subset, so flipping the operator turns 38 of 66
+  fixture nodes red for a reason that is not a defect. **Deferred: lands with the fixture
+  regeneration. Owner: 1.18/1.19.**
+
+- **`test_pass_network_edges_join_players_who_have_a_node` was re-scoped, and the re-scope is
+  larger than the guard.** Six unguarded nullable-container reads were fixed
+  (`test_fixtures.py`: two `bundle["events"]["shots"]`, two `bundle["players"]`, and both
+  `passNetworkNodes`/`passNetworkEdges` in the join). But the guard alone would make every
+  edge fail *"dangling edge"* on the corpus-real shape, which is a true statement about a
+  **correct** bundle. So the invariant now **skips when `passNetworkNodes` is `null`** and
+  applies when it is a list, including `[]`. `test_a_null_node_table_does_not_silently_skip_
+  a_real_dangling_edge` pins all three states by construction, because a skip is exactly how
+  an invariant stops being enforced without anyone noticing. **Closed.**
+
+- **`pipeline/precompute/budget.py` sits in `precompute/`, not `validate/`, and that is a
+  declared departure.** `ARCHITECTURE-SPINE.md:176` files *"budget + route-manifest asserts"*
+  under `validate/`. It lands here because it is a property of the bytes this module writes,
+  measured at the moment of writing, and `validate/` is the per-report FR-15 gate that never
+  sees an emitted artifact. The rejected alternative — `pipeline/validate/budget.py` imported
+  by the emitter — splits one write-and-measure step across two packages. Stated in the
+  module docstring too. **Deferred: nothing to do; recorded so it is not read as a
+  structural violation. Owner: none.**
+
+- **`domain_e_checks` reads its own payload by bare subscript — RE-FILED, not discharged.**
+  The ledger routes this to *"whoever next touches the record-version contract (Story 1.16 is
+  the natural point, since it is the first consumer that reads staged records it did not
+  write)"*. Story 1.16 **is** that consumer, and the entry-point guard it would have needed is
+  in fact present in a stronger form: `check_total` asserts every emitted object's key set
+  against its `$def`, so a record staged by an older checkout surfaces as a typed
+  `UnmappedFieldError` naming the offending key rather than a bare `KeyError`. **But that
+  covers the EMITTER's reads, not `domain_e_checks`' own**, and `pipeline/validate/` is
+  outside this story's scope boundary. The filing is therefore **not** silently dropped:
+  **Deferred: the emitter's own reads are guarded; `domain_e_checks` is untouched. Owner:
+  whichever story next edits `pipeline/validate/checks.py` — Story 1.19's batch acceptance is
+  the natural point.**
+
+### The CS-2 block, restated with what is and is not done
+
+- **Story 1.16 is BLOCKED-PENDING-CS-2 on exactly two mappers, and on nothing else.** All
+  104 bundles build and validate against `/contract` on every one of the nine unblocked root
+  keys; the **only** violations corpus-wide are `'tacticalIdentity' is a required property`
+  and `'goalkeeping' is a required property`, 104 times each and nothing else. The two
+  mappers are deliberately **not stubbed with a guessed shape** — `build_bundle` raises a
+  typed `EmitError` naming them, and the CLI reports it as a finding (exit 1) rather than
+  writing a partial `data/matches/`.
+  **Deferred: change-set CS-2 (D1 + D2), its own spec and its own atomic AD-14 commit, which
+  must not land while an Epic 2 session is in flight. Owner: Story 1.16, on Juan's
+  go-ahead.**
+
+- **Tasks blocked behind CS-2, so a reviewer knows what is missing rather than inferring
+  it:** 4.7 (`tacticalIdentity`), 4.9 (`goalkeeping`), 8.1 (flipping
+  `test_the_repository_has_no_committed_match_bundles_yet` to its populated branch), 8.3
+  (the `/data` pinning baseline actually engaging), 8.4 (committing `data/matches/`), 11.3
+  (retiring the `contract/README.md:197` row) and 11.5's acceptance runs. Task 8.2 **is**
+  discharged: `test_the_unavailable_data_baseline_line_is_always_printed_and_never_suppressed`
+  stages into `tmp_path` and passes `--data-dir` under it, verified by reading the helper
+  rather than assumed, so it stays green when `data/matches/` appears.

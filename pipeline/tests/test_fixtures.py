@@ -350,7 +350,7 @@ def test_a_bundle_carries_a_shot_event_flagged_as_an_own_goal() -> None:
     bundles = _bundles()
     found = False
     for name, bundle in bundles.items():
-        own_goal_shots = [s for s in bundle["events"]["shots"] if s["ownGoal"]]
+        own_goal_shots = [s for s in bundle["events"]["shots"] or [] if s["ownGoal"]]
         own_goals = [g for g in bundle["metadata"]["goals"] if g["ownGoal"]]
         if not own_goal_shots:
             continue
@@ -470,7 +470,7 @@ def test_every_event_player_appears_in_a_team_sheet(path: Path) -> None:
                     assert row[key] in known, (
                         f"{path.name}: {table} references unknown player {row[key]!r}"
                     )
-    for record in bundle["players"]:
+    for record in bundle["players"] or []:
         assert record["playerId"] in known, f"{path.name}: player record off the team sheet"
 
 
@@ -485,7 +485,7 @@ def test_shot_outcome_counts_agree_with_the_key_statistics_on_target_total(path:
         team_id = bundle["metadata"][f"{side}Team"]["teamId"]
         shots = [
             s
-            for s in bundle["events"]["shots"]
+            for s in bundle["events"]["shots"] or []
             if s["teamId"] == team_id and not s["ownGoal"]
         ]
         on_target = sum(1 for s in shots if s["outcome"] in ("goal", "on-target"))
@@ -496,11 +496,69 @@ def test_shot_outcome_counts_agree_with_the_key_statistics_on_target_total(path:
 
 @pytest.mark.parametrize("path", MATCH_FIXTURES, ids=lambda p: p.name)
 def test_pass_network_edges_join_players_who_have_a_node(path: Path) -> None:
+    """Every edge endpoint has a node — WHEN the bundle carries a node table at all.
+
+    Re-scoped by Story 1.16, and the re-scope is the point rather than the guard. `null`
+    and `[]` are distinct states for every nullable container in the contract (decision 9):
+    `null` means the report does not carry that data, `[]` means it carries none. A real
+    Match Bundle emits `passNetworkNodes: null` beside a fully populated
+    `passNetworkEdges` — 0 pitch frames exist on 208/208 pages, so `PitchX`/`PitchY` have
+    no source, while the pass MATRIX is complete. That shape is schema-legal and correct.
+
+    So the invariant does not apply when the node table is absent: there is nothing to
+    dangle from. When it IS a list — including the empty list, where every edge genuinely
+    dangles — it applies in full. `test_a_null_node_table_does_not_silently_skip_a_real_
+    dangling_edge` pins that the skip cannot swallow a regression.
+    """
     bundle = _load(path)
-    nodes = {(n["teamId"], n["playerId"]) for n in bundle["events"]["passNetworkNodes"]}
-    for edge in bundle["events"]["passNetworkEdges"]:
+    node_table = bundle["events"]["passNetworkNodes"]
+    if node_table is None:
+        pytest.skip("passNetworkNodes is null: the report carries no node coordinates, "
+                    "so the join invariant has nothing to hold between")
+    nodes = {(n["teamId"], n["playerId"]) for n in node_table}
+    for edge in bundle["events"]["passNetworkEdges"] or []:
         assert (edge["teamId"], edge["fromPlayerId"]) in nodes, f"{path.name}: dangling edge"
         assert (edge["teamId"], edge["toPlayerId"]) in nodes, f"{path.name}: dangling edge"
+
+
+def _join_dangling_edges(bundle: dict) -> "list[tuple]":
+    """The join the test above asserts, as a pure function so it can be driven RED."""
+    node_table = bundle["events"]["passNetworkNodes"]
+    if node_table is None:
+        return []
+    nodes = {(n["teamId"], n["playerId"]) for n in node_table}
+    return [
+        (edge["teamId"], endpoint)
+        for edge in bundle["events"]["passNetworkEdges"] or []
+        for endpoint in (edge["fromPlayerId"], edge["toPlayerId"])
+        if (edge["teamId"], endpoint) not in nodes
+    ]
+
+
+def test_a_null_node_table_does_not_silently_skip_a_real_dangling_edge() -> None:
+    """Constructed, because no committed fixture has the corpus-real shape.
+
+    A skip is how an invariant stops being enforced without anyone noticing, so the three
+    states are pinned separately: `null` skips, `[]` catches every edge, and a populated
+    table still catches a genuine dangler.
+    """
+    edge = {"teamId": "alpha", "fromPlayerId": "a", "toPlayerId": "b", "volume": 3}
+
+    absent = {"events": {"passNetworkNodes": None, "passNetworkEdges": [edge]}}
+    assert _join_dangling_edges(absent) == [], "null must not be read as an empty table"
+
+    empty = {"events": {"passNetworkNodes": [], "passNetworkEdges": [edge]}}
+    assert _join_dangling_edges(empty) == [("alpha", "a"), ("alpha", "b")], (
+        "[] means the report carries NO nodes, so every edge dangles"
+    )
+
+    partial = {
+        "events": {
+            "passNetworkNodes": [{"teamId": "alpha", "playerId": "a"}],
+            "passNetworkEdges": [edge],
+        }
+    }
+    assert _join_dangling_edges(partial) == [("alpha", "b")]
 
 
 def test_the_tournament_entity_index_resolves_to_the_artifacts_that_exist() -> None:
@@ -783,7 +841,7 @@ def test_domain_g_player_totals_reconcile_with_the_domain_b_team_totals(path: Pa
     ]
     for side in ("home", "away"):
         team_id = bundle["metadata"][f"{side}Team"]["teamId"]
-        squad = [p for p in bundle["players"] if p["teamId"] == team_id]
+        squad = [p for p in bundle["players"] or [] if p["teamId"] == team_id]
         assert squad, f"{path.name}: no player records for {team_id}"
         for block, field, team_field in pairs:
             total = sum(p[block][field] for p in squad)
