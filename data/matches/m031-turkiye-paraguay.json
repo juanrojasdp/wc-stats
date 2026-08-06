@@ -7070,128 +7070,128 @@
   "tacticalIdentity": {
     "away": {
       "defensiveBlockDistribution": {
-        "high": 1,
-        "low": 46,
-        "mid": 12
+        "high": 1.0,
+        "low": 46.0,
+        "mid": 12.0
       },
       "phasesInPossession": {
-        "attackingTransition": 35,
-        "buildUpOpposed": 4,
-        "buildUpUnopposed": 11,
-        "counterAttack": 3,
-        "finalThird": 9,
-        "longBall": 16,
-        "progression": 7,
-        "setPiece": 11
+        "attackingTransition": 35.0,
+        "buildUpOpposed": 4.0,
+        "buildUpUnopposed": 11.0,
+        "counterAttack": 3.0,
+        "finalThird": 9.0,
+        "longBall": 16.0,
+        "progression": 7.0,
+        "setPiece": 11.0
       },
       "phasesOutOfPossession": {
-        "counterPress": 8,
-        "defensiveTransition": 11,
-        "highBlock": 1,
-        "highPress": 1,
-        "lowBlock": 46,
-        "lowPress": 1,
-        "midBlock": 12,
-        "midPress": 1,
-        "recovery": 6
+        "counterPress": 8.0,
+        "defensiveTransition": 11.0,
+        "highBlock": 1.0,
+        "highPress": 1.0,
+        "lowBlock": 46.0,
+        "lowPress": 1.0,
+        "midBlock": 12.0,
+        "midPress": 1.0,
+        "recovery": 6.0
       },
       "shapeByPhase": {
         "inPossession": {
           "buildUpLow": {
-            "lineHeight": 27,
-            "teamLength": 30,
-            "teamWidth": 36
+            "lineHeight": 27.0,
+            "teamLength": 30.0,
+            "teamWidth": 36.0
           },
           "buildUpMid": {
-            "lineHeight": 38,
-            "teamLength": 35,
-            "teamWidth": 48
+            "lineHeight": 38.0,
+            "teamLength": 35.0,
+            "teamWidth": 48.0
           },
           "finalThirdPhase": {
-            "lineHeight": 51,
-            "teamLength": 39,
-            "teamWidth": 36
+            "lineHeight": 51.0,
+            "teamLength": 39.0,
+            "teamWidth": 36.0
           }
         },
         "outOfPossession": {
           "highBlockPress": {
-            "lineHeight": 51,
-            "teamLength": 38,
-            "teamWidth": 36
+            "lineHeight": 51.0,
+            "teamLength": 38.0,
+            "teamWidth": 36.0
           },
           "lowBlock": {
-            "lineHeight": 15,
-            "teamLength": 18,
-            "teamWidth": 32
+            "lineHeight": 15.0,
+            "teamLength": 18.0,
+            "teamWidth": 32.0
           },
           "midBlock": {
-            "lineHeight": 37,
-            "teamLength": 24,
-            "teamWidth": 37
+            "lineHeight": 37.0,
+            "teamLength": 24.0,
+            "teamWidth": 37.0
           }
         }
       }
     },
     "home": {
       "defensiveBlockDistribution": {
-        "high": 2,
-        "low": 2,
-        "mid": 7
+        "high": 2.0,
+        "low": 2.0,
+        "mid": 7.0
       },
       "phasesInPossession": {
-        "attackingTransition": 11,
-        "buildUpOpposed": 15,
-        "buildUpUnopposed": 39,
-        "counterAttack": 1,
-        "finalThird": 32,
-        "longBall": 1,
-        "progression": 20,
-        "setPiece": 9
+        "attackingTransition": 11.0,
+        "buildUpOpposed": 15.0,
+        "buildUpUnopposed": 39.0,
+        "counterAttack": 1.0,
+        "finalThird": 32.0,
+        "longBall": 1.0,
+        "progression": 20.0,
+        "setPiece": 9.0
       },
       "phasesOutOfPossession": {
-        "counterPress": 20,
-        "defensiveTransition": 35,
-        "highBlock": 2,
-        "highPress": 2,
-        "lowBlock": 2,
-        "lowPress": 0,
-        "midBlock": 7,
-        "midPress": 1,
-        "recovery": 8
+        "counterPress": 20.0,
+        "defensiveTransition": 35.0,
+        "highBlock": 2.0,
+        "highPress": 2.0,
+        "lowBlock": 2.0,
+        "lowPress": 0.0,
+        "midBlock": 7.0,
+        "midPress": 1.0,
+        "recovery": 8.0
       },
       "shapeByPhase": {
         "inPossession": {
           "buildUpLow": {
-            "lineHeight": 23,
-            "teamLength": 37,
-            "teamWidth": 51
+            "lineHeight": 23.0,
+            "teamLength": 37.0,
+            "teamWidth": 51.0
           },
           "buildUpMid": {
-            "lineHeight": 48,
-            "teamLength": 30,
-            "teamWidth": 52
+            "lineHeight": 48.0,
+            "teamLength": 30.0,
+            "teamWidth": 52.0
           },
           "finalThirdPhase": {
-            "lineHeight": 66,
-            "teamLength": 25,
-            "teamWidth": 43
+            "lineHeight": 66.0,
+            "teamLength": 25.0,
+            "teamWidth": 43.0
           }
         },
         "outOfPossession": {
           "highBlockPress": {
-            "lineHeight": 49,
-            "teamLength": 37,
-            "teamWidth": 35
+            "lineHeight": 49.0,
+            "teamLength": 37.0,
+            "teamWidth": 35.0
           },
           "lowBlock": {
-            "lineHeight": 16,
-            "teamLength": 34,
-            "teamWidth": 31
+            "lineHeight": 16.0,
+            "teamLength": 34.0,
+            "teamWidth": 31.0
           },
           "midBlock": {
-            "lineHeight": 36,
-            "teamLength": 36,
-            "teamWidth": 35
+            "lineHeight": 36.0,
+            "teamLength": 36.0,
+            "teamWidth": 35.0
           }
         }
       }

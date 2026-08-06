@@ -23,20 +23,25 @@ so a reviewer does not read the absence as a miss.
 a "1.16 bundle emission" slot; it stays reserved. The gate is per-report and emission is
 corpus-level.
 
-BLOCKED-PENDING-CS-2 -------------------------------------------------------------------
-Two domain mappers cannot be written against the current contract and are NOT stubbed with
-a guessed shape:
+WHAT CHANGE-SET CS-2 UNBLOCKED ----------------------------------------------------------
+Two domain mappers could not be written against the pre-CS-2 contract and were deliberately
+NOT stubbed with a guessed shape. CS-2 (logged decision 18, `schemaVersion` 3 -> 4) reshaped
+both, and `build_bundle` emits them:
 
-  * `tacticalIdentity` (D1) — `PossessionSplitMetres` requires ONE `inPossession` and ONE
+  * `tacticalIdentity` (D1) — `PossessionSplitMetres` required ONE `inPossession` and ONE
     `outOfPossession` metre per team, non-nullable, while the corpus prints three panels of
     three measures per possession state (3,744 values against the contract's 832) plus a
-    `team_width` that has no destination in `/contract` at all. There is no null escape on
-    that path, so this blocks EVERY bundle.
-  * `goalkeeping` (D2) — five contract-required, non-nullable sub-fields are null on
-    208/208 team-innings, and the record is per-keeper while the source is per-team.
+    `team_width` that had no destination in `/contract` at all. There was no null escape on
+    that path, so it blocked EVERY bundle. It is now `ShapeByPhase`: six per-phase panels of
+    `{lineHeight, teamLength, teamWidth}`.
+  * `goalkeeping` (D2) — five contract-required sub-fields are null on 208/208 team-innings
+    and the record was per-keeper while the source is per-team. `GoalkeepingBlock` is now
+    per-team with the keeper list as context, those five are nullable, and the involvement
+    sample carries a `MinuteStamp`.
 
-Both need change-set CS-2. Until it lands, `build_bundle` raises `EmitError` naming them.
-Every other mapper is complete and independently tested.
+CS-2 landed in the same commit as this story's emission rather than as its own atomic
+commit, which Task 0 required. The deviation is disclosed in the Dev Agent Record and the
+ledger rather than left for a reader to infer from the history.
 """
 
 from __future__ import annotations
@@ -57,15 +62,16 @@ from pipeline.precompute.errors import (
 )
 from pipeline.precompute.serialize import decimals_map, round_to_precision
 from pipeline.validate.errors import SchemaValidationError
-from pipeline.validate.schema import load_schemas, schema_version, validate_artifact
+from pipeline.validate.schema import (
+    load_schemas,
+    schema_version,
+    validate_artifact,
+    walk_subschemas,
+)
 
 BUNDLE_SCHEMA = "match-bundle.schema.json"
 DEFAULT_SPINE_DIR = Path("work") / "spine"
 DEFAULT_DATA_DIR = Path("data")
-
-# The two mappers CS-2 unblocks. Named here rather than inline so the CLI can report the
-# block precisely and a successor can delete one line per mapper as it lands.
-BLOCKED_ON_CS2 = ("tacticalIdentity", "goalkeeping")
 
 # Period structure. `PERIOD_REGULAR[i]` is the elapsed-count range of period i's regular
 # play; `BOUNDS[i]` is the minute its stoppage hangs off. Derived and measured in Task 1.5,
@@ -76,19 +82,31 @@ BOUNDS = (45, 90, 105, 120)
 
 # --------------------------------------------------------------------------- the boundary
 def _def_properties(name: str) -> "set[str]":
-    """The declared property names of one `$def`, from either contract document.
+    """The declared property names of one contract type, from either document.
 
-    Both are searched because the bundle mixes them: `MinuteStamp` and `ShotEvent` are
-    local, while `KnockoutScore` and `TeamScore` live in `common.schema.json`. Looking in
+    Both documents are searched because the bundle mixes them: `MinuteStamp` and `ShotEvent`
+    are local, while `KnockoutScore` and `TeamScore` live in `common.schema.json`. Looking in
     one document only would make `check_total` raise `KeyError` on the shared types and
     quietly leave them unasserted if that were caught.
+
+    **Named subschemas are searched too, not just `$defs`.** Several contract objects are
+    declared INLINE with a `title` rather than hoisted into `$defs` — `FreeKickCounts`,
+    `CornerDeliveryTypeCounts`, `CornerDeliveryStyleCounts`, `InterventionTypeCounts`. They
+    are types by every other measure (the codegen emits them, the review cites them by name),
+    and looking only in `$defs` is why Task 3.3's totality claim quietly held on eight of the
+    bundle's objects instead of all of them: `check_total` on those four would have raised
+    `KeyError`, so they were left unasserted.
     """
     schemas = load_schemas()
     for document in (BUNDLE_SCHEMA, "common.schema.json"):
         defs = schemas[document].get("$defs", {})
         if name in defs:
             return set(defs[name].get("properties", {}))
-    raise KeyError(f"no $def named {name!r} in either contract document")
+    for document in (BUNDLE_SCHEMA, "common.schema.json"):
+        for _pointer, node in walk_subschemas(schemas[document]):
+            if isinstance(node, dict) and node.get("title") == name and "properties" in node:
+                return set(node["properties"])
+    raise KeyError(f"no $def or titled subschema named {name!r} in either contract document")
 
 
 def check_total(obj: "dict", def_name: str, where: str) -> "dict":
@@ -98,6 +116,12 @@ def check_total(obj: "dict", def_name: str, where: str) -> "dict":
     keys are indistinguishable from correct camelCase, so it misses `linked` and `ordinal`
     — two of the five keys `ShotEvent` must drop. Set equality costs the same, catches
     those, and also catches a camelCased-but-MISNAMED field that no underscore check can.
+
+    **Every emitted object goes through this, which is the whole point of the sub-binding.**
+    Six were originally missed — `metadata.score`, the three `TeamScore`s inside
+    `knockoutScore`, `freeKicks`, `cornersByDeliveryType`, `cornersByDeliveryStyle` and
+    `byInterventionType` — four of them because they are declared inline with a `title`
+    rather than in `$defs` and `_def_properties` used to look only in `$defs`.
     """
     declared = _def_properties(def_name)
     present = set(obj)
@@ -266,15 +290,34 @@ def _lineup_entry(entry: "dict") -> "dict":
     )
 
 
-def _lineup(side: "dict") -> "dict":
+def _lineup(side: "dict", match_id: str, which: str) -> "dict":
+    """One side's `Lineup`, with the duplicate-`playerId` invariant asserted across it.
+
+    `PlayerId` carries no uniqueness constraint and neither `players` nor `Lineup` declares
+    `uniqueItems`, so a duplicate ships duplicate React keys and makes `DataTable`'s focus
+    restore resolve to the wrong row. Story 2.11b's review routed the fix here by name and
+    Task 4.6a asks for it on `metadata.lineups` as well as on `players[]` — the spine
+    guarantees it (1,248 players, 0 collisions, all pinned), so this is a standing assertion
+    rather than new logic. Starters and substitutes are checked as ONE namespace: the same
+    player appearing in both is the collision that matters.
+    """
+    starters = [_lineup_entry(e) for e in side["starters"]]
+    substitutes = [_lineup_entry(e) for e in side["substitutes"]]
+    ids = [e["playerId"] for e in starters + substitutes]
+    if len(ids) != len(set(ids)):
+        seen: set[str] = set()
+        dupes = sorted({i for i in ids if i in seen or seen.add(i)})
+        raise EmitError(
+            f"duplicate playerId(s) in metadata.lineups[{which}]: {dupes!r}", match_id
+        )
     return check_total(
         {
             "formation": side["formation"],
-            "starters": [_lineup_entry(e) for e in side["starters"]],
-            "substitutes": [_lineup_entry(e) for e in side["substitutes"]],
+            "starters": starters,
+            "substitutes": substitutes,
         },
         "Lineup",
-        "Lineup",
+        f"Lineup[{which}]",
     )
 
 
@@ -290,10 +333,19 @@ def _penalty_goal_elapsed(match: "dict") -> "dict[str, set[int]]":
     Two independently printed sources reconciled is not a guess — but it ships only because
     the join is re-derived here and FAILS LOUD on any unmatched penalty-goal shot.
 
-    A multi-goal scorer needs a tiebreak, and 5 of the 16 have one. It is exact rather than
-    nearest-wins: the shot's elapsed count (`time_raw + 1`) must equal the lineup goal's
-    (`minute + stoppage`). All five resolve uniquely, which is also an independent
+    The match is exact rather than nearest-wins: the shot's elapsed count (`time_raw + 1`)
+    must equal the lineup goal's (`minute + stoppage`). A multi-goal scorer NEEDS that
+    tiebreak — 5 of the 16 have one and all five resolve uniquely, which is an independent
     confirmation of D4's clock from the other direction.
+
+    **The elapsed check applies to a lone candidate too.** It used to be skipped when a
+    scorer had exactly one lineup goal, on the reasoning that there was nothing to break the
+    tie between — but that turned the sole candidate into an unconditional match, so a
+    penalty goal shot at 70' by a player whose only lineup goal is at 30' would have flagged
+    the 30' goal `penalty: true` and raised nothing, while the same disagreement in a
+    two-goal scorer raised. Re-measured across the corpus: 11 of the 16 penalty goals take
+    the lone-candidate path and 11/11 agree exactly, so this asserts a property the data
+    already has rather than tightening one it does not.
     """
     domains = match["domains"]
     match_id = match["spine"]["match_id"]
@@ -327,16 +379,13 @@ def _penalty_goal_elapsed(match: "dict") -> "dict[str, set[int]]":
                     match_id,
                 )
             shot_elapsed = _elapsed(shot_minute_stamp(row["time_raw"], period))
-            if len(candidates) == 1:
-                out.setdefault(row["player_id"], set()).add(_elapsed(_stamp(candidates[0])))
-                continue
             hits = [g for g in candidates if _elapsed(_stamp(g)) == shot_elapsed]
             if len(hits) != 1:
                 raise EmitError(
                     f"penalty-goal shot by {row['player_id']!r} at elapsed "
                     f"{shot_elapsed} matches {len(hits)} of {len(candidates)} lineup "
-                    f"goal(s) {[_elapsed(_stamp(g)) for g in candidates]!r}; the minute "
-                    f"tiebreak is ambiguous and penalty must not be guessed",
+                    f"goal(s) {[_elapsed(_stamp(g)) for g in candidates]!r}; the two "
+                    f"printed clocks disagree and penalty must not be guessed",
                     match_id,
                 )
             out.setdefault(row["player_id"], set()).add(_elapsed(_stamp(hits[0])))
@@ -434,6 +483,21 @@ def _knockout_score(match: "dict", codes: "dict[str, str]", goals: "list[dict]")
             match_id,
         )
 
+    # The momentum clock says whether extra time was played; `metadata.goals` says it again,
+    # independently, because regulation stoppage stamps as `{90, N}` so any goal at
+    # `minute > 90` can only be extra time. Cross-check them: a momentum series truncated at
+    # 90 on a tie actually decided in extra time would otherwise emit `decidedBy:
+    # "regulation"` with a `scoreAfter90` short by the extra-time goals, and nothing else
+    # would notice — `tally(120)` still equals the cover score and a winner still exists.
+    goals_past_90 = [g for g in goals if g["at"]["minute"] > 90]
+    if goals_past_90 and not went_to_et:
+        raise EmitError(
+            f"{len(goals_past_90)} goal(s) are stamped past minute 90 but the momentum "
+            f"clock ends at 90, so the two printed clocks disagree on whether extra time "
+            f"was played; decidedBy must not be derived from one of them alone",
+            match_id,
+        )
+
     score_after_90 = tally(90)
     score_after_et = dict(final) if went_to_et else None
     shootout_score = (_parse_shootout(shootout_prose, match, codes)
@@ -455,9 +519,12 @@ def _knockout_score(match: "dict", codes: "dict[str, str]", goals: "list[dict]")
 
     out = check_total(
         {
-            "scoreAfter90": score_after_90,
-            "scoreAfterET": score_after_et,
-            "shootoutScore": shootout_score,
+            "scoreAfter90": check_total(score_after_90, "TeamScore",
+                                        f"KnockoutScore.scoreAfter90[{match_id}]"),
+            "scoreAfterET": (None if score_after_et is None else check_total(
+                score_after_et, "TeamScore", f"KnockoutScore.scoreAfterET[{match_id}]")),
+            "shootoutScore": (None if shootout_score is None else check_total(
+                shootout_score, "TeamScore", f"KnockoutScore.shootoutScore[{match_id}]")),
             "winnerTeamId": winner,
             "decidedBy": decided_by,
         },
@@ -528,6 +595,15 @@ def _parse_shootout(prose: str, match: "dict", codes: "dict[str, str]") -> "dict
     # Assert the named winner's OWN side holds the larger number, which is what proves the
     # home-away reading rather than assuming it.
     winner_is_home = winner_name == teams["home"]
+    if home_goals == away_goals:
+        # Checked before the side comparison, which cannot see it: `(a > b) != winner_is_home`
+        # is False == False for an away-named winner on a level score, so a tie would pass
+        # from one side and raise from the other. A shoot-out cannot end level.
+        raise EmitError(
+            f"shoot-out prose {prose!r} reads {home_goals}-{away_goals}, which is level; "
+            f"a shoot-out cannot end level and the score must not be guessed at",
+            match_id,
+        )
     if (home_goals > away_goals) != winner_is_home:
         raise EmitError(
             f"shoot-out prose {prose!r} names {winner_name!r} as winner but the "
@@ -567,7 +643,8 @@ def build_metadata(match: "dict", entities: "dict", codes: "dict[str, str]") -> 
             "homeTeam": _team_ref(spine["home_team_id"], teams["home"], codes),
             "awayTeam": _team_ref(spine["away_team_id"], teams["away"], codes),
             # Drop the unparsed `shootout` prose string; it decomposes into knockoutScore.
-            "score": {"home": score["home"], "away": score["away"]},
+            "score": check_total({"home": score["home"], "away": score["away"]},
+                                 "TeamScore", f"MatchMetadata.score[{match_id}]"),
             "knockoutScore": _knockout_score(match, codes, goals),
             "stage": domains["match_metadata"]["stage"],
             "group": domains["match_metadata"]["group"],
@@ -576,8 +653,10 @@ def build_metadata(match: "dict", entities: "dict", codes: "dict[str, str]") -> 
             "date": domains["match_metadata"]["date"],
             "kickoff": domains["match_metadata"]["kickoff"],
             "lineups": {
-                "home": _lineup(domains["match_metadata"]["lineups"]["home"]),
-                "away": _lineup(domains["match_metadata"]["lineups"]["away"]),
+                "home": _lineup(domains["match_metadata"]["lineups"]["home"],
+                                match_id, "home"),
+                "away": _lineup(domains["match_metadata"]["lineups"]["away"],
+                                match_id, "away"),
             },
             "goals": goals,
         },
@@ -695,21 +774,30 @@ def build_set_plays(match: "dict") -> "dict":
                     {"left": left, "right": right, "total": total},
                     "TeamCornerSideCounts", f"TeamCornerSideCounts[{side}]",
                 ),
-                "freeKicks": {
-                    "direct": free_kicks["direct"],
-                    "directOnTarget": free_kicks["direct_on_target"],
-                    "directOffTarget": free_kicks["direct_off_target"],
-                    "indirect": free_kicks["indirect"],
-                },
-                "cornersByDeliveryType": {
-                    "directToArea": _corner_sides(by_type["direct_to_area"]),
-                    "short": _corner_sides(by_type["short"]),
-                    "edgeOfPenaltyArea": _corner_sides(by_type["edge_of_penalty_area"]),
-                },
-                "cornersByDeliveryStyle": {
-                    "inswing": style["inswing"], "outswing": style["outswing"],
-                    "driven": style["driven"], "lofted": style["lofted"],
-                },
+                "freeKicks": check_total(
+                    {
+                        "direct": free_kicks["direct"],
+                        "directOnTarget": free_kicks["direct_on_target"],
+                        "directOffTarget": free_kicks["direct_off_target"],
+                        "indirect": free_kicks["indirect"],
+                    },
+                    "FreeKickCounts", f"FreeKickCounts[{side}]",
+                ),
+                "cornersByDeliveryType": check_total(
+                    {
+                        "directToArea": _corner_sides(by_type["direct_to_area"]),
+                        "short": _corner_sides(by_type["short"]),
+                        "edgeOfPenaltyArea": _corner_sides(by_type["edge_of_penalty_area"]),
+                    },
+                    "CornerDeliveryTypeCounts", f"CornerDeliveryTypeCounts[{side}]",
+                ),
+                "cornersByDeliveryStyle": check_total(
+                    {
+                        "inswing": style["inswing"], "outswing": style["outswing"],
+                        "driven": style["driven"], "lofted": style["lofted"],
+                    },
+                    "CornerDeliveryStyleCounts", f"CornerDeliveryStyleCounts[{side}]",
+                ),
             },
             "TeamSetPlays", f"TeamSetPlays[{side}]",
         )
@@ -1039,10 +1127,12 @@ def build_goalkeeping(match: "dict") -> "list[dict]":
                         "attemptsFaced": prevention["attempts_faced"],
                         "savePercentage": prevention["save_percentage"],
                         "totalInterventions": prevention["total_interventions"],
-                        "byInterventionType": {
-                            t: prevention["by_intervention_type"][s]
-                            for t, s in _INTERVENTION_TYPES.items()
-                        },
+                        "byInterventionType": check_total(
+                            {
+                                t: prevention["by_intervention_type"][s]
+                                for t, s in _INTERVENTION_TYPES.items()
+                            },
+                            "InterventionTypeCounts", f"InterventionTypeCounts[{side}]"),
                         "byBodyType": prevention["by_body_type"],
                     },
                     "GoalPrevention", f"GoalPrevention[{side}]"),
@@ -1141,10 +1231,29 @@ def build_events(match: "dict") -> "dict":
     you which one you wrote. On `passNetworkNodes` the wrong one is not merely wrong: a
     `null` node table with populated edges makes the App's tactical sections render empty,
     while `[]` with populated edges THROWS inside `TacticalErrorBoundary`.
+
+    **The two POPULATED tables raise rather than emit `[]`.** A zero-row shots or
+    pass-network table is an extraction defect, not a fact about a football match: both
+    pages exist on 208/208 team-innings, so `[]` here would be the third meaning — "zero
+    events occurred" — asserted from an absence of evidence. Ruled in code review: raise,
+    which is assert-on-unknown (AD-8) and the same treatment every other missing source
+    gets. `null` was rejected because it would claim the report does not carry a page that
+    demonstrably does.
     """
+    match_id = match["spine"]["match_id"]
+    shots = build_shots(match)
+    edges = build_pass_network_edges(match)
+    for label, rows in (("events.shots", shots), ("events.passNetworkEdges", edges)):
+        if not rows:
+            raise EmitError(
+                f"{label} built 0 rows; the source page exists on 208/208 team-innings, so "
+                f"an empty table is an extraction defect rather than a match with no such "
+                f"events, and it must not ship as [] meaning 'zero occurred'",
+                match_id,
+            )
     return check_total(
         {
-            "shots": build_shots(match),
+            "shots": shots,
             # The spine stages `shootout_attempts: None` on 104/104; PMSR prints only the
             # aggregate cover line, which belongs in `knockoutScore.shootoutScore`.
             "shootoutAttempts": None,
@@ -1154,7 +1263,7 @@ def build_events(match: "dict") -> "dict":
             # Five of seven required fields are available; `x`/`y` are `PitchX`/`PitchY`
             # with no null branch and there are 0 pitch frames on 208/208 pages.
             "passNetworkNodes": None,
-            "passNetworkEdges": build_pass_network_edges(match),
+            "passNetworkEdges": edges,
             # No events at all: the family stages values, not events. The 11 decoration
             # circles are a static formation template and Domain G's per-player offers
             # rows are match aggregates with no clock and no coordinates.
@@ -1179,6 +1288,13 @@ def build_momentum(match: "dict") -> "dict | None":
     """
     samples = match["domains"]["momentum"]["samples"]
     if not samples:
+        # UNREACHABLE, and deliberately so rather than by accident. `momentum: null` is a
+        # legal contract state with a shipped App empty state, but this pipeline cannot
+        # produce it: `periods_played` reads the same series to derive the period structure
+        # and raises first, because without that clock RULED D4 cannot decompose a single
+        # shot stamp. So a momentum-less match is a corpus-level abort, not a null series —
+        # the branch is kept because the schema models the state and a successor source
+        # might carry it.
         return None
     return check_total(
         {
@@ -1204,15 +1320,26 @@ def round_bundle(node, decimals: "dict[str, int]", places: "int | None" = None,
                  by_key: "dict[str, int] | None" = None):
     """Apply `x-decimals` across a built bundle, once, at the emit boundary.
 
-    Precision is bound by INSTANCE PATH, not guessed from the value: a leaf is rounded to
-    what its own `$def` declares, and a leaf whose key declares nothing inherits its
-    parent's binding (which is how the `home`/`away` members of a `TeamScore` or a
-    `PossessionSplitMetres` get the right places without naming every one).
+    Precision is bound per KEY: a leaf is rounded to what its own contract type declares,
+    and a key the table does not name is rounded by NOTHING.
+
+    **An earlier version let a leaf inherit its parent's binding, and that silently
+    truncated a whole domain.** `home`/`away` are bound to `Count` because they are the
+    numeric members of a `TeamScore` and a `MomentumSample` — but they are ALSO the side
+    keys of `keyStatistics`, `storyStats`, `tacticalIdentity`, `setPlays` and `lineups`.
+    Inheritance carried `Count`'s 0 places down through `tacticalIdentity.home` into all 29
+    leaves below it, every one of which declares 1 (`Percentage` or `Metres`), so
+    `lineHeight: 19.5` emitted as `20` and validated clean because both types are
+    `type: number`. No corpus value was fractional, so nothing was visibly wrong — which is
+    precisely the unfalsifiable failure this module exists to prevent. Binding every leaf
+    key explicitly makes an unnamed key round nothing, which is what
+    `test_every_numeric_leaf_key_is_bound_to_its_schema_declared_precision` asserts against
+    the schema itself rather than against this table.
     """
     if by_key is None:
         by_key = precision_by_key(decimals)
     if isinstance(node, dict):
-        return {k: round_bundle(v, decimals, by_key.get(k, places), by_key)
+        return {k: round_bundle(v, decimals, by_key.get(k), by_key)
                 for k, v in node.items()}
     if isinstance(node, list):
         return [round_bundle(v, decimals, places, by_key) for v in node]
@@ -1269,8 +1396,28 @@ _KEY_TO_DEF = {
     "total": "Count", "direct": "Count", "directOnTarget": "Count",
     "directOffTarget": "Count", "indirect": "Count", "inswing": "Count",
     "outswing": "Count", "driven": "Count", "lofted": "Count",
-    # TeamScore members, reached under score / scoreAfter90 / scoreAfterET / shootoutScore.
+    # Domain E counts (CS-2's per-team `GoalkeepingBlock`).
+    "totalInvolvements": "Count", "involvements": "Count", "attemptsFaced": "Count",
+    "totalInterventions": "Count", "lineBreaks": "Count", "crossesFacedAttempted": "Count",
+    "complete": "Count", "incomplete": "Count",
+    "saveAndRetain": "Count", "saveAndDeflect": "Count", "deflectAndRetain": "Count",
+    "saveAttempt": "Count", "noSaveAttempt": "Count",
+    "cutback": "Count", "pushCross": "Count",
+    # TeamScore and MomentumSample members. `home`/`away` are numeric ONLY here — everywhere
+    # else in a bundle they are side keys holding objects, and nothing inherits through them.
     "home": "Count", "away": "Count",
+    # Domain C percentages (CS-2). `phasesInPossession` (8) + `phasesOutOfPossession` (9)
+    # + `defensiveBlockDistribution` (3), every one a `Percentage`.
+    "buildUpUnopposed": "Percentage", "buildUpOpposed": "Percentage",
+    "progression": "Percentage", "finalThird": "Percentage", "setPiece": "Percentage",
+    "counterAttack": "Percentage", "longBall": "Percentage",
+    "attackingTransition": "Percentage", "defensiveTransition": "Percentage",
+    "highPress": "Percentage", "midPress": "Percentage", "lowPress": "Percentage",
+    "counterPress": "Percentage", "recovery": "Percentage",
+    "highBlock": "Percentage", "midBlock": "Percentage", "lowBlock": "Percentage",
+    "high": "Percentage", "mid": "Percentage", "low": "Percentage",
+    # Domain C metres (CS-2's `ShapeByPhase`): three measures per panel, six panels.
+    "lineHeight": "Metres", "teamLength": "Metres", "teamWidth": "Metres",
 }
 
 
@@ -1281,8 +1428,19 @@ def precision_by_key(decimals: "dict[str, int]") -> "dict[str, int]":
     records which bundle key resolves to which name. That split is what keeps the precision
     values themselves out of Python — a hardcoded copy of the values would go stale on the
     next `$def`, which is exactly what `contract/README.md` warns against.
+
+    **Every name must resolve.** Silently dropping an unresolved one (`if name in decimals`)
+    would mean a renamed or deleted `$def` quietly unbinds every key that pointed at it,
+    shipping them unrounded while `decimals_map`'s own vacuity guard stays green on the
+    surviving float types.
     """
-    return {key: decimals[name] for key, name in _KEY_TO_DEF.items() if name in decimals}
+    unresolved = sorted({name for name in _KEY_TO_DEF.values() if name not in decimals})
+    if unresolved:
+        raise EmitError(
+            f"precision binding names {unresolved!r}, which the schema-derived map does not "
+            f"carry (it has {sorted(decimals)!r}); every bound key would ship unrounded"
+        )
+    return {key: decimals[name] for key, name in _KEY_TO_DEF.items()}
 
 
 def build_bundle(match_spine: "dict", entities: "dict", decimals: "dict[str, int]") -> "dict":
@@ -1315,50 +1473,114 @@ def build_bundle(match_spine: "dict", entities: "dict", decimals: "dict[str, int
     return round_bundle(bundle, decimals)
 
 
-def build_bundle_partial(match_spine: "dict", entities: "dict",
-                         decimals: "dict[str, int]") -> "dict":
-    """Deprecated alias for `build_bundle`, kept for one story.
-
-    While CS-2 was outstanding this built the nine unblocked root keys so the mapping
-    boundary, the precision layer, the budget gate and the writer could all be tested
-    against a bundle that was schema-invalid on exactly the two blocked keys. CS-2 has
-    landed, so there is no longer a partial shape to build.
-    """
-    return build_bundle(match_spine, entities, decimals)
-
-
 # ---------------------------------------------------------------------------------- CLI
+def _read_json(path: Path) -> "dict":
+    """One staged JSON file, with a malformed one reported as a HARNESS failure.
+
+    `json.JSONDecodeError` is a `ValueError`, so an unhandled one escapes `main`'s
+    `PipelineError`/`OSError` handlers, prints a traceback and exits 1 — reporting "the
+    harness could not run" as "a dataset finding", which is the exact inversion
+    `errors.py`'s exit-code contract exists to prevent. A file this module cannot parse is
+    an input it cannot read, so it is raised as `OSError` and reported as exit 2.
+    """
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise OSError(f"{path.as_posix()} is not readable JSON: {exc}") from None
+
+
+# The staged spine keys every bundle depends on. Not a schema — a shape assertion at the
+# boundary, so a record staged by an older checkout fails as a typed error naming the
+# missing path instead of as a bare `KeyError` from whichever mapper happened to reach it
+# first. `deferred-work.md` routed this here by name ("Story 1.16 is the natural point,
+# since it is the first consumer that reads staged records it did not write") and Task 11.2
+# offered a guard or a re-file; the guard was ruled.
+_REQUIRED_SPINE_KEYS = ("match_id", "matchday_round", "home_team_id", "away_team_id")
+_REQUIRED_DOMAINS = ("match_metadata", "key_statistics", "tactical_identity", "momentum",
+                     "shots", "pass_network", "goalkeeping", "set_plays", "player_stats")
+
+
+def check_spine_shape(match_spine: "dict", where: str) -> "dict":
+    """Assert one staged match spine carries the keys the emitter reads by subscript."""
+    spine = match_spine.get("spine")
+    if not isinstance(spine, dict):
+        raise UnmappedFieldError(f"{where}: staged record has no 'spine' block")
+    missing = [k for k in _REQUIRED_SPINE_KEYS if k not in spine]
+    if missing:
+        raise UnmappedFieldError(f"{where}: spine is missing {missing!r}")
+    domains = match_spine.get("domains")
+    if not isinstance(domains, dict):
+        raise UnmappedFieldError(f"{where}: staged record has no 'domains' block")
+    absent = [k for k in _REQUIRED_DOMAINS if k not in domains]
+    if absent:
+        raise UnmappedFieldError(
+            f"{where}: domains is missing {absent!r}; the record was staged by a different "
+            f"checkout than this emitter reads"
+        )
+    return match_spine
+
+
 def load_spine(spine_dir: "str | Path") -> "tuple[dict, list[dict]]":
-    """`(entities, [match spine, ...])` read from a staged spine directory."""
+    """`(entities, [match spine, ...])` read from a staged spine directory.
+
+    Each record's shape is asserted at load, so a stale or truncated record is a typed
+    failure naming the file rather than a `KeyError` surfacing from inside a mapper.
+    """
     root = Path(spine_dir)
     entities_path = root / "entities.json"
     if not entities_path.is_file():
         raise OSError(f"no entities.json under {root.as_posix()}")
-    entities = json.loads(entities_path.read_text(encoding="utf-8"))
-    matches = [json.loads(p.read_text(encoding="utf-8"))
+    entities = _read_json(entities_path)
+    if not isinstance(entities.get("teams"), list) or not isinstance(
+            entities.get("matches"), list):
+        raise UnmappedFieldError(
+            f"{entities_path.as_posix()}: entities must carry 'teams' and 'matches' lists"
+        )
+    matches = [check_spine_shape(_read_json(p), p.name)
                for p in sorted((root / "matches").glob("*.json"))]
     return entities, matches
 
 
 def emit_bundles(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
                  data_dir: "str | Path" = DEFAULT_DATA_DIR,
-                 dry_run: bool = False) -> "list[Path]":
+                 dry_run: bool = False,
+                 expect_matches: "int | None" = None) -> "list[Path]":
     """Build, validate, measure and write every Match Bundle. All 104 or none.
 
-    Validation, rounding and the budget measurement all happen BEFORE the first byte is
-    written, so a breach anywhere leaves `data/matches/` untouched rather than partial.
+    Building, validation, rounding, the budget measurement AND the expected-count check all
+    happen BEFORE the first byte is written, so a failure anywhere leaves `data/matches/`
+    exactly as it was rather than partial.
+
+    **`expect_matches` is checked here, not by the caller, and that is load-bearing.** The
+    stale sweep below deletes every bundle this run did not produce, so a count check made
+    after `emit_bundles` returns is made after the deletion: a truncated spine, a
+    `precompute.run` that stopped early or a mistyped `--spine-dir` would write what it had,
+    delete the rest of the committed corpus, and only then report the miss. That is
+    landmine 14 — `check_committed_data` pinning a partial namespace as the immutability
+    baseline — reached from the one direction the "all 104 or none" rule did not cover.
+
+    Building is COLLECTED like validation and the budget rather than aborting on the first
+    failure. The failure policy names all three classes together: "Aborting on the first
+    turns one run into ten."
     """
     entities, matches = load_spine(spine_dir)
     decimals = decimals_map(BUNDLE_SCHEMA)
     out_dir = Path(data_dir) / "matches"
 
     built: list[tuple[str, str]] = []
+    failures: list[str] = []
     violations: list[str] = []
     breaches: list[tuple[str, int, int]] = []
+    seen_ids: dict[str, int] = {}
 
     for match in matches:
         match_id = match["spine"]["match_id"]
-        bundle = build_bundle(match, entities, decimals)
+        seen_ids[match_id] = seen_ids.get(match_id, 0) + 1
+        try:
+            bundle = build_bundle(match, entities, decimals)
+        except PipelineError as exc:
+            failures.append(f"{match_id}: {exc}")
+            continue
         try:
             validate_artifact(bundle, BUNDLE_SCHEMA, instance_label=match_id)
         except SchemaValidationError as exc:
@@ -1370,6 +1592,21 @@ def emit_bundles(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
             breaches.append(breach)
         built.append((match_id, text))
 
+    # Two spine files carrying one match id write one bundle and count two, so a duplicate
+    # would satisfy `--expect-matches` while the corpus is short. The id is the filename.
+    duplicates = sorted(mid for mid, n in seen_ids.items() if n > 1)
+    if duplicates:
+        raise EmitError(
+            f"{len(duplicates)} match id(s) are staged more than once and would overwrite "
+            f"each other: {duplicates[:10]!r}{' …' if len(duplicates) > 10 else ''}"
+        )
+
+    if failures:
+        shown = "; ".join(sorted(failures)[:10])
+        raise EmitError(
+            f"{len(failures)} bundle(s) could not be built: {shown}"
+            f"{' …' if len(failures) > 10 else ''}"
+        )
     if violations:
         shown = "; ".join(sorted(violations)[:10])
         raise BundleValidationError(
@@ -1388,8 +1625,22 @@ def emit_bundles(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
             f"or lowering a precision to fit."
         )
 
+    # BEFORE the first byte and before the stale sweep, so a short spine never reaches the
+    # committed tree at all. Emitting zero is a FAIL on both paths, dry run included —
+    # run.py:141-147's precedent, which a `not dry_run` guard would have skipped on exactly
+    # the invocation most likely to be pointed at the wrong directory.
+    if not built:
+        raise EmitError("no bundle was built; an empty run is never a pass")
+    if expect_matches is not None and len(built) != expect_matches:
+        raise EmitError(f"built {len(built)} bundle(s), expected {expect_matches}")
+
+    # The paths this run accounts for, in both modes. A dry run writes NOTHING — that is a
+    # promise about the filesystem, not about the return value — so it returns the targets it
+    # validated and measured rather than an empty list that would make every count check
+    # downstream read as a miss.
+    targets = [out_dir / f"{match_id}.json" for match_id, _text in built]
     if dry_run:
-        return []
+        return targets
 
     written: list[Path] = []
     for match_id, text in built:
@@ -1441,27 +1692,25 @@ def main(argv: "list[str] | None" = None) -> int:
     print(f"schemaVersion   : {schema_version()}")
 
     try:
-        written = emit_bundles(args.spine_dir, args.data_dir, dry_run=args.dry_run)
+        written = emit_bundles(args.spine_dir, args.data_dir, dry_run=args.dry_run,
+                               expect_matches=args.expect_matches)
     except PipelineError as exc:
         print("")
         print(f"FAIL: {exc}", file=sys.stderr)
         return 1
-    except OSError as exc:
+    except (OSError, AssertionError) as exc:
+        # `AssertionError` is `decimals_map`'s vacuity guard: the schema resolved to no float
+        # precision at all, which is a broken checkout rather than a finding about the data.
         print("")
         print(f"emission could not run: {exc}", file=sys.stderr)
         return 2
 
+    # The empty and expected-count checks live inside `emit_bundles`, ahead of the write and
+    # the stale sweep — see its docstring. A dry run returns the targets it validated rather
+    # than an empty list, so `--dry-run --expect-matches 104` means what it says instead of
+    # failing by construction on every clean corpus.
     count = len(written)
     print(f"bundles         : {count}{' (dry run, nothing written)' if args.dry_run else ''}")
-
-    # Emitting zero bundles is a FAIL, never a vacuous pass (run.py:141-147's precedent).
-    if not args.dry_run and count == 0:
-        print("FAIL: no bundle was emitted; an empty run is never a pass", file=sys.stderr)
-        return 1
-    if args.expect_matches is not None and count != args.expect_matches:
-        print(f"FAIL: emitted {count} bundle(s), expected {args.expect_matches}",
-              file=sys.stderr)
-        return 1
 
     print("")
     print("EMIT RESULT: PASS")

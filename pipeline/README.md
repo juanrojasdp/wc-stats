@@ -1858,6 +1858,66 @@ id — correct for the six non-nullable keys, wrong for `winnerTeamId`, which is
 data the moment `data/matches/` existed. `NULLABLE_ID_KEYS` now admits null for that key
 alone; a null `playerId` is still a finding.
 
-Measured corpus budget after CS-2: **maximum 14,242 gzip-9 bytes (`m082-belgium-senegal`),
+Measured corpus budget after CS-2: **maximum 14,251 gzip-9 bytes (`m082-belgium-senegal`),
 2.85% of the 500,000-byte ceiling** — up from 11,784 before the two domains were added, and
-still nowhere near the gate.
+still nowhere near the gate. (14,242 before the code review's precision fix re-emitted every
+bundle; the whole corpus is 17,887,538 bytes across 104 files.)
+
+### What the 2026-08-05 code review changed in the emitter
+
+Six behaviours, all of them cases where the module did something narrower than what it said
+it did. Recorded here because each one is a rule a successor could re-break.
+
+**Precision is bound per key, and NOTHING inherits.** `round_bundle` used to let a leaf whose
+key the table did not name inherit its parent's places. `home`/`away` are bound to `Count`
+because they are the numeric members of a `TeamScore` and a `MomentumSample` — but they are
+also the SIDE keys of `keyStatistics`, `storyStats`, `tacticalIdentity`, `setPlays` and
+`lineups`, so `Count`'s 0 places rode down through `tacticalIdentity.home` into all 29 leaves
+below it, every one of which declares 1. Nothing caught it: `Percentage` and `Metres` are
+`type: number` so the truncation validated clean, no corpus value was fractional so no number
+changed, and both precision tests derived their expectation from the emitter's own binding
+table. All 38 unbound keys (23 Domain C, 15 Domain E) are now named, an unnamed key rounds
+nothing, and `test_every_numeric_leaf_key_is_bound_to_its_schema_declared_precision` walks the
+instance against the SCHEMA and asserts the two maps are equal — not "at most", because "at
+most" is exactly what under-rounding satisfies. **The 104 committed bundles were re-emitted:
+7,904 `tacticalIdentity` values now serialize as `19.0` rather than `19`, matching what the
+fixtures already carried and what `x-decimals: 1` always meant.**
+
+**The expected-count check runs BEFORE the write and the stale sweep.** It used to run in
+`main`, after `emit_bundles` returned — and `emit_bundles` deletes every bundle the run did
+not produce. So a truncated spine, a `precompute.run` that stopped early or a mistyped
+`--spine-dir` wrote what it had, deleted the rest of the committed corpus, and only then
+reported the miss. "All 104 or none" was a promise about WRITES; the sweep is a DELETE, and
+landmine 14 was reachable from that side. The count check, the empty-run check and the
+duplicate-`match_id` check now all raise inside `emit_bundles` ahead of the first byte.
+
+**`--dry-run` returns the targets it validated.** It used to return `[]`, so
+`--dry-run --expect-matches 104` reported FAIL on every clean corpus — the pre-write
+validation pass a reviewer naturally reaches for could not pass. The promise a dry run makes
+is about the filesystem, not the return value. The vacuous-pass rule now applies on that
+branch too.
+
+**Unreadable input exits 2, not 1.** `json.JSONDecodeError` is a `ValueError`, so a malformed
+spine file escaped both handlers as a traceback and exit 1 — reporting "the harness could not
+run" as "a dataset finding", the inversion the exit-code contract exists to prevent.
+`decimals_map`'s vacuity `AssertionError` escaped the same way.
+
+**The spine's shape is asserted at load.** Every mapper reads it by bare subscript, so a
+record staged by an older checkout used to raise a bare `KeyError` from whichever mapper
+reached it first. `check_spine_shape` now raises `UnmappedFieldError` naming the missing path.
+This is the guard `deferred-work.md` routed to Story 1.16 by name; the ledger previously
+claimed `check_total` already provided it, which was false — `check_total` inspects the dict a
+mapper has already BUILT, never the source it read.
+
+**Three more assertions the story asked for and the code did not carry:** the
+duplicate-`playerId` invariant on `metadata.lineups` (it existed only on `players[]`); the
+elapsed check on a LONE penalty-goal candidate (skipped, so a sole candidate matched
+unconditionally while a two-goal scorer raised — 11 of the 16 corpus penalties take that
+path and 11/11 agree); and `check_total` on the six emitted objects that were missing it, four
+of them because they are declared inline with a `title` rather than in `$defs` and
+`_def_properties` looked only in `$defs`. Alongside them: a level shoot-out score now raises
+from either side (`(a > b) != winner_is_home` is `False != False` for an away-named winner on
+a tie), goals stamped past minute 90 cross-check the momentum clock's verdict on extra time,
+and a zero-row `shots` or `passNetworkEdges` table raises rather than shipping `[]` — both
+pages exist on 208/208 team-innings, so an empty one is an extraction defect and `[]` would
+assert "zero occurred" from an absence of evidence.

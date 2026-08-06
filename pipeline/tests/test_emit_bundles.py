@@ -25,7 +25,7 @@ from pipeline.precompute import emit
 from pipeline.precompute.budget import BUDGET_BYTES, gzip_bytes, over_budget
 from pipeline.precompute.errors import EmitError, UnmappedFieldError
 from pipeline.precompute.serialize import decimals_map
-from pipeline.validate.schema import iter_violations, schema_version
+from pipeline.validate.schema import iter_violations, load_schemas, schema_version
 
 BUNDLE = emit.BUNDLE_SCHEMA
 
@@ -148,10 +148,23 @@ def _shot(ordinal, time_raw, team_id, pid, **kw):
     return row
 
 
+def _edge(from_id, to_id, volume=3):
+    return {"from_player_id": from_id, "to_player_id": to_id, "volume": volume,
+            "from_name": "A PLAYER", "to_name": "B PLAYER", "from_shirt": 1,
+            "to_shirt": 2}
+
+
 def make_spine(*, shots=None, momentum_max=90, score=None, shootout=None,
                home_goals=(), away_goals=(), home_own=(), away_own=(),
-               home_players=None, away_players=None, set_plays_home=None):
-    """A minimal spine match that every unblocked mapper accepts."""
+               home_players=None, away_players=None, set_plays_home=None,
+               home_edges=None, away_edges=None):
+    """A minimal spine match that every mapper accepts.
+
+    Carries one shot and one pass edge by default. Both tables are POPULATED on 208/208
+    corpus team-innings and the emitter now refuses to ship an empty one as `[]` — a
+    zero-row page is an extraction defect, not a match in which nothing happened — so a
+    spine staging neither is not a minimal valid input, it is a broken one.
+    """
     home_id, away_id = "alpha", "beta"
     samples = [{"minute": m, "stoppage_minute": None, "home": 1, "away": 1}
                for m in range(1, momentum_max + 1)]
@@ -187,13 +200,19 @@ def make_spine(*, shots=None, momentum_max=90, score=None, shootout=None,
             "momentum": {"samples": samples, "axis_top_label": "x", "extra_time": False,
                          "full_time_index": 90},
             "pass_network": {
-                s: {"edges": [], "players": [], "node_positions": None,
-                    "matrix_total": 0, "top_ranked_pairs": []}
-                for s in ("home", "away")
+                "home": {"edges": (home_edges if home_edges is not None
+                                   else [_edge("alpha-one-aaa", "alpha-two-aaa")]),
+                         "players": [], "node_positions": None,
+                         "matrix_total": 3, "top_ranked_pairs": []},
+                "away": {"edges": (away_edges if away_edges is not None
+                                   else [_edge("beta-one-bbb", "beta-one-bbb")]),
+                         "players": [], "node_positions": None,
+                         "matrix_total": 3, "top_ranked_pairs": []},
             },
             "player_stats": {"home": hp, "away": ap},
             "set_plays": {"home": set_plays_home or _set_plays(), "away": _set_plays()},
-            "shots": {"shot_events": shots if shots is not None else [],
+            "shots": {"shot_events": (shots if shots is not None
+                                      else [_shot(1, 10, home_id, "alpha-one-aaa")]),
                       "shootout_attempts": None, "counts": {}},
             "crosses": {"cross_events": [], "counts": {}, "cross_table_rows": []},
             "defensive_actions": {"defensive_action_events": [], "counts": {},
@@ -288,7 +307,7 @@ def make_entities():
 @pytest.fixture
 def synthetic(decimals):
     def _build(**kw):
-        return emit.build_bundle_partial(make_spine(**kw), make_entities(), decimals)
+        return emit.build_bundle(make_spine(**kw), make_entities(), decimals)
     return _build
 
 
@@ -474,7 +493,7 @@ def test_a_team_with_no_committed_code_fails_loud(decimals):
     entities = make_entities()
     entities["teams"] = [t for t in entities["teams"] if t["team_id"] != "beta"]
     with pytest.raises(EmitError, match="no committed teamCode"):
-        emit.build_bundle_partial(make_spine(), entities, decimals)
+        emit.build_bundle(make_spine(), entities, decimals)
 
 
 # ============================================================ Task 6 — knockoutScore
@@ -682,18 +701,147 @@ def _places(value: float) -> int:
     return len(text.split(".")[1].rstrip("0")) if "." in text else 0
 
 
-def test_no_emitted_float_carries_more_places_than_its_x_decimals(synthetic, decimals):
+def _resolve(node: dict, schemas: dict) -> dict:
+    """Follow a `$ref` to its target in either contract document.
+
+    A real one-hop resolver, written here rather than imported, because the whole point of
+    these two tests is to derive the expectation from the SCHEMA and not from the emitter's
+    own binding table. `test_every_numeric_leaf_key_is_bound_to_its_schema_declared_precision`
+    checked the emitter against `emit.precision_by_key` and therefore could not see a key the
+    table simply did not carry — which is how 29 `tacticalIdentity` leaves came to be rounded
+    to 0 places while both precision tests stayed green.
+    """
+    for _ in range(8):
+        ref = node.get("$ref")
+        if not isinstance(ref, str):
+            return node
+        name = ref.rsplit("/", 1)[-1]
+        for document in (BUNDLE, "common.schema.json"):
+            defs = schemas[document].get("$defs", {})
+            if name in defs:
+                node = defs[name]
+                break
+        else:
+            return {}
+    return node
+
+
+def _branches(node: dict, schemas: dict):
+    yield node
+    for branch in node.get("anyOf", ()):
+        yield _resolve(branch, schemas)
+
+
+def schema_declared_places(instance, schema, schemas, path="", out=None):
+    """`[(instance path, key, declared x-decimals), ...]` for every numeric leaf.
+
+    Walks the INSTANCE against the schema, resolving `$ref` and `anyOf` as it goes, so the
+    precision each leaf is entitled to comes from the contract rather than from Python.
+    """
+    out = [] if out is None else out
+    schema = _resolve(schema, schemas)
+    if instance is None or isinstance(instance, (bool, str)):
+        return out
+    if isinstance(instance, (int, float)):
+        declared = None
+        for branch in _branches(schema, schemas):
+            if "x-decimals" in branch:
+                declared = branch["x-decimals"]
+                break
+        out.append((path, path.rsplit("/", 1)[-1], declared))
+        return out
+    if isinstance(instance, list):
+        items = next((b["items"] for b in _branches(schema, schemas) if "items" in b), None)
+        if items is None:
+            raise AssertionError(f"{path}: array reached with no resolvable `items`")
+        for index, value in enumerate(instance):
+            schema_declared_places(value, items, schemas, f"{path}/{index}", out)
+        return out
+    props = next((b["properties"] for b in _branches(schema, schemas) if b.get("properties")),
+                 None)
+    if props is None:
+        raise AssertionError(f"{path}: object reached with no resolvable `properties`")
+    for key, value in instance.items():
+        assert key in props, f"{path}/{key} is not declared by the schema"
+        schema_declared_places(value, props[key], schemas, f"{path}/{key}", out)
+    return out
+
+
+def test_every_numeric_leaf_key_is_bound_to_its_schema_declared_precision(synthetic,
+                                                                         decimals):
+    """The binding table must MATCH the schema, not merely not exceed it.
+
+    "At most its declared places" cannot catch UNDER-rounding, and under-rounding is the
+    failure that actually shipped: a leaf entitled to 1 place emitted at 0 satisfies "at
+    most", and `round_to_precision(x, 0)` returns an `int`, so it is not even collected by a
+    float-only walk. This asserts the two maps are equal — every numeric leaf the schema
+    declares a precision for is bound to exactly that precision, and no leaf is unbound.
+    """
+    schemas = load_schemas()
     by_key = emit.precision_by_key(decimals)
-    for path, value in _numeric_leaves(synthetic()):
-        key = path.rsplit("/", 1)[-1]
-        allowed = by_key.get(key)
-        if allowed is None:
-            for part in reversed(path.split("/")):
-                if part in by_key:
-                    allowed = by_key[part]
-                    break
-        assert allowed is not None, f"{path} has no declared precision"
-        assert _places(value) <= allowed, f"{path} = {value!r} exceeds {allowed} places"
+    unbound: list[str] = []
+    wrong: list[str] = []
+    for path, key, declared in schema_declared_places(synthetic(), schemas[BUNDLE], schemas):
+        if declared is None:
+            continue
+        if key not in by_key:
+            unbound.append(f"{path} (declares {declared})")
+        elif by_key[key] != declared:
+            wrong.append(f"{path}: schema says {declared}, emitter binds {by_key[key]}")
+    assert not unbound, f"numeric leaves with no precision binding: {sorted(set(unbound))!r}"
+    assert not wrong, f"precision bindings that disagree with the schema: {sorted(set(wrong))!r}"
+
+
+def test_a_key_bound_to_the_wrong_precision_is_caught(synthetic, decimals, monkeypatch):
+    """Drive the test above RED, so it cannot pass by walking nothing.
+
+    Rebinding `lineHeight` from `Metres` (1) to `Count` (0) is exactly the defect that
+    shipped, reproduced deliberately.
+    """
+    table = dict(emit._KEY_TO_DEF)
+    table["lineHeight"] = "Count"
+    monkeypatch.setattr(emit, "_KEY_TO_DEF", table)
+    with pytest.raises(AssertionError, match="disagree with the schema"):
+        test_every_numeric_leaf_key_is_bound_to_its_schema_declared_precision(synthetic,
+                                                                             decimals)
+
+
+def test_an_unbound_numeric_leaf_is_caught(synthetic, decimals, monkeypatch):
+    """The same test, driven red the other way: a key dropped from the table entirely."""
+    table = {k: v for k, v in emit._KEY_TO_DEF.items() if k != "teamWidth"}
+    monkeypatch.setattr(emit, "_KEY_TO_DEF", table)
+    with pytest.raises(AssertionError, match="no precision binding"):
+        test_every_numeric_leaf_key_is_bound_to_its_schema_declared_precision(synthetic,
+                                                                             decimals)
+
+
+def _value_at(bundle, path: str):
+    node = bundle
+    for part in path.split("/")[1:]:
+        node = node[int(part)] if isinstance(node, list) else node[part]
+    return node
+
+
+def test_no_emitted_float_carries_more_places_than_its_x_decimals(synthetic, decimals):
+    """Every numeric leaf, at exactly the precision the schema declares for it.
+
+    Equality, not "at most": a value rounded to FEWER places than declared is the
+    under-rounding defect, and `round(19.5, 1) == 19.5` while `int(round(19.5)) == 20` is a
+    different number. Ints are compared by value so a `Count` stays exempt.
+    """
+    schemas = load_schemas()
+    bundle = synthetic()
+    for path, _key, declared in schema_declared_places(bundle, schemas[BUNDLE], schemas):
+        value = _value_at(bundle, path)
+        if declared is None:
+            # `schemaVersion` is a `const` integer and declares no precision. Anything else
+            # undeclared would be a float shipping at whatever the arithmetic produced.
+            assert not isinstance(value, float), f"{path} is a float with no x-decimals"
+            continue
+        assert _places(value) <= declared, f"{path} = {value!r} exceeds {declared} places"
+        assert value == round(float(value), declared), (
+            f"{path} = {value!r} is not the value rounded to its declared {declared} places"
+        )
 
 
 def test_the_precision_layer_can_actually_fail(decimals):
@@ -756,12 +904,12 @@ def test_swapping_home_and_away_changes_the_bundle(synthetic, decimals):
     """A test asserting `emit(x) == emit(x)` proves only that the function is the
     function. Each mutation below must turn something red."""
     spine = make_spine()
-    baseline = emit.build_bundle_partial(spine, make_entities(), decimals)
+    baseline = emit.build_bundle(spine, make_entities(), decimals)
     swapped = copy.deepcopy(spine)
     swapped["spine"]["home_team_id"], swapped["spine"]["away_team_id"] = "beta", "alpha"
     swapped["domains"]["match_metadata"]["teams"].update(
         {"home": "Beta", "away": "Alpha", "home_team_id": "beta", "away_team_id": "alpha"})
-    mutated = emit.build_bundle_partial(swapped, make_entities(), decimals)
+    mutated = emit.build_bundle(swapped, make_entities(), decimals)
     assert mutated["metadata"]["homeTeam"]["teamId"] != baseline["metadata"]["homeTeam"]["teamId"]
     assert mutated["players"][0]["teamId"] != baseline["players"][0]["teamId"]
 
@@ -832,13 +980,94 @@ def test_a_failed_run_writes_nothing_at_all(tmp_path):
     assert not data.exists(), "the GOOD bundle must not be written either"
 
 
+# =========================================== guards added by the 2026-08-05 code review
+def test_a_duplicate_player_id_in_one_lineup_is_a_finding(decimals):
+    """Task 4.6a asks for the invariant on `metadata.lineups`, not only on `players[]`.
+
+    `PlayerId` carries no uniqueness constraint and `Lineup` declares no `uniqueItems`, so
+    jsonschema accepts the duplicate and the App ships duplicate React keys.
+    """
+    spine = make_spine()
+    lineup = spine["domains"]["match_metadata"]["lineups"]["home"]
+    lineup["substitutes"].append(_entry("alpha-one-aaa", 12))
+    with pytest.raises(EmitError, match="duplicate playerId"):
+        emit.build_bundle(spine, make_entities(), decimals)
+
+
+def test_a_lone_penalty_goal_candidate_still_has_to_agree_on_the_minute(decimals):
+    """The elapsed check used to be skipped when a scorer had exactly one lineup goal, which
+    made the sole candidate an unconditional match while a two-goal scorer raised."""
+    goal = {"minute": 30, "stoppage_minute": None}
+    penalty_shot = _shot(1, 69, "alpha", "alpha-one-aaa",
+                         outcome="goal", outcome_detail="on-target-goal",
+                         delivery_type="penalty")
+    spine = make_spine(shots=[penalty_shot], home_goals=[goal])
+    with pytest.raises(EmitError, match="printed clocks disagree"):
+        emit.build_bundle(spine, make_entities(), decimals)
+
+
+def test_a_lone_penalty_goal_candidate_that_agrees_is_flagged(decimals):
+    """The same path, green: elapsed 70 on both clocks."""
+    goal = {"minute": 70, "stoppage_minute": None}
+    penalty_shot = _shot(1, 69, "alpha", "alpha-one-aaa",
+                         outcome="goal", outcome_detail="on-target-goal",
+                         delivery_type="penalty")
+    bundle = emit.build_bundle(make_spine(shots=[penalty_shot], home_goals=[goal]),
+                               make_entities(), decimals)
+    assert [g["penalty"] for g in bundle["metadata"]["goals"]] == [True]
+
+
+def test_a_level_shootout_score_is_a_finding_from_either_side(decimals):
+    """`(a > b) != winner_is_home` is `False != False` for an away-named winner on a level
+    score, so a tie passed from one side and raised from the other."""
+    for winner in ("Beta", "Alpha"):
+        spine = make_spine(momentum_max=120,
+                           shootout=f"({winner} win 3-3 on Penalties)",
+                           home_goals=[{"minute": 10, "stoppage_minute": None}],
+                           away_goals=[{"minute": 20, "stoppage_minute": None}])
+        with pytest.raises(EmitError, match="level"):
+            emit.build_bundle(spine, make_entities(), decimals)
+
+
+def test_a_goal_past_minute_90_contradicts_a_regulation_momentum_clock(decimals):
+    """The two printed clocks cross-check each other: regulation stoppage stamps as
+    `{90, N}`, so a goal at `minute > 90` can only be extra time."""
+    spine = make_spine(momentum_max=90, home_goals=[{"minute": 97, "stoppage_minute": None}])
+    with pytest.raises(EmitError, match="past minute 90"):
+        emit.build_bundle(spine, make_entities(), decimals)
+
+
+def test_a_zero_row_shots_table_is_a_finding_not_an_empty_array(decimals):
+    """Ruled in code review: `[]` would assert "zero shots occurred" from an absence of
+    evidence, on a page that exists on 208/208 team-innings."""
+    with pytest.raises(EmitError, match="events.shots built 0 rows"):
+        emit.build_bundle(make_spine(shots=[]), make_entities(), decimals)
+
+
+def test_a_zero_row_pass_network_table_is_a_finding_not_an_empty_array(decimals):
+    with pytest.raises(EmitError, match="events.passNetworkEdges built 0 rows"):
+        emit.build_bundle(make_spine(home_edges=[], away_edges=[]), make_entities(),
+                          decimals)
+
+
+def test_a_precision_name_the_schema_does_not_carry_is_a_finding(decimals, monkeypatch):
+    """`precision_by_key` used to drop an unresolved `$def` silently, so a renamed type
+    unbound every key that pointed at it while the vacuity guard stayed green."""
+    table = dict(emit._KEY_TO_DEF)
+    table["possession"] = "PercentageRenamedByACS3"
+    monkeypatch.setattr(emit, "_KEY_TO_DEF", table)
+    with pytest.raises(EmitError, match="PercentageRenamedByACS3"):
+        emit.precision_by_key(decimals)
+
+
 # ================================================ Task 7 — the write path, end to end
 #
-# `build_bundle` raises while CS-2 is outstanding, so `emit_bundles`' validate/measure/write
-# path is otherwise unreachable. These tests substitute a COMMITTED FIXTURE — a real,
-# schema-valid Match Bundle at the current `schemaVersion` — as the builder's output, which
-# exercises the writer, the stale-file sweep, the budget gate and the two failure paths
-# without pretending the blocked mappers exist.
+# These tests substitute a COMMITTED FIXTURE — a real, schema-valid Match Bundle at the
+# current `schemaVersion` — as the builder's output, so the writer, the stale-file sweep, the
+# budget gate and the failure paths are exercised over a bundle whose CONTENT is fixed and
+# independent of the synthetic spine. Written while CS-2 was outstanding and `build_bundle`
+# raised; kept afterwards because the substitution is what lets a write-path test assert on
+# bytes without also re-testing every mapper.
 
 FIXTURE_BUNDLES = sorted(
     (Path(__file__).resolve().parents[2] / "data" / "fixtures" / "matches").glob("*.json")
@@ -884,9 +1113,15 @@ def test_written_bundles_are_byte_identical_across_two_runs(tmp_path, valid_buil
 
 
 def test_a_dry_run_validates_and_measures_but_writes_nothing(tmp_path, valid_builder):
+    """It returns the targets it validated; the promise it makes is about the FILESYSTEM.
+
+    Returning `[]` made `--dry-run --expect-matches N` fail by construction, because the
+    count check could not tell "wrote nothing on purpose" from "built nothing".
+    """
     valid_builder()
     spine = _stage(tmp_path, [make_spine()], make_entities())
-    assert emit.emit_bundles(spine, tmp_path / "data", dry_run=True) == []
+    targets = emit.emit_bundles(spine, tmp_path / "data", dry_run=True)
+    assert [p.name for p in targets] == ["m001-alpha-beta.json"]
     assert not (tmp_path / "data").exists()
 
 
@@ -979,6 +1214,104 @@ def test_an_empty_spine_is_a_finding_never_a_vacuous_pass(tmp_path, valid_builde
     code = emit.main(["--spine-dir", str(spine), "--data-dir", str(tmp_path / "data")])
     assert code == 1
     assert "never a pass" in capsys.readouterr().err
+
+
+def test_an_empty_spine_does_not_delete_the_committed_bundles(tmp_path, valid_builder):
+    """The stale sweep must never run for a run that produced nothing.
+
+    Landmine 14 from the direction "all 104 or none" did not cover: the guarantee was about
+    WRITES, and the sweep is a DELETE. An empty or truncated spine — a `precompute.run` that
+    stopped early, a mistyped `--spine-dir` — wrote what it had, deleted the rest of the
+    committed corpus, and only then reported the miss, leaving `check_committed_data` to pin
+    a partial namespace as the immutability baseline.
+    """
+    valid_builder()
+    out = tmp_path / "data" / "matches"
+    out.mkdir(parents=True)
+    committed = {out / "m001-alpha-beta.json", out / "m002-gamma-delta.json"}
+    for path in committed:
+        path.write_text("{}", encoding="utf-8")
+    spine = _stage(tmp_path, [], make_entities())
+    assert emit.main(["--spine-dir", str(spine), "--data-dir", str(tmp_path / "data")]) == 1
+    assert set(out.glob("*.json")) == committed, "an empty run must delete nothing"
+
+
+def test_an_expect_matches_miss_does_not_delete_the_committed_bundles(tmp_path,
+                                                                     valid_builder):
+    """The count check runs BEFORE the write and the sweep, not after them."""
+    valid_builder()
+    out = tmp_path / "data" / "matches"
+    out.mkdir(parents=True)
+    orphan = out / "m999-gone-away.json"
+    orphan.write_text("{}", encoding="utf-8")
+    spine = _stage(tmp_path, [make_spine()], make_entities())
+    code = emit.main(["--spine-dir", str(spine), "--data-dir", str(tmp_path / "data"),
+                      "--expect-matches", "104"])
+    assert code == 1
+    assert orphan.is_file(), "a short spine must not sweep the committed corpus"
+    assert not (out / "m001-alpha-beta.json").exists(), "nor write its own partial slice"
+
+
+def test_a_dry_run_with_expect_matches_passes_on_a_clean_corpus(tmp_path, valid_builder,
+                                                                capsys):
+    """`--dry-run --expect-matches N` used to FAIL by construction on every clean run.
+
+    `emit_bundles` returned `[]` for a dry run and `main` compared that against the expected
+    count, so the pre-write validation pass a reviewer would naturally reach for could never
+    report PASS. A dry run now returns the targets it validated; the promise it makes is
+    about the filesystem.
+    """
+    valid_builder()
+    spine = _stage(tmp_path, [make_spine()], make_entities())
+    code = emit.main(["--spine-dir", str(spine), "--data-dir", str(tmp_path / "data"),
+                      "--expect-matches", "1", "--dry-run"])
+    assert code == 0, capsys.readouterr().err
+    assert "dry run, nothing written" in capsys.readouterr().out
+    assert not (tmp_path / "data").exists(), "a dry run writes nothing"
+
+
+def test_a_dry_run_over_an_empty_spine_is_still_a_finding(tmp_path, valid_builder, capsys):
+    """The vacuous-pass rule applied to the branch that used to skip it."""
+    valid_builder()
+    spine = _stage(tmp_path, [], make_entities())
+    code = emit.main(["--spine-dir", str(spine), "--data-dir", str(tmp_path / "data"),
+                      "--dry-run"])
+    assert code == 1
+    assert "never a pass" in capsys.readouterr().err
+
+
+def test_two_spine_files_with_one_match_id_are_a_finding(tmp_path, valid_builder):
+    """A duplicate wrote one bundle and counted two, satisfying `--expect-matches`."""
+    valid_builder()
+    spine = _stage(tmp_path, [make_spine(), make_spine()], make_entities())
+    with pytest.raises(EmitError, match="staged more than once"):
+        emit.emit_bundles(spine, tmp_path / "data", expect_matches=2)
+    assert not (tmp_path / "data").exists()
+
+
+def test_a_malformed_spine_file_is_a_broken_harness_not_a_finding(tmp_path, capsys):
+    """`json.JSONDecodeError` is a `ValueError`, so it escaped both handlers as a traceback
+    and exit 1 — reporting "the harness could not run" as "a dataset finding"."""
+    spine = _stage(tmp_path, [make_spine()], make_entities())
+    target = next((spine / "matches").glob("*.json"))
+    target.write_text('{"spine": {', encoding="utf-8")
+    code = emit.main(["--spine-dir", str(spine), "--data-dir", str(tmp_path / "data")])
+    assert code == 2
+    assert "not readable JSON" in capsys.readouterr().err
+
+
+def test_a_record_missing_a_staged_key_fails_typed_not_as_a_key_error(tmp_path):
+    """The entry-point guard the ledger routed here by name.
+
+    Every mapper reads the spine by bare subscript, so a record staged by an older checkout
+    used to surface as `KeyError('...')` from whichever mapper reached it first — untyped,
+    and through the CLI an uncaught traceback.
+    """
+    stale = make_spine()
+    del stale["domains"]["key_statistics"]
+    spine = _stage(tmp_path, [stale], make_entities())
+    with pytest.raises(UnmappedFieldError, match="key_statistics"):
+        emit.emit_bundles(spine, tmp_path / "data")
 
 
 # ============================================================ the real corpus
@@ -1158,8 +1491,8 @@ def test_corpus_story_stats_agree_with_the_key_statistics_they_summarize(bundles
 def test_corpus_bundles_are_byte_identical_across_two_builds(corpus, decimals):
     entities, matches = corpus
     for match in matches[:12]:
-        first = canonical_json(emit.build_bundle_partial(match, entities, decimals))
-        second = canonical_json(emit.build_bundle_partial(match, entities, decimals))
+        first = canonical_json(emit.build_bundle(match, entities, decimals))
+        second = canonical_json(emit.build_bundle(match, entities, decimals))
         assert first.encode("utf-8") == second.encode("utf-8"), match["spine"]["match_id"]
 
 
@@ -1194,16 +1527,45 @@ def test_the_committed_id_check_is_total_for_a_match_bundle(bundles):
     )
 
 
+def test_the_committed_bundles_are_exactly_what_the_emitter_produces(spine_dir, bundles):
+    """`data/matches/` is COMMITTED under AD-13, so the tree and the emitter can drift.
+
+    Every other corpus test here builds from `work/spine/` and asserts properties of what it
+    built — which says nothing about the 104 files a consumer actually reads. This compares
+    bytes, not parsed dicts: canonical serialization is the property under test, and a
+    hand-edited or stale committed bundle is invisible to a parsed comparison that
+    round-trips it.
+    """
+    entities, matches = emit.load_spine(spine_dir)
+    decimals = decimals_map(BUNDLE)
+    committed_dir = spine_dir.parents[1] / "data" / "matches"
+    drifted: list[str] = []
+    for match in matches:
+        match_id = match["spine"]["match_id"]
+        expected = canonical_json(emit.build_bundle(match, entities, decimals))
+        committed = committed_dir / f"{match_id}.json"
+        if not committed.is_file():
+            drifted.append(f"{match_id}: not committed")
+        elif committed.read_bytes() != expected.encode("utf-8"):
+            drifted.append(f"{match_id}: committed bytes differ from a fresh emission")
+    assert not drifted, f"{len(drifted)} bundle(s) drifted: {sorted(drifted)[:10]!r}"
+    assert len(matches) == len(bundles)
+
+
 def test_every_corpus_numeric_leaf_respects_its_declared_precision(bundles, decimals):
+    """The same schema-derived walk over all 104 real bundles, not just the synthetic one."""
+    schemas = load_schemas()
     by_key = emit.precision_by_key(decimals)
     for bundle in bundles:
-        for path, value in _numeric_leaves(bundle):
-            key = path.rsplit("/", 1)[-1]
-            allowed = by_key.get(key)
-            if allowed is None:
-                for part in reversed(path.split("/")):
-                    if part in by_key:
-                        allowed = by_key[part]
-                        break
-            assert allowed is not None, f'{bundle["matchId"]}{path}'
-            assert _places(value) <= allowed, f'{bundle["matchId"]}{path} = {value!r}'
+        for path, key, declared in schema_declared_places(bundle, schemas[BUNDLE], schemas):
+            if declared is None:
+                assert not isinstance(_value_at(bundle, path), float), (
+                    f'{bundle["matchId"]}{path} is a float with no declared precision'
+                )
+                continue
+            assert by_key.get(key) == declared, (
+                f'{bundle["matchId"]}{path}: schema declares {declared}, emitter binds '
+                f"{by_key.get(key)!r}"
+            )
+            value = _value_at(bundle, path)
+            assert _places(value) <= declared, f'{bundle["matchId"]}{path} = {value!r}'

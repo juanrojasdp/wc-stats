@@ -595,7 +595,7 @@ function keeperBlock(
  * THE X AXIS IS THE SAMPLE INDEX. The minute is a LABEL read off the sample —
  * never the key, never the domain, and NEVER ASSUMED UNIQUE.
  *
- * `GoalkeeperInvolvementSample` is `{minute: Minute, involvements: Count}` — a
+ * `GoalkeeperInvolvementSample` was `{minute: Minute, involvements: Count}` — a
  * BARE `Minute`, 0-120, WITH NO STOPPAGE FIELD. The corpus draws 95-145 slots
  * per team-inning (min 95, median 102, max 145) and 2,506 of 21,764 corpus
  * slots fall in stoppage time, so on real data MANY SAMPLES COLLIDE ONTO ONE
@@ -603,14 +603,15 @@ function keeperBlock(
  * fixed for `MomentumSample.at` by making it a `MinuteStamp`, and exactly what
  * invalidated Story 2.6's original slider AC.
  *
- * THE FIXTURES HIDE IT COMPLETELY: m001/m002 carry 19 samples at minutes
- * 0,5,10..90 and m074 carries 25 at 0,5..120 — evenly spaced, unique, and
- * summing EXACTLY to totalInvolvements. Build to this docblock, not to what is
- * on screen.
+ * CHANGE-SET CS-2 LANDED THAT FIX: the sample now carries `at: MinuteStamp`,
+ * and this function reads `sample.at.minute`. Indexing by sample was already
+ * right and needed no change — but the stoppage component is now AVAILABLE and
+ * this model still drops it, which matters for `involvementTicks` below.
  *
- * Filed to the successor change-set as a BLOCKER for Story 2.19's real-data
- * cutover (Task 9.4): `minute` needs to become a `MinuteStamp`. Because this
- * story already indexes by sample, no App change is owed when that lands.
+ * THE FIXTURES HIDE THE COLLISION COMPLETELY: m001/m002 carry 19 samples at
+ * minutes 0,5,10..90 and m074 carries 25 at 0,5..120 — evenly spaced, unique,
+ * and summing EXACTLY to totalInvolvements. Build to this docblock, not to what
+ * is on screen; the 104 real bundles are the corpus this describes.
  */
 export function involvementSeries(
   record: CorpusNullableGoalkeeperRecord
@@ -629,19 +630,30 @@ export function involvementSeries(
 /**
  * Thinned x-axis tick INDICES, first and last always present (decision 9).
  *
- * THE SHIPPED TICK MODEL IS NOT DIRECTLY IMPLEMENTABLE HERE, and the interim
- * behaviour is ruled rather than left to the implementer.
+ * THE SHIPPED TICK MODEL WAS NOT IMPLEMENTABLE WHEN THIS WAS WRITTEN, and the
+ * interim behaviour was ruled rather than left to the implementer.
  * `momentumTickIndices` emits a tick only at a row whose minute is a multiple
  * of the step AND IS NOT A STOPPAGE SLOT, with a `seen` set added by review
  * patch "so a later row carrying the SAME minute cannot emit a second tick at
- * the same clock label". Both mechanisms read `row.at.stoppageMinute`, WHICH
- * THIS CONTRACT DOES NOT CARRY.
+ * the same clock label". Both mechanisms read `row.at.stoppageMinute`, which
+ * this contract did not then carry.
  *
- * So the surviving half is implemented: DEDUPE TICK MINUTES BY VALUE, FIRST
+ * So the surviving half was implemented: DEDUPE TICK MINUTES BY VALUE, FIRST
  * OCCURRENCE WINS — the half that stops a repeated axis label. The axis says
  * what it is, once, in its own <Label> and in the figureSummary (Task 8.4's
  * minted sentence): it plots the report's slots in order, and a stoppage slot
  * carries the preceding regulation minute.
+ *
+ * THE INTERIM'S CONDITION HAS EXPIRED. Change-set CS-2 made the sample carry
+ * `at: MinuteStamp`, so `at.stoppageMinute` IS available and the full
+ * `momentumTickIndices` model — skip stoppage slots outright — is now
+ * implementable. Measured over the 104 emitted bundles: 2,506 of 21,764 samples
+ * carry a non-null `stoppageMinute` and every one collides with another sample
+ * on the same minute, so the dedupe is doing real work on real data and the
+ * first-occurrence winner is a regulation slot only by luck of ordering.
+ * Re-opening this is Story 2.19's, with the rest of the #goalkeeping cutover;
+ * recorded here rather than changed, because a tick model is a shipped visual
+ * ruling and CS-2's job was to keep `main` green.
  */
 export function involvementTicks(points: readonly InvolvementPoint[]): number[] {
   if (points.length === 0) {

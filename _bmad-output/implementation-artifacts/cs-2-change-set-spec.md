@@ -2,7 +2,7 @@
 
 **Requested by:** Story 1.16 (Match Bundle emission), Epic 1
 **Ruled by:** Juan, 2026-08-04 (D1 and D2), scope expansion 2026-08-05
-**Landed:** 2026-08-05, one atomic AD-14 commit
+**Landed:** 2026-08-05, in commit `04f886e` — **NOT as its own commit; see the correction below**
 **`schemaVersion`:** 3 → 4
 **Logged decision:** `contract/README.md` decision 18
 
@@ -16,6 +16,19 @@ was blocking its own producer, and no amount of pipeline work could route around
 
 This is the same shape as CS-1's block and resolves the same way: one atomic commit, its own
 spec, landing **before** emission.
+
+> **CORRECTION, added by the 2026-08-05 code review.** That is what was required and it is
+> not what happened. CS-2's schema, fixture and `app/` files landed in `04f886e` together
+> with Story 1.16's 104 emitted bundles, both unblocked mappers, `pipeline/precompute/
+> identity.py` and three test modules. The checklist below ticks *"All in ONE commit"*
+> truthfully — every file CS-2 owed is in one commit — but that commit is not CS-2 alone,
+> which is what Task 0, Task 0.1, Task 11.4 and AD-14 required. Nothing in the change-set's
+> CONTENT is affected: six declarations moved, both type trees regenerated, seven fixtures
+> re-pinned, `check:types` green in both trees. Juan ruled: disclose rather than rewrite
+> pushed history, since the schema and the two mappers it unblocks are genuinely entangled
+> and this spec already provides what reviewing the bump in isolation needs. **Recorded so
+> the next AD-14 change-set is not planned from a precedent that looks like the rule was
+> optional.**
 
 ## Scope, fixed by rulings D1 and D2 and by nothing else
 
@@ -75,7 +88,7 @@ followed the corrected one:
       other)
 - [x] The prose stating the version in `data/fixtures/README.md`
 - [x] `app/` repaired so the build stays green
-- [x] All in ONE commit
+- [x] All in ONE commit — but **not in a commit of its own**; see the correction above
 
 **Proof required:** the full `pipeline/tests` suite, plus `npm run check:types` run by hand
 in `app/` — that tree has no freshness gate (`contract/README.md`, the gate-gap note under

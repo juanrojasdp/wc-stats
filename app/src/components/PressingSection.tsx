@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { TacticalIdentityBlock } from "@/lib/contract/contract-types";
-import { formatDecimal, formatPercent } from "@/lib/format";
+import { formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import type { TableColumn } from "@/lib/table-sort";
@@ -87,15 +87,6 @@ const BlockChart = distributionChart(BLOCK_HEIGHT);
 const CAPTION_SEPARATOR = " — ";
 const CLAUSE_SEPARATOR = ", ";
 const VALUE_SEPARATOR = " · ";
-const UNIT_SEPARATOR = " ";
-
-/*
- * Theme-aware canvas accents: these are cards on --surface-raised, never the
- * pitch. The -on-pitch variants would put #f2f5f7 ink at 1.09:1 on the white
- * card. Measured on --surface-raised: team A 13.56 dark / 4.99 light, team B
- * 10.30 / 5.36 — both clear 4.5:1 in both themes.
- */
-const ACCENT_CLASS = { a: "text-viz-team-a", b: "text-viz-team-b" } as const;
 
 interface SideRef {
   teamId: string;
@@ -168,9 +159,12 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
   /* ------------------------------- The tables -------------------------------- */
 
   /*
-   * The rate tables and the metre table share a shape — label, home, away —
-   * differing only in the first column's head and in the value formatter. Built
-   * from one factory so the three can never drift apart.
+   * The rate tables share a shape — label, home, away — differing only in the
+   * first column's head and in the value formatter. Built from one factory so
+   * the two can never drift apart. (A third, the metre table, was retired with
+   * `PossessionSplitMetres` in change-set CS-2; re-presenting the 18 real
+   * `shapeByPhase` values is filed to 2.19 and needs six panel labels that exist
+   * in neither locale.)
    */
   function labelledPairColumns<Row extends { labelKey: DictionaryKey; home: number; away: number }>(
     labelHead: string,

@@ -2033,3 +2033,59 @@ what it changed beyond its filed scope, and what it left open.
   need a built `out/`, which the worktree has not got — they are not CS-2 failures.**
   **Deferred: nothing. Owner: none — recorded so a reviewer re-running the chain in the
   shared tree and seeing ExpertLayer errors knows they are not CS-2's.**
+
+## Corrections from: code review of 1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate (2026-08-05)
+
+**Four entries this story filed above are wrong or overstated. Appended as corrections rather than edited in place, per the house convention.**
+
+- **CORRECTION to *"The duplicate-`playerId` invariant … is DISCHARGED"*.** That entry claims the invariant is *"Asserted at the emitter for both `players[]` and `metadata.lineups`"*. It was asserted for `players[]` only — `build_players` carried the check and `_lineup` carried none, so a spine repeating a `player_id` between `starters` and `substitutes` would have emitted a schema-valid bundle with duplicate lineup entries. **Fixed in the code review**: `_lineup` now checks starters and substitutes as one namespace and raises `EmitError`, and a constructed test pins it. The entry's conclusion (closed, no app-side guard needed) now holds; its stated reason did not.
+
+- **CORRECTION to *"`domain_e_checks` reads its own payload by bare subscript — RE-FILED"*.** That entry justifies the re-file by claiming the emitter's own reads are already guarded *"in a stronger form: `check_total` asserts every emitted object's key set against its `$def`, so a record staged by an older checkout surfaces as a typed `UnmappedFieldError` … rather than a bare `KeyError`."* **That is false.** `check_total` only ever inspects the dict a mapper has already BUILT; every mapper reads the spine by bare subscript first, so deleting one staged key made `build_bundle` raise `KeyError`, untyped, and through the CLI an uncaught traceback. **Juan ruled the guard rather than the re-file**: `check_spine_shape` now asserts the required `spine` and `domains` keys at load and raises `UnmappedFieldError` naming the missing path. The `domain_e_checks` half of the filing stands as re-filed — `pipeline/validate/` is still outside this story — but for the reason the entry gives second, not the one it gives first.
+
+- **CORRECTION to *"Story 2.10's `GoalkeeperInvolvementSample.minute` BLOCKER … is DISCHARGED"*.** *"Closed, and 2.19 owes no App change for it"* is right for `involvementSeries`, which is index-keyed and needed only `sample.minute` → `sample.at.minute`. It is overstated for the TICKS. `involvementTicks` implements a deliberately partial interim model whose ruling reads *"Both mechanisms read `row.at.stoppageMinute`, WHICH THIS CONTRACT DOES NOT CARRY"* — CS-2 made it carry exactly that, so the condition the interim rests on has expired. Measured over the 104 emitted bundles: 2,506 of 21,764 samples carry a non-null `stoppageMinute` and every one collides with another sample on the same minute, so the minute-dedupe is doing real work and its first-occurrence winner is a regulation slot only by luck of ordering. The docblocks are corrected in place; the model is not. **Deferred: re-open the involvement tick model against the full `momentumTickIndices` rule now that stoppage is available. Owner: Story 2.19, with the rest of the #goalkeeping cutover.**
+
+- **CORRECTION to CS-2's *"`app/` was repaired in the same commit"* entry, and a disclosure the Dev Agent Record owed.** Two figures in that entry and its sibling are off. (a) The blast radius is stated as *"Six files"*; the commit touches **seven** under `app/` — `PressingSection.tsx`, `goalkeeping-model.ts` + `.test.ts`, `phases-model.ts` + `.test.ts`, and both regenerated files under `src/lib/contract/`. The count is a convention question, not a hidden file: all seven are in the File List. (b) **CS-2 did not land as its own atomic commit at all.** Task 0, Task 0.1, Task 11.4 and the PREREQUISITE section all require it to be separate from this story's emission, and AD-14 is the reason; `04f886e` carries CS-2's schema, fixture and app files together with the 104 emitted bundles, both unblocked mappers, `identity.py` and three test modules. Everything CS-2 owed was executed — six declarations, both type trees, seven fixtures re-pinned, `check:types` green in `contract/` and `app/` — and the CS-2 spec's checklist ticks *"All in ONE commit"* truthfully; what is missing is the separation and, until now, any disclosure of it. **Juan ruled: disclose and move on** — the schema and the two mappers it unblocks are genuinely entangled, and rewriting pushed history to recover a separation whose purpose (reviewing the bump in isolation) the CS-2 spec already serves. **Deferred: nothing. Owner: none — recorded so the next AD-14 change-set is not planned from a precedent that looks like the rule was optional.**
+
+## Deferred from: code review of 1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate (2026-08-05)
+
+- **An `OSError` mid-write leaves `data/matches/` partially populated with no rollback.**
+  `emit_bundles`' write loop (`pipeline/precompute/emit.py`, the loop after the *"if dry_run:
+  return []"* guard) has no all-or-nothing step of its own. Validation, rounding and the budget
+  measurement all complete before the first byte, which is what the docstring's *"a breach
+  anywhere leaves `data/matches/` untouched"* correctly describes — but a disk-full or
+  permission failure on bundle 57 propagates to `main`'s `except OSError` and exits 2 with 56
+  files written, the stale sweep skipped, and the next `check_committed_data` pinning that
+  partial namespace as the immutability baseline. That is landmine 14 reached by a different
+  door from the count-check defect patched in this review. The fix is a staged directory —
+  write all 104 beside the target and swap, or write to `.tmp` names and rename in a second
+  pass — which is a real design step rather than a guard, and touches the one code path whose
+  output is committed. **Deferred: make the write phase itself all-or-nothing. Owner:
+  whichever story next edits the emitter's write path — Story 1.19's batch acceptance is the
+  natural point, since it is the story that re-runs emission over the whole corpus.**
+
+- **`i18n.test.ts`'s 27-caption accessibility inventory still lists a caption no section
+  renders.** `app/src/lib/i18n.test.ts` pins `viz.pressing.metreTableCaption` in a
+  hand-maintained caption list asserted `toHaveLength(27)`. CS-2 deleted the metre `DataTable`
+  from `PressingSection.tsx`, so the App now renders 26 tables while the parity assertion still
+  says 27 — it stays green because the list is built from dictionary lookups rather than from
+  the DOM, which means the next section to add a table will make it "pass" at the wrong count.
+  The orphaned `viz.pressing.{metres,metreNote,metreTableCaption}`, `viz.pressing.metre.*`,
+  `viz.table.measure` and `enums.unit.m` keys are the same residue; CS-2 left them in place
+  deliberately rather than touch `i18n.test.ts` while a concurrent session was editing it.
+  **Deferred: retire the metre captions, keys and inventory entry together when the surface is
+  re-presented. Owner: Story 2.19, alongside the `shapeByPhase` re-presentation already filed
+  under *"`#pressing`'s metre presentation is RETIRED"*.**
+
+- **`goalkeeping-model.ts` synthesizes a joined `playerId` and a hand-composed display name
+  for the two-keeper innings.** CS-2's per-team reshape is absorbed in
+  `app/src/viz/goalkeeping-model.ts` by deriving `playerId` as `goalkeepers.map(k =>
+  k.playerId).join("-")` and `playerName` as the names joined with `" / "`, then assigning both
+  to the widened block. On the 7 two-keeper team-innings `playerId` becomes
+  `"rangel-raul-mex-ochoa-guillermo-mex"` — a string that is not a `PlayerId` and resolves to no
+  player, in a field whose name says it is one. It is only a React-key disambiguator today,
+  which is why nothing breaks; it is a loaded gun for the first consumer that treats it as an
+  id, and the `" / "` separator is user-visible copy minted inside a pure model rather than in
+  the locale layer, which is the boundary AD-7 draws. The minimal repair was correct for a
+  change-set whose job was to keep `main` green. **Deferred: give the per-team block an honest
+  key (the `teamId` it already carries) and move the name composition into the locale layer.
+  Owner: Story 2.19, with the `#goalkeeping` re-scope.**

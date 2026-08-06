@@ -904,14 +904,22 @@ def test_every_pass_network_node_is_at_least_as_involved_as_its_own_edges(path: 
 
 @pytest.mark.parametrize("path", MATCH_FIXTURES, ids=lambda p: p.name)
 def test_set_play_counts_are_internally_consistent(path: Path) -> None:
-    """Free kicks are NESTED and corners are partitioned; both were undocumented and untested."""
+    """Corners are partitioned by delivery type; free kicks are NOT nested.
+
+    This used to assert `direct == directOnTarget + directOffTarget`, which change-set CS-2
+    documented as CORPUS-FALSE: it holds on 0 of 208 team-innings, and 160 of them carry
+    `directOnTarget + directOffTarget == 0` while `direct > 0`. It held here only because
+    `data/fixtures/` is hand-authored, which is how the claim came to be written in the
+    contract in the first place. Left in place it would turn red the moment the fixtures are
+    regenerated from real data (1.18/1.19) — for a reason that is not a defect, which is
+    exactly the trap Story 1.16 refused to set when it declined to tighten
+    `test_every_pass_network_node_is_at_least_as_involved_as_its_own_edges`.
+
+    The four relations below are the corpus-true ones, verified on 208/208.
+    """
     for side in ("home", "away"):
         plays = _load(path)["setPlays"][side]
         free_kicks = plays["freeKicks"]
-        assert (
-            free_kicks["direct"]
-            == free_kicks["directOnTarget"] + free_kicks["directOffTarget"]
-        ), f"{path.name}/{side}: direct free kicks are not the sum of their on/off split"
         assert (
             free_kicks["direct"] + free_kicks["indirect"] == plays["totalFreeKicks"]
         ), f"{path.name}/{side}: direct + indirect != totalFreeKicks"
@@ -926,14 +934,25 @@ def test_set_play_counts_are_internally_consistent(path: Path) -> None:
 
 @pytest.mark.parametrize("path", MATCH_FIXTURES, ids=lambda p: p.name)
 def test_goal_prevention_breakdowns_hit_their_own_documented_denominators(path: Path) -> None:
-    """The two panels have DIFFERENT totals by design; that is now written down and held."""
-    for keeper in _load(path)["goalkeeping"] or []:
-        prevention = keeper["goalPrevention"]
+    """The two panels have DIFFERENT totals by design; that is now written down and held.
+
+    Both messages used to interpolate `keeper["playerId"]`, a key change-set CS-2 deleted
+    when `GoalkeepingBlock` became per-TEAM — so the moment either invariant actually broke,
+    the test died with `KeyError: 'playerId'` instead of naming the bundle and the relation.
+    `byBodyType` became nullable in the same change-set and is null on 208/208 real
+    team-innings; summing it unguarded is the identical defect Task 9 swept six instances of.
+    """
+    for block in _load(path)["goalkeeping"] or []:
+        prevention = block["goalPrevention"]
+        where = f"{path.name}/{block['teamId']}"
         assert sum(prevention["byInterventionType"].values()) == prevention["attemptsFaced"], (
-            f"{path.name}/{keeper['playerId']}: intervention types do not sum to attemptsFaced"
+            f"{where}: intervention types do not sum to attemptsFaced"
         )
-        assert sum(prevention["byBodyType"].values()) == prevention["totalInterventions"], (
-            f"{path.name}/{keeper['playerId']}: body types do not sum to totalInterventions"
+        by_body_type = prevention["byBodyType"]
+        if by_body_type is None:
+            continue
+        assert sum(by_body_type.values()) == prevention["totalInterventions"], (
+            f"{where}: body types do not sum to totalInterventions"
         )
 
 

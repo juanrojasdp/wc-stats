@@ -277,8 +277,9 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
        * Narrow, explicit props, never the whole bundle (Story 2.5 Task 5.1's
        * precedent). #phases and #pressing read the SAME `tacticalIdentity`
        * block: ruled decision 4 gives #phases all 17 phase rates and #pressing
-       * the four press rates plus the blocks plus the metres, so seven of the
-       * nine out-of-possession values appear in both — deliberately, because
+       * the four press rates plus the blocks (the metres went with
+       * `PossessionSplitMetres` in change-set CS-2), so seven of the nine
+       * out-of-possession values appear in both — deliberately, because
        * #pressing's shipped, frozen summary promises pressing intensity and is
        * also the <lg collapsed-shell copy.
        */

@@ -501,7 +501,7 @@
     },
     "ShapeByPhase": {
       "title": "ShapeByPhase",
-      "$comment": "CS-2 (logged decision 18) replaced `lineHeight`/`teamLength`, which were two PossessionSplitMetres modelling FOUR metre values per team. The corpus prints EIGHTEEN: three panels per possession state, three measures each, verified 104 x 2 sides x 2 pages x 3 panels x 3 measures = 3,744 values corpus-wide against the contract's 832. No aggregation was implied by the data � m001 home in-possession lineHeight is 19 / 39 / 54 and the v3 fixture's single 44.4 matched no panel and no mean of them, because it was synthetic. Story 1.16 could not emit the old shape at all: PossessionSplitMetres was non-nullable throughout, so it blocked EVERY bundle.",
+      "$comment": "CS-2 (logged decision 18) replaced `lineHeight`/`teamLength`, which were two PossessionSplitMetres modelling FOUR metre values per team. The corpus prints EIGHTEEN: three panels per possession state, three measures each, verified 104 x 2 sides x 2 pages x 3 panels x 3 measures = 3,744 values corpus-wide against the contract's 832. No aggregation was implied by the data — m001 home in-possession lineHeight is 19 / 39 / 54 and the v3 fixture's single 44.4 matched no panel and no mean of them, because it was synthetic. Story 1.16 could not emit the old shape at all: PossessionSplitMetres was non-nullable throughout, so it blocked EVERY bundle.",
       "description": "Team shape by phase of play, in and out of possession. The report does not aggregate these; neither does the contract.",
       "type": "object",
       "additionalProperties": false,

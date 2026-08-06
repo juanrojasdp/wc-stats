@@ -2437,7 +2437,7 @@ development_status:
   # CS-2 is Task 0 of the story and is NOT part of its commit. D3/D4 need no contract change.
   # Consequence for Epic 2, owned by 2.10/2.19 not by 1.16: #pressing's metre block is deleted or
   # re-shaped by D1, and CorpusNullableGoalkeeperRecord collapses to a re-export under D2.
-  1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: review
+  1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
   1-17-tournament-index-results-standings-leaderboards: backlog
   1-18-team-player-profile-artifacts: backlog
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
@@ -2534,3 +2534,42 @@ development_status:
 #             same shape as its CS-1 block, and CS-2 is Task 0 with its own spec and its own
 #             atomic commit. Two of eleven mapping subtasks (4.7 tacticalIdentity, 4.9
 #             goalkeeping) wait on it; every other task is implementable today.
+# 2026-08-05: story 1-16 adversarial code review (3 layers over f2ea99d..04f886e, this story's
+#             slice across BOTH its commits with the interleaved 2.11c review excluded): 45 raw
+#             findings deduped to 30 — 4 decisions ruled, 21 patches, 3 deferred, 2 dismissed.
+#             All five ACs re-verified independently and they HOLD on the shipped artifacts:
+#             104/104 schema-valid at schemaVersion 4 with zero violations, byte-identical
+#             rebuilds, the four Domain D tables null and never [], knockoutScore on all 104,
+#             the budget gate red by construction. D1-D4 all implemented as ruled, D3 with its
+#             "re-derive 16/16 and fail loud" condition met.
+#             HEADLINE FINDING: the precision layer silently truncated a whole domain. _KEY_TO_DEF
+#             binds home/away to Count because they are TeamScore's numeric members, but they are
+#             ALSO the side keys of tacticalIdentity — and round_bundle let a leaf inherit its
+#             parent's places, so Count's 0 rode down into all 29 leaves below, every one of which
+#             declares 1. It validated clean (Percentage/Metres are type:number), no corpus value
+#             was fractional so no number was visibly wrong, and BOTH precision tests derived their
+#             expectation from the emitter's own binding table so neither could see it. 38 keys
+#             were unbound in total (23 Domain C, 15 Domain E). Fixed, inheritance removed, and the
+#             tests rewritten to walk the instance against the SCHEMA asserting EQUALITY — "at
+#             most" is exactly what under-rounding satisfies. The 104 bundles were RE-EMITTED:
+#             7,904 tacticalIdentity values now serialize as 19.0 rather than 19.
+#             SECOND: a short or empty spine DELETED the committed bundles. The expected-count
+#             check ran in main, after emit_bundles returned — and emit_bundles sweeps every file
+#             the run did not produce. "All 104 or none" was a promise about WRITES; the sweep is a
+#             DELETE, so landmine 14 was reachable from the one side the rule did not cover. The
+#             count, empty-run and duplicate-match_id checks now raise before the first byte.
+#             FOUR DECISIONS RULED BY JUAN, all as recommended: (1) CS-2's non-atomic commit —
+#             disclose rather than rewrite pushed history, now recorded in the story, the ledger
+#             and the CS-2 spec; (2) the U+FFFD baked into match-bundle.schema.json:504 — fix now
+#             as a byte correction, no bump, both type trees regenerated (neither diffed); (3) the
+#             emitter's bare-subscript spine reads — add the entry-point guard, which makes the
+#             ledger's claim true instead of correcting it downward; (4) zero-row shots/edges —
+#             raise, not [] and not null.
+#             THREE LEDGER CLAIMS WERE FALSE and are corrected as appended corrections: the
+#             lineups duplicate-playerId assertion did not exist, check_total never guarded the
+#             emitter's SOURCE reads, and "2.19 owes no App change" is true for the involvement
+#             series but not for its tick model, whose interim ruling rested on a field CS-2 added.
+#             VERIFIED: 1,501 collected — 1,500 passed, 1 skipped, 0 failed across four chunks,
+#             all 43 modules; app suite 741 passed, tsc + eslint clean; emit, emit --dry-run and
+#             run all exit 0. Suite arithmetic now reconciles exactly (1,482 + 19 new = 1,501),
+#             correcting the story's own off-by-one. Status -> done.
