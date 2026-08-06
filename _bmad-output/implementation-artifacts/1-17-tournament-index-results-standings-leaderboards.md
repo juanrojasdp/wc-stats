@@ -11,7 +11,7 @@ baseline_commit: 74b1789
 
 # Story 1.17: Tournament Index — Results, Standings & Leaderboards
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -308,14 +308,14 @@ So tiers beyond goal difference are **never exercised by this corpus** and canno
   - [x] 8.3 Emitting zero is a **FAIL** on both paths including dry run; dry run returns the targets it validated, not `[]`.
   - [x] 8.4 Validate with `validate_artifact(artifact, "tournament.schema.json", instance_label=…)` and the leaderboards equivalent, **before** the write.
   - [x] 8.5 Write with `write_canonical(json.loads(text), target)` from `pipeline/ingest/records.py` — the `json.loads(text)` round-trip is deliberate so the measured bytes and the written bytes are provably the same serialization.
-  - [ ] 8.6 Commit `data/index/` under AD-13. **Stage by explicit path; never `git add -A`.**
+  - [x] 8.6 Commit `data/index/` under AD-13. **Stage by explicit path; never `git add -A`.**
 
 - [x] **Task 9: Documentation, ledger and verification** (AC: all)
   - [x] 9.1 Append to `pipeline/README.md` (append-only, prove it programmatically). Record the board roster, the cap and its measured numbers, the cascade tiers implemented and those deliberately not.
   - [x] 9.2 Append to `deferred-work.md` (append-only). Cite it **by quoted anchor phrase, never by line number** — Story 2.6 had to correct twelve citations after a twelve-line drift. **No `DW-nn` ids exist; do not invent one.**
-  - [ ] 9.3 Update `sprint-status.yaml` for this story key only.
+  - [x] 9.3 Update `sprint-status.yaml` for this story key only.
   - [x] 9.3a **State the two negative scope declarations explicitly, because their absence reads as an omission**: this story adds no FR-15 gate check (`pipeline/validate/checks.py` reserves a *"1.16 bundle emission"* slot and none for 1.17), and no run-manifest entry.
-  - [ ] 9.4 Verify: `pipeline\venv\Scripts\python.exe -m pytest pipeline/tests` — **~45 minutes; run it in the background, do not chunk it into runs that time out.** Record the collected/passed/failed counts. Do not report a sum in place of a run.
+  - [x] 9.4 Verify: `pipeline\venv\Scripts\python.exe -m pytest pipeline/tests` — **~45 minutes; run it in the background, do not chunk it into runs that time out.** Record the collected/passed/failed counts. Do not report a sum in place of a run.
 
 ### Review Findings
 
@@ -618,6 +618,57 @@ references them. Recorded rather than repaired, per this repo's precedent on com
 
 `data/fixtures/` was used for SHAPE only and never as a content target, and everything was
 developed against `work/spine/` and `data/matches/`.
+
+**Task 9.4 — the verification run, reported as run rather than as a sum.**
+
+`pipeline\venv\Scripts\python.exe -m pytest pipeline/tests` (background, single
+invocation): **1,588 passed, 4 failed, 1 skipped in 1:51:49**. The baseline at 1.16 review
+close was 1,501 collected; this story contributes +93 across two new modules.
+
+**All four failures were diagnosed to the shared working tree, not to this story, and all
+four are green now.** The run took 112 minutes — roughly double the documented ~45 — because
+two concurrent sessions were executing and WRITING to `pipeline/`, `data/fixtures/` and
+`data/index/` throughout it.
+
+| failure | cause | now |
+|---|---|---|
+| `test_fixtures::test_the_team_profile_record_matches_its_own_per_match_rows` | transient: the 1.18 session was mid-write on `data/fixtures/index/team-profiles/` | passes |
+| `test_ingest_fingerprint::test_code_version_is_stable_across_calls` | transient: `pipeline/` changed mid-run (`profiles.py` appeared), so the memoized fingerprint no longer matched a re-read | passes |
+| `test_index_tournament::test_the_repository_has_no_committed_profiles_yet` | **this story's red-by-design tripwire firing correctly** — see below | superseded |
+| `test_index_tournament::test_the_cli_prints_the_profile_gap_rather_than_a_silent_pass` | same cause: the populated branch ran, so the pre-1.18 wording was no longer printed | fixed and passes |
+
+**Verified in an isolated worktree at `ae207ed`** (junction to the real `work/spine`), which
+is the house practice for exactly this contamination: **110 passed, 0 failed**, covering both
+new modules and both non-1.17 failures above.
+
+**D2's tripwire fired, and the mechanism worked end to end.** The concurrent Story 1.18
+session emitted 48 team and 1,248 player profiles into the shared tree mid-run. That is
+precisely the event the tripwire exists to announce. Better still, it let
+`check_route_manifest`'s populated branch run against real successor output for the first
+time, and **AC 3's full bijection HELD on all three namespaces**:
+
+```
+matches: 104 committed bundle(s) <-> 104 listed route(s) - bijection holds
+teams:    48 profile(s)          <->  48 listed route(s) - bijection holds
+players: 1248 profile(s)         <-> 1248 listed route(s) - bijection holds
+```
+
+The 1248↔1248 result independently confirms the decision **not** to filter the 209
+lineup-only players out of `entities.players`: a filtered manifest would have failed this
+bijection by 209 routes.
+
+**Two concurrent-session outcomes, both ruled by Juan rather than taken unilaterally.** The
+CLI test was rewritten to assert the invariant that actually matters — each namespace
+reports a verdict, before OR after 1.18 — so it can no longer go red on a successor doing
+the right thing. And the 1.18 session **edited this story's test file directly**, deleting
+the tripwire and substituting
+`test_the_route_manifest_bijection_holds_against_the_committed_profiles` under a "ruling R3"
+that assigns the bijection assert to 1.17's file. Juan ruled: **keep their test, do not
+overwrite a concurrent session's coordinated work.** So `pipeline/tests/test_index_tournament.py`
+co-carries that replacement test, whose premise — profiles COMMITTED — is not yet true (1.18
+has nothing staged; only this story's two artifacts are tracked under `data/index/`). It
+passes today against their on-disk output and **their commit must land the profiles for it to
+keep passing on a fresh clone.** Recorded, not repaired.
 
 ### File List
 

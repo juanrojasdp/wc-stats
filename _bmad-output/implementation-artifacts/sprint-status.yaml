@@ -452,6 +452,68 @@ last_updated: 2026-08-06
 #             next/dynamic boundary); and the i18n object-shaped-prop gate hole was RESOLVED by
 #             2.18 decision 8, not still open. Also: "no aria-pressed" is 2.11a decision 10, not
 #             a UX-DR12 clause.
+# 2026-08-06: story 1-17 IMPLEMENTED and moved to review — the tournament index and the
+#             leaderboards. ALL FIVE DECISIONS RULED BY JUAN before Task 3 began, each taken
+#             against RE-DERIVED measurements rather than the story's forwarded numbers: D1
+#             cascade = points -> goal difference -> goals scored + a typed raise on exhaustion;
+#             D2 Story 1.15's two-source bijection pattern; D3 sum-of-gzips + a 100-row
+#             tie-extended player cap; D4a TeamRecord counts ALL matches; D4b matchesPlayed is
+#             the entity's OWN appearances; D5 the 36-board family-grouped roster.
+#             EVERY PROBE FIGURE REPRODUCED EXCEPT ONE, AND THAT ONE WAS OVERTURNED AT
+#             IMPLEMENTATION. D4b's recommended mechanism, len(entity["match_ids"]), is the
+#             TEAMSHEET, not appearances — measured, it differs from the team's match count for
+#             only 13 of 1,039 ranked players, and six players sit on the sheet for 8 matches
+#             with ONE Domain G row (thuram-marcus-fra, lo-celso-giovani-arg, zubimendi-martin-esp,
+#             pubill-marc-esp, iglesias-borja-esp, palacios-exequiel-arg), so it would have
+#             divided one match's value by eight. The story's 584/56% figure is real and belongs
+#             to the PERFORMANCE-ROW count, which is what shipped. Reproduced exactly: 104
+#             bundles; 7 equal-points pairs all separated by goal difference, ZERO surviving
+#             ties; the computed 12 winners + 12 runners-up + best-8 thirds ARE the real R32
+#             field (24/24 + 8/8); 32/32 MetricCodes resolve, zero orphans; 14 own goals; 20
+#             drawn group ties.
+#             MEASURED AT EMISSION: tournament.json 409,524 raw / 39,137 gzip-9; leaderboards.json
+#             962,885 / 78,501; COMBINED 117,638 against a 500,000 ceiling — 23.5%. 36 boards,
+#             2,965 rows. Full roster would be 610,341 — FAIL — and that failure is reproduced as
+#             a TEST (remove the cap on the real corpus), not quoted.
+#             THREE SHIPPED-CODE TRAPS CLEARED AS SPECIFIED. decimals_map's vacuity guard is
+#             parameterized (armed by default, opted out at ONE call site, never try/except); the
+#             inline precision pass is now anyOf-aware and MEASURED to add exactly one name in the
+#             whole contract, leaving the bundle and tournament maps untouched so no committed
+#             bundle moves a byte; check_total/_def_properties take a document tuple rather than
+#             being forked. identity.py was NOT edited — a bare "id" in COMMITTED_ID_KEYS is
+#             ambiguous (it names a team or a player BY CONTEXT), so the index artifacts assert
+#             their own containment with a walk that RAISES on an unclassifiable id, plus a
+#             totality test over 9,250 id sites.
+#             FOUR GATES SHIP AND EVERY ONE HAS A CONSTRUCTED TEST DRIVING IT RED — the project
+#             has shipped a gate-that-cannot-fail three times.
+#             D2'S TRIPWIRE FIRED FOR REAL, MID-RUN, AND THE MECHANISM WORKED END TO END. The
+#             concurrent 1.18 session emitted 48 team + 1,248 player profiles into the shared tree
+#             during the 112-minute suite, which let check_route_manifest's populated branch run
+#             against real successor output for the first time: AC 3's FULL BIJECTION HELD on all
+#             three namespaces (104<->104, 48<->48, 1248<->1248). The 1248<->1248 independently
+#             confirms the decision NOT to filter the 209 lineup-only players out of the manifest —
+#             a filtered manifest would have missed by exactly 209 routes.
+#             SUITE: 1,588 passed / 4 failed / 1 skipped in 1:51:49, and ALL FOUR FAILURES WERE
+#             DIAGNOSED TO THE SHARED TREE, NOT TO THIS STORY — two transient (test_fixtures'
+#             team-profile row test and code_version's fingerprint, both broken by another session
+#             WRITING to pipeline/ and data/fixtures/ mid-run, both green now) and two caused by
+#             1.18's artifacts appearing. VERIFIED IN AN ISOLATED WORKTREE at ae207ed: 110 passed,
+#             0 failed. All four are green in the shared tree now.
+#             CONCURRENT-SESSION DISCLOSURES, both ruled by Juan rather than taken unilaterally.
+#             (1) errors.py is co-mingled: the 1.18 session added ProfileError and
+#             ProfileValidationError while this story appended IndexEmitError,
+#             TiebreakUnresolvedError and RouteManifestError; commit ae207ed necessarily carries
+#             theirs because index.py does not import without the file, and their consumer is NOT
+#             staged. (2) The 1.18 session EDITED THIS STORY'S TEST FILE, deleting the red-by-design
+#             tripwire and substituting test_the_route_manifest_bijection_holds_against_the_committed_profiles
+#             under a "ruling R3". Juan ruled KEEP THEIR TEST rather than overwrite a concurrent
+#             session's coordinated work — so test_index_tournament.py co-carries it, and its
+#             premise (profiles COMMITTED) is NOT yet true: 1.18 has nothing staged and only this
+#             story's two artifacts are tracked under data/index/. THEIR COMMIT MUST LAND THE
+#             PROFILES or that test fails on a fresh clone. Recorded, not repaired.
+#             pipeline/README.md and deferred-work.md appended with the append-only property PROVEN
+#             programmatically (+13,756 and +3,406 bytes, prefixes byte-identical, no CRLF). Never
+#             `git add -A`; app/ untouched; contract/, data/fixtures/ and data/matches/ unchanged.
 # 2026-08-06: story 1-17 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 74b1789. FIVE
 #             DECISIONS SURFACED AND LEFT UNRULED for Juan — D1 the FIFA tiebreaker cascade
 #             (bound by four sources, defined by none; corpus resolves every within-group tie
@@ -2839,7 +2901,7 @@ development_status:
   # Consequence for Epic 2, owned by 2.10/2.19 not by 1.16: #pressing's metre block is deleted or
   # re-shaped by D1, and CorpusNullableGoalkeeperRecord collapses to a re-export under D2.
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
-  1-17-tournament-index-results-standings-leaderboards: in-progress
+  1-17-tournament-index-results-standings-leaderboards: review
   1-18-team-player-profile-artifacts: review
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
   epic-1-retrospective: optional

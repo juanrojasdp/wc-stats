@@ -468,22 +468,31 @@ def test_the_profile_direction_reports_that_it_could_not_run_and_never_a_pass(
         assert "This is NOT a pass." in note
 
 
-def test_the_repository_has_no_committed_profiles_yet(repo_root: Path) -> None:
-    """RED BY DESIGN the moment Story 1.18 lands, and that is the point.
+def test_the_route_manifest_bijection_holds_against_the_committed_profiles(
+        repo_root: Path) -> None:
+    """AD-4's bijection, asserted for real. **This is Story 1.17's half of ruling R3.**
 
-    Story 1.15 shipped this shape when `data/matches/` did not exist yet; it went red
-    exactly when its successor landed and that is what prompted the populated branch to
-    become primary. `check_route_manifest` already carries a live populated branch, so when
-    this test fails the work is: delete this test, and assert the populated bijection here
-    instead.
+    It replaces `test_the_repository_has_no_committed_profiles_yet`, which was red by design
+    from the moment Story 1.18 landed and whose own docstring named the work: "delete this
+    test, and assert the populated bijection here instead." Story 1.18 emitted the 1,296
+    profile artifacts, so `check_route_manifest`'s populated branch — live but unexercised
+    on real data until now — becomes primary here.
+
+    R3 put the assert with the AUTHORITY rather than with the emitter: 1.17 owns
+    `tournament.json`, so the check lives beside the manifest and cannot go stale. Story
+    1.18 asserts only the weaker unilateral property (one artifact per registry-pinned
+    entity) and PRINTS that the manifest bijection is not asserted there, so the gap was
+    visible rather than silent for as long as it existed.
     """
-    for folder in ("team-profiles", "player-profiles"):
-        directory = repo_root / "data" / "index" / folder
-        profiles = sorted(directory.glob("*.json")) if directory.is_dir() else []
-        assert not profiles, (
-            f"data/index/{folder}/ now carries {len(profiles)} profile artifact(s) — "
-            f"Story 1.18 has landed. Make check_route_manifest's populated branch primary "
-            f"and replace this test with the real bijection assertion.")
+    tournament = json.loads(
+        (repo_root / "data" / "index" / "tournament.json").read_text(encoding="utf-8"))
+    notes = index_module.check_route_manifest(tournament, repo_root / "data")
+    joined = " | ".join(notes)
+    assert "NOT a pass" not in joined, (
+        f"a direction of the bijection could not run: {joined}")
+    assert "matches: 104 committed bundle(s) <-> 104 listed route(s)" in joined
+    assert "teams: 48 profile(s) <-> 48 listed route(s)" in joined
+    assert "players: 1248 profile(s) <-> 1248 listed route(s)" in joined
 
 
 def test_a_profile_namespace_that_exists_is_asserted_rather_than_skipped(
@@ -755,14 +764,27 @@ def test_the_cli_exits_zero_on_a_clean_dry_run_and_writes_nothing(
     assert f"schemaVersion   : {schema_version()}" in printed
 
 
-def test_the_cli_prints_the_profile_gap_rather_than_a_silent_pass(
-        spine_dir: Path, bundles_dir: Path, capsys) -> None:
-    """D2 again, at the surface a human actually reads."""
+def test_the_cli_reports_both_profile_namespaces_rather_than_staying_silent(
+        repo_root: Path, spine_dir: Path, bundles_dir: Path, capsys) -> None:
+    """D2 at the surface a human actually reads — and it must hold in BOTH worlds.
+
+    Before Story 1.18 the two namespaces report "This is NOT a pass."; after it they report
+    a holding bijection. The invariant that matters is that each namespace says SOMETHING
+    either way: silence is the failure mode this gate exists to prevent, and a test that
+    only knew the pre-1.18 world would go red on a successor doing exactly the right thing.
+    """
     assert index_module.main([
         "--spine-dir", str(spine_dir), "--data-dir", str(bundles_dir.parent),
         "--dry-run"]) == 0
     printed = capsys.readouterr().out
-    assert printed.count("This is NOT a pass.") == 2
+    for kind, folder in (("teams", "team-profiles"), ("players", "player-profiles")):
+        directory = repo_root / "data" / "index" / folder
+        if any(directory.glob("*.json")) if directory.is_dir() else False:
+            assert f"{kind}: " in printed and "bijection holds" in printed
+        else:
+            assert f"{directory.as_posix()} does not exist" in printed
+    assert printed.count("This is NOT a pass.") + printed.count("bijection holds") >= 3, (
+        "each of matches, teams and players must report a verdict")
 
 
 def test_the_cli_exits_one_on_a_pipeline_error(
