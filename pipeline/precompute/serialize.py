@@ -53,13 +53,25 @@ def _declared_places(node: dict) -> "int | None":
     return None
 
 
-def decimals_map(schema_name: str) -> "dict[str, int]":
+def decimals_map(schema_name: str, *, require_float: bool = True) -> "dict[str, int]":
     """Every named precision an artifact of `schema_name` can reach, keyed by name.
 
     Keys are `$def` names for the shared numeric types (`Percentage`, `Metres`, …) and
     `title`s for the precisions declared inline in the artifact document (`MatchNumber`,
     `MomentumHomeValue`, …). A Match Bundle reaches 11 shared `$defs` — the twelfth,
     `Rank`, is a leaderboard type no bundle field refs — plus 5 inline: 16 names.
+
+    **`require_float` parameterizes the vacuity guard, and the default keeps it armed.**
+    The guard reasons "only integer precisions ⇒ the `$ref` hop failed", which is true of
+    `match-bundle.schema.json` and FALSE of `tournament.schema.json`, whose every numeric
+    leaf (`Count`, `GoalDifference`, `Rank`, `ResultMatchNumber`) is genuinely `x-decimals:
+    0`. An all-integer map is the correct answer there, so Story 1.17 passes
+    `require_float=False` at that ONE call site and nowhere else. Story 1.16's callers are
+    untouched and keep the guard.
+
+    Do not reach for `try/except AssertionError` instead: that catches the real `$ref`
+    failure the guard exists to detect, on every document, forever. The opt-out is per
+    call site and visible in the source, which is the whole difference.
     """
     schemas = load_schemas()
     if schema_name not in schemas:
@@ -102,15 +114,25 @@ def decimals_map(schema_name: str) -> "dict[str, int]":
                 places[name] = declared
 
     # The precisions declared inline in the artifact document itself, keyed by their title.
+    #
+    # `_declared_places`, NOT `node.get("x-decimals")`. A titled node may declare its
+    # precision on an `anyOf` BRANCH rather than on itself, and the branch carries no title
+    # of its own, so a bare `.get` records nothing for it. `LeaderboardPerMatchValue` is
+    # exactly that shape — `anyOf: [{number, x-decimals: 2}, {null}]` — and it was the one
+    # name missing from `decimals_map("leaderboards.schema.json")`. It validates clean as
+    # `type: number` either way, so byte-identity would have rested on float arithmetic.
+    # Measured: this reads one additional name in the whole contract, and it is that one.
+    # Both `match-bundle.schema.json` and `tournament.schema.json` are unchanged by it, so
+    # no committed bundle moves a byte.
     for _pointer, node in walk_subschemas(document):
-        declared = node.get("x-decimals")
+        declared = _declared_places(node)
         if declared is None:
             continue
         title = node.get("title")
         if title:
             places[title] = declared
 
-    if not any(value >= 1 for value in places.values()):
+    if require_float and not any(value >= 1 for value in places.values()):
         # The vacuity guard the story demands. Reaching here means the $ref hop failed and
         # every float in the artifact would ship unrounded while validating clean.
         raise AssertionError(

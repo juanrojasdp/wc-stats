@@ -81,8 +81,8 @@ BOUNDS = (45, 90, 105, 120)
 
 
 # --------------------------------------------------------------------------- the boundary
-def _def_properties(name: str) -> "set[str]":
-    """The declared property names of one contract type, from either document.
+def _def_properties(name: str, documents: "tuple[str, ...]" = ()) -> "set[str]":
+    """The declared property names of one contract type, from any of `documents`.
 
     Both documents are searched because the bundle mixes them: `MinuteStamp` and `ShotEvent`
     are local, while `KnockoutScore` and `TeamScore` live in `common.schema.json`. Looking in
@@ -96,20 +96,31 @@ def _def_properties(name: str) -> "set[str]":
     and looking only in `$defs` is why Task 3.3's totality claim quietly held on eight of the
     bundle's objects instead of all of them: `check_total` on those four would have raised
     `KeyError`, so they were left unasserted.
+
+    **`documents` is parameterized rather than forked (Story 1.17).** The artifact document
+    was hardcoded to `BUNDLE_SCHEMA`, so `check_total(row, "StandingsRow", …)` raised
+    `KeyError` — the index artifacts declare their own `$defs` in their own files. A second
+    copy of this function would be a second definition of "the boundary is total", and the
+    inline-title loop below is precisely the part a copy tends to drop. Default is the
+    bundle pair, so every Story 1.16 call site is byte-for-byte unchanged.
     """
+    documents = documents or (BUNDLE_SCHEMA, "common.schema.json")
     schemas = load_schemas()
-    for document in (BUNDLE_SCHEMA, "common.schema.json"):
+    for document in documents:
         defs = schemas[document].get("$defs", {})
         if name in defs:
             return set(defs[name].get("properties", {}))
-    for document in (BUNDLE_SCHEMA, "common.schema.json"):
+    for document in documents:
         for _pointer, node in walk_subschemas(schemas[document]):
             if isinstance(node, dict) and node.get("title") == name and "properties" in node:
                 return set(node["properties"])
-    raise KeyError(f"no $def or titled subschema named {name!r} in either contract document")
+    raise KeyError(
+        f"no $def or titled subschema named {name!r} in any of {list(documents)!r}"
+    )
 
 
-def check_total(obj: "dict", def_name: str, where: str) -> "dict":
+def check_total(obj: "dict", def_name: str, where: str,
+                documents: "tuple[str, ...]" = ()) -> "dict":
     """Assert `obj`'s key set EQUALS `def_name`'s declared properties (Task 3.3).
 
     The cheap check is "no key contains `_`", and it is NOT sufficient: single-word snake
@@ -122,8 +133,11 @@ def check_total(obj: "dict", def_name: str, where: str) -> "dict":
     `knockoutScore`, `freeKicks`, `cornersByDeliveryType`, `cornersByDeliveryStyle` and
     `byInterventionType` — four of them because they are declared inline with a `title`
     rather than in `$defs` and `_def_properties` used to look only in `$defs`.
+
+    `documents` selects which contract files declare the type; it defaults to the Match
+    Bundle pair. Story 1.17 passes the index documents.
     """
-    declared = _def_properties(def_name)
+    declared = _def_properties(def_name, documents)
     present = set(obj)
     extra = present - declared
     missing = declared - present

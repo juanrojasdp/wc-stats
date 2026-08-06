@@ -2089,3 +2089,49 @@ what it changed beyond its filed scope, and what it left open.
   change-set whose job was to keep `main` green. **Deferred: give the per-team block an honest
   key (the `teamId` it already carries) and move the name composition into the locale layer.
   Owner: Story 2.19, with the `#goalkeeping` re-scope.**
+
+## Filed by Story 1.17 — the tournament index and the leaderboards (2026-08-06)
+
+- **`test_fixtures.py`'s cross-artifact rule encodes a `matchesPlayed` reading that is
+  correct for the fixtures and wrong for real `/data`.** The test filed under the anchor
+  phrase *"The App shows a board and a profile side by side; they described different
+  worlds"* reads `team_id = row["team"]["id"]` and asserts `row["matchesPlayed"] ==
+  played[team_id]` for **every** row, players included — against the STANDINGS `played`. The
+  fixtures obey it because they carry one group and no knockout stage, so a team's standings
+  `played` and its tournament record agree, and all 20 rows of the fixture's `topSpeed`
+  player board carry their team's match count. **Neither holds on real data.** Under Story
+  1.17's D4a a team row's counterpart is `TeamRecord.played` (all matches: Argentina is 8,
+  not 3), and under D4b a player row carries its own appearance count, which differs from
+  its team's for 584 of 1,039 ranked players. The test was **left untouched on purpose** —
+  it reads only `data/fixtures/`, where it is correct and green, and re-scoping it today
+  would be a change with no failing case. The real-data assertions live in
+  `test_index_leaderboards.py` instead, split by scope. **Deferred: if the index fixtures
+  are ever regenerated from real corpus data, that assertion must be re-scoped to
+  team-scoped boards and pointed at `TeamRecord.played` in the same commit, or it goes red
+  for the right reason and gets "fixed" by weakening it. Owner: whoever regenerates
+  `data/fixtures/index/`.**
+
+- **`contract/README.md` says "all 31 codes" and the `MetricCode` enum holds 32.** Verified
+  by counting the enum. The README is stale; the schema is the definition, and all 32 were
+  confirmed to resolve to a real field in a real bundle with zero orphans. Not fixed here:
+  `/contract` is read-only for this story. **Deferred: correct the count. Owner: the next
+  story with a contract-editing mandate.**
+
+- **`pipeline/validate/runner.py` still carries a second, non-atomic inline copy of the
+  canonical-write recipe.** Pre-existing and already ledgered; re-stated only because this
+  story added a second write path (`data/index/`) and deliberately did NOT unify it —
+  unifying a shipped module is a refactor outside this story's scope. `index.py` uses
+  `records.write_canonical` like `emit.py` does.
+
+- **A partial write to `data/index/` still has no rollback.** An `OSError` between the two
+  artifacts leaves `tournament.json` written and `leaderboards.json` absent, and every gate
+  ran before the first byte so nothing would catch it. This story mitigates rather than
+  fixes: build, round, validate, serialize, measure and all four gates complete before the
+  first write, so the only reachable window is the filesystem itself. The staged-directory
+  fix is already routed to Story 1.19; this is a second call site for it, not a new item.
+
+- **`higherIsBetter` is `true` on all 36 boards, so the `false` branch ships unexercised.**
+  Every metric in the D5 roster is one where more is better. Nothing in the artifact or the
+  App depends on the field varying today, but the first board where it does not (a
+  concessions or errors metric) will be the first time that branch runs anywhere. **Deferred:
+  exercise it when such a board is added. Owner: whoever extends the roster.**

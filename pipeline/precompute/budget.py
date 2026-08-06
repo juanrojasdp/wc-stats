@@ -57,3 +57,29 @@ def over_budget(label: str, text: str) -> "tuple[str, int, int] | None":
     if compressed > BUDGET_BYTES:
         return (label, compressed, len(text.encode("utf-8")))
     return None
+
+
+def over_budget_combined(label: str, texts: "list[str]") -> "tuple[str, int, int] | None":
+    """`(label, summed_gzip_size, summed_raw_size)` when a SET of artifacts breaches it.
+
+    AD-4 states one budget over `tournament.json` + `leaderboards.json` **combined**,
+    "because the Hub loads both" — a unit `over_budget` cannot express, since it measures
+    exactly one string.
+
+    **The measurement is the SUM OF INDEPENDENTLY GZIPPED ARTIFACTS, and that is a ruling
+    (Story 1.17 D3), not an implementation detail.** The Hub fetches two files over two
+    HTTP responses, so it downloads two gzip streams and pays for both headers and both
+    dictionaries; that is what this sums. The alternative reading, `gzip_bytes(a + b)`,
+    compresses one stream over a concatenation nobody ever transfers, and it is
+    systematically the smaller number because the second artifact gets to reuse the first
+    one's dictionary. Measured over the real corpus the two readings differ by well under
+    0.5% at every row cap and never disagree on the verdict — but they are different
+    claims about the wire, and the one the reader pays for is this one.
+
+    Same return-don't-raise contract as `over_budget`, so a caller collects every breach —
+    the per-artifact ones and this one — before failing.
+    """
+    compressed = sum(gzip_bytes(text) for text in texts)
+    if compressed > BUDGET_BYTES:
+        return (label, compressed, sum(len(text.encode("utf-8")) for text in texts))
+    return None

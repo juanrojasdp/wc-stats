@@ -129,6 +129,34 @@ class BundleValidationError(PrecomputeError):
     what = "bundle is schema-invalid"
 
 
+class ProfileError(PrecomputeError):
+    """Team or player profile emission could not complete (Story 1.18).
+
+    The general profile failure: a lineup entry whose minutes fall outside the match, a
+    with-minutes entry with no Domain G row, a team whose group letter does not resolve, a
+    numeric leaf reaching the serializer with no declared precision, a player carrying two
+    shirt numbers. Anything with a sharper class below uses that class instead.
+
+    Deliberately NOT reused for the budget: `BudgetExceededError` already carries SM-C2's
+    "never truncate to fit" rule in its own docstring, and minting a profile-specific twin
+    would split one policy across two classes.
+    """
+
+    what = "profile emission failed"
+
+
+class ProfileValidationError(ProfileError):
+    """A profile failed the `/contract` schema before it was written.
+
+    Distinct from `ProfileError` because the profile was BUILT successfully and is wrong
+    against the contract, which points at the reduction rather than at the source data.
+    Carries every violation at once — `validate_artifact` reports them all, and the whole
+    point of that is lost if this re-raises only the first.
+    """
+
+    what = "profile is schema-invalid"
+
+
 class UnmappedFieldError(PrecomputeError):
     """The snake_case -> camelCase boundary is not total for some object.
 
@@ -139,3 +167,52 @@ class UnmappedFieldError(PrecomputeError):
     """
 
     what = "emit mapping is not total"
+
+
+class IndexEmitError(PrecomputeError):
+    """Tournament index or leaderboard emission could not complete (Story 1.17).
+
+    The general index failure: a spine block the aggregators read by subscript and cannot
+    find, a group whose table does not close, a board whose metric names no field, an
+    artifact count that contradicts `--expect-matches`. Anything with a sharper class
+    below uses that class instead.
+
+    **Named `IndexEmitError`, never `IndexError`.** That name is a builtin, and shadowing
+    it inside a package whose callers routinely index lists would turn a genuine
+    out-of-range bug into something that reads like a typed pipeline finding.
+    """
+
+    what = "index emission failed"
+
+
+class TiebreakUnresolvedError(PrecomputeError):
+    """A standings tie survived the implemented FIFA tiebreaker cascade (Story 1.17 D1).
+
+    Tiers 1-3 are implemented — points, then goal difference, then goals scored. They are
+    universally agreed, they are what this corpus exercises, and they reproduce the actual
+    tournament outcome exactly. Tiers 4+ are DELIBERATELY unimplemented: the normative
+    regulations text is not in this repository, head-to-head and fair play are not
+    computable from the contracted `StandingsRow` (and adding a field to carry them is an
+    AD-14 change request), and drawing of lots is non-deterministic and collides head-on
+    with AD-8's byte-identical requirement.
+
+    So a surviving tie raises rather than inventing an order. The message MUST name every
+    tied team and the tier that ran out — "a tie survived" localizes nothing across twelve
+    groups, and the whole reason this class exists is that the next person needs to know
+    exactly which regulation to go and read.
+    """
+
+    what = "standings tie unresolved by the implemented cascade"
+
+
+class RouteManifestError(PrecomputeError):
+    """The AD-4 route-manifest bijection or the index id-containment gate failed.
+
+    Its own class rather than a reuse of `IndexEmitError`, per this module's own rule:
+    "One exception per failure kind." An artifact on disk that no entity list names, and
+    an id in `data/index/` that no manifest pins, are both route-manifest failures — the
+    App's `generateStaticParams` reads these lists, so either one ships a route that 404s
+    or an entity that has no route at all.
+    """
+
+    what = "route manifest is not total"

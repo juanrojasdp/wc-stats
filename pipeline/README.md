@@ -1921,3 +1921,202 @@ a tie), goals stamped past minute 90 cross-check the momentum clock's verdict on
 and a zero-row `shots` or `passNetworkEdges` table raises rather than shipping `[]` — both
 pages exist on 208/208 team-innings, so an empty one is an extraction defect and `[]` would
 assert "zero occurred" from an absence of evidence.
+
+## Story 1.17 — the tournament index and the leaderboards (`pipeline/precompute/index.py`)
+
+Two artifacts, `data/index/tournament.json` and `data/index/leaderboards.json`, emitted
+together or not at all. A pure projection: every number already exists in
+`work/spine/entities.json` or in a committed Match Bundle, and the module mints no id and
+derives nothing the bundles do not contain (FR-19).
+
+**Source of truth, stated because two exist.** `work/spine/` is the input for match
+identity, scheduling and scores — it is what `emit.py` reads and `data/matches/` is its
+downstream product. The committed bundles are read for exactly one thing: the per-team
+`keyStatistics` and per-player Domain G blocks the spine stages but does not reshape.
+Nothing is read from both, so the two cannot silently diverge.
+
+**Measured at emission (2026-08-06, 104 bundles):** `tournament.json` 409,524 raw / 39,137
+gzip-9; `leaderboards.json` 962,885 raw / 78,501 gzip-9; **combined 117,638 gzip-9 against
+the 500,000-byte ceiling — 23.5%**. 36 boards, 2,965 rows.
+
+### The five decisions, and what was ruled
+
+**D1 — the FIFA tiebreaker cascade is implemented at tiers 1-3 only: points, then goal
+difference, then goals scored.** Four sources bind "the full cascade" and none defines it;
+there is no normative regulations text in this repository. The corpus settles that this is
+enough and the ground truth proves it: 7 within-group adjacent equal-points pairs, **all 7
+separated by goal difference**, **zero** ties surviving tier 3 — and the 12 winners, 12
+runners-up and computed best-8 third-placed teams ARE the real Round-of-32 field, 24/24 and
+8/8. **Tiers 4+ are deliberately unimplemented**: fair play is not computable from the
+contracted `StandingsRow` (adding a field is an AD-14 change request), and drawing of lots
+is non-deterministic and cannot satisfy AD-8. A surviving tie raises
+`TiebreakUnresolvedError` naming every tied team; that branch never fires on this corpus, so
+it ships with a constructed test that drives it red.
+
+There is **no home in v4 for a ranking of the 12 third-placed teams** — `tournament.json`'s
+top level is exactly five keys — so that cross-group table is out of scope rather than an
+omission. For the record it contains one genuine tie, `ecuador` and `ghana` at 4 points /
+GD 0 / 2 scored, unresolved by tiers 1-3. Both advance, so nothing turns on it.
+
+**D2 — the AD-4 route-manifest bijection is asserted in the direction that can run, and the
+other direction says out loud that it did not.** Profile artifacts are Story 1.18's, so a
+literal `==` would fail on 1,248 players and 48 teams and a silent skip would be a gate that
+cannot fail. This copies Story 1.15's two-source pattern: the artifact→entity direction is
+asserted over `data/matches/` (104 ↔ 104), the profile direction prints "**This is NOT a
+pass.**", and `test_the_repository_has_no_committed_profiles_yet` goes RED BY DESIGN the
+moment 1.18 lands. `check_route_manifest`'s populated branch is already live and is
+exercised by a constructed test, so the successor does not inherit a gate nobody has run.
+
+**D3 — the combined budget is the SUM OF INDEPENDENTLY GZIPPED ARTIFACTS, and player boards
+are capped at 100 rows extended to the end of the boundary tie group.** The Hub fetches two
+files over two responses, so it downloads two gzip streams; that is what
+`budget.over_budget_combined` sums. The alternative reading, one stream over a concatenation
+nobody transfers, is systematically smaller and never disagreed on a verdict — measured
+within 0.5% at every cap — but it is a different claim about the wire.
+
+The cap is a **logged AD-4 budget decision**, and this is the log. Measured:
+
+| player-board cap | rows | combined gzip-9 | verdict |
+|---|---|---|---|
+| none (full roster) | 19,566 | **610,341** | **FAIL** |
+| 100, hard cut | 2,664 | 105,853 | pass |
+| **100, tie-extended (shipped)** | **2,965** | **117,638** | **pass, 23.5% of ceiling** |
+| 50, tie-extended | 1,983 | 82,623 | pass |
+| 25, tie-extended | 1,398 | 66,265 | pass |
+
+SM-C2 forbids resolving a breach by dropping fields; a row cap drops **rows**, which neither
+AD-4 nor SM-C2 names, and every row that ships carries every field. **The cap never splits a
+tie group** — it cuts on RANK, not on position, because competition ranking means several
+entities share a rank and a hard cut would publish an arbitrary subset of equals chosen by
+the id tiebreak, which exists for determinism and is not a ranking. **The entity lists are
+never capped**: they are the route manifest and dropping an entry deletes a route.
+`tournament.json` is never the problem at 7.8% of ceiling.
+
+**D4a — `TeamRecord` counts ALL matches, group and knockout.** It backs the Team Profile's
+`<title>`/OG "name + tournament record"; at group-only it would publish "P3 W3 D0 L0" as a
+finalist's record. It therefore differs from `StandingsRow.played`, which is a group table
+and is necessarily group-only — Argentina is P8 against P3. **Two identically-named fields
+meaning different things is exactly the defect the 1.16 review named**, so both carry a
+docstring saying which is which. `TeamRecord` has no `points` and no `goalDifference`; the
+contract omits both.
+
+**D4b — `matchesPlayed` is the entity's OWN match count.** For a player that is the number
+of matches carrying a Domain G row for them, which is exactly the set of matches aggregated
+into `value`, so `perMatch == value / matchesPlayed` holds by construction.
+
+*The story's recommended mechanism was measured and overturned at implementation.* It named
+`len(entity["match_ids"])` from `entities.json` — but **that field is the TEAMSHEET**, not
+appearances: it differs from the team's match count for only **13** of 1,039 ranked players.
+Six players are on the sheet for 8 matches with a single performance row
+(`thuram-marcus-fra`, `lo-celso-giovani-arg`, `zubimendi-martin-esp`, `pubill-marc-esp`,
+`iglesias-borja-esp`, `palacios-exequiel-arg`), so that reading would divide one match's
+value by eight. The 56% figure in the story is real and belongs to the **performance-row
+count**, which differs from the team's match count for **584 of 1,039**.
+
+**D5 — the 36-board family-grouped roster**, 18 team-scope and 18 player-scope, emitted
+family-major and team-before-player within a family. **The order IS the contract**: AD-5
+makes array order the App's default order and `Leaderboard` carries no group field, so Story
+2.13 sections this surface from `metricCode` alone and the grouping is expressed by
+adjacency and by nothing else.
+
+| family | team-scope (18) | player-scope (18) |
+|---|---|---|
+| physical | `distanceCovered`, `sprintDistance` | `topSpeed`, `sprints`, `highSpeedRuns`, `totalDistance` |
+| attacking | `goals`, `expectedGoals`, `shots`, `shotsOnTarget`, `crosses` | `goals`, `takeOns`, `stepIns`, `crossesCompleted` |
+| passing | `possession`, `passes`, `passesCompleted`, `passCompletion`, `ballProgressions`, `completedLineBreaks`, `receptionsInFinalThird` | `passesCompleted`, `passCompletion`, `ballProgressions`, `lineBreaksCompleted`, `switchesOfPlay` |
+| defending | `defensiveLineBreaks`, `defensivePressures`, `forcedTurnovers`, `secondBalls` | `tacklesWon`, `interceptions`, `possessionRegains`, `duelsWonAerial`, `duelsWonPhysical` |
+
+All 32 `MetricCode` values were verified to resolve to a real field in a real bundle —
+**32 of 32, zero orphans** — so the roster is a product choice, not a data constraint.
+`distanceCovered` (team, km) and `totalDistance` (player, m) are deliberately never paired
+at one scope: the enum's own rule is "no code carries two units".
+
+### Ordering, ranking and precision
+
+**Six orderings are contract, declared in schema prose and enforced by nothing** — no
+`minItems`, no `uniqueItems`, no ordering keyword anywhere in either file — so all six are
+enforced in the emitter and each is pinned by a test: `groups` by group letter;
+`knockoutResults` by stage then match number (stage order imported from
+`discover.rounds.KNOCKOUT_ROUNDS`, never transcribed); `standings` in rank order; `form`
+chronological; leaderboard `rows` in rank order. **`entities.*` has NO declared order**, and
+AD-8 demands byte-identical re-runs, so one is fixed and stated: `entities.json`'s own,
+already sorted by `match_id` / `team_id` / `player_id`, carried through rather than
+re-sorted.
+
+`form` is ordered by **`matchNumber` ascending**, and the key is named rather than implied:
+`matchNumber`, `date` and `kickoff` were verified to induce the same order for every team,
+so the key is unambiguous — but AD-8 requires it to be stated, not inferred.
+
+**`rank` is competition ranking: 1, 2, 2, 4 — never 1, 2, 2, 3.** Ties share the better rank
+and the next distinct value skips to its ordinal position. Within a tie group rows are
+ordered by **ascending entity id**, which is a serialization order for determinism and never
+a claim that one tied entity outranks another.
+
+**Precision is keyed by `metricCode` for `value`**, because that slot is polymorphic and a
+key-only table cannot express it — `Percentage` 1, `KmPerHour` 1, `Metres` 1, `Kilometres`
+2, `ExpectedGoals` 2, everything else an integer count. **`perMatch` takes the SLOT's
+declared 2 places**, and that is a ruling with a proof: applying the source field's
+precision to a rate is wrong for every count metric, since 5 goals over 8 matches rounded to
+`goals`' own 0 places publishes 1 and misses the shipped `< 0.05` tolerance by 0.375. A rate
+is not a value in the source field's unit.
+
+### Three shipped-code traps this story had to clear
+
+1. **`decimals_map("tournament.schema.json")` raised `AssertionError`** — exit 2, a run
+   failing as a broken harness. Its vacuity guard reasons "only integer precisions ⇒ the
+   `$ref` hop failed", which is true of the Match Bundle and **false of `tournament.json`,
+   which genuinely has no float field at all**. The guard is now parameterized
+   (`require_float=True` by default) and opted out of at that one call site. Not wrapped in
+   `try/except AssertionError`, which would have caught the real `$ref` failure forever.
+2. **`decimals_map("leaderboards.schema.json")` silently omitted
+   `LeaderboardPerMatchValue`** — its `x-decimals` sits on an untitled `anyOf` branch and
+   the inline pass read `node.get("x-decimals")` at the titled node. `perMatch` would have
+   shipped unrounded, validating clean as `type: number`, with byte-identity resting on
+   float arithmetic — the same defect class as the 1.16 review's headline finding. The
+   inline pass now uses `_declared_places`, which already handled branches. **Measured: this
+   adds exactly one name in the whole contract**, and neither `match-bundle.schema.json` nor
+   `tournament.schema.json` moves, so no committed bundle moves a byte. Pinned by a test.
+3. **`check_total`/`_def_properties` hardcoded `match-bundle.schema.json`**, so
+   `check_total(row, "StandingsRow", …)` raised `KeyError`. The document tuple is
+   parameterized rather than the function forked — a copy would have dropped the
+   inline-title loop, which is why four objects went unasserted in 1.16.
+
+### The id-containment gate, and why `identity.py` was left alone
+
+`check_committed_data` globs `data/matches/*.json` only, and its `COMMITTED_ID_KEYS` is
+seven contract field names of which **none is the bare `"id"` that `EntityRef` uses** — so
+every id in `data/index/` falls outside AD-3's immutability walk while the run still reports
+"all pinned". Widening that map was rejected: a bare `"id"` names a team or a player **by
+context**, and a context-free entry in a module whose whole job is to be unambiguous would
+be worse than the gap. `identity.py` is therefore untouched, and the index artifacts assert
+their own containment over the manifest they emit, with a context-carrying walk in which an
+unclassifiable `"id"` **raises rather than being skipped**. A totality test asserts the
+walked set equals a naive every-key-ending-in-`id` walk, so the gate cannot quietly miss a
+slot.
+
+### Landmines confirmed rather than assumed
+
+**Own goals need no special handling, and that was verified.** Domain G's
+`inPossession.goals` already excludes them — 294 corpus-wide against 308 recorded goals less
+14 own goals, agreeing match by match on all 104 — and team `keyStatistics.goals` equals the
+final score on all 104, which is the benefiting-team crediting the contract specifies. So
+the top-scorer board credits the scorer and the team board credits the beneficiary, both
+from printed fields, with no re-derivation.
+
+**A passing board ranks the printed Domain G `passesCompleted`, not a pass-matrix row sum.**
+The two disagree on a large minority of rows; the choice is recorded here so it is not
+silent.
+
+**Player boards are populated from the 1,039 players who have a `players[]` block, not the
+1,248 in the manifest.** That is not a contradiction: the manifest is a route list and a
+board ranks what has data. The 209 lineup-only players stay in `entities.players` — AC 3
+allows an empty section and never an absence, and filtering them would delete 209 routes.
+Team boards carry all 48. The `m092` Henderson anomaly needs no special-casing here: he has
+one all-zero row, so he is ranked last on every board rather than staging a phantom stat
+line, and `matchesPlayed >= 1` makes the divide-by-zero hazard unreachable by construction.
+
+### Negative scope, stated because its absence would read as an omission
+
+This story adds **no FR-15 gate check** — `pipeline/validate/checks.py` reserves a "1.16
+bundle emission" slot and none for 1.17 — and **no run-manifest entry**. `run.py` does not
+call `emit.py` and will not call `index.py`; the three phases are separate processes.

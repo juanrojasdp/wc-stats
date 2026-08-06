@@ -1,0 +1,1188 @@
+"""The tournament index and the leaderboards (Story 1.17, FR-19 / FR-26, AD-4 / AD-5).
+
+Two artifacts, `data/index/tournament.json` and `data/index/leaderboards.json`, emitted
+together or not at all. The Hub renders both verbatim: AD-5 reserves every aggregation to
+this module and forbids the App re-sorting, re-ranking or re-summing anything it reads.
+
+**This story is a pure projection.** Every number published here already exists in
+`work/spine/entities.json` or in a committed Match Bundle. It mints no id, parses no PDF,
+and derives nothing the bundles do not contain (FR-19: "precompute adds no data the
+bundles don't contain"). Its whole job is to aggregate, order, rank, serialize and gate.
+
+**Source of truth, stated because two sources exist and silent divergence would be
+unfalsifiable.** `work/spine/` is THE input for match identity, scheduling and scores — it
+is what `emit.py` reads, and `data/matches/` is a downstream product of it. The committed
+bundles are read for exactly one thing: the per-team `keyStatistics` and per-player
+Domain G stat blocks the spine stages but does not reshape. Nothing is read from both.
+
+**The five decisions this module implements were ruled before a line was written**
+(Story 1.17 D1-D5); each is recorded at the site that implements it:
+
+* D1 the tiebreaker cascade -> `_standings_key` and `_check_tiebreaks`
+* D2 the AD-4 bijection ordering -> `check_route_manifest`
+* D3 the combined budget and the row cap -> `budget.over_budget_combined`, `PLAYER_ROW_CAP`
+* D4 what `played` and `matchesPlayed` count -> `_team_record` and `_board_rows`
+* D5 the board roster and its order -> `BOARDS`
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+from pipeline.discover.rounds import KNOCKOUT_ROUNDS
+from pipeline.errors import PipelineError
+from pipeline.ingest.records import canonical_json, write_canonical
+from pipeline.precompute.budget import BUDGET_BYTES, over_budget, over_budget_combined
+from pipeline.precompute.emit import (
+    _goals,
+    _knockout_score,
+    check_total,
+    load_spine,
+)
+from pipeline.precompute.errors import (
+    BudgetExceededError,
+    BundleValidationError,
+    IndexEmitError,
+    RouteManifestError,
+    TiebreakUnresolvedError,
+)
+from pipeline.precompute.serialize import decimals_map, round_to_precision
+from pipeline.validate.errors import SchemaValidationError
+from pipeline.validate.schema import schema_version, validate_artifact
+
+TOURNAMENT_SCHEMA = "tournament.schema.json"
+LEADERBOARDS_SCHEMA = "leaderboards.schema.json"
+
+# The document pair each artifact's `$def`s are declared across. `check_total` is
+# parameterized rather than forked so the index objects get the same totality assertion the
+# Match Bundle's do — see `emit._def_properties`.
+TOURNAMENT_DOCUMENTS = (TOURNAMENT_SCHEMA, "common.schema.json")
+LEADERBOARDS_DOCUMENTS = (LEADERBOARDS_SCHEMA, "common.schema.json")
+
+DEFAULT_SPINE_DIR = Path("work") / "spine"
+DEFAULT_DATA_DIR = Path("data")
+
+# A proper noun, not a translated label (AD-7). It is not printed in the corpus and not
+# carried by the spine, so it is declared once here rather than in two artifacts.
+TOURNAMENT_NAME = "FIFA World Cup 2026"
+
+# --------------------------------------------------------------------------- D5: the roster
+#
+# 36 boards: 18 team-scope and 18 player-scope, emitted family-major and, within a family,
+# team boards before player boards. **The order IS the contract.** AD-5 makes array order
+# the App's default order and `Leaderboard` carries no group/category field, so Story 2.13
+# sections this surface from `metricCode` alone — the family grouping is expressed by
+# adjacency and by nothing else. Re-ordering this tuple silently re-sections the App.
+#
+# The scope rule is the contract's, not a preference: a team-scope code names a
+# `TeamKeyStatistics` field and a player-scope code names a Domain G field, and two scopes
+# may name one concept differently (`completedLineBreaks` team / `lineBreaksCompleted`
+# player, `distanceCovered` team in kilometres / `totalDistance` player in metres). All 32
+# codes were verified against a real bundle; every one resolves and there are no orphans.
+#
+# (family, metricCode, scope, aggregation, higherIsBetter)
+BOARDS: "tuple[tuple[str, str, str, str, bool], ...]" = (
+    ("physical", "distanceCovered", "team", "sum", True),
+    ("physical", "sprintDistance", "team", "sum", True),
+    ("physical", "topSpeed", "player", "max", True),
+    ("physical", "sprints", "player", "sum", True),
+    ("physical", "highSpeedRuns", "player", "sum", True),
+    ("physical", "totalDistance", "player", "sum", True),
+
+    ("attacking", "goals", "team", "sum", True),
+    ("attacking", "expectedGoals", "team", "sum", True),
+    ("attacking", "shots", "team", "sum", True),
+    ("attacking", "shotsOnTarget", "team", "sum", True),
+    ("attacking", "crosses", "team", "sum", True),
+    ("attacking", "goals", "player", "sum", True),
+    ("attacking", "takeOns", "player", "sum", True),
+    ("attacking", "stepIns", "player", "sum", True),
+    ("attacking", "crossesCompleted", "player", "sum", True),
+
+    ("passing", "possession", "team", "average", True),
+    ("passing", "passes", "team", "sum", True),
+    ("passing", "passesCompleted", "team", "sum", True),
+    ("passing", "passCompletion", "team", "average", True),
+    ("passing", "ballProgressions", "team", "sum", True),
+    ("passing", "completedLineBreaks", "team", "sum", True),
+    ("passing", "receptionsInFinalThird", "team", "sum", True),
+    ("passing", "passesCompleted", "player", "sum", True),
+    ("passing", "passCompletion", "player", "average", True),
+    ("passing", "ballProgressions", "player", "sum", True),
+    ("passing", "lineBreaksCompleted", "player", "sum", True),
+    ("passing", "switchesOfPlay", "player", "sum", True),
+
+    ("defending", "defensiveLineBreaks", "team", "sum", True),
+    ("defending", "defensivePressures", "team", "sum", True),
+    ("defending", "forcedTurnovers", "team", "sum", True),
+    ("defending", "secondBalls", "team", "sum", True),
+    ("defending", "tacklesWon", "player", "sum", True),
+    ("defending", "interceptions", "player", "sum", True),
+    ("defending", "possessionRegains", "player", "sum", True),
+    ("defending", "duelsWonAerial", "player", "sum", True),
+    ("defending", "duelsWonPhysical", "player", "sum", True),
+)
+
+# ------------------------------------------------------------------- D3: the row cap
+#
+# Player boards are capped; team boards are not (48 rows each, never a factor). Measured
+# over the real corpus: at full roster the two artifacts are 610,341 gzip-9 bytes against a
+# 500,000 ceiling — a FAIL caused entirely by leaderboards, since `tournament.json` alone is
+# 39,157 (7.8% of ceiling). At this cap the pair measures ~115,000, under a quarter of the
+# ceiling, and the UX's only stated need is "top-3 teaser rows at hero altitude and full
+# sortable tables beneath".
+#
+# **SM-C2 forbids resolving a breach by dropping fields, and this is not that.** A row cap
+# drops ROWS, which neither AD-4 nor SM-C2 names; every row that ships carries every field.
+# It is nonetheless a logged budget decision, which AD-4 explicitly permits, and it is
+# logged in `pipeline/README.md` and in the story's Dev Agent Record.
+#
+# The cap NEVER splits a tie group — see `_apply_cap`. Never truncate `entities`: those
+# lists are the route manifest, and dropping an entry deletes a route.
+PLAYER_ROW_CAP = 100
+
+# ------------------------------------------------------------- Task 2.4 / 2.5: precision
+#
+# **Keyed by `metricCode`, because `value` is polymorphic and a key-only table cannot
+# express it.** `contract/README.md` decision 15 and `leaderboards.schema.json` both rule
+# that the serializer rounds to the precision of the SOURCE FIELD the code names, not to
+# `LeaderboardValue`'s own `x-decimals: 2` default. A code absent from this map is a hard
+# failure, never a default: an unbound key is exactly how 29 leaves were silently truncated
+# in Story 1.16 while validating clean.
+METRIC_DECIMALS: "dict[str, int]" = {
+    "possession": 1,
+    "passCompletion": 1,
+    "topSpeed": 1,
+    "totalDistance": 1,
+    "distanceCovered": 2,
+    "sprintDistance": 2,
+    "expectedGoals": 2,
+}
+# Every other code names an integer-valued count.
+METRIC_DECIMALS_DEFAULT = 0
+
+# **`perMatch` takes the SLOT's declared precision, and that is a ruling with a proof.**
+# `LeaderboardPerMatchValue` says "precision is metric-dependent; see LeaderboardValue" —
+# but applying the source field's precision to a rate is provably wrong for every count
+# metric. 5 goals over 8 matches is 0.625; rounded to `goals`' own 0 places it publishes 1,
+# and the shipped cross-artifact invariant `abs(perMatch - value / matchesPlayed) < 0.05`
+# fails by 0.375. A rate is not a value in the source field's unit, so it rounds to the
+# widest precision the contract declares for the slot instead. No metric's source precision
+# exceeds this, so nothing is ever widened past what the source supports.
+PER_MATCH_DECIMALS = 2
+
+
+# --------------------------------------------------------------------------- small helpers
+def _entity_ref(entity_id: str, name: str) -> dict:
+    """One `EntityRef` — `{"id", "name"}` and nothing else.
+
+    Written here rather than reused: `emit._team_ref` produces `{teamId, teamCode, name}`
+    for the bundle's `TeamRef`, which is a DIFFERENT contract type. Every team and player
+    reference in both index artifacts is an `EntityRef` — `MatchResultRow.homeTeam` and
+    `.awayTeam`, `MatchEntity.homeTeam` and `.awayTeam`, `StandingsRow.team`,
+    `PlayerEntity.team`, `LeaderboardRow.entity` and `.team`. `TeamEntity` is the single
+    exception and carries flat `teamId`/`name`/`teamCode` instead.
+    """
+    return check_total({"id": entity_id, "name": name}, "EntityRef",
+                       f"EntityRef[{entity_id}]", TOURNAMENT_DOCUMENTS)
+
+
+def check_entities_shape(entities: dict, where: str) -> dict:
+    """Assert `entities.json` carries the three lists this module reads by subscript.
+
+    `emit.load_spine` guards `teams` and `matches` and NOT `players`, because Story 1.16
+    never read the player list. This story depends on it entirely — it is the route
+    manifest, the search corpus and the source of every player name — so a stale spine must
+    be a typed failure naming the file rather than a bare `KeyError` surfacing from inside
+    an aggregator three frames down.
+    """
+    for key in ("teams", "matches", "players"):
+        if not isinstance(entities.get(key), list):
+            raise IndexEmitError(f"{where}: entities must carry a {key!r} list")
+        if not entities[key]:
+            raise IndexEmitError(f"{where}: entities[{key!r}] is empty; an empty manifest "
+                                 f"is never a fact about this corpus")
+    return entities
+
+
+# ------------------------------------------------------------------ D1: the FIFA cascade
+def _standings_key(row: dict) -> tuple:
+    """The implemented FIFA tiebreaker cascade, tiers 1-3 (Story 1.17 D1).
+
+    Points, then goal difference, then goals scored — descending on all three. Universally
+    agreed, exercised by this corpus, and verified to reproduce the actual tournament
+    outcome exactly: the 12 group winners, 12 runners-up and best 8 third-placed teams this
+    ordering computes ARE the real 32-team Round-of-32 field, 24/24 and 8/8.
+
+    **Tiers 4+ are deliberately unimplemented and `_check_tiebreaks` raises rather than
+    guessing.** See `TiebreakUnresolvedError` for why each of them is unavailable here.
+
+    The trailing `team["id"]` is NOT a tiebreaker and must never be read as one — it is
+    only reached after `_check_tiebreaks` has already proven no tie survives tier 3, so it
+    sorts a set of rows that are pairwise distinct on the three real keys. It exists so the
+    sort is total and therefore reproducible byte-for-byte (AD-8).
+    """
+    return (-row["points"], -row["goalDifference"], -row["goalsFor"], row["team"]["id"])
+
+
+def _check_tiebreaks(rows: "list[dict]", where: str) -> None:
+    """Raise if any two rows are equal on all three implemented tiers.
+
+    Checked BEFORE the id-ordered sort is trusted, and over every pair rather than only
+    adjacent ones, so the message names the whole tied set rather than one arbitrary pair
+    out of it.
+    """
+    buckets: "dict[tuple, list[str]]" = defaultdict(list)
+    for row in rows:
+        buckets[(row["points"], row["goalDifference"], row["goalsFor"])].append(
+            row["team"]["id"])
+    tied = sorted((key, sorted(ids)) for key, ids in buckets.items() if len(ids) > 1)
+    if tied:
+        detail = "; ".join(
+            f"{ids!r} all on {pts} pts, GD {gd}, {gf} scored" for (pts, gd, gf), ids in tied
+        )
+        raise TiebreakUnresolvedError(
+            f"{where}: {detail}. The implemented cascade is points -> goal difference -> "
+            f"goals scored and it has run out. Tiers beyond that (head-to-head, fair play, "
+            f"drawing of lots) are deliberately unimplemented: no normative regulations "
+            f"text exists in this repository, fair play is not computable from the "
+            f"contracted StandingsRow, and drawing of lots cannot satisfy AD-8. Rule this "
+            f"before emitting — do not invent an order."
+        )
+
+
+# --------------------------------------------------------------------------- tournament.json
+def _match_result_row(match: dict, knockout: dict, team_name: "dict[str, str]") -> dict:
+    """One `MatchResultRow`, projected from the spine's `entities.matches` row.
+
+    **The staging keys are stripped at BOTH levels.** The spine's per-match `score` is
+    `{home, away, shootout}` while `common.schema.json`'s `TeamScore` is
+    `additionalProperties: false, required [home, away]` — carrying it through verbatim
+    fails validation on every result row in the artifact. The `shootout` prose decomposes
+    into `knockoutScore` instead, exactly as `emit.build_metadata` does it.
+
+    `group` is non-null iff `stage == "group"`; `knockoutScore` is required on GROUP rows
+    too, where it reads `decidedBy: "regulation"` with null `scoreAfterET` and
+    `shootoutScore`, and a null `winnerTeamId` on each of the 20 drawn group ties.
+    """
+    home, away = match["home_team_id"], match["away_team_id"]
+    return check_total(
+        {
+            "matchId": match["match_id"],
+            "matchNumber": match["match_number"],
+            "stage": match["stage"],
+            "group": match["group"],
+            "matchdayRound": match["matchday_round"],
+            "date": match["date"],
+            "kickoff": match["kickoff"],
+            "venue": match["venue"],
+            "homeTeam": _entity_ref(home, team_name[home]),
+            "awayTeam": _entity_ref(away, team_name[away]),
+            "score": check_total({"home": match["score"]["home"],
+                                  "away": match["score"]["away"]},
+                                 "TeamScore", f"MatchResultRow.score[{match['match_id']}]",
+                                 TOURNAMENT_DOCUMENTS),
+            "knockoutScore": knockout,
+        },
+        "MatchResultRow", f"MatchResultRow[{match['match_id']}]", TOURNAMENT_DOCUMENTS,
+    )
+
+
+def _tally(matches: "list[dict]", knockouts: "dict[str, dict]", group_only: bool) -> dict:
+    """Accumulate W/D/L, goals and (for group tables) form, one entry per team.
+
+    **Group tables are computed from the 90-MINUTE score, tournament records from the
+    FINAL score, and the difference is not cosmetic.** A group table has no extra time to
+    read; a knockout tie's cover score is printed after extra time when extra time was
+    played. `knockoutScore.scoreAfter90` is itself a reconciliation of two printed sources
+    (`metadata.goals` at minute <= 90, cross-checked against the cover), which is why it is
+    taken from `emit._knockout_score` rather than re-derived here.
+
+    Matches are consumed in `match_number` order, which is what makes `form` chronological.
+    """
+    table: "dict[str, dict]" = defaultdict(
+        lambda: dict(played=0, won=0, drawn=0, lost=0, goalsFor=0, goalsAgainst=0,
+                     points=0, form=[]))
+    for match in sorted(matches, key=lambda m: m["match_number"]):
+        if group_only and match["stage"] != "group":
+            continue
+        if group_only:
+            score = knockouts[match["match_id"]]["scoreAfter90"]
+        else:
+            score = match["score"]
+        home, away = match["home_team_id"], match["away_team_id"]
+        for team_id, scored, conceded in ((home, score["home"], score["away"]),
+                                          (away, score["away"], score["home"])):
+            row = table[team_id]
+            row["played"] += 1
+            row["goalsFor"] += scored
+            row["goalsAgainst"] += conceded
+            if scored > conceded:
+                row["won"] += 1
+                row["points"] += 3
+                row["form"].append("win")
+            elif scored == conceded:
+                row["drawn"] += 1
+                row["points"] += 1
+                row["form"].append("draw")
+            else:
+                row["lost"] += 1
+                row["form"].append("loss")
+    return table
+
+
+def _team_record(tally_row: dict) -> dict:
+    """One `TeamRecord` — the team's record over ALL matches (Story 1.17 D4a).
+
+    **This is NOT `StandingsRow.played`, and the two differ for 32 of the 48 teams.**
+    `StandingsRow` is a group table and is necessarily group-only; `TeamRecord` is
+    documented as "a team's TOURNAMENT record" and backs the Team Profile's `<title>` and
+    OG string, defined as "name + tournament record". Argentina played 3 group matches and
+    5 knockout matches: publishing "P3 W3 D0 L0" as a finalist's tournament record would be
+    simply false, and would silently discard the knockout half of a knockout tournament.
+
+    `TeamRecord` carries no `points` and no `goalDifference` — the contract omits both,
+    because a tournament-wide points total is not a thing the competition defines.
+
+    **A tie decided on penalties is a DRAW for both teams here**, which is the standard
+    football convention and is why `winnerTeamId` lives in `knockoutScore` rather than
+    moving a W/L into this record. Measured on this corpus: 208 team-matches and 48 draws,
+    being 20 drawn group ties and 4 shoot-outs, each counted for both sides. A record that
+    credited the shoot-out winner with a win would disagree with every published table of
+    the same tournament.
+    """
+    return check_total(
+        {key: tally_row[key] for key in
+         ("played", "won", "drawn", "lost", "goalsFor", "goalsAgainst")},
+        "TeamRecord", "TeamRecord", TOURNAMENT_DOCUMENTS,
+    )
+
+
+def build_tournament(entities: dict, matches: "list[dict]") -> dict:
+    """`tournament.json` — results, standings and the route manifest.
+
+    `matches` is the staged match spine list, used only for the goal records
+    `emit._knockout_score` reconciles; every schedule field comes from
+    `entities["matches"]`, which already carries `match_number`, `stage`, `group`,
+    `matchday_round`, `date`, `kickoff`, `venue` and `score`.
+
+    **No id is minted and the `m###` prefix is never parsed.** Every id already exists in
+    `entities.json`; re-deriving one is the reinvention, a divergence would be
+    unfalsifiable, and `m052-bosnia-and-herzegovina-qatar` cannot be split by string rules
+    in any case.
+    """
+    check_entities_shape(entities, "entities.json")
+    codes = {team["team_id"]: team["team_code"] for team in entities["teams"]}
+    team_name = {team["team_id"]: team["name"] for team in entities["teams"]}
+
+    spine_by_id = {match["spine"]["match_id"]: match for match in matches}
+    missing = sorted(row["match_id"] for row in entities["matches"]
+                     if row["match_id"] not in spine_by_id)
+    if missing:
+        raise IndexEmitError(
+            f"{len(missing)} match(es) are listed in entities.json with no staged spine "
+            f"record: {missing[:10]!r}{' …' if len(missing) > 10 else ''}"
+        )
+
+    knockouts = {
+        match_id: _knockout_score(spine, codes, _goals(spine))
+        for match_id, spine in spine_by_id.items()
+    }
+    rows = {row["match_id"]: _match_result_row(row, knockouts[row["match_id"]], team_name)
+            for row in entities["matches"]}
+
+    # --- group tables, ordered by group letter -------------------------------------
+    group_tally = _tally(entities["matches"], knockouts, group_only=True)
+    group_of = {team["team_id"]: team["group"] for team in entities["teams"]}
+    by_group: "dict[str, list[str]]" = defaultdict(list)
+    for team_id in group_tally:
+        by_group[group_of[team_id]].append(team_id)
+
+    groups = []
+    for group in sorted(by_group):
+        standings_rows = []
+        for team_id in by_group[group]:
+            tally_row = group_tally[team_id]
+            standings_rows.append({
+                "rank": 0,  # replaced below; ranks are assigned only after the sort
+                "team": _entity_ref(team_id, team_name[team_id]),
+                "played": tally_row["played"],
+                "won": tally_row["won"],
+                "drawn": tally_row["drawn"],
+                "lost": tally_row["lost"],
+                "goalsFor": tally_row["goalsFor"],
+                "goalsAgainst": tally_row["goalsAgainst"],
+                "goalDifference": tally_row["goalsFor"] - tally_row["goalsAgainst"],
+                "points": tally_row["points"],
+                "form": list(tally_row["form"]),
+            })
+        _check_tiebreaks(standings_rows, f"group {group!r}")
+        standings_rows.sort(key=_standings_key)
+        for rank, row in enumerate(standings_rows, start=1):
+            row["rank"] = rank
+            check_total(row, "StandingsRow",
+                        f"StandingsRow[{group}/{row['team']['id']}]", TOURNAMENT_DOCUMENTS)
+        results = [rows[m["match_id"]] for m in
+                   sorted((m for m in entities["matches"]
+                           if m["stage"] == "group" and m["group"] == group),
+                          key=lambda m: m["match_number"])]
+        groups.append(check_total({"group": group, "standings": standings_rows,
+                                   "results": results},
+                                  "GroupTable", f"GroupTable[{group}]",
+                                  TOURNAMENT_DOCUMENTS))
+
+    # --- knockout results, ordered by stage then match number ----------------------
+    stage_order = {stage: i for i, stage in enumerate(KNOCKOUT_ROUNDS)}
+    unknown = sorted({m["stage"] for m in entities["matches"]
+                      if m["stage"] != "group" and m["stage"] not in stage_order})
+    if unknown:
+        raise IndexEmitError(
+            f"stage(s) {unknown!r} are not in discover.rounds.KNOCKOUT_ROUNDS, so "
+            f"knockoutResults has no declared order for them"
+        )
+    knockout_results = [
+        rows[m["match_id"]] for m in
+        sorted((m for m in entities["matches"] if m["stage"] != "group"),
+               key=lambda m: (stage_order[m["stage"]], m["match_number"]))
+    ]
+
+    # --- the route manifest --------------------------------------------------------
+    #
+    # `entities.matches` / `.teams` / `.players` have NO declared order in the schema, and
+    # AD-8 demands byte-identical re-runs, so one is FIXED here and stated: the order is
+    # `work/spine/entities.json`'s own, which is already sorted by `match_id`, `team_id`
+    # and `player_id` respectively. Carried through rather than re-sorted, and pinned by a
+    # test, so the artifact and its input can never disagree about it.
+    record_tally = _tally(entities["matches"], knockouts, group_only=False)
+    manifest = check_total(
+        {
+            "matches": [
+                check_total({"matchId": m["match_id"], "stage": m["stage"],
+                             "homeTeam": _entity_ref(m["home_team_id"],
+                                                     team_name[m["home_team_id"]]),
+                             "awayTeam": _entity_ref(m["away_team_id"],
+                                                     team_name[m["away_team_id"]]),
+                             "score": check_total({"home": m["score"]["home"],
+                                                   "away": m["score"]["away"]},
+                                                  "TeamScore",
+                                                  f"MatchEntity.score[{m['match_id']}]",
+                                                  TOURNAMENT_DOCUMENTS)},
+                            "MatchEntity", f"MatchEntity[{m['match_id']}]",
+                            TOURNAMENT_DOCUMENTS)
+                for m in entities["matches"]
+            ],
+            "teams": [
+                check_total({"teamId": t["team_id"], "name": t["name"],
+                             "teamCode": t["team_code"], "group": t["group"],
+                             "record": _team_record(record_tally[t["team_id"]])},
+                            "TeamEntity", f"TeamEntity[{t['team_id']}]",
+                            TOURNAMENT_DOCUMENTS)
+                for t in entities["teams"]
+            ],
+            # All 1,248, including the 209 who appear in a lineup and have no Domain G row.
+            # AC 3 is explicit that empty sections are allowed and absence is not: filtering
+            # them out would delete 209 routes from the manifest Story 1.18 builds against.
+            "players": [
+                check_total({"playerId": p["player_id"], "name": p["name"],
+                             "team": _entity_ref(p["team_id"], team_name[p["team_id"]]),
+                             "position": p["position"]},
+                            "PlayerEntity", f"PlayerEntity[{p['player_id']}]",
+                            TOURNAMENT_DOCUMENTS)
+                for p in entities["players"]
+            ],
+        },
+        "EntityIndex", "EntityIndex", TOURNAMENT_DOCUMENTS,
+    )
+
+    return {
+        "schemaVersion": schema_version(),
+        "tournamentName": TOURNAMENT_NAME,
+        "groups": groups,
+        "knockoutResults": knockout_results,
+        "entities": manifest,
+    }
+
+
+# --------------------------------------------------------------------------- leaderboards
+def _metric_decimals(metric_code: str) -> int:
+    return METRIC_DECIMALS.get(metric_code, METRIC_DECIMALS_DEFAULT)
+
+
+def collect_metric_values(bundles: "list[dict]") -> "tuple[dict, dict, dict]":
+    """`(team_values, player_values, player_team)` read from the committed bundles.
+
+    `team_values[code][team_id]` and `player_values[code][player_id]` are the per-match
+    values a board aggregates, in bundle order. The bundles are the ONLY source for these:
+    the spine stages the stat blocks but does not reshape them, and `keyStatistics` /
+    Domain G are exactly what the two scopes' metric codes name.
+
+    **A player board is populated from the players who have a `players[]` performance
+    block, not from the route manifest.** 1,039 of the 1,248 listed players have one; the
+    other 209 appear only in lineups, have no Domain G row and cannot be ranked on any
+    metric. That is not a contradiction of the manifest — the manifest is a route list, a
+    board ranks what has data.
+
+    **Own goals need no special handling here, and that was verified rather than assumed.**
+    Domain G's `inPossession.goals` already excludes them: summed corpus-wide it is 294,
+    exactly the 308 recorded goals less the 14 own goals, and it agrees match by match on
+    all 104. The team-scope `keyStatistics.goals` equals the final score on all 104, which
+    is the benefiting-team crediting the contract specifies. So the top-scorer board
+    credits the scorer and the team board credits the beneficiary, from the printed fields,
+    with no re-derivation.
+    """
+    team_values: "dict[str, dict[str, list]]" = defaultdict(lambda: defaultdict(list))
+    player_values: "dict[str, dict[str, list]]" = defaultdict(lambda: defaultdict(list))
+    player_team: "dict[str, str]" = {}
+
+    team_codes = {code for _f, code, scope, _a, _h in BOARDS if scope == "team"}
+    player_codes = {code for _f, code, scope, _a, _h in BOARDS if scope == "player"}
+
+    for bundle in bundles:
+        match_id = bundle["matchId"]
+        for side in ("home", "away"):
+            team_id = bundle["metadata"][f"{side}Team"]["teamId"]
+            statistics = bundle["keyStatistics"][side]
+            for code in team_codes:
+                if code not in statistics:
+                    raise IndexEmitError(
+                        f"{match_id}: keyStatistics.{side} has no field {code!r}, which a "
+                        f"team-scope board ranks", match_id)
+                if statistics[code] is not None:
+                    team_values[code][team_id].append(statistics[code])
+        for player in bundle["players"]:
+            player_id = player["playerId"]
+            player_team[player_id] = player["teamId"]
+            flat: dict = {}
+            for block in ("inPossession", "outOfPossession", "physical"):
+                flat.update(player.get(block) or {})
+            for code in player_codes:
+                if code not in flat:
+                    raise IndexEmitError(
+                        f"{match_id}: player {player_id!r} has no Domain G field {code!r}, "
+                        f"which a player-scope board ranks", match_id)
+                if flat[code] is not None:
+                    player_values[code][player_id].append(flat[code])
+
+    return team_values, player_values, player_team
+
+
+def _aggregate(values: "list", aggregation: str, where: str):
+    if aggregation == "max":
+        return max(values)
+    if aggregation == "sum":
+        return sum(values)
+    if aggregation == "average":
+        return sum(values) / len(values)
+    raise IndexEmitError(f"{where}: unknown aggregation {aggregation!r}")
+
+
+def _per_match(value, aggregation: str, matches_played: int):
+    """`perMatch` for one row — required-but-nullable, so `null` is WRITTEN, not omitted.
+
+    `max` is null: the contract names `topSpeed` as its own example of a metric that is not
+    meaningfully rateable. `sum` divides. `average` returns the value itself, because for
+    an average the value already IS the per-match figure — dividing it again would publish
+    a tournament possession of 21.8% for a team that held 65.5% in each of three matches,
+    and the shipped fixture's one `average` board carries a non-null `perMatch` equal to
+    its value.
+    """
+    if aggregation == "max":
+        return None
+    if aggregation == "average":
+        return value
+    return value / matches_played
+
+
+def _rank_rows(rows: "list[dict]") -> None:
+    """Assign competition ranks in place: 1, 2, 2, 4 — never 1, 2, 2, 3.
+
+    Ties share the better (lower) rank and the next distinct value skips to its ordinal
+    position. The committed fixture is the only thing in the contract that says so — its
+    `topSpeed` board runs 1,2,3,4,5,6,7,7,7,7,7,12,… — and `test_fixtures.py` pins it.
+
+    `rows` must already be sorted by `(-value, entity id)`. The ascending-id tiebreak
+    inside a tie group is the fixture's too, and it is what makes re-runs byte-identical;
+    it is a serialization order, never a claim that one tied entity outranks another.
+    """
+    previous_value = None
+    previous_rank = 0
+    for position, row in enumerate(rows, start=1):
+        if previous_value is None or row["value"] != previous_value:
+            row["rank"] = position
+            previous_rank = position
+        else:
+            row["rank"] = previous_rank
+        previous_value = row["value"]
+
+
+def _apply_cap(rows: "list[dict]", cap: "int | None") -> "list[dict]":
+    """Truncate to `cap` rows, extended to the END of the boundary tie group.
+
+    **A hard cut at N publishes an arbitrary subset of equals.** Competition ranking means
+    several entities can share the boundary rank, and cutting mid-group would ship some of
+    them and drop others on no stated criterion — with the survivors chosen by the id
+    tiebreak, which exists for determinism and is emphatically not a ranking. So the cut is
+    made on RANK, not on position: every row sharing the boundary row's rank ships.
+
+    Measured on this corpus, that is ~2,965 rows against 2,664 for a hard cut — about 300
+    rows and ~9,500 gzip bytes of difference, which the budget absorbs four times over.
+    """
+    if cap is None or len(rows) <= cap:
+        return rows
+    boundary_rank = rows[cap - 1]["rank"]
+    return [row for row in rows if row["rank"] <= boundary_rank]
+
+
+def _board_rows(metric_code: str, scope: str, aggregation: str,
+                values: "dict[str, list]", name_of: "dict[str, str]",
+                team_of: "dict[str, str]", team_name: "dict[str, str]") -> "list[dict]":
+    """Every ranked row of one board, sorted, ranked and capped.
+
+    **`matchesPlayed` is the ENTITY'S OWN match count (Story 1.17 D4b)** — the number of
+    matches whose values were aggregated into `value`, which is what makes
+    `perMatch == value / matchesPlayed` true by construction rather than approximately.
+
+    For a player that is the number of matches carrying a Domain G row for them. It is NOT
+    their team's match count, which the hand-authored fixture uses and which differs for
+    584 of the 1,039 ranked players — dividing an unused substitute and a full-tournament
+    starter by the same denominator makes `perMatch` false on more than half of every
+    player board. Nor is it `entities.json`'s `match_ids`, which is the TEAMSHEET: six
+    players are on the sheet for eight matches with a single performance row, and that
+    reading would divide their one match by eight.
+
+    For a team it is the team's match count, group and knockout, which agrees with
+    `TeamRecord.played` by construction — every played match contributes a `keyStatistics`
+    block.
+    """
+    decimals = _metric_decimals(metric_code)
+    rows = []
+    for entity_id, per_match_values in values.items():
+        matches_played = len(per_match_values)
+        value = round_to_precision(
+            _aggregate(per_match_values, aggregation, f"{metric_code}/{scope}"), decimals)
+        team_id = entity_id if scope == "team" else team_of[entity_id]
+        rows.append({
+            "rank": 0,  # replaced by `_rank_rows`, which needs the sorted order first
+            "entity": _entity_ref(entity_id, name_of[entity_id]),
+            "team": _entity_ref(team_id, team_name[team_id]),
+            "value": value,
+            "matchesPlayed": matches_played,
+            "perMatch": _per_match(value, aggregation, matches_played),
+        })
+    rows.sort(key=lambda row: (-row["value"], row["entity"]["id"]))
+    _rank_rows(rows)
+    rows = _apply_cap(rows, PLAYER_ROW_CAP if scope == "player" else None)
+    for row in rows:
+        if row["perMatch"] is not None:
+            row["perMatch"] = round_to_precision(row["perMatch"], PER_MATCH_DECIMALS)
+        check_total(row, "LeaderboardRow",
+                    f"LeaderboardRow[{metric_code}/{scope}/{row['entity']['id']}]",
+                    LEADERBOARDS_DOCUMENTS)
+    return rows
+
+
+def build_leaderboards(entities: dict, matches: "list[dict]",
+                       bundles: "list[dict]") -> dict:
+    """`leaderboards.json` — the 36-board roster, in `BOARDS` order.
+
+    `matches` is carried for the cross-check that the committed bundle set is exactly the
+    staged match set: a board silently built from 103 of 104 bundles would be wrong in a
+    way no schema and no ordering test could see.
+    """
+    check_entities_shape(entities, "entities.json")
+    team_name = {team["team_id"]: team["name"] for team in entities["teams"]}
+    player_name = {player["player_id"]: player["name"] for player in entities["players"]}
+
+    staged = {match["spine"]["match_id"] for match in matches}
+    committed = {bundle["matchId"] for bundle in bundles}
+    if staged != committed:
+        only_staged = sorted(staged - committed)
+        only_committed = sorted(committed - staged)
+        raise IndexEmitError(
+            f"the staged spine and the committed bundles disagree on the match set: "
+            f"{len(only_staged)} staged-only {only_staged[:5]!r}, "
+            f"{len(only_committed)} committed-only {only_committed[:5]!r}. Leaderboards "
+            f"aggregate the bundles and are ranked against the spine's entities; the two "
+            f"must name the same matches or the boards are built from a partial corpus"
+        )
+
+    team_values, player_values, player_team = collect_metric_values(bundles)
+    unknown = sorted(pid for pid in player_team if pid not in player_name)
+    if unknown:
+        raise IndexEmitError(
+            f"{len(unknown)} player(s) carry a Domain G row and are absent from the "
+            f"entities manifest: {unknown[:10]!r}. Every ranked entity must have a route"
+        )
+
+    boards = []
+    for _family, metric_code, scope, aggregation, higher_is_better in BOARDS:
+        if scope == "team":
+            values, name_of = team_values[metric_code], team_name
+        else:
+            values, name_of = player_values[metric_code], player_name
+        if not values:
+            raise IndexEmitError(
+                f"board {metric_code!r}/{scope} would ship with no rows; an empty board is "
+                f"an extraction defect, not a fact about this tournament"
+            )
+        boards.append(check_total(
+            {
+                "metricCode": metric_code,
+                "scope": scope,
+                "aggregation": aggregation,
+                "higherIsBetter": higher_is_better,
+                "rows": _board_rows(metric_code, scope, aggregation, values, name_of,
+                                    player_team, team_name),
+            },
+            "Leaderboard", f"Leaderboard[{metric_code}/{scope}]", LEADERBOARDS_DOCUMENTS,
+        ))
+
+    return {"schemaVersion": schema_version(), "boards": boards}
+
+
+# --------------------------------------------------------------- rounding at the boundary
+def round_index(artifact: dict, decimals: "dict[str, int]", leaf_types: "dict[str, str]"):
+    """Round every numeric leaf to its BOUND precision, and no leaf by inheritance.
+
+    `leaf_types` maps a leaf KEY to the contract type name whose precision it takes.
+    `decimals` is the schema-derived map for the document. A key absent from `leaf_types`
+    is rounded by NOTHING — never by a parent's precision.
+
+    That last rule is the whole point. `emit.round_bundle`'s docstring records that
+    inheritance silently truncated 29 leaves (`lineHeight: 19.5 -> 20`) while the artifact
+    validated clean, because a validator ignores `x-decimals` entirely. Precision is
+    enforced here or nowhere.
+    """
+    def walk(node, key: "str | None"):
+        if isinstance(node, dict):
+            return {k: walk(v, k) for k, v in node.items()}
+        if isinstance(node, list):
+            return [walk(item, key) for item in node]
+        type_name = leaf_types.get(key) if key is not None else None
+        if type_name is None:
+            return node
+        if type_name not in decimals:
+            raise IndexEmitError(
+                f"leaf {key!r} is bound to contract type {type_name!r}, which declares no "
+                f"x-decimals in this document; a leaf bound to nothing rounds by nothing"
+            )
+        return round_to_precision(node, decimals[type_name])
+
+    return walk(artifact, None)
+
+
+# Every numeric leaf of `tournament.json`, bound explicitly to the contract type that
+# declares its precision. All four are integer precisions — `tournament.json` genuinely has
+# no float field, which is why `decimals_map` needs `require_float=False` for it.
+TOURNAMENT_LEAF_TYPES: "dict[str, str]" = {
+    "matchNumber": "ResultMatchNumber",
+    "rank": "Rank",
+    "played": "Count", "won": "Count", "drawn": "Count", "lost": "Count",
+    "goalsFor": "Count", "goalsAgainst": "Count", "points": "Count",
+    "goalDifference": "GoalDifference",
+    "home": "Count", "away": "Count",
+}
+
+# `value` and `perMatch` are deliberately ABSENT: their precision is metric-dependent and
+# is applied per row in `_board_rows`, which is the only place the `metricCode` is in
+# scope. Binding them here would round every board to one precision.
+LEADERBOARDS_LEAF_TYPES: "dict[str, str]" = {
+    "rank": "Rank",
+    "matchesPlayed": "Count",
+}
+
+
+# --------------------------------------------------------------- D2: the route manifest
+_ID_KEY_KIND: "dict[str, str]" = {
+    "matchId": "matches",
+    "teamId": "teams",
+    "playerId": "players",
+    "winnerTeamId": "teams",
+    "scorerPlayerId": "players",
+}
+# The slots whose value is an `EntityRef`, and the namespace that ref's bare `"id"` belongs
+# to. `entity` is absent on purpose: its namespace is the BOARD'S SCOPE, supplied per board.
+_REF_SLOT_KIND: "dict[str, str]" = {
+    "homeTeam": "teams",
+    "awayTeam": "teams",
+    "team": "teams",
+}
+
+# `winnerTeamId` is the one contract-nullable id key these artifacts carry: it is
+# `anyOf [TeamId, null]` and is null on all 20 drawn group ties. Every other key above is a
+# bare non-nullable `$ref`, so a null there stays a finding.
+_NULLABLE_ID_KEYS = frozenset({"winnerTeamId"})
+
+
+def id_sites(artifact, slot_kinds: "dict[str, str]", ref_kind: "str | None" = None,
+             path: str = "") -> "list[tuple[str, str, object, str]]":
+    """Every id-bearing site in an index artifact as `(path, key, value, kind)`.
+
+    ONE walk, used by both the containment gate and the totality test, so the two can
+    never drift into disagreeing about what "every id" means.
+
+    **A bare `"id"` is classified by its SLOT, not by its shape**, which is why this is a
+    context-carrying walk rather than a key lookup. `EntityRef.id` is the id key both index
+    artifacts use most, and it names a team in `homeTeam`/`awayTeam`/`team` and either a
+    team or a player in `entity`, depending on the board's scope. `slot_kinds` is passed in
+    rather than read from a module constant for exactly that reason: the caller binds
+    `entity` per board, because nothing about the ref itself says which namespace it is in.
+
+    An `"id"` reached with no slot context is a FAILURE, never a skip. An unclassifiable id
+    the gate quietly walked past is precisely how a run reports "all pinned" while unpinned
+    ids ship.
+    """
+    sites: "list[tuple[str, str, object, str]]" = []
+    if isinstance(artifact, dict):
+        for key, value in artifact.items():
+            here = f"{path}.{key}"
+            if key == "id":
+                if ref_kind is None:
+                    raise RouteManifestError(
+                        f"{here}: a bare 'id' with no slot context; this walk cannot say "
+                        f"which namespace it belongs to and must not guess"
+                    )
+                sites.append((here, key, value, ref_kind))
+            elif key in _ID_KEY_KIND:
+                sites.append((here, key, value, _ID_KEY_KIND[key]))
+            else:
+                sites.extend(id_sites(value, slot_kinds,
+                                      slot_kinds.get(key, ref_kind), here))
+    elif isinstance(artifact, list):
+        for position, item in enumerate(artifact):
+            sites.extend(id_sites(item, slot_kinds, ref_kind, f"{path}[{position}]"))
+    return sites
+
+
+def index_id_sites(tournament: dict, leaderboards: dict) -> "list[tuple]":
+    """Every id-bearing site across BOTH artifacts, with board scope bound per board.
+
+    `entity` is the one slot whose namespace comes from the artifact rather than from the
+    key, so each board is walked with its own `slot_kinds` binding instead of the walk
+    guessing. `metricCode`, `scope` and the numeric leaves carry no id and are reached and
+    ignored by the same walk, which is what makes the totality test meaningful.
+    """
+    sites = [(f"tournament{path}", key, value, kind)
+             for path, key, value, kind in id_sites(tournament, _REF_SLOT_KIND)]
+    for position, board in enumerate(leaderboards["boards"]):
+        slot_kinds = dict(_REF_SLOT_KIND)
+        slot_kinds["entity"] = "teams" if board["scope"] == "team" else "players"
+        sites.extend(
+            (f"leaderboards.boards{path}", key, value, kind)
+            for path, key, value, kind
+            in id_sites(board, slot_kinds, None, f"[{position}]")
+        )
+    return sites
+
+
+def check_index_ids(tournament: dict, leaderboards: dict) -> None:
+    """Every id in either index artifact must be pinned by the emitted route manifest.
+
+    **`identity.check_committed_data` does NOT cover these artifacts, and this is not a
+    duplicate of it.** That check globs `data/matches/*.json` only, and its
+    `COMMITTED_ID_KEYS` is seven contract field names of which none is the bare `"id"` that
+    `EntityRef` uses — so every id in `data/index/` falls outside AD-3's immutability walk
+    while the run still reports "all pinned". Widening that map was rejected as the fix: a
+    bare `"id"` names a team or a player BY CONTEXT, and a context-free entry there would
+    be ambiguous in a module whose whole job is to be unambiguous. `identity.py` is
+    therefore left untouched and the index artifacts assert their own containment, over the
+    manifest they themselves emit.
+    """
+    known = {
+        "matches": {row["matchId"] for row in tournament["entities"]["matches"]},
+        "teams": {row["teamId"] for row in tournament["entities"]["teams"]},
+        "players": {row["playerId"] for row in tournament["entities"]["players"]},
+    }
+    unpinned: "list[str]" = []
+    for path, key, value, kind in index_id_sites(tournament, leaderboards):
+        if value is None and key in _NULLABLE_ID_KEYS:
+            continue
+        if not isinstance(value, str):
+            # Reported, never skipped: a null `playerId` would otherwise go uncounted and
+            # the run would print "all pinned".
+            unpinned.append(f"{path} = {value!r} (non-string {kind} id)")
+        elif value not in known[kind]:
+            unpinned.append(f"{path} = {value!r} names no {kind} entry in the manifest")
+    if unpinned:
+        shown = "; ".join(sorted(unpinned)[:10])
+        raise RouteManifestError(
+            f"{len(unpinned)} id(s) in the index artifacts are not pinned by the route "
+            f"manifest: {shown}{' …' if len(unpinned) > 10 else ''}"
+        )
+
+
+PROFILE_BASELINE_UNAVAILABLE = (
+    "profile baseline unavailable: {path} does not exist — Story 1.18 emits the team and "
+    "player profile artifacts, so the artifact->entity half of AD-4's bijection has "
+    "nothing to run against in this story. This is NOT a pass."
+)
+
+
+def check_route_manifest(tournament: dict, data_dir: "str | Path") -> "list[str]":
+    """AD-4's route-manifest bijection, both directions, honestly (Story 1.17 D2).
+
+    Returns human-readable notes for the CLI to print. Raises `RouteManifestError` when a
+    direction that CAN be checked fails.
+
+    **The two directions are not equally checkable today, and pretending otherwise would
+    be the defect.** AC 3 requires one profile artifact per listed entity — but
+    `data/index/team-profiles/` and `player-profiles/` are Story 1.18's output and do not
+    exist, so a literal `==` here would fail on 1,248 players and 48 teams, and a
+    `if not exists: pass` would be a gate that cannot fail, which reads greener than no
+    gate while proving strictly less.
+
+    So this copies Story 1.15's two-source pattern exactly, which is precedent rather than
+    invention and which worked as intended when its successor landed:
+
+    * the direction checkable NOW is asserted — every Match Bundle committed under
+      `data/matches/` is named by `entities.matches`, all 104 of them, and any bundle on
+      disk that no entity lists is a route-manifest failure;
+    * the profile direction PRINTS that it could not run and says in words that this is
+      not a pass;
+    * `test_the_repository_has_no_committed_profiles_yet` goes RED BY DESIGN the moment
+      1.18 lands, which is the prompt to make the populated branch primary here.
+    """
+    notes: "list[str]" = []
+    root = Path(data_dir)
+
+    listed = {row["matchId"] for row in tournament["entities"]["matches"]}
+    matches_dir = root / "matches"
+    on_disk = sorted(p.stem for p in matches_dir.glob("*.json")) if matches_dir.is_dir() \
+        else []
+    if not on_disk:
+        notes.append(
+            f"committed bundle baseline unavailable: no match bundles under "
+            f"{matches_dir.as_posix()} — the artifact->entity direction could not run. "
+            f"This is NOT a pass."
+        )
+    else:
+        orphans = sorted(set(on_disk) - listed)
+        if orphans:
+            raise RouteManifestError(
+                f"{len(orphans)} committed Match Bundle(s) are named by no entities.matches "
+                f"entry: {orphans[:10]!r}{' …' if len(orphans) > 10 else ''}. Every emitted "
+                f"artifact must have a route"
+            )
+        unbacked = sorted(listed - set(on_disk))
+        if unbacked:
+            raise RouteManifestError(
+                f"{len(unbacked)} match route(s) are listed with no committed bundle: "
+                f"{unbacked[:10]!r}{' …' if len(unbacked) > 10 else ''}. AC 3 allows an "
+                f"empty section and never an absent artifact"
+            )
+        notes.append(f"matches: {len(on_disk)} committed bundle(s) <-> "
+                     f"{len(listed)} listed route(s) — bijection holds")
+
+    for kind, folder in (("teams", "team-profiles"), ("players", "player-profiles")):
+        directory = root / "index" / folder
+        profiles = sorted(p.stem for p in directory.glob("*.json")) \
+            if directory.is_dir() else []
+        if not profiles:
+            notes.append(PROFILE_BASELINE_UNAVAILABLE.format(path=directory.as_posix()))
+            continue
+        # Story 1.18 has landed. This branch is deliberately live from the day it does, so
+        # the successor is not silently running against a gate that was never wired up.
+        key = "teamId" if kind == "teams" else "playerId"
+        listed_kind = {row[key] for row in tournament["entities"][kind]}
+        missing = sorted(listed_kind - set(profiles))
+        orphans = sorted(set(profiles) - listed_kind)
+        if missing or orphans:
+            raise RouteManifestError(
+                f"{folder}: {len(missing)} listed {kind} have no profile artifact "
+                f"{missing[:5]!r}; {len(orphans)} profile artifact(s) are listed by no "
+                f"entity {orphans[:5]!r}"
+            )
+        notes.append(f"{kind}: {len(profiles)} profile(s) <-> {len(listed_kind)} listed "
+                     f"route(s) — bijection holds")
+    return notes
+
+
+# ------------------------------------------------------------------------------- emission
+def emit_index(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
+               data_dir: "str | Path" = DEFAULT_DATA_DIR,
+               *, expect_matches: "int | None" = None,
+               dry_run: bool = False,
+               notes: "list[str] | None" = None) -> "list[Path]":
+    """Build, round, validate, serialize, measure, gate — and only then write.
+
+    Both artifacts or neither. AD-8's "never abort the batch" governs per-report extract;
+    emission has no per-report recovery, and a partial `data/index/` becomes the pinning
+    baseline for everything downstream.
+
+    Every failure class is COLLECTED and raised together rather than aborting on the first:
+    "aborting on the first turns one run into ten."
+
+    `expect_matches` is checked HERE, before the write, not by the caller — the same
+    reasoning `emit_bundles` records: a check made after the function returns is a check
+    made after the filesystem has already changed.
+
+    Returns the artifact paths. A dry run writes nothing — that is a promise about the
+    filesystem, not about the return value — and returns the targets it validated rather
+    than an empty list that every downstream count check would read as a miss.
+
+    `notes` is an optional sink the CLI passes so it can print the route-manifest findings.
+    It is a sink rather than a second return value because the return type is pinned, and
+    because D2 makes those notes non-optional output: the profile direction of the
+    bijection PRINTS that it could not run, in words, and a caller that silently discarded
+    that would turn "this is NOT a pass" back into a silent pass.
+    """
+    entities, matches = load_spine(spine_dir)
+    check_entities_shape(entities, f"{Path(spine_dir).as_posix()}/entities.json")
+
+    bundles_dir = Path(data_dir) / "matches"
+    bundle_paths = sorted(bundles_dir.glob("*.json"))
+    if not bundle_paths:
+        raise IndexEmitError(
+            f"no committed Match Bundle under {bundles_dir.as_posix()}; the leaderboards "
+            f"aggregate them and an empty corpus is never a pass"
+        )
+    bundles = [json.loads(path.read_text(encoding="utf-8")) for path in bundle_paths]
+
+    if expect_matches is not None and len(entities["matches"]) != expect_matches:
+        raise IndexEmitError(
+            f"the spine lists {len(entities['matches'])} match(es), expected "
+            f"{expect_matches}")
+    if expect_matches is not None and len(bundles) != expect_matches:
+        raise IndexEmitError(
+            f"{len(bundles)} committed bundle(s), expected {expect_matches}")
+
+    tournament = build_tournament(entities, matches)
+    leaderboards = build_leaderboards(entities, matches, bundles)
+
+    tournament = round_index(tournament,
+                             decimals_map(TOURNAMENT_SCHEMA, require_float=False),
+                             TOURNAMENT_LEAF_TYPES)
+    leaderboards = round_index(leaderboards, decimals_map(LEADERBOARDS_SCHEMA),
+                               LEADERBOARDS_LEAF_TYPES)
+
+    violations: "list[str]" = []
+    for artifact, schema_name in ((tournament, TOURNAMENT_SCHEMA),
+                                  (leaderboards, LEADERBOARDS_SCHEMA)):
+        try:
+            validate_artifact(artifact, schema_name, instance_label=schema_name)
+        except SchemaValidationError as exc:
+            violations.append(f"{schema_name}: {exc}")
+    if violations:
+        raise BundleValidationError(
+            f"{len(violations)} index artifact(s) failed the /contract schema: "
+            + "; ".join(sorted(violations))
+        )
+
+    tournament_text = canonical_json(tournament)
+    leaderboards_text = canonical_json(leaderboards)
+
+    breaches = [breach for breach in (
+        over_budget("tournament.json", tournament_text),
+        over_budget("leaderboards.json", leaderboards_text),
+        over_budget_combined("tournament.json + leaderboards.json",
+                             [tournament_text, leaderboards_text]),
+    ) if breach is not None]
+    if breaches:
+        shown = "; ".join(
+            f"{label} {gz} gzip-9 bytes over canonical {raw}" for label, gz, raw
+            in sorted(breaches))
+        raise BudgetExceededError(
+            f"{len(breaches)} payload budget breach(es) against the {BUDGET_BYTES}-byte "
+            f"ceiling: {shown}. AD-4 measures tournament.json + leaderboards.json COMBINED "
+            f"because the Hub loads both. SM-C2: resolve by splitting or by a logged budget "
+            f"decision, NEVER by dropping fields, lowering a precision to fit, or "
+            f"truncating the entity lists — those are the route manifest."
+        )
+
+    check_index_ids(tournament, leaderboards)
+    if notes is not None:
+        notes.extend(check_route_manifest(tournament, data_dir))
+    else:
+        check_route_manifest(tournament, data_dir)
+
+    out_dir = Path(data_dir) / "index"
+    targets = [out_dir / "tournament.json", out_dir / "leaderboards.json"]
+    if dry_run:
+        return targets
+
+    written: "list[Path]" = []
+    for target, text in zip(targets, (tournament_text, leaderboards_text)):
+        # `json.loads(text)` round-trips deliberately: the bytes measured above and the
+        # bytes written here are then provably the same serialization, rather than two
+        # serializations of one object that a stray key-order change could separate.
+        written.append(write_canonical(json.loads(text), target))
+
+    # Sweep stale artifacts this run did not produce, AFTER a successful write and never
+    # before it — Story 1.16 patch 3 records a short spine deleting 54 committed bundles
+    # because the count check ran after the sweep. Scoped to `data/index/*.json`, which is
+    # a non-recursive glob: Story 1.18's `team-profiles/` and `player-profiles/`
+    # subdirectories are not reachable by it and must never be.
+    keep = {path.name for path in written}
+    for existing in sorted(out_dir.glob("*.json")):
+        if existing.name not in keep:
+            existing.unlink()
+    return written
+
+
+# ------------------------------------------------------------------------------------ CLI
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="python -m pipeline.precompute.index",
+        description="Emit the tournament index and the leaderboards from the staged spine "
+                    "and the committed Match Bundles.",
+    )
+    parser.add_argument("--spine-dir", default=str(DEFAULT_SPINE_DIR),
+                        help="staged spine to consume (default work/spine)")
+    parser.add_argument("--data-dir", default=str(DEFAULT_DATA_DIR),
+                        help="artifact root; writes data/index (default data)")
+    parser.add_argument("--expect-matches", type=int, default=None, metavar="N",
+                        help="assert exactly N matches are indexed (use 104)")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="build, validate, round and measure; write nothing")
+    return parser
+
+
+def main(argv: "list[str] | None" = None) -> int:
+    args = build_parser().parse_args(argv)
+
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
+
+    print("")
+    print("Tournament index emission")
+    print("=" * 25)
+    print(f"spine dir       : {Path(args.spine_dir).as_posix()}")
+    print(f"data dir        : {Path(args.data_dir).as_posix()}")
+    print(f"schemaVersion   : {schema_version()}")
+
+    notes: "list[str]" = []
+    try:
+        written = emit_index(args.spine_dir, args.data_dir,
+                             expect_matches=args.expect_matches,
+                             dry_run=args.dry_run, notes=notes)
+    except PipelineError as exc:
+        print("")
+        print(f"FAIL: {exc}", file=sys.stderr)
+        return 1
+    except (OSError, AssertionError, json.JSONDecodeError) as exc:
+        # `json.JSONDecodeError` is a `ValueError`, so without naming it a malformed
+        # committed bundle would exit 1 with a traceback and read as a finding about the
+        # data. It is a broken harness: nothing was learned. `AssertionError` is
+        # `decimals_map`'s vacuity guard, for the same reason.
+        print("")
+        print(f"index emission could not run: {exc}", file=sys.stderr)
+        return 2
+
+    for note in notes:
+        print(f"  {note}")
+    suffix = " (dry run, nothing written)" if args.dry_run else ""
+    print(f"artifacts       : {len(written)}{suffix}")
+
+    print("")
+    print("INDEX RESULT: PASS")
+    print("")
+    return 0
+
+
+if __name__ == "__main__":  # pragma: no cover - CLI entry point
+    raise SystemExit(main())
