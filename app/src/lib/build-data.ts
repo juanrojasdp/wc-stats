@@ -2,7 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { MatchBundle, Tournament } from "@/lib/contract/contract-types";
+import type { Leaderboards, MatchBundle, Tournament } from "@/lib/contract/contract-types";
+import { SCHEMA_VERSION } from "@/lib/contract/schema-version";
 
 /*
  * Build-time-ONLY data reader (AR-11, AD-11). generateStaticParams and
@@ -40,4 +41,35 @@ export function readTournament(): Tournament {
 /** One match's full bundle, read at build time. `matchId` is the route slug. */
 export function readMatchBundle(matchId: string): MatchBundle {
   return readJson<MatchBundle>(path.join("matches", `${matchId}.json`));
+}
+
+/**
+ * The leaderboards artifact, read at build time for the hero-altitude teasers
+ * (Story 2.13, AD-11).
+ *
+ * The teasers are PRE-RENDERED from this read; the full sortable tables come
+ * from the client fetch in `LeaderboardsRegion`, which is the one artifact
+ * FR-26's "initially loaded index" permits. Reading it here as well costs no
+ * extra request — it is inlined into the exported HTML.
+ */
+export function readLeaderboards(): Leaderboards {
+  const payload = readJson<Leaderboards>(path.join("index", "leaderboards.json"));
+  /*
+   * GATED LIKE THE RUNTIME PATH (Story 2.13 code review). `LeaderboardsRegion`
+   * refuses to render a payload whose schemaVersion does not match and shows the
+   * "invalid" panel; this path gated on nothing, so the two halves of one screen
+   * could contradict each other — pre-rendered teaser cards full of real names
+   * and figures sitting above a panel saying the data does not match this
+   * version. A build-time read has a better answer available than the runtime
+   * one: FAIL THE BUILD. A static export that cannot state its own schema is not
+   * one worth publishing, and `readJson` above already treats a missing artifact
+   * the same way.
+   */
+  if (payload.schemaVersion !== SCHEMA_VERSION) {
+    throw new Error(
+      `build-data: leaderboards.json is at schemaVersion ${String(payload.schemaVersion)}, ` +
+        `but this build expects ${String(SCHEMA_VERSION)}.`
+    );
+  }
+  return payload;
 }

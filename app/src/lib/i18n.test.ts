@@ -1,8 +1,11 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { en } from "@/locales/en";
 import { es } from "@/locales/es";
-import type { PossessionContestType } from "@/lib/contract/contract-types";
+import type { Leaderboards, MetricCode, PossessionContestType } from "@/lib/contract/contract-types";
 import {
   GLOSSARY_TERMS,
   SECTION_HEADING_MARKS,
@@ -12,7 +15,18 @@ import {
   glossaryTermEnKey,
   glossaryTermEsKey,
 } from "@/lib/glossary";
+import {
+  MATCHDAY_ROUNDS,
+  MATCH_RESULTS,
+  RESULT_COLUMN_KEYS,
+  SHARED_ROUND_STAGES,
+  STANDINGS_COLUMN_KEYS,
+  matchResultLetterKey,
+  matchResultWordKey,
+  matchdayRoundLabelKey,
+} from "@/lib/hub-model";
 import { t, type Locale } from "@/lib/i18n";
+import { composeHeadAccessibleName } from "@/lib/table-sort";
 import {
   COLLAPSIBLE_SECTION_IDS,
   KEY_STAT_FIELDS,
@@ -23,6 +37,24 @@ import {
 import type { CollapsibleSectionId, SectionId } from "@/lib/tactical-sections";
 import { CROSS_DELIVERY_TYPES, crossDeliveryKey } from "@/viz/cross-map-model";
 import { EXPERT_FIELDS, expertFieldKey, expertFieldTitleKey } from "@/viz/expert-model";
+import {
+  ABBREVIATED_METRICS,
+  leaderboardMetricAbbrKey,
+  leaderboardMetricKey,
+} from "@/viz/leaderboard-model";
+
+/*
+ * The leaderboards fixture, for the caption-uniqueness list (Story 2.13 Task
+ * 8.3). Read rather than hardcoded at three boards: the component is driven off
+ * `boards.length` and Story 1.17's real emission carries roughly thirty, so a
+ * literal count here would pin a fixture fact instead of the property.
+ */
+const LEADERBOARD_FIXTURE: Leaderboards = JSON.parse(
+  readFileSync(
+    path.join(process.cwd(), "..", "data", "fixtures", "index", "leaderboards.json"),
+    "utf8"
+  )
+) as Leaderboards;
 import {
   DEFENSIVE_ACTION_TYPES,
   POSSESSION_CONTEST_TYPES,
@@ -81,14 +113,22 @@ import {
 } from "@/viz/set-plays-model";
 import { SHOT_OUTCOMES, shotOutcomeKey } from "@/viz/shot-map-model";
 
+/*
+ * The probe key was `app.scaffold.heading` until Story 2.12 retired the whole
+ * scaffold namespace (its only call site, `src/app/page.tsx`'s Story 2.1
+ * placeholder body, is now the Tournament Hub). `notFound.homeLink` replaces it
+ * on the two properties these assertions actually need: it is a leaf, and its
+ * es and en values DIFFER — which is what makes the third assertion below
+ * meaningful. `app.siteName` would not do: it is "WC Stats" in both.
+ */
 describe("t()", () => {
   it("defaults to the canonical Spanish dictionary", () => {
-    expect(t("app.scaffold.heading")).toBe(es.app.scaffold.heading);
+    expect(t("notFound.homeLink")).toBe(es.notFound.homeLink);
   });
 
   it("resolves the active locale's value", () => {
-    expect(t("app.scaffold.heading", "en")).toBe(en.app.scaffold.heading);
-    expect(t("app.scaffold.heading", "es")).not.toBe(t("app.scaffold.heading", "en"));
+    expect(t("notFound.homeLink", "en")).toBe(en.notFound.homeLink);
+    expect(t("notFound.homeLink", "es")).not.toBe(t("notFound.homeLink", "en"));
   });
 
   it("throws on a key that does not resolve to a string", () => {
@@ -122,14 +162,14 @@ describe("t() production fallback policy", () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     // en is type-mirrored, so a real miss cannot exist in a compiling tree;
     // simulate the untyped boundary by breaking the leaf at runtime.
-    const enScaffold = en.app.scaffold as Record<string, unknown>;
-    const original = enScaffold.heading;
-    enScaffold.heading = undefined;
+    const enNotFound = en.notFound as Record<string, unknown>;
+    const original = enNotFound.homeLink;
+    enNotFound.homeLink = undefined;
     try {
-      expect(t("app.scaffold.heading", "en")).toBe(es.app.scaffold.heading);
+      expect(t("notFound.homeLink", "en")).toBe(es.notFound.homeLink);
       expect(consoleError).toHaveBeenCalledTimes(1);
     } finally {
-      enScaffold.heading = original;
+      enNotFound.homeLink = original;
     }
   });
 
@@ -224,10 +264,27 @@ describe("enums.shotOutcome / enums.crossDelivery (AD-7)", () => {
     }
   });
 
-  it("does NOT carry ShotOutcomeDetail labels — those ride CS-1 (Task 10.4)", () => {
-    // AD-14 decision CR-2 makes `outcome` authoritative for marker encoding, so
-    // this story maps the stable five-value enum only. The 22->24 detail
-    // extension is CS-1's payload and belongs to Stories 2.11/2.13/2.18.
+  it("carries the five ShotOutcome labels and DELIBERATELY no ShotOutcomeDetail ones", () => {
+    /*
+     * RETITLED, NOT DELETED (Story 2.13 ruling 5). The assertions below are
+     * byte-identical to the ones this test shipped with; only its NAME and this
+     * comment changed, because the name asserted a premise that is now false and
+     * "green tests named 'CS-1 has not landed' misreport the gate's state to the
+     * next reader" is the filed defect.
+     *
+     * CS-1 HAS LANDED (093a1b2, plus 4682639; schemaVersion 2 -> 3, and CS-2 has
+     * since taken it to 4). `ShotOutcomeDetail` exists in the contract with all
+     * 24 values. What does NOT exist, on purpose, is a locale label for any of
+     * them: AD-14 decision CR-2 makes `outcome` authoritative for marker
+     * encoding and forbids deriving it from the detail, so the App maps the
+     * stable five-value enum and nothing else.
+     *
+     * This is therefore STILL CORRECT AS AN ASSERTION and must stay green. It
+     * is the only thing between the extended enum and an unlabelled detail code
+     * reaching a user. Deleting it belongs to whoever ships ShotOutcomeDetail
+     * locale labels — Story 2.13 maps `MetricCode`, a different closed enum on a
+     * different surface, so the ledger's deletion condition is unmet here.
+     */
     expect(Object.keys(es.enums.shotOutcome)).toHaveLength(5);
     expect(Object.keys(es.enums)).not.toContain("shotOutcomeDetail");
   });
@@ -994,10 +1051,19 @@ describe("glossary exhaustiveness (Story 2.18 Task 9.4)", () => {
     expect(en.glossaryPage.enPrefix).toBe(es.glossaryPage.enPrefix);
   });
 
-  it("still mints NO ShotOutcomeDetail namespace (decision 12 — CS-1 has not landed)", () => {
-    // The 2.7 tripwires, re-asserted from this story's side: 2.18 maps the
-    // stable five-value ShotOutcome only, and both must be deleted DELIBERATELY
-    // when detail labels ship.
+  it("still mints NO ShotOutcomeDetail namespace, now that CS-1 HAS landed", () => {
+    /*
+     * RETITLED, NOT DELETED (Story 2.13 ruling 5) — assertions byte-identical,
+     * name and rationale corrected. CS-1 landed at 093a1b2 (schemaVersion 2 ->
+     * 3; CS-2 has since taken it to 4) and the 24-value `ShotOutcomeDetail`
+     * enum exists in the contract. NO LOCALE LABELS FOR IT DO, and that is
+     * deliberate: AD-14 decision CR-2 makes `outcome` authoritative, so 2.18
+     * maps the stable five-value ShotOutcome only.
+     *
+     * The 2.7 tripwire re-asserted from this story's side. Both stay green and
+     * undeleted until detail labels actually ship; deletion is re-routed to
+     * that story, not taken by 2.13, which maps `MetricCode` instead.
+     */
     expect(Object.keys(es.enums)).not.toContain("shotOutcomeDetail");
     expect(Object.keys(es.enums.shotOutcome)).toHaveLength(5);
   });
@@ -1472,6 +1538,30 @@ describe("Story 2.11c's receiving log and log links", () => {
       ];
     }
 
+    /*
+     * STORY 2.13 EXTENDS THIS LIST WITH THE HUB'S LEADERBOARD TABLES, and it
+     * was WARNED that the pin below would go red on a stale count — it has
+     * before.
+     *
+     * DERIVED FROM THE FIXTURE'S OWN BOARD LIST, not hardcoded at three. The
+     * component renders one DataTable per board and is driven off
+     * `boards.length`; Story 1.17's real emission carries roughly thirty boards
+     * and its unruled D3/D5 may cap player rows, so a literal three here would
+     * be a fixture fact masquerading as a property. What IS the property — every
+     * rendered caption on the site is distinct — holds at either scale, and this
+     * mirrors the component's composition exactly:
+     *   `${metricLabel}${boardSeparator}${scopeLabel}${SEPARATOR}${tableCaption}`
+     */
+    function hubLeaderboardCaptions(locale: Locale): string[] {
+      const title = (key: Parameters<typeof t>[0]) => t(key, locale);
+      return LEADERBOARD_FIXTURE.boards.map((board) => {
+        const heading = `${title(leaderboardMetricKey(board.metricCode))}${title(
+          "leaderboards.boardSeparator"
+        )}${title(board.scope === "team" ? "leaderboards.scope.team" : "leaderboards.scope.player")}`;
+        return `${heading}${SEPARATOR}${title("leaderboards.tableCaption")}`;
+      });
+    }
+
     for (const locale of locales) {
       const shipped = composedCaptions(locale);
       expect(shipped, locale).toHaveLength(27);
@@ -1483,6 +1573,23 @@ describe("Story 2.11c's receiving log and log links", () => {
       )}`;
       expect(shipped, `the new caption in ${locale}`).not.toContain(receiving);
       expect(new Set([...shipped, receiving]).size, locale).toBe(28);
+
+      /*
+       * The Hub captions (Story 2.13): distinct from each other AND from all 28
+       * on the match route.
+       *
+       * NO LITERAL COUNT (2.13 code review). The helper's comment above says a
+       * literal three "would be a fixture fact masquerading as a property" —
+       * and the code then pinned both `3` and `31` two lines later, which is
+       * the fixture fact it disowned. The real emission carries 36 boards, so
+       * both literals break at the 2.19 DATA_ROOT flip for a reason unrelated
+       * to any behaviour, and the fixture was already regenerated once during
+       * this story. One board per caption, all distinct, at any board count.
+       */
+      const hub = hubLeaderboardCaptions(locale);
+      expect(hub, `the Hub captions in ${locale}`).toHaveLength(LEADERBOARD_FIXTURE.boards.length);
+      expect(new Set(hub).size, `the Hub captions in ${locale}`).toBe(hub.length);
+      expect(new Set([...shipped, receiving, ...hub]).size, locale).toBe(28 + hub.length);
     }
   });
 
@@ -1505,6 +1612,560 @@ describe("Story 2.11c's receiving log and log links", () => {
      */
     expect(Object.keys(es.expert.logs).sort()).toEqual(Object.keys(en.expert.logs).sort());
     expect(Object.keys(es.expert.logs)).not.toContain("empty");
+  });
+});
+
+/*
+ * ------------------------- STORY 2.12, THE TOURNAMENT HUB --------------------
+ *
+ * Task 7.3. The `const KEYS = [...] as const` sweep over both locales, plus the
+ * two assertions the story calls its likeliest silent bug: the es-`D`/en-`D`
+ * divergence, and the chip/column letter split.
+ */
+describe("hub.* and Story 2.12's enums (AC 3, AC 4)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  const KEYS = [
+    "hub.title",
+    "hub.separator",
+    "hub.region.loading",
+    "hub.region.loaded",
+    "hub.region.error",
+    "hub.region.retry",
+    "hub.region.invalid",
+    "hub.region.invalidExplanation",
+    "hub.columns.more",
+    "hub.columns.fewer",
+    "hub.sortMenu.trigger",
+    "hub.sortMenu.clear",
+    "hub.standings.heading",
+    "hub.standings.caption",
+    "hub.standings.tableName",
+    "hub.standings.rowLink",
+    "hub.standings.empty.headline",
+    "hub.standings.empty.explanation",
+    "hub.results.heading",
+    "hub.results.caption",
+    "hub.results.tableName",
+    "hub.results.rowLink",
+    "hub.results.extraTimeShort",
+    "hub.results.shootoutFull",
+    "hub.results.empty.headline",
+    "hub.results.empty.explanation",
+  ] as const;
+
+  it("resolves every minted Hub key in both locales", () => {
+    for (const key of KEYS) {
+      for (const locale of locales) {
+        const value = t(key, locale);
+        expect(value, `${key} in ${locale}`).not.toBe("");
+        expect(value, `${key} in ${locale}`).not.toContain("hub.");
+      }
+    }
+  });
+
+  it("has one column head per rendered column, in both locales", () => {
+    expect(Object.keys(es.hub.standings.column).sort()).toEqual([...STANDINGS_COLUMN_KEYS].sort());
+    expect(Object.keys(es.hub.results.column).sort()).toEqual([...RESULT_COLUMN_KEYS].sort());
+    for (const key of STANDINGS_COLUMN_KEYS) {
+      for (const locale of locales) {
+        expect(t(`hub.standings.column.${key}`, locale), `${key} in ${locale}`).not.toBe("");
+      }
+    }
+    for (const key of RESULT_COLUMN_KEYS) {
+      for (const locale of locales) {
+        expect(t(`hub.results.column.${key}`, locale), `${key} in ${locale}`).not.toBe("");
+      }
+    }
+  });
+
+  it("carries a full term for every ABBREVIATED head and for no other (UX-DR17)", () => {
+    /*
+     * TableColumn's contract is "full term when headText is abbreviated; null
+     * otherwise". `team` and `form` are whole words in both locales, so a
+     * headTitle for them would be a duplicate rather than an expansion.
+     */
+    const abbreviated = STANDINGS_COLUMN_KEYS.filter(
+      (key) => key !== "team" && key !== "form"
+    );
+    expect(Object.keys(es.hub.standings.columnTitle).sort()).toEqual([...abbreviated].sort());
+    for (const key of abbreviated) {
+      for (const locale of locales) {
+        const head = t(`hub.standings.column.${key}`, locale);
+        const full = t(`hub.standings.columnTitle.${key}`, locale);
+        expect(full, `${key} in ${locale}`).not.toBe("");
+        // An "expansion" no longer than the abbreviation expands nothing.
+        expect(full.length, `${key} in ${locale}`).toBeGreaterThan(head.length);
+      }
+    }
+  });
+
+  it("ships the RULED Spanish standings abbreviations verbatim", () => {
+    // EXPERIENCE.md's "result letters & standings columns" row: PJ, G, E, P,
+    // GF, GC, DG, Pts. One of the three scaffolding rows deferred-work.md
+    // routed to its owning story, which this is.
+    expect([
+      es.hub.standings.column.played,
+      es.hub.standings.column.won,
+      es.hub.standings.column.drawn,
+      es.hub.standings.column.lost,
+      es.hub.standings.column.goalsFor,
+      es.hub.standings.column.goalsAgainst,
+      es.hub.standings.column.goalDifference,
+      es.hub.standings.column.points,
+    ]).toEqual(["PJ", "G", "E", "P", "GF", "GC", "DG", "Pts"]);
+  });
+
+  it("ships the RULED chip letters: V/E/D in es, W/D/L in en", () => {
+    expect(MATCH_RESULTS.map((code) => t(matchResultLetterKey(code), "es"))).toEqual([
+      "V",
+      "E",
+      "D",
+    ]);
+    expect(MATCH_RESULTS.map((code) => t(matchResultLetterKey(code), "en"))).toEqual([
+      "W",
+      "D",
+      "L",
+    ]);
+  });
+
+  it("es `D` and en `D` name DIFFERENT MatchResult codes (D8's inversion)", () => {
+    /*
+     * THE STORY'S LIKELIEST SILENT BUG, pinned. es `D` is *derrota* (loss); en
+     * `D` is *draw*. Keying a chip off the LETTER instead of the enum code
+     * would flip every loss into a draw on the language toggle with nothing to
+     * catch it — no type error, no lint error, no other test.
+     */
+    const esD = MATCH_RESULTS.filter((code) => t(matchResultLetterKey(code), "es") === "D");
+    const enD = MATCH_RESULTS.filter((code) => t(matchResultLetterKey(code), "en") === "D");
+    expect(esD).toEqual(["loss"]);
+    expect(enD).toEqual(["draw"]);
+    expect(esD).not.toEqual(enD);
+  });
+
+  it("keeps the chip letters and the standings column letters apart", () => {
+    // Chips are V/E/D, columns are G/E/P — only `E` coincides, in the same row,
+    // for concepts that are NOT the same. Two namespaces, on purpose.
+    expect(es.enums.matchResult.win).not.toBe(es.hub.standings.column.won);
+    expect(es.enums.matchResult.loss).not.toBe(es.hub.standings.column.lost);
+    expect(es.enums.matchResult.draw).toBe(es.hub.standings.column.drawn);
+  });
+
+  it("labels every MatchResult with a spoken word, distinct from its letter", () => {
+    for (const code of MATCH_RESULTS) {
+      for (const locale of locales) {
+        const word = t(matchResultWordKey(code), locale);
+        expect(word, `${code} in ${locale}`).not.toBe("");
+        expect(word.length, `${code} in ${locale}`).toBeGreaterThan(1);
+      }
+    }
+  });
+
+  it("has exactly one entry per MatchdayRound code", () => {
+    expect(Object.keys(es.enums.matchdayRound).sort()).toEqual([...MATCHDAY_ROUNDS].sort());
+    for (const round of MATCHDAY_ROUNDS) {
+      for (const locale of locales) {
+        expect(t(matchdayRoundLabelKey(round), locale), `${round} in ${locale}`).not.toBe("");
+      }
+    }
+  });
+
+  it("pins the six shared round labels EQUAL to their enums.stage counterparts", () => {
+    /*
+     * `MatchdayRound` restates six `Stage` codes deliberately (an unlabelled
+     * code is worse than a restated one). This is what stops the restatement
+     * from drifting into a second Spanish term for the same round.
+     */
+    for (const stage of SHARED_ROUND_STAGES) {
+      for (const locale of locales) {
+        expect(t(`enums.matchdayRound.${stage}`, locale), `${stage} in ${locale}`).toBe(
+          t(`enums.stage.${stage}`, locale)
+        );
+      }
+    }
+  });
+
+  it("does NOT reuse match-scoped copy on the Hub", () => {
+    /*
+     * `match.bundle.loading` is "Cargando datos DEL PARTIDO" and
+     * `match.bundle.invalid` "Los datos DE ESTE PARTIDO" — both false
+     * statements on a tournament-wide route. This asserts the Hub minted its
+     * own rather than pointing at them.
+     */
+    for (const locale of locales) {
+      expect(t("hub.region.loading", locale)).not.toBe(t("match.bundle.loading", locale));
+      expect(t("hub.region.invalid", locale)).not.toBe(t("match.bundle.invalid", locale));
+      expect(t("hub.standings.caption", locale)).not.toBe(t("viz.table.caption", locale));
+      expect(t("hub.results.caption", locale)).not.toBe(t("viz.table.caption", locale));
+    }
+  });
+
+  it("gives the two Hub tables distinct captions and distinct names", () => {
+    for (const locale of locales) {
+      expect(t("hub.standings.caption", locale)).not.toBe(t("hub.results.caption", locale));
+      expect(t("hub.standings.tableName", locale)).not.toBe(t("hub.results.tableName", locale));
+    }
+  });
+
+  it("keeps the retired scaffold keys retired", () => {
+    // Task 1.1 removed their only call site. Re-adding them would be the
+    // dead-key defect facing the other way.
+    expect(Object.keys(es.app)).toEqual(["siteName"]);
+    expect(Object.keys(es.a11y)).toEqual(["localeAnnouncement"]);
+  });
+});
+
+/*
+ * ============= STORY 2.13 — LÍDERES DEL TORNEO (Task 8.2, AD-7) =============
+ *
+ * `leaderboardMetricKey` ends in an `as DictionaryKey` cast — DictionaryKey is
+ * a literal union and a template-literal expression infers `string` — so tsc is
+ * defeated by construction, exactly as it is for `expertFieldKey`. A round-trip
+ * over the builder's FULL 32-value domain, in BOTH locales, is the only thing
+ * between a typo'd key and a runtime miss.
+ */
+describe("the leaderboards namespaces (Story 2.13, AD-2 / AD-7)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  /*
+   * The MetricCode domain as a `Record<MetricCode, true>`, so a contract enum
+   * change is a compile error in this test rather than a silently uncovered
+   * case — the same AD-2 mechanism the registries themselves use.
+   */
+  const ALL_METRIC_CODES: Record<MetricCode, true> = {
+    ballProgressions: true,
+    completedLineBreaks: true,
+    crosses: true,
+    crossesCompleted: true,
+    defensiveLineBreaks: true,
+    defensivePressures: true,
+    distanceCovered: true,
+    duelsWonAerial: true,
+    duelsWonPhysical: true,
+    expectedGoals: true,
+    forcedTurnovers: true,
+    goals: true,
+    highSpeedRuns: true,
+    interceptions: true,
+    lineBreaksCompleted: true,
+    passCompletion: true,
+    passes: true,
+    passesCompleted: true,
+    possession: true,
+    possessionRegains: true,
+    receptionsInFinalThird: true,
+    secondBalls: true,
+    shots: true,
+    shotsOnTarget: true,
+    sprintDistance: true,
+    sprints: true,
+    stepIns: true,
+    switchesOfPlay: true,
+    tacklesWon: true,
+    takeOns: true,
+    topSpeed: true,
+    totalDistance: true,
+  };
+  const METRIC_CODES = Object.keys(ALL_METRIC_CODES) as MetricCode[];
+
+  it("has exactly one entry per MetricCode value — all 32", () => {
+    expect(METRIC_CODES).toHaveLength(32);
+    expect(Object.keys(es.enums.leaderboardMetric).sort()).toEqual([...METRIC_CODES].sort());
+    expect(Object.keys(en.enums.leaderboardMetric).sort()).toEqual([...METRIC_CODES].sort());
+  });
+
+  it("resolves every metric label in both locales", () => {
+    for (const code of METRIC_CODES) {
+      for (const locale of locales) {
+        const label = t(leaderboardMetricKey(code), locale);
+        expect(label, `${code} in ${locale}`).not.toBe("");
+        expect(label, `${code} in ${locale}`).not.toContain("enums.leaderboardMetric");
+      }
+    }
+  });
+
+  it("does NOT touch enums.metric — that namespace is pinned to KEY_STAT_FIELDS", () => {
+    /*
+     * THE STORY'S SHARPEST TRAP, asserted from this side too. `enums.metric` is
+     * pinned key-for-key to the 19 Domain B Key Statistics fields by the suite
+     * above, and `tactical-sections.ts`, which owns that list, is do-not-touch.
+     * MetricCode is 32 values, so the labels needed a NEW namespace; one extra
+     * key over there is a red suite.
+     */
+    expect(Object.keys(es.enums.metric).sort()).toEqual([...KEY_STAT_FIELDS].sort());
+    expect(Object.keys(es.enums.metric)).not.toContain("topSpeed");
+  });
+
+  it("carries exactly the ABBREVIATED_METRICS in leaderboardMetricAbbr, and no more", () => {
+    const abbreviated = Object.keys(ABBREVIATED_METRICS).sort();
+    expect(abbreviated).toEqual(["highSpeedRuns", "topSpeed"]);
+    expect(Object.keys(es.enums.leaderboardMetricAbbr).sort()).toEqual(abbreviated);
+    expect(Object.keys(en.enums.leaderboardMetricAbbr).sort()).toEqual(abbreviated);
+    for (const code of METRIC_CODES) {
+      const key = leaderboardMetricAbbrKey(code);
+      if (key === null) {
+        continue;
+      }
+      for (const locale of locales) {
+        expect(t(key, locale), `${code} in ${locale}`).not.toBe("");
+      }
+    }
+  });
+
+  it("MINTS NO ABBREVIATION — both reuse ruled copy the app already ships", () => {
+    /*
+     * THE RULED-REUSE PINS, the same mechanism `expert.field.topSpeed` uses.
+     * EXPERIENCE.md names "VEL. MÁX." for "Velocidad máxima" as the worked
+     * example of the abbreviation rule, and both strings already exist as ruled
+     * copy — the Hero's top-speed tile and the glossary's high-speed-run
+     * definition. Pinning them EQUAL is what stops a second mint drifting in.
+     *
+     * `topSpeed` sits on the Hero tiles rather than under enums.metric because
+     * it is absent from KEY_STAT_FIELDS; Story 2.18 records why.
+     */
+    expect(es.enums.leaderboardMetricAbbr.topSpeed).toBe(es.match.hero.tiles.topSpeed);
+    expect(es.enums.leaderboardMetricAbbr.topSpeed).toBe("Vel. máx.");
+    expect(es.enums.leaderboardMetricAbbr.highSpeedRuns).toBe(es.expert.field.highSpeedRuns);
+    expect(es.enums.leaderboardMetricAbbr.highSpeedRuns).toBe("CARR. ALTA VEL.");
+  });
+
+  it("takes the FULL term for the two abbreviated metrics, never the short form", () => {
+    /*
+     * `enums.leaderboardMetric` holds full terms ONLY. Copying
+     * `expert.field.topSpeed` here would have put "Vel. máx." in the namespace
+     * whose whole job is to carry the expansion — so both come from
+     * `expert.fieldTitle` instead.
+     */
+    expect(es.enums.leaderboardMetric.topSpeed).toBe(es.expert.fieldTitle.topSpeed);
+    expect(es.enums.leaderboardMetric.topSpeed).toBe("Velocidad máxima");
+    expect(es.enums.leaderboardMetric.highSpeedRuns).toBe(es.expert.fieldTitle.highSpeedRuns);
+    expect(es.enums.leaderboardMetric.highSpeedRuns).toBe("Carreras a alta velocidad");
+    // And they really are different strings, or the abbreviation would be idle.
+    expect(es.enums.leaderboardMetric.topSpeed).not.toBe(
+      es.enums.leaderboardMetricAbbr.topSpeed
+    );
+  });
+
+  it("inherits eighteen labels from enums.metric verbatim, minting no second name", () => {
+    // Every enums.metric key except `directPressures`, which is not a
+    // MetricCode. A divergence here means one quantity has two Spanish names.
+    const inherited = (Object.keys(es.enums.metric) as string[]).filter(
+      (key) => key !== "directPressures"
+    );
+    expect(inherited).toHaveLength(18);
+    for (const key of inherited) {
+      const code = key as MetricCode;
+      expect(es.enums.leaderboardMetric[code], key).toBe(
+        es.enums.metric[key as keyof typeof es.enums.metric]
+      );
+      expect(en.enums.leaderboardMetric[code], key).toBe(
+        en.enums.metric[key as keyof typeof en.enums.metric]
+      );
+    }
+  });
+
+  it("resolves the whole leaderboards.* surface in both locales", () => {
+    for (const locale of locales) {
+      for (const key of [
+        "leaderboards.title",
+        "leaderboards.teaserHeading",
+        "leaderboards.tablesHeading",
+        "leaderboards.teaserCount",
+        "leaderboards.teaserCountOne",
+        "leaderboards.boardSeparator",
+        "leaderboards.tableCaption",
+        "leaderboards.filterLabel",
+        "leaderboards.filterPlaceholder",
+        "leaderboards.filterResults",
+        "leaderboards.filterResultsOne",
+        "leaderboards.filterNoResults",
+        "leaderboards.filterNoResultsExplanation",
+        "leaderboards.empty",
+        "leaderboards.emptyExplanation",
+        "leaderboards.loading",
+        "leaderboards.error",
+        "leaderboards.retry",
+        "leaderboards.invalid",
+        "leaderboards.invalidExplanation",
+        "leaderboards.columns.rank",
+        "leaderboards.columns.matchesPlayed",
+        "leaderboards.columns.perMatch",
+        "leaderboards.scope.team",
+        "leaderboards.scope.player",
+        "leaderboards.higherIsBetter.true",
+        "leaderboards.higherIsBetter.false",
+      ] as const) {
+        const value = t(key, locale);
+        expect(value, `${key} in ${locale}`).not.toBe("");
+        expect(value, `${key} in ${locale}`).not.toBe(key);
+      }
+    }
+  });
+
+  it("ships the RULED title and avoids 'clasificación' entirely", () => {
+    /*
+     * EXPERIENCE.md's policy row rules the string: "standings / leaderboards |
+     * translate | Tabla de posiciones / Líderes del torneo | 'Clasificación' is
+     * avoided entirely — in LatAm it *means* the standings table, and the Hub
+     * carries both surfaces". The forbidden-register sweep above already bans
+     * the "clasificaci" prefix across every es leaf; this makes the INTENT
+     * explicit for a later reader who might otherwise reach for it.
+     */
+    expect(es.leaderboards.title).toBe("Líderes del torneo");
+    for (const [key, value] of Object.entries(es.leaderboards)) {
+      if (typeof value === "string") {
+        expect(value, `leaderboards.${key}`).not.toMatch(/clasificaci/i);
+      }
+    }
+  });
+
+  it("keeps the two higherIsBetter labels distinct — the artifact carries the flag to be rendered", () => {
+    for (const dictionary of [es, en]) {
+      expect(dictionary.leaderboards.higherIsBetter.true).not.toBe(
+        dictionary.leaderboards.higherIsBetter.false
+      );
+    }
+  });
+
+  it("distinguishes the singular and plural result-count nouns in both locales", () => {
+    // t() has no interpolation, so the count sentence is composed at the call
+    // site — which only works if the two nouns actually differ.
+    for (const dictionary of [es, en]) {
+      expect(dictionary.leaderboards.filterResults).not.toBe(
+        dictionary.leaderboards.filterResultsOne
+      );
+      expect(dictionary.leaderboards.teaserCount).not.toBe(
+        dictionary.leaderboards.teaserCountOne
+      );
+    }
+  });
+
+  /*
+   * THESE CALL THE SHIPPED COMPOSER (2.13 code review). The version that
+   * shipped built its own template literal and asserted it against itself:
+   *
+   *   const accessibleName = `${sortAction} ${headText} (${headTitle})`;
+   *   expect(accessibleName).toBe("Ordenar por Vel. máx. (Velocidad máxima)");
+   *
+   * — green if `headAccessibleName` were deleted, green if its operands were
+   * swapped, and green under the suppression bug below. Worse, the string it
+   * pinned was not the one the component emitted: the real head carries its
+   * unit, so ES actually reads "Ordenar por Vel. máx. (km/h) (Velocidad
+   * máxima)". `composeHeadAccessibleName` now lives in `@/lib/table-sort` for
+   * exactly this reason — a composition trapped inside a "use client" closure
+   * cannot be reached by a node-environment suite.
+   */
+  it("composes an accessible name that CONTAINS the visible abbreviated head", () => {
+    /*
+     * WCAG 2.5.3 Label in Name, for the one case Story 2.13 adds: an
+     * ABBREVIATED head. Visible text FIRST, full term appended. Swapping
+     * headText for headTitle would give "Ordenar por Velocidad máxima" over
+     * visible text reading "Vel. máx.", which is a 2.5.3 failure outright.
+     */
+    const headText = es.enums.leaderboardMetricAbbr.topSpeed;
+    const headTitle = es.enums.leaderboardMetric.topSpeed;
+    const accessibleName = composeHeadAccessibleName(es.viz.table.sortAction, headText, headTitle);
+    expect(accessibleName).toBe("Ordenar por Vel. máx. (Velocidad máxima)");
+    expect(accessibleName).toContain(headText);
+    expect(accessibleName.startsWith(es.viz.table.sortAction)).toBe(true);
+    // The unabbreviated form is unchanged from the pre-2.13 composition.
+    const plainHead = es.leaderboards.columns.rank;
+    expect(composeHeadAccessibleName(es.viz.table.sortAction, plainHead, null)).toBe(
+      "Ordenar por Puesto"
+    );
+  });
+
+  it("still carries the full term when the head also carries a UNIT", () => {
+    /*
+     * THE REAL HEAD, which the previous test never built. Ruling 6 puts the
+     * unit head-side, so `headText` is "Vel. máx. (km/h)" while `headTitle`
+     * stays the bare term. Both halves are ruled and their composition simply
+     * stacks — clumsy, disclosed and accepted; what matters is that the full
+     * term is still THERE, and that the visible text still leads.
+     */
+    const headText = `${es.enums.leaderboardMetricAbbr.topSpeed} (${es.enums.unit.kmh})`;
+    const name = composeHeadAccessibleName(
+      es.viz.table.sortAction,
+      headText,
+      es.enums.leaderboardMetric.topSpeed
+    );
+    expect(name).toContain(headText);
+    expect(name).toContain(es.enums.leaderboardMetric.topSpeed);
+  });
+
+  it("SUPPRESSES a parenthetical the head already contains — the EN unit case", () => {
+    /*
+     * THE BUG THIS TEST EXISTS FOR. `ABBREVIATED_METRICS` and `TITLED_FIELDS`
+     * are keyed per metric/field, not per locale, so in EN the "abbreviation"
+     * and the full term are the SAME STRING. A byte-equality guard fired on
+     * `topSpeed` only while the head carried no unit; once ruling 6 appended
+     * " (km/h)" the two halves were never byte-equal and EN shipped
+     * "Sort by Top speed (km/h) (Top speed)" — the exact string en.ts's own
+     * comment promises is impossible. It regressed the Expert Layer's already
+     * shipped topSpeed head too, since `ExpertLayer` composes headText the same
+     * way. Containment is the correct test; byte-equality is its special case.
+     */
+    expect(en.enums.leaderboardMetricAbbr.topSpeed).toBe(en.enums.leaderboardMetric.topSpeed);
+    const bare = composeHeadAccessibleName(
+      en.viz.table.sortAction,
+      en.enums.leaderboardMetricAbbr.topSpeed,
+      en.enums.leaderboardMetric.topSpeed
+    );
+    expect(bare).toBe("Sort by Top speed");
+
+    const withUnit = `${en.enums.leaderboardMetricAbbr.topSpeed} (${en.enums.unit.kmh})`;
+    const composed = composeHeadAccessibleName(
+      en.viz.table.sortAction,
+      withUnit,
+      en.enums.leaderboardMetric.topSpeed
+    );
+    expect(composed).toBe("Sort by Top speed (km/h)");
+    expect(composed).not.toContain("(Top speed)");
+  });
+
+  it("keeps the Hub's kickoff head to ONE parenthetical (ruled at the 2.13 review)", () => {
+    /*
+     * The Hub's kickoff column supplied a PRE-COMPOSED headTitle,
+     * "Hora (hora local)", and the composer wrapped the already-wrapped string:
+     * "Ordenar por Hora (Hora (hora local))".
+     *
+     * THE FIX IS AT THE CALL SITE, NOT IN THE COMPOSER, and this test pins the
+     * distinction deliberately. `TableColumn.headTitle`'s documented contract is
+     * a BARE full term; the composer's job is to append it visible-text-first,
+     * and teaching it to detect and unwrap a caller's own parentheses would be a
+     * second special case guessing at intent. So the assertion below is on the
+     * SHIPPED values — a bare clarifier in, one parenthetical out.
+     */
+    const shipped = composeHeadAccessibleName(
+      es.viz.table.sortAction,
+      es.hub.results.column.kickoff,
+      es.match.hero.localTime
+    );
+    expect(shipped).toBe(
+      `${es.viz.table.sortAction} ${es.hub.results.column.kickoff} (${es.match.hero.localTime})`
+    );
+    expect(shipped).not.toContain("((");
+    expect(shipped.match(/\(/g) ?? []).toHaveLength(1);
+    // And the visible head still leads it — WCAG 2.5.3.
+    expect(shipped).toContain(es.hub.results.column.kickoff);
+  });
+
+  it("reuses the shipped column names for the entity and team heads", () => {
+    /*
+     * DELIBERATELY NOT MINTED. `viz.table.team` / `viz.table.player` already
+     * ship as the house column names for exactly these quantities, so
+     * `leaderboards.columns` carries only the three heads that had no shipped
+     * equivalent. A second pair would be two sources for one term.
+     */
+    expect(Object.keys(es.leaderboards.columns).sort()).toEqual([
+      "matchesPlayed",
+      "perMatch",
+      "rank",
+    ]);
+    for (const locale of locales) {
+      expect(t("viz.table.team", locale)).not.toBe("");
+      expect(t("viz.table.player", locale)).not.toBe("");
+    }
   });
 });
 

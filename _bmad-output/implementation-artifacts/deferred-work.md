@@ -2135,3 +2135,646 @@ what it changed beyond its filed scope, and what it left open.
   App depends on the field varying today, but the first board where it does not (a
   concessions or errors metric) will be the first time that branch runs anywhere. **Deferred:
   exercise it when such a board is added. Owner: whoever extends the roster.**
+
+## Filed at Story 2.12 — the Tournament Hub's results and standings (2026-08-06)
+
+- **NARROWING, not a closure — the "six table-scaffolding rows" CORRECTION above now covers ONE
+  row, not three.** The 2.18 correction (*"the 'six table-scaffolding rows are discharged in the
+  locale files' claim covers three rows, not six"*) listed `result letters & standings columns`,
+  `standings / leaderboards` and `fouls / duels` as having **no locale keys at all**. Story 2.12
+  discharges **the first two and only the first two**: `enums.matchResult` ships the ruled chip
+  letters (V/E/D es, W/D/L en) and `hub.standings.column.*` the ruled column set (PJ, G, E, P, GF,
+  GC, DG, Pts), both verbatim from EXPERIENCE.md's per-term row and both pinned in `i18n.test.ts`;
+  `hub.standings.heading` ships "Tabla de posiciones" and Story 2.13's `leaderboards.title` ships
+  "Líderes del torneo", which is the whole of the `standings / leaderboards` row.
+  **`fouls / duels` is UNTOUCHED and remains open** — it is separately owned at the *"Task 8.7's
+  recount"* entry above, and closing the correction wholesale would have erased a live deferral.
+  The `app/src/lib/glossary.ts` docblock is narrowed to match: five of six discharged, one open.
+  **Owner of the remainder: whichever story first renders a fouls surface.**
+
+- **Task 10.3 discharged: the Hub does NOT inherit a fouls column, and the reason is structural
+  rather than editorial.** The *"Task 8.7's recount"* entry names the owner as "whichever story
+  first renders a fouls surface (2.11b/2.11c **or the Tournament Hub**)". The Hub does not:
+  `StandingsRow`'s eleven fields and `MatchResultRow`'s twelve carry **no fouls field of any kind**,
+  so there is nothing for the Hub to render and no key it could honestly mint. Checked against the
+  contract rather than assumed. The parenthetical's Hub clause is dead; the entry stays open on its
+  2.11b/2.11c half and on any future surface.
+
+- **`/teams/{teamId}/` links now ship from THREE surfaces and the route does not exist until Story
+  2.16.** Story 2.12's standings rows link every row to `/teams/{team.id}/` (ruled D2, mandated by
+  AC 2 and UX-DR22), joining `MatchHero.tsx:103,119` (Story 2.4, ruled deliberately) and Story
+  2.13's leaderboard team rows. `LineupsDisclosure.tsx:34` does the same for `/players/{id}/`.
+  Story 2.11b decision 12 recorded this live inconsistency and explicitly declined to resolve it
+  ("that is not this story's to fix"), and **nobody has filed it since** — so it is filed here.
+  Every one of these is a 404 in the static export today. **This is known, accepted debt, not a
+  defect to stub: do NOT build a placeholder route.** `/matches/{matchId}/` resolves (Story 2.4).
+  **Owner: Story 2.16 for `/teams`, Story 2.15 for `/players`.**
+
+- **104-at-scale verification is deferred to Story 2.19, and the fixture cannot stand in.** The
+  fixture carries **3 of 104** reachable matches (1 group of 12, 4 standings rows of 48, 2 group
+  results of 72, 1 knockout tie of 32) and exercises **2 of 7** `Stage` values and **2 of 9**
+  `MatchdayRound` values. Story 2.12 therefore asserts what the fixture CAN carry — the group-by is
+  total over synthetic rows covering all 7 stages and all 12 groups (exhaustive by construction,
+  both enums being closed), link count equals row count for whatever N the artifact holds, and the
+  results/manifest bijection — and **deliberately does not assert `toHaveLength(104)` against a
+  fixture that cannot reach it**. Still unverified at real scale: the literal 104 count, real-data
+  reachability, Lighthouse, the `<md` behaviour with 12 group tables and up to 19 sections on one
+  page, and the collation premise (2.11a measured "es and en orders are identical" over 96
+  ASCII-only fixture names; 2.12 sorts real team names for the first time). **Owner: Story 2.19.**
+
+- **DECLARED DEPARTURE — Hub tables ship NO sticky header, against UX-DR12 / EXPERIENCE.md:76.**
+  `DataTable`'s `sticky` is opt-in because it is correct ONLY inside a caller-rendered
+  HEIGHT-BOUNDED scroll container; inside an unbounded one it computes as `sticky`, never offsets,
+  and ships green while silently doing nothing (2.11a's own recorded departure). Hub tables are
+  short — four standings rows per group, six results per group, sixteen in the largest knockout
+  section — so none of them scrolls vertically and there is nothing to stick to. Manufacturing the
+  condition would mean bounding up to nineteen tables to a fixed height, i.e. nineteen nested
+  vertical scrollports on a page whose natural flow is fine, hiding rows behind a scroll gesture
+  that is currently unnecessary. `scroll-padding-top: 4.5rem` is already global on `<html>`, so
+  anchored and focused sections clear the site header regardless. **Owner: Story 2.19, to revisit
+  if real 104-row data changes the premise.**
+
+- **The row-link focus ring paints on the ANCHOR's box, not on the row — observed, not assumed.**
+  Story 2.12 is the first surface to put focusable content inside a `DataTable` body, so UX-DR12's
+  focus-restore went live here and was verified with real key presses: sorting a standings table
+  with focus on a row link keeps focus on that same anchor as its row moves from position 1 to
+  position 4. The ring itself, however, outlines the anchor's own 44px block inside the row-header
+  cell (measured 165x44 in the fixture's widest team name) and NOT the row (1104x57), while the
+  whole row is the click target — so the focus indicator understates the hit area. It is visible,
+  unobscured and meets 2.4.7/2.4.11 in both themes. A row-wide indicator was prototyped
+  (`tr:has(a:focus-visible)`) and NOT shipped: it either doubles the indicator or requires
+  suppressing the native ring, and `outline-none` is a house prohibition that has already cost two
+  review patches — and DESIGN.md specifies no row-focus treatment for this pattern, so minting one
+  would be a design decision this story was not given. **Owner: whichever story rules the
+  linked-row pattern — Story 2.16 ships `/teams` and makes these links live.**
+
+- **FOUND AND FILED, NOT FIXED: Story 2.13's `#lideres` section overflows the DOCUMENT at 390px and
+  320px, in BOTH locales.** Differentially attributed rather than asserted, on the technique Story
+  2.6 established: with everything expanded at a 390px viewport (clientWidth 375) the document
+  measures `body.scrollWidth` **457**; hiding `#lideres` alone returns it to **375 == 375**, and
+  hiding Story 2.12's two surfaces instead leaves it at **457**. Same result at 320px (305 vs 433)
+  and in EN (375 vs 433). The offenders are the leaderboards board `<article>` elements at 441px
+  inside a grid — the same `min-width: auto` grid-item cause Story 2.12 fixed in its own sections
+  with `min-w-0`, which is why the fix is a one-class change. **Story 2.12's own surfaces are clean
+  at 390 AND 320, in both locales, fully expanded.** Not fixed here: 2.13 was mid-implementation in
+  a concurrent session and has not yet run its own Task 9. **Owner: Story 2.13.**
+
+- **CONTRACT QUESTION FOR STORY 1.17: `MatchResultRow.score` has no description, and the fixture
+  cannot disambiguate it.** The schema gives `score` no description at all, and `TeamScore` says
+  only "a home/away goal pair at one point in a match" — it does not say which point. The only
+  knockout fixture (m074) has `score` == `scoreAfter90` == `scoreAfterET` == 1–1, so nothing in the
+  fixture can settle it; for a 1–1 after 90 / 2–1 after ET tie the answer changes what renders.
+  Story 2.12 rules it to be the same quantity as `MatchMetadata.score` ("the final score as the
+  cover prints it — after extra time when extra time was played, otherwise after 90"), because
+  `MatchResultRow`'s own description says it carries what the `<title>`/OG string needs "so neither
+  has to fetch the Match Bundle" — which is only true if the two agree. **That is an INFERENCE from
+  the contract, not a statement in it.** Nothing in 2.12 depends on the answer: the row prints
+  `score` verbatim (AD-5) plus the `decidedBy` suffix, and neither reading changes what renders. A
+  surface printing BOTH the 90' and the final score would. **Owner: Story 1.17, the artifact's
+  producer — a one-line schema description closes it.**
+
+- **The Hub's leaderboards anchor is a SPANISH slug, against Story 2.18 ruled decision 11.** Every
+  other anchor in the app is a language-neutral English slug ("slugs are English/romanized, stable
+  and human-readable, and the URL carries no language"), and Story 2.12's own anchors follow it
+  (`#standings`, `#results`, `#standings-group-a`, `#results-r32`). `#lideres` does not. It is
+  Story 2.13's ruling, taken before 2.12 ran and stated in that story's own code
+  (`LEADERBOARDS_SECTION_ID`), and interoperating with a shipped id beat unilaterally renaming it —
+  two ids for one section is the only strictly bad outcome. **Owner: Story 2.19, alongside the
+  other anchor work; renaming it is a one-line change plus whatever links to it.**
+
+- **`generateMetadata` on `/` inherits the open "`<title>`/OG stays Spanish after an EN toggle"
+  decision.** Story 2.18 gave `/about` and `/glossary` NO metadata export on exactly those grounds,
+  and Story 2.13's draft of `page.tsx` refused one for `/` for the same reason. Story 2.12's Task
+  1.1 requires it and UX-DR22 requires a meaningful `<title>`/OG per route, so it ships — following
+  the DATA-BEARING precedent (`/matches/[slug]` has carried `generateMetadata` since Story 2.4)
+  rather than the two content pages. The consequence is NOT introduced here: `/` already carried a
+  title from the layout's default `metadata`. The route's title is now composed from the artifact's
+  own `tournamentName` and stays Spanish for an EN reader, exactly as every other route's does.
+  **Owner: Juan, on the existing open entry.**
+
+- **NOT FILED HERE, DELIBERATELY: the combined `tournament.json + leaderboards.json` budget gate.**
+  `over_budget` measures exactly one string and `budget.py` is wired only into `emit_bundles`, so
+  the combined gate AC 5 cites does not exist yet — but **Story 1.17 already owns building it** (its
+  Task 4.1 appends a combined function reusing `BUDGET_BYTES`), and duplicating the entry here would
+  split one obligation across two owners. Recorded only so a reader does not mistake the absence for
+  an oversight. The measured position, from 1.17: `tournament.json` is 38,934 gzip-9 (**7.8%** of
+  the 500,000 ceiling), full-roster leaderboards are 572,276, and the combined 611,210 **FAILS** —
+  entirely because of leaderboards, and fixed by 1.17's still-unruled D3/D5 100-row cap (105,779,
+  PASS). **Owner: Story 1.17.**
+
+---
+
+## Story 2.13 — Líderes del torneo (2026-08-06)
+
+Baseline `74b1789`. `app/` + locales + the two ledger artifacts only; fixture-driven against
+`data/fixtures/index/leaderboards.json` at `schemaVersion` 4. Every number below was measured
+in the browser against the built `out/`, not inferred.
+
+### Discharged by this story
+
+- **`EXPERIENCE.md`'s `standings / leaderboards` policy row — THE LEADERBOARDS HALF ONLY.**
+  `glossary.ts` recorded this row as having "NO locale keys at all" and deferred it to its
+  owning story. `leaderboards.title` now ships the ruled `"Líderes del torneo"`, pinned in
+  `i18n.test.ts` together with an explicit assertion that no `leaderboards.*` leaf matches
+  `/clasificaci/i` — the policy row bans that form outright, because in LatAm it *means* the
+  standings table and the Hub carries both surfaces. **The STANDINGS half is Story 2.12's**
+  (`hub.standings.heading`), and 2.12's own `glossary.ts` docblock now credits both halves.
+  `result letters & standings columns` is 2.12's and `fouls / duels` still has no surface —
+  neither is claimed here.
+
+### NEW defects found by this story, FIXED here
+
+- **`<Link prefetch>` broke AC 4's zero-network clause, and only measurement caught it.**
+  FR-26 requires sorting and filtering to be "instant and client-side — zero network beyond
+  the initially loaded index". With Next's default prefetching,
+  `performance.getEntriesByType("resource").length` went **48 -> 75** across one sort pass and
+  one filter clear: every `<Link>` entering the viewport fired a route fetch, and re-ordering
+  20 rows re-runs that on every sort. It is also pure waste — `/players/{slug}` and
+  `/teams/{slug}` are UNBUILT (2.15 / 2.16), so each request is a round trip for a route that
+  does not exist. **Fixed**: `prefetch={false}` on all three leaderboard `<Link>` sites. Re-
+  measured at **43 -> 43** across six sort actions and four filter keystrokes, with zero
+  `/players/` or `/teams/` entries attributable to `#lideres`.
+  **STILL OPEN, AND IT IS 2.12's**: the Hub's standings links prefetch. Measured on the merged
+  page, 4 route fetches fire on load — `/teams/czechia/`, `/teams/korea-republic/`,
+  `/teams/south-africa/`, `/teams/mexico/` — and all four resolve to links OUTSIDE `#lideres`.
+  2.13's 13 links inside the section fire none. **Owner: Story 2.12** (its D2 ships the same
+  dead links). One prop, same fix.
+
+- **A grid item's default `min-width: auto` gave the Hub a WCAG 1.4.10 document scroll.**
+  Each board's `<article>` is a grid item, and `min-width: auto` refuses to shrink below the
+  content's min-content width — so the article was sized BY ITS TABLE and the
+  `overflow-x-auto` wrapper inside it could never engage. At a 390px viewport
+  `document.body.scrollWidth` measured **457 against a clientWidth of 375** (82px of document
+  scroll) in ES, and 433 in EN. Proven to be this story's by differential: hiding `#lideres`
+  returned the document to 375/375. **Fixed** with `min-w-0` on the board article; the wrapper
+  then becomes the scrollport (437px of table inside a 343px port) and the document sits at
+  exactly 375/375 at 390px and 305/305 at 320px, in BOTH themes and BOTH locales. Same family
+  as 2.11b's lesson that `truncate` inside a table cell widens the column instead of
+  truncating.
+
+### NEW defect found, FILED not fixed
+
+- **`InvolvementChart` ships the UNFIXED, edge-drawn copy of the Team B hatch `<pattern>`.**
+  `TacticalCharts.tsx:531-534` draws its hatch line at `x1={0} x2={0}`, while
+  `DistributionChart` at `:338-340` centres it at `x1={HATCH_TILE_PX / 2}`. An SVG pattern
+  tile clips at its own edge, so a stroke centred on x=0 puts half its width at negative x and
+  renders as a clipped 0.75px stripe — the precise case `DistributionChart`'s own comment
+  warns about and whose centring exists to prevent. This is half the texture channel
+  UX-DR11(b) is discharged with, on a shipped chart, uncommented. Re-verified present at this
+  story's baseline. **Not fixed here — `TacticalCharts.tsx` is outside 2.13's scope (ruling
+  2). Owner: whoever next opens that file (2.16 / 2.17 or 2.19).**
+
+- **An abbreviated head that also carries a unit composes two stacked parentheticals.**
+  The `topSpeed` column's accessible name resolves to `"Ordenar por Vel. máx. (km/h)
+  (Velocidad máxima)"`. Both halves are RULED and neither is wrong: Task 7.2 puts the unit in
+  the head (`es.ts` decision 4 — "the unit NEVER rides the label … never per cell") and Task
+  5.2 appends the full term in parentheses, visible-text-first, because substituting it would
+  be a WCAG 2.5.3 Label in Name failure. Their composition simply stacks. It reads clumsily
+  rather than incorrectly — the visible label is contained, the full term is present, and
+  `title` carries the expansion alone. **Deferred: a copy ruling this story does not have.
+  Owner: whoever next rules head composition (2.19's a11y hardening is the natural home).**
+
+### Filed by this story
+
+- **No glossary marking anywhere on the leaderboards surface.** Marking inside a sortable head
+  is STRUCTURALLY invalid — `glossary.ts` bans nesting a focusable trigger inside a
+  `<button aria-expanded>`, and nothing in the build chain catches it. The board headings could
+  legitimately carry marks; that is scope this story was not given. **Owner: 2.19 or a copy
+  pass.**
+- **2.12's `"Más columnas"` disclosure and its `<md` sort menu must be applied to the three
+  leaderboard tables when they land** (ruling 8: that work is named in 2.12's ACs and in
+  neither of 2.13's). What keeps 390px usable meanwhile is the two PRESENCE GATES rather than
+  a breakpoint: `team` repeats `entity` on all 12 fixture team rows and `perMatch` is null on
+  all 20 `topSpeed` rows, so every board renders **five** columns, not six — measured in the
+  browser, driven off the data. **Owner: the follow-on both stories should expect.**
+- **`sort: null` still has no consumer.** Story 2.13 added the accessible-name composition to
+  that branch of `DataTable` (Task 5.3) for parity, but every column this story ships is
+  sortable and no other call site passes `sort: null`, so the branch remains unexercised at
+  runtime. **Owner: the first story that ships an unsortable column.**
+- **`EXPERIENCE.md`'s per-term policy table has NO row for "max speed" / "velocidad máxima".**
+  The Spanish-text-expansion rule names `"VEL. MÁX."` for `"Velocidad máxima"` as its one
+  worked example, yet no term row exists for it. This story MINTS NOTHING — both abbreviations
+  reuse already-shipped ruled copy byte-for-byte (`match.hero.tiles.topSpeed` and
+  `expert.field.highSpeedRuns`, both pinned equal in `i18n.test.ts`) — so the line-278 minting
+  procedure does not require a row. **Recorded so a later story does not mistake the reuse for
+  a minting. Owner: whoever next edits the policy table.**
+
+### Routed, with evidence — NOT taken here (ruling 2: this story ships no chart)
+
+`EXPERIENCE.md`'s Visualization Layering row is normative and gives leaderboards exactly two
+altitudes: *"Leaderboards (Hub) | Top-3 teaser rows | — | Full sortable table (FR-26)"*. The em
+dash at Tactical altitude is the ruling, and the AC names no visualization. The bundle
+arithmetic confirms it: there are exactly TWO recharts import specifiers today and the vendor
+duplication is PER SPECIFIER, so a third would mint a third ~300 KB vendor chunk on the Hub —
+one of the two Lighthouse-≥90-budgeted routes. Verified in the exported HTML: `out/index.html`
+contains no `recharts` and no `<pattern>`.
+
+- **The recharts vendor-chunk duplication -> Story 2.15.** Its AC declares recharts by name
+  ("cross-match trend charts follow (recharts, `viz-single` series)"), so 2.15 is the genuine
+  third importer and the first story that can verify the win on its own route.
+- **The Team B non-hue channel -> 2.16 / 2.17.** 2.15 is `viz-single` — single-series — so it
+  needs no second channel at all; the first real two-team surface is a profile or comparison
+  chart. The recorded evidence stands unchanged and is not re-derived here, including the
+  binding conclusion that **the declared dashed-stroke fallback cannot work on a filled bar at
+  all**, so a story needing a different mechanism must RULE a new one rather than reach for it.
+- **`seriesLabelIndex` -> still the first successor story to reuse `DistributionChart`.** This
+  story does not. The recorded remedy travels with the item.
+
+### DO NOT FILE — already owned, and duplicating is the failure mode this list exists to prevent
+
+- **The dead-link departure is 2.12's D2.** It states in its own words that "the ledger entry
+  nobody filed is now 2.12's", and it files the departure for BOTH surfaces. 2.13 links on the
+  same footing (ruling 3, the `MatchHero` / `LineupsDisclosure` precedent) and files nothing.
+  Disclosed rather than hidden: on the fixtures **19 of 20 player slugs and 5 of 6 team slugs
+  have no profile artifact**, so most links dead-end today. `tournament.json`'s entity lists
+  are the route manifest and the pipeline asserts the bijection, so this resolves at real
+  data — a fixture property, not a design flaw.
+- **The missing combined-budget gate is 1-17's Task 4.1.** 2.12 already says of it "already
+  tracked there — do not duplicate the ledger entry". 2.13 measures no budget: the App never
+  does (AD-4), the pipeline owns it, and 2.12's D6 rules the same.
+- **The recharts tick trap is MOOT here, not re-filed.** It was filed naming 2.13, but under
+  ruling 2 this story adds no chart and no recharts importer, so the condition never arises.
+  Recorded as moot rather than forgotten.
+
+### Carried forward, unchanged: the combined-budget failure is real and upstream
+
+Story 1-17 measured a realistic 36-board full-roster emission at **19,566 rows / 572,276 bytes
+gzip -9**, giving **611,210 combined against a 500,000 ceiling — FAIL**, with `tournament.json`
+only 7.8% of the ceiling and leaderboards the entire cause. **A 100-row player cap lands at
+105,779 combined — PASS.** The ruling is **1-17's unruled D3/D5** (the board roster and the
+cap), not 2.13's, and the fix is upstream: a breach is resolved by splitting artifacts or a
+logged decision, never by dropping fields (SM-C2). **This story is built indifferent to the
+outcome** — every count is driven off `board.rows.length` and `boards.length`, nothing assumes
+a full roster and nothing assumes a cap, and the filter and teaser work at either scale. On the
+fixtures the artifact is 10,927 bytes raw / **1,198 gzip -9** (shell `gzip -9`; `zlib.gzipSync`
+reports 1,175 — the 23-byte difference is the FNAME header, the same shell-vs-library gap 2.12
+had to correct in its own figures).
+
+- **`assert-schema-version.test.ts` now times out in the full suite, and the cause is the data tree
+  growing, not the gate breaking.** The test shells out to `scripts/assert-schema-version.mjs`, which
+  walks every `*.json` under `data/`. At the start of Story 2.12's session that was **111 artifacts**
+  and the test ran in 2,632 ms; by the end a concurrent Story 1.18 session had emitted
+  `data/index/player-profiles/` and `data/index/team-profiles/`, taking the tree to **1,409
+  artifacts**, and the same test takes **4,434 ms against a 5,000 ms default timeout** — so it passes
+  3/3 in isolation and tips over under the full suite's parallel load. Nothing about the gate is
+  wrong: it correctly reports 1,409 artifacts at schemaVersion 4, and both negative cases still pass.
+  **Deliberately NOT papered over with a larger timeout by Story 2.12**, which changed no artifact and
+  owns none of this: the real question is whether a unit-test run should re-walk the entire emitted
+  corpus at all, and Story 1.19's full batch run will multiply the tree again. **Owner: Story 1.18 /
+  1.19, with the batch-run work.**
+
+## Story 2.12 addendum — ownership of the bullet immediately above (2026-08-06)
+
+**The `assert-schema-version.test.ts` bullet directly above this heading belongs to Story 2.12, not
+to Story 2.13.** It was appended while the concurrent 2.13 session was appending its own section, so
+it landed after that section rather than inside 2.12's block at the heading *Filed at Story 2.12 —
+the Tournament Hub's results and standings*. The content is unchanged and the ownership is restated
+here rather than by rewriting the file, because every story in this ledger proves the append-only
+property programmatically and a reflow would break that proof for all of them.
+
+### Found at 2.13's hand-off, NOT this story's: the schema-version gate now times out in vitest
+
+`app/src/lib/assert-schema-version.test.ts > "passes on the current fixture tree"` FAILS with
+"Test timed out in 5000ms". **Cause: Story 1.17's commit `ae207ed`**, which added a real
+`data/index/` — **1,298 JSON artifacts, ~12 MB**, where the tree previously held 9 fixture
+files. `node scripts/assert-schema-version.mjs` now takes **12.1 s** standalone (measured)
+against vitest's **5 s** default timeout, so the wrapper fails while the gate ITSELF PASSES and
+correctly reports "111 artifact(s) at schemaVersion 4".
+
+**It is a timeout, not a correctness failure**, and it is not Story 2.13's: that story touched
+neither the test, nor `app/scripts/assert-schema-version.mjs`, nor anything under `data/`
+(verified with `git diff` over all three paths). It was green at 2.13's baseline `74b1789` and
+on every run until `ae207ed` landed mid-implementation.
+
+The fix is one argument — an explicit per-test timeout on that case — but it belongs to the
+story that changed the input, and the deeper question is whether the gate should scan the whole
+`data/` tree on every test run now that the tree is real rather than fixture-sized.
+**Owner: Story 1.17 (or 1.19, which owns the full-batch run).**
+
+## Filed by Story 1.18 implementation (team & player profile emission, 2026-08-06)
+
+Entries are cited by quoted anchor phrase, never by line number, and closures are appended
+rather than edited into another story's paragraph.
+
+### Closed by this story
+
+- **Closes _"A zero-appearance squad member is schema-valid but fails the profile test"_.**
+  Measured: **209 of the 1,248 pinned players never took the field** — 16.7% of the player
+  artifacts, not an edge case. Ruled and shipped: the file is emitted with
+  `appearances` all-zero, `matches: []`, `physical` all zeros (`topSpeed: 0.0` — max over an
+  empty set is undefined, ruled to 0.0 rather than raising), **all 18 aggregate rows with
+  `value: 0` and `perNinety: null`, and all six trend series with `points: []`**. The
+  identity block comes from lineups, which is the only source that has it for these 209.
+  *Rejected: omitting the file (breaks the registry bijection) and emitting empty
+  `aggregates`/`trends` (re-introduces the branch that a closed, total, ordered list exists
+  to remove, on 16.7% of files).* AD-4: "empty sections allowed, absence not."
+
+- **Closes _"Fixture request FR-1 (routed to Story 1.18's fixture work"_.** All nine
+  branches now have fixture coverage, verified programmatically:
+  `goalkeeping: null`, `players: null`, `events.*: null` beyond `shootoutAttempts`, an empty
+  `[]` event array, `decidedBy: "extra-time"`, `movementType: null`, a `CardRecord` and
+  `penalty: true` all land on one new bundle, `data/fixtures/matches/m082-belgium-senegal.json`;
+  the zero-appearance player is `data/fixtures/index/player-profiles/acevedo-carlos-mex.json`.
+  **A NEW bundle rather than edits to the existing three, deliberately**: m001/m002/m074 must
+  keep their populated goalkeeping technique blocks (Story 2.10's presence gates need the
+  populated branch) and m001's hand-transcribed Domain G physical block, which
+  `test_the_ground_truth_physical_block_matches_the_committed_fixture` and the
+  `totalDistance`-divergence pin both read. **m082 was chosen by measurement**: it is the
+  only corpus match that is `decidedBy: "extra-time"` AND carries a `penalty: true` goal
+  record AND carries cards, so only the two contract-nullable branches and the empty array
+  are hand-authored — everything else is real data. FR-1's own scope caveat about guard-test
+  updates is discharged below.
+
+- **Closes _"No fixture exercises `decidedBy: \"extra-time\"`"_.** Covered by the same
+  bundle. Closed explicitly because it is a separate filing from FR-1 even though FR-1 folds
+  it, and a sweep that closes one leaves the other open.
+
+### Filed, not fixed
+
+- **A substitute sent on at the closing minute plays ZERO clock minutes, and 20 players
+  total zero minutes despite an appearance.** Not anticipated by the story; found by
+  measurement during implementation. **75** substitutes are stamped at exactly the closing
+  minute of their match — `minute: 90` in a regulation tie, `minute: 120` in an extra-time
+  one — with no `substitutedOff`, so under the ruling that `stoppageMinute` is ignored their
+  clock time is `length − length = 0`. **59 of the 75 carry a non-null `stoppageMinute` (1–7)
+  and 16 carry none at all**, so this is not purely an artefact of discarding stoppage and
+  adding it back would not remove the population — it would instead make
+  `{minute: 90, stoppageMinute: 2}` in a 90-minute match compute `90 − 92 = −2`, which is
+  the failure the ignore-stoppage ruling exists to prevent. **The ruling stands and `0` is
+  the honest floor.** Consequences, all asserted in
+  `test_a_substitute_sent_on_at_the_closing_minute_plays_zero_clock_minutes`: 20 players
+  carry `played > 0` with `minutesPlayed: 0` and therefore a null `perNinety` on every
+  metric; no starter is ever affected; `played == started + substituteAppearances` still
+  holds. **Owner: Story 2.15 (Player Profile)** — the page will render an appearance whose
+  minutes read `0'`, and whether that shows as `0'`, as `<1'` or as a dash is a copy ruling
+  this story does not have.
+
+- **The `>=` to `==` tightening is STILL not takeable, and the stated precondition was
+  wrong.** Both filings — _"The `>=` to `==` tightening of"_ (Story 1.16) and _"still holds
+  at `>=`, and CS-2 does not change that"_ (CS-2) — defer it to "the fixture regeneration,
+  Owner: 1.18/1.19". **Story 1.18's fixture work regenerates the PROFILE fixtures, not the
+  match-bundle fixtures**, and it must not regenerate the latter: Story 2.10's presence gates
+  require their populated goalkeeping technique blocks and the Domain G ground-truth pins
+  require m001's hand-transcribed physical block. Re-measured at this story's close:
+  **38 of 66 fixture nodes still go red under `==`**, unchanged. **And the deeper reason the
+  precondition can never be met by a regeneration: `events.passNetworkNodes` is `null` on
+  104/104 corpus bundles**, so the invariant SKIPS on every real bundle and can only ever run
+  against hand-authored fixtures, whose edge lists are a subset by construction. The
+  `involvement == Σ incident edge volumes` identity is true (3,289/3,289 in the staged
+  spine); it is simply not assertable through this test. **Both entries stay OPEN with the
+  precondition corrected to: "a fixture bundle whose `passNetworkEdges` list is TOTAL for its
+  `passNetworkNodes`, which no corpus-derived bundle can supply." Owner: whoever makes the
+  node/edge fixtures total, or a decision to retire the test.**
+
+- **_"An `OSError` mid-write leaves `data/matches/` partially populated with no rollback."_
+  stays OPEN with its existing owner.** Story 1.18 gives the two PROFILE namespaces
+  all-or-nothing writes via a staged-directory swap with rollback
+  (`profiles._swap_directory`), but that entry is about **`emit.py`'s bundle loop**, and
+  `emit.py` was not edited by this story. Closing it on the strength of a different module's
+  write path would close it falsely. The bundle namespace remains uncovered; the profile
+  namespaces are covered.
+
+- **A new fixture match bundle adds a static app route, and the app side was NOT verified.**
+  `app/src/app/matches/[slug]/page.tsx`'s `generateStaticParams` reads
+  `tournament.json`'s `entities.matches`, so registering `m082-belgium-senegal` there — which
+  the fixture set's own reachability test requires — creates a fourth pre-rendered match
+  route. That route is the first to exercise `players: null` and `goalkeeping: null` in the
+  App, branches Stories 2.11b and 2.10 built absence states for. **The app suite was not run
+  for it**: `app/` is Epic 2's tree (AD-1, read-only for this story) and was occupied by two
+  concurrent in-flight sessions (Stories 2.12 and 2.13) throughout this implementation, so a
+  run there would have reported their work rather than this change. No app test asserts a
+  page count, and none references `m082`. **Owner: the next Epic 2 session to touch the
+  match route, or Story 2.19's real-data cutover.**
+
+### Guard-test updates, disclosed because they change what a shipped test proves
+
+- **`test_fixtures.py::test_the_team_profile_record_matches_its_own_per_match_rows` asserted
+  the WRONG points rule and is corrected.** It asserted `points == won * 3 + drawn` over ALL
+  rows; `TournamentRecord`'s own description says _"`points` counts group-stage points only;
+  knockout ties award none."_ The two disagree on **19 of the 48 real teams** (Mexico: 12 by
+  the old form, **9** by the contract). The old fixture carried three group rows and nothing
+  else, so both readings agreed and the conflict was invisible until the fixture was
+  regenerated from real data.
+
+- **`test_fixtures.py`'s two non-empty profile guards are relaxed, and replaced with
+  something stronger.** `assert fixture["matches"]` and `assert rows` fail on a CORRECT
+  zero-appearance artifact. Both now assert `len(rows) == played`, which still forbids the
+  failure the originals existed to catch — a silently empty breakdown on a profile that did
+  play — and additionally forbids the reverse. FR-1 named this as in scope.
+
+- **`test_fixtures.py::test_domain_g_player_totals_reconcile_with_the_domain_b_team_totals`
+  is re-scoped to skip on `players: null`**, following the `passNetworkNodes` precedent
+  exactly. A bundle with no per-player pages has nothing to reconcile. Because a skip is how
+  an invariant stops being enforced unnoticed,
+  `test_the_players_null_skip_does_not_silently_disable_the_domain_g_reconciliation` pins
+  that at least three fixtures are still reconciled, that the skip fires on exactly one file,
+  and that an EMPTY `players` list stays reconciled rather than joining the skip.
+
+- **`test_precompute_identity.py` carried two unguarded nullable-container reads and they are
+  fixed.** `doc.get("players", [])` returns `None` when the key is present and explicitly
+  null — the default only fires on an ABSENT key — so four tests raised
+  `TypeError: 'NoneType' object is not iterable` the moment a `players: null` fixture
+  existed. Now `doc.get("players") or []`, the same idiom `test_fixtures.py` uses in six
+  places. Same defect class, different file; disclosed rather than silent because
+  `test_precompute_identity.py` was not in this story's declared file list until FR-1 forced
+  it.
+
+- **_"`test_set_play_counts_are_internally_consistent`"_ needed no action.** The story routed
+  it here as a pin that would "turn red for a reason that is not a defect" once fixtures were
+  regenerated from real data. Re-read at implementation time: CS-2 already corrected it to
+  the four corpus-true relations, and its docstring records the change. Verified green; no
+  edit made.
+
+- **The `m001` `physical.totalDistance` divergence pin was NOT triggered and needs no
+  action.** `test_extract_report_domain_g.py`'s pin fails loudly "if a fixture refresh
+  corrects it" — but this story does not refresh the m001 BUNDLE fixture (see the FR-1 entry
+  above), only the profile fixtures, so the divergence and its pin are untouched.
+
+### Two figures from the story that did not reproduce, and the reconciliation
+
+- **`quinones-julian-mex`'s pass completion is `82.2`, not the `83.2` the story instructs.**
+  The story derives `119/143 × 100 = 83.2` from the COMMITTED FIXTURE's three hand-authored
+  rows — and those rows are not corpus data: the fixture claims 56/62 for `m001` where the
+  real Domain G row is 28/34. Over his five real matches the corpus sums are
+  **111 completed / 135 attempted = 82.2** weighted, against **81.8** unweighted. The RULE
+  the figure was defending is implemented and tested (weighted ≠ unweighted, and 82.2 ≠ 81.8
+  is what makes the mutation visible); only the fixture-scoped number differs. The
+  regenerated fixture is the real corpus artifact, so it now carries 82.2.
+
+- **`passesAttempted == 0` holds on 53 Domain G rows but only 52 EMITTED match rows.** The
+  53rd is `m092-mexico-england` / `henderson-jordan-eng`, whose row has no minutes and
+  therefore produces no `PlayerMatchRow` at all. Both numbers are right; they count different
+  things, and the story's "53 individual match rows" is a Domain G count.
+
+### Coordination and attribution
+
+- **Story 1.17's commit `ae207ed` captured this story's two error classes.** `ProfileError`
+  and `ProfileValidationError` were appended to `pipeline/precompute/errors.py` by this
+  story and were swept into 1.17's commit alongside its own `IndexEmitError`,
+  `TiebreakUnresolvedError` and `RouteManifestError`. Content integrity verified — both
+  classes are intact at HEAD — so this is an **attribution defect only**. Recorded, not
+  repaired, per this repo's precedent (the Story 1.14 review's ruling on commit `5344fac`
+  and Story 2.18's identical disclosure). A reviewer looking for those two classes' diff must
+  read `ae207ed`.
+
+- **Two forks were written against the baseline and retired once 1.17 landed.** At `74b1789`
+  `emit._def_properties` took only a name and raised `KeyError` on all 13 profile `$def`s,
+  and `decimals_map("player-profile.schema.json")` silently omitted `PerNinety` (7 names, the
+  declaration hidden inside an `anyOf` branch) — both reproduced by running the code, and both
+  are why Tasks 4.7 and 6.2b ordered profile-scoped copies. Story 1.17 (`ae207ed`) then added
+  the `documents` parameter and fixed the inline-title loop to use `_declared_places`. The
+  copies were **deleted** in favour of the shipped functions rather than left in place with a
+  stale rationale, and the tripwires that detected the change were inverted into positive
+  assertions (`test_the_shipped_check_total_resolves_every_profile_type_including_the_titled_ones`,
+  `test_per_ninety_stays_bound_because_its_precision_hides_inside_an_anyof_branch`) so a
+  revert of either 1.17 change is loud here rather than silent. The 1,296 emitted artifacts
+  are byte-identical before and after the retirement.
+
+
+## Deferred from: code review of 2-13-tournament-leaderboards (2026-08-06)
+
+Three adversarial layers over the uncommitted tree; 53 raw findings, 40 after dedupe, 3 dismissed.
+Four items went to Juan as decisions and 26 to patches; these seven are deferred.
+
+- **The `aria-label` branch added to the unsortable `<th>` has no call site.** Story 2.13 Task 5.3
+  composed the full term onto the `sort: null` head, but `grep "sort: null"` returns exactly one
+  production column — `TournamentHub.tsx:247`, the standings `form` strip — and
+  `STANDINGS_COLUMN_KEYS.filter(...)` guarantees its `headTitle` is null. So `plainAccessibleName`
+  is `undefined` at every rendered head and the branch never runs. Untested, unreachable code in a
+  component 27 instances depend on. **When a caller first pairs `sort: null` with a non-null
+  `headTitle`, note that `aria-label` on a non-interactive `<th>` REPLACES the header name AT reads
+  when announcing each body cell's column association — verify that before shipping it.**
+  Owner: whoever adds that first call site.
+
+- **Two boards sharing `metricCode` + `scope` would collide on every identity the leaderboards
+  surface mints.** `Leaderboard` carries `aggregation` and the App reads it nowhere; board identity
+  is asserted to be `metricCode` + `scope` alone, and the row key
+  (`${scope}-${metricCode}-${entity.id}`), the React key, the heading, the caption and `tableName`
+  all derive from that pair. An emission carrying e.g. `{goals, player, sum}` and
+  `{goals, player, average}` — or the same entity twice in one board — gives duplicate React keys,
+  byte-identical captions and ambiguous sort announcements, and `DataTable`'s focus restore
+  (`querySelector` on `data-row-key`) lands on whichever row matches first. Unreachable in both the
+  3-board fixture and the 36-board real emission today. Owner: whoever extends the board roster.
+
+- **Story 2.13's `static-output.test.ts` block asserts ABSENCE across the whole document.**
+  `not.toContain('role="region"')`, `not.toContain("recharts")`, `not.toContain("<pattern")` and
+  `not.toContain("type-display-score")` all run against the entire `out/index.html`, which includes
+  Story 2.12's Hub region and the shared chrome — not the leaderboards subtree. Any later Hub work
+  adding a landmark or mounting a chart turns 2.13's suite red with a message pointing at
+  leaderboards. Pre-existing idiom — the glossary suite does the same at `:187`. Owner: whichever
+  story first trips it.
+
+- **Task 10.4's "commit `app/` by explicit path" is no longer achievable.** 2.12's and 2.13's hunks
+  are interleaved inside seven shared files — `DataTable.tsx` (2.13's `headAccessibleName` beside
+  2.12's `sortState`/`onSortChange`/`rowClass`), `es.ts`, `en.ts`, `i18n.test.ts`, `page.tsx`,
+  `static-output.test.ts` and `glossary.ts` (a jointly authored docblock). Per-path staging cannot
+  separate the two stories; only a per-hunk stage can, and neither story's protocol describes one.
+  The Completion Notes state "neither story restructured the other's work" without noting the
+  slices are no longer separable. A concurrency consequence, not a code defect.
+  Owner: Juan, at staging time.
+
+- **[Story 2.12] `sortState` passed without `onSortChange` is silently ignored.**
+  `DataTable.tsx:244` sets `isControlled = onSortChange !== undefined` — controlled-ness keys off
+  the CALLBACK, not the value. A caller passing `sortState` alone silently gets the uncontrolled
+  path with no dev warning, and TypeScript permits it because the two props are independently
+  optional. The header glyphs and the caller's state then disagree. Owner: Story 2.12.
+
+- **[Story 2.12] Caption uniqueness is no longer a site-wide property.** `i18n.test.ts`'s
+  hand-maintained list totals 31 — the match route plus 2.13's three boards — but
+  `TournamentHub.tsx:541,629` passes an un-composed `t("hub.standings.caption")` /
+  `t("hub.results.caption")` to every table it renders, so every standings table on the Hub carries
+  the identical caption and none of them is in the list. 2.13's own three entries are correct; the
+  invariant the list claims to guard is not. Owner: Story 2.12.
+
+- **[Story 2.12] `/`'s `generateMetadata` takes the unruled `<title>`-language decision.**
+  Story 2.13's scope boundary and Task 6.2 both forbade adding one — "`/about` and `/glossary`
+  deliberately export no `metadata`, because the `<title>`-stays-Spanish decision is unruled and
+  2.18 refused to take it". 2.12's Task 1.1 overrode that and shipped `title`, `description` and
+  `openGraph` on the Hub. Not chargeable to 2.13, but the decision is now taken de facto on the
+  route 2.13 mounts into, and the inherited ledger entry is unfiled. **NFR-4 forces the question at
+  2.19.** Owner: Juan (the ruling), Story 2.12 (the filing).
+
+- **[Story 2.13 review, RULED BY JUAN] Two `MetricCode` values resolve to ONE Spanish label.**
+  `enums.leaderboardMetric.completedLineBreaks` and `.lineBreaksCompleted` are both
+  "Rupturas de lineas completadas" in `es.ts` — the first inherited from `enums.metric`, the
+  second from `expert.field`, which is how one name arrived for two quantities. EN separates them
+  ("Completed line breaks" / "Line breaks completed"); ES does not. Both codes ship in the real
+  emission (`completedLineBreaks` team, 48 rows; `lineBreaksCompleted` player, 106 rows) and are
+  separated on screen only by the scope suffix the heading appends.
+  Board heading, table caption, `tableName` (hence every sort announcement) and the filter
+  announcement all derive from this label.
+  **Ruled: FILED, NOT MINTED.** Ruling 7's no-mint constraint stands and the scope suffix
+  disambiguates both shipped emissions today. **The live risk is a SAME-SCOPE emission** — both
+  codes at `team`, or both at `player` — which would give two boards an identical heading,
+  identical `tableName` and identical captions, turning `i18n.test.ts`'s caption-uniqueness
+  assertion red. That test is driven off a 3-board fixture containing neither code, so it cannot
+  see this coming. Owner: whoever first emits both codes at one scope, or the story that mints a
+  distinguishing Spanish term with its EXPERIENCE.md policy row.
+
+## Filed at Story 2.12 CODE REVIEW (2026-08-06)
+
+Appended, never edited into the paragraphs above — the append-only property is proven
+programmatically by every story in this file.
+
+### Reconciliation: the `assert-schema-version` timeout is filed TWICE, with contradictory causes
+
+Two adjacent sections describe one failure and disagree on both facts. The 2.12 bullet
+("`assert-schema-version.test.ts` now times out in the full suite") attributes the growth to
+*a concurrent Story 1.18 session* emitting `data/index/{player,team}-profiles/` and names
+**Owner: Story 1.18 / 1.19**. The 2.13 section immediately below it attributes the same failure
+to *Story 1.17's commit `ae207ed`* adding 1,298 artifacts and names **Owner: Story 1.17 (or
+1.19)**. Both were appended in the same window, and this file's own rule is "DO NOT FILE —
+already owned, and duplicating is the failure mode this list exists to prevent".
+
+**Reconciled: both causes are real and additive, and neither story is the owner.** `ae207ed`
+(1.17) added `data/index/*.json`; the concurrent 1.18 session added
+`data/index/{player,team}-profiles/`. The tree went 9 → ~111 → 1,409 artifacts across the two,
+so each session measured a different intermediate figure and correctly attributed the growth it
+could see. **Owner: Story 1.19**, which owns the full-batch run and will multiply the tree
+again; 1.17 and 1.18 are both already done.
+
+**One measured fact in the 2.12 bullet is now STALE and should not be relied on.** It records
+"it passes 3/3 in isolation at 4,434 ms". Re-measured at code review, against the tree as it
+stands: the test **FAILS IN ISOLATION TOO**, at **18,192 ms** against the 5,000 ms default
+(the other two cases in the file still pass, at 530 ms and 426 ms). So the "passes alone, tips
+over under parallel load" framing no longer holds — the gate now exceeds the default timeout on
+its own. The gate itself is still correct: it reports the full tree at schemaVersion 4 and both
+negative cases pass. The open question is unchanged and is the real one: whether a unit-test run
+should re-walk the entire emitted corpus at all, now that the corpus is real rather than
+fixture-sized.
+
+### The head-name composer does not guard the case its own new test asserts
+
+`src/lib/i18n.test.ts > "the leaderboards namespaces (Story 2.13, AD-2 / AD-7)" > "never nests a
+parenthetical a call site pre-composed"` is **RED** in the shared tree.
+`composeHeadAccessibleName` (`app/src/lib/table-sort.ts:347-357`) suppresses the parenthetical
+when `headText.includes(headTitle)` — the direction Story 2.13's ruling 6 needed ("Top speed
+(km/h)" containing "Top speed"). The new test asserts the REVERSE direction, where the call site
+pre-composed the parenthetical into `headTitle` ("Hora" + "Hora (hora local)"), and that
+direction has no guard, so the composer still emits `"Ordenar por Hora (Hora (hora local))"`.
+
+**NOT FIXED HERE, deliberately.** The function, the test and the file are Story 2.13's, that
+session was actively editing all three during this review (the file changed under this session
+twice), and a concurrent edit to a function mid-fix is worse than a red test its owner is
+already looking at. Story 2.12's own exposure is closed at the CALL SITE instead: the Hub's
+kickoff column now passes the bare clarifier (`match.hero.localTime`) as its `headTitle` rather
+than a pre-composed `"Hora (hora local)"`, so no shipped head reaches the unguarded branch.
+**Owner: Story 2.13.** The fix is one condition — when `headTitle.includes(headText)`, emit
+`headTitle` in place of the composed pair.
+
+- **[Story 2.13 review CORRECTION, 2026-08-06] The `assert-schema-version.test.ts` timeout is
+  owned by STORY 1.18, not 1.17.** Story 2.13's hand-off block filed this against 1.17's commit
+  `ae207ed`, on the stated grounds that it "added a real `data/index/` — 1,298 JSON artifacts".
+  **Measured at review, that is wrong:** `git diff --name-only 74b1789 ae207ed -- data/` returns
+  **two** files (`index/leaderboards.json`, `index/tournament.json`), and `git ls-files data/index`
+  returns the same two. The other **1,296** artifacts are UNCOMMITTED and belong to **Story
+  1.18** — `data/index/player-profiles/` and `data/index/team-profiles/`, emitted by a concurrent
+  session alongside its still-untracked `pipeline/precompute/profiles.py` and
+  `pipeline/tests/test_emit_profiles.py`. Story 2.12's own block in this file already recorded it
+  correctly ("a concurrent Story 1.18 session had emitted ... taking the tree to 1,409
+  artifacts"); the two entries contradicted each other and 2.13's was the wrong one.
+  Also corrected: the gate reports **1,411** artifacts at schemaVersion 4, not the 111 recorded.
+  **The defect itself is unchanged and real** — `node scripts/assert-schema-version.mjs` walks the
+  whole tree and exceeds vitest's 5 s default while the gate itself PASSES, so the wrapper times
+  out on a healthy artifact set. The fix is a per-test timeout or a scoped walk, not a data change.
+  **Owner: Story 1.18 (or 1.19).**

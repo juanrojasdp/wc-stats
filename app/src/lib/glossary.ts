@@ -25,15 +25,23 @@ import type {
  * glossary id — they have no term pair to show and no definition to write.
  *
  * BUT "no glossary id" IS NOT "done" (2.18 code review corrected this docblock).
- * Only THREE of the six are discharged in the locale files today — stage names
- * (`enums.stage`), lineup labels and Expert column groups. The other three —
- * `result letters & standings columns`, `standings / leaderboards` and
- * `fouls / duels` — have NO locale keys at all, because their surfaces do not
- * ship until 2.11-2.16, and minting keys for an absent surface is the dead-key
- * defect AC 1's own BINDING prohibits. They are DEFERRED to their owning
- * stories and recorded by name in deferred-work.md. A later story reading the
- * original wording would have shipped a standings table with no ruled
- * vocabulary, believing the row was already satisfied.
+ * FIVE of the six are discharged in the locale files today — stage names
+ * (`enums.stage`), lineup labels, Expert column groups, and, since Story 2.12,
+ * `result letters & standings columns` (`enums.matchResult` V/E/D and W/D/L,
+ * plus `hub.standings.column.*` PJ/G/E/P/GF/GC/DG/Pts) and
+ * `standings / leaderboards` (`hub.standings.heading` "Tabla de posiciones" and
+ * 2.13's `leaderboards.title` "Líderes del torneo"). All five are pinned in
+ * `i18n.test.ts`.
+ *
+ * ONE ROW IS STILL UNDISCHARGED: `fouls / duels`. `duelos` ships
+ * (`enums.possessionContest`), `faltas` occurs zero times in `es.ts`, and no
+ * surface renders fouls yet — the Hub does not, because neither `StandingsRow`
+ * nor `MatchResultRow` carries a fouls field at all. It stays DEFERRED to
+ * whichever story first renders a fouls surface, and is recorded by name in
+ * deferred-work.md. A story reading the pre-2.18 wording would have shipped a
+ * standings table with no ruled vocabulary, believing the row was satisfied;
+ * one reading the pre-2.12 wording would now believe three rows are open when
+ * only one is.
  */
 
 /**
@@ -125,10 +133,12 @@ const GLOSSARY_ORDER: Record<GlossaryTermId, true> = {
   "set-play": true,
   momentum: true,
   // Row "shot outcomes (legend + log headers)" expanded to the FIVE stable
-  // ShotOutcome values. ShotOutcomeDetail is deliberately absent (decision 12,
-  // whose extension rides CS-1 and has not landed). Decision 12 also says "do
-  // NOT hardcode the pre-CS-1 count anywhere, in code, comment or copy" — this
-  // comment carried it until the 2.18 code review.
+  // ShotOutcome values. ShotOutcomeDetail is deliberately absent (decision 12)
+  // and STAYS absent now that CS-1 has landed (093a1b2) and its extended enum
+  // exists in the contract: AD-14 decision CR-2 makes `outcome` authoritative,
+  // so no glossary id names a detail value. (Stale-rationale fix, Story 2.13
+  // ruling 5.) Decision 12 also says "do NOT hardcode the count anywhere, in
+  // code, comment or copy" — this comment carried it until the 2.18 review.
   goal: true,
   "on-target": true,
   "off-target": true,

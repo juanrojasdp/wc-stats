@@ -140,3 +140,45 @@ export function compareText(a: string, b: string, locale: Locale = "es"): number
 export function textEquals(a: string, b: string, locale: Locale = "es"): boolean {
   return collators[locale].compare(a, b) === 0;
 }
+
+/**
+ * Accent- and case-insensitive SUBSTRING match — the filter counterpart to
+ * `textEquals` (Story 2.13, FR-26's client-side filtering).
+ *
+ * NOT built on `Intl.Collator`, and it cannot be: the collators above give
+ * whole-string equality, and `Intl` has no substring operation of any kind. So
+ * this normalizes rather than collates — NFD-decompose, strip the combining
+ * diacritics, lowercase, then `String.includes`.
+ *
+ * It lives HERE rather than beside its one caller because this module's header
+ * declares itself the only text-comparison path; a second normalization home is
+ * precisely the drift that declaration exists to prevent. Locale-independent by
+ * construction, so it takes no `Locale` — Unicode decomposition is the same in
+ * both dictionaries, and a per-locale needle would silently change what a
+ * reader's keystrokes match when they toggle language mid-filter.
+ */
+export function includesText(haystack: string, needle: string): boolean {
+  return foldForSearch(haystack).includes(foldForSearch(needle));
+}
+
+/*
+ * The `u` flag is required for \p{...}; without it this is a literal-brace
+ * pattern that silently matches nothing and folds no accents at all.
+ *
+ * NAMED FOR WHAT IT ACTUALLY MATCHES (Story 2.13 code review). `\p{Diacritic}`
+ * is NOT the combining-mark class: it also covers SPACING characters that are
+ * not marks — `^` U+005E, backtick U+0060, `¨`, `¯`, `´` — which are therefore
+ * stripped from names as well as from the needle. The earlier name asserted a
+ * property the pattern does not have.
+ *
+ * KNOWN GAP, deliberately not closed here: NFD only decomposes what HAS a
+ * decomposition, so non-decomposing letters — `ø`, `ł`, `đ`, `ı` — fold to
+ * themselves and a reader typing "o" will not match "Ø". No name in either
+ * shipped artifact is affected. Closing it needs a transliteration table, which
+ * is a bigger decision than a filter helper should take on its own.
+ */
+const DIACRITICS = /\p{Diacritic}/gu;
+
+function foldForSearch(value: string): string {
+  return value.normalize("NFD").replace(DIACRITICS, "").toLowerCase();
+}

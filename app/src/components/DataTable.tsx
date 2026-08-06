@@ -6,6 +6,8 @@ import { useSortAnnounce } from "@/components/SortAnnouncer";
 import { useT } from "@/lib/i18n-provider";
 import {
   ariaSortFor,
+  composeHeadAccessibleName,
+  composeSortAnnouncement,
   nextSortState,
   sortRows,
   type SortState,
@@ -57,11 +59,19 @@ const ASCENDING_GLYPH = "▲";
 const DESCENDING_GLYPH = "▼";
 /** Reserved-space placeholder for an inactive column, so no head reflows on sort. */
 const NO_GLYPH = "";
-const CLAUSE_SEPARATOR = ", ";
-const PERIOD = ".";
-const SPACE = " ";
-/** Separates a table's own name from the sort clause (Story 2.11b). */
-const NAME_SEPARATOR = ": ";
+/*
+ * NO STRING-COMPOSITION CONSTS LIVE HERE ANY MORE.
+ *
+ * The sort announcement's separators (`, `, `.`, `: `) left in Story 2.12 with
+ * the composition itself, because the Hub's `<md` sort menu composes the same
+ * announcement from outside this component. The head accessible name's `SPACE`
+ * and parentheses followed at the 2.13 review, for the other half of the same
+ * reason: a composition that only exists as a closure inside a "use client"
+ * component cannot be reached by a node-environment test, and the test that
+ * claimed to pin it was asserting a hand-built literal against itself. Both now
+ * live in `@/lib/table-sort` — see `announcementFor` and `headAccessibleName`
+ * below, which are thin delegations.
+ */
 
 /** Every focusable thing a body row could ever contain (decision 6's restore). */
 const FOCUSABLE_SELECTOR =
@@ -159,6 +169,43 @@ export interface DataTableProps<Row> {
    * byte for byte.
    */
   tableName?: string;
+  /**
+   * OPTIONAL CONTROLLED-SORT MODE (Story 2.12, an authorized additive amendment
+   * to 2.11a's contract — the story AC 4 assigns the Hub's sort menu to).
+   *
+   * WHY IT HAD TO EXIST. `sortState` below is component-private, and the props
+   * above are the whole API — so a DropdownMenu rendered OUTSIDE the table, as
+   * EXPERIENCE.md's `<md` Hub clause requires, had nothing to drive. Forking
+   * the component was banned by 2.11a decision 1 and would have minted a fourth
+   * sort contract; a fork is what this prop pair exists to prevent.
+   *
+   * IT ALSO RESOLVES THE RE-KEY CONFLICT. 2.11b keys its `DataTable` on the
+   * column set, which UNMOUNTS the table and silently resets the sort — the
+   * exact open ledger defect. With the state hoisted to the caller it survives
+   * a column-set change, so the Hub needs no key at all.
+   *
+   * CONTROLLED IFF `onSortChange` IS PASSED. Every one of the ~24 existing call
+   * sites passes neither, takes the `useState` path unchanged, and renders byte
+   * for byte what it rendered before this prop pair existed.
+   */
+  sortState?: SortState | null;
+  onSortChange?: (next: SortState | null) => void;
+  /**
+   * Extra classes for every BODY `<tr>` (Story 2.12, D9's minimal hook).
+   *
+   * The Hub is the first surface to make a whole row a link, which the ruled
+   * mechanism does with a single `<a>` in the row-header cell stretched over the
+   * row by `after:absolute after:inset-0` — and that needs the `<tr>` to be the
+   * containing block, i.e. `position: relative`. There is no other way to say
+   * it from outside: this component renders the `<tr>` itself, and a private
+   * copy is banned.
+   *
+   * Deliberately a class hook rather than a `rowHref` prop: the anchor's
+   * content, its accessible name and its ≥44 px target are all call-site
+   * decisions, and a `rowHref` prop would have to grow all three. `undefined`
+   * everywhere else, and `cn()` drops it, so no existing `<tr>` changes.
+   */
+  rowClass?: string;
 }
 
 /**
@@ -175,6 +222,9 @@ export function DataTable<Row extends { key: string }>({
   surface,
   sticky = false,
   tableName,
+  sortState: controlledSortState,
+  onSortChange,
+  rowClass,
 }: DataTableProps<Row>) {
   const t = useT();
   const announce = useSortAnnounce();
@@ -184,8 +234,13 @@ export function DataTable<Row extends { key: string }>({
    * localStorage. THERE IS NO `defaultSort` PROP and no sorted-on-mount column
    * (decision 5): `null` IS the artifact order, which AD-5 reserves to the
    * artifact ("user-initiated re-ordering only").
+   *
+   * The hook runs unconditionally in both modes (hooks cannot be conditional);
+   * in controlled mode its value is simply never read.
    */
-  const [sortState, setSortState] = useState<SortState | null>(null);
+  const [uncontrolledSortState, setUncontrolledSortState] = useState<SortState | null>(null);
+  const isControlled = onSortChange !== undefined;
+  const sortState = isControlled ? controlledSortState ?? null : uncontrolledSortState;
 
   const bodyRef = useRef<HTMLTableSectionElement>(null);
   /**
@@ -283,25 +338,55 @@ export function DataTable<Row extends { key: string }>({
   const clearedLabel = t("viz.table.sortCleared");
 
   /**
-   * Prefixes the table's own name when it has one (Story 2.11b). BOTH states
-   * take the prefix, the cleared one included: "the table's original order was
-   * restored" is exactly as ambiguous across 26 tables as the sorted form.
-   * With no `tableName` this returns the identity, so the shipped string is
-   * unchanged at every call site that does not pass one.
+   * A head's accessible name, carrying the FULL TERM behind an abbreviation
+   * (Story 2.13, AC 5). `optionalPrefix` is the sort action on a sortable head
+   * and empty on an unsortable one.
+   *
+   * VISIBLE TEXT FIRST, ALWAYS, and the full term APPENDED in parentheses —
+   * never substituted. Swapping `headText` for `headTitle` would set the name
+   * to "Ordenar por Velocidad máxima" over visible text reading "Vel. máx.",
+   * so the visible label would no longer be contained in the accessible name:
+   * a WCAG 2.5.3 Label in Name failure. i18n.test.ts pins this composition
+   * order for exactly that reason.
+   *
+   * DECLARED REFINEMENT (Story 2.13): a parenthetical that would only RESTATE
+   * what the visible text already says is suppressed. `TITLED_FIELDS` and
+   * `ABBREVIATED_METRICS` are keyed per FIELD/METRIC rather than per locale —
+   * the ruled abbreviations are Spanish — so in EN the "abbreviation" and the
+   * full term are frequently the same string, and appending it unconditionally
+   * would ship "Sort by Top speed (Top speed)": a name strictly worse than
+   * today's for no information gained.
+   *
+   * THE TEST IS CONTAINMENT, NOT BYTE-EQUALITY, and the 2.13 review found out
+   * why the hard way. A caller composes the UNIT into `headText` (ruling 6 puts
+   * it head-side) while `headTitle` stays the bare term, so the two halves are
+   * never byte-equal on any metric carrying a unit: EN shipped "Sort by Top
+   * speed (km/h) (Top speed)" — the exact string this refinement was written to
+   * prevent — and it regressed the Expert Layer's already-shipped topSpeed head
+   * too, since `ExpertLayer` composes `headText` the same way. Byte-equality is
+   * merely the special case of containment where the suffix is empty.
    */
-  function withTableName(clause: string): string {
-    return tableName === undefined ? clause : `${tableName}${NAME_SEPARATOR}${clause}`;
-  }
+  const headAccessibleName = composeHeadAccessibleName;
 
+  /*
+   * DELEGATES to the shared composer (Story 2.12). The composition, its
+   * separators and the tableName prefix moved to `@/lib/table-sort` because the
+   * Hub's `<md` sort menu drives the same state from OUTSIDE this component and
+   * must produce the SAME announcement — two restatements of one string would
+   * diverge the first time either is edited. The emitted strings are unchanged.
+   */
   function announcementFor(next: SortState | null, headText: string): string {
-    if (next === null) {
-      // The cycle's third state names no column, because none is active.
-      return withTableName(clearedLabel);
-    }
-    const direction = next.direction === "ascending" ? ascendingLabel : descendingLabel;
-    return withTableName(
-      `${sortedByLabel}${SPACE}${headText}${CLAUSE_SEPARATOR}${direction}${PERIOD}`
-    );
+    return composeSortAnnouncement({
+      state: next,
+      headText,
+      tableName,
+      labels: {
+        sortedBy: sortedByLabel,
+        ascending: ascendingLabel,
+        descending: descendingLabel,
+        cleared: clearedLabel,
+      },
+    });
   }
 
   function handleSort(column: TableColumn<Row>): void {
@@ -312,7 +397,19 @@ export function DataTable<Row extends { key: string }>({
      * this button, not on a row). See the useLayoutEffect above.
      */
     const next = nextSortState(sortState, column.key);
-    setSortState(next);
+    /*
+     * ONE cycle, two writers (Story 2.12). In controlled mode the caller owns
+     * the state, so this hands `next` up rather than setting it — but the
+     * CYCLE and the ANNOUNCEMENT stay here, so a header click behaves
+     * identically whoever holds the state. The Hub's sort menu drives the same
+     * `nextSortState` through `useTableSort` and announces through the same
+     * `composeSortAnnouncement`: one contract, two controls.
+     */
+    if (onSortChange !== undefined) {
+      onSortChange(next);
+    } else {
+      setUncontrolledSortState(next);
+    }
     announce(announcementFor(next, column.headText));
   }
 
@@ -375,7 +472,19 @@ export function DataTable<Row extends { key: string }>({
                   : NO_GLYPH;
             // Composed into identifiers: t() has no interpolation, and both
             // `aria-label` and `title` are gated prop names.
-            const accessibleName = `${sortActionLabel}${SPACE}${column.headText}`;
+            const accessibleName = headAccessibleName(
+              sortActionLabel,
+              column.headText,
+              column.headTitle
+            );
+            /*
+             * The same composition with NO action prefix, for the unsortable
+             * branch. `undefined` when it would only restate the cell's own
+             * text, so that branch emits exactly the markup it emitted before
+             * this story.
+             */
+            const plainName = headAccessibleName("", column.headText, column.headTitle);
+            const plainAccessibleName = plainName === column.headText ? undefined : plainName;
             const headTitle = column.headTitle ?? undefined;
 
             if (column.sort === null) {
@@ -384,12 +493,23 @@ export function DataTable<Row extends { key: string }>({
                * "none" on a head that can never sort claims a capability that
                * does not exist. It still reserves the 44 px row height so the
                * header row does not become ragged.
+               *
+               * THE FULL TERM RIDES THE <th> ITSELF (Story 2.13 Task 5.3),
+               * because this branch has no focusable child to carry it: the
+               * sortable branch below puts it on the button's `aria-label`,
+               * which is where a keyboard user meets it. `aria-label` on a
+               * non-interactive <th> REPLACES its name rather than augmenting
+               * it, so the composition's visible-text-first rule is what keeps
+               * the head's own text in the announcement. Omitted entirely when
+               * there is no full term, leaving the pre-2.13 name (the cell's
+               * own text) byte for byte.
                */
               return (
                 <th
                   key={column.key}
                   scope="col"
                   title={headTitle}
+                  aria-label={plainAccessibleName}
                   className={cn(
                     "type-stat-label",
                     ink.head,
@@ -479,7 +599,17 @@ export function DataTable<Row extends { key: string }>({
        */}
       <tbody ref={bodyRef} onFocus={handleBodyFocus}>
         {ordered.map((row) => (
-          <tr key={row.key} data-row-key={row.key} className={rowDividerClass ?? undefined}>
+          <tr
+            key={row.key}
+            data-row-key={row.key}
+            /*
+             * `rowClass` is Story 2.12's minimal hook (D9): the Hub passes
+             * `relative` so its row-header anchor can stretch over the whole
+             * row with `after:inset-0`. `undefined` at every other call site,
+             * and `cn()` drops it — the class string is unchanged there.
+             */
+            className={cn(rowDividerClass, rowClass) || undefined}
+          >
             {columns.map((column) =>
               column.rowHeader === true ? (
                 <th

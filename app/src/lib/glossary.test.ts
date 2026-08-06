@@ -125,7 +125,21 @@ describe("GLOSSARY_TERMS (ruled decision 10)", () => {
     }
   });
 
-  it("mints no ShotOutcomeDetail id (ruled decision 12 — CS-1 has not landed)", () => {
+  it("mints no ShotOutcomeDetail id, now that CS-1 HAS landed", () => {
+    /*
+     * RETITLED, NOT DELETED (Story 2.13 ruling 5) — the assertion is
+     * byte-identical; only the name and this comment changed. CS-1 landed at
+     * 093a1b2 (schemaVersion 2 -> 3; CS-2 has since taken it to 4) and the
+     * 24-value `ShotOutcomeDetail` enum exists. No glossary id names one, on
+     * purpose: AD-14 decision CR-2 makes `outcome` authoritative and forbids
+     * deriving marker encoding from the detail.
+     *
+     * NOTE FOR THE NEXT READER, because this one is BLUNTER THAN ITS NAME: the
+     * check is `not.toContain("detail")` over the whole id, so it will reject
+     * ANY future glossary id containing the substring "detail" — not merely a
+     * ShotOutcomeDetail one. If a legitimate term ever needs that word, narrow
+     * the assertion rather than assuming this test has caught a real violation.
+     */
     for (const id of GLOSSARY_TERMS) {
       expect(id).not.toContain("detail");
     }

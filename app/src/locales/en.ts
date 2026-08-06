@@ -7,16 +7,8 @@ import type { Dictionary } from "./es";
 export const en: Dictionary = {
   app: {
     siteName: "WC Stats",
-    scaffold: {
-      heading: "Design system scaffold",
-      body: "This page proves the tokens, the self-hosted fonts and the locale layer. Real tournament content arrives with the next stories.",
-      statLabel: "Sample xG",
-    },
   },
   a11y: {
-    scaffold: {
-      demoRegion: "Design token demo",
-    },
     localeAnnouncement: "Language: English",
   },
   chrome: {
@@ -385,6 +377,97 @@ export const en: Dictionary = {
       // Review patch (2.11b): claimed the sibling Tactical boundary was healthy,
       // which this boundary cannot know. See the es.ts note.
       crashedExpertExplanation: "You can reload the page to try again.",
+    },
+  },
+  /*
+   * The Tournament Hub (Story 2.12). See the es.ts docblock for what is ruled,
+   * what is reused and what is newly authored.
+   *
+   * The standings column abbreviations are the ENGLISH convention, not a
+   * transliteration of the ruled Spanish set: EXPERIENCE.md rules "PJ, G, E, P,
+   * GF, GC, DG, Pts" for es and only the CHIP letters (W / D / L) for en.
+   * `played` is "MP", never "P" — English standings split played-vs-lost the
+   * other way round from Spanish, so a bare "P" here would read as the es
+   * *perdidos* column while `L` already holds losses.
+   */
+  hub: {
+    title: "The tournament",
+    separator: " · ",
+    region: {
+      loading: "Loading the tournament data",
+      loaded: "Tournament data loaded.",
+      error: "We could not load the tournament data. Check your connection and try again.",
+      retry: "Retry",
+      invalid: "The tournament data does not match this version of the site.",
+      invalidExplanation: "We are aware of it. Try again later.",
+      crashed: "We could not display the results and standings.",
+      crashedExplanation:
+        "The tournament data arrived with a value we could not read. We are aware of it.",
+    },
+    columns: {
+      more: "More columns",
+      fewer: "Fewer columns",
+    },
+    sortMenu: {
+      trigger: "Sort",
+      clear: "Original order",
+    },
+    standings: {
+      heading: "Standings",
+      caption: "Sorted by position.",
+      tableName: "Standings table",
+      rowLink: "View the team",
+      empty: {
+        headline: "No standings for this group.",
+        explanation: "The tournament index does not carry this group's table yet.",
+      },
+      column: {
+        rank: "Pos",
+        team: "Team",
+        played: "MP",
+        won: "W",
+        drawn: "D",
+        lost: "L",
+        goalsFor: "GF",
+        goalsAgainst: "GA",
+        goalDifference: "GD",
+        points: "Pts",
+        form: "Form",
+      },
+      columnTitle: {
+        rank: "Position",
+        played: "Matches played",
+        won: "Won",
+        drawn: "Drawn",
+        lost: "Lost",
+        goalsFor: "Goals for",
+        goalsAgainst: "Goals against",
+        goalDifference: "Goal difference",
+        points: "Points",
+      },
+    },
+    results: {
+      heading: "Results",
+      caption: "Sorted by match number.",
+      tableName: "Results table",
+      rowLink: "View the match",
+      extraTimeShort: "AET",
+      shootoutFull: "Decided on penalties",
+      empty: {
+        headline: "No results for this stage.",
+        explanation: "The tournament index does not carry any match in this stage yet.",
+      },
+      column: {
+        match: "Match",
+        matchNumber: "No.",
+        date: "Date",
+        kickoff: "Time",
+        venue: "Venue",
+        matchdayRound: "Matchday",
+      },
+      columnTitle: {
+        matchNumber: "Match number",
+      },
     },
   },
   tactical: {
@@ -917,10 +1000,93 @@ export const en: Dictionary = {
       claim: "Claim",
       "tipped-palmed": "Tipped or palmed",
     },
+    /*
+     * Story 2.12. `D` MEANS DRAW HERE AND *DERROTA* (LOSS) IN es — the whole
+     * reason these are keyed off the MatchResult code and never off the letter.
+     * `i18n.test.ts` asserts that divergence directly, so a well-meaning
+     * "alignment" of the two dictionaries fails the suite instead of silently
+     * relabelling every loss on the language toggle.
+     */
+    matchResult: {
+      win: "W",
+      draw: "D",
+      loss: "L",
+    },
+    matchResultFull: {
+      win: "Win",
+      draw: "Draw",
+      loss: "Loss",
+    },
+    // The six knockout labels are pinned equal to their enums.stage
+    // counterparts in i18n.test.ts; only the three group matchdays differ.
+    matchdayRound: {
+      "group-md1": "Matchday 1",
+      "group-md2": "Matchday 2",
+      "group-md3": "Matchday 3",
+      r32: "Round of 32",
+      r16: "Round of 16",
+      qf: "Quarter-final",
+      sf: "Semi-final",
+      "third-place": "Third place",
+      final: "Final",
+    },
     unit: {
       km: "km",
       m: "m",
       kmh: "km/h",
+    },
+    /*
+     * Story 2.13 — the 32 leaderboard metrics. Mirrors es.ts: eighteen values
+     * are `enums.metric` above verbatim, fourteen are `expert.field` /
+     * `expert.fieldTitle`. Full terms only; the abbreviations live below.
+     */
+    leaderboardMetric: {
+      ballProgressions: "Ball progressions",
+      completedLineBreaks: "Completed line breaks",
+      crosses: "Crosses",
+      defensiveLineBreaks: "Defensive line breaks",
+      defensivePressures: "Defensive pressures",
+      distanceCovered: "Distance",
+      expectedGoals: "xG",
+      forcedTurnovers: "Forced turnovers",
+      goals: "Goals",
+      passCompletion: "Pass accuracy",
+      passes: "Passes",
+      passesCompleted: "Completed passes",
+      possession: "Possession",
+      receptionsInFinalThird: "Receptions in final third",
+      secondBalls: "Second balls",
+      shots: "Shots",
+      shotsOnTarget: "Shots on target",
+      sprintDistance: "Sprint distance",
+      crossesCompleted: "Crosses completed",
+      duelsWonAerial: "Aerial duels won",
+      duelsWonPhysical: "Physical duels won",
+      interceptions: "Interceptions",
+      lineBreaksCompleted: "Line breaks completed",
+      possessionRegains: "Possession regains",
+      sprints: "Sprints",
+      stepIns: "Step-ins",
+      switchesOfPlay: "Switches of play",
+      tacklesWon: "Tackles won",
+      takeOns: "Take-ons",
+      totalDistance: "Total distance",
+      highSpeedRuns: "High-speed runs",
+      topSpeed: "Top speed",
+    },
+    /*
+     * NOTHING IN EN IS ABBREVIATED, and that is a shipped ruling rather than an
+     * omission: the 2.11b code review retired the invented "HIGH-SPD RUNS"
+     * because there is no EN copy ruling to reuse, and i18n.test.ts pins its
+     * absence. Both entries therefore restate their full term — the same cost
+     * es.expert.fieldTitle already pays for a gate keyed per METRIC rather than
+     * per locale. The composition in DataTable suppresses a parenthetical whose
+     * two halves are byte-equal, so an EN head reads "Sort by Top speed" and
+     * never "Sort by Top speed (Top speed)".
+     */
+    leaderboardMetricAbbr: {
+      highSpeedRuns: "High-speed runs",
+      topSpeed: "Top speed",
     },
   },
   expert: {
@@ -1025,6 +1191,59 @@ export const en: Dictionary = {
       // EN head is unabbreviated, so this title restates it — TITLED_FIELDS is
       // keyed per FIELD, not per locale, and parity is the compile-time rule.
       topSpeed: "Top speed",
+    },
+  },
+  /*
+   * Story 2.13 — the Hub's leaderboards section. Mirrors es.ts key for key.
+   * Team and player NAMES pass through from the artifact untranslated (FR-30);
+   * only the chrome around them is localized.
+   */
+  leaderboards: {
+    title: "Tournament leaders",
+    teaserHeading: "Highlights",
+    tablesHeading: "Full tables",
+    teaserCount: "top places",
+    teaserCountOne: "top place",
+    // Mirrors es.leaderboards.teaserOverflow* — the ruled teaser cap disclosure.
+    teaserOverflowTiedAt: "tied at rank",
+    teaserOverflowTiedAtOne: "tied at rank",
+    teaserOverflowMore: "more in the top 3",
+    boardSeparator: " · ",
+    tableCaption: "Sorted by rank.",
+    // Mirrors es.leaderboards.showTable/hideTable — the per-board disclosure.
+    showTable: "Show the table",
+    hideTable: "Hide the table",
+    filterLabel: "Filter by name",
+    filterPlaceholder: "Type a name",
+    filterResults: "results",
+    filterResultsOne: "result",
+    filterNoResults: "No results",
+    filterNoResultsExplanation: "No name matches the filter. Delete letters to see more rows.",
+    empty: "No leaderboards yet",
+    emptyExplanation: "The tournament index carries no leaderboards.",
+    // A board that arrived with zero rows is not a filter that excluded them.
+    boardEmpty: "This table arrived with no rows",
+    boardEmptyExplanation: "The tournament does not yet have enough data for this metric.",
+    loading: "Loading the leaderboards",
+    // Mirrors match.bundle.loaded / hub.region.loaded — the resolved announcement.
+    loaded: "Leaderboards loaded.",
+    error: "We could not load the leaderboards.",
+    retry: "Try again",
+    invalid: "The leaderboards do not match this version of the data.",
+    invalidExplanation:
+      "The file arrived intact but carries a different schema version, so it is not shown.",
+    columns: {
+      rank: "Rank",
+      matchesPlayed: "Matches",
+      perMatch: "Per match",
+    },
+    scope: {
+      team: "Teams",
+      player: "Players",
+    },
+    higherIsBetter: {
+      true: "Higher is better",
+      false: "Lower is better",
     },
   },
 };

@@ -59,7 +59,333 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-08-05
+last_updated: 2026-08-06
+# 2026-08-06: story 2-13 CODE REVIEW (review -> in-progress). Three adversarial layers over the
+#             2.13-scoped diff (53 raw findings -> 40 after dedupe); 4 decisions RULED BY JUAN,
+#             29 patches APPLIED, 8 deferred, 3 dismissed.
+#             TOP FIND: the disclosed "byte-equal parenthetical suppression" in DataTable compared
+#             headTitle against headText AFTER the unit suffix was concatenated, so it could never
+#             fire on any metric carrying a unit -- EN shipped "Sort by Top speed (km/h) (Top
+#             speed)", the exact string en.ts's own comment promises is impossible, AND it
+#             REGRESSED the Expert Layer's already-shipped topSpeed head, which composes headText
+#             the same way. Fixed by testing CONTAINMENT, not equality; the composer moved to
+#             @/lib/table-sort so a node-environment test can actually reach it (the test that
+#             claimed to pin it was asserting a hand-built template literal against itself).
+#             ALSO: `anyPerMatch` gated on NULL-NESS rather than usefulness, shipping a column
+#             byte-identical to `value` on every `average` board (6/6 fixture possession rows;
+#             48/48, 48/48, 102/102 on the real emission) -- the exact duplicated-column waste the
+#             gate's own docblock exists to prevent. Filtering to zero rows unmounted DataTable and
+#             silently discarded the active sort. The whole artifact was serialized into
+#             out/index.html as a client prop AND fetched again at runtime (~409 KB inlined at the
+#             2.19 flip); now projected to <=3 rows per board, export 29,961 -> 26,032 B.
+#             RULINGS: (A) teaser caps at 3 with a DISCLOSED overflow count -- the real emission
+#             ties 51 players at rank 1 on passCompletion/player; ruling 9 intact, the CARD is
+#             what is bounded. (B) per-board disclosure ships now, bounding 36 boards / 2,965 rows.
+#             (C) the completedLineBreaks / lineBreaksCompleted Spanish label collision is FILED,
+#             not minted -- ruling 7 stands. (D) TournamentHub's kickoff headTitle supplies a bare
+#             term, fixing "Ordenar por Hora (Hora (hora local))".
+#             RECORD CORRECTIONS: the assert-schema-version timeout was filed against Story 1.17's
+#             `ae207ed`, which added TWO files under data/ -- the 1,296 artifacts are Story 1.18's
+#             UNCOMMITTED emission, so the ledger owner is corrected to 1.18. The gate reports
+#             1,411 artifacts, not the 111 recorded. Task 1.3's post-regeneration re-measurement
+#             claim was wrong in three places (rank-7 tie is x4 not x5; next rank 11 not 12).
+#             STATUS IS in-progress, NOT done: AC 4's "measured, not asserted" discharge rests on
+#             a browser session predating the fixture regeneration, and the patches changed the
+#             surface materially (disclosure, debounced announcement, projected prop, controlled
+#             sort, role="group"). Task 10.1 + 10.2 must be RE-RUN in the browser. The harness has
+#             no jsdom, so nothing here can be signed off from the suite alone.
+#             Chain after patches: lint clean, tsc clean, build green (9 pages), 868 tests / 867
+#             pass -- the one failure is 1.18's timeout, not this story's.
+# 2026-08-06: story 2-12 CODE REVIEW COMPLETE (review -> done). Three adversarial layers over the
+#             2.12-scoped diff; 3 decisions RULED (Juan delegated them), 17 patches APPLIED, 6
+#             dismissed. TOP FIND: a raw NUL byte in `TableSortMenu.tsx` (`KEY_JOINER`) made git
+#             classify the whole 264-line file as BINARY -- no diff, no blame, skipped by every
+#             grep-based check. Also fixed: the AC 5 fetch allow-list test Task 9.3 mandated and the
+#             notes claimed but that did not exist (now a transitive module walk from page.tsx);
+#             `prefetch={false}` on the row anchors, closing the measured `/teams/*` route fetches
+#             2.13 filed as 2.12's; an error boundary + `form` normalization, so one malformed row
+#             costs a panel instead of the entry route; UX-DR18 deep-link anchors made reachable
+#             after the client fetch; the four authored terms actually appended to EXPERIENCE.md;
+#             `composeSortAnnouncement` pinned; the closed-enum lists rebuilt on Record<Code,true>,
+#             which is exhaustive in the direction AD-2 needs. RULINGS: the `<md` sort menu now
+#             tracks the breakpoint (it was unmounting itself, and the focus target Radix restores
+#             to, mid-interaction); `aria-controls` dropped from the column disclosure; 2.13's
+#             co-authored files deliberately NOT split.
+#             GATE: lint clean, typecheck clean, next build 9 pages, 866/868 tests. BOTH FAILURES
+#             ARE OTHER STORIES' AND FILED: `assert-schema-version` now times out IN ISOLATION too
+#             (18,192 ms -- 2.12's recorded "passes 3/3 at 4,434 ms" is STALE), and it was filed
+#             TWICE with contradictory causes/owners across the 2.12 and 2.13 sections -- reconciled
+#             in the ledger, owner 1-19; and 2.13's own new `composeHeadAccessibleName` test, whose
+#             guard covers one containment direction and not the reverse -- owner 2.13, one
+#             condition. 2.12's exposure to that one is closed at the call site.
+# 2026-08-06: story 2-13 implemented and moved to review — LIDERES DEL TORNEO, the Hub's
+#             leaderboards section at the two altitudes EXPERIENCE.md's Visualization Layering row
+#             gives it. Suite 741/26 -> 846/28 (+105 tests, +2 files), of which 845 PASS and ONE
+#             FAILS — and that one is NOT this story's: HEAD MOVED MID-IMPLEMENTATION when the
+#             1-17 session committed ae207ed, adding a real data/index/ of 1,298 JSON artifacts
+#             (~12 MB) against the 9 fixture files the tree held before. assert-schema-version.mjs
+#             now takes 12.1s standalone (MEASURED) against vitest's 5s default, so
+#             assert-schema-version.test.ts's "passes on the current fixture tree" TIMES OUT while
+#             THE GATE ITSELF PASSES (111 artifacts at v4). This story touched neither that test,
+#             nor the script, nor anything under data/ — verified with git diff over all three.
+#             Filed to deferred-work.md; owner 1-17 (or 1-19). Not fixed here: one argument on
+#             another story's file, and that story is actively running.
+#             THE FIXTURE WAS ALSO REGENERATED MID-STORY by the same lane — topSpeed ranks moved
+#             from ...7,7,7,7,7,12... to ...7,7,7,7,11,12,12... Boards/rows unchanged (3/32),
+#             schemaVersion still 4, so every claim this story rests on still holds, ties
+#             included. What broke was a HARDCODED RANK LITERAL in leaderboard-model.test.ts —
+#             a test pinning a fixture fact rather than a behaviour. Rewritten as the PROPERTY:
+#             ranks never decrease, at least one tie exists, ranks are provably not array
+#             positions, and every tie is followed by a SKIP (competition ranking). Robust to the
+#             next regeneration.
+#             full chain green (lint
+#             --max-warnings 0, tsc --noEmit, assert:schema-version 111 artifacts at v4,
+#             check:types, next build 8 pages, copy-data).
+#             TWO REAL DEFECTS FOUND BY DRIVING THE REAL THING, both this story's and both FIXED.
+#             (1) AC 4's zero-network clause was BROKEN BY NEXT'S DEFAULT <Link> PREFETCH:
+#             performance.getEntriesByType("resource").length went 48 -> 75 across one sort pass
+#             and one filter clear, because every link entering the viewport fired a route fetch —
+#             and re-ordering 20 rows re-runs that on every sort. Pure waste besides, since
+#             /players/{slug} and /teams/{slug} are UNBUILT. prefetch={false} on all three link
+#             sites; RE-MEASURED 43 -> 43 across six sorts and four filter keystrokes. THE STORY
+#             WAS RIGHT THAT PROSE CANNOT DISCHARGE THIS AC — reading the code would never have
+#             found it. STILL OPEN AND IT IS 2.12's: 4 route fetches still fire on load, all four
+#             from standings links OUTSIDE #lideres; 2.13's 13 links inside fire none.
+#             (2) A WCAG 1.4.10 DOCUMENT SCROLL AT 390px, 457 vs a clientWidth of 375 in ES (433
+#             in EN). Cause: each board <article> is a GRID ITEM, whose default min-width:auto
+#             refuses to shrink below min-content, so the article was sized BY ITS TABLE and the
+#             inner overflow-x-auto could never engage. PROVEN THIS STORY'S BY DIFFERENTIAL —
+#             hiding #lideres returned the document to 375/375. Fixed with min-w-0; now 375/375 at
+#             390px and 305/305 at 320px in BOTH themes and BOTH locales, with the table scrolling
+#             INTERNALLY (437px inside a 343px port), which is the data-table exception.
+#             CONTRAST METHOD VALIDATED BEFORE ANY NEW NUMBER WAS TRUSTED (the Story 2.6 rule):
+#             --viz-team-a reproduced 13.56 dark / 4.99 light and --viz-team-b 10.30 / 5.36
+#             EXACTLY, against --card — and the first attempt, against --surface-base, gave
+#             14.83/11.27 and was DISCARDED rather than reported. Every text run in the section
+#             then measured against its ACTUAL painted background: zero failures in either theme,
+#             minimum 7.87 dark / 7.08 light against a 4.5 floor. ZERO --ink-muted copy uses.
+#             VERIFIED AS BEHAVIOUR, not asserted: a sort SPEAKS and is table-qualified —
+#             "Velocidad máxima · Jugadores: Ordenado por Vel. máx. (km/h), ascendente." — which
+#             matters because useSortAnnounce() is a no-op outside a provider and fails SILENTLY;
+#             the filter announces its own count with the right singular/plural ("1 resultado");
+#             artifact order restores EXACTLY including the competition ties (1,2,3,4,5,6,7,7,7,7,7,
+#             12,...,16,16,16,19,20); focus ring is visible under real :focus-visible (2px, 2px
+#             offset) and heads are 44px.
+#             BOTH PRESENCE GATES FIRE ON THE FIXTURES, so every board renders FIVE columns not
+#             six — team repeats entity on 12/12 team rows, perMatch is null on 20/20 topSpeed
+#             rows. That is what keeps 390px usable without 2.12's disclosure (ruling 8).
+#             RULING 5 HELD: the three CS-1 tripwires are RETITLED, NOT DELETED, assertions
+#             byte-identical. CS-1 verified landed (093a1b2 / 4682639; the 24-value enum exists,
+#             SCHEMA_VERSION is 4) and 2.18 verified not to have touched them. The four stale
+#             prose sites corrected. Deleting was re-routed to whoever ships ShotOutcomeDetail
+#             labels — this story maps MetricCode, so the ledger's deletion condition is unmet.
+#             MINTED ALMOST NOTHING: 18 of the 32 leaderboardMetric labels are enums.metric
+#             verbatim, 14 are expert.field/fieldTitle, and BOTH abbreviations reuse ruled copy
+#             byte-for-byte (pinned equal to match.hero.tiles.topSpeed and
+#             expert.field.highSpeedRuns). enums.metric was NOT touched — that trap is asserted
+#             from this side too. DISCHARGES the leaderboards half of the standings/leaderboards
+#             policy row; the standings half is 2.12's.
+#             CONCURRENCY: 2-12 LANDED ITS HUB PAGE MID-IMPLEMENTATION AND THE COORDINATION
+#             DESIGNED INTO RULING 1 WORKED. page.tsx was still the 2.1 placeholder when this
+#             story reached it — and no longer compiled, because 2.12 had already retired the
+#             app.scaffold.* keys — so Task 6.2's second branch applied and a minimal Hub was
+#             written to host the section, carrying an explicit instruction to lift the
+#             SortAnnouncerProvider when 2.12 landed. 2.12 then took the file over, honoured the
+#             mount verbatim, and DID lift the provider, removing the nested one. One live region,
+#             not two. Neither story restructured the other's work.
+#             DECLARED REFINEMENT, disclosed for review: DataTable's new accessible-name
+#             composition SUPPRESSES a parenthetical whose two halves are byte-equal, so EN reads
+#             "Sort by Top speed" rather than "Sort by Top speed (Top speed)" — ABBREVIATED_METRICS
+#             and TITLED_FIELDS are keyed per metric/field, not per locale, and the ruled
+#             abbreviations are Spanish. One condition; changes nothing in ES. Also filed: an
+#             abbreviated head that ALSO carries a unit composes two stacked parentheticals
+#             ("Ordenar por Vel. máx. (km/h) (Velocidad máxima)") — both halves ruled, neither
+#             wrong, reads clumsily; a copy ruling this story does not have.
+#             ONE FILE BEYOND THE STORY'S PLANNED LIST: src/lib/leaderboard-format.ts, the shared
+#             value/unit resolution. It imports @/lib/format so the placement rule bars src/viz/,
+#             and 2.11c's review precedent bars putting shared logic in a "use client" module.
+#             NEW DEFECT FILED NOT FIXED: InvolvementChart still ships the UNFIXED edge-drawn hatch
+#             <pattern> (x1=0/x2=0 at TacticalCharts.tsx:531) against DistributionChart's centred
+#             HATCH_TILE_PX/2 — re-verified present. TacticalCharts.tsx is outside scope (ruling 2).
+#             deferred-work.md appended with the append-only property PROVEN programmatically
+#             (10,750 bytes appended, prefix byte-identical, no CRLF).
+#             NOT COMMITTED — staging is Juan's call, and the story bars `git add -A`.
+# 2026-08-06: story 1-18 DEV STARTED (ready-for-dev -> in-progress). baseline_commit 74b1789 already
+#             pinned in the story frontmatter (preserved, not overwritten). Lane:
+#             pipeline/precompute/profiles.py + pipeline/tests/ + data/index/{team,player}-profiles/
+#             + data/fixtures/**. contract/ and app/ untouched; 1-17 owns data/index/*.json.
+# 2026-08-06: story 2-12 IMPLEMENTED and moved to review — the TOURNAMENT HUB (`/`), its results
+#             listing and its standings. Baseline 74b1789. app/ + locales only; no artifact, no
+#             schema, no pipeline file touched.
+#             THREE DEFECTS THE BROWSER CAUGHT THAT NO TEST IN THIS jsdom-LESS HARNESS COULD.
+#             (1) A 237px DOCUMENT-level horizontal scroll at 390px (WCAG 1.4.10): a grid item
+#             defaults to min-width:auto, so an 11-column table made the SECTION wider than the
+#             viewport and the overflow-x-auto wrapper inside it never became the scroller —
+#             measured body.scrollWidth 612 vs clientWidth 375, fixed with min-w-0. (2) AC 4's OWN
+#             CLAUSE WOULD HAVE SILENTLY UN-SORTED THE TABLE: the sort menu offers hidden columns,
+#             sortRows resolves columnKey against the columns DataTable is given, so filtering
+#             hidden columns OUT meant picking one fell back to artifact order instantly — verbatim
+#             the open ledger defect, reached by the route AC 4 REQUIRES. Rebuilt: a hidden column
+#             is hidden with display:none, NEVER removed from the model, so it leaves layout, a11y
+#             tree and tab order together while the sort survives — SM-C2's "hides columns, never
+#             removes data" made literally true. Sorting a hidden column also reveals it. (3)
+#             kickoffSortValue returned a confident MIDNIGHT for unparseable input (Number("") is 0),
+#             caught by its own "returns null, never 0" test.
+#             ELEVEN RULED DECISIONS FOLLOWED; THE FOUR LEFT OPEN ARE NOW RULED. D10 the results
+#             listing is authored (DataTable, 6 columns, row-header FIRST, matchdayRound a label
+#             never a sectioning key); D11 chips are STANDINGS-FORM ONLY — MatchResultRow carries no
+#             MatchResult field and a result row has TWO teams, so a per-row chip could not say
+#             whose result it is, and AC 3 is satisfied in full because standings rows ARE linked
+#             rows; 2.4b `score` ruled by contract inference and RAISED TO 1.17 as a contract
+#             question (nothing here depends on it — the row prints the field verbatim); 2.4c
+#             winnerTeamId not rendered; 6.3b disclosure per SURFACE, sort menu per TABLE.
+#             UX-DR12's FOCUS-RESTORE GOES LIVE HERE — 2.12 is the first story to put focusable
+#             content in a DataTable body, and DataTable's docblock anticipated it. Verified with
+#             real key presses: sorting by GF moved Mexico from row 1 to row 4 and focus stayed on
+#             the same anchor. rank stayed 2/3/4/1 — the pipeline's values, not renumbered.
+#             MEASURED, NOT ASSUMED: all six chip contrast ratios REPRODUCE DESIGN.md:290 exactly
+#             (10.68/6.35/6.66 dark, 5.36/5.61/5.55 light), which validates the method as well as
+#             the result; exactly ONE tab stop per row; three polite live regions page-wide, zero
+#             role=status/alert, zero aria-pressed in any table, zero --ink-muted on content, no
+#             zebra; the sort:null form column correctly emits NO aria-sort (the filed departure,
+#             not "fixed" back); AC 5's "loads only" half is exactly the two allow-listed fetches.
+#             REFLOW at 390 AND 320 in BOTH locales, everything expanded, and ATTRIBUTED
+#             DIFFERENTIALLY before being reported: THIS STORY'S SURFACES ARE CLEAN in all four
+#             (375==375, 305==305). The residual 82px belongs ENTIRELY to 2.13's #lideres — hiding
+#             it alone returns 375==375; hiding both 2.12 surfaces leaves 457. FILED, NOT FIXED.
+#             AC 5 IS NOT CLAIMED GREEN: the combined-budget half is contingent on 1-17's unruled
+#             D3/D5 (full-roster leaderboards 572,276 gzip-9 vs a 500,000 ceiling; tournament.json
+#             is 7.8% of it). The App never measures bytes — AD-4 forbids it.
+#             CONCURRENCY, and the tree changed THREE TIMES underneath: 2.13 reached page.tsx first
+#             and left a seam, which this story honoured verbatim including 2.13's chosen page
+#             position; 2.13's standing instruction "WHEN 2.12'S PAGE LANDS, LIFT THIS PROVIDER TO
+#             THE PAGE" is done and the nested one removed (two providers = two live regions =
+#             2.11a decision 9, and it fails SILENTLY); and a concurrent session REGENERATED THE
+#             FIXTURES mid-run, adding m082-belgium-senegal — every assertion survived untouched,
+#             and the second r32 tie now exercises multi-row-per-stage grouping on real fixture
+#             data. Never `git add -A`.
+#             SUITE 845 passed / 1 failed of 846 (28 files). The one failure is
+#             assert-schema-version.test.ts TIMING OUT at the 5,000 ms default — it passes 3/3 in
+#             isolation at 4,434 ms, and crossed the line because a concurrent 1-18 session emitted
+#             data/index/{player,team}-profiles/, taking the scanned tree from 111 to 1,409
+#             artifacts. Not this story's file, not its change; filed with its owner rather than
+#             papered over with a bigger timeout.
+#             LEDGER: the 2.18 "six table-scaffolding rows" correction is NARROWED, NOT CLOSED —
+#             2.12 discharges `result letters & standings columns` and `standings / leaderboards`;
+#             `fouls / duels` STAYS OPEN and the Hub does not inherit it, because neither
+#             StandingsRow nor MatchResultRow carries a fouls field at all (Task 10.3 checked
+#             against the contract, not assumed). Append-only proven programmatically.
+#             NOT COMMITTED — staging is Juan's call, and the story bars `git add -A`.
+# 2026-08-06: story 2-12 DEV STARTED (ready-for-dev -> in-progress). baseline_commit 74b1789 pinned
+#             in the story frontmatter. app/ + app/src/locales/ ONLY — pipeline/, data/ and
+#             contract/ are 1-17's lane and are not touched.
+# 2026-08-06: story 2-13 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 74b1789 (verified
+#             HEAD, clean tree). app/ + locales + the two ledger artifacts ONLY; fixture-driven.
+#             THE THREE INHERITED RECHARTS DECISIONS ARE ROUTED, NOT TAKEN, AND THE EVIDENCE IS
+#             A NORMATIVE QUOTE RATHER THAN A JUDGEMENT CALL: EXPERIENCE.md:226 gives leaderboards
+#             exactly two altitudes — "Top-3 teaser rows | — | Full sortable table" — and the AC
+#             names no visualization, so 2.13 SHIPS NO CHART and adds NO recharts importer. There
+#             are exactly two import specifiers today and the vendor duplication is PER SPECIFIER,
+#             so a third would put a third 300.4 KB chunk on a Lighthouse->=90 route. Routed: the
+#             dedupe -> 2.15 (its AC declares recharts by name, so it is the real third importer);
+#             the Team B non-hue channel -> 2.16/2.17 (2.15 is viz-single, single-series, and needs
+#             no second channel at all); seriesLabelIndex -> still the first story to reuse
+#             DistributionChart. NEW DEFECT FOUND AT CREATION, filed not fixed: InvolvementChart's
+#             copy of the hatch <pattern> is the UNFIXED edge-drawn version (x1=0/x2=0), the exact
+#             clipped-0.75px-stripe case DistributionChart's own comment warns about and centring
+#             at HATCH_TILE_PX/2 exists to prevent — half the texture UX-DR11(b) is discharged with,
+#             on a shipped chart, uncommented.
+#             FOUR RULINGS BY JUAN: R1 Lideres is a SECTION of / and 2.12 owns the page — 2.13
+#             mounts into 2.12's Task 1.4 slot and rules the anchor #lideres; R2 no chart (above);
+#             R3 player AND team rows are LINKS, per the MatchHero/LineupsDisclosure precedent, NOT
+#             the 2.8/2.11c plain-text one — UX-DR22's mandate covers this surface because
+#             EXPERIENCE.md:32 lists the Player Profile as "Reached from: Leaderboards"; 2.12's D2
+#             reached the same departure independently from the standings side; R4 filtering is a
+#             per-board name filter over a CALLER-OWNED row set (the shipped ExpertLayer
+#             convention), so DataTable is extended once and never forked.
+#             I DISAGREED WITH THE BRIEF ON THE TRIPWIRES AND RULED RETITLE-ONLY (R5). There are
+#             THREE, not two (i18n.test.ts x2, glossary.test.ts x1). The ledger conditions deletion
+#             on "when detail labels ship" in three places and 2.11c re-framed them as "still
+#             CORRECT as assertions" — only the RATIONALE is stale. This story maps MetricCode, not
+#             ShotOutcomeDetail, so the condition is unmet and deleting would remove the only guard
+#             between the 24-value enum and an unlabelled detail reaching a user. Retitle + fix the
+#             four stale prose sites; deletion re-routed to whoever ships detail labels.
+#             MEASURED, NOT ASSUMED: fixture = 3 boards / 32 rows / 3 of 32 MetricCodes,
+#             schemaVersion 4, 10,927 B raw / 1,198 gzip-9; rank<=3 yields exactly 3 on all three
+#             boards; entity===team on all 12 team rows and perMatch null on all 20 topSpeed rows
+#             (both become presence gates, so every board renders 5 columns not 6); two real tie
+#             clusters (rank 7 x5 at 33.3, rank 16 x3 at 32.2) — which is why the teaser takes
+#             rank<=3 and NEVER slice(0,3).
+#             TWO CONSTRAINTS THAT SHAPE THE BUILD. (1) enums.metric is SEALED: i18n.test.ts pins
+#             its key set exactly to KEY_STAT_FIELDS (19) and tactical-sections.ts is do-not-touch,
+#             so the 32 MetricCode labels need a NEW namespace — and 18 strings come from
+#             enums.metric, 14 from expert.field/expert.fieldTitle, so almost nothing is minted.
+#             (2) DataTable's aria-label carries only headText, so the AC's "full term in tooltip
+#             AND aria-label" needs a real extension — composed as "<action> <abbr> (<full>)",
+#             because swapping in headTitle alone would break WCAG 2.5.3 Label in Name.
+#             CARRIES 1-17's MEASURED BUDGET FAILURE: full-roster leaderboards are 572,276 gzip-9,
+#             giving 611,210 combined vs a 500,000 ceiling — FAIL — and leaderboards are the entire
+#             cause (tournament.json is 7.8%). 105,779 at a 100-row cap. The ruling is 1-17's D3/D5;
+#             this story is built indifferent to the outcome (drive off board.rows.length).
+#             COORDINATION: 2-12 and 1-17 were BOTH created by concurrent sessions DURING this
+#             story's creation, which is why R1 and Task 6.2 carry an explicit order contingency
+#             and why Task 6.4 mounts SortAnnouncerProvider only if 2.12 has not (two providers =
+#             two live regions = a 2.11a decision 9 violation, and it fails SILENTLY).
+# 2026-08-06: story 2-12 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 74b1789. app/ +
+#             locales ONLY; fixture-driven (data/index/ does not exist). ELEVEN DECISIONS RULED
+#             in-story — D1 client fetch per AD-11 (build-time for meta only), D2 standings DO
+#             link to /teams/{id}/ DEPARTING from 2.8/2.11c's plain-text precedent (2.4 +
+#             LineupsDisclosure already ship dead links; AC2 + UX-DR22 mandate this one; the
+#             ledger entry nobody filed is now 2.12's), D3 rank is a COLUMN never an index and
+#             ties are real (leaderboards fixture proves rank 7 x5 - never a React key), D4
+#             default sort = artifact order via sortState null (DataTable has no defaultSort),
+#             D5 104 is designed-for not asserted (fixture carries 3 of 104 - MEASURED), D6 the
+#             App never measures the budget (AD-4), D7 <md sort menu is new but the sort
+#             contract is 2.11a's, D8 mint result letters + standings columns (2.12 IS the
+#             owning story per deferred-work:1376), D9 the row-as-link MECHANISM (DataTable has
+#             NO rowHref/rowClass hook — verified; ruled stretched anchor in the row-header cell
+#             + an API addition, private copies banned; 2.12 is the FIRST story to put focusable
+#             content in a DataTable body, so UX-DR12's focus-restore goes live here), D10 the
+#             results listing is unspecified in BOTH spines so 2.12 authors and records it, D11
+#             whether result rows carry chips at all (MatchResultRow has NO MatchResult field —
+#             a chip there needs a derivation AD-5 does not obviously bless; standings-form-only
+#             is the lower-risk reading).
+#             VALIDATION (2 fresh-context agents) FOUND 3 CRITICALS, ALL FIXED IN-STORY: (a) AC4
+#             was UNIMPLEMENTABLE — DataTable's sortState is component-private (DataTable.tsx:188,
+#             no sortState/onSortChange prop), so an external sort menu had nothing to drive;
+#             ruled an ADDITIVE controlled-sort API as an authorized amendment to 2.11a's
+#             contract, uncontrolled path unchanged for all existing call sites. (b) Task 6.5's
+#             inherited 2.11b re-key idiom would have remounted the table and silently destroyed
+#             the sort — the exact defect Task 6.7 forbids; the re-key is dropped and the
+#             controlled state makes it moot. (c) Task 2.2 instructed a client-side re-sort of
+#             knockoutResults, which the schema already orders and AC1/AD-5 forbid. Also caught
+#             my own gzip figures were SHELL figures (+15 B FNAME) in the same section whose note
+#             warns about that; canonical is 1,034 / 1,183. NOT applied: the validator's
+#             capability-map line renumbering was itself wrong (:221 IS the Hub row) — but its
+#             substantive point stands and is recorded: AD-11's Binds line names FR-34, which is
+#             AC5's own FR, so AD-11 governs the Hub and D1 stands.
+#             MEASURED AT CREATION: fixture = 1 group / 4 standings rows / 2 group results /
+#             1 knockout = 3 reachable matches, exercising 2 of 7 stages. Corpus = 104 bundles,
+#             m001-m104 no gaps, group 72 / r32 16 / r16 8 / qf 4 / sf 2 / third-place 1 /
+#             final 1, groups a-l. Projected full-scale tournament.json ~400 KB raw / ~34 KB
+#             gzip-9 — INDEPENDENTLY CORROBORATED by 1-17's 409,512 / 38,934.
+#             CARRIES A CONTINGENCY ON 1-17: the COMBINED budget FAILS today (611,210 vs
+#             500,000) entirely because of full-roster leaderboards; tournament.json is 7.8% of
+#             ceiling. The fix is 1-17's unruled D3/D5, so 2.12 cannot claim AC5 green alone.
+#             CORRECTED TWO INHERITED PREMISES: 2.6's eager-<script async> "Next static export"
+#             attribution was OVERTURNED by its own review (cause was a value import across a
+#             next/dynamic boundary); and the i18n object-shaped-prop gate hole was RESOLVED by
+#             2.18 decision 8, not still open. Also: "no aria-pressed" is 2.11a decision 10, not
+#             a UX-DR12 clause.
+# 2026-08-06: story 1-17 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 74b1789. FIVE
+#             DECISIONS SURFACED AND LEFT UNRULED for Juan — D1 the FIFA tiebreaker cascade
+#             (bound by four sources, defined by none; corpus resolves every within-group tie
+#             at goal difference and points/GD/GF reproduces the real R32 field exactly), D2
+#             the AD-4 bijection ordering (profiles are 1.18's; 1.15's two-source precedent
+#             recommended), D3 the combined budget (measurement mode absent; full-roster
+#             leaderboards measured 611,210 bytes vs a 500,000 ceiling — FAIL — 105,779 at a
+#             100-row player cap), D4 TeamRecord.played semantics, D5 the board roster.
+#             Three traps reproduced by running the code, all documented in the story.
 # 2026-08-05: story 2-11c CODE REVIEW — 3 layers, 21 findings after dedupe, triaged to 2 decisions
 #             (both ruled by Juan), 12 patches (all applied), 9 deferred, 17 dismissed. Status
 #             review -> done. THE IMPLEMENTATION HELD: the Acceptance Auditor re-ran the chain
@@ -2438,8 +2764,8 @@ development_status:
   # Consequence for Epic 2, owned by 2.10/2.19 not by 1.16: #pressing's metre block is deleted or
   # re-shaped by D1, and CorpusNullableGoalkeeperRecord collapses to a re-export under D2.
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
-  1-17-tournament-index-results-standings-leaderboards: backlog
-  1-18-team-player-profile-artifacts: backlog
+  1-17-tournament-index-results-standings-leaderboards: in-progress
+  1-18-team-player-profile-artifacts: in-progress
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
   epic-1-retrospective: optional
   epic-2: in-progress
@@ -2461,8 +2787,8 @@ development_status:
   2-11a-sortable-data-table-contract: done
   2-11b-expert-layer-per-player-tables: done
   2-11c-expert-layer-event-logs: done
-  2-12-tournament-hub-results-standings: backlog
-  2-13-tournament-leaderboards: backlog
+  2-12-tournament-hub-results-standings: done
+  2-13-tournament-leaderboards: in-progress
   2-14-header-search: backlog
   2-15-player-profile: backlog
   2-16-team-profile: backlog
@@ -2573,3 +2899,20 @@ development_status:
 #             all 43 modules; app suite 741 passed, tsc + eslint clean; emit, emit --dry-run and
 #             run all exit 0. Suite arithmetic now reconciles exactly (1,482 + 19 new = 1,501),
 #             correcting the story's own off-by-one. Status -> done.
+# 2026-08-06: story 1-18 context created and moved to ready-for-dev — team & player profile
+#             emission from pipeline/precompute/profiles.py into data/index/team-profiles/ and
+#             player-profiles/. Baseline 74b1789, contract verified at schemaVersion 4 (CS-2
+#             pre-cleared team-profile's shapeByPhase for this story). Reads data/matches/, NOT
+#             work/spine/, so the camelCase mapping boundary stays single. Scope is pipeline/ +
+#             the two profile directories + FR-1 fixture regeneration; disjoint from 1-17's
+#             tournament.json/leaderboards.json but SHARING the precompute package — every
+#             shared-file edit append-only, never git add -A. Probe: 209 of 1,248 players never
+#             played (16.7% zero-appearance profiles); 3,288 with-minutes pairs vs 3,289 Domain
+#             G rows, the one orphan being m092 Jordan HENDERSON, all-zero; 19 of 48 teams where
+#             the shipped points test contradicts the schema's group-only rule; MetricCode's 32
+#             values split 18 player-scope / 14 team-scope. FIVE RULINGS OPEN FOR JUAN, R1 and
+#             R3 BLOCKING: R1 goalkeeping appears in NO profile artifact (CS-2 D2b made the
+#             block per-team; neither profile schema has a slot, additionalProperties false) —
+#             so a goalkeeper's profile is Domain G only, and 2.16 gets no goalkeeping section
+#             unless a CS-3 is authorized; R3 the bijection owner, which is Story 1.17's
+#             DECISION D2 seen from the other side — rule them together or they diverge.

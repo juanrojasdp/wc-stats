@@ -10,18 +10,17 @@
  * Per-surface stories extend them; the scaffold only fixes the shape.
  */
 export const es = {
+  /*
+   * STORY 2.12 retired `app.scaffold.*` and `a11y.scaffold.demoRegion`. Task 1.1
+   * replaced the Story 2.1 placeholder body in `src/app/page.tsx`, which was
+   * their ONLY call site, so leaving them would be the dead-key defect facing
+   * the other way — the same defect `deferred-work.md` cites for minting keys
+   * ahead of a surface.
+   */
   app: {
     siteName: "WC Stats",
-    scaffold: {
-      heading: "Andamiaje del sistema de diseño",
-      body: "Esta página comprueba los tokens, las fuentes autoalojadas y la capa de idiomas. El contenido real del torneo llega con las siguientes historias.",
-      statLabel: "xG de ejemplo",
-    },
   },
   a11y: {
-    scaffold: {
-      demoRegion: "Demostración de tokens de diseño",
-    },
     // Announced in the TARGET language on switch (WCAG 4.1.3, ruled strings).
     localeAnnouncement: "Idioma: Español",
   },
@@ -302,12 +301,16 @@ export const es = {
     incomplete: {
       /*
        * The forward note ruled decision 12 requires: the report also prints a
-       * LONGER per-shot label whose vocabulary this site does not map yet. Its
-       * extension rides CS-1, which has not landed. Decision 12: do NOT write
-       * the pre-CS-1 count anywhere, in code, comment or copy — this comment
-       * stated the rule and broke it in the same sentence until the 2.18 code
-       * review. The counts live in contract/common.schema.json, which is the
-       * one place they cannot go stale.
+       * LONGER per-shot label whose vocabulary this site does not map. CS-1 HAS
+       * NOW LANDED (093a1b2; schemaVersion 2 -> 3, and CS-2 has since taken it
+       * to 4), so that extension exists in the contract — and the site still
+       * maps none of it, deliberately, because AD-14 decision CR-2 makes
+       * `outcome` authoritative for marker encoding. (Stale-rationale fix,
+       * Story 2.13 ruling 5.) Decision 12: do NOT write the count anywhere, in
+       * code, comment or copy — this comment stated the rule and broke it in
+       * the same sentence until the 2.18 code review. The counts live in
+       * contract/common.schema.json, which is the one place they cannot go
+       * stale.
        */
       es: "incompleto",
       en: "incomplete",
@@ -539,6 +542,182 @@ export const es = {
        */
       crashedExpert: "No pudimos mostrar los datos por jugador de este partido.",
       crashedExpertExplanation: "Puedes recargar la página para volver a intentarlo.",
+    },
+  },
+  /*
+   * ------------------------ THE TOURNAMENT HUB (Story 2.12) ------------------
+   *
+   * `/`'s results and standings. A NEW TOP-LEVEL NAMESPACE rather than a branch
+   * of `match.*`: every string under `match.bundle.*` is match-scoped and would
+   * be a FALSE STATEMENT here — `match.bundle.loading` is literally "Cargando
+   * datos DEL PARTIDO" and `match.bundle.invalid` "Los datos DE ESTE PARTIDO".
+   * The same goes for `tactical.empty.*` ("… para este partido"). The Hub is a
+   * different surface and gets its own copy.
+   *
+   * REUSED, NOT RE-MINTED: `enums.stage.*` (all 7 codes, already ruled, incl.
+   * "Dieciseisavos de final"), `match.hero.group` ("Grupo" — one term, one key;
+   * promoting it to a shared namespace would rewrite a shipped key path for no
+   * behavioural gain, and 2.16/2.17 are the natural point), and
+   * `match.hero.scoreSeparator` / `match.meta.penShort` for the scoreline.
+   *
+   * RULED VERBATIM by EXPERIENCE.md's per-term table: `standings.heading` is
+   * "Tabla de posiciones" (the row that also rules "Líderes del torneo" for
+   * 2.13, and that avoids "Clasificación" entirely — in LatAm it MEANS the
+   * standings table and the Hub carries both surfaces), and the standings
+   * column abbreviations are its ruled set: PJ, G, E, P, GF, GC, DG, Pts.
+   *
+   * NEWLY AUTHORED under EXPERIENCE.md's extension procedure, because that
+   * table has no row for any of them: `hub.title` (the Hub `<h1>`, which no
+   * spine specifies), `results.heading` ("Resultados" — the results-surface
+   * heading, likewise unspecified), `enums.matchdayRound.*` (all nine codes,
+   * which had no key in either dictionary) and the ENGLISH standings column
+   * abbreviations (the table rules the Spanish set and the English CHIP
+   * letters, not the English column heads). All four are flagged in the story's
+   * Completion Notes for Juan to confirm.
+   *
+   * The four rows are appended to EXPERIENCE.md's own table under "Rows
+   * appended by Story 2.12" — added at CODE REVIEW, because the first pass
+   * minted the strings and claimed the append without making it. Minting
+   * terminology without the row is how the table stops being the record.
+   */
+  hub: {
+    /*
+     * The page `<h1>`. It is a locale string rather than `tournamentName`
+     * because AD-11 (ruled D1) reserves the build-time `readTournament()` read
+     * to `<title>`/OG metadata, and the artifact's proper noun is not available
+     * to the pre-rendered body. It must cover the whole route — leaderboards
+     * (2.13) as well as standings and results — so it names the tournament
+     * rather than either surface.
+     */
+    title: "El torneo",
+    // Composition glyph, registered so no component hardcodes it.
+    separator: " · ",
+    // The runtime region's four states (D1), mirroring MatchBundleRegion's
+    // machine with Hub-scoped copy.
+    region: {
+      loading: "Cargando los datos del torneo",
+      loaded: "Datos del torneo cargados.",
+      error: "No pudimos cargar los datos del torneo. Revisa tu conexión e intenta de nuevo.",
+      retry: "Reintentar",
+      /*
+       * A payload that ARRIVED INTACT and then failed the schemaVersion gate is
+       * not a network failure, so this branch carries no retry — re-fetching
+       * the identical artifact can never change the answer.
+       */
+      invalid: "Los datos del torneo no coinciden con esta versión del sitio.",
+      invalidExplanation: "Estamos al tanto. Vuelve a intentarlo más tarde.",
+      /*
+       * The render-time crash the error boundary catches — a DIFFERENT failure
+       * from `error` (the fetch never arrived) and from `invalid` (it arrived
+       * and failed the version gate): here it arrived, passed the gate, and one
+       * malformed field threw while painting.
+       *
+       * Hub-scoped rather than the boundary's `match.bundle.crashed` default,
+       * which reads "el análisis táctico de este partido" — a false statement
+       * on a tournament-wide route (ruled D8).
+       */
+      crashed: "No pudimos mostrar los resultados y las posiciones.",
+      crashedExplanation:
+        "Los datos del torneo llegaron con un valor que no pudimos leer. Estamos al tanto.",
+    },
+    /*
+     * The `<md` column disclosure (AC 4). TWO keys, not one conditional call:
+     * `{t(cond ? "a" : "b")}` trips the i18n gate, so the key is built into a
+     * variable — ViewDataDisclosure's hard-won idiom, copied rather than
+     * re-derived.
+     */
+    columns: {
+      more: "Más columnas",
+      fewer: "Menos columnas",
+    },
+    // The `<md` sort menu (AC 4). `trigger` is composed with the table's own
+    // name at the call site so twelve menus do not share one accessible name.
+    sortMenu: {
+      trigger: "Ordenar",
+      clear: "Orden original",
+    },
+    standings: {
+      // RULED VERBATIM (EXPERIENCE.md, "standings / leaderboards").
+      heading: "Tabla de posiciones",
+      /*
+       * UX-DR12's "stated default sort per table", discharged by the caption —
+       * which NEVER mutates on sort (2.11a decision 7). `null` sort state IS
+       * artifact order (AD-5), and the artifact states rank order.
+       */
+      caption: "Ordenado por posición.",
+      // Names the table in the ONE polite sort announcement; composed with the
+      // group label at the call site, because twelve tables share this surface.
+      tableName: "Tabla de posiciones",
+      // sr-only prefix on the stretched row anchor, so a screen reader's link
+      // list reads "Ver el equipo México" and not a bare team name.
+      rowLink: "Ver el equipo",
+      empty: {
+        headline: "Sin posiciones para este grupo.",
+        explanation: "El índice del torneo todavía no trae la tabla de este grupo.",
+      },
+      column: {
+        rank: "Pos.",
+        team: "Equipo",
+        played: "PJ",
+        won: "G",
+        drawn: "E",
+        lost: "P",
+        goalsFor: "GF",
+        goalsAgainst: "GC",
+        goalDifference: "DG",
+        points: "Pts",
+        form: "Forma",
+      },
+      /*
+       * `headTitle` for the NINE abbreviated heads only — TableColumn's
+       * contract is "full term when headText is abbreviated; null otherwise",
+       * so `team` and `form` deliberately have no entry. UX-DR17 requires the
+       * full term behind every ruled abbreviation.
+       */
+      columnTitle: {
+        rank: "Posición",
+        played: "Partidos jugados",
+        won: "Ganados",
+        drawn: "Empatados",
+        lost: "Perdidos",
+        goalsFor: "Goles a favor",
+        goalsAgainst: "Goles en contra",
+        goalDifference: "Diferencia de gol",
+        points: "Puntos",
+      },
+    },
+    results: {
+      // NEWLY AUTHORED (see the namespace docblock).
+      heading: "Resultados",
+      caption: "Ordenado por número de partido.",
+      tableName: "Tabla de resultados",
+      rowLink: "Ver el partido",
+      /*
+       * Row-sized `decidedBy` suffixes. `match.hero.extraTime` ("Definido en
+       * tiempo extra") and `match.hero.shootout` ("Penales:") are HERO-sized
+       * caption copy and do not fit a 390 px table row, so the row prints a
+       * short visible form and carries the full term in an `sr-only` span.
+       * The extra-time full form REUSES `match.hero.extraTime`; the shoot-out
+       * one is minted here because `match.hero.shootout` carries a colon and
+       * labels a following number rather than standing alone.
+       */
+      extraTimeShort: "t. extra",
+      shootoutFull: "Definido en penales",
+      empty: {
+        headline: "Sin resultados para esta fase.",
+        explanation: "El índice del torneo todavía no trae partidos en esta fase.",
+      },
+      column: {
+        match: "Partido",
+        matchNumber: "N.º",
+        date: "Fecha",
+        kickoff: "Hora",
+        venue: "Sede",
+        matchdayRound: "Jornada",
+      },
+      columnTitle: {
+        matchNumber: "Número de partido",
+      },
     },
   },
   /*
@@ -1285,9 +1464,13 @@ export const es = {
     /*
      * The five-value marker outcome (Story 2.7 Task 10.2), verbatim from
      * EXPERIENCE's ruled i18n table row "shot outcomes (legend + log headers)".
-     * ShotOutcomeDetail labels are deliberately ABSENT: its 22->24 extension is
-     * CS-1's payload, and AD-14 decision CR-2 makes `outcome` authoritative for
-     * marker encoding — the detail labels belong to Stories 2.11/2.13/2.18.
+     * ShotOutcomeDetail labels are deliberately ABSENT, and they stay absent
+     * now that CS-1 has landed (093a1b2; the 24-value enum exists in the
+     * contract): AD-14 decision CR-2 makes `outcome` authoritative for marker
+     * encoding and forbids deriving it from the detail, so the absence is a
+     * ruling rather than a gap. Whoever ships detail labels owns minting them
+     * — 2.11 and 2.18 have both shipped without, and 2.13 maps `MetricCode`
+     * instead. (Stale-rationale fix, Story 2.13 ruling 5.)
      */
     shotOutcome: {
       goal: "Gol",
@@ -1560,6 +1743,68 @@ export const es = {
       claim: "Atrapada",
       "tipped-palmed": "Desvío con la mano",
     },
+    /*
+     * ---------------------- STORY 2.12's THREE ENUMS ------------------------
+     *
+     * TWO LETTER SYSTEMS COLLIDE ON THE HUB, and keying off the enum code is
+     * what keeps them apart — this is the story's likeliest silent bug.
+     *
+     * 1. `D` INVERTS ACROSS LOCALES. es `D` is *derrota* (LOSS); en `D` is
+     *    *draw*. A key named after the letter would flip meaning on the
+     *    language toggle with nothing to catch it. `i18n.test.ts` asserts the
+     *    divergence explicitly: es `D` and en `D` map to DIFFERENT MatchResult
+     *    codes, and that assertion exists to fail if anyone "tidies" these.
+     * 2. CHIPS AND COLUMNS USE DIFFERENT LETTERS FOR THE SAME CONCEPTS, IN THE
+     *    SAME ROW. Chips are V/E/D, standings columns are G/E/P — only `E`
+     *    coincides. The two live in different namespaces on purpose.
+     * 3. And in EN the standings `played` head is "MP", not "P": `P` is already
+     *    the es *perdidos* column, and English standings tables split on
+     *    played-vs-lost the other way round. Newly authored, since
+     *    EXPERIENCE.md rules the es column set only.
+     *
+     * Both are RULED VERBATIM by EXPERIENCE.md's "result letters & standings
+     * columns" row (V / E / D; chips EN: W / D / L) — one of the three
+     * scaffolding rows `deferred-work.md` routed to its owning story, which
+     * this is.
+     */
+    matchResult: {
+      win: "V",
+      draw: "E",
+      loss: "D",
+    },
+    /*
+     * The chip's spoken form. A chip whose accessible content is a bare letter
+     * makes the row's name unreadable, so every chip carries an `sr-only` word.
+     * A spoken-form rule is not written in the spines — this is a ruled
+     * addition, on the precedent of the `líder` sr-only affix (Story 2.4).
+     */
+    matchResultFull: {
+      win: "Victoria",
+      draw: "Empate",
+      loss: "Derrota",
+    },
+    /*
+     * All NINE MatchdayRound codes. `MatchdayRound` is a SEPARATE closed enum
+     * from `Stage`: six codes share a name with a stage and are restated here
+     * rather than bridged to `enums.stage`, because a code with no entry of its
+     * own renders unlabelled the day the two vocabularies diverge. The six
+     * shared labels are pinned EQUAL to their `enums.stage` counterparts in
+     * `i18n.test.ts`, so the restatement cannot drift into a second term.
+     *
+     * "Jornada" is the standard LatAm word for a group matchday; the round is a
+     * rendered LABEL on every results row and is never a sectioning key (D10).
+     */
+    matchdayRound: {
+      "group-md1": "Jornada 1",
+      "group-md2": "Jornada 2",
+      "group-md3": "Jornada 3",
+      r32: "Dieciseisavos de final",
+      r16: "Octavos de final",
+      qf: "Cuartos de final",
+      sf: "Semifinal",
+      "third-place": "Tercer puesto",
+      final: "Final",
+    },
     // Units are locale metadata, never baked into a label string (AD-7).
     unit: {
       km: "km",
@@ -1569,6 +1814,92 @@ export const es = {
       // Story 2.18 Task 8.10: the Hero's top-speed tile had no unit entry at
       // all, so "km/h" was baked into its label.
       kmh: "km/h",
+    },
+    /*
+     * ---------------- STORY 2.13 — THE 32 LEADERBOARD METRICS ----------------
+     *
+     * A NEW NAMESPACE, because `enums.metric` above is SEALED: i18n.test.ts
+     * pins its key set exactly to KEY_STAT_FIELDS (19 Domain B fields) and
+     * `tactical-sections.ts`, which owns that list, is do-not-touch. One extra
+     * key there is a red suite — this file already records the collision twice.
+     * MetricCode is 32 values, so a new namespace is the only shape that fits,
+     * and it is the shape `expert.field` established for exactly this reason.
+     *
+     * ALMOST NOTHING HERE IS MINTED. Eighteen strings are `enums.metric` above,
+     * verbatim (every one of its 19 keys except `directPressures`, which is not
+     * a MetricCode); fourteen come from `expert.field` / `expert.fieldTitle`.
+     * A metric that names the same quantity as a shipped label takes that
+     * label rather than a second name for it.
+     *
+     * FULL TERMS ONLY. Two of the fourteen are ABBREVIATIONS in `expert.field`
+     * — topSpeed is "Vel. máx." and highSpeedRuns is "CARR. ALTA VEL." — so
+     * both are taken from `expert.fieldTitle` instead. The abbreviations live in
+     * `leaderboardMetricAbbr` below and are keyed by the same code, which is
+     * what lets a narrow column head swap one for the other while keeping the
+     * full term in `headTitle` and in the accessible name (UX-DR17, UX-DR19).
+     */
+    leaderboardMetric: {
+      // — 18 from enums.metric, verbatim —
+      ballProgressions: "Progresiones de balón",
+      completedLineBreaks: "Rupturas de líneas completadas",
+      crosses: "Centros",
+      defensiveLineBreaks: "Rupturas de líneas defensivas",
+      defensivePressures: "Presiones defensivas",
+      distanceCovered: "Distancia",
+      expectedGoals: "xG",
+      forcedTurnovers: "Recuperaciones forzadas",
+      goals: "Goles",
+      passCompletion: "Precisión de pases",
+      passes: "Pases",
+      passesCompleted: "Pases completados",
+      possession: "Posesión",
+      receptionsInFinalThird: "Recepciones en el último tercio",
+      secondBalls: "Segundas jugadas",
+      shots: "Tiros",
+      shotsOnTarget: "Tiros al arco",
+      sprintDistance: "Distancia en sprint",
+      // — 14 from expert.field, verbatim, except the two noted below —
+      crossesCompleted: "Centros completados",
+      duelsWonAerial: "Duelos aéreos ganados",
+      duelsWonPhysical: "Duelos físicos ganados",
+      interceptions: "Intercepciones",
+      lineBreaksCompleted: "Rupturas de líneas completadas",
+      possessionRegains: "Recuperaciones",
+      sprints: "Sprints",
+      stepIns: "Irrupciones",
+      switchesOfPlay: "Cambios de orientación",
+      tacklesWon: "Entradas ganadas",
+      takeOns: "Regates",
+      totalDistance: "Distancia total",
+      // The two whose expert.field value is an ABBREVIATION. Their FULL terms
+      // come from expert.fieldTitle — this namespace holds full terms only.
+      highSpeedRuns: "Carreras a alta velocidad",
+      topSpeed: "Velocidad máxima",
+    },
+    /*
+     * The ruled table abbreviations — EXACTLY TWO, and THIS STORY MINTS NONE.
+     *
+     * EXPERIENCE.md's Spanish-text-expansion rule names one worked example
+     * ("VEL. MÁX." for "Velocidad máxima", with the full term in the header's
+     * tooltip and aria-label), and the app already ships both strings as ruled
+     * copy. Both values below are byte-for-byte reuses, pinned in i18n.test.ts
+     * so a second mint cannot drift in beside them:
+     *   topSpeed      = match.hero.tiles.topSpeed  (= expert.field.topSpeed)
+     *   highSpeedRuns = expert.field.highSpeedRuns (ruled by the glossary's
+     *                   high-speed-run definition, verbatim)
+     *
+     * SENTENCE CASE, not ALL-CAPS, for topSpeed: the uppercase rendering comes
+     * from `type-stat-label`, which carries `text-transform: uppercase`, never
+     * from the string. (`type-label-caps` does NOT — despite the name it is a
+     * caps-METRIC label, 11px/600/0.08em tracking, and every one of its twenty
+     * consumers passes content that is already uppercase. Corrected at review;
+     * the earlier claim named both classes.) Every other metric has no ruled
+     * abbreviation and therefore gets no
+     * entry — the head falls back to its full term.
+     */
+    leaderboardMetricAbbr: {
+      highSpeedRuns: "CARR. ALTA VEL.",
+      topSpeed: "Vel. máx.",
     },
   },
   /*
@@ -1799,6 +2130,143 @@ export const es = {
       distanceZone5: "25 km/h o más",
       highSpeedRuns: "Carreras a alta velocidad",
       topSpeed: "Velocidad máxima",
+    },
+  },
+  /*
+   * ================= LÍDERES DEL TORNEO (Story 2.13, FR-26) =================
+   *
+   * A NEW TOP-LEVEL NAMESPACE for the Hub's leaderboards section. This
+   * DISCHARGES THE LEADERBOARDS HALF of EXPERIENCE.md's "standings /
+   * leaderboards" policy row, which glossary.ts records as having "NO locale
+   * keys at all" and deferred to its owning story. The STANDINGS half is Story
+   * 2.12's and is not claimed here.
+   *
+   * `title` IS RULED, not chosen. The policy row reads: "standings /
+   * leaderboards | translate | Tabla de posiciones / Líderes del torneo |
+   * 'Clasificación' is avoided entirely — in LatAm it *means* the standings
+   * table, and the Hub carries both surfaces". i18n.test.ts's forbidden-register
+   * sweep bans the prefix "clasificaci" outright, so any leaderboard copy
+   * reaching for it turns the suite red by design.
+   *
+   * NO COLUMN LABEL FOR THE ENTITY OR THE TEAM. Those two heads resolve
+   * `viz.table.player` / `viz.table.team`, which already ship as the house
+   * column names for exactly those quantities — a second pair here would be two
+   * sources for one term, which is what this file's docblocks exist to prevent.
+   * The VALUE column's head is the metric label itself (enums.leaderboardMetric
+   * or its abbreviation), so it needs no entry either.
+   *
+   * t() HAS NO INTERPOLATION, so the result-count sentence is composed at the
+   * call site from `filterResults` / `filterResultsOne` and a formatted number.
+   * Tuteo, neutral LatAm register, no exclamation marks (UX-DR19).
+   */
+  leaderboards: {
+    title: "Líderes del torneo",
+    // Names the two altitudes EXPERIENCE.md's Visualization Layering row gives
+    // this surface: teaser rows, then the full sortable tables.
+    teaserHeading: "Lo más destacado",
+    tablesHeading: "Tablas completas",
+    /*
+     * The teaser's own row count, composed at the call site — NEVER the literal
+     * "3". Ranks are competition-ranked, so a tie at rank 3 puts four or more
+     * rows in a teaser and a hardcoded three would be a visible lie (ruling 9).
+     */
+    teaserCount: "primeros puestos",
+    teaserCountOne: "primer puesto",
+    /*
+     * THE TEASER'S OVERFLOW LINE (ruled by Juan at the 2.13 code review).
+     *
+     * A card prints at most three rows; when more rows qualify at `rank <= 3`
+     * it STATES how many it withheld rather than cutting them silently. The
+     * real emission makes this concrete: `passCompletion/player` puts 51
+     * one-match players at rank 1, which turned one card in a three-up grid
+     * into a 51-entry list.
+     *
+     * `…TiedAt` names the shared rank and is used ONLY when every withheld row
+     * carries it; `…More` is the honest fallback when the withheld rows span
+     * more than one rank, because naming a rank they do not all share would be
+     * the misstatement the disclosure exists to avoid. Both are composed at the
+     * call site — t() has no interpolation.
+     */
+    teaserOverflowTiedAt: "empatados en el puesto",
+    teaserOverflowTiedAtOne: "empatado en el puesto",
+    // NO singular variant: "+1 más en el top 3" and "+2 más en el top 3" take
+    // the same words, so a `…MoreOne` key would be a dead one.
+    teaserOverflowMore: "más en el top 3",
+    // Joins a board's metric label to its scope label in the board heading.
+    boardSeparator: " · ",
+    /*
+     * UX-DR12 requires every table to STATE its default order, and this one
+     * never mutates on sort (2.11a decision 7). The default order is the
+     * artifact's, which for a leaderboard is rank order — there is no
+     * sorted-on-mount column and no `defaultSort` prop.
+     */
+    tableCaption: "Ordenado por puesto.",
+    /*
+     * THE PER-BOARD DISCLOSURE (ruled at the 2.13 code review). Past the first
+     * three boards the table is not mounted at all, so the real emission's 36
+     * boards do not put ~2,965 rows on the page at once. Distinct from 2.12's
+     * "Más columnas" control, which discloses COLUMNS within one table.
+     */
+    showTable: "Ver la tabla",
+    hideTable: "Ocultar la tabla",
+    filterLabel: "Filtrar por nombre",
+    filterPlaceholder: "Escribe un nombre",
+    filterResults: "resultados",
+    filterResultsOne: "resultado",
+    filterNoResults: "Sin resultados",
+    filterNoResultsExplanation:
+      "Ningún nombre coincide con el filtro. Borra letras para ver más filas.",
+    empty: "Todavía no hay tablas de líderes",
+    emptyExplanation: "El índice del torneo no trae ninguna tabla de líderes.",
+    /*
+     * A board that ARRIVED with zero rows is not a filter that excluded them.
+     * Conflating the two told the reader to "borrar letras" from an empty
+     * filter box — found at the 2.13 code review. The contract's "empty array
+     * and null are distinct states" applies one level down as well.
+     */
+    boardEmpty: "Esta tabla llegó sin filas",
+    boardEmptyExplanation: "El torneo todavía no tiene datos suficientes para este indicador.",
+    loading: "Cargando las tablas de líderes",
+    /*
+     * The RESOLVED announcement, which this region shipped without — while both
+     * sibling regions on the same routes (match.bundle.loaded, hub.region.loaded)
+     * announced theirs. A screen-reader user was told when results and standings
+     * arrived and nothing when the leaderboards did; the aria-busy skeleton just
+     * disappeared. Found at the 2.13 code review, and it is exactly the
+     * two-regions-answering-differently defect the region's own docblock claims
+     * to have avoided.
+     */
+    loaded: "Tablas de líderes cargadas.",
+    error: "No pudimos cargar las tablas de líderes.",
+    retry: "Reintentar",
+    /*
+     * A payload that arrived intact and then failed the schemaVersion gate —
+     * a data-integrity problem, not a network one, so it gets NO retry button
+     * (re-fetching the same artifact cannot change the answer). Mirrors
+     * match.bundle.invalid, whose distinction Story 2.5's review ruled.
+     */
+    invalid: "Las tablas de líderes no coinciden con esta versión de los datos.",
+    invalidExplanation:
+      "El archivo llegó completo pero trae otra versión del esquema, así que no se muestra.",
+    columns: {
+      rank: "Puesto",
+      matchesPlayed: "Partidos",
+      perMatch: "Por partido",
+    },
+    // Plural, because it names what the whole board ranks — the entity COLUMN
+    // head is the singular viz.table.team / viz.table.player.
+    scope: {
+      team: "Equipos",
+      player: "Jugadores",
+    },
+    /*
+     * The artifact carries `higherIsBetter` "so the App can label the board
+     * correctly without a hard-coded metric table of its own" (the schema's own
+     * words). Render it; do not ignore it.
+     */
+    higherIsBetter: {
+      true: "Más es mejor",
+      false: "Menos es mejor",
     },
   },
 };

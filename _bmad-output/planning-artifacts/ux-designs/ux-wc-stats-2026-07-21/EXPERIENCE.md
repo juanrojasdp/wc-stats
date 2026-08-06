@@ -289,6 +289,15 @@ Rows appended by **Story 2.18** under that procedure (appended, never renumbered
 | about — credits | translate | *(see `about.credits`)* | **PROPOSED, NOT RULED.** No spine carries credits wording. Authored under Voice and Tone (tuteo, neutral LatAm, no exclamation marks, flat register) by Story 2.18 Task 7.4; awaiting Juan's confirmation or overturn at review |
 | about — project framing | translate | *(see `about.project`)* | **PROPOSED, NOT RULED.** As above, for the free/open passion-project framing. Story 2.18 Task 7.4 |
 
+Rows appended by **Story 2.12** under the same procedure (appended, never renumbered). The story's D8 required these to land here and they were minted in the locale files without the table rows; added at code review:
+
+| Term (en) | Decision | Proposed es string | Rationale |
+|---|---|---|---|
+| tournament hub — page title | translate | El torneo | **PROPOSED, NOT RULED.** The route's `<h1>` (`hub.title`). No spine specifies a title for `/` — the IA table names the surface "Tournament Hub", which is a document label rather than reader-facing copy. Authored under Voice and Tone (neutral LatAm, flat register); en "The tournament". Awaiting Juan's confirmation or overturn |
+| tournament hub — results surface heading | translate | Resultados | **PROPOSED, NOT RULED.** The results-surface `<h2>` (`hub.results.heading`). The *standings / leaderboards* row above rules the other two Hub surface headings and has no entry for results, which is why D10 had to author the whole listing. Direct, universal; en "Results" |
+| matchday / round | translate | Jornada 1–3 · Dieciseisavos de final · Octavos de final · Cuartos de final · Semifinal · Tercer puesto · Final | The `MatchdayRound` contract enum, all nine codes (`enums.matchdayRound.*`) — **no key existed in either dictionary**. Separate from `Stage` by contract: six codes share a name with a stage and are labelled identically (pinned equal in `i18n.test.ts` so they cannot drift), while `group-md1..3` have no stage counterpart at all. "Jornada" over "Fecha", which collides with the calendar date rendered in the adjacent column |
+| standings column abbreviations (en) | translate | *(en set: MP, W, D, L, GF, GA, GD, Pts)* | The *result letters & standings columns* row rules the **Spanish** set (PJ, G, E, P, GF, GC, DG, Pts) and, separately, the English **chip** letters (W/D/L). The English **column** heads were unruled. Authored to the international-broadcast set, with one forced departure: `played` is **"MP"** (matches played), never "P", because the chip letters already spend `D` on *draw* against Spanish *derrota* and a bare "P" beside "W D L" reads as the Spanish *perdidos* column it sits next to in the other locale |
+
 **Attribution (OQ-3)** [ASSUMPTION: wording and placement proposed here; presence is the requirement]:
 
 - Placement: (1) persistent site footer on every route; (2) in-panel caption on every pitch panel (survives screenshots — Diego's citation path); (3) full statement on `/about`.

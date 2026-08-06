@@ -6,6 +6,7 @@ import {
   clockSortValue,
   compareNumberNullLast,
   compareTextNullLast,
+  composeSortAnnouncement,
   nextSortState,
   sortRows,
   type SortState,
@@ -448,5 +449,83 @@ describe("ariaSortFor", () => {
     expect(ariaSortFor(state, "count")).toBe("descending");
     expect(ariaSortFor(state, "name")).toBe("none");
     expect(ariaSortFor({ columnKey: "name", direction: "ascending" }, "name")).toBe("ascending");
+  });
+});
+
+/*
+ * `composeSortAnnouncement` (Story 2.12 amendment, pinned at code review).
+ *
+ * IT WAS EXTRACTED FROM `DataTable` PRECISELY SO TWO CONTROLS COULD NOT DIVERGE
+ * — the Hub's `<md` sort menu drives the same state from outside the table —
+ * and then shipped with no test at all. Nothing rendered is unit-testable in
+ * this jsdom-less harness, so if this composition is not pinned here it is not
+ * pinned anywhere: a changed separator or a dropped period would stay green
+ * while the only feedback a screen-reader user gets from a sort quietly changes
+ * shape. The expected strings below are the ones `DataTable` emitted before the
+ * move, which is what "byte-identical" in that docblock has to mean.
+ */
+const ANNOUNCE_LABELS = {
+  sortedBy: "Ordenado por",
+  ascending: "ascendente",
+  descending: "descendente",
+  cleared: "Se restableció el orden original.",
+};
+
+describe("composeSortAnnouncement", () => {
+  it("names the column and the direction, and ends in a period", () => {
+    expect(
+      composeSortAnnouncement({
+        state: { columnKey: "goalsFor", direction: "ascending" },
+        headText: "GF",
+        labels: ANNOUNCE_LABELS,
+      })
+    ).toBe("Ordenado por GF, ascendente.");
+  });
+
+  it("swaps only the direction word between the two sorted states", () => {
+    expect(
+      composeSortAnnouncement({
+        state: { columnKey: "goalsFor", direction: "descending" },
+        headText: "GF",
+        labels: ANNOUNCE_LABELS,
+      })
+    ).toBe("Ordenado por GF, descendente.");
+  });
+
+  it("names NO column on the cleared state — the cycle's third state has none active", () => {
+    expect(
+      composeSortAnnouncement({ state: null, headText: "GF", labels: ANNOUNCE_LABELS })
+    ).toBe("Se restableció el orden original.");
+  });
+
+  it("prefixes the table name on BOTH states, so thirty Hub tables stay distinguishable", () => {
+    const tableName = "Tabla de posiciones · Grupo A";
+    expect(
+      composeSortAnnouncement({
+        state: { columnKey: "points", direction: "descending" },
+        headText: "Pts",
+        labels: ANNOUNCE_LABELS,
+        tableName,
+      })
+    ).toBe("Tabla de posiciones · Grupo A: Ordenado por Pts, descendente.");
+    // The cleared form is exactly as ambiguous unprefixed as the sorted one.
+    expect(
+      composeSortAnnouncement({
+        state: null,
+        headText: "Pts",
+        labels: ANNOUNCE_LABELS,
+        tableName,
+      })
+    ).toBe("Tabla de posiciones · Grupo A: Se restableció el orden original.");
+  });
+
+  it("emits the bare clause when no table name is given (the pre-2.11b call shape)", () => {
+    expect(
+      composeSortAnnouncement({
+        state: { columnKey: "name", direction: "ascending" },
+        headText: "Equipo",
+        labels: ANNOUNCE_LABELS,
+      })
+    ).not.toContain(":");
   });
 });

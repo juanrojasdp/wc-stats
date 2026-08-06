@@ -20,11 +20,16 @@ import {
  * DESIGN's table. A `Record` over the GENERATED union, so a contract enum
  * change is a compile error here rather than a silently unstyled marker.
  *
- * CS-1-proof by construction: this maps `ShotOutcome` — the stable five-value
- * marker enum — and never `ShotOutcomeDetail`, whose 22->24 extension is CS-1's
- * payload. AD-14 decision CR-2 makes `outcome` authoritative for marker
- * encoding ("the App treats outcome as authoritative, never derived from
- * outcomeDetail"), so the detail labels belong to Stories 2.11 / 2.13 / 2.18.
+ * CS-1-proof by construction, AND CS-1 HAS SINCE LANDED WITHOUT TOUCHING THIS
+ * (093a1b2; schemaVersion 2 -> 3, and CS-2 has since taken it to 4) — which is
+ * the claim being proved rather than a prediction. This maps `ShotOutcome`, the
+ * stable five-value marker enum, and never `ShotOutcomeDetail`, whose extended
+ * vocabulary now exists in the contract and is still mapped nowhere in the App.
+ * AD-14 decision CR-2 makes `outcome` authoritative for marker encoding ("the
+ * App treats outcome as authoritative, never derived from outcomeDetail"), so
+ * the detail labels belong to whichever story ships them — not to 2.11, 2.13 or
+ * 2.18, all three of which have now shipped without. (Stale-rationale fix,
+ * Story 2.13 ruling 5.)
  */
 export const SHOT_OUTCOME_ENCODING: Record<
   ShotOutcome,

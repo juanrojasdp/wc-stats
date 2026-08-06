@@ -412,7 +412,7 @@ describe("i18n gate keeps legal patterns legal", () => {
       `import { t } from "@/lib/i18n";
        export function P() {
          return (
-           <p aria-label={t("a11y.scaffold.demoRegion")} className="type-body" data-slot="probe">
+           <p aria-label={t("chrome.skipLink")} className="type-body" data-slot="probe">
              {t("app.siteName")}
            </p>
          );
@@ -425,7 +425,7 @@ describe("i18n gate keeps legal patterns legal", () => {
     const errors = await gateErrorsFor(
       `import { t } from "@/lib/i18n";
        export function P({ on }: { on: boolean }) {
-         return <p aria-label={on ? t("app.siteName") : t("app.scaffold.heading")} />;
+         return <p aria-label={on ? t("app.siteName") : t("notFound.homeLink")} />;
        }`
     );
     expect(errors).toEqual([]);

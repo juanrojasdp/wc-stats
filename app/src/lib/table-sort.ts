@@ -256,6 +256,106 @@ export function nextSortState(current: SortState | null, columnKey: string): Sor
   return null;
 }
 
+/*
+ * ---------------- THE POLITE ANNOUNCEMENT (Story 2.12 amendment) -------------
+ *
+ * These four consts and `composeSortAnnouncement` were `DataTable`'s private
+ * module scope until Story 2.12. They moved here for one reason: the Hub's
+ * `<md` sort menu (AC 4) drives the SAME sort state from OUTSIDE the table, so
+ * without a shared composer there would be two restatements of one announcement
+ * — and the announcement is the only feedback a screen-reader user gets that a
+ * sort happened at all.
+ *
+ * The strings are byte-identical to what `DataTable` emitted before the move.
+ */
+
+/** Separates the clauses of the sorted-by announcement. */
+const CLAUSE_SEPARATOR = ", ";
+const PERIOD = ".";
+const SPACE = " ";
+/** Separates a table's own name from the sort clause (Story 2.11b). */
+const NAME_SEPARATOR = ": ";
+
+/** Already-resolved announcement fragments, supplied by the call site's t(). */
+export interface SortAnnouncementLabels {
+  sortedBy: string;
+  ascending: string;
+  descending: string;
+  cleared: string;
+}
+
+/**
+ * The polite announcement for a sort transition.
+ *
+ * `headText` is the ACTIVE column's resolved head; it is unread when `state` is
+ * null, because the cycle's third state names no column — none is active.
+ *
+ * `tableName` prefixes BOTH states, the cleared one included: "the table's
+ * original order was restored" is exactly as ambiguous across twenty-odd tables
+ * as the sorted form, and the Hub renders THIRTY on one route (12 group
+ * standings + 12 group results + up to 6 knockout stages).
+ */
+export function composeSortAnnouncement(input: {
+  state: SortState | null;
+  headText: string;
+  labels: SortAnnouncementLabels;
+  tableName?: string;
+}): string {
+  const { state, headText, labels, tableName } = input;
+  const clause =
+    state === null
+      ? labels.cleared
+      : `${labels.sortedBy}${SPACE}${headText}${CLAUSE_SEPARATOR}${
+          state.direction === "ascending" ? labels.ascending : labels.descending
+        }${PERIOD}`;
+  return tableName === undefined ? clause : `${tableName}${NAME_SEPARATOR}${clause}`;
+}
+
+/*
+ * Wraps the FULL TERM behind an abbreviated head (Story 2.13, UX-DR17/UX-DR19).
+ * Module consts rather than literals because `aria-label` is one of the sixteen
+ * gated prop names and the i18n gate fires on template literals AND on the
+ * operands of concatenation inside them.
+ */
+const TITLE_OPEN = " (";
+const TITLE_CLOSE = ")";
+
+/**
+ * A column head's accessible name, carrying the FULL TERM behind an
+ * abbreviation. `optionalPrefix` is the sort action on a sortable head and
+ * empty on an unsortable one.
+ *
+ * VISIBLE TEXT FIRST, ALWAYS, and the full term APPENDED in parentheses —
+ * never substituted. Swapping `headText` for `headTitle` would set the name to
+ * "Ordenar por Velocidad máxima" over visible text reading "Vel. máx.", so the
+ * visible label would no longer be contained in the accessible name: a WCAG
+ * 2.5.3 Label in Name failure.
+ *
+ * THE SUPPRESSION TEST IS CONTAINMENT, NOT BYTE-EQUALITY. A caller composes the
+ * UNIT into `headText` (ruling 6 puts it head-side) while `headTitle` stays the
+ * bare term, so a byte-equality guard never fires on a metric carrying a unit
+ * and EN shipped "Sort by Top speed (km/h) (Top speed)" — the exact outcome the
+ * guard existed to prevent, and a regression of the Expert Layer's already
+ * shipped topSpeed head. Found at the Story 2.13 code review.
+ *
+ * IT LIVES HERE, not inside `DataTable`, so it can be TESTED. As a closure in a
+ * "use client" component it was unreachable from the node-environment suite,
+ * and the test that claimed to pin it asserted a hand-built template literal
+ * against itself — green even if the function were deleted. Same move, and same
+ * reason, as `composeSortAnnouncement` above.
+ */
+export function composeHeadAccessibleName(
+  optionalPrefix: string,
+  headText: string,
+  headTitle: string | null
+): string {
+  const base = optionalPrefix === "" ? headText : `${optionalPrefix}${SPACE}${headText}`;
+  if (headTitle === null || headText.includes(headTitle)) {
+    return base;
+  }
+  return `${base}${TITLE_OPEN}${headTitle}${TITLE_CLOSE}`;
+}
+
 /**
  * The `aria-sort` value for one column head. In the "none" state EVERY `<th>`
  * reads `"none"` — the third state of the cycle is "no column active", not

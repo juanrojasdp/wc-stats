@@ -7,6 +7,7 @@ import {
   formatInteger,
   formatKickoff,
   formatPercent,
+  includesText,
   textEquals,
 } from "@/lib/format";
 
@@ -116,5 +117,56 @@ describe("collation", () => {
   it("sorts accented names into their base-letter position", () => {
     const names = ["Zamora", "Álvarez", "Ñíguez"];
     expect([...names].sort((a, b) => compareText(a, b))).toEqual(["Álvarez", "Ñíguez", "Zamora"]);
+  });
+});
+
+/*
+ * STORY 2.13 (Task 3.2) — the SUBSTRING counterpart to textEquals.
+ *
+ * `textEquals` cannot serve the leaderboard name filter: it is whole-string
+ * equality built on Intl.Collator, and Intl has NO substring operation at all.
+ * So `includesText` normalizes instead of collating, and it lives beside the
+ * collators rather than in a second module — format.ts's own header declares it
+ * "The ONLY text comparison for sorting", and a second normalization home is
+ * exactly the drift that declaration exists to prevent.
+ */
+describe("includesText (Story 2.13)", () => {
+  it("ignores accents on both sides", () => {
+    expect(includesText("Núñez", "nunez")).toBe(true);
+    expect(includesText("Nunez", "núñez")).toBe(true);
+    expect(includesText("Álvarez", "alvarez")).toBe(true);
+  });
+
+  it("ignores case", () => {
+    expect(includesText("SON Heungmin", "heung")).toBe(true);
+    expect(includesText("son heungmin", "SON")).toBe(true);
+  });
+
+  it("matches everything on an empty needle", () => {
+    // The filter's resting state: an empty input narrows nothing.
+    expect(includesText("Núñez", "")).toBe(true);
+    expect(includesText("", "")).toBe(true);
+  });
+
+  it("is a SUBSTRING filter, not a word filter — a match across a word boundary counts", () => {
+    /*
+     * SAY SO IN THE NAME so a later reader does not "fix" this into a
+     * word-prefix matcher. A reader typing "n he" while scanning "SON
+     * Heungmin" is mid-name, and narrowing the table is the whole point;
+     * requiring a word boundary would make the control feel broken.
+     */
+    expect(includesText("SON Heungmin", "n he")).toBe(true);
+    expect(includesText("Kevin De Bruyne", "in de")).toBe(true);
+  });
+
+  it("still rejects a needle that is not present", () => {
+    expect(includesText("Núñez", "zzz")).toBe(false);
+    expect(includesText("", "a")).toBe(false);
+  });
+
+  it("matches mid-word, which whole-string textEquals cannot", () => {
+    // The one behavioural difference that made a new export necessary.
+    expect(textEquals("Núñez", "nun")).toBe(false);
+    expect(includesText("Núñez", "nun")).toBe(true);
   });
 });
