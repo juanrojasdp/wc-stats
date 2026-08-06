@@ -60,6 +60,25 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-06
+# 2026-08-06: story 2-14 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 29e90fb (verified
+#             HEAD, app/ CLEAN). app/ + locales ONLY; fixture-driven. THIRTEEN RULINGS.
+#             HEADLINE, ESTABLISHED BY MEASUREMENT ON out/: tournament.json is NOT loaded on any
+#             route but `/` -- the chunk that fetches it is referenced 0x by every match route,
+#             /about, /glossary and 404 -- so AC 1's "no network beyond the already-loaded index"
+#             is FALSE off the Hub. Ruled lazy-on-first-engagement with a module-scope promise
+#             cache, and the departure is DECLARED, not papered over. Also found: the allow-list
+#             module walk starts at page.tsx, never layout.tsx, so a header fetch would have gone
+#             unmeasured. THREE BRIEF PREMISES CORRECTED: 2.13's code is already committed inside
+#             29e90fb (swept in under a "2.12 code review" title), so includesText/foldForSearch
+#             are dependencies, not in-flight work; the collator is in format.ts (Story 2.1), is
+#             module-private, and CANNOT do substrings -- reuse the shipped fold instead; and the
+#             slug regex lives in contract/common.schema.json, not AD-3. cmdk is absent so the
+#             UX-DR5 "shadcn Command" instruction is reconciled by hand-rolling. This story also
+#             INTRODUCES THE RENDER-TEST SEAM (jsdom + testing-library, devDependencies only,
+#             per-file opt-in) -- the ledger had named "whichever story introduces jsdom" as owner.
+#             Validation: 2 fresh-context subagents; 13 critical + 12 enhancement findings applied,
+#             incl. a nested-field bug (decidedBy is at knockoutScore.decidedBy, not top level)
+#             that would have shipped silently on 4 of 104 matches.
 # 2026-08-06: story 2-13 CODE REVIEW (review -> in-progress). Three adversarial layers over the
 #             2.13-scoped diff (53 raw findings -> 40 after dedupe); 4 decisions RULED BY JUAN,
 #             29 patches APPLIED, 8 deferred, 3 dismissed.
@@ -89,11 +108,22 @@ last_updated: 2026-08-06
 #             UNCOMMITTED emission, so the ledger owner is corrected to 1.18. The gate reports
 #             1,411 artifacts, not the 111 recorded. Task 1.3's post-regeneration re-measurement
 #             claim was wrong in three places (rank-7 tie is x4 not x5; next rank 11 not 12).
-#             STATUS IS in-progress, NOT done: AC 4's "measured, not asserted" discharge rests on
-#             a browser session predating the fixture regeneration, and the patches changed the
-#             surface materially (disclosure, debounced announcement, projected prop, controlled
-#             sort, role="group"). Task 10.1 + 10.2 must be RE-RUN in the browser. The harness has
-#             no jsdom, so nothing here can be signed off from the suite alone.
+#             BROWSER RE-VERIFICATION DONE IN TWO PASSES, so status is DONE. Pass 1 (fixture):
+#             reflow 375/375 at 390px and 305/305 at 320px in both themes AND both locales, zero
+#             document overflow; contrast method validated against the published viz-team figures
+#             (13.56/4.99, 10.30/5.36 -- exact) then 17 text runs per combination with ZERO
+#             failures, min 7.87 dark / 7.08 light; focus verified under REAL keyboard focus (the
+#             programmatic form reported a false negative first); all buttons and inputs >=44px;
+#             AC 4 zero-network across sorts, filter keystrokes and disclosure toggles.
+#             Pass 2 (real 36-board emission, fixture restored byte-identically afterwards --
+#             sha256 verified): out/index.html 98,640 B against ~989,436 B un-projected, so the
+#             AD-11 projection saves ~890 KB from the Hub document; ruling A renders "+48 tied at
+#             rank 1" on the 51-way tie plus six more overflow lines; ruling B mounts 3 tables /
+#             207 rows against 2,965 and genuinely UNMOUNTS on collapse; the perMatch gate drops
+#             the duplicate column on the 48-row possession average board; boardEmpty renders its
+#             own state; 23->23 resources at scale; reflow clean at real scale.
+#             NOT VERIFIABLE AND NOT A DEFECT: accent folding has NO data in the corpus -- 0 of
+#             715 real names carry an accent -- so includesText's fold is unit-tested only.
 #             Chain after patches: lint clean, tsc clean, build green (9 pages), 868 tests / 867
 #             pass -- the one failure is 1.18's timeout, not this story's.
 # 2026-08-06: story 2-12 CODE REVIEW COMPLETE (review -> done). Three adversarial layers over the
@@ -210,6 +240,51 @@ last_updated: 2026-08-06
 #             deferred-work.md appended with the append-only property PROVEN programmatically
 #             (10,750 bytes appended, prefix byte-identical, no CRLF).
 #             NOT COMMITTED — staging is Juan's call, and the story bars `git add -A`.
+# 2026-08-06: story 1-18 implemented and moved to review — 1,296 profile artifacts (48 team +
+#             1,248 player), all schema-valid, largest 1,543 gzip-9 bytes = 0.31% of the 500 KB
+#             ceiling, byte-identical across two independent emissions in two trees.
+#             FOUR RULINGS BY JUAN: R1 (A) goalkeeping appears in NO profile artifact — CS-2's D2b
+#             made the block per-team and neither profile schema has a slot, so a keeper's profile
+#             is shaped exactly like every other player's and Story 2.16's Team Profile page will
+#             have no goalkeeping section; R2 all 18 player-scope metrics in enum order + 6 trend
+#             series, TOTAL on all 1,248 files so the App never branches (the 209 zero-appearance
+#             players carry 18 zeroed rows and six empty series); R3 Story 1.17 owns the AD-4
+#             route-manifest bijection and 1.18 asserts only the registry-pinned 48 + 1,248, with
+#             main() PRINTING "route-manifest bijection not asserted here" so absence never reads
+#             as a pass; R5 proceed with today's slugs.
+#             THE MUTATION CHECK FOUND A DEFECT IN THIS STORY'S OWN TEST SUITE. The first run
+#             scored 0 red on all five mutations: the fixtures loaded the COMMITTED artifacts, so
+#             mutating the emitter changed nothing the eighteen named expectations could see —
+#             they proved the FILES correct and said nothing about the emitter, with the whole
+#             coupling resting on one byte-comparison test. Fixed by building every profile in
+#             memory and checking the on-disk namespace separately.
+#             A SECOND DEFECT WAS CAUGHT BY THE BYTE-COMPARISON, IN THIS STORY'S OWN OUTPUT. The
+#             mutation harness was killed mid-run, its finally-restore did not complete, and 1,296
+#             artifacts were emitted with perNinety rounded at the SOURCE METRIC's precision —
+#             2.34 shipped as 2. That is landmine 2 exactly and it validates clean. Caught at
+#             1,019/1,296 differing against an independent worktree emission, restored, re-emitted
+#             to 0 differing. Mutations now run only in a worktree.
+#             NEW FINDING, MEASURED AND KEPT: 75 substitutes are stamped at exactly the closing
+#             minute and therefore play 0 clock minutes under the ignore-stoppageMinute ruling. 59
+#             of the 75 carry a stoppage stamp and 16 do NOT, so adding it back would not remove
+#             the population — it would make {minute:90, stoppage:2} in a 90-minute match compute
+#             -2. 20 players total 0 minutes despite an appearance and carry a null perNinety on
+#             every metric; no starter is affected. Filed with 2.15 as owner for the copy ruling.
+#             TASKS 4.7 AND 6.2b's PREMISES WERE CORRECT AT 74b1789 and were overtaken mid-run by
+#             1.17's ae207ed. Verified in a worktree at the exact baseline: _def_properties raised
+#             KeyError on all 13 profile $defs and decimals_map silently omitted PerNinety. The
+#             ordered forks were written, then RETIRED in favour of 1.17's shipped functions, with
+#             their tripwires inverted into positive assertions. Artifacts byte-identical either way.
+#             ONE SUBTASK DELIBERATELY NOT DONE — Task 8.6's >= to == flip. Re-measured: 38 of 66
+#             fixture nodes still go red, and since passNetworkNodes is NULL on 104/104 corpus
+#             bundles the invariant can only ever run against hand-authored fixtures whose edge
+#             lists are a subset by construction. Both ledger entries re-filed with a corrected
+#             precondition and a named owner rather than closed falsely.
+#             DISCLOSED: ae207ed captured this story's two error classes (attribution only,
+#             content intact, recorded not repaired per the 1.14/2.18 precedent); and the new FR-1
+#             fixture bundle adds a FOURTH pre-rendered app route — the first to exercise
+#             players:null and goalkeeping:null in the App — which was NOT verified because app/ is
+#             Epic 2's tree and was occupied by two concurrent sessions throughout.
 # 2026-08-06: story 1-18 DEV STARTED (ready-for-dev -> in-progress). baseline_commit 74b1789 already
 #             pinned in the story frontmatter (preserved, not overwritten). Lane:
 #             pipeline/precompute/profiles.py + pipeline/tests/ + data/index/{team,player}-profiles/
@@ -2765,7 +2840,7 @@ development_status:
   # re-shaped by D1, and CorpusNullableGoalkeeperRecord collapses to a re-export under D2.
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
   1-17-tournament-index-results-standings-leaderboards: in-progress
-  1-18-team-player-profile-artifacts: in-progress
+  1-18-team-player-profile-artifacts: review
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
   epic-1-retrospective: optional
   epic-2: in-progress
@@ -2788,8 +2863,8 @@ development_status:
   2-11b-expert-layer-per-player-tables: done
   2-11c-expert-layer-event-logs: done
   2-12-tournament-hub-results-standings: done
-  2-13-tournament-leaderboards: in-progress
-  2-14-header-search: backlog
+  2-13-tournament-leaderboards: done
+  2-14-header-search: ready-for-dev
   2-15-player-profile: backlog
   2-16-team-profile: backlog
   2-17-comparison-mode: backlog

@@ -4,7 +4,7 @@ baseline_commit: 74b1789
 
 # Story 2.13: Tournament Leaderboards
 
-Status: in-progress
+Status: done
 
 <!-- Baseline 74b1789, verified HEAD with a clean tree at create-story, 2026-08-06.
      THIS STORY IS app/ + locales + the two shared ledger artifacts. Nothing in
@@ -987,17 +987,116 @@ failures in either theme**, minimum **7.87 dark / 7.08 light** against a 4.5 flo
 programmatic `.focus()` does not trigger it and would have reported a false negative), and head
 buttons measure 44px.
 
-> ⚠️ **THE BROWSER EVIDENCE BELOW PREDATES THE FIXTURE REGENERATION AND MUST BE RE-RUN.**
-> Flagged at code review 2026-08-06. The session that produced **every** Task 10.1 / 10.2
-> number — 48→75 and 43→43, 457/375, 375/375, 305/305, and the contrast figures — ran against
-> the pre-regeneration tree: the artifact-order sequence recorded below,
-> `1,2,3,4,5,6,7,7,7,7,7,12,13,…`, does not exist in the shipped fixture, which runs
-> `…7,7,7,7,11,12,12,…`. The measurements are very likely still true — nothing in the
-> regeneration changed board or row counts — but Task 10.2's own rule is that *"an assertion in
-> prose does not discharge this AC"*, and evidence taken on a tree that no longer exists is
-> prose. **AC 4 is PARTIALLY MET until re-measured**, and the review's patches changed the
-> surface materially since (a per-board disclosure, a debounced announcement, a projected
-> build-time prop), so a re-run is required on its own merits.
+> ⚠️ **THE BROWSER EVIDENCE BELOW PREDATED THE FIXTURE REGENERATION. IT HAS BEEN RE-RUN.**
+> The original session's numbers were taken against a tree that no longer exists (it recorded the
+> artifact order as `…7,7,7,7,7,12,13,…`; the shipped fixture runs `…7,7,7,7,11,12,12,…`), and
+> the review's patches then changed the surface materially. Superseded by the re-run below.
+
+### Task 10.1 / 10.2 RE-RUN — code review, 2026-08-06, post-patch
+
+Against the rebuilt export served on a private port, driven in Chrome. Viewport control via a
+same-origin iframe, because `resize_window` could not move the viewport in this environment;
+media queries were confirmed to evaluate against the iframe (`min-width: 768px` → false at 390),
+so the reflow numbers are real and not a scaled-down desktop layout.
+
+**Reflow — WCAG 1.4.10, all four combinations at each width, zero document overflow.**
+
+| Width | Locale | Theme | `body.scrollWidth / clientWidth` | Table scrollports |
+|---|---|---|---|---|
+| 390 | ES | dark + light | **375 / 375** | 350·441·423 in 343 |
+| 390 | EN | dark + light | **375 / 375** | 343·400·394 in 343 |
+| 320 | ES | dark + light | **305 / 305** | 350·441·423 in 273 |
+| 320 | EN | dark + light | **305 / 305** | 340·400·394 in 273 |
+
+The widest element in the section measures 457px at 390/ES — **inside** the `overflow-x-auto`
+wrapper, which is the data-table internal-scroll exception. The document itself never scrolls.
+ES runs wider than EN at every width, which is the asymmetry that hid a shipped 1.4.10 failure
+from 2.11b's ES-only review; both are contained.
+
+**Contrast — method validated BEFORE any new number was trusted (the Story 2.6 rule).**
+Measured against `--card`, `--viz-team-a` reproduced **13.56** dark / **4.99** light and
+`--viz-team-b` **10.30** / **5.36** — byte-identical to the published figures, so the method
+reproduces. Then every text-bearing element in `#lideres` was measured against its **actual
+painted** background (walking ancestors to the first non-transparent fill): **17 runs per
+combination, ZERO failures in either theme or either locale**, minimum **7.87 dark / 7.08 light**
+against a 4.5 floor. **Zero `--ink-muted` on copy.**
+
+**Targets and focus.** 17 buttons (3 disclosure + 14 sortable heads) and 3 search inputs all
+measure **≥ 44px**. Focus checked under **real keyboard focus**, not `element.focus()` — the
+programmatic form does not set `:focus-visible` and reports a false negative, which is exactly
+what it did here first. Tabbing to the new disclosure button gives `:focus-visible` true,
+`outline: solid 2px rgb(61, 219, 232)`, offset 2px, from the global `@layer base` rule.
+
+**AC 4 — MEASURED, NOT ASSERTED. Zero network after load, including the new controls.**
+
+| Action | `performance.getEntriesByType("resource").length` |
+|---|---|
+| 6 sort actions across three tables | **24 → 24** |
+| 7 filter keystrokes + clear | **23 → 23** |
+| sort → filter to zero → clear | **23 → 23** |
+| disclosure collapse + expand | **24 → 24** |
+
+**The patched behaviours, verified as behaviour.**
+- **Sort survives filter-to-zero** (the silent data-ordering bug): sorted "Partidos" ascending →
+  first row `sane-leroy-ger`; filtered to nothing (table unmounts, empty panel renders); cleared →
+  `aria-sort="ascending"` **and** row order both restored.
+- **The `loaded` announcement now fires**: `"Tablas de líderes cargadas."` It did not exist before;
+  the region was silent while its sibling on the same route announced.
+- **Debounce**: 7 keystrokes produce **one** utterance, `"Velocidad máxima · Jugadores: 1 resultado"`.
+- **Trimmed needle**: a single space now yields **20 rows** (it yielded 0 before); `"  mex  "` → 4.
+- **Ruling B's disclosure genuinely UNMOUNTS**: a collapsed board reports 0 tables, 0 inputs,
+  0 rows — not `display:none`. That is what makes it bound the DOM at 36 boards.
+- Sort announcements stay table-qualified: `"Posesión · Equipos: Ordenado por Puesto, ascendente."`
+
+**NOT REACHABLE ON THE FIXTURE** — the fixture has 3 boards, none with more than 3 rows at
+`rank <= 3` and none with `rows: []`, so ruling A's overflow line, ruling B's collapsed-by-default
+path and the `boardEmpty` panel never render. Covered by the second pass below.
+
+### PASS 2 — the real 36-board emission, 2026-08-06
+
+`data/index/leaderboards.json` (36 boards / 2,965 rows / 963,404 B) was copied over the fixture
+path with **one legal empty board appended** (the schema sets no `minItems` on `rows`) and the app
+rebuilt, so both the build-time teaser path and the runtime region saw real data. **The fixture
+was restored byte-identically afterwards** — sha256 `f0b54704…` verified against a pre-swap
+backup, no CRLF introduced — and the app rebuilt again; the suite is back to 868/867.
+
+**The AD-11 projection, measured at the scale that matters.** `out/index.html` came out at
+**98,640 B**. Un-projected it would have been ~**989,436 B** (the 26,032 B shell plus the whole
+963,404 B artifact inlined) — **~890 KB saved from the Hub document**, on one of the two
+Lighthouse->=90 routes, and the artifact is still fetched once at runtime as FR-26 permits.
+`matchesPlayed` occurs exactly **108** times in the HTML: 36 boards x 3 teaser rows, not 2,965.
+`aggregation` and `higherIsBetter` do not occur at all.
+
+**Ruling A renders, and the 51-way tie is exactly the case it was ruled for.** Seven boards
+produce an overflow line; the degenerate one reads **`+48 tied at rank 1`** (51 rows at
+`rank <= 3`, 3 shown). The others: `+4 tied at rank 2`, `+2 tied at rank 3`, and `+1 tied at
+rank 3` on four boards. No card is a 51-entry list, and no tie is cut silently.
+
+**Ruling B bounds the DOM as intended.** 37 board articles, **3 open**, **3 tables and 207 rows
+mounted** against 2,965 available — and expanding three more boards took it to 555 rows and 7
+tables, then collapsing returned it to 255. Collapsed boards report 0 tables / 0 inputs / 0 rows,
+so this is an unmount, not `display:none`.
+
+**The `perMatch` gate, on a genuine `average` board.** `possession` (48 rows) renders **four**
+columns — Rank, Team, Possession, Matches. **No "Per match" column.** Before the fix it would have
+carried a second column reading `57,9%` beside `57,9%` on every row. Both presence gates fire.
+
+**`boardEmpty` renders the right state**: *"This table arrived with no rows / The tournament does
+not yet have enough data for this metric"* — not the filter state that told a reader with an empty
+box to delete letters they never typed.
+
+**AC 4 holds at real scale**: **23 -> 23** resources across six sorts, expanding three boards
+(peaking at 555 mounted rows) and collapsing them again.
+
+**Reflow at real scale**: 390px **375/375** and 320px **305/305**, no document overflow, in both
+themes and both locales. The widest element (452px) stays inside the table scrollport.
+
+**STILL NOT VERIFIABLE, AND IT IS NOT A DEFECT.** `includesText`'s accent folding has **no data
+anywhere in the corpus** that exercises it: **0 of the 715 distinct names** in the real emission
+carry an accent, and the fixture's carry none either (`Raul JIMENEZ`, `Julian QUINONES`). The fold
+is correct and unit-tested in `format.test.ts` (`"Núñez"` matches `"nunez"`); it simply has nothing
+to fold today. Recorded so a later reader does not mistake the absence of evidence for dead code —
+the day the pipeline stops stripping accents, this is the code that makes the filter still work.
 
 **Verified as behaviour, not asserted.** A sort *speaks*, and is table-qualified —
 `"Velocidad máxima · Jugadores: Ordenado por Vel. máx. (km/h), ascendente."` This mattered:
@@ -1215,14 +1314,17 @@ Measured effect of the patches on the export: `out/index.html` **29,961 -> 26,03
 `aggregation`, `higherIsBetter` and every non-teaser entity now absent from the flight payload;
 `matchesPlayed` occurs exactly 9 times, which is the 9 teaser rows the page actually paints.
 
-**STATUS IS `in-progress`, NOT `done`, AND THE REASON IS AC 4.** Its "measured, not asserted"
-discharge rests on a browser session that predates the mid-story fixture regeneration, and the
-patches have since changed the surface materially — a per-board disclosure, a debounced filter
-announcement, a projected build-time prop, a controlled sort and a new `role="group"` on the busy
-region. Nothing here can be signed off from the test suite alone, because the harness has no
-jsdom. **Remaining work: re-run Task 10.1 and Task 10.2 in the browser** (both themes, both
-locales, 390px and 320px; resource count across sorts, filter keystrokes and disclosure toggles)
-and record the numbers. Everything else in this review is closed.
+**STATUS: `done`.** Task 10.1 and 10.2 were re-run in the browser after patching, in two passes —
+the fixture (reflow, contrast, focus, targets, zero-network) and the real 36-board emission
+(both rulings, the `perMatch` gate, `boardEmpty`, the projection, zero-network at scale). Every
+number is recorded above. **AC 4 is MET on measurement, not assertion**, which is what the task
+demanded. AC 1, 2, 3, 5 and 6 were already MET at the acceptance audit and none of the patches
+narrowed them.
+
+Two things stay open and neither belongs to this story: the `assert-schema-version` suite timeout
+(Story **1.18**, filed with corrected ownership) and the eight deferred items above. One coverage
+note travels with the story rather than blocking it: accent folding has no data in the corpus to
+exercise, as recorded in pass 2.
 
 #### Dismissed (3)
 

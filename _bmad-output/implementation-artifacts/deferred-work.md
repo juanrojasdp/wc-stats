@@ -2778,3 +2778,32 @@ than a pre-composed `"Hora (hora local)"`, so no shipped head reaches the unguar
   whole tree and exceeds vitest's 5 s default while the gate itself PASSES, so the wrapper times
   out on a healthy artifact set. The fix is a per-test timeout or a scoped walk, not a data change.
   **Owner: Story 1.18 (or 1.19).**
+
+### Appended by Story 1.18 at close — the R3 hand-off, and three guard-test consequences
+
+- **Story 1.17's `test_the_repository_has_no_committed_profiles_yet` went red exactly as
+  designed, and was replaced rather than patched.** Its docstring named the work — *"delete
+  this test, and assert the populated bijection here instead"* — and that is what happened.
+  `check_route_manifest`'s populated branch, live but never exercised on real data, now
+  reports **matches 104 <-> 104, teams 48 <-> 48, players 1248 <-> 1248, bijection holds**.
+  Ruling R3 is therefore fully discharged across both stories: the assert lives with the
+  authority that owns `tournament.json`, and Story 1.18's `main` printed
+  *"route-manifest bijection not asserted here"* for exactly as long as the gap existed.
+
+- **`test_precompute_identity.py`'s fixture-reach count moved 155 -> 207**, because FR-1's
+  new bundle brings two more squads into the fixture set. Updated rather than loosened to a
+  `>=`: a silent DROP in reach is what that line exists to catch. The acceptance criterion
+  it guards — zero caps-run mismatches — still holds on all 207.
+
+- **`identity.check_committed_data`'s "unavailable" message formats the DIRECTORY, not the
+  glob.** Caught by `test_an_absent_data_baseline_reports_unavailable_and_never_success`,
+  which pins the exact string; the first cut of the `globs` parameter had it printing
+  `.../matches/*.json`. Recorded because that test is the load-bearing negative for the
+  whole "never let absence read as a pass" rule, and it did its job.
+
+- **One full-suite failure is a WORKTREE ARTEFACT and not a defect**, stated so a reviewer
+  re-running the suite is not misled: `test_contract_schemas.py::test_the_committed_
+  generated_types_still_match_the_schemas` shells out to `contract/scripts/generate-types.mjs`,
+  whose `json-schema-to-typescript` dependency lives in a gitignored `node_modules`. It fails
+  in a fresh git worktree and passes in the main tree (73/73). `contract/` was not touched by
+  this story.
