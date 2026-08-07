@@ -14,6 +14,7 @@ import {
   aggregateRows,
   axisFamily,
   decimalAxis,
+  matchAnchorHref,
   matchRows,
   physicalModel,
   profileMetricFormat,
@@ -313,6 +314,14 @@ describe("decimalAxis", () => {
         // The data fits inside the axis.
         expect(axis.min).toBeLessThanOrEqual(low);
         expect(axis.max).toBeGreaterThanOrEqual(low + span);
+        /*
+         * AND NEVER BELOW ZERO. Added at code review 2026-08-07: `min <= low`
+         * alone accepted `decimalAxis([0], 1) === { min: -0.1, ticks: [-0.1, 0,
+         * 0.1] }`, because -0.1 <= 0 — a labelled NEGATIVE distance or top
+         * speed. Both units this generator serves are non-negative by
+         * definition, so the invariant set has to say so.
+         */
+        expect(axis.min).toBeGreaterThanOrEqual(0);
         // The first and last ticks ARE the domain bounds — recharts drops a
         // tick that misses its own domain by a floating-point hair.
         expect(axis.ticks[0]).toBe(axis.min);
@@ -334,6 +343,22 @@ describe("decimalAxis", () => {
   it("quantizes to two decimals when asked (kilometres)", () => {
     for (const tick of decimalAxis([1.234, 1.239], 2).ticks) {
       expect(Math.abs(tick * 100 - Math.round(tick * 100))).toBeLessThan(1e-6);
+    }
+  });
+
+  /*
+   * The case the invariant loop cannot reach: `span` is always paired with a
+   * `low`, so a series that is flat AT ZERO — every point 0 — is its own test.
+   * It is what a player with match rows but no distance in any of them would
+   * emit, and it returned a negative axis minimum before the clamp.
+   */
+  it("never floors below zero for a flat series at zero", () => {
+    const axis = decimalAxis([0, 0, 0], 1);
+    expect(axis.min).toBe(0);
+    expect(axis.max).toBeGreaterThan(0);
+    expect(axis.ticks[0]).toBe(0);
+    for (const tick of axis.ticks) {
+      expect(tick).toBeGreaterThanOrEqual(0);
     }
   });
 });
@@ -399,5 +424,37 @@ describe("section anchors", () => {
       MATCHES_SECTION_ID,
     ];
     expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
+/*
+ * AC 3's DEEP LINK, pinned here because nothing else can pin it (code review
+ * 2026-08-07). Task 9.1 said the static-output suite asserted the `#expert`
+ * href; it never did, and it cannot — `PlayerMatchesSection` is client-rendered,
+ * so the string never reaches the exported HTML. The href was therefore the one
+ * load-bearing composition in the story with no regression protection at all.
+ */
+describe("matchAnchorHref", () => {
+  /*
+   * A LITERAL EXPECTATION, never one built by calling `matchHref` — "an
+   * expectation built by the function under test reproduces that function's bugs
+   * and can only prove it was called."
+   */
+  it("composes the match route with the Expert fragment", () => {
+    expect(matchAnchorHref("m001")).toBe("/matches/m001/#expert");
+  });
+
+  /*
+   * THE SLASH IS THE WHOLE POINT. `trailingSlash: true` rewrites a slash-less
+   * href at request time and the fragment is dropped in the redirect, so
+   * `/matches/m001#expert` would land on the Match Dashboard with the Expert
+   * Layer closed — AC 3 failing in a way that looks like a working link.
+   */
+  it("keeps the trailing slash immediately before the fragment", () => {
+    for (const matchId of ["m001", "m028", "m053", "m079", "m092"]) {
+      const href = matchAnchorHref(matchId);
+      expect(href.endsWith("/#expert"), href).toBe(true);
+      expect(href).not.toContain("#expert-");
+    }
   });
 });

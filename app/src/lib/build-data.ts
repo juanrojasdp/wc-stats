@@ -105,6 +105,23 @@ export function readPlayerProfile(playerId: string): PlayerProfile {
   const payload = readJson<PlayerProfile>(
     path.join("index", "player-profiles", `${playerId}.json`)
   );
+  /*
+   * THE IDENTITY GATE, added at code review 2026-08-07 — `PlayerProfileRegion`
+   * gates on BOTH `playerId` and `schemaVersion` at the fetch boundary, and this
+   * read gated on only one. A mis-keyed or stale artifact therefore pre-rendered
+   * player A's name, title and OG tags above a runtime panel reporting the data
+   * invalid: verbatim the two-halves-of-one-screen-contradicting-each-other
+   * failure the version gate below exists to prevent, reached through the other
+   * field. AD-3 makes `playerId` the slug and the filename stem, so disagreement
+   * here is a pipeline breach and must break the build.
+   */
+  if (payload.playerId !== playerId) {
+    throw new Error(
+      `build-data: player-profiles/${playerId}.json carries playerId ` +
+        `${JSON.stringify(payload.playerId)}; the id, the filename and the route slug are ` +
+        `one value (AD-3).`
+    );
+  }
   if (payload.schemaVersion !== SCHEMA_VERSION) {
     throw new Error(
       `build-data: player-profiles/${playerId}.json is at schemaVersion ` +

@@ -3077,12 +3077,25 @@ Three-scenario cost, gzip-9:
 | Match `<lg`, reader opens nothing (`momentum` is in `ALWAYS_EXPANDED_SECTION_IDS`, so it mounts at every width) | 102.7 KB | 103.2 KB | **+0.5 KB — the regression, and the number that matters: the `<lg` Match Dashboard is Lighthouse-gated** |
 | Match `>=lg` (Tactical sections default open) | 202.3 KB | 103.2 KB | **-99.1 KB** |
 | Match `<lg`, reader opens any second chart section | 202.3 KB | 103.2 KB | **-99.1 KB** |
-| `/players/{slug}` | would have minted a THIRD vendor copy | shares the one chunk | **-89 KB** |
+| `/players/{slug}`, PAGE WEIGHT | ~89.2 KB vendor + its own leaf | 103.2 KB shared | **~+14 KB — a regression, like the `<lg` match page** |
+| `/players/{slug}`, EXPORT TOTAL | would have minted a THIRD vendor copy | shares the one chunk | **-89 KB of build artifacts** |
+
+**The `/players/{slug}` row was corrected at code review 2026-08-07, and the correction is worth
+stating rather than quietly editing.** It read a single `-89 KB`, which is the EXPORT-TOTAL number —
+the third vendor copy the barrel avoids minting — reported inside a table whose other three rows are
+PAGE-WEIGHT deltas. Per page the sign is inverted: this route renders only `ProfileCharts`, so with
+its own specifier it would load one vendor chunk (~89.2 KB) plus its own leaf, and with the barrel it
+loads the merged 103.2 KB, which carries `MomentumChart`'s 13.3 KB and `TacticalCharts`' 10.4 KB of
+leaf code this route can never render. Both numbers are true and neither was measured wrongly; the
+row conflated two different questions. D1 (the story spec) framed it the same way, so this is an
+inherited framing rather than an implementation slip — recorded here so the next story reading this
+table does not re-inherit it.
 
 The `<lg` regression is **+0.5 KB gzip against D1's ~40 KB stop-threshold**, so the escape hatch (a
 Turbopack `cacheGroup`-equivalent) was neither needed nor adopted. `/players/{slug}` is not
 Lighthouse-gated (`epics.md:67` scopes NFR-1 to Match Dashboard and Tournament Hub), which is
-exactly why the mobile match-page number is the one recorded.
+exactly why the mobile match-page number is the one recorded — and why the ~+14 KB this route pays
+was accepted rather than escaped.
 
 **CLOSED — the `/players/` half of the dangling-link entry.** All three inline interpolations now
 call `playerHref()`: `LineupsDisclosure.tsx`, `LeaderboardsSection.tsx` and `LeaderboardsRegion.tsx`
@@ -3111,6 +3124,21 @@ one condition that makes the suppression legal. Verified under a REAL Tab press 
 `<tr>` `solid 2px rgb(14,116,144)` at `-2px` offset, ring box **1411x63** against the anchor's
 **58x50**. The click target and the focus indicator now describe the same region. **`DataTable.tsx`'s
 own note — "this is what keeps it satisfied when 2.15 makes those names links" — is discharged.**
+
+> **OVERTURNED AT CODE REVIEW 2026-08-07, and this entry is RESTATED rather than closed.** Juan
+> ruled Story 2.16 Q2 — *"accept the anchor-box focus ring"* — while this story was in `review`, so
+> the tree carried two contradictory rulings for one pattern and two `RowAnchor` implementations to
+> match. The anchor-box ring wins on the merits as well as on precedence, for a reason this entry
+> did not see: **`:focus-within` matches on ANY descendant `:focus`, including the focus a MOUSE
+> CLICK puts on the anchor**, so the row painted a persistent 2px ring for pointer users that the
+> anchor's `:focus-visible` ring never did and that no ruled visual state covers. The measurement
+> above is real and the geometry argument still has force — a 1411x63 ring does describe the click
+> target better than a 58x50 one — but it was bought with `outline-none`, which the house prohibits
+> and which has now cost three review patches. `PlayerMatchesSection` therefore imports
+> `@/components/RowAnchor` and its private copy is deleted (Story 2.11a decision 1: *"every private
+> copy is deleted"*), which also removed the `HubTable` fork that only existed to carry the row-level
+> `rowClass`. **Owner of the remaining question — whether a row-scoped indicator is worth minting a
+> DESIGN.md treatment for — is whichever story next revisits the linked-row pattern.**
 
 **CLOSED — the minutes half of the zero-minutes entry.** Closes *"20 players carry `played > 0`
 with `minutesPlayed: 0`"*, whose copy ruling was assigned to this story by name. **RULED: render

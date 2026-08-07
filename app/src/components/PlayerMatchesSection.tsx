@@ -1,26 +1,25 @@
 "use client";
 
-import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 
-import { DataTable } from "@/components/DataTable";
-import { EmptyStatePanel } from "@/components/EmptyStatePanel";
-import { TableSortMenu, useTableSort } from "@/components/TableSortMenu";
-import { matchHref, stageLabelKey, visibleColumnKeys } from "@/lib/hub-model";
+import { HubTable } from "@/components/HubTable";
+import { RowAnchor } from "@/components/RowAnchor";
+import { STAGES, stageLabelKey, visibleColumnKeys } from "@/lib/hub-model";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import {
   composeMetricLabel,
-  formatCount,
   formatProfileValue,
   startedLabelKey,
 } from "@/lib/player-profile-format";
 import { formatDate } from "@/lib/format";
 import type { TableColumn } from "@/lib/table-sort";
 import { MD_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
-import { cn } from "@/lib/utils";
-import { MIN_HIT_PX } from "@/viz/marker-layout";
-import { MATCHES_SECTION_ID, type MatchRow } from "@/viz/player-profile-model";
+import {
+  MATCHES_SECTION_ID,
+  matchAnchorHref,
+  type MatchRow,
+} from "@/viz/player-profile-model";
 
 /*
  * The #matches content (Story 2.15, AC 1's closing altitude and AC 3): the FULL
@@ -31,15 +30,23 @@ import { MATCHES_SECTION_ID, type MatchRow } from "@/viz/player-profile-model";
  * columns. NFR-3/UX-DR17 make the narrow layout a LAYOUT change and never a data
  * removal, so the `<md` set HIDES columns with `display: none` and the sort menu
  * still offers every one of them.
+ *
+ * THE TABLE IS `HubTable`, NOT A PRIVATE RESTATEMENT OF IT (code review
+ * 2026-08-07). This file previously re-derived `HubTable`'s whole `<md`
+ * disclosure — `HIDDEN_COLUMN_CLASS`, `hiddenKeys`, `renderedColumns` and the
+ * reveal-on-sort `menuController` — line for line, because the one thing it
+ * needed that `HubTable` does not offer was a row-level focus ring, and
+ * `HubTable` hardcodes `rowClass="relative"`. Ruling Q2 below removed that need,
+ * and with it the fork: Story 2.11a decision 1 is binding, "every private copy
+ * is deleted".
  */
 
 /** Composition glyphs are module consts, never bare JSX literals (i18n gate). */
-const SPACE = " ";
 const CAPTION_SEPARATOR = " — ";
 
 /*
- * THE STRETCHED ROW ANCHOR — Story 2.12's shipped pattern (`TournamentHub.tsx`),
- * reused verbatim rather than re-derived, on this route's second surface for it.
+ * THE STRETCHED ROW ANCHOR is `@/components/RowAnchor`, imported (Story 2.16's
+ * hoist, ruled D4). This file held the second private copy that hoist names.
  *
  * ONE ANCHOR PER ROW, NOT ONE PER CELL (ruled D2). Thirteen per-cell links were
  * rejected on four independent grounds: 2.13 ruling 3 puts a table CELL on
@@ -52,56 +59,17 @@ const CAPTION_SEPARATOR = " — ";
  * makes the WHOLE ROW the target, which is what AC 3's "tapping any value"
  * actually asks for.
  *
- * THE OPEN LEDGER ITEM THIS STORY OWNS — "the row-link focus ring paints on the
- * ANCHOR's box, not on the row" — IS ADDRESSED, not restated. The ring is moved
- * off the anchor's own box and onto the `<tr>` via `focus-within`, so a keyboard
- * user sees the ROW they are about to activate rather than a ring around the
- * date cell. `rowClass` below carries it; `outline-none` on the anchor is safe
- * ONLY because the row paints a ring in its place, which is the one condition
- * that makes suppressing a focus indicator legal.
+ * THE FOCUS RING PAINTS ON THE ANCHOR'S OWN BOX. This story first ruled the
+ * opposite — the ring moved onto the `<tr>` via `focus-within`, with
+ * `outline-none` suppressing the anchor's — and that ruling is OVERTURNED at
+ * code review in favour of Story 2.16 Q2, taken by Juan, for two reasons beyond
+ * consistency. `outline-none` is a house prohibition that has already cost two
+ * review patches. And `:focus-within` matches on ANY descendant `:focus`,
+ * including the focus a mouse click puts on the anchor — so the row painted a
+ * persistent 2px ring for pointer users, which the anchor's `:focus-visible`
+ * ring never did and which no ruled visual state covers. The open ledger item is
+ * therefore RESTATED to 2.16's ruling rather than closed on this story's.
  */
-const ROW_ANCHOR_CLASS =
-  "flex min-w-0 items-center after:absolute after:inset-0 hover:underline focus-visible:outline-none";
-
-const ROW_CLASS =
-  "relative focus-within:outline focus-within:outline-2 focus-within:outline-offset-[-2px] focus-within:outline-ring";
-
-function RowAnchor({
-  href,
-  accessiblePrefix,
-  children,
-}: {
-  href: string;
-  accessiblePrefix: string;
-  children: ReactNode;
-}) {
-  /*
-   * THE TRAILING SPACE IS DELIBERATE (2.12's finding): the accessible-name
-   * algorithm inserts a space between element children, but the DOM text is
-   * concatenated raw, so the name read out of the live DOM was
-   * "Ver el partidoFase de grupos". An explicit separator makes it true in every
-   * engine rather than true in the spec.
-   */
-  const prefix = `${accessiblePrefix}${SPACE}`;
-  return (
-    <Link
-      href={href}
-      /*
-       * NO PREFETCH. Next prefetches every `<Link>` entering the viewport, so an
-       * 8-row table would fire eight route requests on load and re-fire them on
-       * every re-order. Seven of eight 404 on the fixture tree by construction
-       * (see the section docblock), and even at real data the reader has asked
-       * for none of them.
-       */
-      prefetch={false}
-      className={ROW_ANCHOR_CLASS}
-      style={{ minHeight: MIN_HIT_PX }}
-    >
-      <span className="sr-only">{prefix}</span>
-      {children}
-    </Link>
-  );
-}
 
 /** `true` below `md`. Reuses the shipped rem-declared breakpoint, never a px copy. */
 function useIsNarrow(): boolean {
@@ -115,11 +83,8 @@ function useIsNarrow(): boolean {
  * navigable rather than merely narrower — plus the four numbers a per-match
  * reader reads first: minutes, goals, distance and top speed.
  *
- * Hidden means `display: none`, NOT removed from the column list: `sortRows`
- * resolves the active `columnKey` against the list `DataTable` is given, so
- * filtering hidden columns out makes the rows silently un-sort the instant a
- * reader picks one from the menu — verbatim the open ledger defect, reached by
- * the exact route UX-DR17 requires.
+ * Hidden means `display: none`, NOT removed from the column list, and that rule
+ * lives in `HubTable` with the ledger defect it closes.
  */
 const MATCH_COLUMN_KEYS = [
   "date",
@@ -148,8 +113,6 @@ const MATCH_NARROW_COLUMN_KEYS = [
   "topSpeed",
 ] as const;
 
-const HIDDEN_COLUMN_CLASS = "hidden";
-
 export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
   const t = useT();
   const { locale } = useLocale();
@@ -162,7 +125,7 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
   const metresLabel = t("enums.unit.m");
   const kmhLabel = t("enums.unit.kmh");
 
-  /** A count column — the shape fifteen of these share. */
+  /** A count column — the shape eight of these share. */
   function countColumn(
     key: (typeof MATCH_COLUMN_KEYS)[number],
     headText: string,
@@ -191,9 +154,10 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
        * on a TEAM-level map that does not show the number they tapped.
        *
        * THE TRAILING SLASH BEFORE `#` IS MANDATORY. `trailingSlash: true`
-       * rewrites a slash-less href at request time and the fragment is lost;
-       * `matchHref` emits the slash, which is why it is called rather than
-       * interpolated.
+       * rewrites a slash-less href at request time and the fragment is lost.
+       * `matchAnchorHref` composes it from `matchHref` and is unit-tested for
+       * exactly that slash, because nothing in the exported HTML can pin it —
+       * this table is client-rendered, so the static-output suite never sees it.
        *
        * `#expert` is deliberately NOT a `SectionId` —`TacticalLayer`'s
        * `sectionIdFromHash` returns null for it BY DESIGN and `ExpertLayer` owns
@@ -202,7 +166,7 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
        * is silently ignored.
        */
       render: (row) => (
-        <RowAnchor href={`${matchHref(row.matchId)}#expert`} accessiblePrefix={rowLink}>
+        <RowAnchor href={matchAnchorHref(row.matchId)} accessiblePrefix={rowLink}>
           <span className="tabular-nums">{formatDate(row.date, locale)}</span>
         </RowAnchor>
       ),
@@ -231,8 +195,17 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
       headTitle: null,
       render: (row) => t(stageLabelKey(row.stage)),
       align: "text",
-      /* The RESOLVED label, so the order follows the language toggle. */
-      sort: { kind: "text", valueOf: (row) => t(stageLabelKey(row.stage)) },
+      /*
+       * SORTS THE TOURNAMENT ORDER, NOT THE LABEL (code review 2026-08-07). An
+       * earlier draft sorted the resolved string "so the order follows the
+       * language toggle", which produced `Cuartos | Dieciseisavos | Fase de
+       * grupos | Final | Octavos | Semifinal | Tercer puesto` — alphabetical,
+       * and meaningless in both locales. `Stage` is an ORDERED enum and `STAGES`
+       * is its shipped declaration order, so the index is the only ordering the
+       * column can honestly offer; being language-independent is correct here
+       * rather than a regression.
+       */
+      sort: { kind: "number", valueOf: (row) => STAGES.indexOf(row.stage) },
     },
     {
       key: "started",
@@ -313,7 +286,14 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
     {
       key: "topSpeed",
       headText: composeMetricLabel(t("enums.leaderboardMetric.topSpeed"), kmhLabel),
-      headTitle: t("enums.leaderboardMetric.topSpeed"),
+      /*
+       * `null`, matching `totalDistance` above: `headTitle` is the FULL term for
+       * an ABBREVIATED head (`table-sort.ts`), and this head is already the full
+       * term plus its unit. A `headTitle` that is a strict substring of its own
+       * `headText` puts a native tooltip on the `<th>` repeating a shortened
+       * form of what is already visible.
+       */
+      headTitle: null,
       render: (row) => formatProfileValue(row.topSpeed, "decimal1", locale),
       align: "numeric",
       sort: { kind: "number", valueOf: (row) => row.topSpeed },
@@ -337,61 +317,13 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
     isNarrow,
     expanded
   );
-  const hiddenKeys = new Set(
-    columns.filter((column) => !visibleKeys.includes(column.key)).map((column) => column.key)
-  );
-  const renderedColumns = columns.map((column) =>
-    hiddenKeys.has(column.key)
-      ? { ...column, cellClass: cn(column.cellClass, HIDDEN_COLUMN_CLASS) }
-      : column
-  );
-
-  const controller = useTableSort({
-    columns: renderedColumns as readonly TableColumn<never>[],
-    tableName,
-  });
-
-  /* Sorting a hidden column REVEALS it — otherwise the rows re-order with no
-   * visible cause on the narrowest layout the site supports. */
-  const menuController = {
-    ...controller,
-    sortByColumn: (columnKey: string) => {
-      if (hiddenKeys.has(columnKey)) {
-        setExpanded(true);
-      }
-      controller.sortByColumn(columnKey);
-    },
-  };
-
-  /*
-   * `matches: []` IS AN EMPTINESS BRANCH, NOT A SHAPE BRANCH (ruled D8). 209
-   * players (16.7%) never appeared; UX-DR13 gives that slot an `EmptyStatePanel`
-   * — "never a silent absence, never layout collapse". A zero-row table would
-   * also present fifteen live sort controls over an empty `<tbody>`, which is
-   * the open ledger defect `HubTable` closes the same way.
-   */
-  if (rows.length === 0) {
-    return (
-      <section id={MATCHES_SECTION_ID} className="mt-layer-gap">
-        <h2 className="type-title text-ink-primary">{title}</h2>
-        <div className="mt-3">
-          {/* Dedicated copy — `useEmptyHeadline()` says "para este partido",
-           * which is false on a profile. See TrendsSection for the full note. */}
-          <EmptyStatePanel
-            headline={t("player.empty.matchesHeadline")}
-            explanation={t("player.empty.matchesExplanation")}
-          />
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section id={MATCHES_SECTION_ID} className="mt-layer-gap">
       <h2 className="type-title text-ink-primary">{title}</h2>
 
       {isNarrow ? (
-        <div className="mt-3 flex items-center justify-between gap-2">
+        <div className="mt-3">
           {/*
            * `hub.columns.more` / `hub.columns.fewer` REUSED, not minted (D12) —
            * this is the same control the Hub ships, doing the same thing.
@@ -402,6 +334,9 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
            * the table is collapsed. `aria-expanded` STAYS, because it is true
            * about the thing that toggles — the hidden columns really are
            * `display: none`. (TournamentHub's ruling, same control.)
+           *
+           * NO `aria-label` disambiguator, unlike the Hub's: that route carries
+           * two disclosures and needs them told apart. This route carries one.
            */}
           <button
             type="button"
@@ -411,37 +346,43 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
           >
             {t(columnsLabelKey)}
           </button>
-          <TableSortMenu
-            columns={columns}
-            controller={menuController}
-            tableName={tableName}
-          />
         </div>
       ) : null}
 
       {/*
-       * THE CALLER'S SCROLLPORT. `DataTable` renders none and must not — its
-       * sticky mode resolves against the nearest scrolling ancestor, and the one
-       * departure 2.11a declared was a sticky rule inside a height-UNBOUNDED
-       * ancestor that computed correctly and silently did nothing. Fifteen
-       * columns overflow every viewport the site supports, so the table scrolls
-       * inside its own container and never the page (UX-DR16's data-table
-       * exception). `min-w-0` is what stops a flex ancestor handing this div its
-       * content width instead of its available width.
+       * `min-w-0` IS LOAD-BEARING and belongs on THIS div, not inside `HubTable`
+       * — the Hub puts it in exactly the same place. A block whose min-width
+       * resolves to its content makes a fifteen-column table wider than the
+       * viewport, the `overflow-x-auto` wrapper inside `HubTable` never becomes
+       * the scroller, and the whole DOCUMENT scrolls sideways (WCAG 1.4.10).
+       * EXPERIENCE.md gives data tables an INTERNAL-scroll exception, and this
+       * class is what keeps the scroll internal.
        */}
-      <div className="mt-3 w-full min-w-0 overflow-x-auto">
-        <DataTable
+      <div className="mt-3 min-w-0">
+        <HubTable
           caption={matchesCaption}
-          columns={renderedColumns}
+          columns={columns}
+          visibleKeys={visibleKeys}
           rows={rows}
-          surface="canvas"
           tableName={tableName}
-          sortState={controller.sortState}
-          onSortChange={controller.setSortState}
-          /* D9's containing block: the anchor's `after:inset-0` resolves against
-           * the nearest positioned ancestor. Without `relative` the pseudo-
-           * element would cover the page. */
-          rowClass={ROW_CLASS}
+          /*
+           * `matches: []` IS AN EMPTINESS BRANCH, NOT A SHAPE BRANCH (ruled D8).
+           * 209 players (16.7%) never appeared; UX-DR13 gives that slot an
+           * `EmptyStatePanel` — "never a silent absence, never layout collapse"
+           * — and `HubTable` renders it in place of fifteen live sort controls
+           * over an empty `<tbody>`.
+           *
+           * Dedicated copy, not `useEmptyHeadline()`, which says "para este
+           * partido" — false on a profile. See `TrendsSection` for the note.
+           */
+          emptyHeadline={t("player.empty.matchesHeadline")}
+          emptyExplanation={t("player.empty.matchesExplanation")}
+          // The sort menu is the NARROW-LAYOUT sort control, so it tracks the
+          // breakpoint rather than the hidden-column count. See HubTable.
+          showSortMenu={isNarrow}
+          // Sorting an off-screen column from the menu opens the disclosure, so
+          // the reader can see the column they sorted by.
+          onRevealColumns={() => setExpanded(true)}
         />
       </div>
     </section>

@@ -100,7 +100,19 @@ export function composeMetricLabel(term: string, unitLabel: string | null): stri
   return unitLabel === null ? term : `${term}${UNIT_OPEN}${unitLabel}${UNIT_CLOSE}`;
 }
 
-/** The `enums.unit.*` key for a metric's unit, or null. Re-exported for one import. */
+/**
+ * The `enums.unit.*` key for a metric's unit, or `null` for the unitless
+ * families — `leaderboardUnitKey` verbatim, re-exported.
+ *
+ * IT ADDS NO BEHAVIOUR AND IS NOT MEANT TO. The docblock previously said
+ * "re-exported for one import" and there are four (`PlayerHero`,
+ * `PlayerAggregatesSection`, `TrendsSection`, and this module's own test);
+ * corrected at code review 2026-08-07 rather than deleted, because every one of
+ * those call sites pairs it with `composeMetricLabel` from this module, and one
+ * import line for the label pair reads better at the call site than two from
+ * two modules. Anything that needs the unit key WITHOUT the label composition
+ * should import `leaderboardUnitKey` from `@/lib/leaderboard-format` directly.
+ */
 export function profileUnitKey(unit: LeaderboardUnit): DictionaryKey | null {
   return leaderboardUnitKey(unit);
 }

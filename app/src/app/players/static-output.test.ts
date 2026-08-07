@@ -164,10 +164,19 @@ describe.skipIf(!anyBuilt)("exported /players/[slug] routes", () => {
   });
 
   describe("the pre-rendered Hero", () => {
+    /*
+     * SCOPED TO THE HERO, not the document (code review 2026-08-07). Asserted
+     * against the raw HTML, both of these were satisfied by the `<meta>` tags
+     * three tests above: "Julian QUINONES" is in `<title>` and `og:title`, and
+     * "Delantero" is in `og:description` — so a build that emitted correct
+     * metadata over an EMPTY `<header>` passed. `heroHeader()` exists for
+     * exactly this, and its docblock says so: Hero-scoped assertions must not be
+     * satisfiable "by markup the shell owns or by the RSC FLIGHT PAYLOAD".
+     */
     it("renders the player's own name and position, source-passthrough (AD-7)", () => {
-      const html = playerHtml(QUINONES);
-      expect(html).toContain(QUINONES_NAME);
-      expect(html).toContain(es.enums.position.fw);
+      const hero = heroHeader(playerHtml(QUINONES));
+      expect(hero).toContain(QUINONES_NAME);
+      expect(hero).toContain(es.enums.position.fw);
     });
 
     it("renders LOCALE-FORMATTED values, which proves the component ran", () => {
@@ -249,14 +258,21 @@ describe.skipIf(!anyBuilt)("exported /players/[slug] routes", () => {
   });
 
   describe("the below-Hero region is client-fetched, not inlined", () => {
-    it("ships the artifact path as the region's only fetch (AD-11, FR-26)", () => {
-      /*
-       * The path appears in the client chunk rather than the document; what this
-       * asserts about the DOCUMENT is that the region rendered its LOADING
-       * state, which is the proof the split holds — a pre-rendered table would
-       * have no aria-busy skeleton at all.
-       */
-      expect(playerHtml(QUINONES)).toContain('aria-busy="true"');
+    /*
+     * NAMED FOR WHAT IT ASSERTS (code review 2026-08-07). This was titled "ships
+     * the artifact path as the region's ONLY fetch", which it never checked —
+     * the path lives in the client chunk, not the document, and the allow-list
+     * that does pin it is `app/static-output.test.ts`'s per-route walker. A
+     * green test name claiming coverage it does not have is worse than no test,
+     * and this file polices exactly that elsewhere ("a vacuous sweep is not a
+     * pass").
+     */
+    it("renders the LOADING state, which is the proof the AD-11 split holds", () => {
+      // A pre-rendered table would have no aria-busy skeleton at all, and the
+      // skeleton must carry a role that can take a name — see PlayerProfileRegion.
+      const html = playerHtml(QUINONES);
+      expect(html).toContain('aria-busy="true"');
+      expect(html).toMatch(/role="group"[^>]*aria-busy="true"|aria-busy="true"[^>]*role="group"/);
     });
   });
 });

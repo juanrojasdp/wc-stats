@@ -114,6 +114,19 @@ export function PlayerProfileRegion({ slug }: { slug: string }) {
         <div
           ref={busyRef}
           tabIndex={-1}
+          /*
+           * `role="group"` IS LOAD-BEARING, not decoration (code review
+           * 2026-08-07). A `<div>` with no role maps to `role="generic"`, for
+           * which ARIA declares name-from-author PROHIBITED — so the
+           * `aria-label` below is DROPPED, axe's `aria-prohibited-attr` flags
+           * it, and the retry `focus()` above lands on an unnamed node that
+           * announces nothing, making the whole keep-the-reader-oriented patch
+           * inert. `group` is the minimal role that legitimately takes a name
+           * and adds no live region. Found at the Story 2.13 review and fixed in
+           * `LeaderboardsRegion`; this file mirrored `MatchBundleRegion`, which
+           * is the sibling that was missed, and inherited the defect with it.
+           */
+          role="group"
           aria-busy="true"
           aria-label={t("player.region.loading")}
           className="grid gap-tile-gap"

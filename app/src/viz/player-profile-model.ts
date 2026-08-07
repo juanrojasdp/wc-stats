@@ -4,8 +4,8 @@ import type {
   PhysicalProfile,
   PlayerMatchRow,
   PlayerProfile,
-  Stage,
 } from "@/lib/contract/contract-types";
+import { matchHref } from "@/lib/hub-model";
 import {
   LEADERBOARD_FORMAT,
   LEADERBOARD_UNIT,
@@ -282,11 +282,6 @@ export function matchRows(profile: PlayerProfile): MatchRow[] {
   });
 }
 
-/** The `Stage` of a row, for the `enums.stage.*` label the column head needs. */
-export function matchRowStage(row: MatchRow): Stage {
-  return row.stage;
-}
-
 /* --------------------------------- Trends ---------------------------------- */
 
 export interface TrendPointModel {
@@ -427,9 +422,20 @@ export function decimalAxis(values: readonly number[], decimals: number): Axis {
   let lowUnit = Math.floor(minUnit / stepUnit) * stepUnit;
   let highUnit = Math.ceil(maxUnit / stepUnit) * stepUnit;
   if (highUnit === lowUnit) {
-    // A flat or single-point series: centre it in one step of headroom rather
-    // than pinning it to an axis edge, and never emit a zero-width domain.
-    lowUnit -= stepUnit;
+    /*
+     * A flat or single-point series: centre it in one step of headroom rather
+     * than pinning it to an axis edge, and never emit a zero-width domain.
+     *
+     * THE FLOOR AT ZERO IS NOT DEFENSIVE TIDYING (code review 2026-08-07).
+     * Every unit this generator serves — Metres and KmPerHour — is non-negative
+     * by definition, and without the clamp a flat series AT zero produced
+     * `min: -0.1` and ticks `[-0.1, 0, 0.1]`: a labelled NEGATIVE distance or
+     * top speed, which is not a number the corpus can contain. Not reachable
+     * today (0 of 1,248 profiles carry a flat-zero `topSpeed`/`totalDistance`
+     * trend), and the property test's `axis.min <= low` invariant accepted it,
+     * so it would have shipped on the day one did.
+     */
+    lowUnit = minUnit < 0 ? lowUnit - stepUnit : Math.max(0, lowUnit - stepUnit);
     highUnit += stepUnit;
   }
   const ticks: number[] = [];
@@ -551,3 +557,27 @@ export const PHYSICAL_SECTION_ID = "physical";
 export const TRENDS_SECTION_ID = "trends";
 export const AGGREGATES_SECTION_ID = "aggregates";
 export const MATCHES_SECTION_ID = "matches";
+
+/**
+ * A per-match row's link target: that match's dashboard, anchored to the Expert
+ * Layer (ruled D2).
+ *
+ * IT LIVES HERE, AS A NAMED FUNCTION, SO IT CAN BE TESTED — added at code review
+ * 2026-08-07. The TRAILING SLASH BEFORE `#` is the single point of failure in
+ * AC 3: `trailingSlash: true` rewrites a slash-less href at request time and the
+ * fragment is lost, which is why `matchHref` is called rather than interpolated.
+ * The per-match table is CLIENT-rendered, so no assertion over the exported HTML
+ * can reach the composed string — Task 9.1 claimed one and the suite never had
+ * it. The co-located test pins it instead.
+ *
+ * `#expert` is deliberately NOT a `SectionId`: `TacticalLayer`'s
+ * `sectionIdFromHash` returns `null` for it BY DESIGN, and `ExpertLayer` owns
+ * its own listener, which is WHOLE-STRING equality on `window.location.hash ===
+ * "#expert"`. Anything finer ("#expert-content") is silently ignored, so this
+ * fragment is not a place to add precision later.
+ */
+export function matchAnchorHref(matchId: string): string {
+  return `${matchHref(matchId)}${EXPERT_FRAGMENT}`;
+}
+
+const EXPERT_FRAGMENT = "#expert";

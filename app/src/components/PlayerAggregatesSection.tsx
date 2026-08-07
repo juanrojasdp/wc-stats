@@ -86,12 +86,22 @@ export function PlayerAggregatesSection({ rows }: { rows: readonly AggregateRow[
       render: (row) => formatProfileValue(row.value, row.format, locale),
       align: "numeric",
       /*
-       * The RAW numeric, never the formatted string: `formatProfileValue` emits
-       * es-CO grouping, and a text sort over "47.274,9" is nonsense. `?? null`
-       * is unnecessary here — `value` is contract-non-nullable and the model has
-       * already thrown on a non-finite one.
+       * NOT SORTABLE, ruled by Juan at code review 2026-08-07.
+       *
+       * This table is TRANSPOSED: eighteen metrics spanning Count, Metres,
+       * KmPerHour and Percentage share ONE value column. That is already why the
+       * unit rides the row-header label rather than the column head (D5) — and
+       * the same transposition makes the column unsortable, which the first
+       * draft shipped a `kind: "number"` sort over anyway. Ordering it ranked
+       * `totalDistance: 47.274,9 m` above `passCompletion: 82,2 %` above
+       * `goals: 4` as though the three were comparable magnitudes. They are not,
+       * and no ordering of them means anything.
+       *
+       * The METRIC column stays sortable — labels are comparable to each other —
+       * and the caption states the artifact's canonical order, which is what a
+       * reader returns to.
        */
-      sort: { kind: "number", valueOf: (row) => row.value },
+      sort: null,
     },
   ];
 

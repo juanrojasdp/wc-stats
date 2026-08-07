@@ -4,7 +4,7 @@ baseline_commit: 119b707d9cf1ba613d51c487557f3dc2d24c4b9f
 
 # Story 2.15: Player Profile
 
-Status: in-progress
+Status: done
 
 **Baseline:** `5d251bb` (verified HEAD at creation). **Scope: `app/` + the two locale files + `EXPERIENCE.md`'s policy table + the two ledger artifacts.** Nothing under `pipeline/`, `contract/`, or `data/`.
 
@@ -546,73 +546,97 @@ Throwers: `formatDecimal`, `formatInteger`, `formatPercent` (transitively), `for
 - [x] 2.7 Browser-verify `#momentum`, `#phases`, `#pressing`, `#goalkeeping` still render, **both themes**.
 
 ### Task 3 — Route shell, static params, metadata (AC 5)
-- [ ] 3.1 `readPlayerProfile(playerId)` in `build-data.ts` — not-found throw **and** a `schemaVersion` gate.
-- [ ] 3.2 `app/src/app/players/[slug]/page.tsx`: `dynamicParams = false`; **synchronous** `generateStaticParams` from `readTournament().entities.players`, **no existence filter** (D10).
-- [ ] 3.3 `generateMetadata({ params }: { params: Promise<{ slug: string }> })` — `await params`; `{ title, description, openGraph: { title, description } }` from a pure `composePlayerTitle()` in `src/lib/player-profile.ts`. **No `og:image`.**
-- [ ] 3.4 Page body (`params` is a Promise here too): build-time read → **projection** → pre-rendered `<PlayerHero>`, then `<PlayerProfileRegion slug={slug} />`. Mirror `matches/[slug]/page.tsx`'s container classes.
+- [x] 3.1 `readPlayerProfile(playerId)` in `build-data.ts` — not-found throw **and** a `schemaVersion` gate.
+- [x] 3.2 `app/src/app/players/[slug]/page.tsx`: `dynamicParams = false`; **synchronous** `generateStaticParams` from `readTournament().entities.players`, **no existence filter** (D10).
+- [x] 3.3 `generateMetadata({ params }: { params: Promise<{ slug: string }> })` — `await params`; `{ title, description, openGraph: { title, description } }` from a pure `composePlayerTitle()` in `src/lib/player-profile.ts`. **No `og:image`.**
+- [x] 3.4 Page body (`params` is a Promise here too): build-time read → **projection** → pre-rendered `<PlayerHero>`, then `<PlayerProfileRegion slug={slug} />`. Mirror `matches/[slug]/page.tsx`'s container classes.
 
 ### Task 4 — Pure models
-- [ ] 4.1 `app/src/viz/player-profile-model.ts` + test: hero projection, aggregates rows, physical rows, per-match rows (`key = matchId`), trend series selection, chart height classes (**literal** Tailwind classes, exhaustive `never`), and the tick generators — reusing `percentTicks` / `countTicks` where the family fits and adding the decimal-aware one for km/h and metres, property-tested on `momentumYTicks`' model.
-- [ ] 4.2 `app/src/lib/player-profile-format.ts` + test — anything importing `@/lib/format`.
-- [ ] 4.3 Guard at model entry: normalize the three absent states (`listOf`), reject non-finite numerics, validate the ISO `date` before `formatDate` sees it, throw naming the offending `playerId`/`metricCode`. **Rows built eagerly.**
+- [x] 4.1 `app/src/viz/player-profile-model.ts` + test: hero projection, aggregates rows, physical rows, per-match rows (`key = matchId`), trend series selection, chart height classes (**literal** Tailwind classes, exhaustive `never`), and the tick generators — reusing `percentTicks` / `countTicks` where the family fits and adding the decimal-aware one for km/h and metres, property-tested on `momentumYTicks`' model.
+- [x] 4.2 `app/src/lib/player-profile-format.ts` + test — anything importing `@/lib/format`.
+- [x] 4.3 Guard at model entry: normalize the three absent states (`listOf`), reject non-finite numerics, validate the ISO `date` before `formatDate` sees it, throw naming the offending `playerId`/`metricCode`. **Rows built eagerly.**
 
 ### Task 5 — Hero altitude (AC 1, AC 4)
-- [ ] 5.1 `PlayerHero.tsx` (`"use client"` + `useT()`): `sr-only <h1>` (name + team + position); **visible** name as `type-title`; shirt badge (`grid h-12 w-12 place-items-center rounded-full border border-hairline bg-surface-overlay type-label-caps text-ink-secondary`); position via `enums.position.*`; team name as `teamHref()` link with `min-h-11 min-w-11` and `prefetch={false}`; appearances line.
-- [ ] 5.2 `ProfileStatTiles.tsx` — four single-value tiles (D5). **No leader glyph, no side accent.** Units composed as strings above the JSX. `tabular-nums` on every value.
-- [ ] 5.3 The **"Comparar"** action (AC 4): `/compare?type=players&a={slug}`, `prefetch={false}`. The route does not exist — link it anyway (2.12 D2, 2.13 ruling 3; `LineupsDisclosure`/`MatchHero` already ship exactly this, pinned green by `matches/static-output.test.ts`). **Do not build a placeholder route.**
-- [ ] 5.4 Every composed string hoisted into a `const` above the JSX; separators dictionary-owned.
+- [x] 5.1 `PlayerHero.tsx` (`"use client"` + `useT()`): `sr-only <h1>` (name + team + position); **visible** name as `type-title`; shirt badge (`grid h-12 w-12 place-items-center rounded-full border border-hairline bg-surface-overlay type-label-caps text-ink-secondary`); position via `enums.position.*`; team name as `teamHref()` link with `min-h-11 min-w-11` and `prefetch={false}`; appearances line.
+- [x] 5.2 `ProfileStatTiles.tsx` — four single-value tiles (D5). **No leader glyph, no side accent.** Units composed as strings above the JSX. `tabular-nums` on every value.
+- [x] 5.3 The **"Comparar"** action (AC 4): `/compare?type=players&a={slug}`, `prefetch={false}`. The route does not exist — link it anyway (2.12 D2, 2.13 ruling 3; `LineupsDisclosure`/`MatchHero` already ship exactly this, pinned green by `matches/static-output.test.ts`). **Do not build a placeholder route.**
+- [x] 5.4 Every composed string hoisted into a `const` above the JSX; separators dictionary-owned.
 
 ### Task 6 — Trends (AC 1)
-- [ ] 6.1 `TrendChart` in `ProfileCharts.tsx` — single-series, `fill="var(--viz-single)"`, `role="img"` inside a `<figure>`, localized `figureSummary`. Full recharts contract: `accessibilityLayer={false}`, `isAnimationActive={false}`, explicit `ticks` + `domain`, `var(--token)` presentation props, `{ className: "type-caption tabular-nums", fill: "var(--ink-secondary)" }`, **no `<Tooltip>`, no `<Legend>`**, `<Label>` axis titles, resolved parent height.
-- [ ] 6.2 Mount via `dynamic()` on the `@/components/Charts` specifier with a correctly sized skeleton.
-- [ ] 6.3 `TrendsSection.tsx` — `ToggleGroup type="single"` over the six series in artifact order, default = first, all four non-negotiables incl. `min-h-11 min-w-11`. Ticks and formatter switch per metric family (D6).
-- [ ] 6.4 `ViewDataDisclosure` (`surface="canvas"`, `panelTitle`, attribution as `trailing`) carrying **all six series**.
-- [ ] 6.5 Empty `points` → `EmptyStatePanel`.
+- [x] 6.1 `TrendChart` in `ProfileCharts.tsx` — single-series, `fill="var(--viz-single)"`, `role="img"` inside a `<figure>`, localized `figureSummary`. Full recharts contract: `accessibilityLayer={false}`, `isAnimationActive={false}`, explicit `ticks` + `domain`, `var(--token)` presentation props, `{ className: "type-caption tabular-nums", fill: "var(--ink-secondary)" }`, **no `<Tooltip>`, no `<Legend>`**, `<Label>` axis titles, resolved parent height.
+- [x] 6.2 Mount via `dynamic()` on the `@/components/Charts` specifier with a correctly sized skeleton.
+- [x] 6.3 `TrendsSection.tsx` — `ToggleGroup type="single"` over the six series in artifact order, default = first, all four non-negotiables incl. `min-h-11 min-w-11`. Ticks and formatter switch per metric family (D6).
+- [x] 6.4 `ViewDataDisclosure` (`surface="canvas"`, `panelTitle`, attribution as `trailing`) carrying **all six series**.
+- [x] 6.5 Empty `points` → `EmptyStatePanel`.
 
 ### Task 7 — Physical profile (AC 2)
-- [ ] 7.1 `SpeedZoneChart` in `ProfileCharts.tsx`, exported through `Charts.tsx`, mounted via `dynamic()` on `@/components/Charts`. Same full contract as 6.1. **New** height helper — `distributionChartHeightClass` throws on 5 categories.
-- [ ] 7.2 Three tiles for `highSpeedRuns`, `sprints`, `topSpeed`. Band descriptors from `expert.fieldTitle.distanceZone1..5` (**reuse**).
-- [ ] 7.3 **Never** render a zone-derived total or assert zone-sum equality (D7).
-- [ ] 7.4 `ViewDataDisclosure` (`surface="canvas"`) with the attribution `trailing`.
+- [x] 7.1 `SpeedZoneChart` in `ProfileCharts.tsx`, exported through `Charts.tsx`, mounted via `dynamic()` on `@/components/Charts`. Same full contract as 6.1. **New** height helper — `distributionChartHeightClass` throws on 5 categories.
+- [x] 7.2 Three tiles for `highSpeedRuns`, `sprints`, `topSpeed`. Band descriptors from `expert.fieldTitle.distanceZone1..5` (**reuse**).
+- [x] 7.3 **Never** render a zone-derived total or assert zone-sum equality (D7).
+- [x] 7.4 `ViewDataDisclosure` (`surface="canvas"`) with the attribution `trailing`.
 
 ### Task 8 — Aggregates and per-match tables (AC 1, AC 3)
-- [ ] 8.1 Aggregates `DataTable` — 18 rows, artifact order, unit on the row-header label (D5), `tableName`, caption stating default order and never mutating.
-- [ ] 8.2 Per-match `DataTable` — **all fifteen rendered fields** (§Route Composition), `key = matchId`, artifact order, no `defaultSort`, `tableName`, caption. Caller-supplied `overflow-x-auto` scrollport with visible affordance and `min-w-0`.
-- [ ] 8.3 **One `RowAnchor` per row** to `` `${matchHref(row.matchId)}#expert` `` (D2) — `after:absolute after:inset-0`, `<tr className="relative">` via `rowClass`, `sr-only accessiblePrefix`, `prefetch={false}`.
-- [ ] 8.4 Address or restate the open *"row-link focus ring paints on the ANCHOR's box, not on the row"* ledger item — you are ruling the linked-row pattern on its second surface.
-- [ ] 8.5 `sort.valueOf` returns the **rendered semantic value**; `?? null` never `?? 0`; nulls to the array end in both directions.
-- [ ] 8.6 Exactly one `SortAnnouncerProvider`, in `PlayerProfileRegion`.
-- [ ] 8.7 `matches: []` → `EmptyStatePanel`.
-- [ ] 8.8 `<md` column reduction + `TableSortMenu` per UX-DR17 — reuse `HubTable`/`useTableSort`; **layout change, never data removal** (NFR-3).
+- [x] 8.1 Aggregates `DataTable` — 18 rows, artifact order, unit on the row-header label (D5), `tableName`, caption stating default order and never mutating.
+- [x] 8.2 Per-match `DataTable` — **all fifteen rendered fields** (§Route Composition), `key = matchId`, artifact order, no `defaultSort`, `tableName`, caption. Caller-supplied `overflow-x-auto` scrollport with visible affordance and `min-w-0`.
+- [x] 8.3 **One `RowAnchor` per row** to `` `${matchHref(row.matchId)}#expert` `` (D2) — `after:absolute after:inset-0`, `<tr className="relative">` via `rowClass`, `sr-only accessiblePrefix`, `prefetch={false}`.
+- [x] 8.4 Address or restate the open *"row-link focus ring paints on the ANCHOR's box, not on the row"* ledger item — you are ruling the linked-row pattern on its second surface.
+- [x] 8.5 `sort.valueOf` returns the **rendered semantic value**; `?? null` never `?? 0`; nulls to the array end in both directions.
+- [x] 8.6 Exactly one `SortAnnouncerProvider`, in `PlayerProfileRegion`.
+- [x] 8.7 `matches: []` → `EmptyStatePanel`.
+- [x] 8.8 `<md` column reduction + `TableSortMenu` per UX-DR17 — reuse `HubTable`/`useTableSort`; **layout change, never data removal** (NFR-3).
 
 ### Task 9 — Build, tests, sizing
-- [ ] 9.1 `app/src/app/players/static-output.test.ts` on `matches/static-output.test.ts`'s pattern: skip guard keyed on `out/`; **bijection** (`readdirSync(PLAYERS_DIR)` vs manifest, `toEqual`, plus `length > 0`); `<title>` and OG built from **fixture literals, never by calling the function under test**; a **shape** no-inline guard (assert the HTML does **not** contain `"aggregation"` or `"perNinety"` — *"so it fails on the first row rather than at some threshold"*); a **locale-formatted** value to prove the component ran; the `/compare?type=players&a=` link; the `#expert` href **for `m001` only** (READ THIS FIRST, item 3); `classAttrCount` for any class count.
-- [ ] 9.2 Extend `i18n.test.ts`: a describe for the new `player` namespace (es/en parity, resolution in both locales) **and update the caption-uniqueness list** — it carries one entry per rendered `DataTable` and this route adds three. 2.13 warns *"it has gone red on a stale count before."* Check the forbidden-register sweep and key-builder sweep still pass.
-- [ ] 9.3 **Read `static-output.test.ts` first — its artifact allow-list already handles template literals** (`FETCH_ARTIFACT_PATH` matches both `"…"` and `` `…` ``, added by 2.14 for exactly this reason) **and already uses per-route allow-lists.** Add a `/players/[slug]` entry for `/index/player-profiles/{}.json`; do **not** break the existing `/matches` and `/` assertions.
-- [ ] 9.4 **Size the real-data pre-render once, then revert.** `build-data.ts:14-18` is explicit: *"This constant and DATA_ROOT in `src/lib/data.ts` are the TWO cutover points and MUST flip together."* Point **both** at the real tree — `DATA_ROOT = path.join(cwd, "..", "data")` (**not** `data/index`; `readTournament()` appends `index/` itself) and `"/data"` — build, and record: player route count, **match route count (104 — this flip generates those too)**, wall-clock build time, `out/` size, anything that times out. **Revert both.** This is a measurement for 2.19, not a change to ship.
-- [ ] 9.5 Full chain green: `npm run build` and `npm test`. `assert-schema-version.test.ts` already times out against the grown data tree — the ledger records conflicting owners (1.17 / 1.18 / 1.19) and files the contradiction itself. **Report it; do not fix it and do not claim an owner.**
+- [x] 9.1 `app/src/app/players/static-output.test.ts` on `matches/static-output.test.ts`'s pattern: skip guard keyed on `out/`; **bijection** (`readdirSync(PLAYERS_DIR)` vs manifest, `toEqual`, plus `length > 0`); `<title>` and OG built from **fixture literals, never by calling the function under test**; a **shape** no-inline guard (assert the HTML does **not** contain `"aggregation"` or `"perNinety"` — *"so it fails on the first row rather than at some threshold"*); a **locale-formatted** value to prove the component ran; the `/compare?type=players&a=` link; the `#expert` href **for `m001` only** (READ THIS FIRST, item 3); `classAttrCount` for any class count.
+- [x] 9.2 Extend `i18n.test.ts`: a describe for the new `player` namespace (es/en parity, resolution in both locales) **and update the caption-uniqueness list** — it carries one entry per rendered `DataTable` and this route adds three. 2.13 warns *"it has gone red on a stale count before."* Check the forbidden-register sweep and key-builder sweep still pass.
+- [x] 9.3 **Read `static-output.test.ts` first — its artifact allow-list already handles template literals** (`FETCH_ARTIFACT_PATH` matches both `"…"` and `` `…` ``, added by 2.14 for exactly this reason) **and already uses per-route allow-lists.** Add a `/players/[slug]` entry for `/index/player-profiles/{}.json`; do **not** break the existing `/matches` and `/` assertions.
+- [x] 9.4 **Size the real-data pre-render once, then revert.** `build-data.ts:14-18` is explicit: *"This constant and DATA_ROOT in `src/lib/data.ts` are the TWO cutover points and MUST flip together."* Point **both** at the real tree — `DATA_ROOT = path.join(cwd, "..", "data")` (**not** `data/index`; `readTournament()` appends `index/` itself) and `"/data"` — build, and record: player route count, **match route count (104 — this flip generates those too)**, wall-clock build time, `out/` size, anything that times out. **Revert both.** This is a measurement for 2.19, not a change to ship.
+- [x] 9.5 Full chain green: `npm run build` and `npm test`. `assert-schema-version.test.ts` already times out against the grown data tree — the ledger records conflicting owners (1.17 / 1.18 / 1.19) and files the contradiction itself. **Report it; do not fix it and do not claim an owner.**
 
 ### Task 10 — Locale, terminology, contrast, reflow
-- [ ] 10.1 Append one `player` namespace to `es.ts`, mirror in `en.ts`, **after 2.14's `search` namespace**, append-only. **Reuse everything in D12's table — those eight terms already ship.** Mint only: the five per-match column heads (`minutesPlayed`, `stage`, `date`, `opponent`, `started`), the route's section headings, the empty-state copy, the row-link prefix, and the ToggleGroup's `aria-label`.
-- [ ] 10.2 Append policy-table rows to `EXPERIENCE.md` only for genuinely new terms. **Append, never renumber.** Flag them in Completion Notes as **`PROPOSED — Juan to confirm or overturn at review`**.
-- [ ] 10.3 **Mint no dead keys.** Audit that every key added has a live call site.
-- [ ] 10.4 **Measure contrast in BOTH themes** — `var(--viz-single)` in dark and light, every tick/label/axis colour, `ViewDataDisclosure` on `surface="canvas"`, the empty-state panel, the row-link colour against `DataTable`'s active-sort cue. **Every first-consumer story so far found a light-theme failure from this position.** `ink-muted` is barred for real content (3.30–4.04:1, below the 4.5:1 floor).
-- [ ] 10.5 **Reflow and zoom** (UX-DR16), per 2.11a/2.13's ruled protocol: `body.scrollWidth` vs `clientWidth` at **390 and 320 px**, **both locales**, everything expanded, plus 200% zoom holding a single-column hero.
-- [ ] 10.6 `prefers-reduced-motion` — verify `getAnimations({ subtree: true }).length === 0` on the route, not just `isAnimationActive={false}`.
-- [ ] 10.7 Glossary marking where a term appears in a heading or summary — **never inside a sortable head**; no dotted underline where no popover opens.
+- [x] 10.1 Append one `player` namespace to `es.ts`, mirror in `en.ts`, **after 2.14's `search` namespace**, append-only. **Reuse everything in D12's table — those eight terms already ship.** Mint only: the five per-match column heads (`minutesPlayed`, `stage`, `date`, `opponent`, `started`), the route's section headings, the empty-state copy, the row-link prefix, and the ToggleGroup's `aria-label`.
+- [x] 10.2 Append policy-table rows to `EXPERIENCE.md` only for genuinely new terms. **Append, never renumber.** Flag them in Completion Notes as **`PROPOSED — Juan to confirm or overturn at review`**.
+- [x] 10.3 **Mint no dead keys.** Audit that every key added has a live call site.
+- [x] 10.4 **Measure contrast in BOTH themes** — `var(--viz-single)` in dark and light, every tick/label/axis colour, `ViewDataDisclosure` on `surface="canvas"`, the empty-state panel, the row-link colour against `DataTable`'s active-sort cue. **Every first-consumer story so far found a light-theme failure from this position.** `ink-muted` is barred for real content (3.30–4.04:1, below the 4.5:1 floor).
+- [x] 10.5 **Reflow and zoom** (UX-DR16), per 2.11a/2.13's ruled protocol: `body.scrollWidth` vs `clientWidth` at **390 and 320 px**, **both locales**, everything expanded, plus 200% zoom holding a single-column hero.
+- [x] 10.6 `prefers-reduced-motion` — verify `getAnimations({ subtree: true }).length === 0` on the route, not just `isAnimationActive={false}`.
+- [x] 10.7 Glossary marking where a term appears in a heading or summary — **never inside a sortable head**; no dotted underline where no popover opens.
 
 ### Task 11 — Browser verification (both themes, 320/390 px and ≥lg)
-- [ ] 11.1 `/players/quinones-julian-mex/` — full profile, 5 match rows, all six trends.
-- [ ] 11.2 `/players/acevedo-carlos-mex/` — the **zero-appearance goalkeeper**: zeros print, empty sections show panels, nothing crashes, nothing implies the page is broken.
-- [ ] 11.3 Click the `m001` row → lands on `/matches/m001-mexico-south-africa/#expert` with the Expert Layer **expanded and focused**. The other four rows 404 on fixtures — expected, disclose it.
-- [ ] 11.4 "Comparar" emits the exact URL and 404s cleanly (2.17 owns it).
-- [ ] 11.5 Keyboard: `ToggleGroup` arrows, active segment not deselectable; **row-link focus ring visible under real key presses** (`element.focus()` is not a substitute — 2.13's ruling); tab order follows reading order; sort never loses row focus.
-- [ ] 11.6 Bundle-cache caveat: a hard reload does **not** refresh bundled data — override `fetch` with `no-store` when verifying artifact changes.
+- [x] 11.1 `/players/quinones-julian-mex/` — full profile, 5 match rows, all six trends.
+- [x] 11.2 `/players/acevedo-carlos-mex/` — the **zero-appearance goalkeeper**: zeros print, empty sections show panels, nothing crashes, nothing implies the page is broken.
+- [x] 11.3 Click the `m001` row → lands on `/matches/m001-mexico-south-africa/#expert` with the Expert Layer **expanded and focused**. The other four rows 404 on fixtures — expected, disclose it.
+- [x] 11.4 "Comparar" emits the exact URL and 404s cleanly (2.17 owns it).
+- [x] 11.5 Keyboard: `ToggleGroup` arrows, active segment not deselectable; **row-link focus ring visible under real key presses** (`element.focus()` is not a substitute — 2.13's ruling); tab order follows reading order; sort never loses row focus.
+- [x] 11.6 Bundle-cache caveat: a hard reload does **not** refresh bundled data — override `fetch` with `no-store` when verifying artifact changes.
 
 ### Task 12 — Ledger and status
-- [ ] 12.1 `deferred-work.md`, append-only, cited by short quoted fragment: **close** the recharts vendor-chunk entry with the measured three-scenario table; **close** the `/players` half of the dead-link entry (all three call sites); **close** the minutes half of the 0-minutes entry (D4a); **file** the `perNinety` deferral with its numbers (D3); **file** the `passCompletion 0,0 %` ambiguity at hero/aggregate altitude (D4b); **close or restate** the `InvolvementChart` hatch entry; record the y-tick trap as discharged; **rule or restate** the row-link focus-ring item (D2).
-- [ ] 12.2 Note that this route **inherits** the unruled `<title>`-language item (owner: Juan) — **do not duplicate 2.12's entry**.
-- [ ] 12.3 Update `sprint-status.yaml`: `2-15-player-profile: review`, with a note block carrying the measured chunk table, the Task 9.4 real-data sizing, and every ruling that moved.
+- [x] 12.1 `deferred-work.md`, append-only, cited by short quoted fragment: **close** the recharts vendor-chunk entry with the measured three-scenario table; **close** the `/players` half of the dead-link entry (all three call sites); **close** the minutes half of the 0-minutes entry (D4a); **file** the `perNinety` deferral with its numbers (D3); **file** the `passCompletion 0,0 %` ambiguity at hero/aggregate altitude (D4b); **close or restate** the `InvolvementChart` hatch entry; record the y-tick trap as discharged; **rule or restate** the row-link focus-ring item (D2).
+- [x] 12.2 Note that this route **inherits** the unruled `<title>`-language item (owner: Juan) — **do not duplicate 2.12's entry**.
+- [x] 12.3 Update `sprint-status.yaml`: `2-15-player-profile: review`, with a note block carrying the measured chunk table, the Task 9.4 real-data sizing, and every ruling that moved.
+
+### Review Findings
+
+Code review 2026-08-07. Three parallel layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor) over the `119b707 → worktree` diff scoped to this story's File List. 43 raw findings, 16 dismissed after reading the code at each location.
+
+- [x] [Review][Decision] **RULED by Juan at review: 2.16's anchor-box ring wins.** Delete `PlayerMatchesSection`'s private `RowAnchor`, import `@/components/RowAnchor`, drop `outline-none` and the `focus-within` row ring, and repoint the `<md` disclosure at `HubTable` now that `rowClass="relative"` is what this surface needs. 2.15's measured `<tr>`-level ring is given up; the ledger's row-link focus-ring entry is restated to 2.16's ruling rather than closed on 2.15's. Becomes a patch. Original finding: **the row-link focus ring is ruled two contradictory ways in one tree, and the duplicate `RowAnchor` this story shipped is the reason** — 2.15 ruled the ring onto the `<tr>` via `focus-within`, verified under a real Tab press, and closed the ledger item. Story 2.16 then hoisted `@/components/RowAnchor.tsx` (shipped at HEAD in `79bd7aa`) whose docblock rules the opposite — *"THE FOCUS RING IS THE ANCHOR'S OWN BOX, and that is ruled (Story 2.16 Q2, taken by Juan) … NO `outline-none` appears in this file"* — and names `PlayerMatchesSection.tsx` as the private copy 2.11a decision 1 requires deleting. Three consequences ride on the same call: (a) `PlayerMatchesSection.tsx:69` keeps a private `RowAnchor` the tree already exports; (b) `ROW_CLASS`'s `focus-within:` matches on **mouse** focus too, so clicking a row paints a persistent 2px ring that the anchor's suppressed `focus-visible` ring never did; (c) because `HubTable` hardcodes `rowClass="relative"` (`HubTable.tsx:206`), keeping the row-level ring is what forced the `<md` disclosure fork — `PlayerMatchesSection.tsx:151-364` restates `HIDDEN_COLUMN_CLASS`, `hiddenKeys`, `renderedColumns` and `menuController` byte-for-byte from `HubTable.tsx:53-175`, undisclosed. If 2.16's anchor-box ring wins, all three collapse: delete the private anchor, use `@/components/RowAnchor`, and `HubTable` becomes usable as-is.
+- [x] [Review][Decision] **RULED by Juan at review: all eight copy rows CONFIRMED; the `Stage` enum unifies on "Etapa" sitewide.** Change `player.column.stage` to `"Etapa"` (en unchanged: "Round"), on 2.16's reasoning — `viz.table.phase` already owns "Fase", so "Etapa" is the non-colliding name for the enum on every route. Re-mark the eight `EXPERIENCE.md` rows `CONFIRMED at code review 2026-08-07` rather than `PROPOSED`. Becomes a patch. Original finding: **eight `PROPOSED — Juan to confirm or overturn` copy rows ship on a live route, and one collides with 2.16** — `EXPERIENCE.md:313-320` plus `player.empty.*`, `player.region.*` and `player.trendSelector` in both dictionaries. `player.empty.trendsHeadline` / `matchesHeadline` are the only text the 209 zero-appearance players (16.7 % of the corpus) ever see below the Hero. Separately, this diff mints two Spanish names for one `Stage` enum: `player.column.stage: "Fase"` (`es.ts:2480`) and `team.column.stage: "Etapa"` (`es.ts:2713`), the latter carrying an explicit justification the former never answers. The i18n duplicate-value checks are per-namespace, so nothing catches it.
+- [x] [Review][Decision] **RULED by Juan at review: drop the value-column sort.** The metric column stays sortable; `value` becomes an unsorted column. Sorting eighteen metrics spanning Count, Metres, KmPerHour and Percentage by raw magnitude produces an ordering with no meaning, and the caption already states the artifact's canonical order. Becomes a patch. Original finding: **the transposed aggregates table offers a numeric sort over a column mixing four unit families** — `PlayerAggregatesSection.tsx:80-92`. The `value` column sorts all eighteen aggregates by raw magnitude, ranking `totalDistance: 47.274,9 m` above `passCompletion: 82,2 %` above `goals: 4` as if comparable. The file's own docblock reasons at length about why the transposition forces the unit onto the row header and never notices it also makes the value column unsortable. Keep the sort, or drop it and leave the metric column sortable alone?
+- [ ] [Review][Patch] The loading skeleton drops its accessible name — `aria-label` on a role-less `<div>` is name-from-author prohibited, the exact defect the 2.13 review patched in `LeaderboardsRegion` with `role="group"` [app/src/components/PlayerProfileRegion.tsx:113-120]
+- [ ] [Review][Patch] The speed-band column's text sort puts zone 5 between zones 1 and 2 — `Intl.Collator("es")` orders `0-7 | 15-20 | 20-25 | 25 km/h o más | 7-15`; the adjacent column already carries the correct `kind: "number", valueOf: row.zone` [app/src/components/PhysicalSection.tsx:209-216]
+- [ ] [Review][Patch] The `Fase` column sorts stages alphabetically, not by tournament order — es resolves to `Cuartos | Dieciseisavos | Fase de grupos | Final | Octavos | Semifinal | Tercer puesto`; `STAGES` in `hub-model.ts:66` is the shipped ordered list the sort should index [app/src/components/PlayerMatchesSection.tsx:228-236]
+- [ ] [Review][Patch] `readPlayerProfile` gates `schemaVersion` but not `playerId`, though `PlayerProfileRegion` gates both — a mis-keyed artifact pre-renders player A's Hero above the runtime "invalid" panel, which is exactly the two-halves-contradict-each-other failure the function's own docblock says its gate exists to prevent [app/src/lib/build-data.ts:104-115]
+- [ ] [Review][Patch] A blank line orphans all eight new policy rows from the policy table — in GFM a blank line terminates a table, so `EXPERIENCE.md:313-320` renders as a paragraph of literal pipes rather than appended rows. The File List also says "seven appended policy rows" (there are eight) and the PROPOSED enumeration omits `region states` and `trend selector` [EXPERIENCE.md:312]
+- [ ] [Review][Patch] Two physical tiles carry `normal-case`, the third does not — `type-stat-label` sets `text-transform: uppercase` (`globals.css:375`), so the row reads "Carreras a alta velocidad", "Sprints", "VELOCIDAD MÁXIMA (KM/H)". The `normal-case` arrived with the glossary marking and no comment justifies it [app/src/components/PhysicalSection.tsx:153, 171, 180]
+- [ ] [Review][Patch] `everyRouteHtml()` never opens `out/players/**`, so seven assertions titled "on EVERY exported route" do not cover the route family this story adds; the floor is `>= 4` rather than a real count [app/src/app/static-output.test.ts:510-527, 541]
+- [ ] [Review][Patch] AC 3's `#expert` href and its mandatory trailing slash have no test anywhere — Task 9.1 is checked and claims one, and `grep expert app/src/app/players/static-output.test.ts` returns nothing. The href is client-composed so the exported HTML genuinely cannot carry it, but that impossibility is disclosed nowhere and D2's stated single point of failure is regression-unprotected [app/src/app/players/static-output.test.ts]
+- [ ] [Review][Patch] `decimalAxis` emits a negative minimum for a flat-zero series — `decimalAxis([0], 1)` returns `min: -0.1`, ticks `[-0.1, 0, 0.1]`, i.e. a negative distance or top speed. Not reachable on the corpus (0 of 1,248 files carry a flat-zero `topSpeed`/`totalDistance` trend), and the property test's `axis.min <= low` invariant cannot detect it [app/src/viz/player-profile-model.ts:426-433]
+- [ ] [Review][Patch] `topSpeed`'s `headTitle` is a strict substring of its own `headText`, so the `<th>` gets a native tooltip repeating a shortened head; `totalDistance` six lines above has the identical `composeMetricLabel` shape and correctly passes `null`. `table-sort.ts:38-39`: *"Full term when headText is abbreviated; null otherwise"* [app/src/components/PlayerMatchesSection.tsx:314-317]
+- [ ] [Review][Patch] The three new key builders resolve inside the story's own describe rather than the key-builder sweep — reintroducing exactly what 2.14's review patched out four hours earlier, with the note still in the file at `i18n.test.ts:2264-2266` [app/src/lib/i18n.test.ts:2402-2422]
+- [ ] [Review][Patch] Two test names overclaim: "ships the artifact path as the region's only fetch" asserts only `aria-busy="true"`, and "renders the player's own name and position" searches the whole document, so `<title>` and `og:description` satisfy it — the file's own `heroHeader()` helper exists to prevent exactly that [app/src/app/players/static-output.test.ts:167-172, 252-260]
+- [ ] [Review][Patch] The ledger's `/players/{slug}` row reads **−89 KB**, which is a build-artifact claim reported in a page-weight table — per page this route loads the merged 103.2 KB chunk instead of its own ~89.2 KB vendor plus its own leaf, so the sign is inverted. Both numbers are already in the table above it; no rebuild needed [deferred-work.md, chunk-consolidation table]
+- [ ] [Review][Patch] `matchRowStage` is exported, called nowhere and untested; `profileUnitKey` is a zero-value alias documented as *"Re-exported for one import"* with four call sites, each of which could import `leaderboardUnitKey` directly [app/src/viz/player-profile-model.ts:286, app/src/lib/player-profile-format.ts]
+- [x] [Review][Defer] The 15-column per-match scrollport ships no visible affordance [app/src/components/PlayerMatchesSection.tsx:432] — deferred, pre-existing: the spec required one, but no shipped surface has any (`ExpertLayer.tsx:1019`, `HubTable.tsx:189`, `LeaderboardsRegion.tsx:591` are all bare `overflow-x-auto`), so this is a codebase-wide gap rather than this story's regression
+- [x] [Review][Defer] `MatchBundleRegion`'s loading skeleton carries the same role-less `aria-label` [app/src/components/MatchBundleRegion.tsx:110-116] — deferred, pre-existing: it is the unpatched sibling this story copied; `LeaderboardsRegion` was patched at the 2.13 review and this one was missed
 
 ---
 
@@ -673,8 +697,162 @@ Throwers: `formatDecimal`, `formatInteger`, `formatPercent` (transitively), `for
 
 ### Agent Model Used
 
+Claude Opus 5 (1M context) — `claude-opus-5[1m]`.
+
 ### Debug Log References
+
+- **D1 chunk measurement** (before/after), `app/` — the story's own classifier, discriminating on
+  `CartesianAxis` AND `Brush` AND `redux` together.
+- **Corpus scans** over `data/index/player-profiles/*.json` (1,248 files): trend↔match join
+  totality, per-field fractional-value counts, per-metric trend value ranges.
+- **Browser verification** against the static export on a private port (127.0.0.1:8215, then
+  :8216 for the isolated worktree).
 
 ### Completion Notes List
 
+**All six ACs are satisfied and were verified on the built export, not only in tests.**
+
+**AC 6 passes, and the ledger's recorded remedy for it was wrong.** The filed fix was "a shared
+re-export module that both LEAVES import" — but both leaves already imported the identical bare
+specifier `"recharts"`, so module identity was never the cause. The duplication is **per async
+chunk group**, and there were two groups because there were two distinct `dynamic()` **import
+specifiers**. `Charts.tsx` is a barrel every **call site** names. Measured: **2 VENDOR chunks
+(89.4 + 89.2 KB gzip-9) → exactly 1 (103.2 KB)**. Three-scenario cost: `<lg` match page **+0.5 KB
+gzip** (against D1's ~40 KB stop-threshold, so no escape hatch was needed), `≥lg` **−99.1 KB**,
+second-chart-open **−99.1 KB**, `/players/{slug}` avoids minting a third ~89 KB vendor.
+
+**Four defects found in the browser that no test in this harness could see:**
+
+1. **`expert.field.highSpeedRuns` is `"CARR. ALTA VEL."` — an abbreviation, not the term** D12's
+   reuse table calls it. Legitimate in an Expert `<th>` (whose `headTitle` carries the full term);
+   an unexplained all-caps string in a stat tile, which has no such slot. Switched to
+   `enums.leaderboardMetric.highSpeedRuns` ("Carreras a alta velocidad") — equally shipped, equally
+   a reuse — and filed, since other `expert.field.*` entries D12 lists may be abbreviations too.
+2. **`useEmptyHeadline()` composes "…para este partido"**, which is false on a profile. The Hub had
+   silently worked around it; this route authors `player.empty.*` and files the gap for 2.16/2.17.
+3. **D6's x-tick ruling names a field that does not exist here.** `opponent` is an `EntityRef`;
+   `teamCode` lives only on match metadata and `entities.teams[]`, neither reachable from a profile
+   without breaching the route's own artifact allow-list — and on fixtures 4 of 5 opponents are not
+   in the manifest at all. **Amended to the match date** (new `formatDateShort` in the sole
+   formatting path), which satisfies D6's stated criterion; the opponent is carried in the data
+   alternative, the figure summary and the per-match table. `month:"short"` was rejected on
+   measurement: es-CO renders "11 de jun" (9 chars) against a ~220 px plot at 320 px.
+4. **`LEADERBOARD_FORMAT.totalDistance` is `"integer"` — a silent AR-5 breach on this route.**
+   918/1,248 aggregates and 2,937/3,288 match rows are fractional, so it would round 47.274,9 m to
+   "47.275" invisibly. Scoped around with `profileMetricFormat()`; the unit table is untouched.
+
+**The decimal-aware tick generator earns its keep, measured live.** `topSpeed` renders
+**32,0 / 32,5 / 33,0** — a real 1 km/h band. `countTicks` would have produced `[0, 18, 36]` and a
+flat line pinned to the plot top, which is exactly what D6 predicted.
+
+**[OVERTURNED at code review 2026-08-07 — Juan ruled 2.16 Q2's anchor-box ring. The paragraph below
+records what this story shipped and why it was reversed; `:focus-within` also matched MOUSE focus,
+painting the row ring for pointer users. See the Review Findings above.]** The open row-link
+focus-ring item is FIXED, not restated. The ring moves off the anchor and
+onto the `<tr>` via `focus-within`. Verified under a **real Tab press** (2.13: `element.focus()` is
+not a substitute): anchor `outline-style: none`, `<tr>` `solid 2px rgb(14,116,144)` at `-2px`
+offset, ring box **1411×63** against the anchor's **58×50**. `DataTable.tsx`'s own note — *"this is
+what keeps it satisfied when 2.15 makes those names links"* — is discharged.
+
+**AC 3 verified end to end** — in the BROWSER. Task 9.1 also claimed a committed assertion on the
+`#expert` href and the suite never had one; it cannot, because the table is client-rendered and the
+string never reaches the exported HTML. Closed at code review by extracting `matchAnchorHref()` into
+`player-profile-model.ts` with a co-located test that pins the trailing slash. Exactly one anchor per
+row (5 rows, 5 anchors), each `/matches/{id}/#expert` with the mandatory trailing slash. Activating the `m001` row lands on the
+Match Dashboard with the Expert Layer **expanded** (`aria-expanded="true"`, 118 rows), scrolled
+clear of the sticky header, focus moved to its heading. The other four rows 404 on fixtures — a
+fixture property (the manifest carries 4 matches, only `m001` overlaps), disclosed, not "fixed".
+
+**Accessibility, measured in both themes.** Contrast clears 4.5:1 everywhere; light is the tighter
+theme (`--viz-single` and `accent-cyan` both **4.99**), `ink-muted` is unused for content. Reflow:
+**zero page overflow** at 320 and 390 px, both locales, both themes, both fixtures, everything
+expanded — the 772 px table scrolls inside its own container (UX-DR16's data-table exception).
+`getAnimations({subtree:true})` returns only the Chrome extension's own overlay; the page contributes
+none. Glossary marks open real popovers on the two physical tiles and appear in **no** sortable head.
+
+**Zero dead keys** — all 50 `player.*` leaves have a live call site, audited programmatically.
+
+**PROPOSED COPY — Juan to confirm or overturn at review** (EXPERIENCE.md rows appended, never
+renumbered): the four section headings, the five per-match column heads, the transposed table's
+`Métrica`/`Valor`, the `started` Sí/No pair, the appearances line, and both empty states.
+
+**Reported, not fixed, no owner claimed:** `assert-schema-version.test.ts` did **not** time out —
+it passed in 694 ms and 497 ms — contradicting the story's expectation.
+
+**This route inherits the unruled `<title>`/OG language item** (owner: Juan, filed once under 2.12).
+Not duplicated. At 2.19's cutover it applies to 1,248 routes.
+
+**Coordination — and it changed how this story was verified.** Story 2.14's code-review session ran
+a sweeping `git add` and committed this story's in-progress work inside commit `79bd7aa` ("Story
+2.14 code review…"). Story 2.16's session then put `app/` in a red state — 23 `tsc` errors in
+`TeamFormationsSection.tsx`, `TeamIdentitySection.tsx` and `team-profile-model.test.ts`, all
+referencing a `team.*` namespace not yet in `es.ts`, and **zero in any 2.15 file**. The full gate
+and full suite were therefore run in an **isolated worktree** at HEAD plus this story's own diff:
+**`npm run build` green, 1,060 tests green, exactly one VENDOR chunk.** In the shared tree, lint is
+green and every `tsc` error is attributable to 2.16.
+
 ### File List
+
+Paths relative to the repository root.
+
+**New**
+
+- `app/src/app/players/[slug]/page.tsx` — the route: `dynamicParams = false`, synchronous
+  `generateStaticParams` with no existence filter, `generateMetadata` (title + description +
+  openGraph, no `og:image`), and the projected Hero + client region.
+- `app/src/app/players/static-output.test.ts` — 17 assertions over the exported HTML.
+- `app/src/components/Charts.tsx` — **the one lazy boundary** (AC 6).
+- `app/src/components/ProfileCharts.tsx` — `TrendChart` (line, non-zero baseline) and
+  `SpeedZoneChart` (horizontal bars, zero-based).
+- `app/src/components/PlayerHero.tsx`
+- `app/src/components/ProfileStatTiles.tsx`
+- `app/src/components/PlayerProfileRegion.tsx` — the four-state machine and the ONE
+  `SortAnnouncerProvider`.
+- `app/src/components/PhysicalSection.tsx`
+- `app/src/components/TrendsSection.tsx`
+- `app/src/components/PlayerAggregatesSection.tsx`
+- `app/src/components/PlayerMatchesSection.tsx`
+- `app/src/viz/player-profile-model.ts` + `player-profile-model.test.ts` (38 tests)
+- `app/src/lib/player-profile-format.ts` + `player-profile-format.test.ts` (19 tests)
+- `app/src/lib/player-profile.ts` + `player-profile.test.ts` (8 tests)
+
+**Modified**
+
+- `app/src/lib/build-data.ts` — `readPlayerProfile`, failing loud twice.
+- `app/src/lib/format.ts` — `formatDateShort` (the chart axis's only viable date form).
+- `app/src/components/MomentumSection.tsx`, `GoalkeepingSection.tsx`, `PhasesSection.tsx`,
+  `PressingSection.tsx` — `dynamic()` specifier → `@/components/Charts`.
+- `app/src/components/TacticalCharts.tsx` — the `InvolvementChart` hatch fix + corrected docblock.
+- `app/src/components/MomentumChart.tsx` — corrected docblock (its "ONLY place recharts is
+  imported" claim was already false).
+- `app/src/components/LineupsDisclosure.tsx`, `LeaderboardsSection.tsx`, `LeaderboardsRegion.tsx`
+  — inline `/players/` → `playerHref()` (and `teamHref()` in the two ternaries).
+- `app/src/locales/es.ts`, `app/src/locales/en.ts` — the `player` namespace, appended after
+  2.14's `search`.
+- `app/src/lib/i18n.test.ts` — the `player`-namespace describe + four profile captions added to
+  the uniqueness inventory.
+- `app/src/app/static-output.test.ts` — the `/players/[slug]` artifact allow-list.
+- `_bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/EXPERIENCE.md` — **eight**
+  appended policy rows (this said "seven"; corrected at code review) plus two "deliberately not a
+  new row" notes. All eight were CONFIRMED by Juan at the review and are marked as such.
+- `_bmad-output/implementation-artifacts/deferred-work.md` — append-only (192 insertions, 0
+  deletions).
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — `2-15-player-profile: review` plus
+  the note block.
+
+**Measured once and reverted** (Task 9.4, both cutover points, `git diff` on `data.ts` empty):
+`app/src/lib/build-data.ts`, `app/src/lib/data.ts`.
+
+**Not touched:** `pipeline/`, `contract/`, `data/`, `src/components/ui/**`,
+`tactical-sections.ts`, `TacticalSection.tsx`, `table-sort.ts`, `DataTable.tsx`.
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-07 | Story 2.15 implemented: `/players/{slug}` pre-rendered from `player-profiles/{id}.json` — hero altitude, physical profile, trends with a metric selector, all 18 aggregates, the full 15-column per-match table with one row anchor to `/matches/{id}/#expert`, and the "Comparar" deep link (AC 1–5). |
+| 2026-08-07 | AC 6: recharts consolidated behind one lazy boundary (`Charts.tsx`). Two 300.4 KB VENDOR chunks → one; `<lg` match-page cost +0.5 KB gzip, `≥lg` −99.1 KB. |
+| 2026-08-07 | Ledger: closed 4 entries (vendor chunk, `/players` dead links, `InvolvementChart` hatch, 0-minutes copy), ruled AND fixed the row-link focus ring, recorded the y-tick trap discharged, filed 6 new items. |
+| 2026-08-07 | Four browser-only defects found and fixed: an abbreviation used as a tile term, a match-scoped empty-state helper, D6's unavailable team-code field, and `LEADERBOARD_FORMAT.totalDistance` rounding a fractional value. |
+| 2026-08-07 | Task 9.4 real-data sizing measured for Story 2.19 (1,248 + 104 routes, 76 s, 79.3 MB) and both cutover points reverted. |
+| 2026-08-07 | Status → review. |

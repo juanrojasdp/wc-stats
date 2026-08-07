@@ -783,6 +783,39 @@ describe("key-builder resolution sweep (Story 2.18 Task 9.1a)", () => {
       }
     }
   });
+
+  /*
+   * STORY 2.15's THREE BUILDERS, REGISTERED HERE (code review 2026-08-07) — for
+   * the same reason as 2.14's directly above, and this time reintroducing the
+   * pattern that ruling had just removed. They were resolved inside the `player`
+   * describe further down, which is equivalent coverage in the wrong place: the
+   * whole value of this sweep is that it is ONE place a reader checks that every
+   * builder in the repo resolves.
+   *
+   * `speedZoneLabelKey` and `speedZoneBandKey` point INTO `expert.*` rather than
+   * `player.*` (D12's reuse), so a broken cast here would surface as a raw
+   * `expert.field.` path in a tile label, which is what the negative assertions
+   * pin. The `player` describe keeps its REUSE assertions — which shipped key
+   * each builder maps to — because those are genuinely story-local.
+   */
+  it("resolves all three player-profile builders over their full domain", () => {
+    for (const locale of locales) {
+      for (const zone of SPEED_ZONES) {
+        for (const key of [speedZoneLabelKey(zone), speedZoneBandKey(zone)]) {
+          const value = t(key, locale);
+          expect(value, `${key} in ${locale}`).not.toBe("");
+          expect(value, `${key} in ${locale}`).not.toBe(key);
+          expect(value, `${key} in ${locale}`).not.toContain("expert.");
+        }
+      }
+      for (const started of [true, false]) {
+        const key = startedLabelKey(started);
+        const value = t(key, locale);
+        expect(value, `${key} in ${locale}`).not.toBe("");
+        expect(value, `${key} in ${locale}`).not.toBe(key);
+      }
+    }
+  });
 });
 
 describe("forbidden-register sweep (Story 2.18 Task 9.1b)", () => {
@@ -2413,20 +2446,15 @@ describe("the player namespace (Story 2.15, AD-7 / D12)", () => {
   // Declared per-describe, the way every other block in this file does it.
   const locales: Locale[] = ["es", "en"];
 
-  it("resolves every key builder over its full domain, in both locales", () => {
-    for (const locale of locales) {
-      for (const zone of SPEED_ZONES) {
-        expect(t(speedZoneLabelKey(zone), locale), `zone ${zone} label`).not.toBe("");
-        expect(t(speedZoneLabelKey(zone), locale)).not.toContain("expert.field.");
-        expect(t(speedZoneBandKey(zone), locale), `zone ${zone} band`).not.toBe("");
-        expect(t(speedZoneBandKey(zone), locale)).not.toContain("expert.fieldTitle.");
-      }
-      for (const started of [true, false]) {
-        expect(t(startedLabelKey(started), locale), `started ${String(started)}`).not.toBe("");
-      }
-    }
-  });
-
+  /*
+   * BUILDER RESOLUTION LIVES IN THE KEY-BUILDER SWEEP, not here (code review
+   * 2026-08-07) — see "resolves all three player-profile builders over their
+   * full domain" in `describe("key-builder resolution sweep …")` above. This
+   * describe had its own copy, which is exactly what 2.14's review had just
+   * ruled against. What stays here is what is specific to this story: WHICH
+   * shipped key each builder maps to, and that nothing was minted that could
+   * have been reused.
+   */
   it("REUSES the shipped speed-zone labels and bands - it mints neither", () => {
     /*
      * D12's table, asserted rather than trusted. `es.ts` warns in place that
