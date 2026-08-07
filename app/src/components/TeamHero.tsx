@@ -1,0 +1,194 @@
+"use client";
+
+import Link from "next/link";
+
+import { ProfileStatTiles, type ProfileStatTile } from "@/components/ProfileStatTiles";
+import { ResultChip } from "@/components/ResultChip";
+import { stageLabelKey } from "@/lib/hub-model";
+import { useLocale, useT } from "@/lib/i18n-provider";
+import {
+  composeGoalPair,
+  composeGroupLabel,
+  composeRecordTriple,
+  formatGoalDifference,
+  formatPressingIntensity,
+  formatRateValue,
+  formatTeamCount,
+} from "@/lib/team-profile-format";
+import { compareTeamHref, type TeamHeroData } from "@/lib/team-profile";
+
+/*
+ * The pre-rendered Hero for `/teams/{slug}` (Story 2.16, AC 1 and AC 4) — the
+ * build-time half of AD-11's split.
+ *
+ * `"use client"` + `useT()`, NEVER A SERVER `t()`. A server-t() body surface
+ * "would freeze Spanish and ignore the language toggle" (`MatchHero`'s ruling).
+ * `generateMetadata` is the ONE place a server `t()` is correct on this route,
+ * because metadata is emitted once per build and has no toggle to ignore.
+ *
+ * IT RECEIVES A PROJECTION, NEVER THE ARTIFACT. `toTeamHeroData` keeps the
+ * identity block, the record, two aggregates and the form strip; the forty
+ * tactical leaves, the formations and the per-match rows are fetched below by
+ * `TeamProfileRegion` from the same artifact at runtime. Serializing the whole
+ * profile into the HTML would ship every byte twice on all 48 routes, and AD-11
+ * admits "no third path; no inlining full bundles into HTML".
+ *
+ * NO GOALKEEPING BLOCK, AND IT IS RULED RATHER THAN MISSING (D8). Story 1.18's
+ * R1(A), taken by Juan: goalkeeping appears in NO profile artifact,
+ * `team-profile.schema.json` has no such property and is
+ * `additionalProperties: false`, and `profiles.py` records that "nothing
+ * goalkeeping-shaped is synthesized". Synthesizing it from Match Bundles would
+ * breach AR-5 and AD-11 both; rendering an `EmptyStatePanel` for it would imply
+ * the page is incomplete.
+ */
+
+/** Composition glyphs are module consts, never bare JSX literals (i18n gate). */
+const RECORD_SEPARATOR = "-";
+
+export function TeamHero({ data }: { data: TeamHeroData }) {
+  const t = useT();
+  const { locale } = useLocale();
+
+  const groupLabel = composeGroupLabel(t("match.hero.group"), data.group);
+
+  /*
+   * TILES, NOT A LEADER TREATMENT. `ProfileStatTiles` is Story 2.15's
+   * single-entity tile: same grid, same card, same type ramp as
+   * `StoryStatTiles`, with NO ▲ glyph, no side accent and no `resolveLeader` —
+   * a profile has no leader, which is 2.10 decision 11's declared departure from
+   * UX-DR7. The tile is NOT a tap target (`EXPERIENCE.md:73`).
+   *
+   * EVERY `value` ARRIVES PRE-FORMATTED. The component never formats.
+   *
+   * NOTHING HERE IS RE-DERIVED (D12). `played` is ALL matches, group and
+   * knockout — Argentina is 8, not 3. `points` counts GROUP-STAGE points only,
+   * so a naive `won*3 + drawn` disagrees on 19 of 48 real teams (Mexico is 12
+   * naive, 9 by contract). `goalDifference` ships SIGNED and is never computed
+   * from `goalsFor - goalsAgainst`.
+   */
+  const tiles: ProfileStatTile[] = [
+    {
+      key: "played",
+      labelNode: t("team.tile.played"),
+      value: formatTeamCount(data.record.played, locale),
+    },
+    {
+      key: "record",
+      labelNode: t("team.tile.record"),
+      value: composeRecordTriple({
+        won: formatTeamCount(data.record.won, locale),
+        drawn: formatTeamCount(data.record.drawn, locale),
+        lost: formatTeamCount(data.record.lost, locale),
+        separator: RECORD_SEPARATOR,
+      }),
+      caption: t("team.tile.recordCaption"),
+    },
+    {
+      key: "goals",
+      labelNode: t("team.tile.goals"),
+      value: composeGoalPair({
+        goalsFor: formatTeamCount(data.record.goalsFor, locale),
+        goalsAgainst: formatTeamCount(data.record.goalsAgainst, locale),
+        separator: RECORD_SEPARATOR,
+      }),
+      caption: t("team.tile.goalsCaption"),
+    },
+    {
+      key: "goalDifference",
+      labelNode: t("team.tile.goalDifference"),
+      value: formatGoalDifference(data.record.goalDifference, locale),
+    },
+    {
+      key: "points",
+      labelNode: t("team.tile.points"),
+      value: formatTeamCount(data.record.points, locale),
+      /* The contract's own scoping, stated rather than assumed: knockout ties
+       * award none. */
+      caption: t("team.tile.pointsCaption"),
+    },
+    {
+      key: "furthestStage",
+      labelNode: t("team.tile.furthestStage"),
+      value: t(stageLabelKey(data.record.furthestStage)),
+    },
+    {
+      key: "possession",
+      labelNode: t("team.tile.possession"),
+      value: formatRateValue(data.possession, locale),
+    },
+    {
+      key: "pressingIntensity",
+      labelNode: t("team.tile.pressingIntensity"),
+      /*
+       * A COUNT-VALUED MEAN AT 1 dp, WITH NO PERCENT SIGN (D12). The contract
+       * calls it "Mean defensive pressures applied per match"; Mexico is 213.0.
+       * `possession` sits two tiles away and IS a percentage, which is exactly
+       * how a stray "%" here would read as correct.
+       */
+      value: formatPressingIntensity(data.pressingIntensity, locale),
+      caption: t("team.tile.pressingIntensityCaption"),
+    },
+  ];
+
+  return (
+    <section className="mt-6">
+      {/*
+       * The `<h1>` is `sr-only`: the visible identity block below carries the
+       * team name at display size, and a second visible heading would duplicate
+       * it. One `<h1>` per route.
+       */}
+      <h1 className="sr-only">{data.name}</h1>
+
+      <div className="flex flex-col items-center gap-1">
+        <p aria-hidden="true" className="type-label-caps text-ink-secondary">
+          {data.teamCode.toUpperCase()}
+        </p>
+        <p className="type-display text-ink-primary">{data.name}</p>
+        <p className="type-caption text-ink-secondary">{groupLabel}</p>
+      </div>
+
+      <ProfileStatTiles tiles={tiles} />
+
+      {/*
+       * THE FORM STRIP (ruled D3): a projection of `matches[].result` in the
+       * artifact's own chronological order. Not an aggregation — nothing is
+       * summed, averaged or derived — so AR-5 is satisfied.
+       *
+       * THE ARRAY INDEX IS THE REACT KEY, and this is the one place that is
+       * legitimate (`TournamentHub.tsx`'s shipped ruling): the strip is a
+       * positional sequence of repeated values with no stable identity of its
+       * own, and W-W-W-W-L carries four identical entries.
+       */}
+      {data.form.length > 0 ? (
+        <div className="mt-5 flex flex-col items-center gap-1">
+          <p className="type-stat-label text-ink-secondary">{t("team.hero.form")}</p>
+          <div className="flex flex-wrap items-center justify-center gap-1">
+            {data.form.map((result, index) => (
+              <ResultChip key={index} result={result} />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {/*
+       * "Comparar equipo" (AC 4) -> `/compare?type=teams&a={slug}`.
+       *
+       * `prefetch={false}` BECAUSE THE ROUTE DOES NOT EXIST YET — Story 2.17
+       * owns `/compare`. Linking to an unbuilt route is itself ruled (2.12 D2
+       * and 2.13 ruling 3 both ruled navigation surfaces link to unbuilt
+       * routes), but prefetching one is a guaranteed round trip for a 404.
+       *
+       * The href is composed in a helper, never interpolated at the call site.
+       */}
+      <div className="mt-5 flex justify-center">
+        <Link
+          href={compareTeamHref(data.teamId)}
+          prefetch={false}
+          className="flex min-h-11 items-center underline underline-offset-4 type-body text-accent-cyan"
+        >
+          {t("team.action.compare")}
+        </Link>
+      </div>
+    </section>
+  );
+}

@@ -495,11 +495,11 @@ Every match page currently speculatively fetches **two non-existent routes**.
 
 ## Tasks / Subtasks
 
-### Task 1 — Baseline, coordination, re-verification (BLOCKING; AC 1)
-- 1.1 `git rev-parse HEAD` — expect `12fad17`. If HEAD moved again, re-read every file this story cites **before** editing it. **Treat every `app/src/**` line number here as advisory and grep for the symbol.**
-- 1.2 **Run the full chain BEFORE your first edit** and record pre-existing failures. Three sessions have been writing to shared files; the tree may be red and not by your hand. **Do not repair another story's work.**
-- 1.3 Record what exists on disk: `Charts.tsx`, `ProfileCharts.tsx`, `ProfileStatTiles.tsx`, `PlayerMatchesSection.tsx`, `app/src/app/players/[slug]/`, `readPlayerProfile`. Run `git status --porcelain app/src/components/ProfileCharts.tsx` and `PlayerMatchesSection.tsx` — **D2's and D4's coordination conditions key off this.**
-- 1.4 Measure the recharts baseline on `out/` **before any change**: count chunks matching **`CartesianAxis` AND `Brush` AND `redux` together** (`CartesianAxis` alone also matches the 34.5 KB `TacticalCharts` leaf and cannot identify a vendor chunk). **Expect ONE.** Record this table and re-fill it at Task 2.4:
+### Task 1 — Baseline, coordination, re-verification (BLOCKING; AC 1) — [x] COMPLETE
+- [x] 1.1 `git rev-parse HEAD` — expect `12fad17`. If HEAD moved again, re-read every file this story cites **before** editing it. **Treat every `app/src/**` line number here as advisory and grep for the symbol.**
+- [x] 1.2 **Run the full chain BEFORE your first edit** and record pre-existing failures. Three sessions have been writing to shared files; the tree may be red and not by your hand. **Do not repair another story's work.**
+- [x] 1.3 Record what exists on disk: `Charts.tsx`, `ProfileCharts.tsx`, `ProfileStatTiles.tsx`, `PlayerMatchesSection.tsx`, `app/src/app/players/[slug]/`, `readPlayerProfile`. Run `git status --porcelain app/src/components/ProfileCharts.tsx` and `PlayerMatchesSection.tsx` — **D2's and D4's coordination conditions key off this.**
+- [x] 1.4 Measure the recharts baseline on `out/` **before any change**: count chunks matching **`CartesianAxis` AND `Brush` AND `redux` together** (`CartesianAxis` alone also matches the 34.5 KB `TacticalCharts` leaf and cannot identify a vendor chunk). **Expect ONE.** Record this table and re-fill it at Task 2.4:
 
   | | Before (2.15's measurement) | After 2.15's D1 | Yours, Task 1.4 | Yours, Task 2.4 |
   |---|---|---|---|---|
@@ -507,8 +507,8 @@ Every match page currently speculatively fetches **two non-existent routes**.
   | MomentumChart leaf | 47.2 KB | 47.2 KB | | |
   | TacticalCharts leaf | 34.5 KB | 34.5 KB | | |
   | distinct `dynamic()` specifiers | 2 | **1** (`@/components/Charts`) | | |
-- 1.5 Re-read `data/fixtures/index/team-profiles/mexico.json` against the schema and re-measure §Data Reality's counts.
-- 1.6 Confirm R1 is ruled, or proceed under option (A) flagging every minted string `PROPOSED`.
+- [x] 1.5 Re-read `data/fixtures/index/team-profiles/mexico.json` against the schema and re-measure §Data Reality's counts.
+- [x] 1.6 Confirm R1 is ruled, or proceed under option (A) flagging every minted string `PROPOSED`.
 
 ### Task 2 — Generalize the single-series chart (AC 2; D2)
 - 2.1 Apply D2's coordination condition. If clear: rename `SpeedZoneChart` → `CategoryBarChart`, `SpeedZoneChartPoint` → `CategoryBarPoint` in `ProfileCharts.tsx`; repoint `Charts.tsx:45` and `PhysicalSection.tsx:65`. If dirty: consume under the existing name and file the rename for 2.17.
@@ -526,11 +526,11 @@ Every match page currently speculatively fetches **two non-existent routes**.
 - 3.6 Mount **one** `SortAnnouncerProvider` at page level, outside every status gate.
 - 3.7 **`TeamProfileRegion.tsx`** — `"use client"`, mirroring `PlayerProfileRegion.tsx` / `MatchBundleRegion.tsx:63-94`: the four-state machine (`loading | loaded | error | invalid`), the `cancelled` cleanup flag, the `attempt` retry counter, and layout-shaped `aria-busy` skeletons per UX-DR14. Gate `payload.teamId !== slug || payload.schemaVersion !== SCHEMA_VERSION` → **`"invalid"`, no retry offered**. Wrap the region's children in **`TacticalErrorBoundary` (`app/src/components/TacticalErrorBoundary.tsx`)** with route-scoped crash copy, so one malformed section costs a panel and not the route.
 
-### Task 4 — Pure models (AC 1, AC 2)
-- 4.1 `src/viz/team-profile-model.ts` + **co-located test**: row builders for the four rate charts, D13's two shape tables, `formationUsage` rows, and the per-match rows. Frozen lists as `Record`s; key builders end `as DictionaryKey`; exhaustive `never` throws.
-- 4.2 Percentage axes come from `percentTicks` / `percentAxisMax`. **No new axis generator is needed** — D13 makes `shapeByPhase` a table.
-- 4.3 `src/lib/team-profile-format.ts` + test for anything importing `@/lib/format`.
-- 4.4 Guard at model entry; build every row set **eagerly**.
+### Task 4 — Pure models (AC 1, AC 2) — [x] COMPLETE
+- [x] 4.1 `src/viz/team-profile-model.ts` + **co-located test**: row builders for the four rate charts, D13's two shape tables, `formationUsage` rows, and the per-match rows. Frozen lists as `Record`s; key builders end `as DictionaryKey`; exhaustive `never` throws.
+- [x] 4.2 Percentage axes come from `percentTicks` / `percentAxisMax`. **No new axis generator is needed** — D13 makes `shapeByPhase` a table.
+- [x] 4.3 `src/lib/team-profile-format.ts` + test for anything importing `@/lib/format`.
+- [x] 4.4 Guard at model entry; build every row set **eagerly**.
 
 ### Task 5 — Hero altitude (AC 1, AC 4)
 - 5.1 `TeamHero.tsx` — `"use client"` + `useT()`. `sr-only <h1>`, identity block, `ProfileStatTiles`, form strip, "Comparar equipo".
@@ -670,8 +670,201 @@ Rules that have each already cost a review cycle:
 
 ### Agent Model Used
 
+claude-opus-5[1m]
+
 ### Debug Log References
+
+**Task 1.1 — HEAD.** `12fad1722afa08269585dc2665411f65e24333ca` = `12fad17`, matching the
+story's `baseline_commit`. HEAD did not move during the session.
+
+**Task 1.2 — pre-edit baseline chain.**
+- `npm run lint --max-warnings 0` → clean.
+- `npm run typecheck` → clean.
+- `npm run assert:schema-version` → `1411 artifact(s) at schemaVersion 4`.
+- `next build` → **BLOCKED**: `⨯ Another next build process is already running.`
+  A concurrent session held the `app/.next` lock. Not repaired; see the
+  coordination note below.
+- `npm test` → **35 files, 1060 tests, ALL GREEN. Zero pre-existing failures.**
+
+**Task 1.3 — coordination probe. BOTH D2's AND D4's CONDITIONS FIRED.**
+`sprint-status.yaml` reports `2-15-player-profile: in-progress`, and its output is
+UNTRACKED in the working tree:
+```
+?? app/src/components/ProfileCharts.tsx
+?? app/src/components/PlayerMatchesSection.tsx
+?? app/src/components/Charts.tsx
+?? app/src/components/PhysicalSection.tsx
+```
+`app/src/components/RowAnchor.tsx` did not exist. `app/src/app/players/[slug]/page.tsx`
+and `players/static-output.test.ts` did exist.
+
+**Task 1.4 — recharts baseline on `out/`, before any change.**
+
+| | Before (2.15's measurement) | After 2.15's D1 | Yours, Task 1.4 | Yours, Task 2.4 |
+|---|---|---|---|---|
+| 300.4 KB VENDOR chunks | 2 (89.4 + 89.2 KB gzip-9) | **1** | **1** (`1sxly1jl9kd60.js`, 367,636 B raw) | *pending build* |
+| MomentumChart leaf | 47.2 KB | 47.2 KB | not re-measured | *pending build* |
+| TacticalCharts leaf | 34.5 KB | 34.5 KB | not re-measured | *pending build* |
+| distinct `dynamic()` specifiers | 2 | **1** | **1** (`@/components/Charts`, 6 call sites) | *pending build* |
+
+Classifier discriminated on `CartesianAxis` **AND** `Brush` **AND** `redux` together, as
+required — `CartesianAxis` alone also matches the 34.5 KB `TacticalCharts` leaf. The six
+call sites are `GoalkeepingSection:85`, `MomentumSection:79`, `PhasesSection:103`,
+`PhysicalSection:68`, `PressingSection:85`, `TrendsSection:61`.
+
+**Task 1.5 — fixture re-verified.** `mexico.json` matches the story's stated data:
+5 matches, `formationUsage` 1 row, `lowPress: 0.0`, `possession: 48.2`,
+`pressingIntensity: 213.0`, `defensiveBlockDistribution` sums to 46.4 (not 100),
+record `played 5 / won 4 / drawn 0 / lost 1 / points 9` against a naive `won*3 + drawn`
+of **12** — D12 confirmed on the fixture itself.
+
+**Task 1.6 — R1 ruled by Juan: option (A).** 2.16 mints the vocabulary. Also ruled:
+**Q2** = accept the anchor-box focus ring; **Q3** = no shootout-draw copy.
+
+**RED-DRIVE (Testing Requirements).** `identityCharts`' press branch was temporarily
+zeroed (`value: 0 * finite(...)`). Two assertions went red and both were the intended
+gates:
+```
+× takes the four press rates as a frozen subset of the nine
+  → expected [ +0, +0, +0, +0 ] to deeply equal [ 5.4, 3.6, +0, 8.4 ]
+× REPEATS the shared out-of-possession values across press and blocks (D11)
+  → press high-press: expected 5.4 to be +0
+```
+Reverted; 25/25 green again. **The Task 9.1 bijection red-drive has NOT run yet** — it
+requires a build.
+
+**Verified green this session:** `team-profile-model.test.ts` 25 tests,
+`team-profile-format.test.ts` 10 tests. **35 new tests, all passing.**
 
 ### Completion Notes List
 
+**STORY IS INCOMPLETE AND STATUS REMAINS `in-progress`.** Step 9's gates are not met.
+What follows is an exact account of why, and of what is and is not verified.
+
+**The blocking condition: a concurrent session owns the shared files.**
+`2-15-player-profile` was `in-progress` throughout and actively writing the files 2.16
+must also modify. It **clobbered a `readTeamProfile` edit to `build-data.ts` at
+11:31:48** (it had flipped `DATA_ROOT` to real data for a sizing run and rewrote the
+file on revert). Write times on contested files inside a 15-minute window:
+`build-data.ts` 11:31:48, `app/static-output.test.ts` 11:26:32, `i18n.test.ts` 11:25:51,
+`en.ts` 11:18:21, `es.ts` 11:18:11. Its work is **untracked**, so a clobber in the other
+direction would be unrecoverable.
+
+Juan ruled: **build the isolated files now, defer every shared-file edit until 2-15
+reaches `review`.** That is what was done. The deferred edits are written out
+ready-to-apply — locale blocks, the `readTeamProfile` patch, the i18n caption
+reconciliation, the module-graph allow-list entry, the `TournamentHub` repoint, every
+ledger entry and the EXPERIENCE.md policy rows — in
+`scratchpad/2-16-deferred-shared-edits.md`.
+
+**Consequence for verification, stated plainly:** the new components and route reference
+`team.*` dictionary keys that do not exist yet, so **`npm run typecheck`, `npm run
+build` and the browser pass (Tasks 9.2–9.6, 10, 11) have NOT been run against them.**
+The two pure modules are the only new code that is test-verified today.
+
+**D2's coordination condition fired — no rename.** `ProfileCharts.tsx` was untracked and
+owned by 2-15, so `SpeedZoneChart` is **consumed under its shipped name** rather than
+renamed to `CategoryBarChart`. Its props were already general and `heightClass` is
+caller-supplied, so the four rate charts (8/9/3/4 categories) mount on it unchanged via
+`distributionChartHeightClass`. The rename is filed for 2.17. Because nothing was
+renamed, **Task 2.3's `PhysicalSection` regression surface does not exist** — that file
+was not touched.
+
+**D4's coordination condition fired — one copy hoisted, not two.** `RowAnchor` is
+hoisted to `src/components/RowAnchor.tsx` from `TournamentHub`'s copy.
+`PlayerMatchesSection.tsx`'s copy is left alone and filed for 2.17.
+
+**A stale premise in the story, corrected: the D4-rider's focus-ring question was
+already answered in the tree.** The story says a row-wide treatment "was prototyped and
+**not** shipped". In fact Story 2.15 shipped one — `PlayerMatchesSection.tsx:66-67`
+carries `focus-within:outline … focus-within:outline-ring` with
+`focus-visible:outline-none` on the anchor. Juan's Q2 ruling (accept the anchor-box
+ring) was taken on the story's premise. Both are honoured without contradiction: the
+hoisted `RowAnchor` and this route use the **native anchor-box ring** per the ruling,
+2.15's file is untouched per the coordination condition, and **the resulting divergence
+between the two surfaces is filed for 2.17** rather than silently left.
+
+**The recharts vendor-chunk ledger item is closable on measurement, and 2.15 filed
+nothing.** Task 1.4 measured exactly ONE vendor chunk and ONE `dynamic()` specifier. All
+four new chart mounts name `@/components/Charts`, so no new chunk group is introduced —
+but this must be **re-measured at Task 2.4 after a real build** before the item is
+closed.
+
+**D12's arithmetic traps, all honoured and pinned by tests.** `record.played` is never
+re-derived; `record.points` is read verbatim (Mexico 9, naive 12 — asserted as a
+non-equality so a future re-derivation goes red); `goalDifference` is read signed;
+`distanceCovered` is KILOMETRES at 2 dp with a range property test guarding against a
+metres leak; `pressingIntensity` is a count-valued mean at 1 dp with an explicit
+`not.toContain("%")`.
+
+**`team-profile.schema.json:97` is misleading and `contract/` is not ours to correct.**
+It describes `tacticalIdentity` values as a "match-count-weighted mean";
+`pipeline/precompute/profiles.py:22-25` records the team implementation is
+**unweighted** while the player artifact's `passCompletion` is weighted. No shipped copy
+asserts a weighting — `team.tile.possession` deliberately avoids "promedio". Filed.
+
+**Reuse went further than the story anticipated, and it removed avoidable minting.**
+`enums.leaderboardMetric` already carries all six Domain B column heads
+(`possession`, `expectedGoals`, `shots`, `shotsOnTarget`, `passCompletion`,
+`distanceCovered`), so those are reused rather than twinned under `team.column.*`.
+Chart titles, axis labels, the independent-rates notes and the rate-table caption all
+come from `viz.phases.*` / `viz.pressing.*`. The story's Task 10.4 warns that a
+duplicated value is enforced against — that enforcement is in fact **scoped to the
+caption inventory**, not global: `i18n.test.ts:1244` explicitly asserts
+`es.expert.field.ballProgressions` **equals** `es.enums.metric.ballProgressions`.
+
+**Two on-page collisions in the minted R1 vocabulary, disclosed not hidden.** Juan
+approved "Último tercio" for `finalThirdPhase`, which is the same string as
+`enums.inPossessionPhase["final-third"]`, and "Bloque medio"/"Bloque bajo" for
+`midBlock`/`lowBlock`, the same strings as `enums.blockLevel.{mid,low}`. Both pairs
+render on this page — the enum in a rate chart, the panel in a shape table. Shipped as
+ruled; filed for review.
+
+**Not built, so not claimed:** Task 2.4's re-measurement, 8.4's ledger closure, 9.1's
+bijection red-drive, 9.2–9.6, all of 10, all of 11, all of 12.
+
 ### File List
+
+**New, complete and test-verified**
+- `app/src/viz/team-profile-model.ts`
+- `app/src/viz/team-profile-model.test.ts` *(25 tests green; red-driven)*
+- `app/src/lib/team-profile-format.ts`
+- `app/src/lib/team-profile-format.test.ts` *(10 tests green)*
+
+**New, written but NOT yet typechecked or built** *(they reference `team.*` keys that
+land with the deferred locale patch)*
+- `app/src/lib/team-profile.ts`
+- `app/src/components/RowAnchor.tsx` *(hoisted; D4)*
+- `app/src/components/TeamHero.tsx`
+- `app/src/components/TeamProfileRegion.tsx`
+- `app/src/components/TeamIdentitySection.tsx`
+- `app/src/components/TeamFormationsSection.tsx`
+- `app/src/components/TeamMatchesSection.tsx`
+- `app/src/app/teams/[slug]/page.tsx`
+
+**Written and HELD OUT of the tree** *(at
+`scratchpad/teams-static-output.test.ts.pending`)*
+- `app/src/app/teams/static-output.test.ts` — RED until the route is built, and
+  correctly so: its skip guard keys on `out/` and NOT on `out/teams/`, deliberately, so
+  that "the route produced nothing at all" cannot masquerade as "no build ran". Because
+  `out/` already exists from the concurrent session's build, the suite runs and fails.
+  Leaving it red in a SHARED tree invites the other session to "repair another story's
+  half-landed work" — the exact failure this story's READ THIS FIRST warns about. Drop
+  it back in immediately before Task 9.6's build. **Do not weaken its guard to
+  `out/teams/` to make it green** — that is the anti-pattern the story names.
+  Post-removal the shared suite is green at **37 files / 1095 tests**.
+
+**Deferred — NOT modified this session** *(patch ready in
+`scratchpad/2-16-deferred-shared-edits.md`)*
+- `app/src/lib/build-data.ts` *(edit written once, clobbered by the concurrent session,
+  not re-applied)*
+- `app/src/locales/es.ts`, `app/src/locales/en.ts`
+- `app/src/lib/i18n.test.ts`
+- `app/src/app/static-output.test.ts`
+- `app/src/components/TournamentHub.tsx`
+- `_bmad-output/planning-artifacts/ux-designs/.../EXPERIENCE.md`
+- `_bmad-output/implementation-artifacts/deferred-work.md`
+
+**Modified**
+- `_bmad-output/implementation-artifacts/2-16-team-profile.md` *(this record)*
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` *(2-16 → in-progress)*
