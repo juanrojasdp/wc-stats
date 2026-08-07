@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { ProfileStatTiles, type ProfileStatTile } from "@/components/ProfileStatTiles";
+import { compareHref } from "@/lib/compare-url";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import { teamHref } from "@/lib/hub-model";
 import {
@@ -171,28 +172,23 @@ export function PlayerHero({ data }: { data: PlayerHeroData }) {
       <ProfileStatTiles tiles={tiles} />
 
       {/*
-       * AC 4's "Comparar" entry (FR-29). The `/compare` route DOES NOT EXIST —
-       * Story 2.17 owns it — and it is linked anyway rather than stubbed, on the
-       * ruling 2.12 D2 and 2.13 ruling 3 already set and that
-       * `LineupsDisclosure`/`MatchHero` already ship, pinned green by
-       * `matches/static-output.test.ts`. Building a placeholder route here would
-       * mean 2.17 inherits a route it has to delete first.
+       * AC 4's "Comparar" entry (FR-29), now pointing at a route that exists.
        *
-       * THE SLASH BEFORE THE QUERY STRING IS WRITTEN OUT, not left to Next.
-       * `next.config.ts` sets `trailingSlash: true`, so the AC's literal
-       * `/compare?type=…` is rewritten to `/compare/?type=…` — which is the form
-       * that actually ships and the form 2.17's route will live at. Writing the
-       * emitted shape here is the same discipline `hub-model`'s three href
-       * helpers apply: the source states what the document contains, and the
-       * static-output test asserts that string rather than a redirect.
+       * THE HELPER IS 2.17's, AS THIS BLOCK ASKED FOR. The comment that stood
+       * here said "2.17 owns the shape and should mint the helper with it", and
+       * `compareHref` is that helper — one home for the URL shape, replacing the
+       * inline literal here and the separate `compareTeamHref` on the team side,
+       * which disagreed with this one about the trailing slash.
        *
-       * NOT a `hub-model` helper: those three take an id and return a route,
-       * and this is a query-string entry point to a route that does not exist
-       * yet. 2.17 owns the shape and should mint the helper with it.
+       * The slash before the query string still ships; it is now emitted by the
+       * helper rather than interpolated here. `next.config.ts` sets
+       * `trailingSlash: true`, so a slash-less `/compare?type=…` is a REDIRECT
+       * rather than a link. `players/static-output.test.ts` asserts the emitted
+       * string, and this repoint keeps it byte-identical.
        */}
       <div className="mt-4">
         <Link
-          href={`/compare/?type=players&a=${data.playerId}`}
+          href={compareHref("players", data.playerId)}
           prefetch={false}
           className="inline-flex items-center rounded-full border border-hairline px-4 type-label-caps text-ink-primary underline underline-offset-4"
           style={{ minHeight: MIN_HIT_PX }}
