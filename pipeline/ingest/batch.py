@@ -62,6 +62,12 @@ DEFAULT_MANIFEST_PATH = Path("work") / "run-manifest.json"
 # manifest's shape never changes underneath an earlier run's numbers.
 STATUSES: tuple[str, ...] = ("extracted", "failed", "skipped-unchanged")
 
+# The largest number of reports a warning may be carried by and still be rendered one
+# line per report in the summary. Above it, the warning collapses to a single counted
+# line. See `format_summary`'s docstring for the AC-1 rationale and Story 1.19 D1 for
+# the ruling. Three, not two and not ten: see the docstring.
+WARNING_NAMED_MAX = 3
+
 
 def discover_pdfs(input_dir: "str | Path") -> list[Path]:
     """Every PDF in `input_dir`, sorted by `(stem, name)`.
@@ -148,6 +154,10 @@ def _entry(report_id: str) -> dict:
         # check entries — the AC requires both counts in the manifest itself.
         "self_validation": None,
         "self_validation_failures": [],
+        # Story 1.19 R2: bounded checks that PASSED on this report while still observing
+        # a non-zero distance from exactness — AC 1's "near-miss parses" category, which
+        # had no output at all before because a passing check reaches the summary nowhere.
+        "near_misses": [],
     }
 
 
@@ -185,13 +195,29 @@ def _mirror_self_validation(entry: dict, record: dict) -> None:
     block = record.get("self_validation")
     result = block.get("result") if isinstance(block, dict) else None
     entry["self_validation"] = result if result in ("pass", "fail", "not-applicable") else None
+    checks = block.get("checks") if isinstance(block, dict) else None
+    checks = checks if isinstance(checks, list) else []
     if entry["self_validation"] == "fail":
-        checks = block.get("checks")
         entry["self_validation_failures"] = [
-            check
-            for check in (checks if isinstance(checks, list) else [])
-            if isinstance(check, dict) and check.get("result") == "fail"
+            check for check in checks if isinstance(check, dict) and check.get("result") == "fail"
         ]
+    # Story 1.19 R2. Only checks that PASSED contribute: a failing bounded check is
+    # already named in full by the Self-validation failures block, and counting it here
+    # too would report one defect twice under two different headings. Keyed on the
+    # PRESENCE of `max_delta` rather than on a list of check ids, so a bounded check
+    # added by a later story reaches the summary without editing this module.
+    entry["near_misses"] = [
+        {"check": check["check"], "max_delta": check["max_delta"]}
+        for check in checks
+        if isinstance(check, dict)
+        and check.get("result") == "pass"
+        and isinstance(check.get("check"), str)
+        # `bool` is an `int` in Python and `True != 0`, so an off-shape check carrying
+        # `max_delta: true` would otherwise render as a near miss of "+1".
+        and isinstance(check.get("max_delta"), (int, float))
+        and not isinstance(check["max_delta"], bool)
+        and check["max_delta"] != 0
+    ]
 
 
 def _fail(entry: dict, exc: BaseException) -> None:
@@ -209,6 +235,7 @@ def _fail(entry: dict, exc: BaseException) -> None:
     entry["warnings"] = []
     entry["self_validation"] = None
     entry["self_validation_failures"] = []
+    entry["near_misses"] = []
     entry["error_type"] = type(exc).__name__
     entry["error"] = str(exc)
 
@@ -390,7 +417,42 @@ def run_batch(
 
 
 def format_summary(manifest: dict) -> str:
-    """Human-readable summary: counts, then every failure with its type and message."""
+    """Human-readable summary: counts, then every failure with its type and message.
+
+    FR-16's binding clause is that a reader can identify **every failed report and why**
+    from this string alone, "without opening logs or artifacts". Two of the blocks below
+    exist because rendering the manifest naively defeats that clause outright.
+
+    **The warnings block is collapsed by count (Story 1.19, ruling D1).** The seven
+    documented absences are properties of the PMSR page family, not of any one report:
+    every one of the 104 corpus records carries all seven, so one line per report per
+    warning printed 728 lines of identical text and buried the two self-validation
+    failures the reader is actually looking for. The iteration is therefore inverted —
+    warning first, then the reports carrying it — and a warning carried by more than
+    `WARNING_NAMED_MAX` reports renders as one counted line.
+
+    **The threshold is 3, and the choice is uniform in both directions.** A bare count
+    that hides *which* three reports differ violates AC 1 just as badly as 728 lines do,
+    so a warning on a small minority still names its reports. Three is where a list stops
+    being readable inline while still being small enough that the difference between
+    those reports and the rest of the corpus is the interesting fact. Above it, the
+    warning is a family property and the count is the whole of the information. The two
+    forms are never both reachable for the same count: `<= 3` names, `> 3` collapses.
+
+    The warning text is emitted **verbatim** — never truncated, elided or re-wrapped.
+    Three tests assert the full warning string is a substring of this output, and more
+    importantly a half-printed warning is not a warning.
+
+    This is a rendering change only. Per-report `warnings` arrays in the manifest keep
+    one entry per report, exactly as `run_batch` writes them.
+
+    **Per-report status is discharged by naming the non-clean reports, not by listing
+    all 104 (Story 1.19, AC-1 obligation (f)).** `counts_by_status` gives the aggregate;
+    the Failed reports, Self-validation failures and Near-miss blocks name every report
+    that is anything other than cleanly extracted. A reader can therefore identify every
+    failure and why. A listing naming all 104 reports one per line would recreate the
+    exact defect the warnings collapse just removed, in a new block.
+    """
     counts = manifest["counts_by_status"]
     run = manifest["run"]
     lines = [
@@ -414,9 +476,22 @@ def format_summary(manifest: dict) -> str:
     warned = [entry for entry in manifest["reports"] if entry["warnings"]]
     if warned:
         lines += ["", "Warnings (non-fatal)"]
+        # Inverted: warning -> the reports carrying it. A plain dict, so both the warning
+        # order and each report list are first-appearance order over `manifest["reports"]`
+        # — deterministic across runs, which a `set` would not be. A report carrying the
+        # same warning twice counts once: the collapsed line counts *reports*, which is
+        # what D1 ruled and what the line says.
+        carriers: dict[str, list[str]] = {}
         for entry in warned:
             for warning in entry["warnings"]:
-                lines.append(f"  {entry['report_id']}: {warning}")
+                reports = carriers.setdefault(warning, [])
+                if entry["report_id"] not in reports:
+                    reports.append(entry["report_id"])
+        for warning, reports in carriers.items():
+            if len(reports) <= WARNING_NAMED_MAX:
+                lines += [f"  {report_id}: {warning}" for report_id in reports]
+            else:
+                lines.append(f"  {len(reports)} reports: {warning}")
 
     if run["failed_count"]:
         lines += ["", "Failed reports"]
@@ -472,6 +547,28 @@ def format_summary(manifest: dict) -> str:
                 else:
                     detail = str(check.get("specifics") or "no detail recorded")
                 lines.append(f"      [{check.get('check')}] {detail}")
+
+    # AC 1 names "near-miss parses" as a summary category and nothing implemented it: the
+    # pipeline's bounded checks record how far the drawn set sits from the printed count on
+    # EVERY report, passing or failing, and a passing check reaches the summary nowhere.
+    # Aggregated, never per-report — 104 lines per bounded check is the defect the warnings
+    # collapse above just removed, rebuilt in a new block. `.get` because a manifest written
+    # before Story 1.19 has no such key and must still render.
+    near_misses: dict[str, list[float]] = {}
+    for entry in manifest["reports"]:
+        for near_miss in entry.get("near_misses") or []:
+            near_misses.setdefault(near_miss["check"], []).append(near_miss["max_delta"])
+    if near_misses:
+        total = len(manifest["reports"])
+        lines += [
+            "",
+            "Near-miss parses (bounded checks that PASSED with a non-zero delta; not failures)",
+        ]
+        for check_id, deltas in near_misses.items():
+            lines.append(
+                f"  {check_id}: {len(deltas)}/{total} report(s) with a non-zero delta "
+                f"(max {max(deltas):+g})"
+            )
 
     if manifest["orphan_record_paths"]:
         lines += [

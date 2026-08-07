@@ -10,6 +10,7 @@ carries a skip-guard for exactly that reason.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -32,18 +33,37 @@ TEAMS = [
     ("India", "Juliett"),
 ]
 
+# Story 1.19 Task 4.1. `_corpus` used to index `TEAMS` directly, so any count above five
+# raised `IndexError` — which is why the ledger's "No test exercises the batch beyond three
+# reports" gap stayed open. The first five pairs stay PINNED because existing tests name
+# `PMSR-M02-CHA-V-DEL` and friends by hand; beyond them pairs are generated, which is all
+# the corpus needs since report and match ids are keyed on the match NUMBER, not the pair.
+NATO = [
+    "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India",
+    "Juliett", "Kilo", "Lima", "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo",
+    "Sierra", "Tango", "Uniform", "Victor", "Whiskey", "Xray", "Yankee", "Zulu",
+]
+
+
+def _team_pair(i: int) -> "tuple[str, str]":
+    """Report `i`'s (home, away). Offsetting the away index by 7 (coprime with 26)
+    guarantees the two are never the same team, which `derive_match_id` refuses."""
+    if i < len(TEAMS):
+        return TEAMS[i]
+    return NATO[i % len(NATO)], NATO[(i + 7) % len(NATO)]
+
 
 def _corpus(directory: Path, make_report, count: int = 3) -> Path:
     """`count` well-formed reports, each with a distinct match number and team pair."""
     directory.mkdir(parents=True, exist_ok=True)
     for i in range(count):
-        home, away = TEAMS[i]
+        home, away = _team_pair(i)
         make_report(
             directory / f"PMSR-M{i + 1:02d}-{home[:3].upper()}-V-{away[:3].upper()}.pdf",
             number=i + 1,
             home=home,
             away=away,
-            day=11 + i,
+            day=11 + i % 18,
         )
     return directory
 
@@ -1125,3 +1145,489 @@ def test_a_pass_network_mismatch_renders_through_the_generic_specifics_fallback(
     # the page's own arithmetic says it should have been.
     assert "printed 99.9%" in summary
     assert f"/{total} =" in summary
+
+
+# --- Story 1.19 D1: the warnings block is collapsed by count ----------------------
+#
+# `format_summary` is a pure `dict -> str`, so these drive it from synthetic manifests
+# rather than from synthetic PDFs. That is not a shortcut: it is the only way to build
+# the 104-report, 7-uniform-warning manifest AC 1's line-count obligation is about, and
+# it keeps the assertions on the rendering rather than on any extractor's behaviour.
+
+
+def _summary_entry(report_id: str, warnings: "list[str] | None" = None, **overrides) -> dict:
+    """One manifest entry carrying every field `format_summary` reads."""
+    entry = {
+        "report_id": report_id,
+        "match_id": report_id.lower(),
+        "status": "extracted",
+        "record_path": f"work/extracted/{report_id.lower()}.json",
+        "error_type": None,
+        "error": None,
+        "warnings": list(warnings or []),
+        "self_validation": "pass",
+        "self_validation_failures": [],
+        "near_misses": [],
+    }
+    entry.update(overrides)
+    return entry
+
+
+def _summary_manifest(entries: "list[dict]", **overrides) -> dict:
+    """A run manifest in the shape `format_summary` consumes, counts derived from
+    `entries` so a hand-written manifest can never disagree with its own reports."""
+    counts = {status: 0 for status in STATUSES}
+    for entry in entries:
+        counts[entry["status"]] += 1
+    manifest = {
+        "manifest_version": MANIFEST_VERSION,
+        "generated_by": "pipeline.ingest.batch",
+        "run_timestamp": "2026-08-07T00:00:00+00:00",
+        "input_dir": "pmsr-corpus",
+        "code_version": "0" * 64,
+        "corpus": {"pdf_count": len(entries), "expected_pdf_count": None},
+        "counts_by_status": counts,
+        "reports": entries,
+        "orphan_record_paths": [],
+        "run": {
+            "result": "pass",
+            "failed_count": counts["failed"],
+            "self_validation_fail_count": sum(
+                1 for entry in entries if entry["self_validation"] == "fail"
+            ),
+            "corpus_gaps": [],
+        },
+    }
+    manifest.update(overrides)
+    return manifest
+
+
+def _warning_lines(summary: str) -> "list[str]":
+    """Every line of the Warnings block, exclusive of its own heading."""
+    lines = summary.split("\n")
+    start = lines.index("Warnings (non-fatal)") + 1
+    end = start
+    while end < len(lines) and lines[end].startswith("  "):
+        end += 1
+    return lines[start:end]
+
+
+UNIFORM = "the page family draws no possession-regain counterpart, so none is recorded"
+MINORITY = "this report's momentum chart is drawn one slot short of its own axis"
+
+
+def test_a_warning_carried_by_the_whole_corpus_collapses_to_one_counted_line():
+    """D1's whole point: 104 reports x 7 family-wide warnings printed 728 identical
+    lines, which is what AC 1's "without opening logs or artifacts" forbids. The
+    collapsed line carries the count and the warning VERBATIM."""
+    from pipeline.ingest.batch import format_summary
+
+    entries = [_summary_entry(f"PMSR-M{i:03d}", [UNIFORM]) for i in range(1, 105)]
+
+    lines = _warning_lines(format_summary(_summary_manifest(entries)))
+
+    assert lines == [f"  104 reports: {UNIFORM}"]
+
+
+def test_seven_corpus_wide_warnings_render_seven_lines_and_not_seven_hundred():
+    """The measured claim, asserted rather than described: the real corpus carries
+    seven documented absences on every one of its 104 records."""
+    from pipeline.ingest.batch import format_summary
+
+    seven = [f"documented absence {n}: the page family records no check" for n in range(7)]
+    entries = [_summary_entry(f"PMSR-M{i:03d}", seven) for i in range(1, 105)]
+
+    lines = _warning_lines(format_summary(_summary_manifest(entries)))
+
+    assert len(lines) == 7, "104 x 7 must render 7 lines, not 728"
+    assert lines == [f"  104 reports: {warning}" for warning in seven]
+
+
+def test_a_warning_carried_by_a_minority_still_names_every_report():
+    """The other direction of AC 1, and the reason D1 refused a bare count: a warning
+    on three of four reports is per-report information, and a reader who cannot tell
+    WHICH three has to open the artifacts after all."""
+    from pipeline.ingest.batch import format_summary
+
+    entries = [
+        _summary_entry("PMSR-M001", [UNIFORM, MINORITY]),
+        _summary_entry("PMSR-M002", [UNIFORM, MINORITY]),
+        _summary_entry("PMSR-M003", [UNIFORM]),
+        _summary_entry("PMSR-M004", [UNIFORM]),
+    ]
+
+    lines = _warning_lines(format_summary(_summary_manifest(entries)))
+
+    # First-appearance order: UNIFORM is seen first, on report 1.
+    assert lines == [
+        f"  4 reports: {UNIFORM}",
+        f"  PMSR-M001: {MINORITY}",
+        f"  PMSR-M002: {MINORITY}",
+    ]
+
+
+def test_the_named_and_collapsed_forms_are_never_both_reachable_for_one_count():
+    """D1.3's uniformity rule, asserted at the boundary rather than described: every
+    count from 1 to `WARNING_NAMED_MAX` names its reports and every count above it
+    collapses, with no count producing both and no count producing neither."""
+    from pipeline.ingest.batch import WARNING_NAMED_MAX, format_summary
+
+    for count in range(1, WARNING_NAMED_MAX + 4):
+        entries = [_summary_entry(f"PMSR-M{i:03d}", [UNIFORM]) for i in range(1, count + 1)]
+        lines = _warning_lines(format_summary(_summary_manifest(entries)))
+        named = [line for line in lines if line.endswith(f": {UNIFORM}") and " reports:" not in line]
+        collapsed = [line for line in lines if line == f"  {count} reports: {UNIFORM}"]
+        if count <= WARNING_NAMED_MAX:
+            assert len(named) == count and not collapsed, f"count {count} must name"
+        else:
+            assert len(collapsed) == 1 and not named, f"count {count} must collapse"
+
+
+def test_the_collapsed_line_never_truncates_or_reflows_the_warning_text():
+    """Landmine 4: three pre-existing tests assert the FULL warning string is a
+    substring of the summary, and a half-printed warning is not a warning. The
+    collapse may add a prefix; it may never touch the text."""
+    from pipeline.ingest.batch import format_summary
+
+    long_warning = (
+        "the receiving movement donuts are raster-only, so their per-slice values "
+        "cannot be read and no slice-sum check is recorded for either side of this "
+        "report — the absence is documented rather than silently passed"
+    )
+    entries = [_summary_entry(f"PMSR-M{i:03d}", [long_warning]) for i in range(1, 21)]
+
+    summary = format_summary(_summary_manifest(entries))
+
+    assert long_warning in summary
+    assert _warning_lines(summary) == [f"  20 reports: {long_warning}"]
+
+
+def test_a_report_carrying_one_warning_twice_counts_as_one_report():
+    """D1 ruled the inversion as "warning -> count of ENTRIES carrying it". The
+    collapsed line says "reports", so it must count reports — a manifest entry whose
+    `warnings` array repeats a string is one report, not two."""
+    from pipeline.ingest.batch import format_summary
+
+    entries = [_summary_entry(f"PMSR-M{i:03d}", [UNIFORM, UNIFORM]) for i in range(1, 6)]
+
+    assert _warning_lines(format_summary(_summary_manifest(entries))) == [f"  5 reports: {UNIFORM}"]
+
+
+def test_the_warnings_block_order_is_deterministic_and_not_set_order():
+    """Byte-identical output is an acceptance condition for the whole story, and the
+    obvious implementation of a de-duplication is a `set`, whose iteration order is
+    salted per process. Rendering the same manifest twice must produce the same string,
+    and the block must follow first appearance over `manifest["reports"]`."""
+    from pipeline.ingest.batch import format_summary
+
+    warnings = [f"absence {n}" for n in range(7)]
+    entries = [
+        # Report 1 introduces 6 and 0; report 2 introduces the rest, out of order.
+        _summary_entry("PMSR-M001", [warnings[6], warnings[0]] * 3),
+        _summary_entry("PMSR-M002", list(reversed(warnings)) * 3),
+        _summary_entry("PMSR-M003", warnings * 3),
+        _summary_entry("PMSR-M004", warnings * 3),
+    ]
+    manifest = _summary_manifest(entries)
+
+    lines = _warning_lines(format_summary(manifest))
+
+    assert format_summary(manifest) == format_summary(_summary_manifest(entries))
+    # Report 1 introduces 6 then 0, so those two lead; report 2 introduces the remaining
+    # five in reverse. Those five are carried by three reports each, so they take the
+    # NAMED branch — which is why this manifest exercises both forms and the ordering of
+    # both in one pass.
+    assert lines[0] == f"  4 reports: {warnings[6]}"
+    assert lines[1] == f"  4 reports: {warnings[0]}"
+    assert lines[2:] == [
+        f"  PMSR-M{i:03d}: {warning}"
+        for warning in reversed(warnings[1:6])
+        for i in (2, 3, 4)
+    ]
+
+
+# --- Story 1.19 R2: near-miss parses reach the summary ----------------------------
+#
+# AC 1 names "near-miss parses" as a summary category and, before this story, nothing
+# implemented it: the pipeline's bounded checks record how far the drawn set sits from
+# the printed count on EVERY report, and a check that PASSES reaches the summary nowhere.
+
+
+NEAR_MISS_HEADING = (
+    "Near-miss parses (bounded checks that PASSED with a non-zero delta; not failures)"
+)
+
+
+def _block(summary: str, heading: str) -> "list[str]":
+    """Every indented line under `heading`, or `[]` when the block is absent."""
+    lines = summary.split("\n")
+    if heading not in lines:
+        return []
+    start = lines.index(heading) + 1
+    end = start
+    while end < len(lines) and lines[end].startswith("  "):
+        end += 1
+    return lines[start:end]
+
+
+def test_a_bounded_check_that_passed_with_a_delta_reaches_the_summary(tmp_path, make_report):
+    """End to end from a real extraction, not a hand-built manifest: the extractor's
+    bounded check carries `max_delta`, `batch.py` mirrors the non-zero ones into the
+    entry, and `format_summary` aggregates them. A hand-built manifest would prove the
+    renderer and leave the two seams before it untested."""
+    from pipeline.ingest.batch import format_summary
+
+    corpus = _corpus(tmp_path / "corpus", make_report, count=1)
+
+    manifest = _run(tmp_path, corpus)
+
+    [entry] = manifest["reports"]
+    assert entry["self_validation"] == "pass"
+    # Whatever the default fixture's bounded checks observe, every mirrored near miss is
+    # a passing check with a non-zero delta and nothing else. Deriving the expectation
+    # from the record rather than restating the fixture's numbers.
+    record = json.loads(Path(entry["record_path"]).read_text(encoding="utf-8"))
+    bounded = {
+        check["check"]: check["max_delta"]
+        for check in record["self_validation"]["checks"]
+        if "max_delta" in check
+    }
+    assert bounded, "the fixture must exercise at least one bounded check"
+    assert {near["check"]: near["max_delta"] for near in entry["near_misses"]} == {
+        check_id: delta for check_id, delta in bounded.items() if delta != 0
+    }
+    for near in entry["near_misses"]:
+        assert f"  {near['check']}: 1/1 report(s) with a non-zero delta" in format_summary(
+            manifest
+        )
+
+
+def test_the_near_miss_block_is_aggregate_and_never_one_line_per_report():
+    """R2's explicit bound: per-report lines would recreate exactly the noise D1 just
+    removed, in a new block. 104 reports carrying two bounded near misses each render
+    TWO lines, and the largest delta across the corpus is the one reported."""
+    from pipeline.ingest.batch import format_summary
+
+    entries = [
+        _summary_entry(
+            f"PMSR-M{i:03d}",
+            near_misses=[
+                {"check": "goalkeeping-involvement-bound", "max_delta": i % 6},
+                {"check": "goalkeeping-distribution-printed", "max_delta": 1 if i < 21 else 0},
+            ],
+        )
+        for i in range(1, 105)
+    ]
+
+    lines = _block(format_summary(_summary_manifest(entries)), NEAR_MISS_HEADING)
+
+    assert lines == [
+        "  goalkeeping-involvement-bound: 104/104 report(s) with a non-zero delta (max +5)",
+        "  goalkeeping-distribution-printed: 104/104 report(s) with a non-zero delta (max +1)",
+    ]
+
+
+def test_an_exact_corpus_produces_no_near_miss_block_at_all():
+    """A block that renders unconditionally is a block a reader learns to ignore. Zero
+    is the corpus-normal case for most bounded checks and it earns no line."""
+    from pipeline.ingest.batch import format_summary
+
+    entries = [_summary_entry(f"PMSR-M{i:03d}") for i in range(1, 5)]
+
+    assert NEAR_MISS_HEADING not in format_summary(_summary_manifest(entries))
+
+
+def test_a_zero_delta_is_never_mirrored_as_a_near_miss(tmp_path, make_report):
+    """The mirror's own filter, driven from the batch seam: a bounded check that was
+    exact everywhere on this report contributes nothing, so an exact corpus is silent."""
+    from pipeline.ingest.batch import _mirror_self_validation
+
+    entry = {"near_misses": [], "self_validation": None, "self_validation_failures": []}
+    _mirror_self_validation(
+        entry,
+        {
+            "self_validation": {
+                "result": "pass",
+                "checks": [
+                    {"check": "exact", "result": "pass", "specifics": "", "max_delta": 0},
+                    {"check": "loose", "result": "pass", "specifics": "", "max_delta": 3},
+                    # `bool` is an `int` in Python: without the explicit guard this would
+                    # mirror as a near miss of "+1".
+                    {"check": "bool", "result": "pass", "specifics": "", "max_delta": True},
+                    {"check": "plain", "result": "pass", "specifics": ""},
+                ],
+            }
+        },
+    )
+
+    assert entry["near_misses"] == [{"check": "loose", "max_delta": 3}]
+
+
+def test_a_failing_bounded_check_is_named_as_a_failure_and_not_also_as_a_near_miss():
+    """One defect, one heading. A bounded check that actually breached its bound is
+    reported in full by the Self-validation failures block; counting it in the near-miss
+    aggregate too would report it twice under two different meanings."""
+    from pipeline.ingest.batch import _mirror_self_validation
+
+    entry = {"near_misses": [], "self_validation": None, "self_validation_failures": []}
+    _mirror_self_validation(
+        entry,
+        {
+            "self_validation": {
+                "result": "fail",
+                "checks": [
+                    {"check": "b", "result": "fail", "specifics": "breached", "max_delta": 9},
+                ],
+            }
+        },
+    )
+
+    assert entry["self_validation"] == "fail"
+    assert [check["check"] for check in entry["self_validation_failures"]] == ["b"]
+    assert entry["near_misses"] == []
+
+
+# --- Story 1.19 Task 3.2: the unlinked-marker branch would fire if it should -------
+
+
+def test_an_unlinked_marker_renders_its_outcome_and_pdf_position_in_the_summary():
+    """The corpus links 2571/2571 markers, so this branch never fires on a real run —
+    which is exactly how a renderer rots unnoticed. Driven from a constructed manifest
+    so the branch is proven reachable rather than assumed."""
+    from pipeline.ingest.batch import format_summary
+
+    entry = _summary_entry(
+        "PMSR-M01-ALP-V-BRA",
+        self_validation="fail",
+        self_validation_failures=[
+            {
+                "check": "shots-link-rate",
+                "team": "home",
+                "linked_count": 12,
+                "marker_count": 13,
+                "unlinked": [{"outcome": "off-target", "pdf_x": 231.5, "pdf_y": 402.25}],
+            }
+        ],
+    )
+
+    summary = format_summary(_summary_manifest([entry], run={
+        "result": "fail", "failed_count": 0, "self_validation_fail_count": 1, "corpus_gaps": [],
+    }))
+
+    assert "  PMSR-M01-ALP-V-BRA" in summary
+    assert (
+        "      [shots-link-rate] home: 12/13 markers linked; "
+        "unlinked: off-target@(231.5,402.25)" in summary
+    )
+
+
+# --- Story 1.19 Task 3.4: "per-report status" (AC 1's obligation (f)) --------------
+
+
+def test_the_summary_names_every_non_clean_report_and_lists_no_clean_one():
+    """AC 1's per-report-status clause, ruled rather than left silent: `counts_by_status`
+    carries the aggregate and the failure blocks name every report that is anything but
+    cleanly extracted, so a reader can identify every failure and why. Listing all 104
+    reports one per line would rebuild the defect D1 just removed in a new block."""
+    from pipeline.ingest.batch import format_summary
+
+    entries = [_summary_entry(f"PMSR-M{i:03d}") for i in range(1, 102)]
+    entries.append(_summary_entry("PMSR-M102", status="failed", self_validation=None,
+                                  error_type="ProbeError", error="page 3 is unreadable"))
+    entries.append(_summary_entry("PMSR-M103", self_validation="fail",
+                                  self_validation_failures=[
+                                      {"check": "defensive-actions-marker-count",
+                                       "team": "away", "family": "forced-turnover",
+                                       "marker_count": 39, "table_count": 40}]))
+    entries.append(_summary_entry("PMSR-M104", status="skipped-unchanged"))
+
+    summary = format_summary(_summary_manifest(entries, run={
+        "result": "fail", "failed_count": 1, "self_validation_fail_count": 1,
+        "corpus_gaps": [],
+    }))
+
+    # Every non-clean report is identifiable, with its cause, from this string alone.
+    assert "PMSR-M102" in summary and "[ProbeError] page 3 is unreadable" in summary
+    assert "PMSR-M103" in summary and "away forced-turnover: 39 markers, page prints 40" in summary
+    # The aggregate carries the rest — the 101 clean reports are named nowhere.
+    assert "  extracted          102" in summary
+    assert "  skipped-unchanged  1" in summary
+    assert "PMSR-M001" not in summary and "PMSR-M104" not in summary
+    assert len(summary.split("\n")) < 30, "the summary must stay readable at corpus scale"
+
+
+# --- Story 1.19 Task 4: exactly 104 terminal entries ------------------------------
+
+
+def test_a_corpus_far_beyond_three_reports_still_gets_one_terminal_entry_each(
+    tmp_path, make_report
+):
+    """The ledger's gap, closed at the runner: "No test exercises the batch beyond three
+    reports". Twelve is past every boundary the old `_corpus` had (it raised `IndexError`
+    above five) and past the point where a per-report accumulator bug would still tally."""
+    corpus = _corpus(tmp_path / "corpus", make_report, count=12)
+
+    manifest = _run(tmp_path, corpus)
+
+    assert len(manifest["reports"]) == 12
+    assert manifest["corpus"]["pdf_count"] == 12
+    assert all(entry["status"] in STATUSES for entry in manifest["reports"])
+    assert sum(manifest["counts_by_status"].values()) == 12
+    assert len({entry["match_id"] for entry in manifest["reports"]}) == 12
+    assert manifest["counts_by_status"]["failed"] == 0
+
+
+def test_the_expect_reports_match_path_holds_at_a_two_digit_corpus(tmp_path, make_report):
+    """`--expect-reports` was only ever proven green over a 2-report corpus. The mismatch
+    path is covered twice; this covers the MATCH path at a size the real run uses."""
+    corpus = _corpus(tmp_path / "corpus", make_report, count=12)
+
+    manifest = _run(tmp_path, corpus, expect_reports=12)
+
+    assert manifest["run"]["corpus_gaps"] == []
+    assert manifest["corpus"]["expected_pdf_count"] == 12
+
+
+def test_the_committed_corpus_run_manifest_carries_exactly_one_hundred_and_four(repo_root):
+    """AC 1's literal clause, asserted over the real run rather than a synthetic corpus.
+
+    A corpus test: `work/` is gitignored, so it skips locally and fails under `CI=1`,
+    the same contract the staged-spine and ground-truth-PDF fixtures carry. Building 104
+    synthetic PDFs would assert the runner's arithmetic, which the twelve-report test
+    above already does; only the real manifest can assert the real corpus is complete.
+    """
+    path = repo_root / "work" / "run-manifest.json"
+    if not path.is_file():
+        message = ("run manifest not available at work/run-manifest.json — run "
+                   "`python -m pipeline.ingest.batch --input-dir pmsr-corpus "
+                   "--expect-reports 104` first")
+        if os.environ.get("CI"):
+            pytest.fail(f"{message}. Failing rather than skipping: CI is set.")
+        pytest.skip(message)
+
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+
+    assert len(manifest["reports"]) == 104
+    assert manifest["corpus"]["pdf_count"] == 104
+    assert all(entry["status"] in STATUSES for entry in manifest["reports"])
+    assert sum(manifest["counts_by_status"].values()) == 104
+    assert len({entry["report_id"] for entry in manifest["reports"]}) == 104
+    assert manifest["counts_by_status"]["failed"] == 0
+    # Story 1.19's tripwire, pinned rather than left as a convention in story prose: the
+    # 1.12 ruling accepted EXACTLY two self-validation failures, both hand-verified as
+    # source defects. A third re-opens that ruling. This is a BASELINE ASSERTION over the
+    # real corpus, never a tolerance and never an allowlist — the allowlist mechanism was
+    # considered and rejected in 1.12, and SM-C1 forbids weakening a check to pass.
+    failing = sorted(
+        entry["report_id"] for entry in manifest["reports"] if entry["self_validation"] == "fail"
+    )
+    assert failing == ["PMSR-M19-ARG-V-ALG", "PMSR-M58-TUN-V-NED"], (
+        "the adjudicated baseline is exactly these two forced-turnover deviations; a "
+        "third means the discrepancy is systematic rather than two defective pages, "
+        "which re-opens the Story 1.12 ruling"
+    )
+    assert manifest["run"]["self_validation_fail_count"] == 2
+    assert manifest["run"]["result"] == "fail", (
+        "the ruled clean-corpus baseline FAILS the run by design (exit 1) — asserting a "
+        "pass here would make a future dev 'fix' a correctly reported source defect"
+    )

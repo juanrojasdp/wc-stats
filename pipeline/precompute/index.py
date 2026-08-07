@@ -52,6 +52,7 @@ from pipeline.precompute.errors import (
 )
 from pipeline.precompute.identity import check_committed_data
 from pipeline.precompute.slug_registry import PINS
+from pipeline.precompute.swap import clear, staged_sibling, swap_files
 from pipeline.precompute.serialize import (
     _declared_places,
     decimals_map,
@@ -1397,18 +1398,34 @@ def emit_index(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
     if dry_run:
         return targets
 
-    written: "list[Path]" = []
-    for target, text in zip(targets, (tournament_text, leaderboards_text)):
-        # `json.loads(text)` round-trips deliberately: the bytes measured above and the
-        # bytes written here are then provably the same serialization, rather than two
-        # serializations of one object that a stray key-order change could separate.
-        written.append(write_canonical(json.loads(text), target))
+    # **The two artifacts install as ONE unit** (Story 1.19 Task 6.3). They are two views
+    # of one tournament and the Hub loads both, so a partial write leaves them disagreeing
+    # about the same competition — and an `OSError` between them used to exit 2, "nothing
+    # was learned", over exactly that. Both are staged beside their targets first; only
+    # then is anything installed, and installation is rename-only with a rollback.
+    #
+    # **A FILE swap, not a directory swap, and the distinction is load-bearing.**
+    # `data/index/` also holds `team-profiles/` and `player-profiles/` — 1,296 artifacts
+    # this run never built. Swapping the directory wholesale would destroy them.
+    staged: "list[tuple[Path, Path]]" = []
+    try:
+        for target, text in zip(targets, (tournament_text, leaderboards_text)):
+            # `json.loads(text)` round-trips deliberately: the bytes measured above and the
+            # bytes written here are then provably the same serialization, rather than two
+            # serializations of one object that a stray key-order change could separate.
+            staged.append((write_canonical(json.loads(text), staged_sibling(target)), target))
+        written = swap_files(staged)
+    except BaseException:
+        for staged_path, _target in staged:
+            clear(staged_path)
+        raise
 
     # Sweep stale artifacts this run did not produce, AFTER a successful write and never
     # before it — Story 1.16 patch 3 records a short spine deleting 54 committed bundles
     # because the count check ran after the sweep. Scoped to `data/index/*.json`, which is
     # a non-recursive glob: Story 1.18's `team-profiles/` and `player-profiles/`
-    # subdirectories are not reachable by it and must never be.
+    # subdirectories are not reachable by it and must never be. It also cannot reach this
+    # run's own staging siblings, whose names end `.json.staged`.
     keep = {path.name for path in written}
     for existing in sorted(out_dir.glob("*.json")):
         if existing.name not in keep:

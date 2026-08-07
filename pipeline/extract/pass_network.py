@@ -56,7 +56,7 @@ import re
 
 import pymupdf
 
-from pipeline.extract import check_entry
+from pipeline.extract import bounded_check, check_entry
 from pipeline.extract.domain_g import has_minutes
 from pipeline.extract.errors import (
     MissingFieldError,
@@ -652,6 +652,7 @@ TOP_RANKED_PCT_TOLERANCE = 0.05
 TOP_RANKED_PCT_EPSILON = 1e-9
 
 _check = check_entry
+_bounded = bounded_check
 
 
 def _side_blocks(payload: "dict | None", *keys: str) -> "dict | None":
@@ -815,10 +816,14 @@ def pass_network_checks(
             f"worst {max(shortfalls) if shortfalls else 0})"
         )
         checks.append(
-            _check(
+            _bounded(
                 "pass-network-row-bound",
                 not row_notes,
                 f"{'; '.join(row_notes)} | {row_census}" if row_notes else row_census,
+                # The shortfall the bound tolerates, machine-readable for the batch
+                # summary's near-miss aggregate (Story 1.19 R2). Equality is corpus-FALSE
+                # on 1,290 of 3,289 rows, so this is non-zero on most reports.
+                max(shortfalls, default=0),
             )
         )
 
@@ -826,6 +831,7 @@ def pass_network_checks(
     if key_totals is not None:
         total_notes: list[str] = []
         deltas: list[str] = []
+        total_gaps: list[int] = []
         for side in ("home", "away"):
             matrix_total = payload[side]["matrix_total"]
             completed = key_totals[side]
@@ -843,11 +849,12 @@ def pass_network_checks(
                 deltas.append(
                     f"{side} {matrix_total} <= {completed} (delta {completed - matrix_total})"
                 )
+                total_gaps.append(abs(completed - matrix_total))
         # Same rule, and the same defect it had: one side exceeding its Key Statistics total
         # used to discard the OTHER side's delta entirely.
         total_census = ", ".join(deltas)
         checks.append(
-            _check(
+            _bounded(
                 "pass-network-total-bound",
                 not total_notes,
                 f"{'; '.join(total_notes)} | {total_census}"
@@ -855,6 +862,7 @@ def pass_network_checks(
                 else "; ".join(total_notes)
                 if total_notes
                 else total_census,
+                max(total_gaps, default=0),
             )
         )
 

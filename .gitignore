@@ -32,3 +32,20 @@ spike/*.pdf
 # AD-3 immutability baseline, which is expensive to undo.
 data/index/*.staged/
 data/index/*.previous.rollback/
+
+# The same scratch paths for the two write paths Story 1.19 made all-or-nothing, and the
+# SHAPE differs because `pipeline/precompute/swap.py` puts scratch beside the target, not
+# inside it. `emit_bundles` swaps `data/matches/` itself, so its siblings sit at the
+# `data/` level -- `data/matches/*.staged/` would match nothing. `emit_index` swaps the two
+# index artifacts as FILES (it must not touch the profile subdirectories), so its scratch
+# paths are `data/index/tournament.json.staged` and friends: files, not directories, which
+# the two directory-only patterns above cannot match either.
+#
+# Same failure mode as the block above, and it is not hypothetical: a run killed mid-write
+# cannot clean up after itself, and without these a sweeping `git add` would commit the
+# orphans as though they were real -- then `identity.check_committed_data` would pin them
+# as the AD-3 immutability baseline, which is expensive to undo.
+data/matches.staged/
+data/matches.previous.rollback/
+data/index/*.json.staged
+data/index/*.json.previous.rollback

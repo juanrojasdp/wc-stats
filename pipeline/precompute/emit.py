@@ -61,6 +61,7 @@ from pipeline.precompute.errors import (
     UnmappedFieldError,
 )
 from pipeline.precompute.serialize import decimals_map, round_to_precision
+from pipeline.precompute.swap import clear, staged_sibling, swap_directory
 from pipeline.validate.errors import SchemaValidationError
 from pipeline.validate.schema import (
     load_schemas,
@@ -1563,7 +1564,10 @@ def emit_bundles(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
 
     Building, validation, rounding, the budget measurement AND the expected-count check all
     happen BEFORE the first byte is written, so a failure anywhere leaves `data/matches/`
-    exactly as it was rather than partial.
+    exactly as it was rather than partial. Since Story 1.19 that promise survives a failure
+    DURING the write too: bundles are staged into `data/matches.staged/` and installed by a
+    single directory rename, so an `OSError` on bundle 57 leaves the committed namespace
+    byte-for-byte as it was rather than 56 files rewritten.
 
     **`expect_matches` is checked here, not by the caller, and that is load-bearing.** The
     stale sweep below deletes every bundle this run did not produce, so a count check made
@@ -1656,21 +1660,35 @@ def emit_bundles(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
     if dry_run:
         return targets
 
-    written: list[Path] = []
-    for match_id, text in built:
-        target = out_dir / f"{match_id}.json"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        write_canonical(json.loads(text), target)
-        written.append(target)
-
-    # Delete stale bundles this run did not produce. `write_spine` does the same for the
-    # phantom-match hazard; here the reason is sharper — a match id that ever changed would
-    # leave an orphan that `check_committed_data` then PINS as the immutability baseline.
-    keep = {p.name for p in written}
-    for existing in sorted(out_dir.glob("*.json")):
-        if existing.name not in keep:
-            existing.unlink()
-    return written
+    # **All 104 or none, on the filesystem and not merely in the return value** (Story 1.19
+    # Task 6.2). The loop below used to write straight into `data/matches/`, so an `OSError`
+    # on bundle 57 left 56 files written, the stale sweep skipped, and the caller exiting 2
+    # — "the harness could not run, so nothing was learned" — over a half-rewritten
+    # committed namespace that the next `check_committed_data` would PIN as the AD-3
+    # immutability baseline. Every bundle is now written into a staging sibling and the
+    # whole namespace is installed by one rename.
+    #
+    # The swap also SUBSUMES the stale sweep it replaces. The sweep existed to delete
+    # bundles this run did not produce — a match id that ever changed would otherwise leave
+    # an orphan that `check_committed_data` pins — and a directory swap installs exactly
+    # what this run built and nothing else, by construction rather than by a second pass.
+    staged_dir = staged_sibling(out_dir)
+    clear(staged_dir)
+    staged_dir.mkdir(parents=True)
+    try:
+        for match_id, text in built:
+            # `json.loads(text)` round-trips deliberately: the bytes measured against the
+            # budget above and the bytes written here are then provably one serialization.
+            write_canonical(json.loads(text), staged_dir / f"{match_id}.json")
+        backup = swap_directory(staged_dir, out_dir)
+    except BaseException:
+        # Nothing was installed, so the committed namespace is untouched — which is what
+        # makes the caller's exit 2 honest rather than merely re-labelled.
+        clear(staged_dir)
+        raise
+    if backup is not None:
+        clear(backup)
+    return [out_dir / f"{match_id}.json" for match_id, _text in built]
 
 
 def build_parser() -> argparse.ArgumentParser:

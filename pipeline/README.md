@@ -81,6 +81,50 @@ pass-network section — the completeness check is where matrix-endpoint join in
 lands, and where the page's two standing NEGATIVE assertions surface if the template ever
 starts drawing a pitch or markers).
 
+## Running the whole pipeline (Story 1.19)
+
+"End to end" is **five** CLIs, not one, and their order is forced. One command runs them
+all in the order that works:
+
+```
+pipeline\venv\Scripts\python.exe -m pipeline.orchestrate --input-dir pmsr-corpus ^
+    --expect-reports 104 --expect-records 104 --expect-matches 104 ^
+    --expect-teams 48 --expect-players 1248
+```
+
+| # | phase | reads | writes |
+| --- | --- | --- | --- |
+| 1 | `ingest.batch` | `pmsr-corpus/*.pdf` | `work/extracted/`, `work/run-manifest.json` |
+| 2 | `precompute.run` | `work/extracted/` | `work/spine/` |
+| 3 | `precompute.emit` | `work/spine/` | `data/matches/` |
+| 4 | `precompute.profiles` | `data/matches/` | `data/index/{team,player}-profiles/` |
+| 5 | `precompute.index` | `work/spine/` + `data/` | `data/index/{tournament,leaderboards}.json` |
+
+**`profiles` runs BEFORE `index`, and that is the whole point.** `index`'s route-manifest
+bijection checks the profile direction *before* its first write and raises on a set
+difference, so once profiles exist, adding one entity to the spine makes `index` refuse to
+emit the very manifest those profiles are built from — the write-blocking deadlock. But
+`profiles` reads `data/matches/` and nothing else, so it has no dependency on `index` at
+all while `index` has a hard one on it. Running it first means the artifacts already match
+when the gate looks: the gate passes on the first attempt, no gate is weakened, nothing is
+deleted, and the ordering is byte-neutral by construction.
+
+**Exit codes.** The runner's own code is the worst any phase returned, and it never masks a
+phase's `1`. A phase exiting `2` stops the run — nothing was learned, so a later phase must
+not write on the strength of it. A **precompute** phase exiting `1` stops the run: a failed
+gate means the artifacts it guards are not trustworthy. `ingest.batch` exiting `1`
+**continues, conditionally**: the ruled clean-corpus baseline for this corpus *is* exit 1
+(two hand-verified forced-turnover source defects, see *the defensive-actions domain*
+below) and `precompute/records.py` rules both records CONSUMED, so stopping there would
+make the documented baseline unrunnable end to end. Any failed report, corpus gap or orphan
+record stops it instead — those mean the corpus is short, and every downstream `--expect-*`
+count would then be measuring a truncated run.
+
+There is no `--dry-run`: a dry `emit` writes no bundles, which would leave `profiles` and
+`index` reading the *previous* run's artifacts while reporting on this one.
+
+The five phases are also documented individually below, and can still be run one at a time.
+
 ## Batch ingestion
 
 Runs every report in a corpus through the Extract phase, staging one Extraction Record per
@@ -114,6 +158,29 @@ carry one of those three terminal statuses before the manifest is written.
 
 The console summary is printed **before** the manifest is written, so a run whose records
 all staged correctly still reports its result even if the manifest itself cannot be written.
+
+**The summary's warnings block is collapsed by count** (Story 1.19, ruling D1). The seven
+documented absences below are properties of the PMSR page family, not of any one report:
+every one of the 104 corpus records carries all seven, so rendering one line per report per
+warning printed **728 lines of identical text** and buried the two Self-Validation failures a
+reader is actually looking for. FR-16 requires that every failed report and its cause be
+identifiable *from the summary alone, without opening logs or artifacts* — 728 lines of
+family-wide noise is that clause's direct antagonist. The block therefore iterates
+**warning-first**: a warning carried by more than `WARNING_NAMED_MAX` (**3**) reports renders
+as a single `  {n} reports: {warning}` line, and one carried by three or fewer still names
+each report as `  {report_id}: {warning}`, because a bare count that hides *which* three
+reports differ breaks the same clause in the other direction. The warning text is emitted
+**verbatim** — never truncated, elided or re-wrapped. Ordering is first appearance over
+`manifest["reports"]`, never `set` iteration order, so the summary is byte-identical across
+runs. **The manifest is unchanged**: per-report `warnings` arrays still carry one entry per
+report. This is a rendering change only. Measured effect on the real corpus: **728 warning
+lines → 7**.
+
+The summary also carries a **Near-miss parses** block (Story 1.19, ruling R2): the pipeline's
+bounded checks *pass* while recording how far the drawn set sits from the printed count, and
+before 1.19 that margin never reached the summary at all even though FR-16 and AC 1 name the
+category. It renders one aggregate line per bounded check that observed a non-zero delta on
+any report — never one line per report, which would recreate exactly the noise D1 removed.
 
 ### Where things land
 
@@ -900,7 +967,9 @@ attributed once.
 A report whose chart is anchored but draws no bars stages `momentum: None` plus a per-report
 warning that `batch.py` mirrors into the manifest — never a non-`pass` check, which the
 strictly binary aggregator would read as a *failure* of a merely incomplete report (Story
-1.12's precedent). **No corpus report takes this branch**: all 104 draw a band, and
+1.12's precedent). The manifest still carries the warning per report; the console summary
+collapses it to one counted line (see *Batch ingestion* above, Story 1.19 D1).
+**No corpus report takes this branch**: all 104 draw a band, and
 `momentum: null` never occurs in real data. A clean corpus run is therefore not evidence
 that the branch is dead code; AD-4 requires the key to be present with a flagged absence, and
 it is unit-tested directly.
@@ -1128,7 +1197,9 @@ quietly bless a relation the corpus refutes.
 
 Three contracted values are not extractable. Each stages as `null` plus one per-report
 **warning** — never a non-`pass` check, which the strictly binary aggregator would read as a
-failure of a merely incomplete report (the 1.12/1.13 branch):
+failure of a merely incomplete report (the 1.12/1.13 branch). All three fire on all 104
+reports, so all three reach the console summary as one collapsed `104 reports: …` line each
+(Story 1.19 D1); the manifest still carries them per report:
 
 | Absent value | Why |
 | --- | --- |
@@ -1338,7 +1409,9 @@ sibling is unavailable — one root cause, one finding.
   filed as an AD-14 emission blocker; nothing here derives them from the edges, from the
   formation string, or from the lineup positions. It is a **warning**, never a non-`pass`
   check — the aggregator treats anything but the literal `"pass"` as a failure, and a
-  documented absence must not turn a complete report into a failing one.
+  documented absence must not turn a complete report into a failing one. It fires on all 104
+  reports, so it reaches the console summary as one collapsed `104 reports: …` line (Story
+  1.19 D1); the manifest still carries it per report.
 
 **The absence is asserted, not commented.** `_assert_no_pitch_and_no_markers` runs on every
 page on every run and requires `detect_pitch_frames` to raise `PitchFrameError` and the page
@@ -1975,11 +2048,20 @@ Both the tripwire and `test_the_route_manifest_bijection_holds_against_the_commi
 profiles` are keyed on `git ls-files`, so they describe the repository rather than one
 machine's working tree, and they swap over together in the run where 1.18's commit lands.
 
-**Ordering constraint on the profile direction.** It is checked before the write, so once
-profiles exist, adding an entity to the spine makes `emit_index` raise and refuse to write
-the manifest those profiles are generated from. The recourse is to empty the two profile
-directories, re-run this module, then re-run 1.18. Resolving the phase ordering properly is
-Story 1.19's, which owns end-to-end orchestration; it is ledgered in `deferred-work.md`.
+**Ordering constraint on the profile direction — RESOLVED by Story 1.19; run `profiles`
+BEFORE `index`.** The profile direction is checked before the write, so once profiles
+exist, adding an entity to the spine makes `emit_index` raise and refuse to write the very
+manifest those profiles are generated from. The recourse recorded here used to be to empty
+the two profile directories, re-run this module, then re-run 1.18 — destructive, easy to
+forget, and it leaves `index` printing a qualified `PASS (N check(s) COULD NOT RUN)`.
+
+It is not needed. **`profiles` reads `data/matches/` and nothing else** — not the spine,
+not `tournament.json` — so it has no dependency on `index` at all, while `index` has a hard
+one on it. Running `profiles` first means the profile artifacts already match the new
+entity set by the time the bijection is checked, so the gate passes on the first attempt
+and the deadlock never forms. No gate is weakened, nothing is deleted, and the ordering is
+byte-neutral: which bytes each phase writes is unchanged, only when. `python -m
+pipeline.orchestrate` encodes it; see *Running the whole pipeline* above.
 
 **D3 — the combined budget is the SUM OF INDEPENDENTLY GZIPPED ARTIFACTS, and player boards
 are capped at 100 rows extended to the end of the boundary tie group.** The Hub fetches two

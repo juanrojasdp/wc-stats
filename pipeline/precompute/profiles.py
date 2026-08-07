@@ -69,6 +69,7 @@ from pipeline.precompute.errors import (
 )
 from pipeline.precompute.serialize import decimals_map, round_to_precision
 from pipeline.precompute.slug_registry import PINS, TEAM_CODES
+from pipeline.precompute.swap import swap_directory
 from pipeline.validate.errors import SchemaValidationError
 from pipeline.validate.schema import schema_version, validate_artifact
 
@@ -1149,38 +1150,11 @@ def index_bundles(bundles: "list[dict]") -> "tuple[dict, dict]":
     return teams, players
 
 
-def _swap_directory(staged: Path, target: Path) -> "Path | None":
-    """Replace `target` with `staged`, RETAINING the retired copy for the caller.
-
-    **Ruled over per-file `.tmp` renames** (Task 7.4): a second rename pass leaves the
-    namespace half-swapped for its whole duration and reproduces the hazard in a smaller
-    window. The named hazard is `identity.check_committed_data` pinning a PARTIAL namespace
-    as the immutability baseline, and 1,296 artifacts across two directories is a far wider
-    window than Story 1.16's 104.
-
-    `os.replace` cannot move a directory onto a non-empty directory on either platform, so
-    the swap is retire-then-install with a rollback, not a single call.
-
-    **Returns the retained backup rather than deleting it**, because atomicity has to span
-    BOTH namespaces: `emit_profiles` can only undo a completed team swap after a failed
-    player swap if the retired team directory still exists. The caller owns the cleanup once
-    every swap has landed.
-    """
-    backup = target.with_name(f"{target.name}.previous.rollback")
-    if backup.exists():
-        shutil.rmtree(backup)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    retired = False
-    if target.exists():
-        target.rename(backup)
-        retired = True
-    try:
-        staged.rename(target)
-    except BaseException:
-        if retired:
-            backup.rename(target)
-        raise
-    return backup if retired else None
+# Story 1.19 Task 6.1 lifted this to `pipeline/precompute/swap.py` so `emit_bundles` and
+# `emit_index` could reuse it rather than grow a second mechanism. The behaviour is
+# unchanged and the private name is retained: this module's tests, and the ruling that
+# chose a directory swap over per-file `.tmp` renames, both name it.
+_swap_directory = swap_directory
 
 
 def emit_profiles(data_dir: "str | Path" = DEFAULT_DATA_DIR,

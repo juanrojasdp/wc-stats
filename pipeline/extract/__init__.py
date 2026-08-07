@@ -29,6 +29,29 @@ def check_entry(check_id: str, passed: bool, specifics: str) -> dict:
     return {"check": check_id, "result": "pass" if passed else "fail", "specifics": specifics}
 
 
+def bounded_check(check_id: str, passed: bool, specifics: str, max_delta: "int | float") -> dict:
+    """A BOUNDED check — one whose predicate is an inequality, not an equality.
+
+    Several of this pipeline's strongest cross-checks are bounds rather than equalities,
+    because the source does not hold to the equality and manufacturing one would be the
+    fake reconciliation Stories 1.8 and 1.12 refused. Such a check *passes* while the
+    drawn set still sits a measurable distance from the printed count, and that distance
+    is the "near-miss parse" category AC 1 and FR-16 name (Story 1.19, ruling R2).
+
+    `max_delta` is that distance: the largest **absolute** gap from exactness the check
+    observed on this report, across every side/panel/row it covered. Zero means the check
+    was exact everywhere, which is the corpus-normal case; the batch summary aggregates
+    only the non-zero ones, so an exact corpus produces no near-miss block at all.
+
+    Carried as an extra key on the check dict rather than as a separate structure. Checks
+    have always been free-shaped beyond the three keys `aggregate_self_validation` reads
+    (`linking.py` and `defensive_actions.py` both add their own), and keying off the
+    presence of `max_delta` is what lets `format_summary` aggregate near misses without
+    hard-coding a registry of check ids it would then have to be kept in step with.
+    """
+    return {**check_entry(check_id, passed, specifics), "max_delta": max_delta}
+
+
 def aggregate_self_validation(checks: "list[dict]") -> str:
     """The record-level result over whatever checks are present.
 

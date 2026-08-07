@@ -58,7 +58,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-from pipeline.extract import check_entry
+from pipeline.extract import bounded_check, check_entry
 from pipeline.extract.errors import (
     GoalkeepingPageParseError,
     InvolvementChartError,
@@ -2009,6 +2009,7 @@ def domain_e_goalkeeper_warnings(payload: dict) -> "list[str]":
 # named at their call sites rather than left as silence.
 
 _check = check_entry
+_bounded = bounded_check
 
 
 def domain_e_checks(payload: dict) -> "list[dict]":
@@ -2025,6 +2026,7 @@ def domain_e_checks(payload: dict) -> "list[dict]":
     sum_notes: list[str] = []
     printed_notes: list[str] = []
     printed_deltas: list[str] = []
+    printed_gaps: list[int] = []
     for side in ("home", "away"):
         distribution = payload[side]["distribution"]
         parts = sum(distribution[key]["total"] for key in DISTRIBUTION_PRINTED_PANELS)
@@ -2038,6 +2040,7 @@ def domain_e_checks(payload: dict) -> "list[dict]":
             block = distribution[key]
             drawn, printed = block["total"], block["printed_total"]
             printed_deltas.append(f"{side} {key}: {drawn}/{printed}")
+            printed_gaps.append(abs(drawn - printed))
             if drawn < printed:
                 printed_notes.append(
                     f"{side} {key}: {drawn} markers drawn, page prints {printed}"
@@ -2081,7 +2084,7 @@ def domain_e_checks(payload: dict) -> "list[dict]":
     # widened margin opened. The per-panel delta is recorded in `specifics` on EVERY
     # report, passing or failing, so the residual gap stays visible rather than absorbed.
     checks.append(
-        _check(
+        _bounded(
             "goalkeeping-distribution-printed",
             not printed_notes,
             (
@@ -2090,6 +2093,10 @@ def domain_e_checks(payload: dict) -> "list[dict]":
                 f"overshooting it by more than {DISTRIBUTION_PRINTED_MAX_OVERSHOOT} — "
             )
             + "; ".join(printed_deltas),
+            # The residual the `>=` bound tolerates, now machine-readable so the batch
+            # summary can aggregate it (Story 1.19 R2). Corpus-wide: non-zero on 20 of 624
+            # side/panel pairs, all in `feet`, +1 on 18 and +2 on 2.
+            max(printed_gaps, default=0),
         )
     )
 
@@ -2148,17 +2155,19 @@ def domain_e_checks(payload: dict) -> "list[dict]":
     # passed on a report where the other side failed, which the original ternary dropped.
     involvement_notes: list[str] = []
     deltas: list[str] = []
+    gaps: list[int] = []
     for side in ("home", "away"):
         block = payload[side]
         drawn = sum(block["involvement_series"])
         printed = block["total_involvements"]
         deltas.append(f"{side}: {drawn}/{printed} (delta {printed - drawn})")
+        gaps.append(abs(printed - drawn))
         if drawn > printed:
             involvement_notes.append(
                 f"{side}: series sums to {drawn}, above the printed total {printed}"
             )
     checks.append(
-        _check(
+        _bounded(
             "goalkeeping-involvement-bound",
             not involvement_notes,
             (
@@ -2167,6 +2176,9 @@ def domain_e_checks(payload: dict) -> "list[dict]":
                 else "series sum within the printed total — "
             )
             + "; ".join(deltas),
+            # Corpus-wide the delta runs 0..5 with mean 1.26 and is non-zero on 149 of 208
+            # team-innings; `sum(series) == total_involvements` is corpus-FALSE (Story 1.19 R2).
+            max(gaps, default=0),
         )
     )
 
