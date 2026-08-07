@@ -19,6 +19,7 @@ import {
   shapeMeasureKey,
   shapeTables,
   teamMatchRows,
+  type RateChartModel,
 } from "@/viz/team-profile-model";
 
 /*
@@ -157,7 +158,13 @@ describe("team-profile-model — identityCharts (AC 1, AC 2)", () => {
      * four ticks, unevenly spaced, no zero). A bar encodes its LENGTH as the
      * value, so the baseline must be zero and the domain must cover the data.
      */
-    for (const [name, chart] of Object.entries(charts)) {
+    const named: [string, RateChartModel][] = [
+      ["inPossession", charts.inPossession],
+      ["outOfPossession", charts.outOfPossession],
+      ["blocks", charts.blocks],
+      ["press", charts.press],
+    ];
+    for (const [name, chart] of named) {
       const peak = Math.max(...chart.rows.map((row) => row.value));
       expect(chart.ticks[0], name).toBe(0);
       expect(chart.axisMax, name).toBeGreaterThanOrEqual(peak);

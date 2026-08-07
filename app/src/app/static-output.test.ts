@@ -750,4 +750,45 @@ describe("global-chrome and match-route artifact fetches (Story 2.14 Task 10.5)"
     );
     expect(artifactPathsReachableFrom(SRC_DIR + "app/players/[slug]/page.tsx")).toHaveLength(1);
   });
+
+  /*
+   * ───────────── STORY 2.16 — /teams/[slug] (Task 9.2) ─────────────
+   *
+   * The fourth per-route allow-list, on the three above's terms exactly. No
+   * change to the walker was needed: this route's call is the template form
+   * (`` fetchArtifact<TeamProfile>(`/index/team-profiles/${slug}.json`) ``),
+   * which Task 10.5's extended pattern already matches.
+   */
+  it("the TEAM route reaches its own profile and NOTHING else (AD-11, FR-26)", () => {
+    /*
+     * SET EQUALITY, deliberately: a MISSING fetch is as much a defect as an
+     * extra one.
+     *
+     * THE `tournament.json` EXCLUSION IS THIS ROUTE'S SPECIFIC TRAP, not
+     * boilerplate (Story 2.16 ruled D3). AC 2 mandates result chips, and
+     * `tournament.json`'s `groups[].standings[].form` IS a `MatchResult[]` that
+     * `TournamentHub` already chips — so reaching for it is the obvious move and
+     * it is WRONG twice over: it is GROUP-STAGE ONLY (three entries for a team
+     * that played eight), and pulling it in would breach FR-26. The form strip
+     * is a projection of the profile's own `matches[].result` instead, and this
+     * assertion is what keeps it that way.
+     *
+     * `readTournament()` in `generateStaticParams` does NOT appear here and must
+     * not: it is a BUILD-TIME filesystem read through `@/lib/build-data`, which
+     * is a different path from the runtime `fetchArtifact` this walk measures.
+     */
+    const reachable = artifactPathsReachableFrom(SRC_DIR + "app/teams/[slug]/page.tsx");
+    expect(reachable).toEqual(["/index/team-profiles/{}.json"]);
+    expect(reachable).not.toContain("/index/tournament.json");
+    expect(reachable).not.toContain("/index/leaderboards.json");
+  });
+
+  it("still walks far enough to see the team route's template-literal fetch", () => {
+    // Guards the guard, as all three siblings do: page.tsx holds no fetch
+    // itself — the only one lives two hops away in TeamProfileRegion.
+    expect(readFileSync(SRC_DIR + "app/teams/[slug]/page.tsx", "utf8")).not.toContain(
+      "fetchArtifact"
+    );
+    expect(artifactPathsReachableFrom(SRC_DIR + "app/teams/[slug]/page.tsx")).toHaveLength(1);
+  });
 });

@@ -1382,4 +1382,106 @@ export const en: Dictionary = {
       crashedExplanation: "The rest of the page is still available.",
     },
   },
+  /*
+   * STORY 2.16 — /teams/{slug}. Mirrors `es.ts`, which is canonical.
+   *
+   * `shape.*` is the R1 vocabulary minted by this story under option (A), taken
+   * by Juan — every string PROPOSED, pending confirmation at review. See the
+   * Spanish block for the full rationale and for the two disclosed on-page
+   * string collisions.
+   *
+   * Team names pass through UNTRANSLATED on both sides (AD-7: "source proper
+   * names pass through as-is in English").
+   */
+  team: {
+    sections: {
+      identity: { title: "Tactical identity" },
+      formations: { title: "Formations" },
+      matches: { title: "Tournament matches" },
+    },
+    hero: { form: "Run" },
+    tile: {
+      played: "Matches played",
+      record: "Record",
+      recordCaption: "W-D-L",
+      goals: "Goals",
+      goalsCaption: "For - Against",
+      goalDifference: "Goal difference",
+      points: "Points",
+      // Group-stage points only; knockout ties award none (ruled D12).
+      pointsCaption: "Group stage only",
+      furthestStage: "Reached",
+      // Never "average": the team artifact's mean is UNWEIGHTED and the
+      // player artifact's is weighted. See the Spanish note.
+      possession: "Tournament possession",
+      // A count-valued mean at 1 dp, never a percentage (ruled D12).
+      pressingIntensity: "Defensive pressures",
+      pressingIntensityCaption: "Per match",
+    },
+    action: { compare: "Compare team" },
+    meta: { separator: " · ", recordSeparator: "-" },
+    shape: {
+      title: "Team shape by phase",
+      note: "The report defines three panels per possession state. Each panel is its own measurement: they are not summed or averaged across panels.",
+      measure: {
+        lineHeight: "Line height",
+        teamLength: "Team length",
+        teamWidth: "Team width",
+      },
+      inPossession: {
+        buildUpLow: "Build-up (low)",
+        buildUpMid: "Build-up (mid)",
+        finalThirdPhase: "Final third",
+      },
+      outOfPossession: {
+        highBlockPress: "High block / press",
+        midBlock: "Mid block",
+        lowBlock: "Low block",
+      },
+    },
+    column: {
+      date: "Date",
+      opponent: "Opponent",
+      // "Round", not "Phase": `viz.table.phase` already owns "Phase" here.
+      stage: "Round",
+      venue: "Venue",
+      result: "Result",
+      score: "Score",
+      formation: "Formation",
+      matchesPlayed: "Matches",
+      share: "Share",
+    },
+    venue: { home: "Home", away: "Away" },
+    caption: {
+      matches: "Sorted chronologically, in the report's order.",
+      matchesLink: "Each row opens the match.",
+      formations: "Sorted by match count, highest first.",
+      shape: "Distances in metres, by panel and measure.",
+    },
+    tableName: {
+      inPossession: "In-possession phases table",
+      outOfPossession: "Out-of-possession phases table",
+      blocks: "Defensive blocks table",
+      press: "Pressing intensity table",
+      shapeInPossession: "In-possession shape table",
+      shapeOutOfPossession: "Out-of-possession shape table",
+      formations: "Formations table",
+      matches: "Team matches table",
+    },
+    empty: {
+      formationsHeadline: "No formations recorded.",
+      formationsExplanation: "The report records no starting line-ups for this team.",
+      matchesHeadline: "This team has no recorded matches.",
+      matchesExplanation: "There are no per-match rows for this team.",
+    },
+    region: {
+      loading: "Loading the team data",
+      loaded: "Team data loaded.",
+      error: "We could not load the team data. Check your connection and try again.",
+      invalid: "This team's data does not match this version of the site.",
+      invalidExplanation: "We are aware. Please try again later.",
+      crashed: "We could not show this team's profile.",
+      crashedExplanation: "The rest of the page is still available.",
+    },
+  },
 };

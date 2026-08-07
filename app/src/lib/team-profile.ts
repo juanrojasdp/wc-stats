@@ -164,11 +164,23 @@ export function composeTeamDescription(input: {
  * (Story 2.12 D2 and 2.13 ruling 3 both ruled navigation surfaces link to
  * unbuilt routes), which is why the caller passes `prefetch={false}`.
  *
+ * THE TRAILING SLASH BEFORE THE QUERY IS MANDATORY AND IS EMITTED HERE, not left
+ * to Next. `trailingSlash: true` normalises a slash-less path at request time,
+ * so `/compare?…` is rewritten to `/compare/?…` and the href in the exported
+ * HTML stops matching what this helper returns — which is exactly the drift
+ * `matchHref`'s docblock records ("emits its own trailing slash, which is why it
+ * is called rather than interpolated"). Caught by the static-output test, which
+ * asserts against the EMITTED markup rather than this function's return value.
+ *
+ * AC 4 spells the target `/compare?type=teams&a={slug}`; `/compare/?…` is that
+ * same target in this site's canonical path form, and every other href builder
+ * in the codebase emits the slash the same way.
+ *
  * NO `encodeURIComponent`. `AD-3` fixes `TeamId` as "lowercase ASCII kebab,
  * accent-stripped", so a slug carries nothing a query string could misread —
  * and encoding it would make the emitted href differ from the slug the route
  * was generated under.
  */
 export function compareTeamHref(teamId: string): string {
-  return `/compare?type=teams&a=${teamId}`;
+  return `/compare/?type=teams&a=${teamId}`;
 }

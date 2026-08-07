@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { EmptyStatePanel } from "@/components/EmptyStatePanel";
 import { HubTable } from "@/components/HubTable";
 import { ResultChip } from "@/components/ResultChip";
+import { RowAnchor } from "@/components/RowAnchor";
 import type { Tournament } from "@/lib/contract/contract-types";
 import { formatDate, formatInteger, formatKickoff } from "@/lib/format";
 import {
@@ -61,14 +62,29 @@ const TITLE_CLOSE = ")";
 const HASH_PREFIX = "#";
 
 /*
- * THE STRETCHED ROW ANCHOR (ruled D9), in one place so both surfaces get the
- * same mechanism.
+ * THE STRETCHED ROW ANCHOR (ruled D9) NOW LIVES IN `@/components/RowAnchor`.
  *
- * `after:absolute after:inset-0` over a `<tr className="relative">` (HubTable
- * passes `rowClass`) makes the WHOLE ROW the click target while there is still
- * exactly ONE `<a>` per row — which is the requirement EXPERIENCE.md:82 states
- * for result chips ("the row, not the chip, is the link target") and which AC 2
- * needs for standings.
+ * HOISTED BY STORY 2.16 (its ruled D4). The pattern had been minted privately
+ * TWICE — here, and again in `PlayerMatchesSection.tsx` for Story 2.15 — and
+ * `/teams/{slug}`'s per-match table would have been the third. Story 2.11a
+ * decision 1 is binding: "every private copy is deleted". This copy was the one
+ * hoisted; `PlayerMatchesSection`'s is filed for Story 2.17 because 2-15 was
+ * `in-progress` in a concurrent session when 2.16 ran and its file was untracked
+ * in the tree.
+ *
+ * BEHAVIOUR IS UNCHANGED HERE. The hoisted component carries this copy's exact
+ * geometry (`flex-wrap`, `gap-x-1.5`), its trailing-space accessible prefix, its
+ * imported `MIN_HIT_PX`, and `prefetch={false}` as the DEFAULT rather than a
+ * per-call-site argument.
+ *
+ * WHY PREFETCH STAYS OFF, measured rather than precautionary: Next prefetches
+ * every `<Link>` that enters the viewport, so the Hub fired four route requests
+ * on load at FIXTURE scale — 48 standings links plus 104 result links at real
+ * scale, re-run on every re-order. Story 2.13 measured `48 → 75` resource
+ * entries across one sort pass and `43 → 43` after the fix. `/teams/{id}/` now
+ * EXISTS (Story 2.16 built it), but that does not change the arithmetic: the
+ * waste was the per-sort re-fire, not the 404, and AC 5 scopes this route to the
+ * artifacts it loads.
  *
  * CONSEQUENCES ACCEPTED AND RECORDED, not discovered later:
  *  - text selection inside the row is lost; that is inherent to stretched links;
@@ -79,62 +95,7 @@ const HASH_PREFIX = "#";
  *  - result-row TEAM NAMES ARE NOT LINKS. UX-DR22 scopes team cross-links to the
  *    match header, and linking them here would add a second and third tab stop
  *    per row and nest interactive elements inside a link.
- *
- * The `sr-only` prefix is a SPAN rather than an `aria-label`: `aria-label` is
- * one of the sixteen gated prop names, and — more importantly — it would
- * REPLACE the visible team name in the accessible name rather than prefix it,
- * costing WCAG 2.5.3 Label in Name.
- *
- * `MIN_HIT_PX` is IMPORTED (never re-declared) so UX-DR15's 44px floor has one
- * definition in the codebase; it sits on the ANCHOR itself, matching the Story
- * 2.4 patch that put it on DataTable's header buttons.
  */
-const ROW_ANCHOR_CLASS =
-  "flex min-w-0 flex-wrap items-center gap-x-1.5 after:absolute after:inset-0 hover:underline";
-
-function RowAnchor({
-  href,
-  accessiblePrefix,
-  children,
-}: {
-  href: string;
-  accessiblePrefix: string;
-  children: ReactNode;
-}) {
-  /*
-   * THE TRAILING SPACE IS DELIBERATE. The accessible-name algorithm appends a
-   * space between element children, but the DOM text is concatenated raw — so
-   * the name read back out of the live DOM was "Ver el equipoMexico", and
-   * whether a reader hears "equipo Mexico" or "equipoMexico" would depend on
-   * the engine implementing that clause. An explicit separator makes it true in
-   * every engine rather than true in the spec.
-   */
-  const prefix = `${accessiblePrefix}${SPACE}`;
-  return (
-    <Link
-      href={href}
-      /*
-       * NO PREFETCH, and it is measured rather than precautionary. Next
-       * prefetches every `<Link>` that enters the viewport, so the Hub fired
-       * four route requests on load at FIXTURE scale (`/teams/czechia/`,
-       * `/teams/korea-republic/`, `/teams/south-africa/`, `/teams/mexico/`) —
-       * 48 standings links plus 104 result links at real scale, re-run on
-       * every re-order. Two reasons it must be off here specifically:
-       * `/teams/{id}/` DOES NOT EXIST until Story 2.16 (ruled D2), so every one
-       * of those is a round trip for a 404; and AC 5 scopes this route to the
-       * artifacts it loads, which is not a claim you get to make while the
-       * document is quietly pulling routes. Story 2.13 measured this, fixed its
-       * own three link sites the same way, and filed the Hub's as this story's.
-       */
-      prefetch={false}
-      className={ROW_ANCHOR_CLASS}
-      style={{ minHeight: MIN_HIT_PX }}
-    >
-      <span className="sr-only">{prefix}</span>
-      {children}
-    </Link>
-  );
-}
 
 /**
  * `true` below `md`. Reuses the shipped `MD_MEDIA_QUERY` (`(min-width: 48rem)`)

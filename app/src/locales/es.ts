@@ -2579,6 +2579,200 @@ export const es = {
       crashedExplanation: "El resto de la página sigue disponible.",
     },
   },
+  /*
+   * ----------------------------- STORY 2.16 — /teams/{slug} -----------------
+   *
+   * Tail append, after `player`. Register: tuteo, neutral LatAm, NO exclamation
+   * marks (`[¡!]` banned; guillemets legal).
+   *
+   * MOST OF THIS ROUTE'S COPY IS REUSED, NOT MINTED, because the Team Profile
+   * renders the same Domain C block the Match Dashboard does: the chart titles
+   * come from `viz.phases.{inPossession,outOfPossession}` and
+   * `viz.pressing.{pressRates,blocks}`, the axis labels from
+   * `viz.phases.{axisRate,axisPhase}`, the independent-rates notes from
+   * `viz.phases.note` / `viz.pressing.note`, the rate-table caption from
+   * `viz.phases.tableCaption`, the phase column head from `viz.table.phase`,
+   * the six Domain B column heads from `enums.leaderboardMetric.*`, the units
+   * from `enums.unit.{m,km}`, the row-link prefix from `hub.results.rowLink`,
+   * the group word from `match.hero.group`, the stage labels from
+   * `enums.stage.*` and the column toggle from `hub.columns.{more,fewer}`.
+   */
+  team: {
+    sections: {
+      identity: { title: "Identidad táctica" },
+      formations: { title: "Formaciones" },
+      matches: { title: "Partidos del torneo" },
+    },
+    hero: {
+      // Names the chip strip. The chips speak through ResultChip's own sr-only
+      // word, so this labels the GROUP rather than each entry.
+      form: "Trayectoria",
+    },
+    tile: {
+      played: "Partidos jugados",
+      // "Balance" rather than "Récord": neutral LatAm. G-E-P is the caption.
+      record: "Balance",
+      recordCaption: "G-E-P",
+      goals: "Goles",
+      goalsCaption: "A favor - En contra",
+      goalDifference: "Diferencia de goles",
+      points: "Puntos",
+      /*
+       * THE CONTRACT'S OWN SCOPING, STATED RATHER THAN ASSUMED (ruled D12).
+       * `record.points` counts group-stage points only — knockout ties award
+       * none — so a naive `won*3 + drawn` disagrees on 19 of 48 real teams.
+       * Mexico is 12 naive and 9 by contract.
+       */
+      pointsCaption: "Solo fase de grupos",
+      furthestStage: "Llegó hasta",
+      /*
+       * DELIBERATELY NOT "promedio" (ruled D12). `team-profile.schema.json:97`
+       * describes tacticalIdentity as a "match-count-weighted mean", but
+       * `pipeline/precompute/profiles.py:22-25` records the TEAM implementation
+       * is UNWEIGHTED while the player artifact's passCompletion is weighted —
+       * "the same word 'average' means two different arithmetics in the two
+       * artifacts, and both are correct". Copy asserting a weighting would be
+       * wrong on one of the two surfaces.
+       */
+      possession: "Posesión en el torneo",
+      /*
+       * A COUNT-VALUED MEAN, NEVER A PERCENTAGE (ruled D12). The contract calls
+       * it "Mean defensive pressures applied per match" with x-decimals 1;
+       * Mexico is 213,0. `possession` sits two tiles away and IS a percentage,
+       * which is exactly how a stray "%" here would read as correct.
+       */
+      pressingIntensity: "Presiones defensivas",
+      pressingIntensityCaption: "Por partido",
+    },
+    action: {
+      // AC 4 verbatim. Targets /compare?type=teams&a={slug}, which Story 2.17
+      // builds — the link ships prefetch={false} because the route 404s today.
+      compare: "Comparar equipo",
+    },
+    meta: {
+      separator: " · ",
+      recordSeparator: "-",
+    },
+    /*
+     * ------------------------------------------------------------------------
+     * R1 VOCABULARY — MINTED BY STORY 2.16 under option (A), taken by Juan.
+     * EVERY STRING IN `shape` IS `PROPOSED — Juan to confirm or overturn at
+     * review`.
+     *
+     * Change-set CS-2 reshaped `shapeByPhase` into 2 states x 3 panels x 3
+     * measures = 18 metre values and filed the vocabulary to Story 2.19 — but
+     * 2.19 has not run and `/teams/{slug}` is the first surface that can render
+     * them. Four of the six panel labels and `teamWidth` had NO copy in either
+     * locale, no glossary entry, and no UX document authorizing any wording.
+     *
+     * "Altura de la línea" is EXPERIENCE.md:244's ruled short label, "longitud
+     * del equipo" is :245 verbatim, "salida de balón" is :242's ruled term for
+     * build-up, and the block levels are :243 verbatim. "Amplitud" is the ONLY
+     * genuinely new term and carries its own appended policy row.
+     *
+     * TWO ON-PAGE COLLISIONS, DISCLOSED RATHER THAN SILENTLY RESOLVED:
+     * `finalThirdPhase` reads "Último tercio", the same string as
+     * `enums.inPossessionPhase["final-third"]`, and `midBlock`/`lowBlock` read
+     * the same strings as `enums.blockLevel.{mid,low}`. Both pairs render on
+     * this page — the enum in a rate chart, the panel in a shape table. Juan
+     * approved these exact strings; the collision is filed for review.
+     * ------------------------------------------------------------------------
+     */
+    shape: {
+      title: "Forma del equipo por fase",
+      /*
+       * `viz.pressing.metreNote` IS DELIBERATELY NOT REUSED. Its shipped text
+       * ("El informe no define a qué fase del juego corresponden estas
+       * distancias.") is FALSE on this surface: CS-2 established the opposite —
+       * the report prints three NAMED panels per possession state. The two
+       * glossary definitions making the same false claim are corrected in this
+       * same story (R1's rider).
+       */
+      note: "El informe define tres paneles por estado de posesión. Cada panel es una medición independiente: no se suman ni se promedian entre sí.",
+      measure: {
+        lineHeight: "Altura de la línea",
+        teamLength: "Longitud del equipo",
+        teamWidth: "Amplitud del equipo",
+      },
+      inPossession: {
+        buildUpLow: "Salida de balón (zona baja)",
+        buildUpMid: "Salida de balón (zona media)",
+        finalThirdPhase: "Último tercio",
+      },
+      outOfPossession: {
+        highBlockPress: "Presión en bloque alto",
+        midBlock: "Bloque medio",
+        lowBlock: "Bloque bajo",
+      },
+    },
+    column: {
+      date: "Fecha",
+      opponent: "Rival",
+      // "Etapa", NOT "Fase": `viz.table.phase` already owns "Fase" on this page
+      // for the phase-rate tables, and one term with two meanings would collide.
+      stage: "Etapa",
+      venue: "Condición",
+      result: "Resultado",
+      score: "Marcador",
+      formation: "Formación",
+      matchesPlayed: "Partidos",
+      share: "Porcentaje",
+    },
+    venue: {
+      // A boolean is never printed raw — `isHome` goes through a ruled pair.
+      home: "Local",
+      away: "Visitante",
+    },
+    caption: {
+      // Each states its table's DEFAULT ORDER, which is how UX-DR12's "default
+      // sort is stated" is discharged — never by a sorted-on-mount column. No
+      // caption here mutates.
+      matches: "Ordenado cronológicamente, en el orden del informe.",
+      matchesLink: "Cada fila abre el partido.",
+      formations: "Ordenado por cantidad de partidos, de mayor a menor.",
+      shape: "Distancias en metros, por panel y medida.",
+    },
+    tableName: {
+      inPossession: "Tabla de fases con balón",
+      outOfPossession: "Tabla de fases sin balón",
+      blocks: "Tabla de bloques defensivos",
+      press: "Tabla de intensidad de la presión",
+      shapeInPossession: "Tabla de forma con balón",
+      shapeOutOfPossession: "Tabla de forma sin balón",
+      formations: "Tabla de formaciones",
+      matches: "Tabla de partidos del equipo",
+    },
+    empty: {
+      /*
+       * EMPTINESS BRANCHES, never shape branches (ruled D9). Neither can fire on
+       * the real emission — formationUsage ships at least one row and matches[]
+       * runs 3-16 — but UX-DR13 gives an empty slot a panel rather than a silent
+       * absence, and a zero-row table would present live sort controls over an
+       * empty <tbody>.
+       */
+      formationsHeadline: "Sin formaciones registradas.",
+      formationsExplanation: "El informe no registra alineaciones iniciales para este equipo.",
+      matchesHeadline: "Este equipo no registra partidos.",
+      matchesExplanation: "No hay filas por partido para este equipo.",
+    },
+    /*
+     * The runtime region's four states, mirroring `PlayerProfileRegion`'s
+     * machine with team-scoped copy. `invalid` is NOT a network failure and
+     * carries no retry — re-fetching the identical artifact cannot change the
+     * answer.
+     */
+    region: {
+      loading: "Cargando los datos del equipo",
+      loaded: "Datos del equipo cargados.",
+      error: "No pudimos cargar los datos del equipo. Revisa tu conexión e intenta de nuevo.",
+      invalid: "Los datos de este equipo no coinciden con esta versión del sitio.",
+      invalidExplanation: "Estamos al tanto. Vuelve a intentarlo más tarde.",
+      // The render-time crash the error boundary catches — a DIFFERENT failure
+      // from `error` (never arrived) and `invalid` (arrived, wrong version).
+      crashed: "No pudimos mostrar el perfil de este equipo.",
+      crashedExplanation: "El resto de la página sigue disponible.",
+    },
+  },
 };
 
 export type Dictionary = typeof es;
