@@ -1,5 +1,5 @@
 # generated: 2026-07-22
-# last_updated: 2026-08-05
+# last_updated: 2026-08-07
 # project: wc-stats
 # project_key: NOKEY
 # tracking_system: file-system
@@ -59,7 +59,124 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-08-06
+last_updated: 2026-08-07
+# 2026-08-07: story 1-17 CODE REVIEW COMPLETE (review -> done). Three adversarial layers over
+#             74b1789..ae207ed + 5d251bb (3,134 lines, 10 files; the 59,798 lines of emitted
+#             JSON were sampled against the emitter and the schemas rather than read). 46 raw
+#             findings -> 2 decisions, 19 patches, 5 deferrals, 2 dismissed. JUAN DELEGATED
+#             BOTH DECISIONS TO THE REVIEW.
+#             HEADLINE: THE PRECISION GATE WAS GRADING ITSELF. Every precision assertion routed
+#             its expected value through the emitter's own `_metric_decimals`, so both sides of
+#             the comparison came from the table under test -- setting two `Percentage` codes to
+#             0 places kept ALL 41 TESTS GREEN while 553 float leaves shipped truncated to
+#             integers. This is verbatim the AC-5 defect the 1.16 review caught and that 1.17's
+#             own spec quotes as the thing not to repeat. FIXED: `METRIC_DECIMALS` is now
+#             DERIVED from /contract by walking each metric code to its source $def and reading
+#             the $ref target's x-decimals, keyed by (code, scope) because four codes exist at
+#             both scopes; the literal expectation moved INTO the test. The derived map
+#             reproduces the hand table exactly plus one entry the code-keyed form could not
+#             express (`passCompletion` at player scope). `METRIC_DECIMALS_DEFAULT = 0` was
+#             deleted -- it implemented the silent default a comment three lines above it
+#             forbade by name.
+#             D-R1 RULED: BOTH id checks run. The "a bare `id` is ambiguous" objection that made
+#             1.17 reject widening `check_committed_data` does NOT block the gap: the 581
+#             unpinned player routes are `entities.players[].playerId`, a flat key already in
+#             COMMITTED_ID_KEYS. Proven: corrupting a boardless player's id passed
+#             `check_index_ids` silently (it validates against the manifest embedded in the
+#             artifact it is checking, so an entry nothing cross-references pins itself). Story
+#             1.18 had already parameterized `globs` AND `id_keys`, so index.py now calls it
+#             with globs=("index/*.json",) and _ID_KEY_KIND -- 2 artifacts, 1,608 id refs, all
+#             pinned. `identity.py` STILL UNTOUCHED; out-of-scope edit count stays at three.
+#             D-R2 RULED: guard + restore tripwire; the write-blocking gate DEFERRED to 1.19.
+#             `test_the_route_manifest_bijection_holds_against_the_committed_profiles` (written
+#             into 1.17's file by the concurrent 1.18 session) asserted profiles exist with NO
+#             skip guard -- verified RED ON ANY CLEAN CHECKOUT, since `git ls-files data/index`
+#             tracks only the two JSON artifacts and the profile dirs are untracked. Both it and
+#             the CLI test are now keyed on `git ls-files`, not on what happens to be on disk,
+#             and `test_the_repository_has_no_committed_profiles_yet` is RESTORED -- 1.17 had
+#             been left with ZERO tripwires while index.py:946 and README:1966 still cited that
+#             deleted test by name. The pair swaps over in the run where 1.18 commits.
+#             ALSO BEHAVIOURAL: `higherIsBetter` was published but never passed to the ranker
+#             (sort unconditionally descending -- the first `false` board would have ranked the
+#             worst entity first); a group match whose `group` names no team's letter matched
+#             NEITHER section filter and VANISHED from the artifact while still being tallied,
+#             now guarded on input and closed by an arithmetic partition check on output;
+#             the CLI printed `INDEX RESULT: PASS` in the same output as "This is NOT a pass.";
+#             an existing-but-EMPTY profile dir reported "does not exist", reading a 0-vs-48
+#             bijection failure as a missing baseline.
+#             BOTH ARTIFACTS RE-EMIT BYTE-IDENTICAL after all 19 patches (git status clean on
+#             data/index/*.json). Tests 93 -> 113 (+20): tournament 52 -> 69, leaderboards
+#             41 -> 44. 113 passed, 1 skipped (the bijection test, correctly standing down).
+#             ONE FAILURE IS NOT THIS STORY'S AND WAS PROVEN SO:
+#             test_fixtures::test_leaderboard_rows_agree_with_the_profiles_and_standings_they_
+#             duplicate fails on mexico 5-vs-3. Measured HEAD vs working tree: COMMITTED
+#             fixtures 0 disagreements, WORKING TREE 3 -- all from the concurrent 1.18 session's
+#             uncommitted 86-line edit to data/fixtures/index/leaderboards.json. test_fixtures
+#             imports nothing from precompute.index. data/fixtures/** is off-limits to 1.17, so
+#             it is REPORTED, NOT REPAIRED.
+# 2026-08-07: story 2-15 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 5d251bb (verified
+#             HEAD). app/ + locales + EXPERIENCE.md policy rows ONLY; fixture-driven. TWELVE
+#             RULINGS.
+#             HEADLINE: THE LEDGER'S RECORDED RECHARTS REMEDY MISDIAGNOSES THE CAUSE. Both
+#             leaves ALREADY import the identical bare specifier "recharts", so a shared
+#             re-export module changes no module identity and fixes nothing. The duplication
+#             is per ASYNC CHUNK GROUP -- two groups because two distinct dynamic() import
+#             specifiers -- and PhasesSection.tsx proves the converse in-repo ("next/dynamic
+#             dedupes on the import specifier"): five handles on one specifier share one chunk.
+#             RULED: ONE lazy boundary (components/Charts.tsx barrel), every dynamic() call
+#             site repointed at it. Baseline re-measured live on out/: two 300.4 KB vendor
+#             chunks + 47.2 KB Momentum leaf + 34.5 KB TacticalCharts leaf.
+#             THE PASS CONDITION HAD TO BE CORRECTED: `CartesianAxis` alone does NOT identify
+#             a vendor chunk -- the 34.5 KB LEAF contains it too, so "exactly one chunk with
+#             CartesianAxis" is unattainable even by a perfect fix. Discriminate on
+#             CartesianAxis AND Brush AND redux together (today exactly the two 300.4 KB).
+#             THE COST IS REAL AND LANDS ON A LIGHTHOUSE-GATED ROUTE: momentum is in
+#             ALWAYS_EXPANDED_SECTION_IDS, so MomentumChart's dynamic() fires on EVERY Match
+#             Dashboard mount. Consolidation adds the other leaves there (<lg regression)
+#             while removing 300.4 KB whenever a second chart section opens -- always at >=lg.
+#             Acceptance is a MEASURED three-scenario table with a stop-and-report threshold,
+#             not a single number. Open question 2 for Juan.
+#             D2 REVERSED AN EARLIER DRAFT: per-match rows use ONE RowAnchor per row
+#             (TournamentHub's shipped after:absolute after:inset-0 + sr-only accessiblePrefix),
+#             NOT one link per value cell. Thirteen cell links per row would cross 2.13 ruling
+#             3's stated line ("not the same footing as ... an Expert table cell"), break WCAG
+#             2.4.4, cost ~104 tab stops in one table, and erase DataTable's active-sort cue
+#             (text-accent-cyan is both the link colour and the sort cue). Anchor is
+#             /matches/{id}/#expert -- #expert is deliberately NOT a SectionId; ExpertLayer
+#             owns its own whole-string-equality listener, so anything finer is ignored.
+#             THREE DRAFT CLAIMS WERE FALSIFIED BY THE VALIDATION PASS AND CORRECTED:
+#             (a) "2.15 is the first story to put focusable content in a DataTable body cell"
+#             is FALSE -- 2.12 did it and verified focus-restore with real key presses; the
+#             DataTable.tsx docblock asserting otherwise is itself stale.
+#             (b) --viz-single-light DOES NOT EXIST. globals.css declares --viz-single once,
+#             as var(--viz-team-a), already theme-aware by indirection.
+#             (c) static-output.test.ts's allow-list regex ALREADY matches template literals
+#             and already uses per-route allow-lists (2.14 Task 10.5 closed that hole).
+#             ALSO CORRECTED: the six terminology rows 2.18 recorded as "not-yet-used" ALREADY
+#             SHIP as expert.field.* / expert.fieldTitle.* / enums.position.* -- es.ts warns in
+#             place that restating them would be two sources for one term. 2.15 mints only five
+#             per-match column heads plus its own chrome.
+#             SIZED: fixture build generates 2 player routes, NOT 1,248 (build reads
+#             data/fixtures/). Real data is 1,248 routes / 7,484,064 raw / 1,203,607 gzip-9,
+#             largest 1,543 B gzip-9 = 0.31% of the 500 KB ceiling. Bijection holds exactly in
+#             both trees (2<->2 fixtures, 1248<->1248 real, 0 mismatches either direction).
+#             The 1,248-route pre-render is 2.19's cutover; Task 9.4 measures it once and
+#             reverts BOTH cutover points (build-data.ts and data.ts flip together).
+#             DISCLOSED: 4 of 5 per-match deep links 404 on fixtures -- quinones' matches are
+#             m001/m028/m053/m079/m092 but the fixture manifest lists m001/m002/m074/m082.
+#             Only m001 resolves. Verify AC 3 against m001; do not assert the other four.
+#             CARRIES: D3 rules perNinety OFF this surface (corpus max 104,139.0 over 1 minute;
+#             62 players at 1-14 min) -- filed, Juan open question 1. D4 closes 1.18's
+#             0-minutes copy item (render 0 verbatim; the em dash is the missing-data glyph)
+#             and FILES a new one: passCompletion 0,0 % means "attempted no passes" for 17
+#             players / 52 rows and is unambiguous only where passesAttempted is adjacent.
+#             INHERITS the unruled <title>-language decision (owner: Juan, unfiled under 2.12)
+#             -- AC 5 forces it and 2.15 may not refuse it. Does NOT duplicate 2.12's entry.
+#             COORDINATION: 2-14 is IN-PROGRESS in app/ and has es.ts, en.ts, i18n.test.ts and
+#             static-output.test.ts dirty -- all four are 2.15's to edit too. APPEND-ONLY,
+#             never `git add -A`, cite by quoted fragment (several ledger anchors quoted by
+#             earlier stories no longer match verbatim). 1-17 and 1-18 are both in review with
+#             1,296 uncommitted artifacts; re-verify every count at dev time.
 # 2026-08-06: story 2-14 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 29e90fb (verified
 #             HEAD, app/ CLEAN). app/ + locales ONLY; fixture-driven. THIRTEEN RULINGS.
 #             HEADLINE, ESTABLISHED BY MEASUREMENT ON out/: tournament.json is NOT loaded on any
@@ -2901,7 +3018,7 @@ development_status:
   # Consequence for Epic 2, owned by 2.10/2.19 not by 1.16: #pressing's metre block is deleted or
   # re-shaped by D1, and CorpusNullableGoalkeeperRecord collapses to a re-export under D2.
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
-  1-17-tournament-index-results-standings-leaderboards: review
+  1-17-tournament-index-results-standings-leaderboards: done
   1-18-team-player-profile-artifacts: review
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
   epic-1-retrospective: optional
@@ -2926,8 +3043,8 @@ development_status:
   2-11c-expert-layer-event-logs: done
   2-12-tournament-hub-results-standings: done
   2-13-tournament-leaderboards: done
-  2-14-header-search: ready-for-dev
-  2-15-player-profile: backlog
+  2-14-header-search: review
+  2-15-player-profile: ready-for-dev
   2-16-team-profile: backlog
   2-17-comparison-mode: backlog
   2-18-glossary-about-terminology-completion: done

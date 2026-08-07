@@ -2298,7 +2298,15 @@ in the browser against the built `out/`, not inferred.
   page, 4 route fetches fire on load — `/teams/czechia/`, `/teams/korea-republic/`,
   `/teams/south-africa/`, `/teams/mexico/` — and all four resolve to links OUTSIDE `#lideres`.
   2.13's 13 links inside the section fire none. **Owner: Story 2.12** (its D2 ships the same
-  dead links). One prop, same fix.
+  dead links). One prop, same fix. — **RESOLVED, and this entry was STALE (correction appended
+  by Story 2.14, 2026-08-07).** Story 2.12's code review shipped the fix in commit `29e90fb`,
+  which is 2.14's own baseline: `app/src/components/TournamentHub.tsx:129` carries
+  `prefetch={false}` on its single `<Link>` site, with the 48→75 measurement quoted in its
+  docblock as the reason. The entry above kept saying "STILL OPEN" for a story-length after it
+  had been closed, which is how a ledger stops being the record. Corrected in place per this
+  file's append-a-correction convention rather than by editing the original text. Story 2.14
+  re-measured on the built export and attributes **zero** route prefetches to any surface it
+  owns — every result row ships `prefetch={false}` (see 2.14's own AC 7 filing below).
 
 - **A grid item's default `min-width: auto` gave the Hub a WCAG 1.4.10 document scroll.**
   Each board's `<article>` is a grid item, and `min-width: auto` refuses to shrink below the
@@ -2807,3 +2815,204 @@ than a pre-composed `"Hora (hora local)"`, so no shipped head reaches the unguar
   whose `json-schema-to-typescript` dependency lives in a gitignored `node_modules`. It fails
   in a fresh git worktree and passes in the main tree (73/73). `contract/` was not touched by
   this story.
+
+## Deferred from: code review of 1-17-tournament-index-results-standings-leaderboards (2026-08-06)
+
+- **A partial `data/index/` with no rollback, now on a second write path.** An `OSError`
+  between the two `write_canonical` calls in `emit_index` leaves `tournament.json` replaced
+  and `leaderboards.json` carrying the previous run's content, and the stale sweep never
+  runs. Every gate ran before the first byte, so the artifacts are individually valid and
+  mutually inconsistent. Compounding it, `main` maps `OSError` to exit **2**, whose stated
+  meaning is *"index emission could not run: nothing was learned"* — the one exit code that
+  promises the filesystem is untouched is the one printed after it was mutated. Pre-existing
+  in shape (`emit_bundles` has the same property) and the staged-directory fix is already
+  routed to Story 1.19; recorded again because 1.17 adds a second call site and because the
+  exit-code half of it is new. Anchor: *"Sweep stale artifacts this run did not produce, AFTER a
+  successful write and never before it"*.
+
+- **The stale sweep unlinks any top-level `data/index/*.json` the run did not write.** The
+  glob is correctly non-recursive, and its comment reasons carefully about why Story 1.18's
+  `team-profiles/` and `player-profiles/` subdirectories are out of reach — but not about a
+  sibling top-level artifact. A later story emitting a third file into `data/index/`, or
+  anything hand-placed there, is deleted without a note. Anchor: *"Scoped to
+  `data/index/*.json`, which is a non-recursive glob"*.
+
+- **`_def_properties` raises a bare `KeyError` that escapes the CLI's typed handler.** A
+  contract document renaming a `$def` produces an uncaught `KeyError` and exit 1 with a
+  traceback — indistinguishable at the exit code from a typed finding about the data, which
+  is precisely the confusion the `json.JSONDecodeError` clause was added to prevent.
+  `test_check_total_reaches_the_index_documents_without_forking` pins `pytest.raises(KeyError)`,
+  so the untyped path is currently intended behaviour. Pre-existing in a Story 1.16 module
+  and out of 1.17's declared scope. Anchor: *"`json.JSONDecodeError` is a `ValueError`, so
+  without naming it a malformed committed bundle would exit 1 with a traceback"*.
+
+- **The profile direction of AD-4's bijection is WRITE-BLOCKING, which inverts the
+  dependency between Story 1.17 and Story 1.18.** `check_route_manifest` raises
+  `RouteManifestError` on any `missing or orphans` and runs before the first
+  `write_canonical`, so adding a single entity to the spine makes `index.py` refuse to emit
+  `tournament.json` until a profile artifact exists for it — but profile artifacts are
+  generated FROM that manifest. The recourse is real but undocumented and ugly: empty the two
+  profile directories to reach the "baseline unavailable" branch, emit, then re-run 1.18.
+  Ruled at 1.17's code review as a DEFERRAL rather than a patch, because reversing a gate's
+  failure semantics exceeds a review's remit and **Story 1.19 owns end-to-end orchestration**,
+  which is where the phase ordering should be expressed. The constraint itself is documented
+  in `index.py` and `pipeline/README.md` by that review's patches. Anchor: *"the profile
+  direction PRINTS that it could not run"*.
+
+- **The three Domain G blocks are flattened into one namespace before metric lookup.**
+  `inPossession`, `outOfPossession` and `physical` are merged with successive `dict.update`
+  calls, so a field name present in two blocks would resolve by dict order with no
+  diagnostic. Verified against `match-bundle.schema.json`: no collision exists among the 18
+  player-scope codes today, which is why this is a ledger entry and not a patch. Anchor:
+  *"Player metrics live across three Domain G blocks"*.
+
+## Deferred from: code review of 1-18-team-player-profile-artifacts (2026-08-06)
+
+- **`pipeline/tests/test_emit_profiles.py` costs 8m40s on its own**, measured
+  (`82 passed in 520.72s`), on a suite already running ~45 minutes and documented in this
+  ledger as getting killed for length. The cost is structural rather than wasteful: one
+  `emit_profiles` build-validate-measure pass over the 104 committed bundles is ~35 s, and
+  the module runs roughly ten of them — the module-scope `built` fixture, the two-tree
+  byte-identity comparison, the `main()` exit-code tests, the failed-write and stale-sweep
+  tests, three dry runs and a cold-interpreter subprocess CLI run — most of them first
+  copying all 104 bundles into `tmp_path` and then writing 1,296 files.
+  **Deferred rather than patched because it is a coverage-versus-runtime tradeoff, not a
+  defect:** every one of those passes exists to satisfy a named acceptance criterion, and
+  collapsing them onto a shared session-scoped emission would weaken the independence that
+  AC 4's anti-tautology rule and Task 9.4's two-tree byte comparison depend on. The honest
+  fix is a session-scoped fixture for the read-only assertions while the write-path tests
+  keep their own trees, which is a real piece of work with a real risk of quietly coupling
+  tests that are currently independent. **Owner: whichever story next needs the pipeline
+  suite to fit in a single un-chunked run.**
+
+## Filed by: 2-14-header-search (2026-08-07)
+
+- **AC 1's "no network beyond the already-loaded index" is FALSE off the Hub, and the story
+  ships a declared departure rather than the AC's letter.** Measured on the built export
+  before any code was written: `grep -rl "index/tournament.json" out/_next/` matches **exactly
+  one chunk** (46,292 B raw / 12,924 B gzip), the minified `TournamentHubRegion`, referenced by
+  `out/index.html` and by **no other route's HTML**. So on four of the five routes there is no
+  already-loaded index and the module that fetches it is not even shipped there, while the
+  header search is global. **RULED: lazy on first engagement, with a module-scope promise cache**
+  (`app/src/lib/tournament-index.ts`). **Re-measured in the browser on the built export**
+  (`python -m http.server`, `/matches/m001-mexico-south-africa/`): **33 resources on a settled
+  load with ZERO `tournament.json` entries**; focus the input → **exactly one** new entry
+  (7,391 B on the fixture; the real index is 409,524 B raw / 39,137 B gzip); six further
+  keystrokes → **no further requests at all**. On `/` the artifact is fetched **once, not
+  twice** — the Hub and the header share the loader (Task 4.4). AC 7 therefore reads: *zero
+  network beyond the already-loaded index on `/`; on every other route, exactly one on-demand
+  fetch of that same index, once per page load, triggered by user engagement and never by page
+  load.* **The payload question is genuinely open and is NOT this entry's to close:** whether
+  39 KB gzip is the right thing to pull on a match route at all, or whether the `entities`
+  slice (29,758 B gzip) or a projected corpus earns a contract change, wants real query
+  behaviour to answer. **Owner: Story 2.19.**
+
+- **The render-test seam now exists, and it makes a whole class of previously-unverifiable
+  work testable.** This ledger's own entry routed interactive verification to "whichever story
+  introduces jsdom or a render-test seam"; 2.14 is that story. Added as **devDependencies
+  only** (`jsdom`, `@testing-library/react`, `@testing-library/user-event`,
+  `@testing-library/jest-dom`) — `dependencies` is untouched, nothing ships to a browser, and
+  Story 2.2's prohibition is on RUNTIME dependencies. `@vitejs/plugin-react` proved
+  **unnecessary**: Vite's esbuild already compiles `.tsx` from tsconfig's `jsx: "react-jsx"`,
+  and the plugin exists for Fast Refresh. **The global `environment` stays `"node"`** — a flip
+  would change `storage.test.ts`'s `vi.unstubAllGlobals()` restore target — so the seam is a
+  per-file `// @vitest-environment jsdom` pragma. `app/src/components/HeaderSearch.test.tsx` is
+  the repo's first `.test.tsx` (30 tests). **What later stories can now do that they could
+  not:** drive real key events, assert focus position, assert `aria-activedescendant`, and test
+  any overlay's open/close/focus-return contract. **Three limits stand and were not closed:**
+  no live screen reader (the structural pass reads roles, labels and strings back from the DOM,
+  which is not the same thing), **no axe** (2.19 owns it — `axe-core` is still transitive-only
+  via `eslint-plugin-jsx-a11y`), and a real Tab key has still never been delivered by this
+  project's browser automation; 2.14's element-order check fell back to the document-order
+  focusable walk and says so.
+
+- **`accent-cyan` on `surface-overlay` is now PUBLISHED: 9.20:1 dark / 4.68:1 light.** DESIGN.md
+  publishes cyan at 11.3 dark / 5.0 light **against `surface-base` only**, and the header
+  search's matched-substring `<mark>` is the first surface putting cyan text on an overlay. By
+  the established method (reproduce a published figure before trusting a new one), the same
+  script measured **cyan on base at 11.27 dark / 4.99 light** — reproducing 11.3 / 5.0 — before
+  the new figure was recorded. Both new values clear the **4.5:1** text floor; light is the
+  tighter of the two at 4.68 and is the number to watch if the cyan token is ever re-toned.
+  Also re-confirmed on the same surface: `ink-primary` 14.13 dark / 15.43 light,
+  `ink-secondary` 7.03 / 6.65, and **`ink-muted` at 3.30 dark** — below the floor, which is why
+  the panel carries no copy in it. A live class audit of the open panel found only
+  `text-ink-primary`, `text-ink-secondary`, `text-accent-cyan` and `bg-transparent`: **no
+  `ink-muted`, no `*-on-pitch` token** (the exact 2.6/2.9/2.10 failure). The `<mark>`'s cue is
+  not colour alone — `font-weight: 600` carries it too (WCAG 1.4.1). **DESIGN.md should absorb
+  the two new figures at 2.19**; they are recorded here rather than written into the spine
+  because this story does not own that document.
+
+- **"Full-width" vs "full-screen": EXPERIENCE.md contradicts itself, and 2.14 shipped
+  FULL-WIDTH.** The Site header row says the `<md` search opens a *"full-width sheet"*; the
+  Header search row says *"full-screen sheet"*. Measured in a 390 px same-origin iframe on the
+  built export: the sheet is **386 px wide against a 386 px viewport, anchored at `top: 0`**,
+  with `max-h-dvh` + `overflow-y-auto` so a long result list scrolls inside the panel. So it
+  spans the full width and is **not** full-screen — its height is content-driven. Full-width was
+  chosen because a top-anchored panel keeps the reader's typing hand and their eye in the same
+  place the control they pressed lives, and because a forced full-height panel over two result
+  rows is a lot of empty overlay. **The two rows should be reconciled to one wording**; both
+  cannot stand. **Owner: 2.19**, or whichever story next edits EXPERIENCE.md's Component
+  Patterns.
+
+- **The sheet's Escape returns focus to the ICON BUTTON, not to the input — a UX-doc
+  departure.** EXPERIENCE.md's Interaction Primitives say Esc "returns focus to the input". In
+  the sheet presentation the input **is unmounted by the close**, so there is nothing to return
+  to; Radix returns focus to the trigger, which is the only correct destination and the one
+  every dialog convention expects. Verified live: one Escape with the listbox open closed
+  **both** the listbox and the dialog and left focus on the icon button. On the DESKTOP
+  presentation the doc's wording is satisfied literally and trivially — focus never leaves the
+  input, so Esc needs no focus call at all. Recorded as a departure rather than a defect; the
+  doc's sentence is written for a presentation that does not unmount its input.
+
+- **AC 2's accent-insensitivity is NOT verifiable against the fixture, and this is a standing
+  coverage gap, not a one-story shortfall.** `data/fixtures/index/tournament.json` contains
+  **zero non-ASCII characters** across its 7 searchable rows, so every accent assertion against
+  it would be a case-insensitivity assertion wearing an accent-insensitivity label. 2.14 covers
+  it by pointing `search-model.test.ts` at the **real** `data/index/tournament.json` (1,400
+  rows), whose entire non-ASCII inventory is three characters — `ü`, `ô`, `ç`, all in team
+  names (`Türkiye`, `Côte d'Ivoire`, `Curaçao`) — and by constructing the cases the corpus
+  cannot supply (`Núñez`/`nunez`, `Quiñones`/`Quinones`). **The inversion is worth carrying:**
+  all 1,248 real player names arrive with diacritics ALREADY stripped (`Julian QUINONES`,
+  `Darwin NUNEZ`), so it is the READER who types the accent — which is the actual justification
+  for AC 2, and a naive `String.includes` fails it. **The gap is that no BROWSER check can
+  exercise an accent until the 2.19 real-data swap**, because `DATA_ROOT` still points at
+  `/data/fixtures`. **Owner: 2.19** — re-run the accent path in the browser once real data is
+  served, and consider giving the fixture one accented team name so the gap closes for good.
+
+- **`hub.separator` (" · ", U+00B7) is NOT fold-safe, and any future highlight surface must
+  check its glyphs.** Found by 2.14's own corpus-wide fold test, not by reading: **U+00B7
+  MIDDLE DOT is in `\p{Diacritic}`** (it marks the Catalan *punt volat*), so `foldForSearch`
+  DELETES it — `" · "` (3 chars) folds to `"  "` (2). Built into a composed match name it broke
+  the 1:1 fold invariant on **all 104 match rows** and silently dropped every match highlight,
+  because degrading quietly is exactly what `matchSpan`'s guard is for. 2.14 joins match team
+  names with `match.hero.scoreSeparator` (U+2013 EN DASH, which folds to itself) and pins the
+  property in both `search-model.test.ts` and `format.test.ts`. **Carry this forward:** any
+  string whose indices are used for highlighting must have its composition glyphs checked
+  against the fold, and `hub.separator` is the one already in the dictionary that fails.
+
+- **`assert-schema-version.test.ts`'s "passes on the current fixture tree" is a 5-second
+  TIMING FLAKE in the full suite, and 2.14 made it more likely without causing it.** Measured:
+  it takes **1.3–1.7 s run alone** and passes every time, but under `npm test`'s seven-worker
+  parallelism it intermittently exceeds vitest's 5 s default and fails as a timeout. **It
+  failed at 2.14's BASELINE**, on the very first full-suite run of this story before a single
+  file was touched — so it is not this story's defect. It is also not innocent of it: 2.14 adds
+  a jsdom test file, which is the heaviest thing in the suite, and more contention makes a
+  marginal timeout tip over more often. Observed rate mid-story: **2 failures in 5 full-suite
+  runs.** — **FIXED IN THIS STORY (2026-08-07), not deferred, and the reversal is deliberate.**
+  This was first written as a deferral on the reasoning that another story's test file is not
+  2.14's to touch. That was wrong on the facts: the scope boundary's do-not-touch list names
+  `table-sort.ts`, `DataTable.tsx`, `match-hero.ts`, `TournamentHub.tsx` and
+  `LeaderboardsSection.tsx`, and the "do not fix inherited behaviours" list is about PRODUCT
+  behaviour (prefetch, the live region, the zoom overflow) — neither covers a test gate that
+  fails at random, and leaving the definition-of-done red on a coin flip is worse than a
+  one-line test-only change. **The fix:** all three `it`s in
+  `app/src/lib/assert-schema-version.test.ts` now carry an explicit `20_000` ms budget, because
+  every one of them shells out to the real gate script and pays a Node interpreter start.
+  Raised per-test rather than globally in `vitest.config.ts` — the other suites are pure-model
+  and their 5 s default is a genuine signal. **Verified: four consecutive full-suite runs at
+  964/964.** 2.14 separately fixed the flake it introduced in its own file
+  (`vi.setConfig({ testTimeout: 20_000 })` file-scoped plus `userEvent.setup({ delay: null })`,
+  which cut that file from 5.6 s to 2.0 s while still dispatching real key events). Recorded
+  rather than deleted because the measurement — a spawning test is the shape that flakes under
+  worker contention — is the reusable part, and because the next story to add a heavy test file
+  should expect to meet it again.

@@ -1964,8 +1964,22 @@ literal `==` would fail on 1,248 players and 48 teams and a silent skip would be
 cannot fail. This copies Story 1.15's two-source pattern: the artifact→entity direction is
 asserted over `data/matches/` (104 ↔ 104), the profile direction prints "**This is NOT a
 pass.**", and `test_the_repository_has_no_committed_profiles_yet` goes RED BY DESIGN the
-moment 1.18 lands. `check_route_manifest`'s populated branch is already live and is
+moment 1.18 **commits**. `check_route_manifest`'s populated branch is already live and is
 exercised by a constructed test, so the successor does not inherit a gate nobody has run.
+
+**"Commits", not "emits" — the 1.17 code review corrected this and the difference is not
+pedantic.** A concurrent 1.18 session emitted 1,296 profile artifacts into the shared
+working tree while this story was in review. Tests keyed on the directory therefore passed
+locally and would have failed on every clean checkout, where the directories do not exist.
+Both the tripwire and `test_the_route_manifest_bijection_holds_against_the_committed_
+profiles` are keyed on `git ls-files`, so they describe the repository rather than one
+machine's working tree, and they swap over together in the run where 1.18's commit lands.
+
+**Ordering constraint on the profile direction.** It is checked before the write, so once
+profiles exist, adding an entity to the spine makes `emit_index` raise and refuse to write
+the manifest those profiles are generated from. The recourse is to empty the two profile
+directories, re-run this module, then re-run 1.18. Resolving the phase ordering properly is
+Story 1.19's, which owns end-to-end orchestration; it is ledgered in `deferred-work.md`.
 
 **D3 — the combined budget is the SUM OF INDEPENDENTLY GZIPPED ARTIFACTS, and player boards
 are capped at 100 rows extended to the end of the boundary tie group.** The Hub fetches two
@@ -2081,18 +2095,36 @@ is not a value in the source field's unit.
    parameterized rather than the function forked — a copy would have dropped the
    inline-title loop, which is why four objects went unasserted in 1.16.
 
-### The id-containment gate, and why `identity.py` was left alone
+### The id-containment gate — TWO checks, and why `identity.py` is still untouched
 
-`check_committed_data` globs `data/matches/*.json` only, and its `COMMITTED_ID_KEYS` is
-seven contract field names of which **none is the bare `"id"` that `EntityRef` uses** — so
-every id in `data/index/` falls outside AD-3's immutability walk while the run still reports
-"all pinned". Widening that map was rejected: a bare `"id"` names a team or a player **by
-context**, and a context-free entry in a module whose whole job is to be unambiguous would
-be worse than the gap. `identity.py` is therefore untouched, and the index artifacts assert
-their own containment over the manifest they emit, with a context-carrying walk in which an
-unclassifiable `"id"` **raises rather than being skipped**. A totality test asserts the
-walked set equals a naive every-key-ending-in-`id` walk, so the gate cannot quietly miss a
-slot.
+At implementation this story shipped **one** check and rejected the other. `check_index_ids`
+asserts containment over the manifest the artifacts emit, with a context-carrying walk in
+which an unclassifiable `"id"` **raises rather than being skipped**, plus a totality test
+asserting the walked set equals a naive every-key-ending-in-`id` walk. Widening
+`identity.COMMITTED_ID_KEYS` was rejected because a bare `"id"` names a team or a player **by
+context**, and a context-free entry there would be ambiguous.
+
+**The 1.17 code review found that reasoning sound and the conclusion wrong, and both checks
+now run.** The objection blocks exactly one key and not the gap:
+
+* `check_index_ids` proves **internal referential integrity** — nothing was minted. It is the
+  only check that can classify `EntityRef`'s bare `"id"`, whose namespace comes from the
+  slot and the board's `scope`. But `known` is built from `tournament["entities"]`, the
+  manifest inside the artifact being checked, so **a manifest entry nothing else
+  cross-references pins itself**. Measured: 581 of the 1,248 player routes hold no board row
+  after the 100-row cap, and rewriting one of their `playerId`s to a bogus value passed
+  silently. `teamId` and `matchId` escaped only because they are cross-referenced.
+* `identity.check_committed_data` proves **immutability against the slug registry**, a source
+  outside the artifact entirely. Story 1.18 parameterized its `globs` **and** its `id_keys`,
+  so `index.py` now calls it with `globs=("index/*.json",)` and `id_keys=_ID_KEY_KIND` — the
+  five keys whose namespace is fixed by the key NAME. `"id"` is deliberately absent from that
+  map, which is the original objection honoured rather than overridden. Measured on the real
+  corpus: **2 index artifacts, 1,608 id references, all pinned.**
+
+`identity.py` is still untouched by this story — the extension points its successor added
+were sufficient. The two maps divide the id space and
+`test_the_bare_entity_ref_id_is_deliberately_absent_from_the_registry_map` pins the division
+so a later merge of the two cannot happen silently.
 
 ### Landmines confirmed rather than assumed
 
@@ -2120,3 +2152,218 @@ line, and `matchesPlayed >= 1` makes the divide-by-zero hazard unreachable by co
 This story adds **no FR-15 gate check** — `pipeline/validate/checks.py` reserves a "1.16
 bundle emission" slot and none for 1.17 — and **no run-manifest entry**. `run.py` does not
 call `emit.py` and will not call `index.py`; the three phases are separate processes.
+
+**`tournamentName` is the one published value this module does not derive.** FR-19 is
+"precompute adds no data the bundles don't contain", and strictly this adds one string. It is
+recorded rather than smuggled: the contract requires the field, nothing in the repository
+prints it, and both alternatives are worse — deriving it from a filename is the id-minting
+the module forbids everywhere else, and omitting it fails validation. Declared once as
+`TOURNAMENT_NAME` and pinned by a test.
+
+### What the 2026-08-07 code review changed in the index emitter
+
+Three adversarial layers over the two 1.17 commits; 19 patches. The four that changed
+behaviour rather than wording:
+
+**The precision table is now DERIVED from `/contract`, not transcribed.** `METRIC_DECIMALS`
+was a hand-written seven-entry map, against `serialize.py`'s own stated rule that "the table
+is DERIVED, never transcribed". Worse, every precision assertion routed its expected value
+through the emitter's own `_metric_decimals`, so both sides of the comparison came from the
+table under test: **setting two `Percentage` codes to 0 places kept all 41 tests green while
+553 float leaves shipped truncated to integers.** The map is now built by walking each
+metric code to its source `$def` and reading the `$ref` target's `x-decimals`, keyed by
+`(code, scope)` because four codes exist at both scopes. The literal expectation lives in the
+TEST now, and `_metric_decimals` subscripts rather than `.get`-with-a-default — the previous
+default of `0` contradicted a comment three lines above it forbidding exactly that.
+
+**`higherIsBetter` is honoured, not merely published.** It was unpacked from `BOARDS`,
+written into the artifact, and never passed to the ranker, whose sort was unconditionally
+descending. Every board today is `true`, so nothing shipped wrong; the first `false` board
+would have ranked the worst entity first while telling the App the ranks already reflected
+the other direction. The determinism tiebreak stays ascending-by-id in both directions.
+
+**Match routing is a partition, and now it is asserted as one.** The group tables select on
+a letter that TEAMS carry and `knockoutResults` selects on `stage != "group"`; those two
+filters are not exhaustive. A group-stage row whose `group` is null or names no team's letter
+matched neither and **vanished from the artifact** while still being counted by the group
+tally — and `--expect-matches` cannot see it, because that counts the input and the bundle
+files, never the emitted rows. `check_match_routing` rejects the unroutable shapes on the way
+in (including a duplicated `match_id`, which double-counted the standings, and a team named
+by no match, which shipped an all-zero record), and an arithmetic check on the way out proves
+every listed match appears in exactly one section.
+
+**The CLI no longer prints `INDEX RESULT: PASS` under "This is NOT a pass."** The headline
+was unconditional, so on any checkout without profile artifacts two of the three bijection
+directions did not run and the verdict a human reads still said PASS. The exit code is
+unchanged — the gates that ran did pass — but the headline now names what the run does not
+prove. Relatedly, an existing-but-EMPTY profile directory used to report "does not exist",
+which asserts a false fact and reads a 0-against-48 bijection failure as a missing baseline;
+it now raises.
+
+Also: `form`'s contents are pinned against the bundles (five of the six declared orderings
+were pinned, this one only had its length checked, and 29 of 48 rows are non-palindromic);
+the budget, id-containment and route-manifest gates now collect and report together rather
+than aborting serially, which the `emit_index` docstring had claimed all along; and a
+group table's standings are asserted to agree with its own printed result rows.
+
+## Story 1.18 — team & player profile emission (`pipeline/precompute/profiles.py`)
+
+Emits `data/index/team-profiles/{team-id}.json` (48) and
+`data/index/player-profiles/{player-id}.json` (1,248) — 1,296 artifacts, all of them
+committed (AD-13). Run it after `emit.py`:
+
+```
+python -m pipeline.precompute.profiles --expect-teams 48 --expect-players 1248
+```
+
+Exit codes are the house contract: **0** clean, **1** a dataset finding, **2** the harness
+could not run. `--dry-run` builds, validates, rounds and measures, and writes nothing.
+
+### The input is `data/matches/`, not `work/spine/`
+
+Ruled, and it is the one structural decision that shapes everything else. The bundles are
+already camelCase, already contract-shaped, already schema-valid and already carry resolved
+ids, so reading them needs **no second snake_case→camelCase mapper** — Story 1.16's binding
+rule is that "the mapping happens at this boundary only". It also makes every `matches[]`
+row literally verbatim from the bundle, which is what the reproducibility AC asks for.
+*Rejected: emitting from `work/spine/` as `emit.py` does — it duplicates the mapping
+boundary, and `work/spine/` is gitignored staging, so no committed test could run against
+it.*
+
+### The join direction is settled by measurement, and only one direction is total
+
+| Measured over the 104 committed bundles | |
+|---|---|
+| (match, player) pairs with minutes | **3,288** = 2,288 starters + 1,000 substitute appearances |
+| Domain G rows | **3,289** |
+| With-minutes pairs lacking a Domain G row | **0** |
+| Domain G rows lacking minutes | **1** — `m092-mexico-england` / `henderson-jordan-eng`, all zero |
+
+So `matches[]` is built by **iterating lineups-with-minutes and joining Domain G by
+`playerId`**. The reverse direction manufactures a phantom appearance for Henderson — an
+unused substitute the report prints an all-zero row for after booking him from the bench —
+and breaks `played == started + substituteAppearances`. He is neither pruned from the
+registry nor special-cased by id; the zero surfaces as the correct *absence* of an
+appearance.
+
+`pipeline.extract.domain_g.has_minutes` is the ruled predicate, but it reads
+`entry["substituted_on"]` — a staged snake_case key — so it is not importable here. Its rule
+is mirrored verbatim in `profiles.has_minutes` with the difference stated, rather than
+re-derived.
+
+### Identity comes from lineups, never from Domain G
+
+**209 of the 1,248 pinned players never took the field** — 16.7% of the artifacts. All
+1,248 appear in some lineup; only 1,039 ever have minutes. Sourcing `name` / `position` /
+`shirtNumber` / `team` from Domain G works for the 1,039 and raises `KeyError` for the rest.
+
+Measured, so it need not be rediscovered: `name` is identical between the lineup entry and
+the Domain G `playerName` on all 3,289 rows, and **0 players carry two shirt numbers**.
+`position` is the exception — `senesi-marcos-arg` is listed `mf` in
+`m019-argentina-algeria`, where he was an *unused substitute* with no Domain G row, and `df`
+in seven others. *Ruled: the most frequent value across the player's lineup entries, ties
+broken by first chronological occurrence* → `df`. *Rejected: "first lineup entry" (yields
+`mf`, a wrong label from a match he did not play) and "the Domain G row" (correct for the
+1,039, unavailable for the 209).*
+
+### The per-metric reduction table is the contract
+
+`aggregates[]` carries **all 18 legal player-scope `MetricCode`s** in the enum's own
+(alphabetical) order; the other 14 of the closed 32-value enum name team-scope fields and
+are schema-legal but semantically forbidden on a player profile — nothing validates that, so
+`test_emit_profiles.py` asserts it. `attemptsAtGoal` is a required `PlayerMatchRow` column
+and is **not** in the enum, so it can never be an aggregate row.
+
+Fifteen metrics **sum**. `topSpeed` is a **max** — "the maximum, never a mean", and never a
+total either. `passCompletion` is a **weighted average**, `Σ completed / Σ attempted × 100`,
+because a player's per-match value *is* that ratio and the mean of the percentages would
+weight a 12-pass cameo equally with a 90-pass shift. `AggregationSemantics` is
+`sum | max | average` and carries no denominator, which is exactly why the tests assert the
+arithmetic rather than the label.
+
+**The same word "average" means two different arithmetics across the two artifacts, and both
+are correct.** A team's `tacticalIdentity.possession` is an *unweighted* mean over matches,
+because no possession-time denominator exists anywhere in the artifact set. Do not "unify"
+them.
+
+**The weighted average divides by zero on 17 real players** who have minutes and attempt 0
+passes all tournament, and on 53 Domain G rows (52 of them emitted; the 53rd is Henderson's).
+`AggregateMetricValue` is `type: number` and not nullable, so *ruled: value `0.0`,
+`aggregation: "average"`, `perNinety: null`.*
+
+`perNinety` is **2 decimal places for every metric**, including the counts — it is not keyed
+to the source field's precision, and applying `Count`'s 0 places would round `goals` per-90
+to `0` and destroy the field. It is `null` for a maximum, for a percentage, and when
+`minutesPlayed == 0`.
+
+### A substitute sent on at the closing minute plays zero clock minutes
+
+Not anticipated by the story; measured during implementation and kept. 75 substitutes are
+stamped at exactly the closing minute of their match (`minute: 90` in a regulation tie,
+`120` in an extra-time one) with no `substitutedOff`. `stoppageMinute` is deliberately
+ignored — 0 substitution stamps sit above minute 90 in a regulation match, so `minute` is
+already the clock minute, and adding stoppage would make `{minute: 90, stoppageMinute: 2}`
+in a 90-minute match compute `90 − 92 = −2`. So those rows carry `minutesPlayed: 0`, and
+**20 players total 0 minutes despite an appearance** and therefore carry a null `perNinety`
+on every metric. 59 of the 75 carry a stoppage stamp and 16 do not, so this is not purely an
+artefact of discarding stoppage. No starter is ever affected.
+
+### Precision, and the two traps that ship unrounded floats
+
+`emit._KEY_TO_DEF` is **not** reused: Story 1.16's review found that an unrecognised key
+inherits its parent's binding there, so 29 percentage and metre leaves took `Count`'s 0
+places and `lineHeight: 19.5` shipped as `20` while validating clean. `profiles` binds every
+numeric leaf key explicitly and **an unbound numeric leaf raises**. Nothing inherits
+anything. The single deliberate exemption is `schemaVersion`, which is `const` and declares
+no `x-decimals` at all.
+
+`value`, a trend point's `value` and `perNinety` are **polymorphic slots**. Their
+`x-decimals: 2` is "the widest precision any metric uses" — a placeholder. `value` and trend
+points round to the precision of the source field named by `metricCode`; `perNinety` rounds
+to 2 always. `PerNinety`'s declaration sits inside an `anyOf` branch, the same shape
+`StoppageMinute` needed a special case for, so it is asserted present rather than looked up
+bare.
+
+### Budget, bijection, and what is deliberately NOT asserted here
+
+The largest emitted artifact is **1,543 gzip-9 bytes — 0.31% of the 500 KB ceiling**, so the
+budget gate cannot be driven red by the corpus. It ships with a *constructed* over-budget
+test, per `budget.py`'s own rule that "a gate that cannot fail reads greener than no gate
+while proving strictly less".
+
+This story asserts the **unilateral** property only: one artifact per registry-pinned entity,
+48 teams and 1,248 players, ids distinct, every filename equal to the id inside the file, no
+orphans. The **AD-4 route-manifest bijection is Story 1.17's**, and `main` prints
+`route-manifest bijection not asserted here; owned by Story 1.17.` on every run — the
+`check_committed_data` precedent is binding: never let "no manifest" read as "passed".
+
+### The write is all-or-nothing, and that is a staged-directory swap
+
+Build → validate → round → measure → **then** write. Rounding is folded into the end of each
+build rather than run as a separate pass, and that is forced: `Count`, `ShirtNumber` and
+`TeamProfileGoalDifference` are `type: integer`, so an unrounded mean of `3.0` fails
+validation before any later rounding pass could reach it. `emit.build_bundle` folds it the
+same way for the same reason.
+
+Each namespace is written into a sibling `*.staged` directory and swapped in, with the
+previous directory retired and restored on failure. *Rejected: per-file `.tmp` renames — a
+second rename pass leaves the namespace half-swapped for its whole duration.* The named
+hazard is `identity.check_committed_data` pinning a **partial** namespace as the immutability
+baseline, and 1,296 artifacts across two directories is a far wider window than Story 1.16's
+104. The swap also makes the stale sweep structural: a file the run did not produce cannot
+survive it.
+
+### Negative scope, stated because its absence would read as an omission
+
+No FR-15 gate check and no run-manifest entry. Both contracts are per-report (AD-8);
+profile emission is corpus-level and all-or-nothing, so there is no per-entity terminal
+status to record. `epics.md` scopes the FR-15 convention to the extraction stories, and
+1.15–1.18 all omit it correctly.
+
+**Goalkeeping appears in no profile artifact at all.** CS-2's ruling D2b made
+`GoalkeepingBlock` per-team with the keeper list as context, and neither
+`team-profile.schema.json` nor `player-profile.schema.json` carries a goalkeeping property
+while both are `additionalProperties: false`. A goalkeeper's profile is therefore exactly
+the same shape as every other player's — passing, distance, top speed, and no saves. Ruled
+by Juan; the alternative was a successor change-set, and Epic 2's Story 2.3 sign-off already
+recorded PASS on both profile schemas as sufficient for 2.15/2.16.
