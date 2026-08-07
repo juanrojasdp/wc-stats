@@ -11,7 +11,7 @@ baseline_commit: 74b1789
 
 # Story 1.17: Tournament Index — Results, Standings & Leaderboards
 
-Status: review
+Status: done
 
 ## Story
 
@@ -320,6 +320,102 @@ So tiers beyond goal difference are **never exercised by this corpus** and canno
 ### Review Findings
 
 <!-- Added post-implementation by the code-review workflow. -->
+
+**Code review 2026-08-06** — three adversarial layers (Blind Hunter, Edge Case Hunter,
+Acceptance Auditor) over `74b1789..ae207ed` + `5d251bb`, 3,134 lines across 10 files. 46 raw
+findings deduped to 2 decisions, 18 patches, 4 deferrals, 2 dismissed. Both new test modules
+were re-run green (52 + 41 = 93) and every headline measurement independently reproduced
+(409,524 / 39,137; 962,885 / 78,501; combined **117,638**; 36 boards / 2,965 rows).
+
+**Decisions — both ruled by Juan (delegated to the review, 2026-08-07)**
+
+**D-R1 ruled: BOTH checks.** The "a bare `id` is ambiguous" objection that drove 1.17 to
+reject widening does not block it. The 581 unpinned player routes are
+`entities.players[].playerId` — a flat key already in `COMMITTED_ID_KEYS` under `players` —
+so pinning them involves no ambiguity at all; only `EntityRef.id` is context-dependent and it
+stays with `check_index_ids`. The two prove different properties and both are wanted:
+`check_committed_data` proves **immutability against the slug registry** (the actual AD-3
+gap), `check_index_ids` proves **internal referential integrity** (the aggregator minted
+nothing). Story 1.18 parameterized both `globs` and `id_keys` (`identity.py:545-551`) and its
+comment at `:521` answers 1.17 by name, so the machinery exists and is tested. The call
+belongs in `index.py`'s gate path, not `run.py`, per this story's stated negative scope.
+
+**D-R2 ruled: guard the test + restore a tripwire; the write-blocking gate is DEFERRED.** A
+committed test that is red on a clean checkout is intolerable regardless of authorship, and
+guarding it does not overwrite 1.18's coordinated work. D2's ruling was "never a silent pass
+AND a successor test red by design", so shipping zero tripwires contradicts it — and
+`index.py:946` / `README:1966` still cite the deleted test by name. The write-blocking profile
+gate is NOT patched: reversing a gate's failure semantics exceeds what a review should
+invent, the deadlock has a real if ugly recourse (empty the profile dirs, emit, re-run 1.18),
+and Story 1.19 owns end-to-end orchestration. Document the constraint here; ledger the
+deadlock for 1.19.
+
+- [ ] [Review][Patch] **D-R1 — widen AD-3's immutability walk to the index artifacts and keep the internal check** — `check_index_ids` (`index.py:895-899`) — `check_index_ids` (`index.py:895-899`) validates ids against `tournament["entities"]`, the manifest embedded in the same artifact it is checking, so any manifest entry cross-referenced nowhere else pins itself. Proven: rewriting a boardless player's `playerId` to `"totally-bogus-not-a-player"` passes silently — **581 of 1,248 player routes** are in that position after the 100-row cap. `teamId`/`matchId` are caught only because they are cross-referenced. Meanwhile `identity.check_committed_data` still globs `matches/*.json` only (`identity.py:548`, called with no override at `run.py:189`), and Story 1.18 **parameterized `globs` and passes its two profile globs** (`profiles.py:1285`) — the one-tuple widening Task 5.2 offered now exists and was never applied to 1.17's own two artifacts. Options: (a) pass `("index/*.json",)` to `check_committed_data` alongside 1.18's globs, resolving the ambiguity Task 5.2 raised about a bare `"id"` by keying on context as `index_id_sites` already does; (b) keep the self-contained check and ledger the residual exposure explicitly, which neither the record nor `deferred-work.md` currently does; (c) both.
+- [ ] [Review][Patch] **D-R2 — guard the bijection tests on tracked profiles and restore a red-by-design tripwire** — three coupled consequences of the concurrent 1.18 session, of which the record discloses only one. (i) `test_the_repository_has_no_committed_profiles_yet` was deleted in `5d251bb`, so this story ships **zero** red-by-design successor tripwires, while `index.py:946` and `pipeline/README.md:1966` still name it as the live mechanism. (ii) Its replacement `test_the_route_manifest_bijection_holds_against_the_committed_profiles` (`test_index_tournament.py:471`) asserts `"NOT a pass" not in joined` and `teams: 48` / `players: 1248` against `repo_root/data` with **no skip guard** — verified: `git ls-files data/index` tracks only the two JSON artifacts; the profile directories are untracked (`??`), so on any clean checkout `check_route_manifest` returns "baseline unavailable … This is NOT a pass." and this committed test **fails**. `test_the_cli_reports_both_profile_namespaces_rather_than_staying_silent` (`:767`) is coupled the same way. (iii) `check_route_manifest` raises `RouteManifestError` on any `missing or orphans` (`index.py:993-998`) **before the first write** (`:1096-1100`), so adding one player to the spine now makes `index.py` refuse to emit `tournament.json` until profiles exist — but profiles are downstream of that manifest. Nothing names this ordering constraint. **Ruled:** guard both tests on tracked profiles (matching the `spine_dir`/`bundles_dir` fixture convention — skip locally, `pytest.fail` under `CI=1`), restore a red-by-design tripwire, and correct the two stale citations. Item (iii) is deferred to Story 1.19; document the ordering constraint here.
+
+**Patches — all 19 APPLIED 2026-08-07**
+
+- [x] [Review][Patch] Leaderboard precision expectations are derived from the emitter's own table — the exact AC-5 defect the 1.16 review found, proven by mutation [pipeline/tests/test_index_leaderboards.py:461,469,477,525,535]
+- [x] [Review][Patch] `METRIC_DECIMALS_DEFAULT = 0` implements the silent default its own comment forbids, violating Task 2.5 [pipeline/precompute/index.py:166,511]
+- [x] [Review][Patch] `higherIsBetter` is written into the artifact but never reaches the ranker; the sort is unconditionally descending [pipeline/precompute/index.py:722,738,676]
+- [x] [Review][Patch] A group match whose `group` letter names no team's group is silently dropped from the artifact; no assert that emitted rows equal the match count [pipeline/precompute/index.py:429-432,447-451]
+- [x] [Review][Patch] The `form` ordering is enforced but pinned by no test, and README claims all six orderings are pinned [pipeline/tests/test_index_tournament.py:167; pipeline/README.md:1993]
+- [x] [Review][Patch] An existing-but-empty profile directory is reported as "does not exist" rather than as a 0-vs-48 bijection failure [pipeline/precompute/index.py:918-922,982-986]
+- [x] [Review][Patch] The CLI prints `INDEX RESULT: PASS` in the same output as "This is NOT a pass." [pipeline/precompute/index.py:1176-1184]
+- [x] [Review][Patch] A team id absent from `entities.teams` crashes untyped at three sites, while player ids are guarded [pipeline/precompute/index.py:283,667,670]
+- [x] [Review][Patch] A null `group` on a team raises `TypeError` from `sorted()`, and a team named by no match ships an all-zero record with no `GroupTable` [pipeline/precompute/index.py:400-406,481]
+- [x] [Review][Patch] A duplicated `entities.matches` row double-counts the standings with no uniqueness assertion [pipeline/precompute/index.py:310,395]
+- [x] [Review][Patch] `group` non-null iff `stage == "group"` is documented in the docstring and enforced nowhere [pipeline/precompute/index.py:278]
+- [x] [Review][Patch] "Every failure class is COLLECTED and raised together" is true only of the budget gate; schema, id and manifest gates each abort serially [pipeline/precompute/index.py:1016,1062-1100]
+- [x] [Review][Patch] Group standings tally `scoreAfter90` while the result rows in the same table print the final `score`, with nothing asserting they agree [pipeline/precompute/index.py:314,886]
+- [x] [Review][Patch] A null source stat is silently skipped where a missing key raises, making `matchesPlayed` quietly per-metric [pipeline/precompute/index.py:554,567]
+- [x] [Review][Patch] `perMatch == value / matchesPlayed` "by construction" is stated unqualified but false on the 6 `max`/`average` boards [pipeline/precompute/index.py:645-648; pipeline/README.md]
+- [x] [Review][Patch] `tournament.json` alone is stated as 39,157 gzip-9; the committed artifact measures 39,137 [pipeline/precompute/index.py:135]
+- [x] [Review][Patch] `tournamentName` is the one published value invented in-module — disclosed in a code comment only, pinned by no test [pipeline/precompute/index.py:69-71]
+- [x] [Review][Patch] File List declares three appended `errors.py` classes; the commit carries five [1-17-…md:686]
+
+### Review patch outcomes (2026-08-07)
+
+**Both artifacts re-emit BYTE-IDENTICAL after all 19 patches** — verified by running the
+emitter and confirming `git status` reports `data/index/*.json` unchanged. Nothing published
+moved; every change is to the gates, the tests and the prose.
+
+**The precision fix is the one that mattered.** `METRIC_DECIMALS` is now derived from
+`/contract` by walking each metric code to its source `$def` and reading the `$ref` target's
+`x-decimals`, keyed by `(code, scope)` because four codes exist at both scopes. The derived
+map reproduces the hand-written one exactly, with **one addition the code-keyed table could
+not express**: `passCompletion` now resolves separately for team and player scope. The
+literal expectation moved into the test (`EXPECTED_PLACES`), inverting the direction that
+let a corrupted table pass 41 tests, and `_metric_decimals` subscripts rather than defaulting.
+
+**Two findings were sharpened by writing the fix.** The numeric-leaf totality test found a
+second rounding path on its first run (`value`/`perMatch` are rounded per row in
+`_board_rows`, not by the leaf-type map) and now pins all three exemptions explicitly, so a
+FOURTH unbound key still fails. And the widened AD-3 walk turned out to RAISE
+`SlugRegistryError` rather than return a note — a stronger gate than the review assumed.
+
+**Test counts:** `test_index_tournament.py` 52 → 69 (+17), `test_index_leaderboards.py`
+41 → 44 (+3). 113 passed, 1 skipped. The skip is
+`test_the_route_manifest_bijection_holds_against_the_committed_profiles`, correctly standing
+down until Story 1.18 commits; `test_the_repository_has_no_committed_profiles_yet` is
+restored and green, and the two swap over in the run where that commit lands.
+
+**`identity.py`, `serialize.py` and `emit.py` were NOT edited by this review.** D-R1 needed
+only the `globs`/`id_keys` extension points Story 1.18 had already added, so this story's
+count of out-of-scope edits is unchanged at three.
+
+**Deferred**
+
+- [x] [Review][Defer] An `OSError` between the two `write_canonical` calls leaves `data/index/` internally inconsistent, and `main` then returns exit 2 — "nothing was learned" — after the filesystem was mutated [pipeline/precompute/index.py:1107-1112] — deferred, pre-existing; the staged-directory fix is routed to Story 1.19
+- [x] [Review][Defer] The stale sweep unlinks any top-level `data/index/*.json` this run did not write, including a future story's artifact [pipeline/precompute/index.py:1119-1122] — deferred, pre-existing pattern copied from `emit_bundles`
+- [x] [Review][Defer] `_def_properties` raises a bare `KeyError` that escapes `main`'s handler as an untyped exit 1, and a test pins that as intended [pipeline/precompute/emit.py:336] — deferred, pre-existing shape in a Story 1.16 module
+- [x] [Review][Defer] The three Domain G blocks are flattened into one namespace; a future field name present in two blocks would resolve by dict order with no diagnostic [pipeline/precompute/index.py:559-561] — deferred, no collision exists among the 18 current player codes
+- [x] [Review][Defer] The profile direction of the bijection is write-blocking, so adding one entity stops `tournament.json` being emitted until profiles exist — but profiles are downstream of that manifest [pipeline/precompute/index.py:993-998,1096-1100] — deferred per ruling D-R2; the recourse (empty the profile dirs, emit, re-run 1.18) is documented by a patch here, and Story 1.19 owns the orchestration fix
+
+**Dismissed as noise (2):** the per-artifact budget checks being unable to fire without the
+combined check firing (harmless, and they improve the error message); the entity-order test
+comparing the artifact to the spine rather than to a sort (carry-through *is* the stated
+contract, and it is pinned).
 
 ---
 
@@ -683,7 +779,7 @@ keep passing on a fresh clone.** Recorded, not repaired.
 - `pipeline/precompute/serialize.py` — `decimals_map` vacuity-guard parameter; anyOf-aware inline precision pass
 - `pipeline/precompute/emit.py` — `_def_properties` / `check_total` take a document tuple
 - `pipeline/precompute/budget.py` — appended `over_budget_combined`
-- `pipeline/precompute/errors.py` — appended `IndexEmitError`, `TiebreakUnresolvedError`, `RouteManifestError`
+- `pipeline/precompute/errors.py` — appended `IndexEmitError`, `TiebreakUnresolvedError`, `RouteManifestError`. **The commit carries FIVE new classes, not three**: a concurrent Story 1.18 session added `ProfileError` and `ProfileValidationError` to the same file while this story was appending, and `index.py` does not import without it. Disclosed in the Completion Notes; reconciled here too, because a File List that undercounts is exactly how the next reader concludes the disclosure was incomplete. Their consumer (`profiles.py`) is deliberately not staged, so nothing in this commit references them.
 - `pipeline/README.md` — appended the Story 1.17 section (append-only proven programmatically)
 - `_bmad-output/implementation-artifacts/deferred-work.md` — appended five items (append-only proven programmatically)
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`

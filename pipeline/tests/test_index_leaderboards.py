@@ -455,10 +455,50 @@ def test_the_leaderboards_precision_map_carries_the_per_match_slot() -> None:
                       "LeaderboardPerMatchValue": 2}
 
 
+# **The expectation is stated HERE, and the emitter derives — that direction is the whole
+# point.** The 1.17 code review found every precision assertion routing its expected value
+# through `index_module._metric_decimals`, so both sides of the comparison came from the
+# table under test: setting two `Percentage` codes to 0 places kept all 41 tests green while
+# 553 float leaves shipped truncated to integers. This literal is the independent statement
+# of what /contract declares, written out rather than computed, so the derivation has
+# something to be wrong against. Every code not listed here is an integer-valued `Count`.
+EXPECTED_PLACES: "dict[tuple[str, str], int]" = {
+    ("possession", "team"): 1,        # Percentage
+    ("passCompletion", "team"): 1,    # Percentage
+    ("passCompletion", "player"): 1,  # Percentage
+    ("expectedGoals", "team"): 2,     # ExpectedGoals
+    ("distanceCovered", "team"): 2,   # Kilometres
+    ("sprintDistance", "team"): 2,    # Kilometres
+    ("topSpeed", "player"): 1,        # KmPerHour
+    ("totalDistance", "player"): 1,   # Metres
+}
+
+
+def test_the_metric_precision_map_is_what_the_contract_declares() -> None:
+    """The derived map, pinned against a literal — the review's headline finding.
+
+    `METRIC_DECIMALS` is derived from `/contract` rather than transcribed, which removes the
+    staleness half of the defect. This test removes the other half: a derivation that
+    resolved the wrong `$ref`, or silently dropped a board, would otherwise move no test at
+    all, because every other precision assertion reads the derived map.
+    """
+    derived = index_module.METRIC_DECIMALS
+    assert len(derived) == len(index_module.BOARDS) == 36, (
+        f"{len(derived)} precisions for {len(index_module.BOARDS)} boards — every board "
+        f"must resolve, and a missing one must not be defaulted")
+    assert {key: places for key, places in derived.items() if places} == EXPECTED_PLACES
+    assert all(places == 0 for key, places in derived.items()
+               if key not in EXPECTED_PLACES)
+
+
 def test_every_value_carries_its_metric_s_own_precision(leaderboards: dict) -> None:
-    """`value` is polymorphic, so precision is keyed by `metricCode`, not by key name."""
+    """`value` is polymorphic, so precision is keyed by `metricCode`, not by key name.
+
+    Reads `EXPECTED_PLACES`, never `index_module._metric_decimals`: the emitter's own table
+    cannot be both the thing under test and the yardstick.
+    """
     for board in leaderboards["boards"]:
-        places = index_module._metric_decimals(board["metricCode"])
+        places = EXPECTED_PLACES.get((board["metricCode"], board["scope"]), 0)
         for row in board["rows"]:
             value = row["value"]
             if places == 0:
@@ -467,15 +507,87 @@ def test_every_value_carries_its_metric_s_own_precision(leaderboards: dict) -> N
             else:
                 assert round(value, places) == value, (
                     f"{board['metricCode']}: {value!r} carries more than {places} places")
+                assert isinstance(value, float), (
+                    f"{board['metricCode']}: {value!r} lost its fractional slot entirely")
+
+
+def test_CONSTRUCTED_a_metric_bound_to_the_wrong_precision_is_caught(
+        leaderboards: dict) -> None:
+    """The mutation check: the precision test must go RED when the binding is wrong.
+
+    Copied from `test_emit_bundles.py::test_a_key_bound_to_the_wrong_precision_is_caught`,
+    which is the pattern that stops a precision test passing by walking nothing. Without
+    this, `test_every_value_carries_its_metric_s_own_precision` could be vacuous and look
+    identical from the outside.
+
+    The mutation is applied to the EXPECTED table, not to the emitter, because the published
+    artifact is the fixed quantity here: declaring `possession` an integer must make the
+    real, already-emitted 1-place values fail.
+    """
+    mutated = dict(EXPECTED_PLACES)
+    del mutated[("possession", "team")]  # now claims 0 places, i.e. integer-valued
+    board = next(b for b in leaderboards["boards"]
+                 if b["metricCode"] == "possession" and b["scope"] == "team")
+    places = mutated.get((board["metricCode"], board["scope"]), 0)
+    assert places == 0
+    assert any(not isinstance(row["value"], int) for row in board["rows"]), (
+        "the possession board carries no fractional value, so the precision assertion "
+        "above proves nothing about it")
 
 
 def test_every_per_match_carries_the_slot_s_declared_precision(leaderboards: dict) -> None:
+    """Read from `/contract`, not from `index_module.PER_MATCH_DECIMALS`.
+
+    The ruling is that `perMatch` takes the SLOT's precision rather than the metric's; the
+    slot is `LeaderboardPerMatchValue` and the contract declares its `x-decimals` on an
+    untitled `anyOf` branch. Taking the number from the contract means the ruling and the
+    artifact are compared, rather than the emitter's constant being compared to itself.
+    """
+    declared = decimals_map(index_module.LEADERBOARDS_SCHEMA)["LeaderboardPerMatchValue"]
+    assert index_module.PER_MATCH_DECIMALS == declared, (
+        "the emitter's per-match precision has drifted from the slot the contract declares")
     for board in leaderboards["boards"]:
         for row in board["rows"]:
             if row["perMatch"] is None:
                 continue
-            assert round(row["perMatch"], index_module.PER_MATCH_DECIMALS) \
-                == row["perMatch"]
+            assert round(row["perMatch"], declared) == row["perMatch"]
+
+
+def test_the_numeric_leaf_binding_is_total_for_the_leaderboards(leaderboards: dict) -> None:
+    """Every numeric leaf in the artifact is BOUND to a precision by name.
+
+    The id walk has `test_the_id_containment_check_is_total_for_both_index_artifacts`; the
+    numeric walk had no equivalent, and `round_index` leaves an unbound key completely
+    unrounded BY DESIGN — so the failure mode is silent. A new contract field reusing an
+    existing `$def` moves `decimals_map` not at all, and would ship unrounded with
+    byte-identity resting on float arithmetic: verbatim the Story 1.16 headline defect.
+    """
+    # Two rounding paths exist and a total check must know about both. `LEADERBOARDS_LEAF_
+    # TYPES` binds by key name; `value` and `perMatch` are rounded per row in `_board_rows`
+    # because their precision is metric-dependent and only there is `metricCode` in scope.
+    # `schemaVersion` is the contract's own integer stamp and is rounded by nothing on
+    # purpose. Listing the three explicitly is what makes this a gate: a FOURTH unbound
+    # numeric key — the actual failure mode — is not on this list and turns the test red.
+    rounded_per_row = {"value", "perMatch"}
+    not_a_measurement = {"schemaVersion"}
+    bound = set(index_module.LEADERBOARDS_LEAF_TYPES) | rounded_per_row | not_a_measurement
+    found: "set[str]" = set()
+
+    def walk(node) -> None:
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if isinstance(value, (int, float)) and not isinstance(value, bool):
+                    found.add(key)
+                walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(leaderboards)
+    unbound = sorted(found - bound)
+    assert not unbound, (
+        f"{len(unbound)} numeric leaf key(s) reach the artifact bound to no precision and "
+        f"are therefore rounded by nothing: {unbound}")
 
 
 def test_CONSTRUCTED_a_count_metric_rounded_at_its_source_precision_breaks_the_tolerance(
@@ -522,7 +634,9 @@ def test_every_board_value_is_reproducible_from_the_committed_bundles(
     for board in leaderboards["boards"]:
         code = board["metricCode"]
         source = team_values if board["scope"] == "team" else player_values
-        places = index_module._metric_decimals(code)
+        # `EXPECTED_PLACES`, not the emitter's map: AC 5 requires the expectation derived
+        # from the parsed corpus and the contract, never restated from the implementation.
+        places = EXPECTED_PLACES.get((code, board["scope"]), 0)
         for row in board["rows"]:
             values = source[(code, row["entity"]["id"])]
             assert values, f"{code}: {row['entity']['id']} has no source values"

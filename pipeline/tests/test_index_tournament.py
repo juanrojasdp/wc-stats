@@ -31,6 +31,7 @@ from pipeline.precompute.emit import load_spine
 from pipeline.precompute.errors import (
     IndexEmitError,
     RouteManifestError,
+    SlugRegistryError,
     TiebreakUnresolvedError,
 )
 from pipeline.precompute.serialize import decimals_map
@@ -67,6 +68,31 @@ def corpus(spine_dir: Path):
 
 
 @pytest.fixture(scope="module")
+def tracked_profiles(repo_root: Path) -> "set[str]":
+    """The profile artifacts git actually TRACKS, which is not the same as what is on disk.
+
+    **Added by the 1.17 code review, and the distinction is the whole point.** Story 1.18
+    emitted 1,296 profiles into the shared working tree while this story was in review, so
+    every test that read the directory passed locally — and would have failed on a clean
+    checkout, where the directories do not exist at all. `git ls-files` asks the question
+    that survives a fresh clone.
+
+    Tests that assert the POPULATED bijection depend on this being non-empty; the tripwire
+    below asserts the opposite and is the thing that goes red when 1.18 commits.
+    """
+    import subprocess
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "data/index/team-profiles", "data/index/player-profiles"],
+            cwd=repo_root, capture_output=True, text=True, timeout=60, check=False)
+    except (OSError, subprocess.SubprocessError) as exc:  # pragma: no cover - env-specific
+        pytest.skip(f"git is unavailable, so tracked state cannot be established: {exc}")
+    if result.returncode != 0:  # pragma: no cover - env-specific
+        pytest.skip(f"git ls-files failed: {result.stderr.strip()}")
+    return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+
+@pytest.fixture(scope="module")
 def bundles(bundles_dir: Path) -> "list[dict]":
     return [json.loads(path.read_text(encoding="utf-8"))
             for path in sorted(bundles_dir.glob("*.json"))]
@@ -92,6 +118,19 @@ def test_the_top_level_carries_exactly_the_five_required_keys(tournament: dict) 
     """The AC names two of the five. The schema is the specification, not the AC."""
     assert sorted(tournament) == [
         "entities", "groups", "knockoutResults", "schemaVersion", "tournamentName"]
+
+
+def test_the_tournament_name_is_declared_once_and_pinned(tournament: dict) -> None:
+    """The one published value not derived from the corpus, pinned so it cannot drift.
+
+    FR-19 is "precompute adds no data the bundles don't contain" and this adds one string:
+    the contract requires `tournamentName`, nothing in the repository prints it, and the
+    alternatives — deriving it from a filename, or omitting it — are respectively the
+    id-minting this module forbids and a validation failure. The 1.17 code review asked for
+    the exception to be disclosed and pinned rather than left in a comment.
+    """
+    assert tournament["tournamentName"] == index_module.TOURNAMENT_NAME
+    assert tournament["tournamentName"] == "FIFA World Cup 2026"
 
 
 def test_the_version_stamp_is_read_and_never_hardcoded(tournament: dict) -> None:
@@ -174,6 +213,72 @@ def test_form_is_chronological_and_as_long_as_the_matches_played(tournament: dic
         for row in group["standings"]:
             assert len(row["form"]) == row["played"]
             assert set(row["form"]) <= {"win", "draw", "loss"}
+
+
+def test_form_reproduces_the_results_recomputed_from_the_committed_bundles(
+        tournament: dict, bundles: "list[dict]") -> None:
+    """The CONTENTS of `form`, recomputed from a second source — not just its length.
+
+    Added by the 1.17 code review: five of the six declared orderings were pinned and this
+    one was not. `test_form_is_chronological_and_as_long_as_the_matches_played` asserts only
+    `len(form) == played` and the value domain, so a reversed sequence, or one whose wins
+    and losses were swapped, passed every shipped test. Measured while writing this: 29 of
+    the 48 rows are non-palindromic, so reversal is genuinely detectable here.
+
+    The expectation walks the bundles' own `scoreAfter90` in `matchNumber` order, which is
+    the second source the emitter never touches.
+    """
+    expected: "dict[str, list[tuple[int, str]]]" = defaultdict(list)
+    for bundle in bundles:
+        metadata = bundle["metadata"]
+        if metadata["stage"] != "group":
+            continue
+        score = metadata["knockoutScore"]["scoreAfter90"]
+        number = metadata["matchNumber"]
+        home, away = metadata["homeTeam"]["teamId"], metadata["awayTeam"]["teamId"]
+        for team_id, scored, conceded in ((home, score["home"], score["away"]),
+                                          (away, score["away"], score["home"])):
+            result = "win" if scored > conceded else "loss" if scored < conceded else "draw"
+            expected[team_id].append((number, result))
+
+    assert expected, "no group bundles were walked"
+    checked = 0
+    for group in tournament["groups"]:
+        for row in group["standings"]:
+            team_id = row["team"]["id"]
+            in_order = [result for _n, result in sorted(expected[team_id])]
+            assert row["form"] == in_order, (
+                f"{team_id}: publishes {row['form']}, the bundles give {in_order}")
+            checked += 1
+    assert checked == 48, f"only {checked} form sequences compared"
+
+
+def test_the_standings_and_the_results_in_one_group_table_agree(tournament: dict) -> None:
+    """A `GroupTable`'s two halves are computed from different scores; bound them.
+
+    `_tally` reads `scoreAfter90` while `_match_result_row` prints the final `score`. For a
+    group match those are the same number — there is no extra time — but nothing asserted
+    it, so a goal reconciled into a minute above 90 would make a table's standings and its
+    own printed results disagree with no test noticing. Shipping the bound rather than
+    trusting the coincidence is this project's standing rule.
+    """
+    for group in tournament["groups"]:
+        scored: "dict[str, int]" = defaultdict(int)
+        conceded: "dict[str, int]" = defaultdict(int)
+        for row in group["results"]:
+            home, away = row["homeTeam"]["id"], row["awayTeam"]["id"]
+            scored[home] += row["score"]["home"]
+            conceded[home] += row["score"]["away"]
+            scored[away] += row["score"]["away"]
+            conceded[away] += row["score"]["home"]
+        for row in group["standings"]:
+            team_id = row["team"]["id"]
+            assert row["goalsFor"] == scored[team_id], (
+                f"group {group['group']}: {team_id} standings say goalsFor "
+                f"{row['goalsFor']}, its own results rows total {scored[team_id]}")
+            assert row["goalsAgainst"] == conceded[team_id]
+        assert {row["team"]["id"] for row in group["standings"]} == set(scored), (
+            f"group {group['group']}: the standings and the results name different teams")
 
 
 def test_the_declared_form_ordering_key_is_unambiguous(tournament: dict) -> None:
@@ -469,7 +574,7 @@ def test_the_profile_direction_reports_that_it_could_not_run_and_never_a_pass(
 
 
 def test_the_route_manifest_bijection_holds_against_the_committed_profiles(
-        repo_root: Path) -> None:
+        repo_root: Path, tracked_profiles: "set[str]") -> None:
     """AD-4's bijection, asserted for real. **This is Story 1.17's half of ruling R3.**
 
     It replaces `test_the_repository_has_no_committed_profiles_yet`, which was red by design
@@ -483,7 +588,16 @@ def test_the_route_manifest_bijection_holds_against_the_committed_profiles(
     1.18 asserts only the weaker unilateral property (one artifact per registry-pinned
     entity) and PRINTS that the manifest bijection is not asserted there, so the gap was
     visible rather than silent for as long as it existed.
+
+    **Guarded on TRACKED profiles by the 1.17 code review.** As written this read the
+    working tree, where a concurrent 1.18 session's untracked output happened to sit — so it
+    passed here and failed on every clean checkout, which is where committed tests are
+    supposed to be green. It now skips until 1.18 commits, and
+    `test_the_repository_has_no_committed_profiles_yet` below fires at that same moment.
     """
+    if not tracked_profiles:
+        pytest.skip("no profile artifacts are tracked yet; Story 1.18 has not committed. "
+                    "test_the_repository_has_no_committed_profiles_yet owns this state.")
     tournament = json.loads(
         (repo_root / "data" / "index" / "tournament.json").read_text(encoding="utf-8"))
     notes = index_module.check_route_manifest(tournament, repo_root / "data")
@@ -493,6 +607,31 @@ def test_the_route_manifest_bijection_holds_against_the_committed_profiles(
     assert "matches: 104 committed bundle(s) <-> 104 listed route(s)" in joined
     assert "teams: 48 profile(s) <-> 48 listed route(s)" in joined
     assert "players: 1248 profile(s) <-> 1248 listed route(s)" in joined
+
+
+def test_the_repository_has_no_committed_profiles_yet(
+        tracked_profiles: "set[str]") -> None:
+    """RED BY DESIGN the moment Story 1.18 commits — restored by the 1.17 code review.
+
+    D2 ruled two things: the gate never reports a silent pass, AND a successor test goes red
+    by design so the populated branch becomes primary deliberately rather than by accident.
+    The second half was deleted when 1.18's session replaced it with the populated
+    assertion, leaving this story with no tripwire at all while its own module docstring and
+    `pipeline/README.md` still cited this test by name.
+
+    It is restored in the only form that is honest now: 1.18 has EMITTED profiles into the
+    working tree but has COMMITTED none, so the state this pins is "not tracked", not "not
+    present". When 1.18 commits, this goes red, the guard on the test above lifts in the
+    same run, and the pair swaps over together.
+
+    **When it fires, delete this test — do not weaken it.** The populated bijection above
+    is its replacement and needs no further work.
+    """
+    assert not tracked_profiles, (
+        f"{len(tracked_profiles)} profile artifact(s) are now tracked by git. Story 1.18 "
+        f"has committed. This tripwire has done its job: delete it, and confirm "
+        f"test_the_route_manifest_bijection_holds_against_the_committed_profiles now runs "
+        f"rather than skipping.")
 
 
 def test_a_profile_namespace_that_exists_is_asserted_rather_than_skipped(
@@ -644,6 +783,173 @@ def test_CONSTRUCTED_a_leaf_bound_to_a_type_the_document_does_not_declare_raises
         index_module.round_index({"played": 3}, {"Count": 0}, {"played": "Absent"})
 
 
+# ------------------------------------------------- match routing (code review, 2026-08-07)
+def _routable_entities() -> dict:
+    """The smallest `entities.json` that routes cleanly: two teams, one group match."""
+    return {
+        "teams": [
+            {"team_id": "alpha", "name": "Alpha", "team_code": "ALP", "group": "a"},
+            {"team_id": "beta", "name": "Beta", "team_code": "BET", "group": "a"},
+        ],
+        "matches": [
+            {"match_id": "m001-alpha-beta", "stage": "group", "group": "a",
+             "home_team_id": "alpha", "away_team_id": "beta"},
+        ],
+        "players": [{"player_id": "p", "name": "P", "team_id": "alpha"}],
+    }
+
+
+def test_the_routing_check_passes_the_real_corpus(spine_dir: Path) -> None:
+    """The guard must not fire on 104 real matches — otherwise the red tests below prove
+    only that it fires on everything."""
+    entities, _matches = load_spine(spine_dir)
+    index_module.check_match_routing(entities, "entities.json")
+
+
+def test_CONSTRUCTED_a_group_match_whose_group_names_no_team_is_caught() -> None:
+    """It would appear in NO group table and in NO knockout list — silently dropped.
+
+    The two filters that section the artifact are not a partition, and the group tally
+    would still count the match, so the table publishes a `played` that its own `results`
+    array cannot account for.
+    """
+    entities = _routable_entities()
+    entities["matches"][0]["group"] = "z"
+    with pytest.raises(IndexEmitError, match="names no team's group"):
+        index_module.check_match_routing(entities, "entities.json")
+
+
+def test_CONSTRUCTED_a_group_row_with_a_null_group_is_caught() -> None:
+    entities = _routable_entities()
+    entities["matches"][0]["group"] = None
+    with pytest.raises(IndexEmitError, match="non-null iff"):
+        index_module.check_match_routing(entities, "entities.json")
+
+
+def test_CONSTRUCTED_a_knockout_row_carrying_a_group_letter_is_caught() -> None:
+    """`ResultGroup` is `anyOf [Group, null]`, so the schema cannot object to this."""
+    entities = _routable_entities()
+    entities["matches"][0]["stage"] = "r32"
+    with pytest.raises(IndexEmitError, match="non-null iff"):
+        index_module.check_match_routing(entities, "entities.json")
+
+
+def test_CONSTRUCTED_a_duplicated_match_row_is_caught() -> None:
+    """`_tally` iterates the list while the result rows dedup into a dict, so a duplicate
+    double-counts the standings against a `results` array carrying the row once."""
+    entities = _routable_entities()
+    entities["matches"].append(dict(entities["matches"][0]))
+    with pytest.raises(IndexEmitError, match="listed more than once"):
+        index_module.check_match_routing(entities, "entities.json")
+
+
+def test_CONSTRUCTED_a_match_naming_an_unlisted_team_is_typed_rather_than_a_KeyError() -> None:
+    """It reached `team_name[...]` as a bare `KeyError` three frames down."""
+    entities = _routable_entities()
+    entities["matches"][0]["away_team_id"] = "gamma"
+    with pytest.raises(IndexEmitError, match="names no entities.teams entry"):
+        index_module.check_match_routing(entities, "entities.json")
+
+
+def test_CONSTRUCTED_a_team_named_by_no_match_is_caught() -> None:
+    """`_tally` returns a `defaultdict`, so it would ship an all-zero `TeamRecord` and
+    contribute no `GroupTable` — an artifact silently missing a whole group."""
+    entities = _routable_entities()
+    entities["teams"].append(
+        {"team_id": "gamma", "name": "Gamma", "team_code": "GAM", "group": "c"})
+    with pytest.raises(IndexEmitError, match="named by no match"):
+        index_module.check_match_routing(entities, "entities.json")
+
+
+def test_CONSTRUCTED_a_team_with_a_null_group_is_typed_rather_than_a_TypeError() -> None:
+    """`sorted(by_group)` raised `TypeError: '<' not supported between str and NoneType`."""
+    entities = _routable_entities()
+    entities["teams"][1]["group"] = None
+    with pytest.raises(IndexEmitError, match="non-string group"):
+        index_module.check_match_routing(entities, "entities.json")
+
+
+# --------------------------------------------- AD-3 immutability (code review, 2026-08-07)
+def test_CONSTRUCTED_an_unregistered_id_in_a_committed_index_artifact_is_caught(
+        tournament: dict, tmp_path: Path) -> None:
+    """The gap `check_index_ids` structurally cannot close, and the walk that closes it.
+
+    `check_index_ids` validates ids against `tournament["entities"]` — the manifest embedded
+    in the artifact it is checking — so a manifest entry that nothing else cross-references
+    pins itself. 581 of the 1,248 player routes hold no board row after the cap and are in
+    exactly that position: corrupting one passes `check_index_ids` silently.
+
+    `identity.check_committed_data` closes it by pinning against the slug REGISTRY, a source
+    outside the artifact entirely. This drives that walk red on precisely the id the other
+    check cannot see.
+    """
+    from pipeline.precompute.identity import check_committed_data
+    from pipeline.precompute.slug_registry import PINS
+
+    index_dir = tmp_path / "index"
+    index_dir.mkdir()
+    corrupted = copy.deepcopy(tournament)
+    victim = corrupted["entities"]["players"][0]
+    victim["playerId"] = "totally-bogus-not-a-player"
+    (index_dir / "tournament.json").write_text(
+        json.dumps(corrupted), encoding="utf-8")
+
+    # `check_index_ids` cannot see it: the id is self-consistent within the artifact.
+    index_module.check_index_ids(corrupted, {"schemaVersion": 4, "boards": []})
+
+    # The registry walk RAISES on an unpinned id rather than reporting it as a note, so the
+    # CLI maps it to exit 1 and no run can proceed past it.
+    with pytest.raises(SlugRegistryError, match="totally-bogus-not-a-player"):
+        check_committed_data(
+            PINS, tmp_path, globs=("index/*.json",), id_keys=index_module._ID_KEY_KIND,
+            unavailable=index_module.INDEX_BASELINE_UNAVAILABLE, noun="index artifact")
+
+
+def test_an_absent_index_baseline_reports_unavailable_and_never_success(
+        tmp_path: Path) -> None:
+    """"No artifacts" must never read as "all pinned" — the rule this project broke three
+    times. The message names the DIRECTORY, matching the shipped precedent."""
+    from pipeline.precompute.identity import check_committed_data
+    from pipeline.precompute.slug_registry import PINS
+
+    notes = check_committed_data(
+        PINS, tmp_path, globs=("index/*.json",), id_keys=index_module._ID_KEY_KIND,
+        unavailable=index_module.INDEX_BASELINE_UNAVAILABLE, noun="index artifact")
+    assert len(notes) == 1
+    assert "This is NOT a pass." in notes[0]
+    assert "all pinned" not in notes[0]
+
+
+def test_the_bare_entity_ref_id_is_deliberately_absent_from_the_registry_map() -> None:
+    """The two checks divide the id space, and the division must stay explicit.
+
+    `_ID_KEY_KIND` holds only keys whose namespace is fixed by the key NAME, because that is
+    all `check_committed_data` can classify. `EntityRef`'s bare `"id"` is fixed by CONTEXT
+    and belongs to `check_index_ids`, which supplies the board's scope per slot. Adding
+    `"id"` here would silently classify every player ref as a team ref, or vice versa.
+    """
+    assert "id" not in index_module._ID_KEY_KIND
+    assert set(index_module._ID_KEY_KIND) == {
+        "matchId", "teamId", "playerId", "winnerTeamId", "scorerPlayerId"}
+    # And the context-classified side really does carry it, so nothing falls between them.
+    assert index_module._REF_SLOT_KIND, "no EntityRef slots are classified by context"
+
+
+def test_every_listed_match_appears_in_exactly_one_emitted_section(
+        tournament: dict) -> None:
+    """The output half of the routing guard, over the real corpus.
+
+    `--expect-matches` counts the INPUT and the bundle files; nothing counted the emitted
+    rows, so a filter change dropping a match was invisible to every shipped assertion.
+    """
+    emitted = [row["matchId"] for table in tournament["groups"]
+               for row in table["results"]]
+    emitted += [row["matchId"] for row in tournament["knockoutResults"]]
+    listed = [row["matchId"] for row in tournament["entities"]["matches"]]
+    assert sorted(emitted) == sorted(listed)
+    assert len(emitted) == len(set(emitted)), "a match appears in two sections"
+
+
 # ------------------------------------------------------------------- id containment (5.2)
 def test_every_id_in_the_artifact_is_pinned_by_the_manifest(
         tournament: dict, corpus, bundles: "list[dict]") -> None:
@@ -772,19 +1078,84 @@ def test_the_cli_reports_both_profile_namespaces_rather_than_staying_silent(
     a holding bijection. The invariant that matters is that each namespace says SOMETHING
     either way: silence is the failure mode this gate exists to prevent, and a test that
     only knew the pre-1.18 world would go red on a successor doing exactly the right thing.
+
+    **Tightened by the 1.17 code review.** The count assertion was
+    `count("NOT a pass") + count("bijection holds") >= 3`, which `check_route_manifest`
+    satisfies by construction — it emits exactly three notes on every path, so the sum is 3
+    whatever the notes SAY. Each namespace is now matched to its own verdict individually.
     """
     assert index_module.main([
         "--spine-dir", str(spine_dir), "--data-dir", str(bundles_dir.parent),
         "--dry-run"]) == 0
     printed = capsys.readouterr().out
+    verdicts = 0
     for kind, folder in (("teams", "team-profiles"), ("players", "player-profiles")):
         directory = repo_root / "data" / "index" / folder
-        if any(directory.glob("*.json")) if directory.is_dir() else False:
-            assert f"{kind}: " in printed and "bijection holds" in printed
-        else:
-            assert f"{directory.as_posix()} does not exist" in printed
-    assert printed.count("This is NOT a pass.") + printed.count("bijection holds") >= 3, (
-        "each of matches, teams and players must report a verdict")
+        populated = directory.is_dir() and any(directory.glob("*.json"))
+        # The verdict must appear in the SAME note as the namespace, not merely somewhere in
+        # the output — the previous form matched "bijection holds" anywhere on the page.
+        note = next((line for line in printed.splitlines()
+                     if line.strip().startswith(f"{kind}: ")), None) if populated else \
+            next((line for line in printed.splitlines()
+                  if directory.as_posix() in line), None)
+        assert note is not None, f"the {kind} namespace reported nothing at all"
+        assert ("bijection holds" in note) if populated else ("NOT a pass." in note)
+        verdicts += 1
+    matches_note = next((line for line in printed.splitlines()
+                         if line.strip().startswith("matches: ")), None)
+    assert matches_note is not None and "bijection holds" in matches_note
+    verdicts += 1
+    assert verdicts == 3, "each of matches, teams and players must report its own verdict"
+
+
+def test_CONSTRUCTED_the_cli_headline_does_not_claim_pass_while_a_check_could_not_run(
+        tmp_path: Path, monkeypatch, capsys) -> None:
+    """`INDEX RESULT: PASS` must not sit in the same output as "This is NOT a pass."
+
+    The 1.17 code review found the headline printed unconditionally, so on a fresh clone —
+    or any checkout where the profile directories are absent — two of the three bijection
+    directions did not run and the verdict a human reads still said PASS. The exit code is
+    deliberately unchanged, because the gates that DID run passed; what changes is that the
+    headline now names what this run does not prove.
+
+    Emission is stubbed so the assertion is about the reporting path and nothing else: this
+    drives the branch with a note the real `check_route_manifest` produces verbatim whenever
+    a profile namespace is missing.
+    """
+    def fake_emit(*_args, notes=None, **_kwargs):
+        if notes is not None:
+            notes.append(index_module.PROFILE_BASELINE_UNAVAILABLE.format(
+                path="data/index/team-profiles"))
+        return [tmp_path / "tournament.json", tmp_path / "leaderboards.json"]
+
+    monkeypatch.setattr(index_module, "emit_index", fake_emit)
+    assert index_module.main(["--data-dir", str(tmp_path), "--dry-run"]) == 0
+    printed = capsys.readouterr().out
+    assert "This is NOT a pass." in printed
+    assert "COULD NOT RUN" in printed, (
+        "the headline claimed an unqualified PASS while a check could not run")
+    assert "INDEX RESULT: PASS\n" not in printed, (
+        "the unqualified headline is still being printed")
+
+
+def test_the_cli_headline_is_unqualified_when_every_check_ran(
+        tmp_path: Path, monkeypatch, capsys) -> None:
+    """The other half: a run that proves everything must not be hedged.
+
+    Without this, qualifying the headline could degenerate into always hedging, which is
+    the same failure as always passing — it just reads the other way.
+    """
+    def fake_emit(*_args, notes=None, **_kwargs):
+        if notes is not None:
+            notes.append("matches: 104 committed bundle(s) <-> 104 listed route(s) "
+                         "— bijection holds")
+        return [tmp_path / "tournament.json"]
+
+    monkeypatch.setattr(index_module, "emit_index", fake_emit)
+    assert index_module.main(["--data-dir", str(tmp_path), "--dry-run"]) == 0
+    printed = capsys.readouterr().out
+    assert "INDEX RESULT: PASS\n" in printed
+    assert "COULD NOT RUN" not in printed
 
 
 def test_the_cli_exits_one_on_a_pipeline_error(
