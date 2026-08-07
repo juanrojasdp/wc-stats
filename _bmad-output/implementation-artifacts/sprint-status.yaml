@@ -60,6 +60,103 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-07
+# 2026-08-07: story 2-15 IMPLEMENTED and moved to review — THE PLAYER PROFILE, /players/{slug}
+#             (FR-27). Baseline 119b707 (HEAD at start; 5d251bb..119b707 touched nothing under
+#             app/, data/ or contract/, so the story's measured Data Reality still held).
+#             Re-verified: fixture manifest 2 players, 2 artifacts, bijection exact; schemaVersion
+#             4; the trends<->matches join total across all 1,248 REAL profiles (0 violations).
+#
+#             HEADLINE: AC 6 PASSES AND THE FILED REMEDY FOR IT WAS WRONG. The ledger proposed "a
+#             shared re-export module that both LEAVES import", but both leaves already imported
+#             the same bare "recharts" specifier — module identity was never the cause. The
+#             duplication is PER ASYNC CHUNK GROUP, and there were two groups because there were
+#             two `dynamic()` IMPORT SPECIFIERS. Fixed with `Charts.tsx`, one barrel that every
+#             CALL SITE names. Measured: 2 VENDOR chunks (89.4 + 89.2 KB gzip) -> exactly 1
+#             (103.2 KB). Cost table: <lg match page +0.5 KB gzip (against D1's ~40 KB stop
+#             threshold), >=lg and second-chart-open both -99.1 KB, /players avoids a third
+#             ~89 KB vendor.
+#
+#             FOUR DEFECTS FOUND IN THE BROWSER THAT NO TEST COULD SEE:
+#             (1) `expert.field.highSpeedRuns` is "CARR. ALTA VEL." — an ABBREVIATION, not the
+#                 term D12's reuse table calls it. Fine in an Expert <th> (headTitle carries the
+#                 full term); an unexplained all-caps string in a stat tile, which has no such
+#                 slot. Switched to enums.leaderboardMetric.* and filed.
+#             (2) `useEmptyHeadline()` composes "...para este partido", FALSE on a profile. The
+#                 Hub had silently worked around it; this story authors player.empty.* and files
+#                 the reusability gap for 2.16/2.17.
+#             (3) D6 rules the trend x-tick "the opponent's team code" — a field that DOES NOT
+#                 EXIST on this route (opponent is an EntityRef; teamCode lives only on match
+#                 metadata and entities.teams[]). Amended to the match date, with the opponent
+#                 carried in the data alternative, the figure summary and the table below.
+#             (4) LEADERBOARD_FORMAT.totalDistance is "integer" — a silent AR-5 breach here,
+#                 since 918/1,248 aggregates and 2,937/3,288 match rows are fractional. Scoped
+#                 around with profileMetricFormat(); filed.
+#
+#             LEDGER MOVED: closed the recharts vendor entry, the /players half of the dangling
+#             links, the InvolvementChart hatch, and the minutes half of the 0-minutes entry
+#             (RULED: render 0 verbatim — no <1, no dash). RULED AND FIXED the open row-link
+#             focus-ring item — the ring moves off the anchor onto the <tr>, verified under a
+#             REAL Tab press (ring 1411x63 vs the anchor's 58x50). Recorded the y-tick trap
+#             discharged. FILED: perNinety (D3, corpus max 104,139.0), passCompletion 0,0 % at
+#             hero altitude (D4b), plus (1)-(4) above. NOT re-filed: the <title> language
+#             question, which this route INHERITS (owner Juan) and which 2.19 puts on 1,248
+#             routes.
+#
+#             TASK 9.4 SIZING FOR 2.19 (measured once, both cutover points reverted — data.ts
+#             diff is empty): 1,248 player + 104 match routes, 76 s next build, out/ 79.3 MB /
+#             12,243 files, one player HTML 23,328 B vs 23,247 B on fixtures — i.e. the AD-11
+#             projection holds at scale, +81 B. Nothing timed out; assert-schema-version.test.ts
+#             PASSED (694 ms), contradicting the story's expectation — reported, no owner claimed.
+#
+#             PROPOSED COPY awaiting Juan at review (EXPERIENCE.md rows appended, never
+#             renumbered): the four section headings, the five per-match column heads, the
+#             transposed table's Metrica/Valor, the started Si/No pair, the appearances line and
+#             both empty states.
+#
+#             COORDINATION: 2-14's code-review session ran a sweeping `git add` and committed
+#             this story's in-progress work inside 79bd7aa ("Story 2.14 code review..."). 2-16's
+#             session has app/ red — 23 tsc errors in Team*.tsx / team-profile-model.test.ts
+#             referencing a team.* namespace not yet in es.ts, ZERO in any 2-15 file. This
+#             story's full gate and suite were therefore verified in an ISOLATED WORKTREE at HEAD
+#             plus its own diff: build green, 1,060 tests green, exactly one VENDOR chunk.
+# 2026-08-07: story 1-19 CONTEXT CREATED (backlog -> ready-for-dev). EPIC 1's LAST STORY.
+#             Baseline 12fad17 (verified HEAD; data/ and pipeline/ both clean, 1,412 tracked
+#             under data/). pipeline/ + data/ ONLY, plus .gitignore and the two ledger
+#             artifacts. app/ IS OFF LIMITS — 2-15 in progress, 2-14/2-16 in flight; the
+#             fixtures->/data DATA_ROOT flip stays Story 2.19's.
+#             THE ARTIFACTS ALREADY EXIST (1.16/1.17/1.18 emitted all 1,402). The ACs are the
+#             end-to-end run, the report, the acceptance and the reproducibility proof.
+#             THREE RULINGS TAKEN: (D1) the format_summary "Warnings (non-fatal)" de-duplication
+#             is TAKEN after being deferred three times — every one of the seven dependent tests
+#             asserts substring containment only, so the stated blocker was measured and does not
+#             hold; 728 lines -> 7. (D2) the batch report of record is format_summary's stdout,
+#             captured verbatim into the Dev Agent Record; no .json under data/ (the App's
+#             schema-version gate walks that tree). (D3) four ledger items explicitly NOT claimed,
+#             incl. the >=/== pass-network tightening and domain_e_checks' bare subscript.
+#             FIVE OPEN RULINGS FOR JUAN (R1 committed report copy, R2 the "near-miss parses" AC
+#             clause with no implementation, R3 _parse_rows' silent skip, R4 assert-schema-version
+#             ownership on a now-false premise, R5 orchestrator vs gate semantics) — each carries
+#             a recommendation so the story is not blocked.
+#             ACCEPTANCE SHAPE: SM-1's "or" branch is the EXPECTED outcome. The ruled baseline is
+#             extracted 104 / failed 0 / corpus_gaps 0 / orphans 0 with EXACTLY TWO self-validation
+#             failures (PMSR-M19-ARG-V-ALG 39/40, PMSR-M58-TUN-V-NED 33/34, both away
+#             forced-turnover), exit 1 BY DESIGN since 1.12. Never assert exit 0. A THIRD failure
+#             is a regression and re-opens the 1.12 ruling — this run is the tripwire.
+#             SEQUENCING IS THE HARD PART: code_version() fingerprints all of pipeline/**/*.py, so
+#             every production edit re-invalidates all 104 staged records. Tasks 2-6 land FIRST,
+#             the authoritative run second, the byte-identical proof LAST on a QUIET TREE.
+#             Stories 1.9 and 1.14 both lost a run to a concurrent mid-batch .py save.
+#             VALIDATION: two fresh-context subagents ran the checklist against code and against
+#             the planning/ledger artifacts. 14 findings applied — incl. the bijection deadlock is
+#             CONDITIONAL (a clean re-run passes; it fires only when the entity set moves), the
+#             --expect-reports match path is already tested (the gap is scale), the .gitignore
+#             patterns are SIBLINGS not children (data/matches.staged/), is_unchanged lives in
+#             ingest/records.py not precompute/, AC 1's "per-report status" clause had no
+#             obligation, and two ledger entries are filed twice so a sweep must close both.
+#             HEAD MOVED MID-CREATION to 79bd7aa (Story 2.14 code review) and its sweeping stage
+#             captured a mid-draft copy of the story file. 79bd7aa is app/-ONLY — pipeline/ and
+#             data/ verified byte-unchanged (git ls-files data/ still 1,412, both trees clean) —
+#             so no figure in the story is stale. Disclosed in the story, not repaired.
 # 2026-08-07: story 2-16 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 12fad17 (NOT the
 #             119b707 the brief pinned — HEAD MOVED MID-CREATION and the story was re-based).
 #             app/ + locales + EXPERIENCE.md policy rows + the two ledger artifacts ONLY;
@@ -3146,7 +3243,7 @@ development_status:
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
   1-17-tournament-index-results-standings-leaderboards: done
   1-18-team-player-profile-artifacts: done
-  1-19-full-batch-run-batch-report-104-104-acceptance: backlog
+  1-19-full-batch-run-batch-report-104-104-acceptance: in-progress
   epic-1-retrospective: optional
   epic-2: in-progress
   # i18n scaffolding first within Epic 2 (per sprint-planning directive); requires 1-1 fixtures
@@ -3170,9 +3267,9 @@ development_status:
   2-12-tournament-hub-results-standings: done
   2-13-tournament-leaderboards: done
   2-14-header-search: done
-  2-15-player-profile: in-progress
-  2-16-team-profile: ready-for-dev
-  2-17-comparison-mode: backlog
+  2-15-player-profile: review
+  2-16-team-profile: review
+  2-17-comparison-mode: in-progress
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
   2-19-performance-accessibility-hardening-real-data-swap-launch: backlog

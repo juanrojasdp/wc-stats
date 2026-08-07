@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { GlossaryTerm } from "@/components/GlossaryTerm";
 import { ProfileStatTiles, type ProfileStatTile } from "@/components/ProfileStatTiles";
 import { ResultChip } from "@/components/ResultChip";
 import { stageLabelKey } from "@/lib/hub-model";
@@ -118,7 +119,31 @@ export function TeamHero({ data }: { data: TeamHeroData }) {
     },
     {
       key: "pressingIntensity",
-      labelNode: t("team.tile.pressingIntensity"),
+      /*
+       * GLOSSARY-MARKED (Task 10.8, UX-DR20), and the tile label is the ONLY
+       * safe host on this route. Every competing host is barred: a sortable
+       * column head cannot nest a focusable trigger inside its
+       * `<button aria-expanded>` (2.13, and nothing in the build catches it),
+       * the chart axis titles are SVG `<text>` that no popover can attach to,
+       * and the section `<h2>`s ("Identidad táctica", "Formaciones", "Partidos
+       * del torneo") match no row of the per-term policy table — a dotted
+       * underline with no popover behind it is the broken promise 2.5 decision 8
+       * rules against.
+       *
+       * `pressing` is a real `GLOSSARY_TERMS` id and its definition is exactly
+       * what a reader needs here: it says the press rates are INDEPENDENT and do
+       * not sum to 100, which is the same fact D10 makes the charts' note carry.
+       *
+       * A `<div>`, not a `<span>`: decision 9 forbids portalling
+       * `Popover.Content`, so the panel mounts as a DOM sibling of its trigger,
+       * and `div` inside `span` is an invalid content model that React's
+       * validateDOMNesting does NOT warn about.
+       */
+      labelNode: (
+        <div className="inline-flex items-center gap-1 normal-case">
+          <GlossaryTerm termId="pressing">{t("team.tile.pressingIntensity")}</GlossaryTerm>
+        </div>
+      ),
       /*
        * A COUNT-VALUED MEAN AT 1 dp, WITH NO PERCENT SIGN (D12). The contract
        * calls it "Mean defensive pressures applied per match"; Mexico is 213.0.

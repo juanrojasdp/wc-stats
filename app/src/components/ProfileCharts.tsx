@@ -12,6 +12,11 @@ import {
 } from "recharts";
 
 import { cn } from "@/lib/utils";
+import {
+  AXIS_LABEL_MAX_CHARS,
+  AXIS_LABEL_MAX_LINES,
+  wrapAxisLabel,
+} from "@/viz/phases-model";
 
 /*
  * The THIRD recharts-bearing leaf (Story 2.15): the two single-series charts
@@ -59,8 +64,89 @@ const TICK_STYLE = { className: "type-caption tabular-nums", fill: "var(--ink-se
 const TREND_MARGIN = { top: 8, right: 12, bottom: 20, left: 4 } as const;
 const ZONE_MARGIN = { top: 8, right: 12, bottom: 20, left: 4 } as const;
 
-/** Y-axis width for the zone chart's category ticks ("Zona 1" … "Zona 5"). */
+/**
+ * Y-axis width for SHORT category ticks — "Zona 1" … "Zona 5" (Story 2.15).
+ *
+ * THE DEFAULT, NOT THE ONLY VALUE. Story 2.16 generalized this chart to any
+ * single-series category set and its labels are the seventeen Spanish phase
+ * names, which do not fit in 62 px: measured on `/teams/mexico/` before the fix,
+ * "Salida de balón sin presión" and "Salida de balón con presión" overlapped
+ * vertically, "Progresión" clipped to "rogresión" and "Contraataque" to
+ * "traataque". `CATEGORY_AXIS_WIDTH_WIDE` is what those callers pass.
+ */
 const ZONE_CATEGORY_AXIS_WIDTH = 62;
+
+/*
+ * The WIDE width is NOT exported from here, deliberately. Everything in this
+ * module sits on the deferred side of the `Charts.tsx` lazy boundary, so a
+ * section importing a const from it would create a STATIC import edge to
+ * recharts and pull ~300 kB into the eager bundle — defeating the split that
+ * barrel exists to protect. Callers get the value from their own PURE model,
+ * which already owns the other axis decisions (ticks, axisMax, heightClass):
+ * see `RATE_CATEGORY_AXIS_WIDTH` in `viz/team-profile-model.ts`.
+ */
+
+/** Line height for the wrapped category tick, in CSS px. */
+const AXIS_LINE_HEIGHT_PX = 11;
+
+/**
+ * A wrapped, two-line-capable category tick.
+ *
+ * recharts renders an axis tick as ONE `<text>` with NO wrapping and NO
+ * truncation — a long label simply runs under the plot or off the SVG, and
+ * recharts' own attempt at it breaks mid-word ("Salidadebalónsinpresión").
+ *
+ * COPIED IN BEHAVIOUR FROM `TacticalCharts`' `CategoryTick`, and it shares that
+ * file's wrapping MODEL rather than re-deriving one: `wrapAxisLabel`,
+ * `AXIS_LABEL_MAX_CHARS` and `AXIS_LABEL_MAX_LINES` are imported from
+ * `phases-model`, which is pure and unit-tested. One wrapping contract in the
+ * codebase, two painters.
+ */
+function CategoryTick(props: {
+  x?: number;
+  y?: number;
+  payload?: { value?: string | number };
+}) {
+  const { x, y, payload } = props;
+  if (x === undefined || y === undefined) {
+    return null;
+  }
+  const lines = wrapAxisLabel(String(payload?.value ?? ""), AXIS_LABEL_MAX_CHARS, AXIS_LABEL_MAX_LINES);
+  if (lines.length === 0) {
+    return null;
+  }
+  // Centre the block on the tick: one line sits on it, two straddle it.
+  const offset = ((lines.length - 1) * AXIS_LINE_HEIGHT_PX) / 2;
+  return (
+    <text
+      x={x}
+      y={y - offset}
+      textAnchor="end"
+      dominantBaseline="middle"
+      fill="var(--ink-secondary)"
+      /*
+       * `tabular-nums` IS CARRIED OVER FROM `TICK_STYLE`, which this tick
+       * replaces. Dropping it would be a silent regression on the speed zones:
+       * "Zona 1" … "Zona 5" all contain digits, `type-caption` carries no
+       * font-variant-numeric of its own, and five category labels whose digits
+       * do not align column-to-column is exactly what the utility exists to
+       * prevent. It is inert on the phase names, which have no digits.
+       */
+      className="type-caption tabular-nums"
+    >
+      {/*
+       * Keyed by INDEX, not by line content: a label that wraps to two identical
+       * lines would otherwise collide on the key and React would drop one tspan,
+       * rendering half the label.
+       */}
+      {lines.map((line, index) => (
+        <tspan key={index} x={x} dy={index === 0 ? 0 : AXIS_LINE_HEIGHT_PX}>
+          {line}
+        </tspan>
+      ))}
+    </text>
+  );
+}
 
 /* --------------------------------- Trends ---------------------------------- */
 
@@ -191,17 +277,38 @@ export function TrendChart({
   );
 }
 
-/* ----------------------------- The speed zones ----------------------------- */
+/* --------------------------- The category bar chart ------------------------ */
 
-export interface SpeedZoneChartPoint {
-  /** The already-resolved zone label ("Zona 1" … "Zona 5"). */
+/*
+ * GENERALIZED FROM `SpeedZoneChart` BY STORY 2.16 (its ruled D2).
+ *
+ * The component was already general — one series, `--viz-single`, a
+ * caller-supplied `heightClass` with no category-count constraint — and its NAME
+ * was the only speed-specific thing about it. `/teams/{slug}` mounts it four
+ * times at 8 / 9 / 3 / 4 categories.
+ *
+ * THE ALTERNATIVES WERE REJECTED FOR MEASURED REASONS. Widening
+ * `DistributionChart` (structurally two-series: `home` and `away` are both
+ * required) would put regression surface on four shipped two-series mounts for
+ * zero gain. A NEW chart module would mint a fresh `dynamic()` specifier, hence
+ * a fresh chunk group and a second ~300 kB recharts vendor copy — the exact
+ * defect `Charts.tsx` exists to remove, and the private copy 2.11a decision 1
+ * bans.
+ *
+ * TWO THINGS CHANGED BEYOND THE NAME, both forced by prose-length labels:
+ * the category axis width became a PROP (defaulted, so the speed zones are
+ * untouched), and the default tick became the wrapping `CategoryTick`.
+ */
+
+export interface CategoryBarPoint {
+  /** The already-resolved category label ("Zona 1", "Salida de balón", …). */
   label: string;
-  /** Metres in that band. */
+  /** The plotted value, raw. The axis is pre-scaled by the model. */
   value: number;
 }
 
-export interface SpeedZoneChartProps {
-  points: SpeedZoneChartPoint[];
+export interface CategoryBarChartProps {
+  points: CategoryBarPoint[];
   ticks: number[];
   axisMax: number;
   formatValue: (value: number) => string;
@@ -209,6 +316,11 @@ export interface SpeedZoneChartProps {
   axisCategoryLabel: string;
   figureSummary: string;
   heightClass: string;
+  /**
+   * Pixels reserved for the CATEGORY (y) axis. Defaults to the narrow width the
+   * speed zones need; pass `CATEGORY_AXIS_WIDTH_WIDE` for prose-length labels.
+   */
+  categoryAxisWidth?: number;
 }
 
 /**
@@ -226,7 +338,7 @@ export interface SpeedZoneChartProps {
  * is not the total. No total is rendered, no total is derived, and the section's
  * data table lists the five bands only.
  */
-export function SpeedZoneChart({
+export function CategoryBarChart({
   points,
   ticks,
   axisMax,
@@ -235,7 +347,8 @@ export function SpeedZoneChart({
   axisCategoryLabel,
   figureSummary,
   heightClass,
-}: SpeedZoneChartProps) {
+  categoryAxisWidth = ZONE_CATEGORY_AXIS_WIDTH,
+}: CategoryBarChartProps) {
   return (
     <div role="img" aria-label={figureSummary} className="min-w-0">
       {/*
@@ -267,8 +380,12 @@ export function SpeedZoneChart({
             <YAxis
               type="category"
               dataKey="label"
-              width={ZONE_CATEGORY_AXIS_WIDTH}
-              tick={TICK_STYLE}
+              width={categoryAxisWidth}
+              /* The WRAPPING tick, not `TICK_STYLE`: recharts' default renders
+               * one unwrapped <text>, which broke mid-word and overlapped at
+               * phase-name length. `CategoryTick` carries its own fill and
+               * class, so the style object is not passed alongside it. */
+              tick={<CategoryTick />}
               interval={0}
               axisLine={false}
               tickLine={false}

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 
 import { DataTable } from "@/components/DataTable";
+import { GlossaryTerm } from "@/components/GlossaryTerm";
 import { ProfileStatTiles, type ProfileStatTile } from "@/components/ProfileStatTiles";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import { useLocale, useT } from "@/lib/i18n-provider";
@@ -29,7 +30,7 @@ import {
  * `highSpeedRuns` / `sprints` / `topSpeed` as three tiles, and the data-table
  * alternative behind "Ver los datos".
  *
- * It owns the locale and the format layer; `SpeedZoneChart` owns recharts and
+ * It owns the locale and the format layer; `CategoryBarChart` owns recharts and
  * receives resolved strings.
  *
  * NO EMPTY STATE HERE, and that is ruled (D8). A keeper who never played has a
@@ -64,8 +65,8 @@ function ChartFallback() {
  * `@/components/ProfileCharts` would mint a THIRD async chunk group and with it
  * a third ~300 kB recharts vendor copy, which is the duplication AC 6 removes.
  */
-const SpeedZoneChart = dynamic(
-  () => import("@/components/Charts").then((module) => module.SpeedZoneChart),
+const CategoryBarChart = dynamic(
+  () => import("@/components/Charts").then((module) => module.CategoryBarChart),
   { ssr: false, loading: () => <ChartFallback /> }
 );
 
@@ -116,19 +117,69 @@ export function PhysicalSection({ physical }: { physical: PhysicalModel }) {
    * artifact repeats them on purpose; deduping would be a client-side edit of a
    * verbatim surface (AR-5).
    *
-   * Every label REUSES a shipped key (D12): `expert.field.highSpeedRuns` and
-   * `expert.field.sprints` already ship, and `enums.leaderboardMetric.topSpeed`
-   * is the term the Hero tile and the leaderboards already use.
+   * EVERY LABEL COMES FROM `enums.leaderboardMetric.*`, THE FULL-TERM
+   * NAMESPACE — and that is a correction to D12's reuse table rather than a
+   * departure from it. That table names `expert.field.highSpeedRuns` as the
+   * shipped term, but its actual value is "CARR. ALTA VEL.": the ABBREVIATION,
+   * which the Expert Layer can use because a `<th>` carries the full term in
+   * `headTitle`. A TILE HAS NO SUCH SLOT, so an abbreviation there is an
+   * all-caps string with nothing behind it — exactly what UX-DR17/UX-DR19
+   * require the full term for. `enums.leaderboardMetric.highSpeedRuns` is
+   * "Carreras a alta velocidad", equally shipped and equally a reuse.
+   * (`sprints` is "Sprints" in both namespaces; it takes the same one for
+   * uniformity.) Caught in the browser, not by a test.
    */
   const tiles: ProfileStatTile[] = [
     {
       key: "physical-highSpeedRuns",
-      labelNode: t("expert.field.highSpeedRuns"),
+      /*
+       * GLOSSARY-MARKED (Task 10.7, UX-DR20). The tile label is the ONE place on
+       * this route where a term can carry a popover: D5 makes the tile itself a
+       * non-target whose only focusable child may be a `GlossaryTerm`, and the
+       * competing hosts are all barred — a sortable column head cannot nest a
+       * focusable trigger inside its `<button aria-expanded>` (2.13), and the
+       * chart's axis titles are SVG `<text>` that no popover can attach to.
+       *
+       * `high-speed-run` and `sprint` are both real `GLOSSARY_TERMS` ids. The
+       * section's `<h2>` ("Perfil físico") matches no row of the policy table,
+       * so it carries NO mark — a dotted underline with no popover behind it is
+       * the broken promise 2.5 decision 8 rules against.
+       *
+       * A `<div>`, not a `<span>`: decision 9 forbids portalling
+       * `Popover.Content`, so the panel mounts as a DOM sibling of its trigger,
+       * and `div` inside `span` is an invalid content model that React's
+       * validateDOMNesting does NOT warn about.
+       *
+       * NO `normal-case` (code review 2026-08-07). Both marked labels carried it
+       * and the third tile — a plain string — did not, so one row read "Carreras
+       * a alta velocidad", "Sprints", "VELOCIDAD MÁXIMA (KM/H)". `type-stat-label`
+       * sets `text-transform: uppercase` and every shipped tile on the site
+       * takes it; the override was incidental to the glossary markup, not a
+       * ruling, so it goes rather than spreading to the third tile.
+       */
+      labelNode: (
+        <div className="inline-flex items-center gap-1">
+          <GlossaryTerm termId="high-speed-run">
+            {t("enums.leaderboardMetric.highSpeedRuns")}
+          </GlossaryTerm>
+        </div>
+      ),
       value: formatProfileValue(physical.highSpeedRuns, "integer", locale),
     },
     {
       key: "physical-sprints",
-      labelNode: t("expert.field.sprints"),
+      /*
+       * No `termLang`. `sprint` is policy `jargon` — the English term stays in
+       * both dictionaries — so it is not "in a different language from the
+       * surrounding copy" in EN, and a hardcoded `lang="en"` would assert a
+       * language change that does not occur there. `StoryStatTiles`' xG call
+       * site (also `jargon`) omits it for the same reason.
+       */
+      labelNode: (
+        <div className="inline-flex items-center gap-1">
+          <GlossaryTerm termId="sprint">{t("enums.leaderboardMetric.sprints")}</GlossaryTerm>
+        </div>
+      ),
       value: formatProfileValue(physical.sprints, "integer", locale),
     },
     {
@@ -168,7 +219,17 @@ export function PhysicalSection({ physical }: { physical: PhysicalModel }) {
       headTitle: null,
       render: (row) => t(speedZoneBandKey(row.zone)),
       align: "text",
-      sort: { kind: "text", valueOf: (row) => t(speedZoneBandKey(row.zone)) },
+      /*
+       * SORTS THE ZONE, NOT THE BAND STRING (code review 2026-08-07). The
+       * descriptors are numeric RANGES rendered as text — "0-7 km/h", "7-15
+       * km/h", "15-20 km/h", "20-25 km/h", "25 km/h o más" — and
+       * `Intl.Collator("es")` orders them `0-7 | 15-20 | 20-25 | 25 km/h o más |
+       * 7-15`, putting zone 5 between zones 1 and 2. The bands are 1:1 with the
+       * zones and strictly increasing, so the zone index IS the band order; this
+       * is the same trap the per-match date column documents twice, reached from
+       * the other side.
+       */
+      sort: { kind: "number", valueOf: (row) => row.zone },
     },
     {
       key: "metres",
@@ -185,14 +246,14 @@ export function PhysicalSection({ physical }: { physical: PhysicalModel }) {
       <h2 className="type-title text-ink-primary">{title}</h2>
       {/*
        * An UNNAMED <figure> grouping the chart with its data alternative. It
-       * carries no role and no aria-label on purpose: `SpeedZoneChart` is
+       * carries no role and no aria-label on purpose: `CategoryBarChart` is
        * already `role="img"` with the localized summary, and a named figure
        * around a named img gives the reader two competing accessible names
        * (`InvolvementChart`'s ruling).
        */}
       <figure className="mt-3 min-w-0">
         <div className="rounded-lg bg-surface-raised p-tile-gap">
-          <SpeedZoneChart
+          <CategoryBarChart
             points={points}
             ticks={axis.ticks}
             axisMax={axis.max}

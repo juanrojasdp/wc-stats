@@ -158,17 +158,30 @@ export const es = {
       definition:
         "El equipo defiende con sus líneas cerca de su propio arco. Es una de las tres alturas de bloque que mide el informe.",
     },
+    /*
+     * BOTH DEFINITIONS WERE FACTUALLY FALSE AND ARE CORRECTED BY STORY 2.16
+     * (R1's rider). PROPOSED — Juan to confirm or overturn at review.
+     *
+     * Each closed with a sentence saying the report "no dice a qué fase del
+     * juego corresponde". Change-set CS-2 established the OPPOSITE: the report
+     * prints THREE NAMED PANELS per possession state, and `shapeByPhase` now
+     * carries all eighteen values. `/teams/{slug}` renders those panels by name,
+     * so the old text contradicted the same page it appeared on.
+     *
+     * The replacement clause states what the report DOES carry, without
+     * claiming a per-panel interpretation the contract does not license.
+     */
     "line-height": {
       es: "altura de la línea defensiva",
       en: "line height",
       definition:
-        "A qué distancia del propio arco juega la última línea, en metros. El informe no dice a qué fase del juego corresponde cada distancia.",
+        "A qué distancia del propio arco juega la última línea, en metros. El informe la reporta por panel de fase: salida de balón en zona baja y media, último tercio, y los tres bloques defensivos.",
     },
     "team-length": {
       es: "longitud del equipo",
       en: "team length",
       definition:
-        "La distancia en metros entre la línea más adelantada del equipo y la más retrasada. El informe no dice a qué fase del juego corresponde.",
+        "La distancia en metros entre la línea más adelantada del equipo y la más retrasada. El informe la reporta por panel de fase, igual que la altura de la línea.",
     },
     "phases-of-play": {
       es: "fases del juego",
@@ -2477,7 +2490,16 @@ export const es = {
       speedBand: "Rango",
       date: "Fecha",
       opponent: "Rival",
-      stage: "Fase",
+      /*
+       * "Etapa", NOT "Fase" — ruled by Juan at code review 2026-08-07, unifying
+       * the `Stage` enum's Spanish name across both profile routes. This key
+       * shipped as "Fase" and `team.column.stage` as "Etapa" in the same diff,
+       * which is two names for one enum: `viz.table.phase` already owns "Fase"
+       * for the possession-phase tables, so "Etapa" is the name that collides
+       * with nothing on any route. The i18n duplicate checks are per-namespace
+       * and could never have caught the divergence.
+       */
+      stage: "Etapa",
       started: "Titular",
       minutesPlayed: "Minutos",
       metric: "Métrica",

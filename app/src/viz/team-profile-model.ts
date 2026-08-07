@@ -142,7 +142,27 @@ export interface RateChartModel {
   axisMax: number;
   heightClass: string;
   categoryCount: 3 | 4 | 8 | 9;
+  /** Pixels reserved for the category axis — see `RATE_CATEGORY_AXIS_WIDTH`. */
+  categoryAxisWidth: number;
 }
+
+/**
+ * Pixels reserved for the CATEGORY (y) axis on the four rate charts.
+ *
+ * IT LIVES IN THE PURE MODEL, not at the call site and not imported from the
+ * chart. Everything in `ProfileCharts.tsx` sits on the deferred side of the
+ * `Charts.tsx` lazy boundary, so importing a const from it would create a static
+ * import edge to recharts and pull ~300 kB into the eager bundle — defeating the
+ * code-split that barrel exists to protect. This module already owns every other
+ * axis decision (ticks, axisMax, heightClass), so it owns this one too.
+ *
+ * 96 px, matching `DistributionChart`'s, because it fits `AXIS_LABEL_MAX_CHARS`
+ * at the 11 px type floor. The chart's own 62 px default is sized for "Zona 1" …
+ * "Zona 5"; at phase-name length it overlapped and clipped — measured on
+ * `/teams/mexico/`: "Salida de balón sin presión" and "Salida de balón con
+ * presión" collided vertically, "Progresión" rendered as "rogresión".
+ */
+export const RATE_CATEGORY_AXIS_WIDTH = 96;
 
 /** The largest value across a single-series row set — the axis max's input. */
 function rowsPeak(rows: readonly CategoryRow[]): number {
@@ -161,6 +181,7 @@ function toRateChart(rows: CategoryRow[], categoryCount: 3 | 4 | 8 | 9): RateCha
     axisMax: percentAxisMax(peak),
     heightClass: distributionChartHeightClass(categoryCount),
     categoryCount,
+    categoryAxisWidth: RATE_CATEGORY_AXIS_WIDTH,
   };
 }
 

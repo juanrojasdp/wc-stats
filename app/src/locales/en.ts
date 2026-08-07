@@ -102,17 +102,22 @@ export const en: Dictionary = {
       definition:
         "The team defends with its lines close to its own goal. One of the three block heights the report measures.",
     },
+    /*
+     * CORRECTED BY STORY 2.16 (R1's rider) — see the es.ts note. Both closed
+     * with a claim that change-set CS-2 made false: the report DOES name three
+     * panels per possession state. PROPOSED, pending Juan at review.
+     */
     "line-height": {
       es: "altura de la línea defensiva",
       en: "line height",
       definition:
-        "How far from its own goal a team's last line plays, in metres. The report does not state which phase of play each distance describes.",
+        "How far from its own goal a team's last line plays, in metres. The report gives it per phase panel: build-up low and mid, final third, and the three defensive blocks.",
     },
     "team-length": {
       es: "longitud del equipo",
       en: "team length",
       definition:
-        "The distance in metres between a team's most advanced line and its deepest one. The report does not state which phase of play it describes.",
+        "The distance in metres between a team's most advanced line and its deepest one. The report gives it per phase panel, like line height.",
     },
     "phases-of-play": {
       es: "fases del juego",

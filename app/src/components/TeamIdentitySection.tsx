@@ -74,14 +74,21 @@ const CAPTION_SEPARATOR = " — ";
  * recharts vendor copy — the exact defect `Charts.tsx` exists to remove, and the
  * measured baseline is exactly ONE vendor chunk.
  *
- * `SpeedZoneChart` IS CONSUMED UNDER ITS SHIPPED NAME. D2 ruled it renamed to
- * `CategoryBarChart` — its props are already general and only the name is
- * speed-specific — but the rename is CONDITIONAL on `ProfileCharts.tsx` being
- * clean, and at Task 1.3 `2-15-player-profile` was `in-progress` in a concurrent
- * session with that file untracked in the tree. D2's coordination condition is
- * explicit: "If it is dirty from another session, DO NOT RENAME. Consume
- * `SpeedZoneChart` under its existing name and file the rename for 2.17." A
- * misleading component name is cheaper than a merge collision.
+ * `CategoryBarChart` IS `SpeedZoneChart` GENERALIZED (ruled D2). The rename was
+ * CONDITIONAL on `ProfileCharts.tsx` being clean: at Task 1.3
+ * `2-15-player-profile` was `in-progress` in a concurrent session with that file
+ * untracked, so the charts were first consumed under the old name. Once 2-15
+ * reached `review` and the file was committed and clean, D2 was applied as
+ * originally ruled.
+ *
+ * THE WIDE CATEGORY AXIS IS NOT COSMETIC. The shipped 62 px axis was sized for
+ * "Zona 1" … "Zona 5"; these labels are the seventeen Spanish phase names.
+ * Measured on `/teams/mexico/` before the fix: "Salida de balón sin presión" and
+ * "Salida de balón con presión" OVERLAPPED vertically, "Progresión" clipped to
+ * "rogresión", "Contraataque" to "traataque", and recharts' default tick broke
+ * words mid-character ("Salidadebalónsinpresión"). The chart now renders the
+ * same wrapping tick `DistributionChart` uses, off the same pure `wrapAxisLabel`
+ * model.
  */
 const IN_POSSESSION_HEIGHT = distributionChartHeightClass(8);
 const OUT_OF_POSSESSION_HEIGHT = distributionChartHeightClass(9);
@@ -102,7 +109,7 @@ function ChartFallback({ heightClass }: { heightClass: string }) {
 }
 
 function categoryChart(heightClass: string) {
-  return dynamic(() => import("@/components/Charts").then((module) => module.SpeedZoneChart), {
+  return dynamic(() => import("@/components/Charts").then((module) => module.CategoryBarChart), {
     // Legal by AR-11: this region is already client-only, so no markup for it
     // exists in `out/` and there is no server render to skip.
     ssr: false,
@@ -196,6 +203,21 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
       <div className="flex flex-col gap-1">
         <p className="type-stat-label text-ink-secondary">{heading}</p>
         {/*
+         * THE INDEPENDENT-RATES NOTE, VISIBLE (D10). `es.ts` calls it "THE
+         * SINGLE MOST IMPORTANT SENTENCE ON THIS SURFACE": the eight and nine
+         * values are INDEPENDENT RATES — corpus in-possession sums run 84-149
+         * and equal 100 on five of 208 team-innings, out-of-possession 73-97 and
+         * equal 100 on ZERO. Without it a reader reasonably assumes the bars
+         * partition the match.
+         *
+         * It ships as VISIBLE TEXT and not only inside `figureSummary`. The
+         * summary is the figure's accessible name, so a sighted reader would
+         * never see the one sentence that stops the chart being misread —
+         * `PhasesSection` renders the same note as a visible `<p>` above its
+         * charts for exactly this reason.
+         */}
+        <p className="type-caption text-ink-secondary">{note}</p>
+        {/*
          * NO SECOND `role` AND NO SECOND `aria-label` AT THIS CALL SITE. The
          * chart component already supplies `role="img"` and takes its accessible
          * name from `figureSummary`; naming it again here would give the reader
@@ -210,6 +232,7 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
           axisCategoryLabel={axisCategoryLabel}
           figureSummary={figureSummary}
           heightClass={model.heightClass}
+          categoryAxisWidth={model.categoryAxisWidth}
         />
         {/*
          * NFR-2's TEXT ALTERNATIVE OF RECORD, one per chart, `surface="canvas"`

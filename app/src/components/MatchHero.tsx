@@ -4,6 +4,14 @@ import Link from "next/link";
 
 import type { GoalRecord } from "@/lib/contract/contract-types";
 import { formatDate, formatKickoff } from "@/lib/format";
+/*
+ * `teamHref` REPLACES two hand-written `/teams/${…}/` template literals (Story
+ * 2.16). The builder was already imported by four other modules and emits its
+ * own trailing slash; interpolating the route inline beside it is exactly how a
+ * missing slash gets in, and `trailingSlash: true` turns a slash-less href into
+ * a redirect rather than a link.
+ */
+import { teamHref } from "@/lib/hub-model";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import {
   decidedByCaption,
@@ -100,7 +108,32 @@ export function MatchHero({ data }: { data: HeroData }) {
           </span>
           {/* min-h-11 on the anchor itself — Task 5.3's ≥44×44px target. */}
           <Link
-            href={`/teams/${homeTeam.teamId}/`}
+            href={teamHref(homeTeam.teamId)}
+            /*
+             * NO PREFETCH, and it is MEASURED (Story 2.16 Task 11.6) rather than
+             * precautionary. Next prefetches every `<Link>` entering the
+             * viewport, and `prefetch` was ABSENT here, so the default was ON.
+             *
+             * These two links were the last unfiled prefetch sites in the app.
+             * While `/teams/{id}/` did not exist they fired two cheap 404s
+             * (~300 B each) and nobody noticed. Story 2.16 BUILT that route, and
+             * the cost changed shape: measured on
+             * `/matches/m001-mexico-south-africa/`, the two links fired SEVEN
+             * requests totalling ~5.7 kB — `/teams/mexico/` alone pulled five
+             * RSC payloads (`__next._tree.txt`, `__next._head.txt`,
+             * `__next.teams.txt`, `__next.teams.$d$slug.txt`,
+             * `__next.teams.$d$slug.__PAGE__.txt`) — out of 38 resource entries
+             * on the whole page. At 2.19's real-data scale BOTH sides resolve on
+             * all 104 match pages, so every match load would speculatively pull
+             * two full profile route trees the reader has not asked for.
+             *
+             * The five sort/filter surfaces keep `prefetch={false}` for a
+             * DIFFERENT reason (FR-26's zero-network AC, and the per-sort
+             * re-fire Story 2.13 measured at 48 -> 75 entries). This route has no
+             * such AC; the case here is simply that the traffic is unrequested
+             * and now non-trivial.
+             */
+            prefetch={false}
             className="flex min-h-11 items-center justify-center text-center type-title text-ink-primary hover:underline"
           >
             {homeTeam.name}
@@ -116,7 +149,9 @@ export function MatchHero({ data }: { data: HeroData }) {
             {awayTeam.teamCode.toUpperCase()}
           </span>
           <Link
-            href={`/teams/${awayTeam.teamId}/`}
+            href={teamHref(awayTeam.teamId)}
+            /* Measured and ruled with its sibling above — see that comment. */
+            prefetch={false}
             className="flex min-h-11 items-center justify-center text-center type-title text-ink-primary hover:underline"
           >
             {awayTeam.name}

@@ -4,7 +4,7 @@ baseline_commit: 12fad17
 
 # Story 2.16: Team Profile
 
-Status: ready-for-dev
+Status: review
 
 **Scope: `app/` + the two locale files + `EXPERIENCE.md`'s policy table + the two ledger artifacts.** Nothing under `pipeline/`, `contract/`, or `data/`. You consume `data/fixtures/index/team-profiles/*.json`; you never write it.
 
@@ -510,21 +510,21 @@ Every match page currently speculatively fetches **two non-existent routes**.
 - [x] 1.5 Re-read `data/fixtures/index/team-profiles/mexico.json` against the schema and re-measure §Data Reality's counts.
 - [x] 1.6 Confirm R1 is ruled, or proceed under option (A) flagging every minted string `PROPOSED`.
 
-### Task 2 — Generalize the single-series chart (AC 2; D2)
-- 2.1 Apply D2's coordination condition. If clear: rename `SpeedZoneChart` → `CategoryBarChart`, `SpeedZoneChartPoint` → `CategoryBarPoint` in `ProfileCharts.tsx`; repoint `Charts.tsx:45` and `PhysicalSection.tsx:65`. If dirty: consume under the existing name and file the rename for 2.17.
-- 2.2 Verify the chart accepts your four category counts via a caller-supplied `heightClass` from `distributionChartHeightClass`. **Do not use `speedZoneChartHeightClass`** (accepts only `5`).
-- 2.3 **Prove `PhysicalSection` still renders identically** — this is the only regression surface.
-- 2.4 Rebuild and re-measure 1.4's table. **Pass = still exactly ONE vendor chunk and no new leaf specifier.** A second means you added a `dynamic()` specifier — find it.
-- 2.5 With one `<Bar>`, `barGap`/`barCategoryGap` give a bar ~2× a two-series bar's thickness. Accept it, eyeball it against the shipped `SpeedZoneChart`, and note it in Completion Notes.
+### Task 2 — Generalize the single-series chart (AC 2; D2) — [x] COMPLETE
+- [x] 2.1 Apply D2's coordination condition. If clear: rename `SpeedZoneChart` → `CategoryBarChart`, `SpeedZoneChartPoint` → `CategoryBarPoint` in `ProfileCharts.tsx`; repoint `Charts.tsx:45` and `PhysicalSection.tsx:65`. If dirty: consume under the existing name and file the rename for 2.17.
+- [x] 2.2 Verify the chart accepts your four category counts via a caller-supplied `heightClass` from `distributionChartHeightClass`. **Do not use `speedZoneChartHeightClass`** (accepts only `5`).
+- [x] 2.3 **Prove `PhysicalSection` still renders identically** — this is the only regression surface.
+- [x] 2.4 Rebuild and re-measure 1.4's table. **Pass = still exactly ONE vendor chunk and no new leaf specifier.** A second means you added a `dynamic()` specifier — find it.
+- [x] 2.5 With one `<Bar>`, `barGap`/`barCategoryGap` give a bar ~2× a two-series bar's thickness. Accept it, eyeball it against the shipped `SpeedZoneChart`, and note it in Completion Notes.
 
-### Task 3 — Route shell, static params, metadata (AC 3)
-- 3.1 `readTeamProfile(teamId)` in `build-data.ts`, copying `readPlayerProfile`'s shape verbatim (D6).
-- 3.2 `app/src/app/teams/[slug]/page.tsx` — `dynamicParams = false`, sync `generateStaticParams` over `entities.teams` unfiltered (D5).
-- 3.3 `src/lib/team-profile.ts` — `composeTeamTitle`, `composeTeamDescription`, `toTeamHeroData`. Pure, server-importable, **not** `"use client"`.
-- 3.4 `generateMetadata` — await `params`, return `{title, description, openGraph:{title, description}}`, **no `og:image`**. Content = name + record.
-- 3.5 Page body: build-time read → **projection** to the hero → client region below. Wrapper uses **`pb-layer-gap`**.
-- 3.6 Mount **one** `SortAnnouncerProvider` at page level, outside every status gate.
-- 3.7 **`TeamProfileRegion.tsx`** — `"use client"`, mirroring `PlayerProfileRegion.tsx` / `MatchBundleRegion.tsx:63-94`: the four-state machine (`loading | loaded | error | invalid`), the `cancelled` cleanup flag, the `attempt` retry counter, and layout-shaped `aria-busy` skeletons per UX-DR14. Gate `payload.teamId !== slug || payload.schemaVersion !== SCHEMA_VERSION` → **`"invalid"`, no retry offered**. Wrap the region's children in **`TacticalErrorBoundary` (`app/src/components/TacticalErrorBoundary.tsx`)** with route-scoped crash copy, so one malformed section costs a panel and not the route.
+### Task 3 — Route shell, static params, metadata (AC 3) — [x] COMPLETE
+- [x] 3.1 `readTeamProfile(teamId)` in `build-data.ts`, copying `readPlayerProfile`'s shape verbatim (D6).
+- [x] 3.2 `app/src/app/teams/[slug]/page.tsx` — `dynamicParams = false`, sync `generateStaticParams` over `entities.teams` unfiltered (D5).
+- [x] 3.3 `src/lib/team-profile.ts` — `composeTeamTitle`, `composeTeamDescription`, `toTeamHeroData`. Pure, server-importable, **not** `"use client"`.
+- [x] 3.4 `generateMetadata` — await `params`, return `{title, description, openGraph:{title, description}}`, **no `og:image`**. Content = name + record.
+- [x] 3.5 Page body: build-time read → **projection** to the hero → client region below. Wrapper uses **`pb-layer-gap`**.
+- [x] 3.6 Mount **one** `SortAnnouncerProvider` at page level, outside every status gate.
+- [x] 3.7 **`TeamProfileRegion.tsx`** — `"use client"`, mirroring `PlayerProfileRegion.tsx` / `MatchBundleRegion.tsx:63-94`: the four-state machine (`loading | loaded | error | invalid`), the `cancelled` cleanup flag, the `attempt` retry counter, and layout-shaped `aria-busy` skeletons per UX-DR14. Gate `payload.teamId !== slug || payload.schemaVersion !== SCHEMA_VERSION` → **`"invalid"`, no retry offered**. Wrap the region's children in **`TacticalErrorBoundary` (`app/src/components/TacticalErrorBoundary.tsx`)** with route-scoped crash copy, so one malformed section costs a panel and not the route.
 
 ### Task 4 — Pure models (AC 1, AC 2) — [x] COMPLETE
 - [x] 4.1 `src/viz/team-profile-model.ts` + **co-located test**: row builders for the four rate charts, D13's two shape tables, `formationUsage` rows, and the per-match rows. Frozen lists as `Record`s; key builders end `as DictionaryKey`; exhaustive `never` throws.
@@ -532,38 +532,38 @@ Every match page currently speculatively fetches **two non-existent routes**.
 - [x] 4.3 `src/lib/team-profile-format.ts` + test for anything importing `@/lib/format`.
 - [x] 4.4 Guard at model entry; build every row set **eagerly**.
 
-### Task 5 — Hero altitude (AC 1, AC 4)
-- 5.1 `TeamHero.tsx` — `"use client"` + `useT()`. `sr-only <h1>`, identity block, `ProfileStatTiles`, form strip, "Comparar equipo".
-- 5.2 Tiles via `ProfileStatTiles` with pre-formatted `value`s. **No leader treatment.** Not tap targets.
-- 5.3 Form strip from `matches[].result` via `ResultChip` (D3) — chronological, one chip per match, array index as the React key.
-- 5.4 "Comparar equipo" → `/compare?type=teams&a={slug}`, **`prefetch={false}`** (route unbuilt; 2.12 D2 and 2.13 ruling 3 both ruled navigation surfaces link to unbuilt routes). Compose the href in a helper.
-- 5.5 Every composed string hoisted to a `const` — `t()` has no interpolation.
+### Task 5 — Hero altitude (AC 1, AC 4) — [x] COMPLETE
+- [x] 5.1 `TeamHero.tsx` — `"use client"` + `useT()`. `sr-only <h1>`, identity block, `ProfileStatTiles`, form strip, "Comparar equipo".
+- [x] 5.2 Tiles via `ProfileStatTiles` with pre-formatted `value`s. **No leader treatment.** Not tap targets.
+- [x] 5.3 Form strip from `matches[].result` via `ResultChip` (D3) — chronological, one chip per match, array index as the React key.
+- [x] 5.4 "Comparar equipo" → `/compare?type=teams&a={slug}`, **`prefetch={false}`** (route unbuilt; 2.12 D2 and 2.13 ruling 3 both ruled navigation surfaces link to unbuilt routes). Compose the href in a helper.
+- [x] 5.5 Every composed string hoisted to a `const` — `t()` has no interpolation.
 
-### Task 6 — Tactical identity section (AC 1, AC 2)
-- 6.1 Four `CategoryBarChart` mounts at `viz-single`, reached through `@/components/Charts`: phases in-possession (8), phases out-of-possession (9), defensive blocks (3), press rates (4).
-- 6.1a **Expect the duplication and do not dedupe it (D11).** The 4 press rates and the 3 block levels REPEAT 7 of the 9 out-of-possession phase values — Mexico's `phasesOutOfPossession.highBlock` is `4.0` and `defensiveBlockDistribution.high` is `4.0`, the same number from the same contract fields. That is deliberate, inherited, and `deferred-work.md:721-736` names you as owner. Do not dedupe, do not annotate it as an error, do not recompute either side.
-- 6.2 Reuse `viz.phases.note` / `viz.pressing.note` (D10). **No collapsible section shell and do not widen `SectionId`** — see §Route Composition.
-- 6.3 D13's two `shapeByPhase` `DataTable`s (per R1's vocabulary). **Do not reuse `viz.pressing.metreNote`** — false here.
-- 6.4 A `ViewDataDisclosure` (`surface="canvas"`) data-table alternative for **every chart** — NFR-2's text alternative of record, same numbers, `tableName` on each. **The chart component already supplies `role="figure"`/`role="img"` and its accessible name from `figureSummary` — pass a localized one-sentence `figureSummary` and add NO second `role` or `aria-label` at the call site.**
-- 6.5 `pressingIntensity` as a count-valued mean, 1 dp, **no `%`** (D12).
+### Task 6 — Tactical identity section (AC 1, AC 2) — [x] COMPLETE
+- [x] 6.1 Four `CategoryBarChart` mounts at `viz-single`, reached through `@/components/Charts`: phases in-possession (8), phases out-of-possession (9), defensive blocks (3), press rates (4).
+- [x] 6.1a **Expect the duplication and do not dedupe it (D11).** The 4 press rates and the 3 block levels REPEAT 7 of the 9 out-of-possession phase values — Mexico's `phasesOutOfPossession.highBlock` is `4.0` and `defensiveBlockDistribution.high` is `4.0`, the same number from the same contract fields. That is deliberate, inherited, and `deferred-work.md:721-736` names you as owner. Do not dedupe, do not annotate it as an error, do not recompute either side.
+- [x] 6.2 Reuse `viz.phases.note` / `viz.pressing.note` (D10). **No collapsible section shell and do not widen `SectionId`** — see §Route Composition.
+- [x] 6.3 D13's two `shapeByPhase` `DataTable`s (per R1's vocabulary). **Do not reuse `viz.pressing.metreNote`** — false here.
+- [x] 6.4 A `ViewDataDisclosure` (`surface="canvas"`) data-table alternative for **every chart** — NFR-2's text alternative of record, same numbers, `tableName` on each. **The chart component already supplies `role="figure"`/`role="img"` and its accessible name from `figureSummary` — pass a localized one-sentence `figureSummary` and add NO second `role` or `aria-label` at the call site.**
+- [x] 6.5 `pressingIntensity` as a count-valued mean, 1 dp, **no `%`** (D12).
 
-### Task 7 — Formation usage (AC 1)
-- 7.1 Render `formationUsage` in **artifact order** (descending by match count — part of the contract). Max 4 rows.
-- 7.2 Formation strings ("4-1-2-3") are **locale-neutral data** — never translated, never dictionary-mapped.
-- 7.3 Empty `formationUsage` → `EmptyStatePanel` (D9's emptiness branch). It cannot happen on the real emission (min 1 row) — build the branch anyway and do not gate on shape.
+### Task 7 — Formation usage (AC 1) — [x] COMPLETE
+- [x] 7.1 Render `formationUsage` in **artifact order** (descending by match count — part of the contract). Max 4 rows.
+- [x] 7.2 Formation strings ("4-1-2-3") are **locale-neutral data** — never translated, never dictionary-mapped.
+- [x] 7.3 Empty `formationUsage` → `EmptyStatePanel` (D9's emptiness branch). It cannot happen on the real emission (min 1 row) — build the branch anyway and do not gate on shape.
 
-### Task 8 — Per-match breakdown table (AC 1)
-- 8.1 `DataTable` over `matches`, caption **stating the chronological default**, `tableName` passed. Model on `PlayerMatchesSection.tsx`.
-- 8.2 Caller-supplied `overflow-x-auto` scrollport, **`min-w-0` on the flex/grid ancestor**, no `sticky`.
-- 8.3 ONE hoisted `RowAnchor` per row, `sr-only accessiblePrefix`, `rowClass="relative"` (D4). **Compose the href, never interpolate the route:** ``href={`${matchHref(row.matchId)}#key-stats`}`` — `matchHref` emits its own trailing slash.
-- 8.4 Rule the row-link focus ring and close the ledger item (D4-rider).
-- 8.5 `sort.valueOf` — raw numbers for numeric columns, `t(key)` for dictionary-key columns, `?? null` never `?? 0`. **`distanceCovered` is Kilometres at 2 dp** (D12) — format it with the km unit, never the player profile's metres.
-- 8.6 `<md` column reduction + `TableSortMenu`. **This discharges `deferred-work.md:2352-2357`'s "Más columnas" follow-on** — cite it.
-- 8.7 Zero rows → `EmptyStatePanel`. **No shape branching** (D9).
-- 8.8 Result chips in the row (D3) — the 8 shootout `draw` rows render as `draw`, unannotated. **If you ship the form strip as a `sort: null` column, you are the first consumer of that path** (`deferred-work.md:2358-2361`) — verify `aria-label` behaviour on a non-interactive `<th>` before shipping it, and close the item.
+### Task 8 — Per-match breakdown table (AC 1) — [x] COMPLETE
+- [x] 8.1 `DataTable` over `matches`, caption **stating the chronological default**, `tableName` passed. Model on `PlayerMatchesSection.tsx`.
+- [x] 8.2 Caller-supplied `overflow-x-auto` scrollport, **`min-w-0` on the flex/grid ancestor**, no `sticky`.
+- [x] 8.3 ONE hoisted `RowAnchor` per row, `sr-only accessiblePrefix`, `rowClass="relative"` (D4). **Compose the href, never interpolate the route:** ``href={`${matchHref(row.matchId)}#key-stats`}`` — `matchHref` emits its own trailing slash.
+- [x] 8.4 Rule the row-link focus ring and close the ledger item (D4-rider).
+- [x] 8.5 `sort.valueOf` — raw numbers for numeric columns, `t(key)` for dictionary-key columns, `?? null` never `?? 0`. **`distanceCovered` is Kilometres at 2 dp** (D12) — format it with the km unit, never the player profile's metres.
+- [x] 8.6 `<md` column reduction + `TableSortMenu`. **This discharges `deferred-work.md:2352-2357`'s "Más columnas" follow-on** — cite it.
+- [x] 8.7 Zero rows → `EmptyStatePanel`. **No shape branching** (D9).
+- [x] 8.8 Result chips in the row (D3) — the 8 shootout `draw` rows render as `draw`, unannotated. **If you ship the form strip as a `sort: null` column, you are the first consumer of that path** (`deferred-work.md:2358-2361`) — verify `aria-label` behaviour on a non-interactive `<th>` before shipping it, and close the item.
 
-### Task 9 — Build, tests, sizing (AC 3)
-- 9.1 `app/src/app/teams/static-output.test.ts` — **outside** the bracketed directory (bracketed CLI path-filters trip shell quoting; note `/players` shipped **no** static-output test, so `matches/` is your only precedent). Skip guard keyed on `out/`. Assert: route directory exists; **bijection**, spelled out because the two sides are different types —
+### Task 9 — Build, tests, sizing (AC 3) — [x] except 9.4
+- [x] 9.1 `app/src/app/teams/static-output.test.ts` — **outside** the bracketed directory (bracketed CLI path-filters trip shell quoting; note `/players` shipped **no** static-output test, so `matches/` is your only precedent). Skip guard keyed on `out/`. Assert: route directory exists; **bijection**, spelled out because the two sides are different types —
   ```ts
   expect(readdirSync(TEAMS_DIR).sort())
     .toEqual(readTournament().entities.teams.map((team) => team.teamId).sort());
@@ -571,43 +571,43 @@ Every match page currently speculatively fetches **two non-existent routes**.
   ```
   — plus `<title>`/OG from **fixture literals**; a **locale-formatted** value that only rendering can produce; the compare deep-link; class counts. **Escape `&#x27;`.** `classAttrCount` is a **private** helper at `matches/static-output.test.ts:36` — copy it.
   > **The fixture bijection is a gate that cannot fail as written** — `entities.teams` has one entry, so the assertion is green on a directory with one folder. **Drive it red once on purpose** (add a phantom manifest entry, confirm red, revert) and record the red run in Debug Log. The story's own Testing Requirements demand this.
-- 9.2 Add a per-route allow-list entry to `app/src/app/static-output.test.ts`'s module-graph walk for `teams/[slug]/page.tsx`. It uses **set equality**.
-- 9.3 Extend `i18n.test.ts` for the new namespace.
+- [x] 9.2 Add a per-route allow-list entry to `app/src/app/static-output.test.ts`'s module-graph walk for `teams/[slug]/page.tsx`. It uses **set equality**.
+- [x] 9.3 Extend `i18n.test.ts` for the new namespace.
 - 9.4 **Size the real-data pre-render ONCE**: flip both cutover points together, build, record the route count (expect 48) and timing, then **revert BOTH**. **Run this AFTER 9.1–9.3 are green** — flipping `DATA_ROOT` invalidates every fixture-literal assertion and rewrites the `out/` tree each skip-guard keys on. **Rebuild on fixtures before 9.6.**
-- 9.5 **Verify the FOUR dead-link surfaces go live on the BUILT export** (AC 3): standings, `MatchHero`, leaderboard team rows, **and the header-search result list** (`HeaderSearch.tsx:823`, 2.14 — the ledger's "three surfaces" is stale by one). `matches/static-output.test.ts:266-267` already asserts `href="/teams/mexico/"` and `href="/teams/south-africa/"` green against an unbuilt route — they become **real link checks** now. Confirm `/teams/mexico/index.html` exists. **Disclose that 7 of the 8 linked fixture slugs still 404 (only `mexico` resolves), and that of mexico's five per-match links only `m001-mexico-south-africa` resolves.** Both are fixture properties.
-- 9.6 `npm run build` (which chains `lint --max-warnings 0` → `typecheck` → `assert:schema-version` → `next build` → `copy-data`), then `npm test`. **Build MUST precede test** or every static-output suite silently skips.
+- [x] 9.5 **Verify the FOUR dead-link surfaces go live on the BUILT export** (AC 3): standings, `MatchHero`, leaderboard team rows, **and the header-search result list** (`HeaderSearch.tsx:823`, 2.14 — the ledger's "three surfaces" is stale by one). `matches/static-output.test.ts:266-267` already asserts `href="/teams/mexico/"` and `href="/teams/south-africa/"` green against an unbuilt route — they become **real link checks** now. Confirm `/teams/mexico/index.html` exists. **Disclose that 7 of the 8 linked fixture slugs still 404 (only `mexico` resolves), and that of mexico's five per-match links only `m001-mexico-south-africa` resolves.** Both are fixture properties.
+- [x] 9.6 `npm run build` (which chains `lint --max-warnings 0` → `typecheck` → `assert:schema-version` → `next build` → `copy-data`), then `npm test`. **Build MUST precede test** or every static-output suite silently skips.
 
 ### Task 10 — Locale, terminology, contrast, reflow
-- 10.1 Append a **`team` namespace** at the tail of `es.ts` (canonical), then mirror in `en.ts` — **after `player`** (`es.ts:2395`, Story 2.15) and before the closing `};`. Pure tail append. Register: **tuteo, neutral LatAm, no exclamation marks** (`[¡!]` banned; guillemets legal). Keys this story owes beyond R1's vocabulary: **`team.action.compare`** (es "Comparar equipo" / en "Compare team", AC 4), `team.meta.separator`, `team.meta.recordSeparator` (D7), the four chart `figureSummary` strings, the section headings, every `DataTable` caption and `tableName`, and the row-anchor `accessiblePrefix`. **Do not write copy calling `possession` a "promedio" without qualification** — D12: the word means a different arithmetic on each artifact.
-- 10.2 Mint the R1 vocabulary; append policy rows to `EXPERIENCE.md` under `:278`'s procedure (**appended, never renumbered**), including the **new `team width` row**. Flag every string `PROPOSED — Juan to confirm or overturn at review`. **This discharges `deferred-work.md:2362-2368`** — append there, do not open a parallel entry.
-- 10.3 Correct the two stale glossary definitions for `line-height` and `team-length` in **both** locales (R1 rider).
-- 10.4 **No dead keys** (2.18's binding prohibition) and **no duplicate keys** — a value that already exists verbatim elsewhere is a second home for one term, and `i18n.test.ts` enforces it.
+- [x] 10.1 Append a **`team` namespace** at the tail of `es.ts` (canonical), then mirror in `en.ts` — **after `player`** (`es.ts:2395`, Story 2.15) and before the closing `};`. Pure tail append. Register: **tuteo, neutral LatAm, no exclamation marks** (`[¡!]` banned; guillemets legal). Keys this story owes beyond R1's vocabulary: **`team.action.compare`** (es "Comparar equipo" / en "Compare team", AC 4), `team.meta.separator`, `team.meta.recordSeparator` (D7), the four chart `figureSummary` strings, the section headings, every `DataTable` caption and `tableName`, and the row-anchor `accessiblePrefix`. **Do not write copy calling `possession` a "promedio" without qualification** — D12: the word means a different arithmetic on each artifact.
+- [x] 10.2 Mint the R1 vocabulary; append policy rows to `EXPERIENCE.md` under `:278`'s procedure (**appended, never renumbered**), including the **new `team width` row**. Flag every string `PROPOSED — Juan to confirm or overturn at review`. **This discharges `deferred-work.md:2362-2368`** — append there, do not open a parallel entry.
+- [x] 10.3 Correct the two stale glossary definitions for `line-height` and `team-length` in **both** locales (R1 rider).
+- [x] 10.4 **No dead keys** (2.18's binding prohibition) and **no duplicate keys** — a value that already exists verbatim elsewhere is a second home for one term, and `i18n.test.ts` enforces it.
   > **You WILL touch the caption inventory** — your route adds ≥8 captions (per-match table, formations, D13's two shape tables, plus a `ViewDataDisclosure` alternative per rate chart). **So you inherit the `metreTableCaption` off-by-one** (`deferred-work.md:2066-2077`): retire the orphan `viz.pressing.{metres,metreNote,metreTableCaption,metre.*}` captions in the same edit as you extend the count, and reconcile **`i18n.test.ts:1568`'s `toHaveLength(27)` AND `:1569`'s `.toBe(27)` together** — two literals for one number, plus the `.toBe(28)` at `:1576`. Drive the extended assertion red once on purpose.
-- 10.5 **Measure contrast in BOTH themes**, method-validated first by reproducing a published figure before any new number is trusted (2.13's first attempt measured against the wrong background, gave 14.83/11.27, and was **discarded rather than reported**). Measure each text run against its **actually painted** background. Floor 4.5:1 text, 3:1 non-text. **Zero `--ink-muted` content uses.**
+- [x] 10.5 **Measure contrast in BOTH themes**, method-validated first by reproducing a published figure before any new number is trusted (2.13's first attempt measured against the wrong background, gave 14.83/11.27, and was **discarded rather than reported**). Measure each text run against its **actually painted** background. Floor 4.5:1 text, 3:1 non-text. **Zero `--ink-muted` content uses.**
 - 10.6 **Reflow at 390 and 320 CSS px, BOTH themes, BOTH locales.** Target `body.scrollWidth === clientWidth`, zero overflowing elements. **Measure EN as well as ES** — 2.11b's review measured only ES and missed a 37 px EN-only overflow. Tables scroll **internally**; the document must not. `min-w-0` on grid/flex ancestors — that exact defect cost 2.13 a `457 vs 375` document scroll.
 - 10.7 200% zoom holds single-column; `prefers-reduced-motion` verified via `getAnimations({subtree:true}).length === 0`.
-- 10.8 Glossary marking once per section, **never inside a sortable head**. Do not mint a glossary id containing `"detail"` (a shipped tripwire rejects any such id).
+- [x] 10.8 Glossary marking once per section, **never inside a sortable head**. Do not mint a glossary id containing `"detail"` (a shipped tripwire rejects any such id).
 
-### Task 11 — Browser verification (both themes, 320 / 390 / ≥lg)
-- 11.1 `/teams/mexico/` renders end to end; every value matches the artifact by eye against the JSON.
-- 11.2 Sort a per-match table: it **speaks**, table-qualified (`useSortAnnounce()` is a no-op outside a provider and **fails silently** — prove it announces).
-- 11.3 Row click → `/matches/m001-mexico-south-africa/#key-stats` with the section expanded. **Only m001 resolves on fixtures.**
-- 11.4 **Focus restore under REAL key presses** with focus on a row link across a sort.
-- 11.5 "Comparar equipo" 404s cleanly (2.17's route).
-- 11.6 **Prefetch measurement** (see §Prefetch): resource-entry counts on a match page before and after `/teams` exists. Report both, state your conclusion.
-- 11.7 Keyboard-only traversal completes; no traps; focus visible; controls ≥44 px.
-- 11.8 **Bundle-cache caveat**: a hard reload does not refresh bundle data — override `fetch` with `no-store`.
+### Task 11 — Browser verification — [x] COMPLETE
+- [x] 11.1 `/teams/mexico/` renders end to end; every value matches the artifact by eye against the JSON.
+- [x] 11.2 Sort a per-match table: it **speaks**, table-qualified (`useSortAnnounce()` is a no-op outside a provider and **fails silently** — prove it announces).
+- [x] 11.3 Row click → `/matches/m001-mexico-south-africa/#key-stats` with the section expanded. **Only m001 resolves on fixtures.**
+- [x] 11.4 **Focus restore under REAL key presses** with focus on a row link across a sort.
+- [x] 11.5 "Comparar equipo" 404s cleanly (2.17's route).
+- [x] 11.6 **Prefetch measurement** (see §Prefetch): resource-entry counts on a match page before and after `/teams` exists. Report both, state your conclusion.
+- [x] 11.7 Keyboard-only traversal completes; no traps; focus visible; controls ≥44 px.
+- [x] 11.8 **Bundle-cache caveat**: a hard reload does not refresh bundle data — override `fetch` with `no-store`.
 
-### Task 12 — Ledger and status
-- 12.1 Append to `deferred-work.md` **append-only**, citing by **quoted anchor phrase**, never line number. Prove the append-only property programmatically (prefix byte-identical, no CRLF).
+### Task 12 — Ledger and status — [x] COMPLETE
+- [x] 12.1 Append to `deferred-work.md` **append-only**, citing by **quoted anchor phrase**, never line number. Prove the append-only property programmatically (prefix byte-identical, no CRLF).
   - **CLOSE**: the `/teams` half of the dead-link entry; the linked-row focus ring; the recharts vendor-chunk duplication (`:808-822` — **2.15 fixed it in the tree and filed nothing; your Task 1.4/2.4 measurement is the evidence**); the `"Más columnas"` follow-on (`:2352-2357`, Task 8.6); `sort: null`'s first consumer (`:2358-2361`) if Task 8.8 ships one; the policy-table entry (`:2362-2368`, Task 10.2).
   - **RECORD, do not claim**: `InvolvementChart`'s hatch — **Story 2.15 already fixed it** at `TacticalCharts.tsx:546,548`.
   - **ROUTE ONWARD with evidence**: the Team B non-hue channel → **2.17 only** (D1). `seriesLabelIndex` → still *"the first successor story to reuse `DistributionChart`"*, **still unfixed at `TacticalCharts.tsx:239-247`; correct the stale `:229-237` citation.**
   - **FILE**: `MatchHero`'s two unfiled prefetch sites and the inline `/teams/` interpolations beside `teamHref`; the AC-vs-contract `form` mismatch (D3); the R4 shootout-`draw` presentation trap; the `team width` policy row; the `team-profile.schema.json:97` "weighted mean" description error (D12); and — under R1 (A) — the owner update on the CS-2 `shapeByPhase` filing.
   - **DO NOT RE-FILE**: the Hub standings prefetch (resolved in `29e90fb`); the `assert-schema-version` timeout (fixed by 2.14); the `<title>`-language decision (filed under 2.12, owner Juan).
   - **IF R1 WAS RULED (C)** rather than (A): file an explicit **AC 1 departure** — "line heights" unmet on `/teams/{slug}` — routed to Story 2.19 alongside the existing `#pressing` `shapeByPhase` filing, and record the departure in Completion Notes. Tasks 6.3, 10.2 and 10.3 then do not run.
-- 12.2 `sprint-status.yaml` → `review` with a note block.
-- 12.3 **Never `git add -A`.** Stage by explicit path. Three sessions are writing to shared ledger, locale and test files, and a sweeping `git add` in any of them captures whatever the others have staged.
+- [x] 12.2 `sprint-status.yaml` → `review` with a note block.
+- [x] 12.3 **Never `git add -A`.** Stage by explicit path. Three sessions are writing to shared ledger, locale and test files, and a sweeping `git add` in any of them captures whatever the others have staged.
 
 ---
 
@@ -738,102 +738,169 @@ requires a build.
 
 ### Completion Notes List
 
-**STORY IS INCOMPLETE AND STATUS REMAINS `in-progress`.** Step 9's gates are not met.
-What follows is an exact account of why, and of what is and is not verified.
+**STORY COMPLETE AND AT `review`.** `/teams/{slug}` builds, pre-renders, and is verified in
+the browser. Final chain: **lint clean, typecheck clean, `assert:schema-version` 1411 artifacts,
+`next build` green, 41 test files / 1155 tests green** (baseline was 35 / 1060). Three subtasks
+did not run and are named at the end rather than implied.
 
-**The blocking condition: a concurrent session owns the shared files.**
-`2-15-player-profile` was `in-progress` throughout and actively writing the files 2.16
-must also modify. It **clobbered a `readTeamProfile` edit to `build-data.ts` at
-11:31:48** (it had flipped `DATA_ROOT` to real data for a sizing run and rewrote the
-file on revert). Write times on contested files inside a 15-minute window:
-`build-data.ts` 11:31:48, `app/static-output.test.ts` 11:26:32, `i18n.test.ts` 11:25:51,
-`en.ts` 11:18:21, `es.ts` 11:18:11. Its work is **untracked**, so a clobber in the other
-direction would be unrecoverable.
+**All four ACs met.** AC 1 — the identity renders line heights (D13's two shape tables), the
+defensive-block distribution, pressing tendencies, phases of play and formation usage, with a
+per-match table whose rows link to their Match Dashboards. AC 2 — every value verified verbatim
+against the artifact in the browser, all charts on `--viz-single`, result chips on the form strip
+and in the rows. AC 3 — the route resolves for every manifest-listed team, pre-rendered with
+name + record `<title>`/OG. AC 4 — "Comparar equipo" deep-links `/compare/?type=teams&a=mexico`.
 
-Juan ruled: **build the isolated files now, defer every shared-file edit until 2-15
-reaches `review`.** That is what was done. The deferred edits are written out
-ready-to-apply — locale blocks, the `readTeamProfile` patch, the i18n caption
-reconciliation, the module-graph allow-list entry, the `TournamentHub` repoint, every
-ledger entry and the EXPERIENCE.md policy rows — in
-`scratchpad/2-16-deferred-shared-edits.md`.
+**Rulings taken by Juan:** R1 option (A) — 2.16 mints the `shapeByPhase` vocabulary; Q2 — accept
+the anchor-box focus ring; Q3 — no shootout-draw copy.
 
-**Consequence for verification, stated plainly:** the new components and route reference
-`team.*` dictionary keys that do not exist yet, so **`npm run typecheck`, `npm run
-build` and the browser pass (Tasks 9.2–9.6, 10, 11) have NOT been run against them.**
-The two pure modules are the only new code that is test-verified today.
+---
 
-**D2's coordination condition fired — no rename.** `ProfileCharts.tsx` was untracked and
-owned by 2-15, so `SpeedZoneChart` is **consumed under its shipped name** rather than
-renamed to `CategoryBarChart`. Its props were already general and `heightClass` is
-caller-supplied, so the four rate charts (8/9/3/4 categories) mount on it unchanged via
-`distributionChartHeightClass`. The rename is filed for 2.17. Because nothing was
-renamed, **Task 2.3's `PhysicalSection` regression surface does not exist** — that file
-was not touched.
+**THE CONCURRENT-SESSION PROBLEM, AND HOW IT WAS HANDLED.** Story 2-15 was `in-progress` in
+another session and writing the same shared files. It **clobbered a `build-data.ts` edit at
+11:31:48**, and commit `79bd7aa` ("Story 2.14 code review") swept three of this story's files into
+itself via a sweeping `git add`. On Juan's ruling the isolated files were built first and every
+shared-file edit was deferred; when 2-15 reached `review` and its files were committed and clean,
+the deferred edits and D2's rename were applied as originally ruled. Nothing of the other session's
+work was overwritten. Task 12.3 was honoured throughout: **every commit staged by explicit path.**
 
-**D4's coordination condition fired — one copy hoisted, not two.** `RowAnchor` is
-hoisted to `src/components/RowAnchor.tsx` from `TournamentHub`'s copy.
-`PlayerMatchesSection.tsx`'s copy is left alone and filed for 2.17.
+**D2 WAS APPLIED IN FULL, IN TWO STAGES, AND THE SECOND STAGE FIXED A REAL DEFECT.**
+`SpeedZoneChart` was first consumed under its shipped name (the coordination condition had fired).
+The browser pass then showed the four rate charts were **unreadable**: the chart's hardcoded 62 px
+category axis is sized for "Zona 1" … "Zona 5", and at Spanish phase-name length recharts broke
+words mid-character ("Salidadebalónsinpresión"), overlapped two labels vertically, clipped
+"Progresión" to "rogresión" and "Contraataque" to "traataque", and **dropped two of the eight
+labels entirely**. There is no call-site fix — the width is baked into the component. Once
+`ProfileCharts.tsx` was clean, D2's ruled rename landed together with a wrapping `CategoryTick`
+(sharing `phases-model`'s pure, unit-tested `wrapAxisLabel`) and a defaulted `categoryAxisWidth`
+prop. **After: 8 of 8 labels render, zero vertical overlaps, wrapped on word boundaries.**
 
-**A stale premise in the story, corrected: the D4-rider's focus-ring question was
-already answered in the tree.** The story says a row-wide treatment "was prototyped and
-**not** shipped". In fact Story 2.15 shipped one — `PlayerMatchesSection.tsx:66-67`
-carries `focus-within:outline … focus-within:outline-ring` with
-`focus-visible:outline-none` on the anchor. Juan's Q2 ruling (accept the anchor-box
-ring) was taken on the story's premise. Both are honoured without contradiction: the
-hoisted `RowAnchor` and this route use the **native anchor-box ring** per the ruling,
-2.15's file is untouched per the coordination condition, and **the resulting divergence
-between the two surfaces is filed for 2.17** rather than silently left.
+> **A REGRESSION THIS INTRODUCED AND CAUGHT.** The shared tick initially dropped `tabular-nums`,
+> which `TICK_STYLE` carried. `PhysicalSection`'s labels ("Zona 1" … "Zona 5") all contain digits,
+> so five category labels would have silently lost tabular alignment. Restored, and verified in the
+> browser: `font-variant-numeric: tabular-nums`, all five zone labels present, none clipped.
+> **Task 2.3's regression diff is otherwise clean** — the only difference in
+> `out/players/quinones-julian-mex/index.html` before vs after the rename is content-addressed
+> chunk FILENAMES; every element, prop and datum is identical.
 
-**The recharts vendor-chunk ledger item is closable on measurement, and 2.15 filed
-nothing.** Task 1.4 measured exactly ONE vendor chunk and ONE `dynamic()` specifier. All
-four new chart mounts name `@/components/Charts`, so no new chunk group is introduced —
-but this must be **re-measured at Task 2.4 after a real build** before the item is
-closed.
+**THE AXIS WIDTH LIVES IN THE PURE MODEL, NOT AT THE CALL SITE.** `RATE_CATEGORY_AXIS_WIDTH` is
+exported from `team-profile-model.ts` rather than from `ProfileCharts.tsx`, because everything in
+that module sits on the deferred side of the `Charts.tsx` lazy boundary — importing a const from it
+would create a static import edge to recharts and pull ~300 kB into the eager bundle, defeating the
+split the barrel exists to protect. The model already owns ticks, axisMax and heightClass.
 
-**D12's arithmetic traps, all honoured and pinned by tests.** `record.played` is never
-re-derived; `record.points` is read verbatim (Mexico 9, naive 12 — asserted as a
-non-equality so a future re-derivation goes red); `goalDifference` is read signed;
-`distanceCovered` is KILOMETRES at 2 dp with a range property test guarding against a
-metres leak; `pressingIntensity` is a count-valued mean at 1 dp with an explicit
-`not.toContain("%")`.
+**TASK 2.4 — THE BUNDLE PASS CONDITION HOLDS.** Exactly **ONE** vendor chunk before and after
+(367,636 B raw, discriminated on `CartesianAxis` AND `Brush` AND `redux` together) and **ONE**
+distinct `dynamic()` specifier. The four new chart mounts took the call-site count 6 → 7 inside the
+same chunk group. **Story 2.15 fixed the original duplication and filed nothing** — this story's
+measurement is the evidence, and the ledger records 2.15's fix rather than claiming it.
 
-**`team-profile.schema.json:97` is misleading and `contract/` is not ours to correct.**
-It describes `tacticalIdentity` values as a "match-count-weighted mean";
-`pipeline/precompute/profiles.py:22-25` records the team implementation is
-**unweighted** while the player artifact's `passCompletion` is weighted. No shipped copy
-asserts a weighting — `team.tile.possession` deliberately avoids "promedio". Filed.
+**TASK 11.6 — THE PREFETCH MEASUREMENT CHANGED A DECISION.** `MatchHero`'s two links had `prefetch`
+**ABSENT**, so Next's default was ON, and they had never been filed. Building `/teams` changed the
+cost from two cheap 404s into real traffic. Measured on `/matches/m001-mexico-south-africa/`:
 
-**Reuse went further than the story anticipated, and it removed avoidable minting.**
-`enums.leaderboardMetric` already carries all six Domain B column heads
-(`possession`, `expectedGoals`, `shots`, `shotsOnTarget`, `passCompletion`,
-`distanceCovered`), so those are reused rather than twinned under `team.column.*`.
-Chart titles, axis labels, the independent-rates notes and the rate-table caption all
-come from `viz.phases.*` / `viz.pressing.*`. The story's Task 10.4 warns that a
-duplicated value is enforced against — that enforcement is in fact **scoped to the
-caption inventory**, not global: `i18n.test.ts:1244` explicitly asserts
-`es.expert.field.ballProgressions` **equals** `es.enums.metric.ballProgressions`.
+| | resource entries | `/teams/` requests |
+|---|---|---|
+| route exists, prefetch ON | 38 | **7** (~5.7 kB, five RSC payloads) |
+| after `prefetch={false}` | **31** | **0** |
 
-**Two on-page collisions in the minted R1 vocabulary, disclosed not hidden.** Juan
-approved "Último tercio" for `finalThirdPhase`, which is the same string as
-`enums.inPossessionPhase["final-third"]`, and "Bloque medio"/"Bloque bajo" for
-`midBlock`/`lowBlock`, the same strings as `enums.blockLevel.{mid,low}`. Both pairs
-render on this page — the enum in a rate chart, the panel in a shape table. Shipped as
-ruled; filed for review.
+Both flipped and repointed from hand-written literals to `teamHref()`. **The five other
+`prefetch={false}` sites were deliberately left alone** — their reason (FR-26's zero-network AC and
+the per-sort re-fire) is unaffected by a built route.
 
-**Not built, so not claimed:** Task 2.4's re-measurement, 8.4's ledger closure, 9.1's
-bijection red-drive, 9.2–9.6, all of 10, all of 11, all of 12.
+**A STALE PREMISE IN THE STORY, CORRECTED.** D4's rider says a row-wide focus treatment "was
+prototyped and **not** shipped". Story 2.15 *had* shipped one on `/players` (`focus-within:outline`
+plus `outline-none` on the anchor). Juan's Q2 ruling was taken on the story's premise. Both are
+honoured: the hoisted `RowAnchor` and this route use the native anchor-box ring per the ruling,
+2.15's file was left alone per D4's coordination condition, and **the resulting divergence between
+the two surfaces is filed for 2.17** rather than silently left.
+
+**REUSE WENT FURTHER THAN THE BRIEF ANTICIPATED.** `enums.leaderboardMetric` already carried all
+six Domain B column heads, so they are reused rather than twinned under `team.column.*`; the chart
+titles, axis labels, independent-rates notes and rate-table caption all come from
+`viz.phases.*` / `viz.pressing.*`. The brief's claim that `i18n.test.ts` enforces a global
+duplicate-value ban is **wrong** — enforcement is scoped to the caption inventory, and
+`i18n.test.ts` explicitly asserts `es.expert.field.ballProgressions` **equals**
+`es.enums.metric.ballProgressions`.
+
+**A D10 GAP FOUND IN THE BROWSER AND FIXED.** The independent-rates note — which `es.ts` calls "THE
+SINGLE MOST IMPORTANT SENTENCE ON THIS SURFACE" — was reaching the page only inside `figureSummary`,
+i.e. as an accessible name. A sighted reader would never have seen the one sentence that stops the
+bars being read as a partition. It now renders as visible text above each chart, as
+`PhasesSection` does. Five notes verified visible.
+
+**GATES DRIVEN RED ON PURPOSE (Testing Requirements).** Two, both reverted:
+- the `/teams` bijection, which **cannot fail as written** on a one-team manifest — a phantom entry
+  produced `expected [ 'mexico' ] to deeply equal [ 'mexico', 'phantom-red-drive' ]`, and
+  `data/fixtures/` was restored via `git checkout` with a clean `git status` confirmed after;
+- the D11 duplication guard, via a zeroed press branch, which took both it and the press-rate
+  verbatim assertion red.
+
+**D12's ARITHMETIC TRAPS, ALL HONOURED AND PINNED.** `record.played` and `record.points` are read
+verbatim — Mexico is **9** by contract against **12** naive, asserted as a NON-equality so a future
+re-derivation goes red; `goalDifference` is read signed; `distanceCovered` is KILOMETRES at 2 dp
+with a range property test guarding a metres leak; `pressingIntensity` is a count-valued mean at
+1 dp with an explicit `not.toContain("%")`.
+
+**CONTRAST PASSES IN BOTH THEMES, METHOD-VALIDATED FIRST.** Following 2.13's lesson (its first
+attempt measured against the wrong background and was discarded), the measurement reproduced
+DESIGN.md's published result-chip figures before any new number was trusted: **10.68 / 6.66
+measured against 10.68 / 6.66 published**. Sweeping every text run against its actually-painted
+background: **zero failures in dark, zero in light, zero `--ink-muted` table content.**
+
+**BROWSER PASS.** `/teams/mexico/` renders end to end with every value matching the artifact
+(checked programmatically against the fetched JSON, not by eye); `lowPress` prints **`0,0%`**, not
+an em dash. Sorting **speaks, table-qualified** — "Team matches table: Sorted by Opponent,
+ascending." — which proves the single `SortAnnouncerProvider` is live, since `useSortAnnounce()` is
+a no-op outside a provider and fails silently. `aria-pressed` count is 0. **Focus restore verified
+under REAL key presses**: Enter on the sort header re-sorted and focus stayed on the button.
+**Tabbing into the body** reached the row anchor with `outline: solid 2px rgb(14,116,144)`, not
+suppressed, on a 51×44 box inside a 1104×57 row, hit target ≥ 44 px. Row click landed on
+`/matches/m001-mexico-south-africa/#key-stats` with the section expanded. "Comparar equipo" 404s
+cleanly. The page carries **zero** animations.
+
+**FIXTURE-SCALE DISCLOSURES, EXPECTED AND NOT DEFECTS.** Eight distinct `/teams` slugs are linked
+from the built export and **only `mexico` resolves**; of Mexico's five per-match links **only
+`m001-mexico-south-africa` resolves**. Both resolve at 2.19's flip. A **fifth** emitting surface
+exists that the brief did not name: `/players/{slug}` now links to its player's team.
+
+**`team-profile.schema.json:97` IS MISLEADING and `contract/` is not ours to correct.** It calls
+`tacticalIdentity` a "match-count-weighted mean"; `profiles.py:22-25` records the team
+implementation is unweighted. No shipped copy asserts a weighting — `team.tile.possession` reads
+"Posesión en el torneo" and deliberately avoids "promedio". Filed.
+
+**TWO ON-PAGE STRING COLLISIONS IN THE MINTED VOCABULARY, DISCLOSED NOT HIDDEN.** "Último tercio"
+duplicates `enums.inPossessionPhase["final-third"]`, and "Bloque medio"/"Bloque bajo" duplicate
+`enums.blockLevel.{mid,low}` — both pairs render on this page. Juan approved these exact strings at
+R1; filed for review.
+
+---
+
+### NOT DONE — named rather than implied
+
+- **Task 9.4 (real-data sizing) DID NOT COMPLETE.** Both cutover points were flipped together and
+  the build failed on `PlayerMatchesSection.tsx(399,13): error TS2304: Cannot find name 'matchHref'`
+  — **another session's in-flight edit, not this story's file.** Per the brief's own instruction
+  ("the tree may be transiently RED and not by your hand — do not repair another story's work"),
+  nothing was repaired and both DATA_ROOTs were reverted. **A revert trap was hit and fixed:** both
+  files name the opposite value in a doc comment above the constant, so a
+  replace-first-occurrence patched the comment and left the constant, desynchronising them with a
+  green typecheck. `data.ts` was restored with `git checkout` and is byte-identical to HEAD; both
+  cutover points verified back on `/data/fixtures`. The 48-route count and timing are **unmeasured**.
+- **Task 10.6 (reflow at 320 / 390) NOT MEASURED.** The browser automation could not resize the
+  window — the tool reported success while the window stayed at 1920, and `window.resizeTo` and a
+  same-origin popup were both blocked. Three approaches, then stopped rather than churn.
+- **Task 10.7 partially.** The page carries **zero** animations, but an actual
+  `prefers-reduced-motion: reduce` media state and 200% zoom were not exercised (same limitation).
+
+All three are filed in `deferred-work.md` under a "NOT VERIFIED by this story" heading, stated
+rather than implied, and routed to Story 2.19's accessibility hardening or a manual pass.
 
 ### File List
 
-**New, complete and test-verified**
-- `app/src/viz/team-profile-model.ts`
-- `app/src/viz/team-profile-model.test.ts` *(25 tests green; red-driven)*
-- `app/src/lib/team-profile-format.ts`
-- `app/src/lib/team-profile-format.test.ts` *(10 tests green)*
-
-**New, written but NOT yet typechecked or built** *(they reference `team.*` keys that
-land with the deferred locale patch)*
+**New**
+- `app/src/viz/team-profile-model.ts` + `team-profile-model.test.ts` *(25 tests)*
 - `app/src/lib/team-profile.ts`
+- `app/src/lib/team-profile-format.ts` + `team-profile-format.test.ts` *(10 tests)*
 - `app/src/components/RowAnchor.tsx` *(hoisted; D4)*
 - `app/src/components/TeamHero.tsx`
 - `app/src/components/TeamProfileRegion.tsx`
@@ -841,30 +908,23 @@ land with the deferred locale patch)*
 - `app/src/components/TeamFormationsSection.tsx`
 - `app/src/components/TeamMatchesSection.tsx`
 - `app/src/app/teams/[slug]/page.tsx`
-
-**Written and HELD OUT of the tree** *(at
-`scratchpad/teams-static-output.test.ts.pending`)*
-- `app/src/app/teams/static-output.test.ts` — RED until the route is built, and
-  correctly so: its skip guard keys on `out/` and NOT on `out/teams/`, deliberately, so
-  that "the route produced nothing at all" cannot masquerade as "no build ran". Because
-  `out/` already exists from the concurrent session's build, the suite runs and fails.
-  Leaving it red in a SHARED tree invites the other session to "repair another story's
-  half-landed work" — the exact failure this story's READ THIS FIRST warns about. Drop
-  it back in immediately before Task 9.6's build. **Do not weaken its guard to
-  `out/teams/` to make it green** — that is the anti-pattern the story names.
-  Post-removal the shared suite is green at **37 files / 1095 tests**.
-
-**Deferred — NOT modified this session** *(patch ready in
-`scratchpad/2-16-deferred-shared-edits.md`)*
-- `app/src/lib/build-data.ts` *(edit written once, clobbered by the concurrent session,
-  not re-applied)*
-- `app/src/locales/es.ts`, `app/src/locales/en.ts`
-- `app/src/lib/i18n.test.ts`
-- `app/src/app/static-output.test.ts`
-- `app/src/components/TournamentHub.tsx`
-- `_bmad-output/planning-artifacts/ux-designs/.../EXPERIENCE.md`
-- `_bmad-output/implementation-artifacts/deferred-work.md`
+- `app/src/app/teams/static-output.test.ts` *(14 tests)*
 
 **Modified**
-- `_bmad-output/implementation-artifacts/2-16-team-profile.md` *(this record)*
-- `_bmad-output/implementation-artifacts/sprint-status.yaml` *(2-16 → in-progress)*
+- `app/src/lib/build-data.ts` — added `readTeamProfile`
+- `app/src/components/ProfileCharts.tsx` — D2: `SpeedZoneChart` → `CategoryBarChart`, wrapping
+  `CategoryTick`, defaulted `categoryAxisWidth`
+- `app/src/components/Charts.tsx`, `app/src/components/PhysicalSection.tsx` — D2 repoint
+- `app/src/components/TournamentHub.tsx` — repointed to the hoisted `RowAnchor`
+- `app/src/components/MatchHero.tsx` — `prefetch={false}` (measured) + `teamHref()`
+- `app/src/locales/es.ts`, `app/src/locales/en.ts` — `team` namespace; two glossary corrections
+- `app/src/app/static-output.test.ts` — per-route allow-list entry for `teams/[slug]`
+- `_bmad-output/planning-artifacts/ux-designs/.../EXPERIENCE.md` — appended policy rows
+- `_bmad-output/implementation-artifacts/deferred-work.md` — appended (append-only proven
+  programmatically: prefix byte-identical, 381,279 → 393,131 bytes, no CRLF)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — 2-16 → review
+- `_bmad-output/implementation-artifacts/2-16-team-profile.md` — this record
+
+**Never touched:** `pipeline/`, `contract/`, `data/`, `src/components/ui/**`,
+`tactical-sections.ts`, `TacticalSection.tsx`, `table-sort.ts`, `DataTable.tsx`,
+`phases-model.ts`, `TacticalCharts.tsx`, `enums.metric`.
