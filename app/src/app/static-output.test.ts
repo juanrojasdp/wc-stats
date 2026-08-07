@@ -514,12 +514,23 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
       { route: "/about", file: ABOUT_HTML },
       { route: "/glossary", file: GLOSSARY_HTML },
     ].filter((entry) => existsSync(entry.file));
-    const matchesDir = OUT_DIR + "matches/";
-    if (existsSync(matchesDir)) {
-      for (const slug of readdirSync(matchesDir)) {
-        const file = `${matchesDir}${slug}/index.html`;
+    /*
+     * EVERY DYNAMIC ROUTE FAMILY, not just `/matches` (code review 2026-08-07).
+     * This walked `matches/` alone, so from the moment Story 2.15 shipped
+     * `/players/{slug}` — and 2.16 `/teams/{slug}` — seven assertions titled "on
+     * EVERY exported route" stopped covering the newest routes on the site while
+     * staying green. A family added here is a family swept; the cost of
+     * forgetting was silent and is now structural.
+     */
+    for (const family of ["matches", "players", "teams"]) {
+      const familyDir = `${OUT_DIR}${family}/`;
+      if (!existsSync(familyDir)) {
+        continue;
+      }
+      for (const slug of readdirSync(familyDir)) {
+        const file = `${familyDir}${slug}/index.html`;
         if (existsSync(file)) {
-          documents.push({ route: `/matches/${slug}`, file });
+          documents.push({ route: `/${family}/${slug}`, file });
         }
       }
     }
@@ -538,7 +549,22 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
 
   it("found every exported route to sweep — a vacuous sweep is not a pass", () => {
     // Driven off what the export actually contains, never off a pinned count.
-    expect(everyRouteHtml().length).toBeGreaterThanOrEqual(4);
+    const swept = everyRouteHtml();
+    expect(swept.length).toBeGreaterThanOrEqual(4);
+    /*
+     * AND REACHED THE DYNAMIC FAMILIES. The `>= 4` floor alone was met by the
+     * four static shells, so it stayed green through the whole period the sweep
+     * silently skipped `/players` and `/teams`. Each family is asserted only
+     * when the export contains it, because a partial build is a real state here.
+     */
+    for (const family of ["matches", "players", "teams"]) {
+      if (existsSync(`${OUT_DIR}${family}/`)) {
+        expect(
+          swept.some((entry) => entry.route.startsWith(`/${family}/`)),
+          `out/${family}/ exists but no ${family} route was swept`
+        ).toBe(true);
+      }
+    }
   });
 
   it("ships the combobox input on EVERY exported route", () => {
@@ -637,9 +663,28 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
      * new surface this story put a header search on, and none of them referenced
      * this artifact at all before.
      */
+    /*
+     * `goalDifference` WAS A PROBE HERE AND HAD TO BE RETIRED (Story 2.16). It
+     * was chosen as a "Tournament-only field name that appears nowhere else in
+     * the app", and that premise was ALREADY FALSE when it was written:
+     * `contract-types.d.ts` declares it TWICE — on `StandingsRow` (Tournament)
+     * and on `TeamTournamentRecord` (TeamProfile). Nothing exposed the overlap
+     * until `/teams/{slug}` shipped, because its Hero projection legitimately
+     * carries all nine `record` fields into the RSC payload (AD-11's build-time
+     * half, which is the whole point of the projection).
+     *
+     * Verified on `out/teams/mexico/index.html` before retiring it: ZERO
+     * occurrences of `knockoutResults`, `tournamentName`, `entities`,
+     * `standings` and `venues` — the index is genuinely not inlined; only the
+     * shared FIELD NAME collided. Keeping the token would have made a green
+     * gate turn red on a correct route, which is worse than the gap it closed.
+     *
+     * `knockoutResults` stays and is the load-bearing probe: it is the field the
+     * corpus join reads (Task 2.6) and it appears on `Tournament` alone.
+     */
     for (const { route, html } of everyRouteHtml()) {
       expect(html, `${route} inlines the index`).not.toContain("knockoutResults");
-      expect(html, `${route} inlines the index`).not.toContain("goalDifference");
+      expect(html, `${route} inlines the index`).not.toContain("tournamentName");
     }
   });
 });
