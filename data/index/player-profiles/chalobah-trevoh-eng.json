@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": null,
+      "value": 11
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 0.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": null,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 26.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": null,
+      "value": 626.5
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 0,
+    "played": 1,
+    "started": 0,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m103-france-england",
+      "minutesPlayed": 0,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 0.0,
+      "passesAttempted": 0,
+      "passesCompleted": 0,
+      "stage": "third-place",
+      "started": false,
+      "topSpeed": 26.2,
+      "totalDistance": 626.5
+    }
+  ],
+  "name": "Trevoh CHALOBAH",
+  "physical": {
+    "distanceZone1": 274.1,
+    "distanceZone2": 214.8,
+    "distanceZone3": 112.7,
+    "distanceZone4": 18.8,
+    "distanceZone5": 6.2,
+    "highSpeedRuns": 11,
+    "sprints": 2,
+    "topSpeed": 26.2,
+    "totalDistance": 626.5
+  },
+  "playerId": "chalobah-trevoh-eng",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 12,
+  "team": {
+    "id": "england",
+    "name": "England"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m103-france-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m103-france-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m103-france-england",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m103-france-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m103-france-england",
+          "value": 26.2
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m103-france-england",
+          "value": 626.5
+        }
+      ]
+    }
+  ]
+}

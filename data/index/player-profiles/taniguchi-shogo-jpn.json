@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.78,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.56,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.39,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 73.64,
+      "value": 189
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 6.62,
+      "value": 17
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 96.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 47.53,
+      "value": 122
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 4.68,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 21.82,
+      "value": 56
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.78,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9645.58,
+      "value": 24757.0
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 231,
+    "played": 3,
+    "started": 2,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-14",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m011-netherlands-japan",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "netherlands",
+        "name": "Netherlands"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 49,
+      "passesCompleted": 49,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.8,
+      "totalDistance": 9237.9
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-25",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m057-japan-sweden",
+      "minutesPlayed": 51,
+      "opponent": {
+        "id": "sweden",
+        "name": "Sweden"
+      },
+      "passCompletion": 94.0,
+      "passesAttempted": 32,
+      "passesCompleted": 30,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.4,
+      "totalDistance": 5742.3
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-29",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m076-brazil-japan",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "brazil",
+        "name": "Brazil"
+      },
+      "passCompletion": 93.0,
+      "passesAttempted": 46,
+      "passesCompleted": 43,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 29.0,
+      "totalDistance": 9776.8
+    }
+  ],
+  "name": "Shogo TANIGUCHI",
+  "physical": {
+    "distanceZone1": 10289.0,
+    "distanceZone2": 11410.8,
+    "distanceZone3": 2265.3,
+    "distanceZone4": 638.0,
+    "distanceZone5": 153.8,
+    "highSpeedRuns": 189,
+    "sprints": 56,
+    "topSpeed": 30.8,
+    "totalDistance": 24757.0
+  },
+  "playerId": "taniguchi-shogo-jpn",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 3,
+  "team": {
+    "id": "japan",
+    "name": "Japan"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m011-netherlands-japan",
+          "value": 2
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 0
+        },
+        {
+          "matchId": "m076-brazil-japan",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m011-netherlands-japan",
+          "value": 0
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 0
+        },
+        {
+          "matchId": "m076-brazil-japan",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m011-netherlands-japan",
+          "value": 100.0
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 94.0
+        },
+        {
+          "matchId": "m076-brazil-japan",
+          "value": 93.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m011-netherlands-japan",
+          "value": 49
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 30
+        },
+        {
+          "matchId": "m076-brazil-japan",
+          "value": 43
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m011-netherlands-japan",
+          "value": 30.8
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 30.4
+        },
+        {
+          "matchId": "m076-brazil-japan",
+          "value": 29.0
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m011-netherlands-japan",
+          "value": 9237.9
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 5742.3
+        },
+        {
+          "matchId": "m076-brazil-japan",
+          "value": 9776.8
+        }
+      ]
+    }
+  ]
+}

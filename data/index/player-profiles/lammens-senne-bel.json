@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 18.95,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 9.47,
+      "value": 2
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 46.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 28.42,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 9.47,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 4.74,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 26.9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 7614.0,
+      "value": 1607.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 19,
+    "played": 1,
+    "started": 0,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-10",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m098-spain-belgium",
+      "minutesPlayed": 19,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 46.0,
+      "passesAttempted": 13,
+      "passesCompleted": 6,
+      "stage": "qf",
+      "started": false,
+      "topSpeed": 26.9,
+      "totalDistance": 1607.4
+    }
+  ],
+  "name": "Senne LAMMENS",
+  "physical": {
+    "distanceZone1": 1255.8,
+    "distanceZone2": 281.7,
+    "distanceZone3": 44.0,
+    "distanceZone4": 14.7,
+    "distanceZone5": 11.2,
+    "highSpeedRuns": 4,
+    "sprints": 1,
+    "topSpeed": 26.9,
+    "totalDistance": 1607.4
+  },
+  "playerId": "lammens-senne-bel",
+  "position": "gk",
+  "schemaVersion": 4,
+  "shirtNumber": 12,
+  "team": {
+    "id": "belgium",
+    "name": "Belgium"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 46.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 26.9
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 1607.4
+        }
+      ]
+    }
+  ]
+}

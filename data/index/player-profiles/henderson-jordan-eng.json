@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 15.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 525.0,
+      "value": 35
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 45.0,
+      "value": 3
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 92.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 180.0,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 15.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 90.0,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 15.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 28.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 26860.5,
+      "value": 1790.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 6,
+    "played": 1,
+    "started": 0,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-27",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m067-panama-england",
+      "minutesPlayed": 6,
+      "opponent": {
+        "id": "panama",
+        "name": "Panama"
+      },
+      "passCompletion": 92.0,
+      "passesAttempted": 13,
+      "passesCompleted": 12,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 28.3,
+      "totalDistance": 1790.7
+    }
+  ],
+  "name": "Jordan HENDERSON",
+  "physical": {
+    "distanceZone1": 396.4,
+    "distanceZone2": 693.3,
+    "distanceZone3": 579.4,
+    "distanceZone4": 108.2,
+    "distanceZone5": 13.4,
+    "highSpeedRuns": 35,
+    "sprints": 6,
+    "topSpeed": 28.3,
+    "totalDistance": 1790.7
+  },
+  "playerId": "henderson-jordan-eng",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 14,
+  "team": {
+    "id": "england",
+    "name": "England"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m067-panama-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m067-panama-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m067-panama-england",
+          "value": 92.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m067-panama-england",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m067-panama-england",
+          "value": 28.3
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m067-panama-england",
+          "value": 1790.7
+        }
+      ]
+    }
+  ]
+}

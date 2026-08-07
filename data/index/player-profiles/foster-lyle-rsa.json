@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.61,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 106.07,
+      "value": 66
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 20.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 1.61,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 25.71,
+      "value": 16
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.61,
+      "value": 1
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 31.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9592.23,
+      "value": 5968.5
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 56,
+    "played": 1,
+    "started": 1,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-11",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m001-mexico-south-africa",
+      "minutesPlayed": 56,
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 20.0,
+      "passesAttempted": 5,
+      "passesCompleted": 1,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.2,
+      "totalDistance": 5968.5
+    }
+  ],
+  "name": "Lyle FOSTER",
+  "physical": {
+    "distanceZone1": 2748.0,
+    "distanceZone2": 2225.6,
+    "distanceZone3": 643.4,
+    "distanceZone4": 263.1,
+    "distanceZone5": 88.4,
+    "highSpeedRuns": 66,
+    "sprints": 16,
+    "topSpeed": 31.2,
+    "totalDistance": 5968.5
+  },
+  "playerId": "foster-lyle-rsa",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 9,
+  "team": {
+    "id": "south-africa",
+    "name": "South Africa"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 20.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 31.2
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 5968.5
+        }
+      ]
+    }
+  ]
+}

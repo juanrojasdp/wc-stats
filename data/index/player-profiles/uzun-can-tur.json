@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 20.0,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 230.0,
+      "value": 92
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 15.0,
+      "value": 6
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 91.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 55.0,
+      "value": 22
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 67.5,
+      "value": 27
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 5.0,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 15.0,
+      "value": 6
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 28.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 15270.25,
+      "value": 6108.1
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 36,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 7,
+      "date": "2026-06-19",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m031-turkiye-paraguay",
+      "minutesPlayed": 30,
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 17,
+      "passesCompleted": 15,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 28.5,
+      "totalDistance": 4445.5
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-25",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m059-turkiye-usa",
+      "minutesPlayed": 6,
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 7,
+      "passesCompleted": 7,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 24.7,
+      "totalDistance": 1662.6
+    }
+  ],
+  "name": "Can UZUN",
+  "physical": {
+    "distanceZone1": 2311.5,
+    "distanceZone2": 2375.6,
+    "distanceZone3": 986.9,
+    "distanceZone4": 369.6,
+    "distanceZone5": 64.7,
+    "highSpeedRuns": 92,
+    "sprints": 27,
+    "topSpeed": 28.5,
+    "totalDistance": 6108.1
+  },
+  "playerId": "uzun-can-tur",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 26,
+  "team": {
+    "id": "turkiye",
+    "name": "Türkiye"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 7
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 0
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 88.0
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 15
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 28.5
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 24.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 4445.5
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 1662.6
+        }
+      ]
+    }
+  ]
+}

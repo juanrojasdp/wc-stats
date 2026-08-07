@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 8.18,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 294.55,
+      "value": 36
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 100.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 24.55,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 130.91,
+      "value": 16
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 8.18,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 26.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 18733.09,
+      "value": 2289.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 11,
+    "played": 1,
+    "started": 0,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-12",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m004-usa-paraguay",
+      "minutesPlayed": 11,
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 3,
+      "passesCompleted": 3,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.1,
+      "totalDistance": 2289.6
+    }
+  ],
+  "name": "Ramon SOSA",
+  "physical": {
+    "distanceZone1": 612.5,
+    "distanceZone2": 1019.1,
+    "distanceZone3": 458.0,
+    "distanceZone4": 192.1,
+    "distanceZone5": 8.0,
+    "highSpeedRuns": 36,
+    "sprints": 16,
+    "topSpeed": 26.1,
+    "totalDistance": 2289.6
+  },
+  "playerId": "sosa-ramon-par",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 7,
+  "team": {
+    "id": "paraguay",
+    "name": "Paraguay"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 26.1
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 2289.6
+        }
+      ]
+    }
+  ]
+}

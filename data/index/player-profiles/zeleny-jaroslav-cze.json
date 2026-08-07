@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 2.88,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.72,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.72,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 116.64,
+      "value": 162
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.44,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 6.48,
+      "value": 9
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 74.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 25.2,
+      "value": 35
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 2.88,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 49.68,
+      "value": 69
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.44,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.44,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11146.75,
+      "value": 15481.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 125,
+    "played": 2,
+    "started": 1,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-11",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m002-korea-republic-czechia",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "korea-republic",
+        "name": "Korea Republic"
+      },
+      "passCompletion": 79.0,
+      "passesAttempted": 34,
+      "passesCompleted": 27,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.4,
+      "totalDistance": 10847.7
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-06-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m025-czechia-south-africa",
+      "minutesPlayed": 35,
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 62.0,
+      "passesAttempted": 13,
+      "passesCompleted": 8,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 29.2,
+      "totalDistance": 4633.9
+    }
+  ],
+  "name": "Jaroslav ZELENY",
+  "physical": {
+    "distanceZone1": 5666.3,
+    "distanceZone2": 6645.5,
+    "distanceZone3": 1956.3,
+    "distanceZone4": 943.7,
+    "distanceZone5": 269.7,
+    "highSpeedRuns": 162,
+    "sprints": 69,
+    "topSpeed": 30.4,
+    "totalDistance": 15481.6
+  },
+  "playerId": "zeleny-jaroslav-cze",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 20,
+  "team": {
+    "id": "czechia",
+    "name": "Czechia"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 2
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 0
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 79.0
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 62.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 27
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 30.4
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 29.2
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 10847.7
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 4633.9
+        }
+      ]
+    }
+  ]
+}

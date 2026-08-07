@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 3.64,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.52,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 134.22,
+      "value": 258
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 58.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 10.4,
+      "value": 20
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.04,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 36.42,
+      "value": 70
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 29.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10951.65,
+      "value": 21051.5
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 173,
+    "played": 2,
+    "started": 2,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-06-13",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m005-haiti-scotland",
+      "minutesPlayed": 83,
+      "opponent": {
+        "id": "haiti",
+        "name": "Haiti"
+      },
+      "passCompletion": 47.0,
+      "passesAttempted": 17,
+      "passesCompleted": 8,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.2,
+      "totalDistance": 10242.4
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-06-24",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m049-scotland-brazil",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "brazil",
+        "name": "Brazil"
+      },
+      "passCompletion": 71.0,
+      "passesAttempted": 17,
+      "passesCompleted": 12,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 28.1,
+      "totalDistance": 10809.1
+    }
+  ],
+  "name": "Lawrence SHANKLAND",
+  "physical": {
+    "distanceZone1": 7332.5,
+    "distanceZone2": 9508.8,
+    "distanceZone3": 3047.9,
+    "distanceZone4": 927.3,
+    "distanceZone5": 234.9,
+    "highSpeedRuns": 258,
+    "sprints": 70,
+    "topSpeed": 29.2,
+    "totalDistance": 21051.5
+  },
+  "playerId": "shankland-lawrence-sco",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 20,
+  "team": {
+    "id": "scotland",
+    "name": "Scotland"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m005-haiti-scotland",
+          "value": 0
+        },
+        {
+          "matchId": "m049-scotland-brazil",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m005-haiti-scotland",
+          "value": 0
+        },
+        {
+          "matchId": "m049-scotland-brazil",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m005-haiti-scotland",
+          "value": 47.0
+        },
+        {
+          "matchId": "m049-scotland-brazil",
+          "value": 71.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m005-haiti-scotland",
+          "value": 8
+        },
+        {
+          "matchId": "m049-scotland-brazil",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m005-haiti-scotland",
+          "value": 29.2
+        },
+        {
+          "matchId": "m049-scotland-brazil",
+          "value": 28.1
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m005-haiti-scotland",
+          "value": 10242.4
+        },
+        {
+          "matchId": "m049-scotland-brazil",
+          "value": 10809.1
+        }
+      ]
+    }
+  ]
+}

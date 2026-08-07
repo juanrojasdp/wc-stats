@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.67,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 6.33,
+      "value": 19
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 8.0,
+      "value": 24
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 66.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 20.67,
+      "value": 62
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 9.0,
+      "value": 27
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.67,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 21.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 4445.27,
+      "value": 13335.8
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 270,
+    "played": 3,
+    "started": 3,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-15",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m015-ir-iran-new-zealand",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "new-zealand",
+        "name": "New Zealand"
+      },
+      "passCompletion": 87.0,
+      "passesAttempted": 23,
+      "passesCompleted": 20,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 19.5,
+      "totalDistance": 4368.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-21",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m039-belgium-ir-iran",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 57.0,
+      "passesAttempted": 37,
+      "passesCompleted": 21,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 17.9,
+      "totalDistance": 4197.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-26",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m063-egypt-ir-iran",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "egypt",
+        "name": "Egypt"
+      },
+      "passCompletion": 64.0,
+      "passesAttempted": 33,
+      "passesCompleted": 21,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 21.5,
+      "totalDistance": 4769.2
+    }
+  ],
+  "name": "Alireza BEIRANVAND",
+  "physical": {
+    "distanceZone1": 11776.7,
+    "distanceZone2": 1378.8,
+    "distanceZone3": 171.0,
+    "distanceZone4": 9.3,
+    "distanceZone5": 0.0,
+    "highSpeedRuns": 19,
+    "sprints": 0,
+    "topSpeed": 21.5,
+    "totalDistance": 13335.8
+  },
+  "playerId": "beiranvand-alireza-irn",
+  "position": "gk",
+  "schemaVersion": 4,
+  "shirtNumber": 1,
+  "team": {
+    "id": "ir-iran",
+    "name": "IR Iran"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m015-ir-iran-new-zealand",
+          "value": 1
+        },
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 0
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m015-ir-iran-new-zealand",
+          "value": 0
+        },
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 0
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m015-ir-iran-new-zealand",
+          "value": 87.0
+        },
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 57.0
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 64.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m015-ir-iran-new-zealand",
+          "value": 20
+        },
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 21
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 21
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m015-ir-iran-new-zealand",
+          "value": 19.5
+        },
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 17.9
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 21.5
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m015-ir-iran-new-zealand",
+          "value": 4368.8
+        },
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 4197.8
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 4769.2
+        }
+      ]
+    }
+  ]
+}

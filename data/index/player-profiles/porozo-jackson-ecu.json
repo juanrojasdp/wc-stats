@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 90.0,
+      "value": 28
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 100.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 38.57,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 41.79,
+      "value": 13
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10370.57,
+      "value": 3226.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 28,
+    "played": 1,
+    "started": 0,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-14",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m009-cote-d-ivoire-ecuador",
+      "minutesPlayed": 28,
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 12,
+      "passesCompleted": 12,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 32.7,
+      "totalDistance": 3226.4
+    }
+  ],
+  "name": "Jackson POROZO",
+  "physical": {
+    "distanceZone1": 1345.1,
+    "distanceZone2": 1344.2,
+    "distanceZone3": 306.6,
+    "distanceZone4": 136.5,
+    "distanceZone5": 94.0,
+    "highSpeedRuns": 28,
+    "sprints": 13,
+    "topSpeed": 32.7,
+    "totalDistance": 3226.4
+  },
+  "playerId": "porozo-jackson-ecu",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 25,
+  "team": {
+    "id": "ecuador",
+    "name": "Ecuador"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 32.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 3226.4
+        }
+      ]
+    }
+  ]
+}

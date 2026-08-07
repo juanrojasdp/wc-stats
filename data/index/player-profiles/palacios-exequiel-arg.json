@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 113.0,
+      "value": 113
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 17.0,
+      "value": 17
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 94.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 89.0,
+      "value": 89
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 5.0,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 37.0,
+      "value": 37
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10029.0,
+      "value": 10029.0
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 90,
+    "played": 1,
+    "started": 1,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-27",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m070-jordan-argentina",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "jordan",
+        "name": "Jordan"
+      },
+      "passCompletion": 95.0,
+      "passesAttempted": 94,
+      "passesCompleted": 89,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.5,
+      "totalDistance": 10029.0
+    }
+  ],
+  "name": "Exequiel PALACIOS",
+  "physical": {
+    "distanceZone1": 3833.7,
+    "distanceZone2": 4156.3,
+    "distanceZone3": 1320.7,
+    "distanceZone4": 534.1,
+    "distanceZone5": 184.1,
+    "highSpeedRuns": 113,
+    "sprints": 37,
+    "topSpeed": 32.5,
+    "totalDistance": 10029.0
+  },
+  "playerId": "palacios-exequiel-arg",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 14,
+  "team": {
+    "id": "argentina",
+    "name": "Argentina"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 95.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 89
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 32.5
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 10029.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 7.83,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 183.91,
+      "value": 47
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 7.83,
+      "value": 2
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 75.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 35.22,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.91,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 58.7,
+      "value": 15
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 7.83,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 27.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 14122.57,
+      "value": 3609.1
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 23,
+    "played": 1,
+    "started": 0,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-06-26",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m062-senegal-iraq",
+      "minutesPlayed": 23,
+      "opponent": {
+        "id": "senegal",
+        "name": "Senegal"
+      },
+      "passCompletion": 75.0,
+      "passesAttempted": 12,
+      "passesCompleted": 9,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 27.8,
+      "totalDistance": 3609.1
+    }
+  ],
+  "name": "KEVIN YAKOB",
+  "physical": {
+    "distanceZone1": 1131.9,
+    "distanceZone2": 1706.4,
+    "distanceZone3": 551.4,
+    "distanceZone4": 190.1,
+    "distanceZone5": 29.3,
+    "highSpeedRuns": 47,
+    "sprints": 15,
+    "topSpeed": 27.8,
+    "totalDistance": 3609.1
+  },
+  "playerId": "kevin-yakob-irq",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 19,
+  "team": {
+    "id": "iraq",
+    "name": "Iraq"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 75.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 9
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 27.8
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 3609.1
+        }
+      ]
+    }
+  ]
+}

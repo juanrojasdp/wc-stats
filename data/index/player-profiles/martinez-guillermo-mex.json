@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 111.25,
+      "value": 89
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 1.25,
+      "value": 1
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 92.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 15.0,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 57.5,
+      "value": 46
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 29.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11702.37,
+      "value": 9361.9
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 72,
+    "played": 2,
+    "started": 1,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-24",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m053-czechia-mexico",
+      "minutesPlayed": 63,
+      "opponent": {
+        "id": "czechia",
+        "name": "Czechia"
+      },
+      "passCompletion": 92.0,
+      "passesAttempted": 12,
+      "passesCompleted": 11,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.7,
+      "totalDistance": 7134.9
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-05",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m092-mexico-england",
+      "minutesPlayed": 9,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 1,
+      "passesCompleted": 1,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 29.5,
+      "totalDistance": 2227.0
+    }
+  ],
+  "name": "Guillermo MARTINEZ",
+  "physical": {
+    "distanceZone1": 3528.0,
+    "distanceZone2": 4066.9,
+    "distanceZone3": 1112.2,
+    "distanceZone4": 523.4,
+    "distanceZone5": 131.6,
+    "highSpeedRuns": 89,
+    "sprints": 46,
+    "topSpeed": 29.7,
+    "totalDistance": 9361.9
+  },
+  "playerId": "martinez-guillermo-mex",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 22,
+  "team": {
+    "id": "mexico",
+    "name": "Mexico"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 0
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 0
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 92.0
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 11
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 29.7
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 29.5
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 7134.9
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 2227.0
+        }
+      ]
+    }
+  ]
+}

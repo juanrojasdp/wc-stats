@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 3.75,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 7.5,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 183.75,
+      "value": 98
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 24.38,
+      "value": 13
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 96.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 54.38,
+      "value": 29
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 9.38,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 65.62,
+      "value": 35
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 5.62,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 3.75,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 13752.75,
+      "value": 7334.8
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 48,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-14",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m010-germany-curacao",
+      "minutesPlayed": 7,
+      "opponent": {
+        "id": "curacao",
+        "name": "Curaçao"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 6,
+      "passesCompleted": 6,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 27.8,
+      "totalDistance": 1459.2
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-29",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m074-germany-paraguay",
+      "minutesPlayed": 41,
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 96.0,
+      "passesAttempted": 24,
+      "passesCompleted": 23,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 33.3,
+      "totalDistance": 5875.6
+    }
+  ],
+  "name": "Waldemar ANTON",
+  "physical": {
+    "distanceZone1": 2407.1,
+    "distanceZone2": 3194.0,
+    "distanceZone3": 1092.9,
+    "distanceZone4": 484.1,
+    "distanceZone5": 156.6,
+    "highSpeedRuns": 98,
+    "sprints": 35,
+    "topSpeed": 33.3,
+    "totalDistance": 7334.8
+  },
+  "playerId": "anton-waldemar-ger",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 3,
+  "team": {
+    "id": "germany",
+    "name": "Germany"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 1
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 100.0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 96.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 6
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 23
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 27.8
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 33.3
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 1459.2
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 5875.6
+        }
+      ]
+    }
+  ]
+}

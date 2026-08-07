@@ -1,0 +1,397 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 6.02,
+      "value": 20
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.6,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 139.67,
+      "value": 464
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.3,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 5.12,
+      "value": 17
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 87.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 26.79,
+      "value": 89
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.2,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 63.21,
+      "value": 210
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.3,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 6.02,
+      "value": 20
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11112.38,
+      "value": 36917.8
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 299,
+    "played": 5,
+    "started": 4,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 9,
+      "date": "2026-06-12",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m004-usa-paraguay",
+      "minutesPlayed": 72,
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 90.0,
+      "passesAttempted": 30,
+      "passesCompleted": 27,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.3,
+      "totalDistance": 8824.2
+    },
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 5,
+      "date": "2026-06-19",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m032-usa-australia",
+      "minutesPlayed": 80,
+      "opponent": {
+        "id": "australia",
+        "name": "Australia"
+      },
+      "passCompletion": 92.0,
+      "passesAttempted": 24,
+      "passesCompleted": 22,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.5,
+      "totalDistance": 9205.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-25",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m059-turkiye-usa",
+      "minutesPlayed": 14,
+      "opponent": {
+        "id": "turkiye",
+        "name": "Türkiye"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 5,
+      "passesCompleted": 5,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 32.9,
+      "totalDistance": 2819.4
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-07-01",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m081-usa-bosnia-and-herzegovina",
+      "minutesPlayed": 88,
+      "opponent": {
+        "id": "bosnia-and-herzegovina",
+        "name": "Bosnia and Herzegovina"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 29,
+      "passesCompleted": 24,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 33.3,
+      "totalDistance": 10157.0
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 4,
+      "date": "2026-07-06",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m094-usa-belgium",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 79.0,
+      "passesAttempted": 14,
+      "passesCompleted": 11,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 33.4,
+      "totalDistance": 5911.7
+    }
+  ],
+  "name": "Sergino DEST",
+  "physical": {
+    "distanceZone1": 11604.2,
+    "distanceZone2": 16412.6,
+    "distanceZone3": 5226.2,
+    "distanceZone4": 2485.7,
+    "distanceZone5": 1189.1,
+    "highSpeedRuns": 464,
+    "sprints": 210,
+    "topSpeed": 33.4,
+    "totalDistance": 36917.8
+  },
+  "playerId": "dest-sergino-usa",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 2,
+  "team": {
+    "id": "usa",
+    "name": "USA"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 9
+        },
+        {
+          "matchId": "m032-usa-australia",
+          "value": 5
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 1
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 1
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 0
+        },
+        {
+          "matchId": "m032-usa-australia",
+          "value": 0
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 0
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 90.0
+        },
+        {
+          "matchId": "m032-usa-australia",
+          "value": 92.0
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 100.0
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 83.0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 79.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 27
+        },
+        {
+          "matchId": "m032-usa-australia",
+          "value": 22
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 5
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 24
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 32.3
+        },
+        {
+          "matchId": "m032-usa-australia",
+          "value": 32.5
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 32.9
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 33.3
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 33.4
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 8824.2
+        },
+        {
+          "matchId": "m032-usa-australia",
+          "value": 9205.5
+        },
+        {
+          "matchId": "m059-turkiye-usa",
+          "value": 2819.4
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 10157.0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 5911.7
+        }
+      ]
+    }
+  ]
+}

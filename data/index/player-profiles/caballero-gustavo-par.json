@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 4.79,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.91,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 161.81,
+      "value": 169
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.96,
+      "value": 1
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 62.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 4.79,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.91,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 54.57,
+      "value": 57
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.96,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.96,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 3.83,
+      "value": 4
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 34.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11885.17,
+      "value": 12413.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 94,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 5,
+      "date": "2026-06-29",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m074-germany-paraguay",
+      "minutesPlayed": 65,
+      "opponent": {
+        "id": "germany",
+        "name": "Germany"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 6,
+      "passesCompleted": 5,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 31.5,
+      "totalDistance": 8308.6
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-04",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m089-paraguay-france",
+      "minutesPlayed": 29,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 0.0,
+      "passesAttempted": 2,
+      "passesCompleted": 0,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 34.7,
+      "totalDistance": 4104.8
+    }
+  ],
+  "name": "Gustavo CABALLERO",
+  "physical": {
+    "distanceZone1": 4294.3,
+    "distanceZone2": 5105.4,
+    "distanceZone3": 1866.4,
+    "distanceZone4": 764.8,
+    "distanceZone5": 382.6,
+    "highSpeedRuns": 169,
+    "sprints": 57,
+    "topSpeed": 34.7,
+    "totalDistance": 12413.4
+  },
+  "playerId": "caballero-gustavo-par",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 24,
+  "team": {
+    "id": "paraguay",
+    "name": "Paraguay"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 5
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 0
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 83.0
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 5
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 31.5
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 34.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 8308.6
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 4104.8
+        }
+      ]
+    }
+  ]
+}

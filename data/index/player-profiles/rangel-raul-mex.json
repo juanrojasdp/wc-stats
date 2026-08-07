@@ -1,0 +1,397 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 14.59,
+      "value": 71
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 8.42,
+      "value": 41
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 77.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 24.66,
+      "value": 120
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 6.58,
+      "value": 32
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 2.47,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.21,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 25.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 5308.29,
+      "value": 25833.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 438,
+    "played": 5,
+    "started": 5,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-11",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m001-mexico-south-africa",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 33,
+      "passesCompleted": 29,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 23.2,
+      "totalDistance": 5476.4
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m028-mexico-korea-republic",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "korea-republic",
+        "name": "Korea Republic"
+      },
+      "passCompletion": 60.0,
+      "passesAttempted": 35,
+      "passesCompleted": 21,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 20.1,
+      "totalDistance": 5313.6
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-24",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m053-czechia-mexico",
+      "minutesPlayed": 78,
+      "opponent": {
+        "id": "czechia",
+        "name": "Czechia"
+      },
+      "passCompletion": 69.0,
+      "passesAttempted": 26,
+      "passesCompleted": 18,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 24.8,
+      "totalDistance": 4266.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-30",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m079-mexico-ecuador",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "ecuador",
+        "name": "Ecuador"
+      },
+      "passCompletion": 76.0,
+      "passesAttempted": 38,
+      "passesCompleted": 29,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 22.9,
+      "totalDistance": 5488.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-05",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m092-mexico-england",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 23,
+      "passesCompleted": 23,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 25.8,
+      "totalDistance": 5288.7
+    }
+  ],
+  "name": "Raul RANGEL",
+  "physical": {
+    "distanceZone1": 19866.1,
+    "distanceZone2": 5084.5,
+    "distanceZone3": 724.2,
+    "distanceZone4": 149.2,
+    "distanceZone5": 9.5,
+    "highSpeedRuns": 71,
+    "sprints": 12,
+    "topSpeed": 25.8,
+    "totalDistance": 25833.7
+  },
+  "playerId": "rangel-raul-mex",
+  "position": "gk",
+  "schemaVersion": 4,
+  "shirtNumber": 1,
+  "team": {
+    "id": "mexico",
+    "name": "Mexico"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 0
+        },
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 0
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 0
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 0
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 0
+        },
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 0
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 0
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 0
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 88.0
+        },
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 60.0
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 69.0
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 76.0
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 29
+        },
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 21
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 18
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 29
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 23
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 23.2
+        },
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 20.1
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 24.8
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 22.9
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 25.8
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 5476.4
+        },
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 5313.6
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 4266.5
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 5488.5
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 5288.7
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.61,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 1.61,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 236.25,
+      "value": 147
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 3.21,
+      "value": 2
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 71.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 16.07,
+      "value": 10
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 69.11,
+      "value": 43
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.61,
+      "value": 1
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 13323.86,
+      "value": 8290.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 56,
+    "played": 2,
+    "started": 1,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-13",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m008-qatar-switzerland",
+      "minutesPlayed": 1,
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 2,
+      "passesCompleted": 2,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 29.0,
+      "totalDistance": 1103.2
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-24",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m052-bosnia-and-herzegovina-qatar",
+      "minutesPlayed": 55,
+      "opponent": {
+        "id": "bosnia-and-herzegovina",
+        "name": "Bosnia and Herzegovina"
+      },
+      "passCompletion": 67.0,
+      "passesAttempted": 12,
+      "passesCompleted": 8,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.8,
+      "totalDistance": 7187.2
+    }
+  ],
+  "name": "HASSAN ALHAYDOS",
+  "physical": {
+    "distanceZone1": 2483.1,
+    "distanceZone2": 3764.8,
+    "distanceZone3": 1497.1,
+    "distanceZone4": 488.0,
+    "distanceZone5": 57.4,
+    "highSpeedRuns": 147,
+    "sprints": 43,
+    "topSpeed": 30.8,
+    "totalDistance": 8290.4
+  },
+  "playerId": "hassan-alhaydos-qat",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 10,
+  "team": {
+    "id": "qatar",
+    "name": "Qatar"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 0
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 0
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 100.0
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 67.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 2
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 29.0
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 30.8
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 1103.2
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 7187.2
+        }
+      ]
+    }
+  ]
+}

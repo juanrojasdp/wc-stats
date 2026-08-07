@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 2.9,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 243.87,
+      "value": 84
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 5.81,
+      "value": 2
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 88.9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 23.23,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 60.97,
+      "value": 21
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 26.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 14888.9,
+      "value": 5128.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 31,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-06",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m094-usa-belgium",
+      "minutesPlayed": 1,
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 4,
+      "passesCompleted": 4,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 24.6,
+      "totalDistance": 810.0
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-10",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m098-spain-belgium",
+      "minutesPlayed": 30,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 5,
+      "passesCompleted": 4,
+      "stage": "qf",
+      "started": false,
+      "topSpeed": 26.4,
+      "totalDistance": 4318.4
+    }
+  ],
+  "name": "Axel WITSEL",
+  "physical": {
+    "distanceZone1": 1401.4,
+    "distanceZone2": 2378.2,
+    "distanceZone3": 1054.1,
+    "distanceZone4": 277.4,
+    "distanceZone5": 17.2,
+    "highSpeedRuns": 84,
+    "sprints": 21,
+    "topSpeed": 26.4,
+    "totalDistance": 5128.4
+  },
+  "playerId": "witsel-axel-bel",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 6,
+  "team": {
+    "id": "belgium",
+    "name": "Belgium"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 0
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 0
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 100.0
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 80.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 4
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 24.6
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 26.4
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 810.0
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 4318.4
+        }
+      ]
+    }
+  ]
+}

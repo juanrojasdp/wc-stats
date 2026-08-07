@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.77,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 3.08,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.77,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 142.31,
+      "value": 185
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.77,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 26.92,
+      "value": 35
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 83.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 56.92,
+      "value": 74
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.77,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 34.62,
+      "value": 45
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 6.15,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.77,
+      "value": 1
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 31.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 12146.38,
+      "value": 15790.3
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 117,
+    "played": 4,
+    "started": 0,
+    "substituteAppearances": 4
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-23",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m048-colombia-congo-dr",
+      "minutesPlayed": 32,
+      "opponent": {
+        "id": "congo-dr",
+        "name": "Congo DR"
+      },
+      "passCompletion": 71.0,
+      "passesAttempted": 28,
+      "passesCompleted": 20,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.0,
+      "totalDistance": 3929.9
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-27",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m071-colombia-portugal",
+      "minutesPlayed": 14,
+      "opponent": {
+        "id": "portugal",
+        "name": "Portugal"
+      },
+      "passCompletion": 77.0,
+      "passesAttempted": 13,
+      "passesCompleted": 10,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 31.0,
+      "totalDistance": 2192.1
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-07-03",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m087-colombia-ghana",
+      "minutesPlayed": 17,
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 19,
+      "passesCompleted": 19,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 26.5,
+      "totalDistance": 3114.8
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-07-07",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m096-switzerland-colombia",
+      "minutesPlayed": 54,
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 86.0,
+      "passesAttempted": 29,
+      "passesCompleted": 25,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 27.7,
+      "totalDistance": 6553.5
+    }
+  ],
+  "name": "Juan QUINTERO",
+  "physical": {
+    "distanceZone1": 6533.7,
+    "distanceZone2": 6411.3,
+    "distanceZone3": 2037.9,
+    "distanceZone4": 674.1,
+    "distanceZone5": 133.2,
+    "highSpeedRuns": 185,
+    "sprints": 45,
+    "topSpeed": 31.0,
+    "totalDistance": 15790.3
+  },
+  "playerId": "quintero-juan-col",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 20,
+  "team": {
+    "id": "colombia",
+    "name": "Colombia"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 1
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 0
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 0
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 0
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 71.0
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 77.0
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 100.0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 86.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 20
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 10
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 19
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 25
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 26.0
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 31.0
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 26.5
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 27.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 3929.9
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 2192.1
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 3114.8
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 6553.5
+        }
+      ]
+    }
+  ]
+}

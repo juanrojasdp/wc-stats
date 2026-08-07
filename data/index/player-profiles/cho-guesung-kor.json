@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 3.1,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 3.1,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 114.83,
+      "value": 37
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 57.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 12.41,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 6.21,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 68.28,
+      "value": 22
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 13681.24,
+      "value": 4408.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 29,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-06-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m028-mexico-korea-republic",
+      "minutesPlayed": 13,
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 0.0,
+      "passesAttempted": 1,
+      "passesCompleted": 0,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.7,
+      "totalDistance": 2071.3
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-24",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m054-south-africa-korea-republic",
+      "minutesPlayed": 16,
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 67.0,
+      "passesAttempted": 6,
+      "passesCompleted": 4,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.5,
+      "totalDistance": 2337.1
+    }
+  ],
+  "name": "CHO Guesung",
+  "physical": {
+    "distanceZone1": 1721.6,
+    "distanceZone2": 1917.6,
+    "distanceZone3": 458.3,
+    "distanceZone4": 227.9,
+    "distanceZone5": 83.1,
+    "highSpeedRuns": 37,
+    "sprints": 22,
+    "topSpeed": 30.5,
+    "totalDistance": 4408.4
+  },
+  "playerId": "cho-guesung-kor",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 9,
+  "team": {
+    "id": "korea-republic",
+    "name": "Korea Republic"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 0
+        },
+        {
+          "matchId": "m054-south-africa-korea-republic",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 0
+        },
+        {
+          "matchId": "m054-south-africa-korea-republic",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 0.0
+        },
+        {
+          "matchId": "m054-south-africa-korea-republic",
+          "value": 67.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 0
+        },
+        {
+          "matchId": "m054-south-africa-korea-republic",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 26.7
+        },
+        {
+          "matchId": "m054-south-africa-korea-republic",
+          "value": 30.5
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m028-mexico-korea-republic",
+          "value": 2071.3
+        },
+        {
+          "matchId": "m054-south-africa-korea-republic",
+          "value": 2337.1
+        }
+      ]
+    }
+  ]
+}

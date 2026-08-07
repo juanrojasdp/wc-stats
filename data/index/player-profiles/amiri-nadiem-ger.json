@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 2.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 180.0,
+      "value": 80
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 11.25,
+      "value": 5
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 85.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 38.25,
+      "value": 17
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 58.5,
+      "value": 26
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 2.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 29.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 12237.08,
+      "value": 5438.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 40,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-20",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m033-germany-cote-d-ivoire",
+      "minutesPlayed": 30,
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 85.0,
+      "passesAttempted": 13,
+      "passesCompleted": 11,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 29.6,
+      "totalDistance": 4280.4
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-29",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m074-germany-paraguay",
+      "minutesPlayed": 10,
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 86.0,
+      "passesAttempted": 7,
+      "passesCompleted": 6,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 28.6,
+      "totalDistance": 1158.3
+    }
+  ],
+  "name": "Nadiem AMIRI",
+  "physical": {
+    "distanceZone1": 1695.2,
+    "distanceZone2": 2256.1,
+    "distanceZone3": 911.1,
+    "distanceZone4": 397.2,
+    "distanceZone5": 179.1,
+    "highSpeedRuns": 80,
+    "sprints": 26,
+    "topSpeed": 29.6,
+    "totalDistance": 5438.7
+  },
+  "playerId": "amiri-nadiem-ger",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 20,
+  "team": {
+    "id": "germany",
+    "name": "Germany"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 85.0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 86.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 11
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 29.6
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 28.6
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 4280.4
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 1158.3
+        }
+      ]
+    }
+  ]
+}

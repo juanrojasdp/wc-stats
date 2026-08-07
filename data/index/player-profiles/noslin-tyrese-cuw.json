@@ -1,0 +1,217 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 6.92,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 290.77,
+      "value": 42
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 55.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 34.62,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 131.54,
+      "value": 19
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 16983.0,
+      "value": 2453.1
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 13,
+    "played": 1,
+    "started": 0,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-25",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m055-curacao-cote-d-ivoire",
+      "minutesPlayed": 13,
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 56.0,
+      "passesAttempted": 9,
+      "passesCompleted": 5,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.7,
+      "totalDistance": 2453.1
+    }
+  ],
+  "name": "Tyrese NOSLIN",
+  "physical": {
+    "distanceZone1": 713.8,
+    "distanceZone2": 891.3,
+    "distanceZone3": 479.2,
+    "distanceZone4": 281.9,
+    "distanceZone5": 86.9,
+    "highSpeedRuns": 42,
+    "sprints": 19,
+    "topSpeed": 30.7,
+    "totalDistance": 2453.1
+  },
+  "playerId": "noslin-tyrese-cuw",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 13,
+  "team": {
+    "id": "curacao",
+    "name": "Curaçao"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 56.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 30.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 2453.1
+        }
+      ]
+    }
+  ]
+}

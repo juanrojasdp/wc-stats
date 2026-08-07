@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 8.75,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 1.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 178.75,
+      "value": 143
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 5.0,
+      "value": 4
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 66.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 15.0,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 5.0,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 83.75,
+      "value": 67
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 2.5,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 8.75,
+      "value": 7
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 29.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 13307.38,
+      "value": 10645.9
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 72,
+    "played": 3,
+    "started": 0,
+    "substituteAppearances": 3
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 2,
+      "date": "2026-06-17",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m024-uzbekistan-colombia",
+      "minutesPlayed": 18,
+      "opponent": {
+        "id": "uzbekistan",
+        "name": "Uzbekistan"
+      },
+      "passCompletion": 50.0,
+      "passesAttempted": 2,
+      "passesCompleted": 1,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.1,
+      "totalDistance": 3153.0
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-07-03",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m087-colombia-ghana",
+      "minutesPlayed": 0,
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 5,
+      "passesCompleted": 4,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 26.2,
+      "totalDistance": 995.9
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 5,
+      "date": "2026-07-07",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m096-switzerland-colombia",
+      "minutesPlayed": 54,
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 64.0,
+      "passesAttempted": 11,
+      "passesCompleted": 7,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 29.8,
+      "totalDistance": 6497.0
+    }
+  ],
+  "name": "Jaminton CAMPAZ",
+  "physical": {
+    "distanceZone1": 3731.0,
+    "distanceZone2": 4122.6,
+    "distanceZone3": 1655.5,
+    "distanceZone4": 911.8,
+    "distanceZone5": 224.9,
+    "highSpeedRuns": 143,
+    "sprints": 67,
+    "topSpeed": 29.8,
+    "totalDistance": 10645.9
+  },
+  "playerId": "campaz-jaminton-col",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 21,
+  "team": {
+    "id": "colombia",
+    "name": "Colombia"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 2
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 1
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 50.0
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 80.0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 64.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 1
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 4
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 26.1
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 26.2
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 29.8
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 3153.0
+        },
+        {
+          "matchId": "m087-colombia-ghana",
+          "value": 995.9
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 6497.0
+        }
+      ]
+    }
+  ]
+}

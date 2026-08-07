@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 2.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 2.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 2.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 168.0,
+      "value": 84
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 2.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 2.0,
+      "value": 1
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 63.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 14.0,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 6.0,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 60.0,
+      "value": 30
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 2.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 2.0,
+      "value": 1
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 13034.0,
+      "value": 6517.0
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 45,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-21",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m039-belgium-ir-iran",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 64.0,
+      "passesAttempted": 11,
+      "passesCompleted": 7,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.1,
+      "totalDistance": 5639.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-26",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m063-egypt-ir-iran",
+      "minutesPlayed": 0,
+      "opponent": {
+        "id": "egypt",
+        "name": "Egypt"
+      },
+      "passCompletion": 0.0,
+      "passesAttempted": 0,
+      "passesCompleted": 0,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 29.0,
+      "totalDistance": 877.2
+    }
+  ],
+  "name": "Alireza JAHANBAKHSH",
+  "physical": {
+    "distanceZone1": 2454.0,
+    "distanceZone2": 2513.4,
+    "distanceZone3": 1049.2,
+    "distanceZone4": 360.9,
+    "distanceZone5": 139.6,
+    "highSpeedRuns": 84,
+    "sprints": 30,
+    "topSpeed": 30.1,
+    "totalDistance": 6517.0
+  },
+  "playerId": "jahanbakhsh-alireza-irn",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 7,
+  "team": {
+    "id": "ir-iran",
+    "name": "IR Iran"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 1
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 0
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 64.0
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 7
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 30.1
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 29.0
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m039-belgium-ir-iran",
+          "value": 5639.8
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 877.2
+        }
+      ]
+    }
+  ]
+}

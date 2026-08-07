@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 3.71,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.53,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 110.65,
+      "value": 209
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 2.12,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 7.94,
+      "value": 15
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 85.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 31.24,
+      "value": 59
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 7.41,
+      "value": 14
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 43.41,
+      "value": 82
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.59,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.06,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 2.12,
+      "value": 4
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10151.15,
+      "value": 19174.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 170,
+    "played": 2,
+    "started": 2,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 3,
+      "date": "2026-06-19",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m029-brazil-haiti",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "brazil",
+        "name": "Brazil"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 48,
+      "passesCompleted": 40,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.7,
+      "totalDistance": 10384.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 4,
+      "date": "2026-06-24",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m050-morocco-haiti",
+      "minutesPlayed": 80,
+      "opponent": {
+        "id": "morocco",
+        "name": "Morocco"
+      },
+      "passCompletion": 90.0,
+      "passesAttempted": 21,
+      "passesCompleted": 19,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 33.5,
+      "totalDistance": 8789.6
+    }
+  ],
+  "name": "Jean-Kevin DUVERNE",
+  "physical": {
+    "distanceZone1": 7607.5,
+    "distanceZone2": 7763.6,
+    "distanceZone3": 2221.6,
+    "distanceZone4": 1075.0,
+    "distanceZone5": 506.7,
+    "highSpeedRuns": 209,
+    "sprints": 82,
+    "topSpeed": 33.5,
+    "totalDistance": 19174.4
+  },
+  "playerId": "duverne-jean-kevin-hai",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 22,
+  "team": {
+    "id": "haiti",
+    "name": "Haiti"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 3
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 0
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 83.0
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 90.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 40
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 19
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 32.7
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 33.5
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 10384.8
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 8789.6
+        }
+      ]
+    }
+  ]
+}

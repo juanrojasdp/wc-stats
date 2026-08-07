@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 2.98,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 117.13,
+      "value": 354
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.66,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 12.9,
+      "value": 39
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 95.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 65.51,
+      "value": 198
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 2.65,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 35.74,
+      "value": 108
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.99,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.66,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.99,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.99,
+      "value": 3
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10754.7,
+      "value": 32503.1
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 272,
+    "played": 4,
+    "started": 3,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-17",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m022-england-croatia",
+      "minutesPlayed": 32,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 30,
+      "passesCompleted": 30,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.7,
+      "totalDistance": 4601.9
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-23",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m046-panama-croatia",
+      "minutesPlayed": 72,
+      "opponent": {
+        "id": "panama",
+        "name": "Panama"
+      },
+      "passCompletion": 95.0,
+      "passesAttempted": 65,
+      "passesCompleted": 62,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.7,
+      "totalDistance": 8421.7
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-06-27",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m068-croatia-ghana",
+      "minutesPlayed": 78,
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 95.0,
+      "passesAttempted": 59,
+      "passesCompleted": 56,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.2,
+      "totalDistance": 9009.1
+    },
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 5,
+      "date": "2026-07-02",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m083-portugal-croatia",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "portugal",
+        "name": "Portugal"
+      },
+      "passCompletion": 93.0,
+      "passesAttempted": 54,
+      "passesCompleted": 50,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 29.9,
+      "totalDistance": 10470.4
+    }
+  ],
+  "name": "Mateo KOVACIC",
+  "physical": {
+    "distanceZone1": 10966.9,
+    "distanceZone2": 15169.1,
+    "distanceZone3": 4401.7,
+    "distanceZone4": 1445.6,
+    "distanceZone5": 519.7,
+    "highSpeedRuns": 354,
+    "sprints": 108,
+    "topSpeed": 32.2,
+    "totalDistance": 32503.1
+  },
+  "playerId": "kovacic-mateo-cro",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 8,
+  "team": {
+    "id": "croatia",
+    "name": "Croatia"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 1
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 1
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 2
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 0
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 0
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 0
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 100.0
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 95.0
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 95.0
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 93.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 30
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 62
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 56
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 50
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 26.7
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 31.7
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 32.2
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 29.9
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 4601.9
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 8421.7
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 9009.1
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 10470.4
+        }
+      ]
+    }
+  ]
+}

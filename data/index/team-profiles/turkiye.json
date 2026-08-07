@@ -1,0 +1,158 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-2-3-1",
+      "matches": 2,
+      "share": 66.7
+    },
+    {
+      "formation": "3-4-3",
+      "matches": 1,
+      "share": 33.3
+    }
+  ],
+  "group": "d",
+  "matches": [
+    {
+      "date": "2026-06-13",
+      "distanceCovered": 112.5,
+      "expectedGoals": 1.66,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 2,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m006-australia-turkiye",
+      "opponent": {
+        "id": "australia",
+        "name": "Australia"
+      },
+      "passCompletion": 92.0,
+      "possession": 62.9,
+      "result": "loss",
+      "shots": 30,
+      "shotsOnTarget": 7,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-19",
+      "distanceCovered": 123.3,
+      "expectedGoals": 2.13,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m031-turkiye-paraguay",
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 89.0,
+      "possession": 67.7,
+      "result": "loss",
+      "shots": 32,
+      "shotsOnTarget": 5,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 115.0,
+      "expectedGoals": 1.71,
+      "formation": "3-4-3",
+      "goalsAgainst": 2,
+      "goalsFor": 3,
+      "isHome": true,
+      "matchId": "m059-turkiye-usa",
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 77.0,
+      "possession": 42.5,
+      "result": "win",
+      "shots": 8,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    }
+  ],
+  "name": "Türkiye",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "group",
+    "goalDifference": -2,
+    "goalsAgainst": 5,
+    "goalsFor": 3,
+    "lost": 2,
+    "played": 3,
+    "points": 3,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 5.0,
+      "low": 10.7,
+      "mid": 11.7
+    },
+    "phasesInPossession": {
+      "attackingTransition": 13.3,
+      "buildUpOpposed": 15.3,
+      "buildUpUnopposed": 34.0,
+      "counterAttack": 2.0,
+      "finalThird": 28.3,
+      "longBall": 2.3,
+      "progression": 21.0,
+      "setPiece": 8.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 14.0,
+      "defensiveTransition": 23.7,
+      "highBlock": 5.0,
+      "highPress": 6.0,
+      "lowBlock": 10.7,
+      "lowPress": 0.7,
+      "midBlock": 11.7,
+      "midPress": 3.3,
+      "recovery": 5.7
+    },
+    "possession": 57.7,
+    "pressingIntensity": 163.3,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 21.7,
+          "teamLength": 36.7,
+          "teamWidth": 52.3
+        },
+        "buildUpMid": {
+          "lineHeight": 45.7,
+          "teamLength": 30.0,
+          "teamWidth": 53.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 63.3,
+          "teamLength": 27.3,
+          "teamWidth": 43.0
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 49.7,
+          "teamLength": 36.0,
+          "teamWidth": 38.3
+        },
+        "lowBlock": {
+          "lineHeight": 16.0,
+          "teamLength": 27.0,
+          "teamWidth": 32.7
+        },
+        "midBlock": {
+          "lineHeight": 38.3,
+          "teamLength": 30.7,
+          "teamWidth": 37.0
+        }
+      }
+    }
+  },
+  "teamCode": "tur",
+  "teamId": "turkiye"
+}

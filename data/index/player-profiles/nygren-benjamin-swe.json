@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 195.23,
+      "value": 282
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 5.54,
+      "value": 8
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 92.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 31.85,
+      "value": 46
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 72.0,
+      "value": 104
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 31.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 13134.88,
+      "value": 18972.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 130,
+    "played": 4,
+    "started": 2,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-14",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m012-sweden-tunisia",
+      "minutesPlayed": 64,
+      "opponent": {
+        "id": "tunisia",
+        "name": "Tunisia"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 14,
+      "passesCompleted": 14,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.5,
+      "totalDistance": 8511.1
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-20",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m035-netherlands-sweden",
+      "minutesPlayed": 56,
+      "opponent": {
+        "id": "netherlands",
+        "name": "Netherlands"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 17,
+      "passesCompleted": 15,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.9,
+      "totalDistance": 7553.1
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-25",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m057-japan-sweden",
+      "minutesPlayed": 2,
+      "opponent": {
+        "id": "japan",
+        "name": "Japan"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 8,
+      "passesCompleted": 7,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 27.5,
+      "totalDistance": 1221.1
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-30",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m077-france-sweden",
+      "minutesPlayed": 8,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 91.0,
+      "passesAttempted": 11,
+      "passesCompleted": 10,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 30.9,
+      "totalDistance": 1687.3
+    }
+  ],
+  "name": "Benjamin NYGREN",
+  "physical": {
+    "distanceZone1": 5157.2,
+    "distanceZone2": 8619.4,
+    "distanceZone3": 3305.5,
+    "distanceZone4": 1301.9,
+    "distanceZone5": 588.9,
+    "highSpeedRuns": 282,
+    "sprints": 104,
+    "topSpeed": 31.5,
+    "totalDistance": 18972.6
+  },
+  "playerId": "nygren-benjamin-swe",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 10,
+  "team": {
+    "id": "sweden",
+    "name": "Sweden"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 2
+        },
+        {
+          "matchId": "m035-netherlands-sweden",
+          "value": 0
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 0
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 0
+        },
+        {
+          "matchId": "m035-netherlands-sweden",
+          "value": 0
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 0
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 100.0
+        },
+        {
+          "matchId": "m035-netherlands-sweden",
+          "value": 88.0
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 88.0
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 91.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 14
+        },
+        {
+          "matchId": "m035-netherlands-sweden",
+          "value": 15
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 7
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 31.5
+        },
+        {
+          "matchId": "m035-netherlands-sweden",
+          "value": 30.9
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 27.5
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 30.9
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 8511.1
+        },
+        {
+          "matchId": "m035-netherlands-sweden",
+          "value": 7553.1
+        },
+        {
+          "matchId": "m057-japan-sweden",
+          "value": 1221.1
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 1687.3
+        }
+      ]
+    }
+  ]
+}

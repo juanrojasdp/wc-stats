@@ -22,3 +22,13 @@ pmsr-corpus/*.pdf
 pmsr-corpus/*.part
 pmsr-corpus/failures.txt
 spike/*.pdf
+
+# Profile-emission scratch directories (Story 1.18). `emit_profiles` stages both artifact
+# namespaces into siblings and swaps them, retaining the retired copy until BOTH swaps land,
+# so the 1,296 artifacts move all-or-nothing. A successful run removes these; a run killed
+# mid-write cannot. They sit inside the COMMITTED data/index/ tree, so without this a
+# sweeping `git add` after an aborted run would commit hundreds of orphan artifacts as
+# though they were real -- and `identity.check_committed_data` would then pin them as the
+# AD-3 immutability baseline, which is expensive to undo.
+data/index/*.staged/
+data/index/*.previous.rollback/

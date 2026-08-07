@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 6.43,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 315.0,
+      "value": 49
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 6.43,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 6.43,
+      "value": 1
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 100.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 45.0,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 12.86,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 96.43,
+      "value": 15
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 6.43,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 26.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 20295.64,
+      "value": 3157.1
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 14,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-14",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m012-sweden-tunisia",
+      "minutesPlayed": 6,
+      "opponent": {
+        "id": "tunisia",
+        "name": "Tunisia"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 1,
+      "passesCompleted": 1,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.4,
+      "totalDistance": 1553.5
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-06-30",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m077-france-sweden",
+      "minutesPlayed": 8,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 6,
+      "passesCompleted": 6,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 25.9,
+      "totalDistance": 1603.6
+    }
+  ],
+  "name": "Mattias SVANBERG",
+  "physical": {
+    "distanceZone1": 921.7,
+    "distanceZone2": 1375.8,
+    "distanceZone3": 587.8,
+    "distanceZone4": 243.6,
+    "distanceZone5": 28.2,
+    "highSpeedRuns": 49,
+    "sprints": 15,
+    "topSpeed": 26.4,
+    "totalDistance": 3157.1
+  },
+  "playerId": "svanberg-mattias-swe",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 19,
+  "team": {
+    "id": "sweden",
+    "name": "Sweden"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 0
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 1
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 100.0
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 1
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 26.4
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 25.9
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m012-sweden-tunisia",
+          "value": 1553.5
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 1603.6
+        }
+      ]
+    }
+  ]
+}

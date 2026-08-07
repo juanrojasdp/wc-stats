@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 5.62,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 5.62,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 315.0,
+      "value": 56
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 11.25,
+      "value": 2
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 43.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 39.38,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 5.62,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 135.0,
+      "value": 24
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 5.62,
+      "value": 1
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 22060.12,
+      "value": 3921.8
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 16,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-21",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m040-new-zealand-egypt",
+      "minutesPlayed": 5,
+      "opponent": {
+        "id": "egypt",
+        "name": "Egypt"
+      },
+      "passCompletion": 25.0,
+      "passesAttempted": 8,
+      "passesCompleted": 2,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 31.8,
+      "totalDistance": 1935.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-26",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m064-new-zealand-belgium",
+      "minutesPlayed": 11,
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 62.0,
+      "passesAttempted": 8,
+      "passesCompleted": 5,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 32.3,
+      "totalDistance": 1986.0
+    }
+  ],
+  "name": "Francis DE VRIES",
+  "physical": {
+    "distanceZone1": 1201.8,
+    "distanceZone2": 1538.4,
+    "distanceZone3": 644.1,
+    "distanceZone4": 297.8,
+    "distanceZone5": 239.7,
+    "highSpeedRuns": 56,
+    "sprints": 24,
+    "topSpeed": 32.3,
+    "totalDistance": 3921.8
+  },
+  "playerId": "de-vries-francis-nzl",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 3,
+  "team": {
+    "id": "new-zealand",
+    "name": "New Zealand"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 0
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 0
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 25.0
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 62.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 2
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 31.8
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 32.3
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 1935.8
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 1986.0
+        }
+      ]
+    }
+  ]
+}

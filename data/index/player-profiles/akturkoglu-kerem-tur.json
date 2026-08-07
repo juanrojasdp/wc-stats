@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.69,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 101.77,
+      "value": 147
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 60.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 6.23,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 50.54,
+      "value": 73
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.38,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10546.68,
+      "value": 15234.1
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 130,
+    "played": 2,
+    "started": 2,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 2,
+      "date": "2026-06-13",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m006-australia-turkiye",
+      "minutesPlayed": 85,
+      "opponent": {
+        "id": "australia",
+        "name": "Australia"
+      },
+      "passCompletion": 64.0,
+      "passesAttempted": 11,
+      "passesCompleted": 7,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.4,
+      "totalDistance": 9564.0
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-19",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m031-turkiye-paraguay",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 50.0,
+      "passesAttempted": 4,
+      "passesCompleted": 2,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.4,
+      "totalDistance": 5670.1
+    }
+  ],
+  "name": "Kerem AKTURKOGLU",
+  "physical": {
+    "distanceZone1": 6520.6,
+    "distanceZone2": 5907.2,
+    "distanceZone3": 1597.8,
+    "distanceZone4": 854.9,
+    "distanceZone5": 353.6,
+    "highSpeedRuns": 147,
+    "sprints": 73,
+    "topSpeed": 32.4,
+    "totalDistance": 15234.1
+  },
+  "playerId": "akturkoglu-kerem-tur",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 7,
+  "team": {
+    "id": "turkiye",
+    "name": "Türkiye"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m006-australia-turkiye",
+          "value": 2
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m006-australia-turkiye",
+          "value": 0
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m006-australia-turkiye",
+          "value": 64.0
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 50.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m006-australia-turkiye",
+          "value": 7
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m006-australia-turkiye",
+          "value": 31.4
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 32.4
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m006-australia-turkiye",
+          "value": 9564.0
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 5670.1
+        }
+      ]
+    }
+  ]
+}

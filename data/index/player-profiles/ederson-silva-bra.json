@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 4.5,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 4.5,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 283.5,
+      "value": 63
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 100.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 22.5,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 148.5,
+      "value": 33
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 20290.5,
+      "value": 4509.0
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 20,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-19",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m029-brazil-haiti",
+      "minutesPlayed": 9,
+      "opponent": {
+        "id": "haiti",
+        "name": "Haiti"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 2,
+      "passesCompleted": 2,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 32.3,
+      "totalDistance": 2090.3
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-07-05",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m091-brazil-norway",
+      "minutesPlayed": 11,
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 3,
+      "passesCompleted": 3,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 32.8,
+      "totalDistance": 2418.7
+    }
+  ],
+  "name": "EDERSON SILVA",
+  "physical": {
+    "distanceZone1": 1409.7,
+    "distanceZone2": 1738.2,
+    "distanceZone3": 662.3,
+    "distanceZone4": 414.4,
+    "distanceZone5": 284.5,
+    "highSpeedRuns": 63,
+    "sprints": 33,
+    "topSpeed": 32.8,
+    "totalDistance": 4509.0
+  },
+  "playerId": "ederson-silva-bra",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 2,
+  "team": {
+    "id": "brazil",
+    "name": "Brazil"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 0
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 0
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 100.0
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 2
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 32.3
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 32.8
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m029-brazil-haiti",
+          "value": 2090.3
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 2418.7
+        }
+      ]
+    }
+  ]
+}

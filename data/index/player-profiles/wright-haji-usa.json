@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": null,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": null,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 100.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": null,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": null,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": null,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 31.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": null,
+      "value": 549.3
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 0,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-19",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m032-usa-australia",
+      "minutesPlayed": 0,
+      "opponent": {
+        "id": "australia",
+        "name": "Australia"
+      },
+      "passCompletion": 0.0,
+      "passesAttempted": 0,
+      "passesCompleted": 0,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 31.2,
+      "totalDistance": 353.0
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-06",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m094-usa-belgium",
+      "minutesPlayed": 0,
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 1,
+      "passesCompleted": 1,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 26.5,
+      "totalDistance": 196.3
+    }
+  ],
+  "name": "Haji WRIGHT",
+  "physical": {
+    "distanceZone1": 139.6,
+    "distanceZone2": 228.0,
+    "distanceZone3": 69.7,
+    "distanceZone4": 36.1,
+    "distanceZone5": 76.0,
+    "highSpeedRuns": 7,
+    "sprints": 4,
+    "topSpeed": 31.2,
+    "totalDistance": 549.3
+  },
+  "playerId": "wright-haji-usa",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 19,
+  "team": {
+    "id": "usa",
+    "name": "USA"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m032-usa-australia",
+          "value": 0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m032-usa-australia",
+          "value": 0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m032-usa-australia",
+          "value": 0.0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m032-usa-australia",
+          "value": 0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m032-usa-australia",
+          "value": 31.2
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 26.5
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m032-usa-australia",
+          "value": 353.0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 196.3
+        }
+      ]
+    }
+  ]
+}

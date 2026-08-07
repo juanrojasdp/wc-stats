@@ -1,0 +1,153 @@
+{
+  "formationUsage": [
+    {
+      "formation": "3-4-3",
+      "matches": 3,
+      "share": 100.0
+    }
+  ],
+  "group": "j",
+  "matches": [
+    {
+      "date": "2026-06-16",
+      "distanceCovered": 119.2,
+      "expectedGoals": 0.53,
+      "formation": "3-4-3",
+      "goalsAgainst": 3,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m020-austria-jordan",
+      "opponent": {
+        "id": "austria",
+        "name": "Austria"
+      },
+      "passCompletion": 74.0,
+      "possession": 33.0,
+      "result": "loss",
+      "shots": 11,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-22",
+      "distanceCovered": 117.5,
+      "expectedGoals": 0.38,
+      "formation": "3-4-3",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m044-jordan-algeria",
+      "opponent": {
+        "id": "algeria",
+        "name": "Algeria"
+      },
+      "passCompletion": 74.0,
+      "possession": 27.7,
+      "result": "loss",
+      "shots": 8,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-27",
+      "distanceCovered": 110.6,
+      "expectedGoals": 0.96,
+      "formation": "3-4-3",
+      "goalsAgainst": 3,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m070-jordan-argentina",
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 80.0,
+      "possession": 27.7,
+      "result": "loss",
+      "shots": 5,
+      "shotsOnTarget": 1,
+      "stage": "group"
+    }
+  ],
+  "name": "Jordan",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "group",
+    "goalDifference": -5,
+    "goalsAgainst": 8,
+    "goalsFor": 3,
+    "lost": 3,
+    "played": 3,
+    "points": 0,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 3.0,
+      "low": 28.7,
+      "mid": 26.0
+    },
+    "phasesInPossession": {
+      "attackingTransition": 22.3,
+      "buildUpOpposed": 11.0,
+      "buildUpUnopposed": 23.3,
+      "counterAttack": 3.3,
+      "finalThird": 13.7,
+      "longBall": 6.0,
+      "progression": 19.3,
+      "setPiece": 8.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 8.3,
+      "defensiveTransition": 10.7,
+      "highBlock": 3.0,
+      "highPress": 3.3,
+      "lowBlock": 28.7,
+      "lowPress": 0.7,
+      "midBlock": 26.0,
+      "midPress": 5.0,
+      "recovery": 4.0
+    },
+    "possession": 29.5,
+    "pressingIntensity": 382.7,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 17.0,
+          "teamLength": 40.3,
+          "teamWidth": 55.0
+        },
+        "buildUpMid": {
+          "lineHeight": 40.3,
+          "teamLength": 34.3,
+          "teamWidth": 55.7
+        },
+        "finalThirdPhase": {
+          "lineHeight": 52.0,
+          "teamLength": 38.7,
+          "teamWidth": 44.0
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.3,
+          "teamLength": 36.7,
+          "teamWidth": 39.0
+        },
+        "lowBlock": {
+          "lineHeight": 20.7,
+          "teamLength": 23.7,
+          "teamWidth": 34.3
+        },
+        "midBlock": {
+          "lineHeight": 37.0,
+          "teamLength": 26.3,
+          "teamWidth": 38.3
+        }
+      }
+    }
+  },
+  "teamCode": "jor",
+  "teamId": "jordan"
+}

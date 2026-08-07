@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 4.85,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.69,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 227.08,
+      "value": 328
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 6.23,
+      "value": 9
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 82.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 22.15,
+      "value": 32
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 60.23,
+      "value": 87
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 4.85,
+      "value": 7
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 13057.96,
+      "value": 18861.5
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 130,
+    "played": 3,
+    "started": 1,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-16",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m020-austria-jordan",
+      "minutesPlayed": 8,
+      "opponent": {
+        "id": "austria",
+        "name": "Austria"
+      },
+      "passCompletion": 70.0,
+      "passesAttempted": 10,
+      "passesCompleted": 7,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 27.5,
+      "totalDistance": 2632.6
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 3,
+      "date": "2026-06-22",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m044-jordan-algeria",
+      "minutesPlayed": 77,
+      "opponent": {
+        "id": "algeria",
+        "name": "Algeria"
+      },
+      "passCompletion": 82.0,
+      "passesAttempted": 22,
+      "passesCompleted": 18,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 28.9,
+      "totalDistance": 10324.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 4,
+      "date": "2026-06-27",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m070-jordan-argentina",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 7,
+      "passesCompleted": 7,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.1,
+      "totalDistance": 5904.1
+    }
+  ],
+  "name": "MAHMOUD ALMARDI",
+  "physical": {
+    "distanceZone1": 5337.8,
+    "distanceZone2": 8422.0,
+    "distanceZone3": 3736.2,
+    "distanceZone4": 1188.8,
+    "distanceZone5": 176.7,
+    "highSpeedRuns": 328,
+    "sprints": 87,
+    "topSpeed": 30.1,
+    "totalDistance": 18861.5
+  },
+  "playerId": "mahmoud-almardi-jor",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 13,
+  "team": {
+    "id": "jordan",
+    "name": "Jordan"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 0
+        },
+        {
+          "matchId": "m044-jordan-algeria",
+          "value": 3
+        },
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 0
+        },
+        {
+          "matchId": "m044-jordan-algeria",
+          "value": 0
+        },
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 70.0
+        },
+        {
+          "matchId": "m044-jordan-algeria",
+          "value": 82.0
+        },
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 7
+        },
+        {
+          "matchId": "m044-jordan-algeria",
+          "value": 18
+        },
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 27.5
+        },
+        {
+          "matchId": "m044-jordan-algeria",
+          "value": 28.9
+        },
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 30.1
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 2632.6
+        },
+        {
+          "matchId": "m044-jordan-algeria",
+          "value": 10324.8
+        },
+        {
+          "matchId": "m070-jordan-argentina",
+          "value": 5904.1
+        }
+      ]
+    }
+  ]
+}

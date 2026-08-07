@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 12.86,
+      "value": 18
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 1.43,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.71,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 131.43,
+      "value": 184
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 16.43,
+      "value": 23
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 85.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 25.0,
+      "value": 35
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.43,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 44.29,
+      "value": 62
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.43,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 2.86,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 11.43,
+      "value": 16
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10997.71,
+      "value": 15396.8
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 126,
+    "played": 2,
+    "started": 1,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 8,
+      "date": "2026-07-03",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m088-australia-egypt",
+      "minutesPlayed": 53,
+      "opponent": {
+        "id": "australia",
+        "name": "Australia"
+      },
+      "passCompletion": 86.0,
+      "passesAttempted": 29,
+      "passesCompleted": 25,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 29.3,
+      "totalDistance": 6544.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 10,
+      "date": "2026-07-07",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m095-argentina-egypt",
+      "minutesPlayed": 73,
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 12,
+      "passesCompleted": 10,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 32.9,
+      "totalDistance": 8852.3
+    }
+  ],
+  "name": "HAISSEM HASSAN",
+  "physical": {
+    "distanceZone1": 6077.6,
+    "distanceZone2": 5857.1,
+    "distanceZone3": 2307.7,
+    "distanceZone4": 867.8,
+    "distanceZone5": 286.5,
+    "highSpeedRuns": 184,
+    "sprints": 62,
+    "topSpeed": 32.9,
+    "totalDistance": 15396.8
+  },
+  "playerId": "haissem-hassan-egy",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 12,
+  "team": {
+    "id": "egypt",
+    "name": "Egypt"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 8
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 0
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 86.0
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 83.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 25
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 29.3
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 32.9
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 6544.5
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 8852.3
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "formationUsage": [
+    {
+      "formation": "3-4-3",
+      "matches": 3,
+      "share": 100.0
+    }
+  ],
+  "group": "a",
+  "matches": [
+    {
+      "date": "2026-06-11",
+      "distanceCovered": 111.8,
+      "expectedGoals": 1.77,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m002-korea-republic-czechia",
+      "opponent": {
+        "id": "czechia",
+        "name": "Czechia"
+      },
+      "passCompletion": 89.0,
+      "possession": 55.8,
+      "result": "win",
+      "shots": 15,
+      "shotsOnTarget": 6,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-18",
+      "distanceCovered": 112.1,
+      "expectedGoals": 0.87,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m028-mexico-korea-republic",
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 86.0,
+      "possession": 51.8,
+      "result": "loss",
+      "shots": 9,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-24",
+      "distanceCovered": 111.0,
+      "expectedGoals": 0.74,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m054-south-africa-korea-republic",
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 92.0,
+      "possession": 60.9,
+      "result": "loss",
+      "shots": 8,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    }
+  ],
+  "name": "Korea Republic",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "group",
+    "goalDifference": -1,
+    "goalsAgainst": 3,
+    "goalsFor": 2,
+    "lost": 2,
+    "played": 3,
+    "points": 3,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 6.7,
+      "low": 13.7,
+      "mid": 19.3
+    },
+    "phasesInPossession": {
+      "attackingTransition": 9.7,
+      "buildUpOpposed": 16.7,
+      "buildUpUnopposed": 44.7,
+      "counterAttack": 1.0,
+      "finalThird": 13.7,
+      "longBall": 3.7,
+      "progression": 14.3,
+      "setPiece": 6.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 9.7,
+      "defensiveTransition": 15.3,
+      "highBlock": 6.7,
+      "highPress": 7.0,
+      "lowBlock": 13.7,
+      "lowPress": 0.0,
+      "midBlock": 19.3,
+      "midPress": 4.0,
+      "recovery": 4.0
+    },
+    "possession": 56.2,
+    "pressingIntensity": 187.7,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 21.0,
+          "teamLength": 38.3,
+          "teamWidth": 56.7
+        },
+        "buildUpMid": {
+          "lineHeight": 44.7,
+          "teamLength": 31.0,
+          "teamWidth": 56.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 57.7,
+          "teamLength": 32.7,
+          "teamWidth": 45.7
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 50.0,
+          "teamLength": 35.0,
+          "teamWidth": 43.0
+        },
+        "lowBlock": {
+          "lineHeight": 20.7,
+          "teamLength": 23.0,
+          "teamWidth": 37.0
+        },
+        "midBlock": {
+          "lineHeight": 38.3,
+          "teamLength": 25.3,
+          "teamWidth": 41.7
+        }
+      }
+    }
+  },
+  "teamCode": "kor",
+  "teamId": "korea-republic"
+}

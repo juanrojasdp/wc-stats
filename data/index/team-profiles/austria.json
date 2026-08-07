@@ -1,0 +1,173 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-2-3-1",
+      "matches": 4,
+      "share": 100.0
+    }
+  ],
+  "group": "j",
+  "matches": [
+    {
+      "date": "2026-06-16",
+      "distanceCovered": 120.4,
+      "expectedGoals": 1.93,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 3,
+      "isHome": true,
+      "matchId": "m020-austria-jordan",
+      "opponent": {
+        "id": "jordan",
+        "name": "Jordan"
+      },
+      "passCompletion": 85.0,
+      "possession": 53.3,
+      "result": "win",
+      "shots": 10,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-22",
+      "distanceCovered": 107.8,
+      "expectedGoals": 0.63,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 2,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m043-argentina-austria",
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 88.0,
+      "possession": 43.5,
+      "result": "loss",
+      "shots": 6,
+      "shotsOnTarget": 1,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-27",
+      "distanceCovered": 113.3,
+      "expectedGoals": 1.06,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 3,
+      "goalsFor": 3,
+      "isHome": false,
+      "matchId": "m069-algeria-austria",
+      "opponent": {
+        "id": "algeria",
+        "name": "Algeria"
+      },
+      "passCompletion": 88.0,
+      "possession": 33.9,
+      "result": "draw",
+      "shots": 10,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-07-02",
+      "distanceCovered": 110.5,
+      "expectedGoals": 0.25,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 3,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m084-spain-austria",
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 81.0,
+      "possession": 33.3,
+      "result": "loss",
+      "shots": 5,
+      "shotsOnTarget": 0,
+      "stage": "r32"
+    }
+  ],
+  "name": "Austria",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "r32",
+    "goalDifference": -3,
+    "goalsAgainst": 9,
+    "goalsFor": 6,
+    "lost": 2,
+    "played": 4,
+    "points": 4,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 3.2,
+      "low": 25.0,
+      "mid": 25.0
+    },
+    "phasesInPossession": {
+      "attackingTransition": 15.0,
+      "buildUpOpposed": 13.0,
+      "buildUpUnopposed": 39.8,
+      "counterAttack": 1.5,
+      "finalThird": 14.0,
+      "longBall": 3.2,
+      "progression": 16.5,
+      "setPiece": 5.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 9.5,
+      "defensiveTransition": 13.8,
+      "highBlock": 3.2,
+      "highPress": 5.5,
+      "lowBlock": 25.0,
+      "lowPress": 0.8,
+      "midBlock": 25.0,
+      "midPress": 4.0,
+      "recovery": 4.5
+    },
+    "possession": 41.0,
+    "pressingIntensity": 305.0,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 19.5,
+          "teamLength": 39.2,
+          "teamWidth": 51.0
+        },
+        "buildUpMid": {
+          "lineHeight": 43.0,
+          "teamLength": 31.8,
+          "teamWidth": 49.5
+        },
+        "finalThirdPhase": {
+          "lineHeight": 56.0,
+          "teamLength": 35.0,
+          "teamWidth": 38.8
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 47.5,
+          "teamLength": 35.8,
+          "teamWidth": 38.0
+        },
+        "lowBlock": {
+          "lineHeight": 17.2,
+          "teamLength": 22.8,
+          "teamWidth": 34.0
+        },
+        "midBlock": {
+          "lineHeight": 36.8,
+          "teamLength": 25.8,
+          "teamWidth": 37.5
+        }
+      }
+    }
+  },
+  "teamCode": "aut",
+  "teamId": "austria"
+}

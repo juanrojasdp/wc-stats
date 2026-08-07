@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.95,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.95,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.95,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.47,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.47,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 124.58,
+      "value": 263
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 2.84,
+      "value": 6
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 82.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 15.63,
+      "value": 33
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 2.37,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 45.47,
+      "value": 96
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.95,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.95,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10426.45,
+      "value": 22011.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 190,
+    "played": 3,
+    "started": 2,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-17",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m022-england-croatia",
+      "minutesPlayed": 12,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 50.0,
+      "passesAttempted": 4,
+      "passesCompleted": 2,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 31.8,
+      "totalDistance": 2404.5
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 1,
+      "date": "2026-06-27",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m068-croatia-ghana",
+      "minutesPlayed": 88,
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 91.0,
+      "passesAttempted": 22,
+      "passesCompleted": 20,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.5,
+      "totalDistance": 9618.7
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-07-02",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m083-portugal-croatia",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "portugal",
+        "name": "Portugal"
+      },
+      "passCompletion": 79.0,
+      "passesAttempted": 14,
+      "passesCompleted": 11,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 32.6,
+      "totalDistance": 9988.2
+    }
+  ],
+  "name": "Nikola VLASIC",
+  "physical": {
+    "distanceZone1": 8252.5,
+    "distanceZone2": 8909.1,
+    "distanceZone3": 2961.2,
+    "distanceZone4": 1350.6,
+    "distanceZone5": 538.1,
+    "highSpeedRuns": 263,
+    "sprints": 96,
+    "topSpeed": 32.6,
+    "totalDistance": 22011.4
+  },
+  "playerId": "vlasic-nikola-cro",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 13,
+  "team": {
+    "id": "croatia",
+    "name": "Croatia"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 0
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 1
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 0
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 1
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 50.0
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 91.0
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 79.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 2
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 20
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 31.8
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 31.5
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 32.6
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 2404.5
+        },
+        {
+          "matchId": "m068-croatia-ghana",
+          "value": 9618.7
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 9988.2
+        }
+      ]
+    }
+  ]
+}

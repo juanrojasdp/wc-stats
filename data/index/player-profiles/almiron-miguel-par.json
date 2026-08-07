@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 4.91,
+      "value": 18
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.82,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.55,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 97.36,
+      "value": 357
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.55,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 3.0,
+      "value": 11
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 73.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 13.36,
+      "value": 49
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.0,
+      "value": 11
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 35.18,
+      "value": 129
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.09,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.36,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 3.82,
+      "value": 14
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9048.44,
+      "value": 33177.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 330,
+    "played": 4,
+    "started": 4,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 1,
+      "date": "2026-06-12",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m004-usa-paraguay",
+      "minutesPlayed": 79,
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 82.0,
+      "passesAttempted": 22,
+      "passesCompleted": 18,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.3,
+      "totalDistance": 9249.6
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-19",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m031-turkiye-paraguay",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "turkiye",
+        "name": "Türkiye"
+      },
+      "passCompletion": 50.0,
+      "passesAttempted": 10,
+      "passesCompleted": 5,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.3,
+      "totalDistance": 5552.3
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 9,
+      "date": "2026-06-29",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m074-germany-paraguay",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "germany",
+        "name": "Germany"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 20,
+      "passesCompleted": 16,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 31.7,
+      "totalDistance": 11085.4
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 6,
+      "date": "2026-07-04",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m089-paraguay-france",
+      "minutesPlayed": 71,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 67.0,
+      "passesAttempted": 15,
+      "passesCompleted": 10,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 33.3,
+      "totalDistance": 7290.3
+    }
+  ],
+  "name": "Miguel ALMIRON",
+  "physical": {
+    "distanceZone1": 11742.3,
+    "distanceZone2": 14747.0,
+    "distanceZone3": 4376.5,
+    "distanceZone4": 1560.4,
+    "distanceZone5": 751.2,
+    "highSpeedRuns": 357,
+    "sprints": 129,
+    "topSpeed": 33.3,
+    "totalDistance": 33177.6
+  },
+  "playerId": "almiron-miguel-par",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 10,
+  "team": {
+    "id": "paraguay",
+    "name": "Paraguay"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 1
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 2
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 9
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 0
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 0
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 82.0
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 50.0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 80.0
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 67.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 18
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 5
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 16
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 29.3
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 32.3
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 31.7
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 33.3
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m004-usa-paraguay",
+          "value": 9249.6
+        },
+        {
+          "matchId": "m031-turkiye-paraguay",
+          "value": 5552.3
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 11085.4
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 7290.3
+        }
+      ]
+    }
+  ]
+}

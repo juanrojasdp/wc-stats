@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.24,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 149.72,
+      "value": 361
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.66,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 8.29,
+      "value": 20
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 82.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 26.96,
+      "value": 65
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.73,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 38.99,
+      "value": 94
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 1.24,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.24,
+      "value": 3
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11422.37,
+      "value": 27540.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 217,
+    "played": 3,
+    "started": 2,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-17",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m024-uzbekistan-colombia",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "colombia",
+        "name": "Colombia"
+      },
+      "passCompletion": 74.0,
+      "passesAttempted": 35,
+      "passesCompleted": 26,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 28.3,
+      "totalDistance": 12019.7
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-23",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m047-portugal-uzbekistan",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "portugal",
+        "name": "Portugal"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 14,
+      "passesCompleted": 14,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 32.2,
+      "totalDistance": 5874.2
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-27",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m072-congo-dr-uzbekistan",
+      "minutesPlayed": 82,
+      "opponent": {
+        "id": "congo-dr",
+        "name": "Congo DR"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 30,
+      "passesCompleted": 25,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.6,
+      "totalDistance": 9646.7
+    }
+  ],
+  "name": "Akmal MOZGOVOY",
+  "physical": {
+    "distanceZone1": 9535.5,
+    "distanceZone2": 12365.8,
+    "distanceZone3": 4178.9,
+    "distanceZone4": 1198.4,
+    "distanceZone5": 262.0,
+    "highSpeedRuns": 361,
+    "sprints": 94,
+    "topSpeed": 32.2,
+    "totalDistance": 27540.6
+  },
+  "playerId": "mozgovoy-akmal-uzb",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 6,
+  "team": {
+    "id": "uzbekistan",
+    "name": "Uzbekistan"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 1
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 1
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 0
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 0
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 74.0
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 100.0
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 83.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 26
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 14
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 25
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 28.3
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 32.2
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 29.6
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m024-uzbekistan-colombia",
+          "value": 12019.7
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 5874.2
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 9646.7
+        }
+      ]
+    }
+  ]
+}

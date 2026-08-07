@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 8.53,
+      "value": 11
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.78,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 97.76,
+      "value": 126
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 1.55,
+      "value": 2
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 75.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 9.31,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.55,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 41.9,
+      "value": 54
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 31.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9743.12,
+      "value": 12557.8
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 116,
+    "played": 2,
+    "started": 2,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 0,
+      "date": "2026-06-16",
+      "duelsWonAerial": 7,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m018-iraq-norway",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 12,
+      "passesCompleted": 10,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.7,
+      "totalDistance": 9971.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-22",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m042-france-iraq",
+      "minutesPlayed": 26,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 50.0,
+      "passesAttempted": 4,
+      "passesCompleted": 2,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.2,
+      "totalDistance": 2586.3
+    }
+  ],
+  "name": "AYMEN HUSSEIN",
+  "physical": {
+    "distanceZone1": 5731.6,
+    "distanceZone2": 4519.5,
+    "distanceZone3": 1424.6,
+    "distanceZone4": 573.5,
+    "distanceZone5": 308.8,
+    "highSpeedRuns": 126,
+    "sprints": 54,
+    "topSpeed": 31.2,
+    "totalDistance": 12557.8
+  },
+  "playerId": "aymen-hussein-irq",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 18,
+  "team": {
+    "id": "iraq",
+    "name": "Iraq"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 0
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 1
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 83.0
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 50.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 10
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 29.7
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 31.2
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 9971.5
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 2586.3
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 4.29,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.86,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 102.86,
+      "value": 120
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 75.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 15.43,
+      "value": 18
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.86,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 40.29,
+      "value": 47
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 31.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10031.66,
+      "value": 11703.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 105,
+    "played": 2,
+    "started": 1,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-06-26",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m061-norway-france",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 76.0,
+      "passesAttempted": 21,
+      "passesCompleted": 16,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.6,
+      "totalDistance": 9812.0
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-11",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m099-norway-england",
+      "minutesPlayed": 15,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 67.0,
+      "passesAttempted": 3,
+      "passesCompleted": 2,
+      "stage": "qf",
+      "started": false,
+      "topSpeed": 31.1,
+      "totalDistance": 1891.6
+    }
+  ],
+  "name": "Jorgen STRAND LARSEN",
+  "physical": {
+    "distanceZone1": 5139.7,
+    "distanceZone2": 4380.2,
+    "distanceZone3": 1298.0,
+    "distanceZone4": 647.5,
+    "distanceZone5": 238.3,
+    "highSpeedRuns": 120,
+    "sprints": 47,
+    "topSpeed": 31.1,
+    "totalDistance": 11703.6
+  },
+  "playerId": "strand-larsen-jorgen-nor",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 11,
+  "team": {
+    "id": "norway",
+    "name": "Norway"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 76.0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 67.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 16
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 30.6
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 31.1
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 9812.0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 1891.6
+        }
+      ]
+    }
+  ]
+}

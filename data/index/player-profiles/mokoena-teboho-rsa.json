@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.67,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.67,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 141.0,
+      "value": 423
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.33,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 16.0,
+      "value": 48
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 89.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 58.67,
+      "value": 176
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 5.67,
+      "value": 17
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 40.33,
+      "value": 121
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 1.33,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.0,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 31.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10327.5,
+      "value": 30982.5
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 270,
+    "played": 3,
+    "started": 3,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-11",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m001-mexico-south-africa",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 95.0,
+      "passesAttempted": 43,
+      "passesCompleted": 41,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.4,
+      "totalDistance": 9860.8
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 1,
+      "date": "2026-06-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m025-czechia-south-africa",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "czechia",
+        "name": "Czechia"
+      },
+      "passCompletion": 93.0,
+      "passesAttempted": 98,
+      "passesCompleted": 91,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.3,
+      "totalDistance": 10523.7
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 1,
+      "date": "2026-06-28",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m073-south-africa-canada",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "canada",
+        "name": "Canada"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 55,
+      "passesCompleted": 44,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 30.8,
+      "totalDistance": 10598.0
+    }
+  ],
+  "name": "Teboho MOKOENA",
+  "physical": {
+    "distanceZone1": 10333.6,
+    "distanceZone2": 13773.8,
+    "distanceZone3": 4800.5,
+    "distanceZone4": 1623.7,
+    "distanceZone5": 451.0,
+    "highSpeedRuns": 423,
+    "sprints": 121,
+    "topSpeed": 31.4,
+    "totalDistance": 30982.5
+  },
+  "playerId": "mokoena-teboho-rsa",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 4,
+  "team": {
+    "id": "south-africa",
+    "name": "South Africa"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 0
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 1
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 0
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 1
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 95.0
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 93.0
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 80.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 41
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 91
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 44
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 31.4
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 31.3
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 30.8
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m001-mexico-south-africa",
+          "value": 9860.8
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 10523.7
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 10598.0
+        }
+      ]
+    }
+  ]
+}

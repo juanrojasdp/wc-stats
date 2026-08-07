@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 8.89,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 2.22,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 177.78,
+      "value": 160
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 2.22,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 7.78,
+      "value": 7
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 83.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 27.78,
+      "value": 25
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 7.78,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 64.44,
+      "value": 58
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 3.33,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.11,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 5.56,
+      "value": 5
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 12855.44,
+      "value": 11569.9
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 81,
+    "played": 3,
+    "started": 0,
+    "substituteAppearances": 3
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 5,
+      "date": "2026-06-16",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m020-austria-jordan",
+      "minutesPlayed": 31,
+      "opponent": {
+        "id": "jordan",
+        "name": "Jordan"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 10,
+      "passesCompleted": 8,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 29.4,
+      "totalDistance": 4502.7
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-22",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m043-argentina-austria",
+      "minutesPlayed": 5,
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 6,
+      "passesCompleted": 6,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.7,
+      "totalDistance": 1481.5
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-07-02",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m084-spain-austria",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 79.0,
+      "passesAttempted": 14,
+      "passesCompleted": 11,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 30.5,
+      "totalDistance": 5585.7
+    }
+  ],
+  "name": "Carney CHUKWUEMEKA",
+  "physical": {
+    "distanceZone1": 3907.7,
+    "distanceZone2": 4796.9,
+    "distanceZone3": 1759.6,
+    "distanceZone4": 762.2,
+    "distanceZone5": 343.2,
+    "highSpeedRuns": 160,
+    "sprints": 58,
+    "topSpeed": 30.7,
+    "totalDistance": 11569.9
+  },
+  "playerId": "chukwuemeka-carney-aut",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 17,
+  "team": {
+    "id": "austria",
+    "name": "Austria"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 5
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 1
+        },
+        {
+          "matchId": "m084-spain-austria",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 0
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 0
+        },
+        {
+          "matchId": "m084-spain-austria",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 80.0
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 100.0
+        },
+        {
+          "matchId": "m084-spain-austria",
+          "value": 79.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 8
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 6
+        },
+        {
+          "matchId": "m084-spain-austria",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 29.4
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 30.7
+        },
+        {
+          "matchId": "m084-spain-austria",
+          "value": 30.5
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m020-austria-jordan",
+          "value": 4502.7
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 1481.5
+        },
+        {
+          "matchId": "m084-spain-austria",
+          "value": 5585.7
+        }
+      ]
+    }
+  ]
+}

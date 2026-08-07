@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 3.62,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 2.01,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 122.95,
+      "value": 306
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.61,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 1.61,
+      "value": 4
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 75.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 15.67,
+      "value": 39
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.62,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 61.07,
+      "value": 152
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.21,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.21,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 2.41,
+      "value": 6
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11034.04,
+      "value": 27462.5
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 224,
+    "played": 4,
+    "started": 2,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 3,
+      "date": "2026-06-12",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m003-canada-bosnia-and-herzegovina",
+      "minutesPlayed": 74,
+      "opponent": {
+        "id": "canada",
+        "name": "Canada"
+      },
+      "passCompletion": 38.0,
+      "passesAttempted": 8,
+      "passesCompleted": 3,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 33.9,
+      "totalDistance": 8469.3
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 4,
+      "date": "2026-06-18",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m026-switzerland-bosnia-and-herzegovina",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 78.0,
+      "passesAttempted": 23,
+      "passesCompleted": 18,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 33.2,
+      "totalDistance": 10930.2
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-24",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m052-bosnia-and-herzegovina-qatar",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "qatar",
+        "name": "Qatar"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 8,
+      "passesCompleted": 8,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 31.7,
+      "totalDistance": 5330.0
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-07-01",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m081-usa-bosnia-and-herzegovina",
+      "minutesPlayed": 15,
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 77.0,
+      "passesAttempted": 13,
+      "passesCompleted": 10,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 32.0,
+      "totalDistance": 2733.0
+    }
+  ],
+  "name": "Amar MEMIC",
+  "physical": {
+    "distanceZone1": 10225.3,
+    "distanceZone2": 10586.0,
+    "distanceZone3": 3718.3,
+    "distanceZone4": 1793.3,
+    "distanceZone5": 1139.6,
+    "highSpeedRuns": 306,
+    "sprints": 152,
+    "topSpeed": 33.9,
+    "totalDistance": 27462.5
+  },
+  "playerId": "memic-amar-bih",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 15,
+  "team": {
+    "id": "bosnia-and-herzegovina",
+    "name": "Bosnia and Herzegovina"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 3
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 4
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 1
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 0
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 0
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 0
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 38.0
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 78.0
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 100.0
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 77.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 3
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 18
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 8
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 33.9
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 33.2
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 31.7
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 32.0
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 8469.3
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 10930.2
+        },
+        {
+          "matchId": "m052-bosnia-and-herzegovina-qatar",
+          "value": 5330.0
+        },
+        {
+          "matchId": "m081-usa-bosnia-and-herzegovina",
+          "value": 2733.0
+        }
+      ]
+    }
+  ]
+}

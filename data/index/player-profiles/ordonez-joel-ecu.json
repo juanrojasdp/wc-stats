@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.8,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 2.4,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 90.8,
+      "value": 227
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.4,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 5.6,
+      "value": 14
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 89.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 40.4,
+      "value": 101
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 4.8,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 32.8,
+      "value": 82
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.4,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.6,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.8,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9430.72,
+      "value": 23576.8
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 225,
+    "played": 3,
+    "started": 3,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-06-14",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m009-cote-d-ivoire-ecuador",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 92.0,
+      "passesAttempted": 62,
+      "passesCompleted": 57,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 28.1,
+      "totalDistance": 9330.1
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-25",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m056-ecuador-germany",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "germany",
+        "name": "Germany"
+      },
+      "passCompletion": 89.0,
+      "passesAttempted": 36,
+      "passesCompleted": 32,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 27.7,
+      "totalDistance": 9575.4
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-30",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m079-mexico-ecuador",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 15,
+      "passesCompleted": 12,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 30.9,
+      "totalDistance": 4671.3
+    }
+  ],
+  "name": "Joel ORDONEZ",
+  "physical": {
+    "distanceZone1": 10289.8,
+    "distanceZone2": 9342.2,
+    "distanceZone3": 2571.8,
+    "distanceZone4": 1118.2,
+    "distanceZone5": 254.7,
+    "highSpeedRuns": 227,
+    "sprints": 82,
+    "topSpeed": 30.9,
+    "totalDistance": 23576.8
+  },
+  "playerId": "ordonez-joel-ecu",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 4,
+  "team": {
+    "id": "ecuador",
+    "name": "Ecuador"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 0
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 2
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 0
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 0
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 92.0
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 89.0
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 80.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 57
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 32
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 28.1
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 27.7
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 30.9
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 9330.1
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 9575.4
+        },
+        {
+          "matchId": "m079-mexico-ecuador",
+          "value": 4671.3
+        }
+      ]
+    }
+  ]
+}

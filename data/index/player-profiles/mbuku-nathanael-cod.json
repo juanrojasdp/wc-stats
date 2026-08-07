@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 7.5,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 1.88,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 151.88,
+      "value": 243
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 8.75,
+      "value": 14
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 77.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 21.88,
+      "value": 35
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.25,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 46.25,
+      "value": 74
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.25,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.25,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 6.25,
+      "value": 10
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11774.0,
+      "value": 18838.4
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 144,
+    "played": 3,
+    "started": 2,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-06-23",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m048-colombia-congo-dr",
+      "minutesPlayed": 8,
+      "opponent": {
+        "id": "colombia",
+        "name": "Colombia"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 5,
+      "passesCompleted": 4,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 32.4,
+      "totalDistance": 1843.5
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 7,
+      "date": "2026-06-27",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m072-congo-dr-uzbekistan",
+      "minutesPlayed": 72,
+      "opponent": {
+        "id": "uzbekistan",
+        "name": "Uzbekistan"
+      },
+      "passCompletion": 82.0,
+      "passesAttempted": 22,
+      "passesCompleted": 18,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.3,
+      "totalDistance": 8529.3
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 3,
+      "date": "2026-07-01",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m080-england-congo-dr",
+      "minutesPlayed": 64,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 72.0,
+      "passesAttempted": 18,
+      "passesCompleted": 13,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 31.7,
+      "totalDistance": 8465.6
+    }
+  ],
+  "name": "Nathanael MBUKU",
+  "physical": {
+    "distanceZone1": 5683.2,
+    "distanceZone2": 8952.6,
+    "distanceZone3": 2773.0,
+    "distanceZone4": 1080.2,
+    "distanceZone5": 349.8,
+    "highSpeedRuns": 243,
+    "sprints": 74,
+    "topSpeed": 32.4,
+    "totalDistance": 18838.4
+  },
+  "playerId": "mbuku-nathanael-cod",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 7,
+  "team": {
+    "id": "congo-dr",
+    "name": "Congo DR"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 2
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 7
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 0
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 0
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 80.0
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 82.0
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 72.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 4
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 18
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 13
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 32.4
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 29.3
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 31.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m048-colombia-congo-dr",
+          "value": 1843.5
+        },
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 8529.3
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 8465.6
+        }
+      ]
+    }
+  ]
+}

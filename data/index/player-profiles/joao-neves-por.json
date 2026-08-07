@@ -1,0 +1,397 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.38,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.23,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.69,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.23,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 146.85,
+      "value": 638
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.15,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 9.21,
+      "value": 40
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 94.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 56.85,
+      "value": 247
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 2.76,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 45.35,
+      "value": 197
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.23,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.69,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.46,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.15,
+      "value": 5
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11770.62,
+      "value": 51136.8
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 391,
+    "played": 5,
+    "started": 4,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-06-17",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m023-portugal-congo-dr",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "congo-dr",
+        "name": "Congo DR"
+      },
+      "passCompletion": 95.0,
+      "passesAttempted": 92,
+      "passesCompleted": 87,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.2,
+      "totalDistance": 11977.1
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-23",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m047-portugal-uzbekistan",
+      "minutesPlayed": 76,
+      "opponent": {
+        "id": "uzbekistan",
+        "name": "Uzbekistan"
+      },
+      "passCompletion": 98.0,
+      "passesAttempted": 54,
+      "passesCompleted": 53,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.4,
+      "totalDistance": 9106.6
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-27",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m071-colombia-portugal",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "colombia",
+        "name": "Colombia"
+      },
+      "passCompletion": 96.0,
+      "passesAttempted": 25,
+      "passesCompleted": 24,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 28.4,
+      "totalDistance": 5759.1
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-07-02",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m083-portugal-croatia",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "croatia",
+        "name": "Croatia"
+      },
+      "passCompletion": 94.0,
+      "passesAttempted": 52,
+      "passesCompleted": 49,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 27.5,
+      "totalDistance": 12441.0
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-07-06",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m093-portugal-spain",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 89.0,
+      "passesAttempted": 38,
+      "passesCompleted": 34,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 30.6,
+      "totalDistance": 11853.0
+    }
+  ],
+  "name": "JOAO NEVES",
+  "physical": {
+    "distanceZone1": 15859.8,
+    "distanceZone2": 24476.9,
+    "distanceZone3": 7227.4,
+    "distanceZone4": 2787.5,
+    "distanceZone5": 785.0,
+    "highSpeedRuns": 638,
+    "sprints": 197,
+    "topSpeed": 30.6,
+    "totalDistance": 51136.8
+  },
+  "playerId": "joao-neves-por",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 15,
+  "team": {
+    "id": "portugal",
+    "name": "Portugal"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m023-portugal-congo-dr",
+          "value": 2
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 1
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 0
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 1
+        },
+        {
+          "matchId": "m093-portugal-spain",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m023-portugal-congo-dr",
+          "value": 1
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 0
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 0
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 0
+        },
+        {
+          "matchId": "m093-portugal-spain",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m023-portugal-congo-dr",
+          "value": 95.0
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 98.0
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 96.0
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 94.0
+        },
+        {
+          "matchId": "m093-portugal-spain",
+          "value": 89.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m023-portugal-congo-dr",
+          "value": 87
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 53
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 24
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 49
+        },
+        {
+          "matchId": "m093-portugal-spain",
+          "value": 34
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m023-portugal-congo-dr",
+          "value": 29.2
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 30.4
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 28.4
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 27.5
+        },
+        {
+          "matchId": "m093-portugal-spain",
+          "value": 30.6
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m023-portugal-congo-dr",
+          "value": 11977.1
+        },
+        {
+          "matchId": "m047-portugal-uzbekistan",
+          "value": 9106.6
+        },
+        {
+          "matchId": "m071-colombia-portugal",
+          "value": 5759.1
+        },
+        {
+          "matchId": "m083-portugal-croatia",
+          "value": 12441.0
+        },
+        {
+          "matchId": "m093-portugal-spain",
+          "value": 11853.0
+        }
+      ]
+    }
+  ]
+}

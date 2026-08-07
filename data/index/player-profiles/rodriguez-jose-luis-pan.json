@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 4.6,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.77,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.77,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 116.81,
+      "value": 305
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 3.06,
+      "value": 8
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 72.9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 13.4,
+      "value": 35
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.53,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 41.74,
+      "value": 109
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.53,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.77,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.53,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 3.06,
+      "value": 8
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9919.03,
+      "value": 25899.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 235,
+    "played": 3,
+    "started": 3,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 4,
+      "date": "2026-06-17",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m021-ghana-panama",
+      "minutesPlayed": 74,
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 20,
+      "passesCompleted": 16,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.6,
+      "totalDistance": 8292.3
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 5,
+      "date": "2026-06-23",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m046-panama-croatia",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "croatia",
+        "name": "Croatia"
+      },
+      "passCompletion": 72.0,
+      "passesAttempted": 18,
+      "passesCompleted": 13,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.3,
+      "totalDistance": 10060.8
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 3,
+      "date": "2026-06-27",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m067-panama-england",
+      "minutesPlayed": 71,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 60.0,
+      "passesAttempted": 10,
+      "passesCompleted": 6,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.9,
+      "totalDistance": 7546.6
+    }
+  ],
+  "name": "Jose Luis RODRIGUEZ",
+  "physical": {
+    "distanceZone1": 10082.0,
+    "distanceZone2": 10228.3,
+    "distanceZone3": 3566.1,
+    "distanceZone4": 1324.7,
+    "distanceZone5": 698.6,
+    "highSpeedRuns": 305,
+    "sprints": 109,
+    "topSpeed": 32.3,
+    "totalDistance": 25899.7
+  },
+  "playerId": "rodriguez-jose-luis-pan",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 7,
+  "team": {
+    "id": "panama",
+    "name": "Panama"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m021-ghana-panama",
+          "value": 4
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 5
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m021-ghana-panama",
+          "value": 0
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 0
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m021-ghana-panama",
+          "value": 80.0
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 72.0
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 60.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m021-ghana-panama",
+          "value": 16
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 13
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m021-ghana-panama",
+          "value": 31.6
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 32.3
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 30.9
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m021-ghana-panama",
+          "value": 8292.3
+        },
+        {
+          "matchId": "m046-panama-croatia",
+          "value": 10060.8
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 7546.6
+        }
+      ]
+    }
+  ]
+}

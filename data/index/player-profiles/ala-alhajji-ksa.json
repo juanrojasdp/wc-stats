@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 3.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 3.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 294.0,
+      "value": 98
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 3.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 12.0,
+      "value": 4
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 94.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 48.0,
+      "value": 16
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 6.0,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 99.0,
+      "value": 33
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 3.0,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 26.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 16065.0,
+      "value": 5355.0
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 30,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-15",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m013-saudi-arabia-uruguay",
+      "minutesPlayed": 0,
+      "opponent": {
+        "id": "uruguay",
+        "name": "Uruguay"
+      },
+      "passCompletion": 0.0,
+      "passesAttempted": 0,
+      "passesCompleted": 0,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 25.6,
+      "totalDistance": 796.2
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-21",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m038-spain-saudi-arabia",
+      "minutesPlayed": 30,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 94.0,
+      "passesAttempted": 17,
+      "passesCompleted": 16,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.8,
+      "totalDistance": 4558.8
+    }
+  ],
+  "name": "ALA ALHAJJI",
+  "physical": {
+    "distanceZone1": 1236.6,
+    "distanceZone2": 2528.1,
+    "distanceZone3": 1057.7,
+    "distanceZone4": 470.7,
+    "distanceZone5": 61.9,
+    "highSpeedRuns": 98,
+    "sprints": 33,
+    "topSpeed": 26.8,
+    "totalDistance": 5355.0
+  },
+  "playerId": "ala-alhajji-ksa",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 18,
+  "team": {
+    "id": "saudi-arabia",
+    "name": "Saudi Arabia"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m013-saudi-arabia-uruguay",
+          "value": 0
+        },
+        {
+          "matchId": "m038-spain-saudi-arabia",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m013-saudi-arabia-uruguay",
+          "value": 0
+        },
+        {
+          "matchId": "m038-spain-saudi-arabia",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m013-saudi-arabia-uruguay",
+          "value": 0.0
+        },
+        {
+          "matchId": "m038-spain-saudi-arabia",
+          "value": 94.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m013-saudi-arabia-uruguay",
+          "value": 0
+        },
+        {
+          "matchId": "m038-spain-saudi-arabia",
+          "value": 16
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m013-saudi-arabia-uruguay",
+          "value": 25.6
+        },
+        {
+          "matchId": "m038-spain-saudi-arabia",
+          "value": 26.8
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m013-saudi-arabia-uruguay",
+          "value": 796.2
+        },
+        {
+          "matchId": "m038-spain-saudi-arabia",
+          "value": 4558.8
+        }
+      ]
+    }
+  ]
+}

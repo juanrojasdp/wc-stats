@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.83,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 127.16,
+      "value": 154
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 1.65,
+      "value": 2
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 71.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 12.39,
+      "value": 15
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 0.83,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 52.02,
+      "value": 63
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.83,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10741.79,
+      "value": 13009.5
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 109,
+    "played": 3,
+    "started": 1,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 0,
+      "date": "2026-06-14",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m009-cote-d-ivoire-ecuador",
+      "minutesPlayed": 56,
+      "opponent": {
+        "id": "ecuador",
+        "name": "Ecuador"
+      },
+      "passCompletion": 56.0,
+      "passesAttempted": 9,
+      "passesCompleted": 5,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.7,
+      "totalDistance": 6519.4
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-25",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m055-curacao-cote-d-ivoire",
+      "minutesPlayed": 23,
+      "opponent": {
+        "id": "curacao",
+        "name": "Curaçao"
+      },
+      "passCompletion": 75.0,
+      "passesAttempted": 8,
+      "passesCompleted": 6,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 29.5,
+      "totalDistance": 2826.7
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-30",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m078-cote-d-ivoire-norway",
+      "minutesPlayed": 30,
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 4,
+      "passesCompleted": 4,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 33.2,
+      "totalDistance": 3663.4
+    }
+  ],
+  "name": "Elye WAHI",
+  "physical": {
+    "distanceZone1": 4590.0,
+    "distanceZone2": 5261.4,
+    "distanceZone3": 1944.9,
+    "distanceZone4": 758.1,
+    "distanceZone5": 455.2,
+    "highSpeedRuns": 154,
+    "sprints": 63,
+    "topSpeed": 33.2,
+    "totalDistance": 13009.5
+  },
+  "playerId": "wahi-elye-civ",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 12,
+  "team": {
+    "id": "cote-d-ivoire",
+    "name": "Côte d'Ivoire"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 0
+        },
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 0
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 0
+        },
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 0
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 56.0
+        },
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 75.0
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 5
+        },
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 6
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 32.7
+        },
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 29.5
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 33.2
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m009-cote-d-ivoire-ecuador",
+          "value": 6519.4
+        },
+        {
+          "matchId": "m055-curacao-cote-d-ivoire",
+          "value": 2826.7
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 3663.4
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "formationUsage": [
+    {
+      "formation": "3-4-3",
+      "matches": 3,
+      "share": 100.0
+    }
+  ],
+  "group": "l",
+  "matches": [
+    {
+      "date": "2026-06-17",
+      "distanceCovered": 117.3,
+      "expectedGoals": 0.77,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m021-ghana-panama",
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 88.0,
+      "possession": 55.5,
+      "result": "loss",
+      "shots": 11,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-23",
+      "distanceCovered": 108.2,
+      "expectedGoals": 0.69,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m046-panama-croatia",
+      "opponent": {
+        "id": "croatia",
+        "name": "Croatia"
+      },
+      "passCompletion": 79.0,
+      "possession": 37.2,
+      "result": "loss",
+      "shots": 8,
+      "shotsOnTarget": 1,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-27",
+      "distanceCovered": 111.3,
+      "expectedGoals": 0.72,
+      "formation": "3-4-3",
+      "goalsAgainst": 2,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m067-panama-england",
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 75.0,
+      "possession": 33.1,
+      "result": "loss",
+      "shots": 13,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    }
+  ],
+  "name": "Panama",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "group",
+    "goalDifference": -4,
+    "goalsAgainst": 4,
+    "goalsFor": 0,
+    "lost": 3,
+    "played": 3,
+    "points": 0,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 3.3,
+      "low": 30.7,
+      "mid": 23.7
+    },
+    "phasesInPossession": {
+      "attackingTransition": 17.3,
+      "buildUpOpposed": 10.7,
+      "buildUpUnopposed": 30.3,
+      "counterAttack": 1.7,
+      "finalThird": 12.7,
+      "longBall": 5.3,
+      "progression": 19.3,
+      "setPiece": 7.3
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 9.7,
+      "defensiveTransition": 14.0,
+      "highBlock": 3.3,
+      "highPress": 2.7,
+      "lowBlock": 30.7,
+      "lowPress": 0.7,
+      "midBlock": 23.7,
+      "midPress": 3.3,
+      "recovery": 5.0
+    },
+    "possession": 41.9,
+    "pressingIntensity": 251.0,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 18.3,
+          "teamLength": 40.0,
+          "teamWidth": 56.0
+        },
+        "buildUpMid": {
+          "lineHeight": 41.3,
+          "teamLength": 33.3,
+          "teamWidth": 56.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 58.0,
+          "teamLength": 34.7,
+          "teamWidth": 44.3
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 50.7,
+          "teamLength": 34.7,
+          "teamWidth": 42.7
+        },
+        "lowBlock": {
+          "lineHeight": 22.7,
+          "teamLength": 18.7,
+          "teamWidth": 38.0
+        },
+        "midBlock": {
+          "lineHeight": 40.3,
+          "teamLength": 20.7,
+          "teamWidth": 42.0
+        }
+      }
+    }
+  },
+  "teamCode": "pan",
+  "teamId": "panama"
+}

@@ -1,0 +1,487 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 5.29,
+      "value": 21
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 1.26,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.76,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 130.59,
+      "value": 518
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 3.78,
+      "value": 15
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 80.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 20.42,
+      "value": 81
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.03,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 53.7,
+      "value": 213
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.5,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.5,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.51,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 4.79,
+      "value": 19
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10590.93,
+      "value": 42010.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 357,
+    "played": 7,
+    "started": 3,
+    "substituteAppearances": 4
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 5,
+      "date": "2026-06-17",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m022-england-croatia",
+      "minutesPlayed": 18,
+      "opponent": {
+        "id": "croatia",
+        "name": "Croatia"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 6,
+      "passesCompleted": 5,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 32.0,
+      "totalDistance": 3035.5
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 1,
+      "date": "2026-06-23",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m045-england-ghana",
+      "minutesPlayed": 25,
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 8,
+      "passesCompleted": 8,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.0,
+      "totalDistance": 2981.2
+    },
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 4,
+      "date": "2026-06-27",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m067-panama-england",
+      "minutesPlayed": 63,
+      "opponent": {
+        "id": "panama",
+        "name": "Panama"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 25,
+      "passesCompleted": 20,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.5,
+      "totalDistance": 7009.1
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 3,
+      "date": "2026-07-01",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m080-england-congo-dr",
+      "minutesPlayed": 29,
+      "opponent": {
+        "id": "congo-dr",
+        "name": "Congo DR"
+      },
+      "passCompletion": 67.0,
+      "passesAttempted": 12,
+      "passesCompleted": 8,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 28.9,
+      "totalDistance": 3788.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-07-05",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m092-mexico-england",
+      "minutesPlayed": 57,
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 6,
+      "passesCompleted": 6,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 32.3,
+      "totalDistance": 6452.5
+    },
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 3,
+      "date": "2026-07-11",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m099-norway-england",
+      "minutesPlayed": 75,
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 79.0,
+      "passesAttempted": 19,
+      "passesCompleted": 15,
+      "stage": "qf",
+      "started": false,
+      "topSpeed": 30.6,
+      "totalDistance": 8674.8
+    },
+    {
+      "attemptsAtGoal": 5,
+      "ballProgressions": 4,
+      "date": "2026-07-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 3,
+      "matchId": "m103-france-england",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 76.0,
+      "passesAttempted": 25,
+      "passesCompleted": 19,
+      "stage": "third-place",
+      "started": true,
+      "topSpeed": 33.0,
+      "totalDistance": 10069.1
+    }
+  ],
+  "name": "Bukayo SAKA",
+  "physical": {
+    "distanceZone1": 16702.0,
+    "distanceZone2": 15510.8,
+    "distanceZone3": 5968.3,
+    "distanceZone4": 2655.6,
+    "distanceZone5": 1174.0,
+    "highSpeedRuns": 518,
+    "sprints": 213,
+    "topSpeed": 33.0,
+    "totalDistance": 42010.7
+  },
+  "playerId": "saka-bukayo-eng",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 7,
+  "team": {
+    "id": "england",
+    "name": "England"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 5
+        },
+        {
+          "matchId": "m045-england-ghana",
+          "value": 1
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 4
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 3
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 1
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 3
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 0
+        },
+        {
+          "matchId": "m045-england-ghana",
+          "value": 0
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 0
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 0
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 0
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 83.0
+        },
+        {
+          "matchId": "m045-england-ghana",
+          "value": 100.0
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 80.0
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 67.0
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 100.0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 79.0
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 76.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 5
+        },
+        {
+          "matchId": "m045-england-ghana",
+          "value": 8
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 20
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 8
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 6
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 15
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 19
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 32.0
+        },
+        {
+          "matchId": "m045-england-ghana",
+          "value": 30.0
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 31.5
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 28.9
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 32.3
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 30.6
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 33.0
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m022-england-croatia",
+          "value": 3035.5
+        },
+        {
+          "matchId": "m045-england-ghana",
+          "value": 2981.2
+        },
+        {
+          "matchId": "m067-panama-england",
+          "value": 7009.1
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 3788.5
+        },
+        {
+          "matchId": "m092-mexico-england",
+          "value": 6452.5
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 8674.8
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 10069.1
+        }
+      ]
+    }
+  ]
+}

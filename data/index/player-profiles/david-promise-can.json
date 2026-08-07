@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 3.55,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 1.18,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 93.55,
+      "value": 79
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 2.37,
+      "value": 2
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 50.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 9.47,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 5.92,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 48.55,
+      "value": 41
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 1.18,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 2.37,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11598.87,
+      "value": 9794.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 76,
+    "played": 4,
+    "started": 0,
+    "substituteAppearances": 4
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-12",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m003-canada-bosnia-and-herzegovina",
+      "minutesPlayed": 29,
+      "opponent": {
+        "id": "bosnia-and-herzegovina",
+        "name": "Bosnia and Herzegovina"
+      },
+      "passCompletion": 33.0,
+      "passesAttempted": 3,
+      "passesCompleted": 1,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.0,
+      "totalDistance": 3097.9
+    },
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 0,
+      "date": "2026-06-24",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m051-switzerland-canada",
+      "minutesPlayed": 15,
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 33.0,
+      "passesAttempted": 3,
+      "passesCompleted": 1,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 30.1,
+      "totalDistance": 2194.3
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-28",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m073-south-africa-canada",
+      "minutesPlayed": 20,
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 60.0,
+      "passesAttempted": 5,
+      "passesCompleted": 3,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 30.1,
+      "totalDistance": 2820.4
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-04",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m090-canada-morocco",
+      "minutesPlayed": 12,
+      "opponent": {
+        "id": "morocco",
+        "name": "Morocco"
+      },
+      "passCompletion": 60.0,
+      "passesAttempted": 5,
+      "passesCompleted": 3,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 26.7,
+      "totalDistance": 1682.0
+    }
+  ],
+  "name": "Promise DAVID",
+  "physical": {
+    "distanceZone1": 4750.9,
+    "distanceZone2": 3422.2,
+    "distanceZone3": 982.2,
+    "distanceZone4": 483.4,
+    "distanceZone5": 156.0,
+    "highSpeedRuns": 79,
+    "sprints": 41,
+    "topSpeed": 30.1,
+    "totalDistance": 9794.6
+  },
+  "playerId": "david-promise-can",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 24,
+  "team": {
+    "id": "canada",
+    "name": "Canada"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 0
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 0
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 0
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 0
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 1
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 0
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 33.0
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 33.0
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 60.0
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 60.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 1
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 1
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 3
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 30.0
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 30.1
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 30.1
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 26.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m003-canada-bosnia-and-herzegovina",
+          "value": 3097.9
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 2194.3
+        },
+        {
+          "matchId": "m073-south-africa-canada",
+          "value": 2820.4
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 1682.0
+        }
+      ]
+    }
+  ]
+}

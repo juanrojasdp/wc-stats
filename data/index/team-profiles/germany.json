@@ -1,0 +1,178 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-2-3-1",
+      "matches": 3,
+      "share": 75.0
+    },
+    {
+      "formation": "3-4-3",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "e",
+  "matches": [
+    {
+      "date": "2026-06-14",
+      "distanceCovered": 116.2,
+      "expectedGoals": 4.17,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 7,
+      "isHome": true,
+      "matchId": "m010-germany-curacao",
+      "opponent": {
+        "id": "curacao",
+        "name": "Curaçao"
+      },
+      "passCompletion": 89.0,
+      "possession": 57.8,
+      "result": "win",
+      "shots": 26,
+      "shotsOnTarget": 12,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-20",
+      "distanceCovered": 125.8,
+      "expectedGoals": 2.47,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m033-germany-cote-d-ivoire",
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 91.0,
+      "possession": 49.5,
+      "result": "win",
+      "shots": 16,
+      "shotsOnTarget": 7,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 114.5,
+      "expectedGoals": 0.74,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m056-ecuador-germany",
+      "opponent": {
+        "id": "ecuador",
+        "name": "Ecuador"
+      },
+      "passCompletion": 88.0,
+      "possession": 51.2,
+      "result": "loss",
+      "shots": 11,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-29",
+      "distanceCovered": 152.4,
+      "expectedGoals": 1.25,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m074-germany-paraguay",
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 90.0,
+      "possession": 65.5,
+      "result": "draw",
+      "shots": 21,
+      "shotsOnTarget": 6,
+      "stage": "r32"
+    }
+  ],
+  "name": "Germany",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "r32",
+    "goalDifference": 6,
+    "goalsAgainst": 5,
+    "goalsFor": 11,
+    "lost": 1,
+    "played": 4,
+    "points": 6,
+    "won": 2
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 5.2,
+      "low": 17.5,
+      "mid": 11.0
+    },
+    "phasesInPossession": {
+      "attackingTransition": 11.5,
+      "buildUpOpposed": 16.2,
+      "buildUpUnopposed": 37.2,
+      "counterAttack": 0.8,
+      "finalThird": 22.8,
+      "longBall": 1.5,
+      "progression": 19.5,
+      "setPiece": 5.5
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 14.5,
+      "defensiveTransition": 21.2,
+      "highBlock": 5.2,
+      "highPress": 7.0,
+      "lowBlock": 17.5,
+      "lowPress": 0.8,
+      "midBlock": 11.0,
+      "midPress": 4.2,
+      "recovery": 7.2
+    },
+    "possession": 56.0,
+    "pressingIntensity": 228.8,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 20.8,
+          "teamLength": 37.5,
+          "teamWidth": 49.2
+        },
+        "buildUpMid": {
+          "lineHeight": 47.2,
+          "teamLength": 29.0,
+          "teamWidth": 49.2
+        },
+        "finalThirdPhase": {
+          "lineHeight": 63.5,
+          "teamLength": 27.2,
+          "teamWidth": 41.2
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 50.0,
+          "teamLength": 34.8,
+          "teamWidth": 38.8
+        },
+        "lowBlock": {
+          "lineHeight": 18.0,
+          "teamLength": 21.8,
+          "teamWidth": 35.8
+        },
+        "midBlock": {
+          "lineHeight": 37.2,
+          "teamLength": 27.0,
+          "teamWidth": 38.8
+        }
+      }
+    }
+  },
+  "teamCode": "ger",
+  "teamId": "germany"
+}

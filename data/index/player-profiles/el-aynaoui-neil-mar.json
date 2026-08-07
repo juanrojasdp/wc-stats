@@ -1,0 +1,442 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.28,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.48,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 133.64,
+      "value": 836
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.64,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 9.27,
+      "value": 58
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 93.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 64.74,
+      "value": 405
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 5.44,
+      "value": 34
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 44.12,
+      "value": 276
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.16,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.48,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.92,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.12,
+      "value": 7
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 34.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11265.94,
+      "value": 70474.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 563,
+    "played": 6,
+    "started": 6,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 4,
+      "date": "2026-06-13",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m007-brazil-morocco",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "brazil",
+        "name": "Brazil"
+      },
+      "passCompletion": 89.0,
+      "passesAttempted": 54,
+      "passesCompleted": 48,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.2,
+      "totalDistance": 11778.0
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-19",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m030-scotland-morocco",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "scotland",
+        "name": "Scotland"
+      },
+      "passCompletion": 94.0,
+      "passesAttempted": 78,
+      "passesCompleted": 73,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 33.4,
+      "totalDistance": 12290.8
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-24",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m050-morocco-haiti",
+      "minutesPlayed": 83,
+      "opponent": {
+        "id": "haiti",
+        "name": "Haiti"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 56,
+      "passesCompleted": 49,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 34.1,
+      "totalDistance": 10295.1
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-29",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m075-netherlands-morocco",
+      "minutesPlayed": 120,
+      "opponent": {
+        "id": "netherlands",
+        "name": "Netherlands"
+      },
+      "passCompletion": 96.0,
+      "passesAttempted": 139,
+      "passesCompleted": 134,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 32.6,
+      "totalDistance": 14370.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-07-04",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m090-canada-morocco",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "canada",
+        "name": "Canada"
+      },
+      "passCompletion": 94.0,
+      "passesAttempted": 49,
+      "passesCompleted": 46,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 32.1,
+      "totalDistance": 11041.0
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-07-09",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m097-france-morocco",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 96.0,
+      "passesAttempted": 57,
+      "passesCompleted": 55,
+      "stage": "qf",
+      "started": true,
+      "topSpeed": 31.3,
+      "totalDistance": 10699.0
+    }
+  ],
+  "name": "Neil EL AYNAOUI",
+  "physical": {
+    "distanceZone1": 22581.3,
+    "distanceZone2": 31778.5,
+    "distanceZone3": 10702.9,
+    "distanceZone4": 3630.9,
+    "distanceZone5": 1781.1,
+    "highSpeedRuns": 836,
+    "sprints": 276,
+    "topSpeed": 34.1,
+    "totalDistance": 70474.7
+  },
+  "playerId": "el-aynaoui-neil-mar",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 24,
+  "team": {
+    "id": "morocco",
+    "name": "Morocco"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m007-brazil-morocco",
+          "value": 4
+        },
+        {
+          "matchId": "m030-scotland-morocco",
+          "value": 1
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 1
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 0
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 2
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m007-brazil-morocco",
+          "value": 0
+        },
+        {
+          "matchId": "m030-scotland-morocco",
+          "value": 0
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 0
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 0
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 0
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m007-brazil-morocco",
+          "value": 89.0
+        },
+        {
+          "matchId": "m030-scotland-morocco",
+          "value": 94.0
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 88.0
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 96.0
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 94.0
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 96.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m007-brazil-morocco",
+          "value": 48
+        },
+        {
+          "matchId": "m030-scotland-morocco",
+          "value": 73
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 49
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 134
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 46
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 55
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m007-brazil-morocco",
+          "value": 30.2
+        },
+        {
+          "matchId": "m030-scotland-morocco",
+          "value": 33.4
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 34.1
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 32.6
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 32.1
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 31.3
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m007-brazil-morocco",
+          "value": 11778.0
+        },
+        {
+          "matchId": "m030-scotland-morocco",
+          "value": 12290.8
+        },
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 10295.1
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 14370.8
+        },
+        {
+          "matchId": "m090-canada-morocco",
+          "value": 11041.0
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 10699.0
+        }
+      ]
+    }
+  ]
+}

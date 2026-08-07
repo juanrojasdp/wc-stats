@@ -1,0 +1,178 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 3,
+      "share": 75.0
+    },
+    {
+      "formation": "4-1-4-1",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "h",
+  "matches": [
+    {
+      "date": "2026-06-15",
+      "distanceCovered": 112.4,
+      "expectedGoals": 0.13,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m014-spain-cabo-verde",
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 74.0,
+      "possession": 25.4,
+      "result": "draw",
+      "shots": 6,
+      "shotsOnTarget": 1,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-21",
+      "distanceCovered": 107.4,
+      "expectedGoals": 0.54,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 2,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m037-uruguay-cabo-verde",
+      "opponent": {
+        "id": "uruguay",
+        "name": "Uruguay"
+      },
+      "passCompletion": 74.0,
+      "possession": 33.4,
+      "result": "draw",
+      "shots": 12,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-26",
+      "distanceCovered": 115.5,
+      "expectedGoals": 1.37,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m065-cabo-verde-saudi-arabia",
+      "opponent": {
+        "id": "saudi-arabia",
+        "name": "Saudi Arabia"
+      },
+      "passCompletion": 86.0,
+      "possession": 48.0,
+      "result": "draw",
+      "shots": 15,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-07-03",
+      "distanceCovered": 141.2,
+      "expectedGoals": 0.52,
+      "formation": "4-1-4-1",
+      "goalsAgainst": 3,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m086-argentina-cabo-verde",
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 87.0,
+      "possession": 34.1,
+      "result": "loss",
+      "shots": 16,
+      "shotsOnTarget": 5,
+      "stage": "r32"
+    }
+  ],
+  "name": "Cabo Verde",
+  "record": {
+    "drawn": 3,
+    "furthestStage": "r32",
+    "goalDifference": -1,
+    "goalsAgainst": 5,
+    "goalsFor": 4,
+    "lost": 1,
+    "played": 4,
+    "points": 3,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 2.0,
+      "low": 42.8,
+      "mid": 21.5
+    },
+    "phasesInPossession": {
+      "attackingTransition": 19.2,
+      "buildUpOpposed": 13.8,
+      "buildUpUnopposed": 26.5,
+      "counterAttack": 2.0,
+      "finalThird": 10.2,
+      "longBall": 5.8,
+      "progression": 17.5,
+      "setPiece": 6.5
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 6.5,
+      "defensiveTransition": 10.0,
+      "highBlock": 2.0,
+      "highPress": 2.2,
+      "lowBlock": 42.8,
+      "lowPress": 0.5,
+      "midBlock": 21.5,
+      "midPress": 2.0,
+      "recovery": 2.5
+    },
+    "possession": 35.2,
+    "pressingIntensity": 313.0,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 17.5,
+          "teamLength": 39.8,
+          "teamWidth": 53.2
+        },
+        "buildUpMid": {
+          "lineHeight": 38.0,
+          "teamLength": 34.8,
+          "teamWidth": 52.5
+        },
+        "finalThirdPhase": {
+          "lineHeight": 53.8,
+          "teamLength": 37.2,
+          "teamWidth": 42.0
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 47.0,
+          "teamLength": 38.2,
+          "teamWidth": 37.2
+        },
+        "lowBlock": {
+          "lineHeight": 18.2,
+          "teamLength": 20.5,
+          "teamWidth": 35.0
+        },
+        "midBlock": {
+          "lineHeight": 36.2,
+          "teamLength": 25.5,
+          "teamWidth": 36.8
+        }
+      }
+    }
+  },
+  "teamCode": "cpv",
+  "teamId": "cabo-verde"
+}

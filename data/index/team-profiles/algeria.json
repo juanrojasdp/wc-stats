@@ -1,0 +1,188 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 1,
+      "share": 25.0
+    },
+    {
+      "formation": "4-2-1-3",
+      "matches": 1,
+      "share": 25.0
+    },
+    {
+      "formation": "4-2-3-1",
+      "matches": 1,
+      "share": 25.0
+    },
+    {
+      "formation": "4-3-3",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "j",
+  "matches": [
+    {
+      "date": "2026-06-16",
+      "distanceCovered": 109.3,
+      "expectedGoals": 0.41,
+      "formation": "4-3-3",
+      "goalsAgainst": 3,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m019-argentina-algeria",
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 91.0,
+      "possession": 50.8,
+      "result": "loss",
+      "shots": 7,
+      "shotsOnTarget": 1,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-22",
+      "distanceCovered": 116.3,
+      "expectedGoals": 2.05,
+      "formation": "4-2-1-3",
+      "goalsAgainst": 1,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m044-jordan-algeria",
+      "opponent": {
+        "id": "jordan",
+        "name": "Jordan"
+      },
+      "passCompletion": 89.0,
+      "possession": 62.2,
+      "result": "win",
+      "shots": 17,
+      "shotsOnTarget": 8,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-27",
+      "distanceCovered": 105.2,
+      "expectedGoals": 1.54,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 3,
+      "goalsFor": 3,
+      "isHome": true,
+      "matchId": "m069-algeria-austria",
+      "opponent": {
+        "id": "austria",
+        "name": "Austria"
+      },
+      "passCompletion": 93.0,
+      "possession": 60.7,
+      "result": "draw",
+      "shots": 12,
+      "shotsOnTarget": 5,
+      "stage": "group"
+    },
+    {
+      "date": "2026-07-02",
+      "distanceCovered": 113.2,
+      "expectedGoals": 0.73,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 2,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m085-switzerland-algeria",
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 86.0,
+      "possession": 51.5,
+      "result": "loss",
+      "shots": 8,
+      "shotsOnTarget": 2,
+      "stage": "r32"
+    }
+  ],
+  "name": "Algeria",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "r32",
+    "goalDifference": -4,
+    "goalsAgainst": 9,
+    "goalsFor": 5,
+    "lost": 2,
+    "played": 4,
+    "points": 4,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 5.0,
+      "low": 11.0,
+      "mid": 21.8
+    },
+    "phasesInPossession": {
+      "attackingTransition": 10.2,
+      "buildUpOpposed": 16.5,
+      "buildUpUnopposed": 46.0,
+      "counterAttack": 0.2,
+      "finalThird": 15.0,
+      "longBall": 1.8,
+      "progression": 16.0,
+      "setPiece": 4.8
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 13.0,
+      "defensiveTransition": 17.2,
+      "highBlock": 5.0,
+      "highPress": 7.5,
+      "lowBlock": 11.0,
+      "lowPress": 0.2,
+      "midBlock": 21.8,
+      "midPress": 4.2,
+      "recovery": 6.5
+    },
+    "possession": 56.3,
+    "pressingIntensity": 253.8,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 22.5,
+          "teamLength": 37.5,
+          "teamWidth": 53.8
+        },
+        "buildUpMid": {
+          "lineHeight": 44.5,
+          "teamLength": 30.0,
+          "teamWidth": 56.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 58.5,
+          "teamLength": 32.0,
+          "teamWidth": 46.8
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.2,
+          "teamLength": 37.8,
+          "teamWidth": 40.5
+        },
+        "lowBlock": {
+          "lineHeight": 18.8,
+          "teamLength": 23.0,
+          "teamWidth": 35.0
+        },
+        "midBlock": {
+          "lineHeight": 37.0,
+          "teamLength": 25.2,
+          "teamWidth": 39.0
+        }
+      }
+    }
+  },
+  "teamCode": "alg",
+  "teamId": "algeria"
+}

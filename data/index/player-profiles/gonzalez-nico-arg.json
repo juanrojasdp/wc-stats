@@ -1,0 +1,487 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 6.4,
+      "value": 18
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 1.42,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 4.27,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.36,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 114.55,
+      "value": 322
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.42,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 2.85,
+      "value": 8
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 82.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 32.02,
+      "value": 90
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.56,
+      "value": 10
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 54.43,
+      "value": 153
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.42,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.71,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 4.98,
+      "value": 14
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11700.6,
+      "value": 32891.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 253,
+    "played": 7,
+    "started": 1,
+    "substituteAppearances": 6
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-16",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m019-argentina-algeria",
+      "minutesPlayed": 35,
+      "opponent": {
+        "id": "algeria",
+        "name": "Algeria"
+      },
+      "passCompletion": 91.0,
+      "passesAttempted": 11,
+      "passesCompleted": 10,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 33.4,
+      "totalDistance": 4237.7
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 1,
+      "date": "2026-06-22",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m043-argentina-austria",
+      "minutesPlayed": 25,
+      "opponent": {
+        "id": "austria",
+        "name": "Austria"
+      },
+      "passCompletion": 56.0,
+      "passesAttempted": 9,
+      "passesCompleted": 5,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 32.1,
+      "totalDistance": 3404.3
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 4,
+      "date": "2026-07-03",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m086-argentina-cabo-verde",
+      "minutesPlayed": 56,
+      "opponent": {
+        "id": "cabo-verde",
+        "name": "Cabo Verde"
+      },
+      "passCompletion": 78.0,
+      "passesAttempted": 27,
+      "passesCompleted": 21,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 33.5,
+      "totalDistance": 6731.6
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 3,
+      "date": "2026-07-07",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m095-argentina-egypt",
+      "minutesPlayed": 24,
+      "opponent": {
+        "id": "egypt",
+        "name": "Egypt"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 10,
+      "passesCompleted": 10,
+      "stage": "r16",
+      "started": false,
+      "topSpeed": 33.4,
+      "totalDistance": 3529.5
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 2,
+      "date": "2026-07-11",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m100-argentina-switzerland",
+      "minutesPlayed": 42,
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 87.0,
+      "passesAttempted": 31,
+      "passesCompleted": 27,
+      "stage": "qf",
+      "started": false,
+      "topSpeed": 31.2,
+      "totalDistance": 5830.9
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-07-15",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m102-england-argentina",
+      "minutesPlayed": 26,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 15,
+      "passesCompleted": 12,
+      "stage": "sf",
+      "started": false,
+      "topSpeed": 32.7,
+      "totalDistance": 3770.7
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 5,
+      "date": "2026-07-19",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m104-spain-argentina",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 6,
+      "passesCompleted": 5,
+      "stage": "final",
+      "started": true,
+      "topSpeed": 29.7,
+      "totalDistance": 5387.0
+    }
+  ],
+  "name": "Nico GONZALEZ",
+  "physical": {
+    "distanceZone1": 12732.9,
+    "distanceZone2": 13136.1,
+    "distanceZone3": 4224.7,
+    "distanceZone4": 1808.7,
+    "distanceZone5": 989.4,
+    "highSpeedRuns": 322,
+    "sprints": 153,
+    "topSpeed": 33.5,
+    "totalDistance": 32891.7
+  },
+  "playerId": "gonzalez-nico-arg",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 15,
+  "team": {
+    "id": "argentina",
+    "name": "Argentina"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m019-argentina-algeria",
+          "value": 2
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 1
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 4
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 3
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 2
+        },
+        {
+          "matchId": "m102-england-argentina",
+          "value": 1
+        },
+        {
+          "matchId": "m104-spain-argentina",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m019-argentina-algeria",
+          "value": 0
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 0
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 0
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 0
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 0
+        },
+        {
+          "matchId": "m102-england-argentina",
+          "value": 0
+        },
+        {
+          "matchId": "m104-spain-argentina",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m019-argentina-algeria",
+          "value": 91.0
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 56.0
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 78.0
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 100.0
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 87.0
+        },
+        {
+          "matchId": "m102-england-argentina",
+          "value": 80.0
+        },
+        {
+          "matchId": "m104-spain-argentina",
+          "value": 83.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m019-argentina-algeria",
+          "value": 10
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 5
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 21
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 10
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 27
+        },
+        {
+          "matchId": "m102-england-argentina",
+          "value": 12
+        },
+        {
+          "matchId": "m104-spain-argentina",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m019-argentina-algeria",
+          "value": 33.4
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 32.1
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 33.5
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 33.4
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 31.2
+        },
+        {
+          "matchId": "m102-england-argentina",
+          "value": 32.7
+        },
+        {
+          "matchId": "m104-spain-argentina",
+          "value": 29.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m019-argentina-algeria",
+          "value": 4237.7
+        },
+        {
+          "matchId": "m043-argentina-austria",
+          "value": 3404.3
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 6731.6
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 3529.5
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 5830.9
+        },
+        {
+          "matchId": "m102-england-argentina",
+          "value": 3770.7
+        },
+        {
+          "matchId": "m104-spain-argentina",
+          "value": 5387.0
+        }
+      ]
+    }
+  ]
+}

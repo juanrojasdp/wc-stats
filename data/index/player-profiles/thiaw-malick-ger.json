@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 2.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 2.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 155.25,
+      "value": 69
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 27.0,
+      "value": 12
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 86.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 74.25,
+      "value": 33
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 11.25,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 45.0,
+      "value": 20
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 4.5,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 2.25,
+      "value": 1
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11493.0,
+      "value": 5108.0
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 40,
+    "played": 2,
+    "started": 0,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-25",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m056-ecuador-germany",
+      "minutesPlayed": 30,
+      "opponent": {
+        "id": "ecuador",
+        "name": "Ecuador"
+      },
+      "passCompletion": 84.0,
+      "passesAttempted": 31,
+      "passesCompleted": 26,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.5,
+      "totalDistance": 3878.9
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-29",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m074-germany-paraguay",
+      "minutesPlayed": 10,
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 7,
+      "passesCompleted": 7,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 32.2,
+      "totalDistance": 1229.1
+    }
+  ],
+  "name": "Malick THIAW",
+  "physical": {
+    "distanceZone1": 1599.9,
+    "distanceZone2": 2336.1,
+    "distanceZone3": 826.6,
+    "distanceZone4": 273.6,
+    "distanceZone5": 71.9,
+    "highSpeedRuns": 69,
+    "sprints": 20,
+    "topSpeed": 32.2,
+    "totalDistance": 5108.0
+  },
+  "playerId": "thiaw-malick-ger",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 24,
+  "team": {
+    "id": "germany",
+    "name": "Germany"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 1
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 84.0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 26
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 26.5
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 32.2
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 3878.9
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 1229.1
+        }
+      ]
+    }
+  ]
+}

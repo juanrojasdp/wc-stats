@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.0,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 2.0,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.0,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 147.67,
+      "value": 443
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.33,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 7.67,
+      "value": 23
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 71.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 26.33,
+      "value": 79
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 2.33,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 51.33,
+      "value": 154
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.0,
+      "value": 3
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11408.3,
+      "value": 34224.9
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 270,
+    "played": 3,
+    "started": 3,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-11",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m002-korea-republic-czechia",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "korea-republic",
+        "name": "Korea Republic"
+      },
+      "passCompletion": 75.0,
+      "passesAttempted": 32,
+      "passesCompleted": 24,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.6,
+      "totalDistance": 11390.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m025-czechia-south-africa",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 64.0,
+      "passesAttempted": 33,
+      "passesCompleted": 21,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.5,
+      "totalDistance": 11827.4
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-24",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m053-czechia-mexico",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 76.0,
+      "passesAttempted": 45,
+      "passesCompleted": 34,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.1,
+      "totalDistance": 11006.7
+    }
+  ],
+  "name": "Vladimir COUFAL",
+  "physical": {
+    "distanceZone1": 11645.6,
+    "distanceZone2": 14500.2,
+    "distanceZone3": 5458.6,
+    "distanceZone4": 1957.6,
+    "distanceZone5": 662.9,
+    "highSpeedRuns": 443,
+    "sprints": 154,
+    "topSpeed": 30.6,
+    "totalDistance": 34224.9
+  },
+  "playerId": "coufal-vladimir-cze",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 5,
+  "team": {
+    "id": "czechia",
+    "name": "Czechia"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 2
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 1
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 0
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 0
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 75.0
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 64.0
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 76.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 24
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 21
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 34
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 30.6
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 30.5
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 30.1
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m002-korea-republic-czechia",
+          "value": 11390.8
+        },
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 11827.4
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 11006.7
+        }
+      ]
+    }
+  ]
+}

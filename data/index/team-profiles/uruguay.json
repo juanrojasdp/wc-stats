@@ -1,0 +1,158 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 2,
+      "share": 66.7
+    },
+    {
+      "formation": "4-4-2",
+      "matches": 1,
+      "share": 33.3
+    }
+  ],
+  "group": "h",
+  "matches": [
+    {
+      "date": "2026-06-15",
+      "distanceCovered": 110.9,
+      "expectedGoals": 1.5,
+      "formation": "4-4-2",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m013-saudi-arabia-uruguay",
+      "opponent": {
+        "id": "saudi-arabia",
+        "name": "Saudi Arabia"
+      },
+      "passCompletion": 91.0,
+      "possession": 63.3,
+      "result": "draw",
+      "shots": 27,
+      "shotsOnTarget": 10,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-21",
+      "distanceCovered": 112.8,
+      "expectedGoals": 2.23,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 2,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m037-uruguay-cabo-verde",
+      "opponent": {
+        "id": "cabo-verde",
+        "name": "Cabo Verde"
+      },
+      "passCompletion": 86.0,
+      "possession": 54.9,
+      "result": "draw",
+      "shots": 17,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-26",
+      "distanceCovered": 113.8,
+      "expectedGoals": 0.22,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m066-uruguay-spain",
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 79.0,
+      "possession": 33.4,
+      "result": "loss",
+      "shots": 5,
+      "shotsOnTarget": 1,
+      "stage": "group"
+    }
+  ],
+  "name": "Uruguay",
+  "record": {
+    "drawn": 2,
+    "furthestStage": "group",
+    "goalDifference": -1,
+    "goalsAgainst": 4,
+    "goalsFor": 3,
+    "lost": 1,
+    "played": 3,
+    "points": 2,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 6.0,
+      "low": 13.3,
+      "mid": 18.3
+    },
+    "phasesInPossession": {
+      "attackingTransition": 13.3,
+      "buildUpOpposed": 12.7,
+      "buildUpUnopposed": 38.7,
+      "counterAttack": 1.3,
+      "finalThird": 21.0,
+      "longBall": 3.3,
+      "progression": 16.7,
+      "setPiece": 7.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 14.0,
+      "defensiveTransition": 18.7,
+      "highBlock": 6.0,
+      "highPress": 7.3,
+      "lowBlock": 13.3,
+      "lowPress": 0.3,
+      "midBlock": 18.3,
+      "midPress": 4.7,
+      "recovery": 3.3
+    },
+    "possession": 50.5,
+    "pressingIntensity": 248.3,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 21.3,
+          "teamLength": 39.3,
+          "teamWidth": 52.3
+        },
+        "buildUpMid": {
+          "lineHeight": 45.7,
+          "teamLength": 30.3,
+          "teamWidth": 54.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 59.3,
+          "teamLength": 31.7,
+          "teamWidth": 44.3
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 47.7,
+          "teamLength": 37.3,
+          "teamWidth": 42.0
+        },
+        "lowBlock": {
+          "lineHeight": 18.3,
+          "teamLength": 24.0,
+          "teamWidth": 37.7
+        },
+        "midBlock": {
+          "lineHeight": 35.3,
+          "teamLength": 28.7,
+          "teamWidth": 42.3
+        }
+      }
+    }
+  },
+  "teamCode": "uru",
+  "teamId": "uruguay"
+}

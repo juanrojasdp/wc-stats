@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 7.97,
+      "value": 24
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.33,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 136.83,
+      "value": 412
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.66,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 6.31,
+      "value": 19
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 82.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 28.56,
+      "value": 86
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 2.99,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 46.49,
+      "value": 140
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.0,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.66,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 6.97,
+      "value": 21
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 11140.94,
+      "value": 33546.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 271,
+    "played": 4,
+    "started": 3,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 7,
+      "date": "2026-06-14",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m010-germany-curacao",
+      "minutesPlayed": 64,
+      "opponent": {
+        "id": "curacao",
+        "name": "Curaçao"
+      },
+      "passCompletion": 58.0,
+      "passesAttempted": 24,
+      "passesCompleted": 14,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.8,
+      "totalDistance": 7874.6
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 5,
+      "date": "2026-06-20",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m033-germany-cote-d-ivoire",
+      "minutesPlayed": 60,
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 83.0,
+      "passesAttempted": 24,
+      "passesCompleted": 20,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.4,
+      "totalDistance": 8133.0
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 5,
+      "date": "2026-06-25",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m056-ecuador-germany",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "ecuador",
+        "name": "Ecuador"
+      },
+      "passCompletion": 86.0,
+      "passesAttempted": 29,
+      "passesCompleted": 25,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.8,
+      "totalDistance": 10651.0
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 7,
+      "date": "2026-06-29",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m074-germany-paraguay",
+      "minutesPlayed": 57,
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 27,
+      "passesCompleted": 27,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 32.3,
+      "totalDistance": 6888.0
+    }
+  ],
+  "name": "Jamal MUSIALA",
+  "physical": {
+    "distanceZone1": 11628.7,
+    "distanceZone2": 14592.3,
+    "distanceZone3": 4875.2,
+    "distanceZone4": 1819.0,
+    "distanceZone5": 631.4,
+    "highSpeedRuns": 412,
+    "sprints": 140,
+    "topSpeed": 32.3,
+    "totalDistance": 33546.6
+  },
+  "playerId": "musiala-jamal-ger",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 10,
+  "team": {
+    "id": "germany",
+    "name": "Germany"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 7
+        },
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 5
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 5
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 1
+        },
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 0
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 58.0
+        },
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 83.0
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 86.0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 14
+        },
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 20
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 25
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 27
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 31.8
+        },
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 30.4
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 30.8
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 32.3
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m010-germany-curacao",
+          "value": 7874.6
+        },
+        {
+          "matchId": "m033-germany-cote-d-ivoire",
+          "value": 8133.0
+        },
+        {
+          "matchId": "m056-ecuador-germany",
+          "value": 10651.0
+        },
+        {
+          "matchId": "m074-germany-paraguay",
+          "value": 6888.0
+        }
+      ]
+    }
+  ]
+}

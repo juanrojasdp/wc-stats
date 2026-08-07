@@ -1,0 +1,442 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 12.3,
+      "value": 82
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 4.5,
+      "value": 30
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 74.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 28.5,
+      "value": 190
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 4.95,
+      "value": 33
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 1.95,
+      "value": 13
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.3,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 28.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 5700.9,
+      "value": 38006.0
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 600,
+    "played": 6,
+    "started": 6,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-13",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m008-qatar-switzerland",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "qatar",
+        "name": "Qatar"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 25,
+      "passesCompleted": 22,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 23.2,
+      "totalDistance": 5418.3
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m026-switzerland-bosnia-and-herzegovina",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "bosnia-and-herzegovina",
+        "name": "Bosnia and Herzegovina"
+      },
+      "passCompletion": 68.0,
+      "passesAttempted": 38,
+      "passesCompleted": 26,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 21.5,
+      "totalDistance": 5722.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-24",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m051-switzerland-canada",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "canada",
+        "name": "Canada"
+      },
+      "passCompletion": 87.0,
+      "passesAttempted": 52,
+      "passesCompleted": 45,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 22.4,
+      "totalDistance": 5658.4
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-02",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m085-switzerland-algeria",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "algeria",
+        "name": "Algeria"
+      },
+      "passCompletion": 71.0,
+      "passesAttempted": 45,
+      "passesCompleted": 32,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 25.3,
+      "totalDistance": 6077.3
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-07",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m096-switzerland-colombia",
+      "minutesPlayed": 120,
+      "opponent": {
+        "id": "colombia",
+        "name": "Colombia"
+      },
+      "passCompletion": 80.0,
+      "passesAttempted": 54,
+      "passesCompleted": 43,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 23.2,
+      "totalDistance": 7365.3
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-11",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m100-argentina-switzerland",
+      "minutesPlayed": 120,
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 54.0,
+      "passesAttempted": 41,
+      "passesCompleted": 22,
+      "stage": "qf",
+      "started": true,
+      "topSpeed": 28.8,
+      "totalDistance": 7764.2
+    }
+  ],
+  "name": "Gregor KOBEL",
+  "physical": {
+    "distanceZone1": 28746.3,
+    "distanceZone2": 8311.4,
+    "distanceZone3": 786.5,
+    "distanceZone4": 142.1,
+    "distanceZone5": 19.8,
+    "highSpeedRuns": 82,
+    "sprints": 13,
+    "topSpeed": 28.8,
+    "totalDistance": 38006.0
+  },
+  "playerId": "kobel-gregor-sui",
+  "position": "gk",
+  "schemaVersion": 4,
+  "shirtNumber": 1,
+  "team": {
+    "id": "switzerland",
+    "name": "Switzerland"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 0
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 0
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 0
+        },
+        {
+          "matchId": "m085-switzerland-algeria",
+          "value": 0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 0
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 0
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 0
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 0
+        },
+        {
+          "matchId": "m085-switzerland-algeria",
+          "value": 0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 0
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 88.0
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 68.0
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 87.0
+        },
+        {
+          "matchId": "m085-switzerland-algeria",
+          "value": 71.0
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 80.0
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 54.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 22
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 26
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 45
+        },
+        {
+          "matchId": "m085-switzerland-algeria",
+          "value": 32
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 43
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 22
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 23.2
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 21.5
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 22.4
+        },
+        {
+          "matchId": "m085-switzerland-algeria",
+          "value": 25.3
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 23.2
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 28.8
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m008-qatar-switzerland",
+          "value": 5418.3
+        },
+        {
+          "matchId": "m026-switzerland-bosnia-and-herzegovina",
+          "value": 5722.5
+        },
+        {
+          "matchId": "m051-switzerland-canada",
+          "value": 5658.4
+        },
+        {
+          "matchId": "m085-switzerland-algeria",
+          "value": 6077.3
+        },
+        {
+          "matchId": "m096-switzerland-colombia",
+          "value": 7365.3
+        },
+        {
+          "matchId": "m100-argentina-switzerland",
+          "value": 7764.2
+        }
+      ]
+    }
+  ]
+}

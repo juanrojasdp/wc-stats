@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 2.73,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 111.27,
+      "value": 204
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 4.36,
+      "value": 8
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 85.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 19.64,
+      "value": 36
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.82,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 28.91,
+      "value": 53
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.09,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.55,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.09,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.64,
+      "value": 3
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 28.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9941.56,
+      "value": 18226.2
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 165,
+    "played": 2,
+    "started": 2,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 3,
+      "date": "2026-06-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m025-czechia-south-africa",
+      "minutesPlayed": 78,
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 79.0,
+      "passesAttempted": 24,
+      "passesCompleted": 19,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 26.7,
+      "totalDistance": 8924.0
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 2,
+      "date": "2026-06-24",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m053-czechia-mexico",
+      "minutesPlayed": 87,
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 94.0,
+      "passesAttempted": 18,
+      "passesCompleted": 17,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 28.7,
+      "totalDistance": 9302.2
+    }
+  ],
+  "name": "Lukas CERV",
+  "physical": {
+    "distanceZone1": 6129.7,
+    "distanceZone2": 8678.5,
+    "distanceZone3": 2561.1,
+    "distanceZone4": 767.1,
+    "distanceZone5": 89.8,
+    "highSpeedRuns": 204,
+    "sprints": 53,
+    "topSpeed": 28.7,
+    "totalDistance": 18226.2
+  },
+  "playerId": "cerv-lukas-cze",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 12,
+  "team": {
+    "id": "czechia",
+    "name": "Czechia"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 3
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 0
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 79.0
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 94.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 19
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 17
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 26.7
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 28.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m025-czechia-south-africa",
+          "value": 8924.0
+        },
+        {
+          "matchId": "m053-czechia-mexico",
+          "value": 9302.2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "formationUsage": [
+    {
+      "formation": "3-4-3",
+      "matches": 4,
+      "share": 100.0
+    }
+  ],
+  "group": "f",
+  "matches": [
+    {
+      "date": "2026-06-14",
+      "distanceCovered": 109.4,
+      "expectedGoals": 0.34,
+      "formation": "3-4-3",
+      "goalsAgainst": 2,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m011-netherlands-japan",
+      "opponent": {
+        "id": "netherlands",
+        "name": "Netherlands"
+      },
+      "passCompletion": 85.0,
+      "possession": 37.4,
+      "result": "draw",
+      "shots": 9,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-20",
+      "distanceCovered": 112.2,
+      "expectedGoals": 1.36,
+      "formation": "3-4-3",
+      "goalsAgainst": 0,
+      "goalsFor": 4,
+      "isHome": false,
+      "matchId": "m036-tunisia-japan",
+      "opponent": {
+        "id": "tunisia",
+        "name": "Tunisia"
+      },
+      "passCompletion": 90.0,
+      "possession": 55.1,
+      "result": "win",
+      "shots": 10,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 110.2,
+      "expectedGoals": 1.22,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m057-japan-sweden",
+      "opponent": {
+        "id": "sweden",
+        "name": "Sweden"
+      },
+      "passCompletion": 84.0,
+      "possession": 44.7,
+      "result": "draw",
+      "shots": 8,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-29",
+      "distanceCovered": 114.9,
+      "expectedGoals": 0.26,
+      "formation": "3-4-3",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m076-brazil-japan",
+      "opponent": {
+        "id": "brazil",
+        "name": "Brazil"
+      },
+      "passCompletion": 85.0,
+      "possession": 30.3,
+      "result": "loss",
+      "shots": 5,
+      "shotsOnTarget": 2,
+      "stage": "r32"
+    }
+  ],
+  "name": "Japan",
+  "record": {
+    "drawn": 2,
+    "furthestStage": "r32",
+    "goalDifference": 3,
+    "goalsAgainst": 5,
+    "goalsFor": 8,
+    "lost": 1,
+    "played": 4,
+    "points": 5,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 3.5,
+      "low": 39.8,
+      "mid": 19.8
+    },
+    "phasesInPossession": {
+      "attackingTransition": 12.5,
+      "buildUpOpposed": 9.8,
+      "buildUpUnopposed": 42.8,
+      "counterAttack": 1.5,
+      "finalThird": 14.5,
+      "longBall": 3.2,
+      "progression": 16.8,
+      "setPiece": 5.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 7.2,
+      "defensiveTransition": 10.5,
+      "highBlock": 3.5,
+      "highPress": 2.8,
+      "lowBlock": 39.8,
+      "lowPress": 0.5,
+      "midBlock": 19.8,
+      "midPress": 3.0,
+      "recovery": 4.2
+    },
+    "possession": 41.9,
+    "pressingIntensity": 279.5,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 18.5,
+          "teamLength": 38.2,
+          "teamWidth": 55.5
+        },
+        "buildUpMid": {
+          "lineHeight": 44.0,
+          "teamLength": 31.0,
+          "teamWidth": 58.2
+        },
+        "finalThirdPhase": {
+          "lineHeight": 57.8,
+          "teamLength": 33.0,
+          "teamWidth": 46.5
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 46.8,
+          "teamLength": 35.8,
+          "teamWidth": 44.2
+        },
+        "lowBlock": {
+          "lineHeight": 20.5,
+          "teamLength": 19.0,
+          "teamWidth": 37.8
+        },
+        "midBlock": {
+          "lineHeight": 37.8,
+          "teamLength": 24.0,
+          "teamWidth": 43.2
+        }
+      }
+    }
+  },
+  "teamCode": "jpn",
+  "teamId": "japan"
+}

@@ -1,0 +1,262 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 11.55,
+      "value": 19
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 1.22,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.61,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.61,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 127.7,
+      "value": 210
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.61,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 2.43,
+      "value": 4
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 59.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 17.03,
+      "value": 28
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.82,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 68.11,
+      "value": 112
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.22,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.22,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 10.34,
+      "value": 17
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10802.01,
+      "value": 17763.3
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 148,
+    "played": 2,
+    "started": 2,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 12,
+      "date": "2026-06-27",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m072-congo-dr-uzbekistan",
+      "minutesPlayed": 72,
+      "opponent": {
+        "id": "uzbekistan",
+        "name": "Uzbekistan"
+      },
+      "passCompletion": 56.0,
+      "passesAttempted": 25,
+      "passesCompleted": 14,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 33.2,
+      "totalDistance": 8454.2
+    },
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 7,
+      "date": "2026-07-01",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m080-england-congo-dr",
+      "minutesPlayed": 76,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 64.0,
+      "passesAttempted": 22,
+      "passesCompleted": 14,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 30.9,
+      "totalDistance": 9309.1
+    }
+  ],
+  "name": "Brian CIPENGA",
+  "physical": {
+    "distanceZone1": 5591.1,
+    "distanceZone2": 8130.1,
+    "distanceZone3": 2414.0,
+    "distanceZone4": 1237.8,
+    "distanceZone5": 390.2,
+    "highSpeedRuns": 210,
+    "sprints": 112,
+    "topSpeed": 33.2,
+    "totalDistance": 17763.3
+  },
+  "playerId": "cipenga-brian-cod",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 9,
+  "team": {
+    "id": "congo-dr",
+    "name": "Congo DR"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 12
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 0
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 56.0
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 64.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 14
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 14
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 33.2
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 30.9
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m072-congo-dr-uzbekistan",
+          "value": 8454.2
+        },
+        {
+          "matchId": "m080-england-congo-dr",
+          "value": 9309.1
+        }
+      ]
+    }
+  ]
+}

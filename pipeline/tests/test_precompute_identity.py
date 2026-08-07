@@ -189,7 +189,12 @@ def _fixture_player_ids() -> "set[tuple[str, str, str]]":
             side: doc["metadata"][f"{side}Team"] for side in ("home", "away")
         }
         code_by_team_id = {team["teamId"]: team["teamCode"] for team in sides.values()}
-        for row in doc.get("players", []):
+        # `or []`, NOT `get("players", [])`. `players` is `anyOf [array, null]` and the
+        # default only fires when the KEY is absent — a bundle that carries an explicit
+        # `null` (Story 1.18's FR-1 branch-coverage fixture) returns None and raises
+        # `TypeError: 'NoneType' object is not iterable`. Same unguarded-nullable-container
+        # class that was fixed six times in `test_fixtures.py`.
+        for row in doc.get("players") or []:
             if isinstance(row, dict) and "playerId" in row and "playerName" in row:
                 found.add(
                     (row["playerId"], row["playerName"], code_by_team_id[row["teamId"]])
@@ -209,7 +214,7 @@ def test_the_committed_fixtures_expose_ids_unreachable_from_the_players_array():
     for path in MATCH_FIXTURES:
         doc = json.loads(path.read_text(encoding="utf-8"))
         from_players.update(
-            row["playerId"] for row in doc.get("players", []) if "playerId" in row
+            row["playerId"] for row in doc.get("players") or [] if "playerId" in row
         )
         for side in ("home", "away"):
             for section in ("starters", "substitutes"):
@@ -228,8 +233,14 @@ def test_the_caps_run_rule_reproduces_every_committed_fixture_player_id():
     on even one id, the rule is wrong and the fixtures are ground truth.
     """
     fixture_ids = _fixture_player_ids()
-    assert len({player_id for player_id, _name, _code in fixture_ids}) == 155, (
-        f"expected 155 distinct fixture player ids, found "
+    # 155 -> 207 when Story 1.18 added `data/fixtures/matches/m082-belgium-senegal.json`
+    # for FR-1's branch coverage. The count is a REACH check — "the walk sees the whole
+    # fixture set" — not the acceptance criterion; the acceptance criterion is the
+    # zero-mismatch assertion below, and it still holds on every one of the 207. The number
+    # is updated rather than loosened to a `>=`, because a silent DROP in reach is exactly
+    # what this line exists to catch.
+    assert len({player_id for player_id, _name, _code in fixture_ids}) == 207, (
+        f"expected 207 distinct fixture player ids, found "
         f"{len({p for p, _n, _c in fixture_ids})}"
     )
     # Every (id, name, code) triple, so a second printed spelling of one id is tested too

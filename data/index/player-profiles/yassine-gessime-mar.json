@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 3.51,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 1.17,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 141.43,
+      "value": 121
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 5.84,
+      "value": 5
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 87.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 39.74,
+      "value": 34
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 1.17,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 50.26,
+      "value": 43
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 3.51,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.17,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 3.51,
+      "value": 3
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 28.6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 13185.94,
+      "value": 11281.3
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 77,
+    "played": 3,
+    "started": 0,
+    "substituteAppearances": 3
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-24",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 1,
+      "matchId": "m050-morocco-haiti",
+      "minutesPlayed": 20,
+      "opponent": {
+        "id": "haiti",
+        "name": "Haiti"
+      },
+      "passCompletion": 86.0,
+      "passesAttempted": 7,
+      "passesCompleted": 6,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 26.2,
+      "totalDistance": 2611.7
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-29",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m075-netherlands-morocco",
+      "minutesPlayed": 41,
+      "opponent": {
+        "id": "netherlands",
+        "name": "Netherlands"
+      },
+      "passCompletion": 87.0,
+      "passesAttempted": 23,
+      "passesCompleted": 20,
+      "stage": "r32",
+      "started": false,
+      "topSpeed": 28.4,
+      "totalDistance": 5820.1
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-07-09",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m097-france-morocco",
+      "minutesPlayed": 16,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 89.0,
+      "passesAttempted": 9,
+      "passesCompleted": 8,
+      "stage": "qf",
+      "started": false,
+      "topSpeed": 28.6,
+      "totalDistance": 2849.5
+    }
+  ],
+  "name": "Gessime YASSINE",
+  "physical": {
+    "distanceZone1": 4195.7,
+    "distanceZone2": 4578.4,
+    "distanceZone3": 1691.5,
+    "distanceZone4": 642.7,
+    "distanceZone5": 173.2,
+    "highSpeedRuns": 121,
+    "sprints": 43,
+    "topSpeed": 28.6,
+    "totalDistance": 11281.3
+  },
+  "playerId": "yassine-gessime-mar",
+  "position": "mf",
+  "schemaVersion": 4,
+  "shirtNumber": 16,
+  "team": {
+    "id": "morocco",
+    "name": "Morocco"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 0
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 2
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 1
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 0
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 86.0
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 87.0
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 89.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 6
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 20
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 26.2
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 28.4
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 28.6
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m050-morocco-haiti",
+          "value": 2611.7
+        },
+        {
+          "matchId": "m075-netherlands-morocco",
+          "value": 5820.1
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 2849.5
+        }
+      ]
+    }
+  ]
+}

@@ -509,28 +509,90 @@ COMMITTED_ID_KEYS: dict[str, str] = {
 # nullable id still belongs to `teams` when it is present.
 NULLABLE_ID_KEYS: frozenset = frozenset({"winnerTeamId"})
 
+# The id-bearing keys of a committed PROFILE artifact (Story 1.18). Artifact-scoped rather
+# than merged into `COMMITTED_ID_KEYS`, for two reasons that pull the same way.
+#
+# **`id` cannot go in the bundle map.** `test_emit_bundles.py::test_the_committed_id_check_
+# is_total_for_a_match_bundle` asserts `carried == set(COMMITTED_ID_KEYS)` over the Match
+# Bundles, and no bundle carries an `id` key — adding it turns that test red for a reason
+# that is not a defect. A union map also makes the bundle totality test unmaintainable and
+# conflates two artifacts' namespaces.
+#
+# **And within a profile, a bare `id` is unambiguous.** Story 1.17 rejected widening the
+# bundle map because "`id` names a team or a player BY CONTEXT" — true across `/data/index`
+# as a whole, and false inside a profile artifact, where `EntityRef` appears in exactly two
+# slots and BOTH name a team: `matches[].opponent` and a player profile's `team`. The
+# ambiguity that argument rests on does not arise here, which is why this map can exist at
+# all while 1.17's could not.
+PROFILE_ID_KEYS: dict[str, str] = {
+    "teamId": "teams",
+    "playerId": "players",
+    "matchId": "matches",
+    "id": "teams",
+}
+
 DATA_BASELINE_UNAVAILABLE = (
     "committed /data baseline unavailable: no match bundles found under {path} — "
     "the registry is the ONLY immutability source for this run. This is NOT a pass."
 )
 
+PROFILE_BASELINE_UNAVAILABLE = (
+    "committed profile baseline unavailable: no profile artifacts found under {path} — "
+    "the registry is the ONLY immutability source for them. This is NOT a pass."
+)
 
-def check_committed_data(pins: "dict[str, dict[str, str]]", data_dir: "str | Path") -> list[str]:
-    """AC 3's second source: every id in a committed bundle must be pinned.
+
+def check_committed_data(
+    pins: "dict[str, dict[str, str]]",
+    data_dir: "str | Path",
+    globs: "tuple[str, ...]" = ("matches/*.json",),
+    id_keys: "dict[str, str] | None" = None,
+    unavailable: "str | None" = None,
+    noun: str = "bundle",
+) -> list[str]:
+    """AC 3's second source: every id in a committed artifact must be pinned.
 
     Returns human-readable notes for the CLI to print. Raises `SlugRegistryError` on a
     committed id the registry does not pin — that is an id already emitted into `/data`
     that this run no longer stands behind.
 
-    **When `data/matches/` is absent this returns the "unavailable" note and never
-    reports success.** `data/matches/` does not exist yet; it arrives with Story 1.16. A
-    naive `if not exists: return []` here would be a gate that cannot fail, which is worse
-    than no gate at all because it reads green.
+    **When the globbed artifacts are absent this returns the "unavailable" note and never
+    reports success.** A naive `if not exists: return []` would be a gate that cannot fail,
+    which is worse than no gate at all because it reads green.
+
+    **`globs` is parameterized rather than forked (Story 1.18).** The directory was
+    hardcoded to `matches/`, so the 1,296 committed profile artifacts fell entirely outside
+    AD-3's immutability walk while the run still printed "all pinned" — extending the KEY
+    SET alone would have given them zero coverage, because the walker never opened them. The
+    default is byte-for-byte Story 1.15's behaviour, so `test_precompute_spine.py`'s
+    "104 bundle(s), 89,358 id reference(s), all pinned" expectation is untouched.
     """
-    matches_dir = Path(data_dir) / "matches"
-    bundles = sorted(matches_dir.glob("*.json")) if matches_dir.is_dir() else []
-    if not bundles:
-        return [DATA_BASELINE_UNAVAILABLE.format(path=matches_dir.as_posix())]
+    root = Path(data_dir)
+    id_keys = COMMITTED_ID_KEYS if id_keys is None else id_keys
+    if not globs:
+        raise SlugRegistryError(
+            "check_committed_data needs at least one glob; an empty tuple would walk "
+            "nothing and report success"
+        )
+    template = unavailable or DATA_BASELINE_UNAVAILABLE
+    # **Emptiness is per-glob, NOT on the union, and the difference is the whole gate.**
+    # Unioning first meant the "unavailable" branch fired only when EVERY namespace was
+    # missing: with `index/team-profiles/*.json` matching 48 files and the entire
+    # `player-profiles` namespace absent, this returned "48 profile(s), all pinned" while
+    # 1,248 artifacts escaped the immutability walk entirely. That is precisely the
+    # gate-that-cannot-fail this docstring argues against — "worse than no gate at all
+    # because it reads green" — reintroduced per namespace by the widening that was meant
+    # to close it.
+    artifacts: "list[Path]" = []
+    for pattern in globs:
+        found = sorted(root.glob(pattern))
+        if not found:
+            # The DIRECTORY, not the glob: `test_an_absent_data_baseline_reports_unavailable_
+            # and_never_success` pins the exact message, and the default path must stay
+            # `.../matches` rather than becoming `.../matches/*.json`.
+            return [template.format(path=(root / pattern).parent.as_posix())]
+        artifacts.extend(found)
+    bundles = sorted(set(artifacts))
 
     pinned_by_kind = {kind: set(mapping.values()) for kind, mapping in pins.items()}
     unpinned: list[str] = []
@@ -540,7 +602,7 @@ def check_committed_data(pins: "dict[str, dict[str, str]]", data_dir: "str | Pat
         nonlocal seen
         if isinstance(node, dict):
             for key, value in node.items():
-                kind = COMMITTED_ID_KEYS.get(key)
+                kind = id_keys.get(key)
                 if kind is not None:
                     seen += 1
                     if value is None and key in NULLABLE_ID_KEYS:
@@ -567,7 +629,9 @@ def check_committed_data(pins: "dict[str, dict[str, str]]", data_dir: "str | Pat
     for bundle in bundles:
         try:
             doc = json.loads(bundle.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+            # `UnicodeDecodeError` is a `ValueError`, not an `OSError`, so a byte-corrupt
+            # artifact bypassed this typed wrapper and escaped as a traceback.
             raise SlugRegistryError(
                 f"committed bundle {bundle.as_posix()!r} is unreadable: {exc}"
             )
@@ -580,7 +644,7 @@ def check_committed_data(pins: "dict[str, dict[str, str]]", data_dir: "str | Pat
             f"{shown}{' …' if len(unpinned) > 10 else ''}"
         )
     return [
-        f"committed /data baseline: {len(bundles)} bundle(s), "
+        f"committed /data baseline: {len(bundles)} {noun}(s), "
         f"{seen} id reference(s), all pinned"
     ]
 

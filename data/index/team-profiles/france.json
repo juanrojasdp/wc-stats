@@ -1,0 +1,253 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-2-3-1",
+      "matches": 8,
+      "share": 100.0
+    }
+  ],
+  "group": "i",
+  "matches": [
+    {
+      "date": "2026-06-16",
+      "distanceCovered": 120.2,
+      "expectedGoals": 1.62,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 3,
+      "isHome": true,
+      "matchId": "m017-france-senegal",
+      "opponent": {
+        "id": "senegal",
+        "name": "Senegal"
+      },
+      "passCompletion": 88.0,
+      "possession": 49.4,
+      "result": "win",
+      "shots": 11,
+      "shotsOnTarget": 8,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-22",
+      "distanceCovered": 107.7,
+      "expectedGoals": 2.3,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 0,
+      "goalsFor": 3,
+      "isHome": true,
+      "matchId": "m042-france-iraq",
+      "opponent": {
+        "id": "iraq",
+        "name": "Iraq"
+      },
+      "passCompletion": 92.0,
+      "possession": 49.0,
+      "result": "win",
+      "shots": 19,
+      "shotsOnTarget": 5,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-26",
+      "distanceCovered": 109.1,
+      "expectedGoals": 1.05,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 4,
+      "isHome": false,
+      "matchId": "m061-norway-france",
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 90.0,
+      "possession": 51.2,
+      "result": "win",
+      "shots": 18,
+      "shotsOnTarget": 9,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-30",
+      "distanceCovered": 107.7,
+      "expectedGoals": 2.9,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 0,
+      "goalsFor": 3,
+      "isHome": true,
+      "matchId": "m077-france-sweden",
+      "opponent": {
+        "id": "sweden",
+        "name": "Sweden"
+      },
+      "passCompletion": 91.0,
+      "possession": 53.5,
+      "result": "win",
+      "shots": 25,
+      "shotsOnTarget": 12,
+      "stage": "r32"
+    },
+    {
+      "date": "2026-07-04",
+      "distanceCovered": 104.8,
+      "expectedGoals": 1.93,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m089-paraguay-france",
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 90.0,
+      "possession": 66.7,
+      "result": "win",
+      "shots": 15,
+      "shotsOnTarget": 5,
+      "stage": "r16"
+    },
+    {
+      "date": "2026-07-09",
+      "distanceCovered": 108.6,
+      "expectedGoals": 3.52,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 0,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m097-france-morocco",
+      "opponent": {
+        "id": "morocco",
+        "name": "Morocco"
+      },
+      "passCompletion": 91.0,
+      "possession": 46.5,
+      "result": "win",
+      "shots": 22,
+      "shotsOnTarget": 8,
+      "stage": "qf"
+    },
+    {
+      "date": "2026-07-14",
+      "distanceCovered": 114.0,
+      "expectedGoals": 0.48,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 2,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m101-france-spain",
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 84.0,
+      "possession": 46.8,
+      "result": "loss",
+      "shots": 10,
+      "shotsOnTarget": 3,
+      "stage": "sf"
+    },
+    {
+      "date": "2026-07-18",
+      "distanceCovered": 107.3,
+      "expectedGoals": 2.99,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 6,
+      "goalsFor": 4,
+      "isHome": true,
+      "matchId": "m103-france-england",
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 91.0,
+      "possession": 41.5,
+      "result": "loss",
+      "shots": 19,
+      "shotsOnTarget": 9,
+      "stage": "third-place"
+    }
+  ],
+  "name": "France",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "third-place",
+    "goalDifference": 10,
+    "goalsAgainst": 10,
+    "goalsFor": 20,
+    "lost": 2,
+    "played": 8,
+    "points": 9,
+    "won": 6
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 9.5,
+      "low": 11.6,
+      "mid": 25.1
+    },
+    "phasesInPossession": {
+      "attackingTransition": 11.5,
+      "buildUpOpposed": 16.9,
+      "buildUpUnopposed": 35.6,
+      "counterAttack": 1.8,
+      "finalThird": 24.2,
+      "longBall": 1.2,
+      "progression": 19.5,
+      "setPiece": 5.6
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 10.9,
+      "defensiveTransition": 14.6,
+      "highBlock": 9.5,
+      "highPress": 6.0,
+      "lowBlock": 11.6,
+      "lowPress": 0.6,
+      "midBlock": 25.1,
+      "midPress": 4.0,
+      "recovery": 3.1
+    },
+    "possession": 50.6,
+    "pressingIntensity": 246.5,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 19.6,
+          "teamLength": 38.9,
+          "teamWidth": 55.2
+        },
+        "buildUpMid": {
+          "lineHeight": 44.8,
+          "teamLength": 30.1,
+          "teamWidth": 56.5
+        },
+        "finalThirdPhase": {
+          "lineHeight": 61.1,
+          "teamLength": 29.1,
+          "teamWidth": 45.8
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 50.8,
+          "teamLength": 35.2,
+          "teamWidth": 40.0
+        },
+        "lowBlock": {
+          "lineHeight": 18.8,
+          "teamLength": 26.2,
+          "teamWidth": 35.1
+        },
+        "midBlock": {
+          "lineHeight": 37.9,
+          "teamLength": 26.9,
+          "teamWidth": 39.2
+        }
+      }
+    }
+  },
+  "teamCode": "fra",
+  "teamId": "france"
+}

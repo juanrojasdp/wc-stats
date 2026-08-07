@@ -1,0 +1,397 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 2.55,
+      "value": 10
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 4.33,
+      "value": 17
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.76,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 108.61,
+      "value": 426
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 2.8,
+      "value": 11
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 79.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 18.36,
+      "value": 72
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.06,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 55.33,
+      "value": 217
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.02,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.25,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 1.27,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.53,
+      "value": 6
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10434.54,
+      "value": 40926.6
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 353,
+    "played": 5,
+    "started": 5,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-15",
+      "duelsWonAerial": 5,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m016-belgium-egypt",
+      "minutesPlayed": 66,
+      "opponent": {
+        "id": "egypt",
+        "name": "Egypt"
+      },
+      "passCompletion": 87.0,
+      "passesAttempted": 23,
+      "passesCompleted": 20,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 33.5,
+      "totalDistance": 7497.8
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 3,
+      "date": "2026-06-26",
+      "duelsWonAerial": 5,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m064-new-zealand-belgium",
+      "minutesPlayed": 85,
+      "opponent": {
+        "id": "new-zealand",
+        "name": "New Zealand"
+      },
+      "passCompletion": 81.0,
+      "passesAttempted": 31,
+      "passesCompleted": 25,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.8,
+      "totalDistance": 9616.7
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 3,
+      "date": "2026-07-01",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m082-belgium-senegal",
+      "minutesPlayed": 45,
+      "opponent": {
+        "id": "senegal",
+        "name": "Senegal"
+      },
+      "passCompletion": 67.0,
+      "passesAttempted": 6,
+      "passesCompleted": 4,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 30.4,
+      "totalDistance": 5420.0
+    },
+    {
+      "attemptsAtGoal": 3,
+      "ballProgressions": 1,
+      "date": "2026-07-06",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 2,
+      "matchId": "m094-usa-belgium",
+      "minutesPlayed": 67,
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 16,
+      "passesCompleted": 14,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 33.3,
+      "totalDistance": 7928.5
+    },
+    {
+      "attemptsAtGoal": 2,
+      "ballProgressions": 1,
+      "date": "2026-07-10",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 1,
+      "goals": 1,
+      "matchId": "m098-spain-belgium",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 60.0,
+      "passesAttempted": 15,
+      "passesCompleted": 9,
+      "stage": "qf",
+      "started": true,
+      "topSpeed": 32.2,
+      "totalDistance": 10463.6
+    }
+  ],
+  "name": "Charles DE KETELAERE",
+  "physical": {
+    "distanceZone1": 15710.8,
+    "distanceZone2": 16625.3,
+    "distanceZone3": 5111.6,
+    "distanceZone4": 2518.3,
+    "distanceZone5": 960.9,
+    "highSpeedRuns": 426,
+    "sprints": 217,
+    "topSpeed": 33.5,
+    "totalDistance": 40926.6
+  },
+  "playerId": "de-ketelaere-charles-bel",
+  "position": "fw",
+  "schemaVersion": 4,
+  "shirtNumber": 17,
+  "team": {
+    "id": "belgium",
+    "name": "Belgium"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 2
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 3
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 3
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 1
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 0
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 0
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 2
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 87.0
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 81.0
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 67.0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 88.0
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 60.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 20
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 25
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 4
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 14
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 9
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 33.5
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 31.8
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 30.4
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 33.3
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 32.2
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 7497.8
+        },
+        {
+          "matchId": "m064-new-zealand-belgium",
+          "value": 9616.7
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 5420.0
+        },
+        {
+          "matchId": "m094-usa-belgium",
+          "value": 7928.5
+        },
+        {
+          "matchId": "m098-spain-belgium",
+          "value": 10463.6
+        }
+      ]
+    }
+  ]
+}

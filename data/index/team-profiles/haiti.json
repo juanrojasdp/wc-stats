@@ -1,0 +1,158 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-4-2",
+      "matches": 2,
+      "share": 66.7
+    },
+    {
+      "formation": "5-4-1",
+      "matches": 1,
+      "share": 33.3
+    }
+  ],
+  "group": "c",
+  "matches": [
+    {
+      "date": "2026-06-13",
+      "distanceCovered": 113.7,
+      "expectedGoals": 0.7,
+      "formation": "4-4-2",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m005-haiti-scotland",
+      "opponent": {
+        "id": "scotland",
+        "name": "Scotland"
+      },
+      "passCompletion": 88.0,
+      "possession": 51.6,
+      "result": "loss",
+      "shots": 15,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-19",
+      "distanceCovered": 112.8,
+      "expectedGoals": 0.26,
+      "formation": "5-4-1",
+      "goalsAgainst": 3,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m029-brazil-haiti",
+      "opponent": {
+        "id": "brazil",
+        "name": "Brazil"
+      },
+      "passCompletion": 84.0,
+      "possession": 43.2,
+      "result": "loss",
+      "shots": 7,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-24",
+      "distanceCovered": 107.5,
+      "expectedGoals": 0.65,
+      "formation": "4-4-2",
+      "goalsAgainst": 4,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m050-morocco-haiti",
+      "opponent": {
+        "id": "morocco",
+        "name": "Morocco"
+      },
+      "passCompletion": 80.0,
+      "possession": 31.5,
+      "result": "loss",
+      "shots": 9,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    }
+  ],
+  "name": "Haiti",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "group",
+    "goalDifference": -6,
+    "goalsAgainst": 8,
+    "goalsFor": 2,
+    "lost": 3,
+    "played": 3,
+    "points": 0,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 5.3,
+      "low": 14.3,
+      "mid": 30.0
+    },
+    "phasesInPossession": {
+      "attackingTransition": 15.0,
+      "buildUpOpposed": 10.7,
+      "buildUpUnopposed": 38.3,
+      "counterAttack": 2.0,
+      "finalThird": 13.3,
+      "longBall": 5.0,
+      "progression": 16.7,
+      "setPiece": 6.7
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 7.3,
+      "defensiveTransition": 11.3,
+      "highBlock": 5.3,
+      "highPress": 5.7,
+      "lowBlock": 14.3,
+      "lowPress": 1.0,
+      "midBlock": 30.0,
+      "midPress": 6.0,
+      "recovery": 4.3
+    },
+    "possession": 42.1,
+    "pressingIntensity": 270.0,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 20.7,
+          "teamLength": 38.3,
+          "teamWidth": 55.3
+        },
+        "buildUpMid": {
+          "lineHeight": 42.3,
+          "teamLength": 32.3,
+          "teamWidth": 57.7
+        },
+        "finalThirdPhase": {
+          "lineHeight": 56.7,
+          "teamLength": 33.3,
+          "teamWidth": 45.7
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.7,
+          "teamLength": 35.7,
+          "teamWidth": 41.0
+        },
+        "lowBlock": {
+          "lineHeight": 17.7,
+          "teamLength": 25.0,
+          "teamWidth": 36.0
+        },
+        "midBlock": {
+          "lineHeight": 38.7,
+          "teamLength": 25.7,
+          "teamWidth": 40.3
+        }
+      }
+    }
+  },
+  "teamCode": "hai",
+  "teamId": "haiti"
+}

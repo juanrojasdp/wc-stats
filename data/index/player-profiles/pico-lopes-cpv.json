@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.38,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 2.08,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 84.46,
+      "value": 366
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.15,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 13.62,
+      "value": 59
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 84.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 35.31,
+      "value": 153
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 7.62,
+      "value": 33
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 22.85,
+      "value": 99
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.38,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 1.15,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.92,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 35.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9634.87,
+      "value": 41751.1
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 390,
+    "played": 4,
+    "started": 4,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-15",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m014-spain-cabo-verde",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 76.0,
+      "passesAttempted": 42,
+      "passesCompleted": 32,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.5,
+      "totalDistance": 9707.8
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-06-21",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m037-uruguay-cabo-verde",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "uruguay",
+        "name": "Uruguay"
+      },
+      "passCompletion": 82.0,
+      "passesAttempted": 34,
+      "passesCompleted": 28,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 35.0,
+      "totalDistance": 9276.5
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 2,
+      "date": "2026-06-26",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m065-cabo-verde-saudi-arabia",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "saudi-arabia",
+        "name": "Saudi Arabia"
+      },
+      "passCompletion": 89.0,
+      "passesAttempted": 53,
+      "passesCompleted": 47,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.9,
+      "totalDistance": 10490.4
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-07-03",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m086-argentina-cabo-verde",
+      "minutesPlayed": 120,
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 87.0,
+      "passesAttempted": 53,
+      "passesCompleted": 46,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 33.0,
+      "totalDistance": 12276.4
+    }
+  ],
+  "name": "PICO LOPES",
+  "physical": {
+    "distanceZone1": 17315.4,
+    "distanceZone2": 18720.3,
+    "distanceZone3": 3992.7,
+    "distanceZone4": 1111.5,
+    "distanceZone5": 611.2,
+    "highSpeedRuns": 366,
+    "sprints": 99,
+    "topSpeed": 35.0,
+    "totalDistance": 41751.1
+  },
+  "playerId": "pico-lopes-cpv",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 4,
+  "team": {
+    "id": "cabo-verde",
+    "name": "Cabo Verde"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m014-spain-cabo-verde",
+          "value": 1
+        },
+        {
+          "matchId": "m037-uruguay-cabo-verde",
+          "value": 2
+        },
+        {
+          "matchId": "m065-cabo-verde-saudi-arabia",
+          "value": 2
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m014-spain-cabo-verde",
+          "value": 0
+        },
+        {
+          "matchId": "m037-uruguay-cabo-verde",
+          "value": 0
+        },
+        {
+          "matchId": "m065-cabo-verde-saudi-arabia",
+          "value": 0
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m014-spain-cabo-verde",
+          "value": 76.0
+        },
+        {
+          "matchId": "m037-uruguay-cabo-verde",
+          "value": 82.0
+        },
+        {
+          "matchId": "m065-cabo-verde-saudi-arabia",
+          "value": 89.0
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 87.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m014-spain-cabo-verde",
+          "value": 32
+        },
+        {
+          "matchId": "m037-uruguay-cabo-verde",
+          "value": 28
+        },
+        {
+          "matchId": "m065-cabo-verde-saudi-arabia",
+          "value": 47
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 46
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m014-spain-cabo-verde",
+          "value": 32.5
+        },
+        {
+          "matchId": "m037-uruguay-cabo-verde",
+          "value": 35.0
+        },
+        {
+          "matchId": "m065-cabo-verde-saudi-arabia",
+          "value": 30.9
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 33.0
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m014-spain-cabo-verde",
+          "value": 9707.8
+        },
+        {
+          "matchId": "m037-uruguay-cabo-verde",
+          "value": 9276.5
+        },
+        {
+          "matchId": "m065-cabo-verde-saudi-arabia",
+          "value": 10490.4
+        },
+        {
+          "matchId": "m086-argentina-cabo-verde",
+          "value": 12276.4
+        }
+      ]
+    }
+  ]
+}

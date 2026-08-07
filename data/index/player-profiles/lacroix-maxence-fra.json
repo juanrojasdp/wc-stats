@@ -1,0 +1,307 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.5,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 3.38,
+      "value": 9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 105.0,
+      "value": 280
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.75,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 9.0,
+      "value": 24
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 96.2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 46.88,
+      "value": 125
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 6.75,
+      "value": 18
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 34.88,
+      "value": 93
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.75,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.38,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.75,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.75,
+      "value": 2
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9939.64,
+      "value": 26505.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 240,
+    "played": 3,
+    "started": 2,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-06-26",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m061-norway-france",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 93.0,
+      "passesAttempted": 46,
+      "passesCompleted": 43,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.1,
+      "totalDistance": 9363.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-07-14",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m101-france-spain",
+      "minutesPlayed": 60,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 96.0,
+      "passesAttempted": 50,
+      "passesCompleted": 48,
+      "stage": "sf",
+      "started": false,
+      "topSpeed": 31.7,
+      "totalDistance": 7949.8
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-07-18",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m103-france-england",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 34,
+      "passesCompleted": 34,
+      "stage": "third-place",
+      "started": true,
+      "topSpeed": 33.7,
+      "totalDistance": 9192.4
+    }
+  ],
+  "name": "Maxence LACROIX",
+  "physical": {
+    "distanceZone1": 11230.3,
+    "distanceZone2": 10595.1,
+    "distanceZone3": 3109.6,
+    "distanceZone4": 1117.5,
+    "distanceZone5": 453.1,
+    "highSpeedRuns": 280,
+    "sprints": 93,
+    "topSpeed": 33.7,
+    "totalDistance": 26505.7
+  },
+  "playerId": "lacroix-maxence-fra",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 26,
+  "team": {
+    "id": "france",
+    "name": "France"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 2
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 1
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 0
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 0
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 93.0
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 96.0
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 43
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 48
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 34
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 29.1
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 31.7
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 33.7
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m061-norway-france",
+          "value": 9363.5
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 7949.8
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 9192.4
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-3-3",
+      "matches": 3,
+      "share": 75.0
+    },
+    {
+      "formation": "4-1-2-3",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "i",
+  "matches": [
+    {
+      "date": "2026-06-16",
+      "distanceCovered": 116.7,
+      "expectedGoals": 0.39,
+      "formation": "4-3-3",
+      "goalsAgainst": 3,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m017-france-senegal",
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 87.0,
+      "possession": 44.5,
+      "result": "loss",
+      "shots": 6,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-22",
+      "distanceCovered": 111.2,
+      "expectedGoals": 2.05,
+      "formation": "4-3-3",
+      "goalsAgainst": 3,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m041-norway-senegal",
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 89.0,
+      "possession": 51.4,
+      "result": "loss",
+      "shots": 16,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-26",
+      "distanceCovered": 111.9,
+      "expectedGoals": 2.7,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 5,
+      "isHome": true,
+      "matchId": "m062-senegal-iraq",
+      "opponent": {
+        "id": "iraq",
+        "name": "Iraq"
+      },
+      "passCompletion": 89.0,
+      "possession": 58.6,
+      "result": "win",
+      "shots": 27,
+      "shotsOnTarget": 11,
+      "stage": "group"
+    },
+    {
+      "date": "2026-07-01",
+      "distanceCovered": 152.9,
+      "expectedGoals": 2.09,
+      "formation": "4-3-3",
+      "goalsAgainst": 3,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m082-belgium-senegal",
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 87.0,
+      "possession": 42.9,
+      "result": "loss",
+      "shots": 19,
+      "shotsOnTarget": 5,
+      "stage": "r32"
+    }
+  ],
+  "name": "Senegal",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "r32",
+    "goalDifference": 1,
+    "goalsAgainst": 9,
+    "goalsFor": 10,
+    "lost": 3,
+    "played": 4,
+    "points": 3,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 6.2,
+      "low": 14.2,
+      "mid": 22.2
+    },
+    "phasesInPossession": {
+      "attackingTransition": 10.5,
+      "buildUpOpposed": 14.2,
+      "buildUpUnopposed": 37.5,
+      "counterAttack": 1.5,
+      "finalThird": 22.5,
+      "longBall": 3.5,
+      "progression": 18.0,
+      "setPiece": 5.5
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 10.2,
+      "defensiveTransition": 13.8,
+      "highBlock": 6.2,
+      "highPress": 6.0,
+      "lowBlock": 14.2,
+      "lowPress": 0.5,
+      "midBlock": 22.2,
+      "midPress": 4.8,
+      "recovery": 5.2
+    },
+    "possession": 49.4,
+    "pressingIntensity": 263.8,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 20.0,
+          "teamLength": 37.2,
+          "teamWidth": 55.2
+        },
+        "buildUpMid": {
+          "lineHeight": 44.5,
+          "teamLength": 30.5,
+          "teamWidth": 55.8
+        },
+        "finalThirdPhase": {
+          "lineHeight": 57.8,
+          "teamLength": 32.8,
+          "teamWidth": 46.2
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.5,
+          "teamLength": 35.0,
+          "teamWidth": 39.0
+        },
+        "lowBlock": {
+          "lineHeight": 17.8,
+          "teamLength": 20.2,
+          "teamWidth": 35.5
+        },
+        "midBlock": {
+          "lineHeight": 37.8,
+          "teamLength": 25.2,
+          "teamWidth": 39.2
+        }
+      }
+    }
+  },
+  "teamCode": "sen",
+  "teamId": "senegal"
+}

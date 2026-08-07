@@ -1,0 +1,158 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-4-2",
+      "matches": 2,
+      "share": 66.7
+    },
+    {
+      "formation": "4-2-3-1",
+      "matches": 1,
+      "share": 33.3
+    }
+  ],
+  "group": "g",
+  "matches": [
+    {
+      "date": "2026-06-15",
+      "distanceCovered": 112.9,
+      "expectedGoals": 1.47,
+      "formation": "4-4-2",
+      "goalsAgainst": 2,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m015-ir-iran-new-zealand",
+      "opponent": {
+        "id": "ir-iran",
+        "name": "IR Iran"
+      },
+      "passCompletion": 84.0,
+      "possession": 45.3,
+      "result": "draw",
+      "shots": 14,
+      "shotsOnTarget": 8,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-21",
+      "distanceCovered": 118.5,
+      "expectedGoals": 0.71,
+      "formation": "4-4-2",
+      "goalsAgainst": 3,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m040-new-zealand-egypt",
+      "opponent": {
+        "id": "egypt",
+        "name": "Egypt"
+      },
+      "passCompletion": 81.0,
+      "possession": 39.4,
+      "result": "loss",
+      "shots": 11,
+      "shotsOnTarget": 5,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-26",
+      "distanceCovered": 117.6,
+      "expectedGoals": 0.3,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 5,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m064-new-zealand-belgium",
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 84.0,
+      "possession": 40.5,
+      "result": "loss",
+      "shots": 6,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    }
+  ],
+  "name": "New Zealand",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "group",
+    "goalDifference": -6,
+    "goalsAgainst": 10,
+    "goalsFor": 4,
+    "lost": 2,
+    "played": 3,
+    "points": 1,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 3.0,
+      "low": 24.0,
+      "mid": 21.0
+    },
+    "phasesInPossession": {
+      "attackingTransition": 16.0,
+      "buildUpOpposed": 13.3,
+      "buildUpUnopposed": 33.3,
+      "counterAttack": 1.0,
+      "finalThird": 12.0,
+      "longBall": 4.3,
+      "progression": 15.7,
+      "setPiece": 6.3
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 8.0,
+      "defensiveTransition": 13.3,
+      "highBlock": 3.0,
+      "highPress": 4.0,
+      "lowBlock": 24.0,
+      "lowPress": 1.0,
+      "midBlock": 21.0,
+      "midPress": 4.3,
+      "recovery": 6.3
+    },
+    "possession": 41.7,
+    "pressingIntensity": 281.3,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 20.7,
+          "teamLength": 39.3,
+          "teamWidth": 52.3
+        },
+        "buildUpMid": {
+          "lineHeight": 38.7,
+          "teamLength": 33.7,
+          "teamWidth": 56.3
+        },
+        "finalThirdPhase": {
+          "lineHeight": 57.3,
+          "teamLength": 34.7,
+          "teamWidth": 44.3
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 47.0,
+          "teamLength": 37.0,
+          "teamWidth": 39.7
+        },
+        "lowBlock": {
+          "lineHeight": 16.3,
+          "teamLength": 27.3,
+          "teamWidth": 33.0
+        },
+        "midBlock": {
+          "lineHeight": 36.7,
+          "teamLength": 27.3,
+          "teamWidth": 39.3
+        }
+      }
+    }
+  },
+  "teamCode": "nzl",
+  "teamId": "new-zealand"
+}

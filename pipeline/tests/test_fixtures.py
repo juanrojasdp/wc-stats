@@ -647,13 +647,32 @@ def test_every_leaderboard_is_ranked_in_order_and_uses_a_closed_metric_code() ->
 
 
 def test_profile_per_match_rows_link_back_to_a_match() -> None:
-    """Every per-match value must name the match it came from (mandatory cross-link)."""
+    """Every per-match value must name the match it came from (mandatory cross-link).
+
+    **The non-empty guard was relaxed by Story 1.18 (FR-1), deliberately.** 209 of the 1,248
+    pinned players — 16.7% — never took the field, and their profiles carry `matches: []` by
+    ruling: the artifact set is a bijection with the registry, so omitting their files would
+    break it, and AD-4 is explicit that "empty sections allowed, absence not". A bare
+    `assert fixture["matches"]` therefore fails on a CORRECT artifact.
+
+    What replaces it is strictly stronger than a presence check, because it still forbids
+    the failure the original guard existed to catch: a silently empty breakdown on a profile
+    that DID play. `played == 0` is admitted; `played > 0` with no rows is not, and neither
+    is the reverse.
+    """
     for path in INDEX_FIXTURES:
         if path.parent.name not in ("team-profiles", "player-profiles"):
             continue
         fixture = _load(path)
-        assert fixture["matches"], f"{path.name} has no per-match breakdown"
-        for row in fixture["matches"]:
+        rows = fixture["matches"]
+        played = (fixture["appearances"]["played"] if path.parent.name == "player-profiles"
+                  else fixture["record"]["played"])
+        assert len(rows) == played, (
+            f"{path.name}: {len(rows)} per-match row(s) against played={played} — a profile "
+            f"that played must not have a silently empty breakdown, and one that did not "
+            f"must not invent rows"
+        )
+        for row in rows:
             assert MATCH_ID_RE.match(row["matchId"]), f"{path.name}: bad matchId"
 
 
@@ -829,8 +848,18 @@ def test_domain_g_player_totals_reconcile_with_the_domain_b_team_totals(path: Pa
     across its player rows. Domain B is read off the report and Domain G is synthetic, so the
     synthetic side is what must add up. A developer who spots the discrepancy cannot tell
     whether it is their bug or the fixture's.
+
+    **Re-scoped by Story 1.18 (FR-1), following the `passNetworkNodes` precedent exactly.**
+    `players` is `anyOf [array, null]` — "Per-player Domain G records, or null when the
+    report does not carry the per-player pages at all" — and FR-1 adds the fixture that
+    exercises the null branch. A bundle with no per-player pages has nothing to reconcile,
+    so the reconciliation SKIPS on null and still applies when `players` is a list,
+    including `[]`. Skipping is exactly how an invariant stops being enforced without
+    anyone noticing, so the empty-list case stays a failure rather than joining the skip.
     """
     bundle = _load(path)
+    if bundle["players"] is None:
+        pytest.skip(f"{path.name} carries no per-player pages (players: null)")
     stats = bundle["keyStatistics"]
     pairs = [
         ("inPossession", "passesAttempted", "passes"),
@@ -841,7 +870,7 @@ def test_domain_g_player_totals_reconcile_with_the_domain_b_team_totals(path: Pa
     ]
     for side in ("home", "away"):
         team_id = bundle["metadata"][f"{side}Team"]["teamId"]
-        squad = [p for p in bundle["players"] or [] if p["teamId"] == team_id]
+        squad = [p for p in bundle["players"] if p["teamId"] == team_id]
         assert squad, f"{path.name}: no player records for {team_id}"
         for block, field, team_field in pairs:
             total = sum(p[block][field] for p in squad)
@@ -866,6 +895,29 @@ def test_domain_g_player_totals_reconcile_with_the_domain_b_team_totals(path: Pa
             f"{path.name}/{side}: players cover {metres / 1000:.2f} km, "
             f"Key Statistics says {stats[side]['distanceCovered']} km"
         )
+
+
+def test_the_players_null_skip_does_not_silently_disable_the_domain_g_reconciliation() -> None:
+    """A skip is exactly how an invariant stops being enforced without anyone noticing.
+
+    Story 1.18 added a `players: null` fixture and made the reconciliation above skip on it.
+    That is only safe while the invariant still RUNS somewhere, so this pins both halves:
+    at least one fixture carries a populated `players` block and is therefore reconciled,
+    and the skip fires on exactly one — the FR-1 branch-coverage bundle — rather than
+    quietly spreading.
+    """
+    populated = [p for p in MATCH_FIXTURES if _load(p)["players"]]
+    null_valued = [p for p in MATCH_FIXTURES if _load(p)["players"] is None]
+    assert len(populated) >= 3, (
+        f"only {len(populated)} fixture(s) still exercise the Domain G reconciliation"
+    )
+    assert [p.name for p in null_valued] == ["m082-belgium-senegal.json"], (
+        f"the players-null skip now covers {[p.name for p in null_valued]}; every added "
+        f"file removes a bundle from the reconciliation"
+    )
+    assert not [p for p in MATCH_FIXTURES if _load(p)["players"] == []], (
+        "an EMPTY players list is not the null branch and must stay reconciled"
+    )
 
 
 @pytest.mark.parametrize("path", MATCH_FIXTURES, ids=lambda p: p.name)
@@ -1018,7 +1070,16 @@ def test_the_team_profile_record_matches_its_own_per_match_rows() -> None:
         assert record["goalsFor"] == sum(r["goalsFor"] for r in rows)
         assert record["goalsAgainst"] == sum(r["goalsAgainst"] for r in rows)
         assert record["goalDifference"] == record["goalsFor"] - record["goalsAgainst"]
-        assert record["points"] == record["won"] * 3 + record["drawn"]
+        # **Corrected by Story 1.18.** This asserted `won * 3 + drawn` over ALL rows, which
+        # contradicts the schema's own `TournamentRecord` description — "`points` counts
+        # group-stage points only; knockout ties award none" — and is wrong on 19 of the 48
+        # real teams (Mexico: 12 by the old form, 9 by the contract). The old fixture had
+        # three group rows and nothing else, so both readings agreed and the conflict was
+        # invisible until the fixture was regenerated from real data.
+        assert record["points"] == sum(
+            3 if r["result"] == "win" else 1 if r["result"] == "draw" else 0
+            for r in rows if r["stage"] == "group"
+        ), f"{path.name}: points must count group-stage rows only"
         stages = {r["stage"] for r in rows}
         if record["furthestStage"] == "group":
             assert stages == {"group"}, f"{path.name}: furthestStage group but rows {stages}"
@@ -1039,13 +1100,20 @@ def test_the_player_profile_aggregates_equal_their_own_aggregation() -> None:
             continue
         profile = _load(path)
         rows = profile["matches"]
-        assert rows, f"{path.name} has no per-match breakdown"
+        # Relaxed by Story 1.18 (FR-1) for the same reason as
+        # `test_profile_per_match_rows_link_back_to_a_match` above: a zero-appearance
+        # player is 16.7% of the artifacts and carries `matches: []` by ruling. The
+        # identities below all hold vacuously and correctly at zero — `sum([]) == 0`,
+        # `max` is guarded — so the arithmetic still runs rather than being skipped.
+        assert len(rows) == profile["appearances"]["played"], (
+            f"{path.name}: per-match rows disagree with appearances.played"
+        )
         physical = profile["physical"]
         assert abs(physical["totalDistance"] - sum(r["totalDistance"] for r in rows)) < 0.05, (
             f"{path.name}: totalDistance {physical['totalDistance']} != the row sum "
             f"{sum(r['totalDistance'] for r in rows):.1f}"
         )
-        assert physical["topSpeed"] == max(r["topSpeed"] for r in rows), (
+        assert physical["topSpeed"] == max((r["topSpeed"] for r in rows), default=0.0), (
             f"{path.name}: topSpeed is not the maximum over the per-match rows"
         )
         appearances = profile["appearances"]
@@ -1064,6 +1132,16 @@ def test_leaderboard_rows_agree_with_the_profiles_and_standings_they_duplicate()
     Every board row said `matchesPlayed: 1` while the standings and the team profile both
     said 3, and Mexico's possession value was one match's figure presented as a tournament
     average.
+
+    **It happened a second time, and this test did not catch it** — Story 1.18's code review
+    found `distanceCovered` for `mexico` still carrying `315.0`, the old synthetic three-match
+    sum, after the profile was regenerated to five real matches: neither the new sum (563.8)
+    nor the group-only one (338.5). The board was patched on exactly the two values compared
+    below (`possession`, `topSpeed`) and nothing else, and `matchesPlayed` was compared
+    against the STANDINGS — a group-only denominator — so a five-match figure sat against a
+    three-match count inside the test meant to prevent that. Hence the per-metric value
+    checks now cover every board this fixture set carries, and `matchesPlayed` is compared
+    against whichever profile is authoritative.
     """
     boards = _load(FIXTURES_DIR / "index" / "leaderboards.json")
     tournament = _load(FIXTURES_DIR / "index" / "tournament.json")
@@ -1085,11 +1163,40 @@ def test_leaderboard_rows_agree_with_the_profiles_and_standings_they_duplicate()
     for board in boards["boards"]:
         for row in board["rows"]:
             team_id = row["team"]["id"]
-            if team_id in played:
-                assert row["matchesPlayed"] == played[team_id], (
-                    f"{board['metricCode']}: {team_id} played {row['matchesPlayed']} on the "
-                    f"board and {played[team_id]} in the standings"
-                )
+            # **`matchesPlayed` is TOURNAMENT-wide; the standings' `played` is GROUP-only.**
+            # This used to assert the two were equal, which holds only for a team eliminated
+            # in the group stage and silently encoded the wrong invariant: `StandingsRow` is
+            # "one team's row in a group table", while a board ranks the whole tournament.
+            # The equality passed for as long as no fixture team reached the knockouts, and
+            # it broke the moment Story 1.18 regenerated Mexico's profile from the real
+            # corpus (5 matches = 3 group + 2 knockout). Compare against the PROFILE, which
+            # is the authority for a tournament-wide count, and keep the standings as the
+            # honest lower bound for teams that have no profile here.
+            # **Scope decides whose count `matchesPlayed` is.** On a player board `team` names
+            # the player's team but the count is the PLAYER's appearances, so comparing it to
+            # the team's record is a category error — Mexico's players appear on the topSpeed
+            # board with their own, smaller counts.
+            if board["scope"] == "team":
+                team_profile = profiles.get(team_id)
+                if team_profile is not None:
+                    assert row["matchesPlayed"] == team_profile["record"]["played"], (
+                        f"{board['metricCode']}: {team_id} played {row['matchesPlayed']} on "
+                        f"the board and {team_profile['record']['played']} in its own profile"
+                    )
+                if team_id in played:
+                    assert row["matchesPlayed"] >= played[team_id], (
+                        f"{board['metricCode']}: {team_id} played {row['matchesPlayed']} on "
+                        f"the board, fewer than the {played[team_id]} group matches the "
+                        f"standings record — a team plays at least its group stage"
+                    )
+            elif board["scope"] == "player":
+                player_profile = players.get(row["entity"]["id"])
+                if player_profile is not None:
+                    assert row["matchesPlayed"] == player_profile["appearances"]["played"], (
+                        f"{board['metricCode']}: {row['entity']['id']} played "
+                        f"{row['matchesPlayed']} on the board and "
+                        f"{player_profile['appearances']['played']} in its own profile"
+                    )
             if board["aggregation"] == "max":
                 assert row["perMatch"] is None, (
                     f"{board['metricCode']}: a maximum has no meaningful per-match rate"
@@ -1104,6 +1211,15 @@ def test_leaderboard_rows_agree_with_the_profiles_and_standings_they_duplicate()
                 assert row["value"] == profile["tacticalIdentity"]["possession"], (
                     f"possession board says {row['value']} for {row['entity']['id']}, "
                     f"its profile says {profile['tacticalIdentity']['possession']}"
+                )
+            # The board that went stale precisely because nothing compared it. `value` is a
+            # SUM over the team's matches, so it is re-derived from the profile's own rows
+            # rather than read from another aggregate.
+            if profile and board["metricCode"] == "distanceCovered":
+                expected = round(sum(r["distanceCovered"] for r in profile["matches"]), 1)
+                assert abs(row["value"] - expected) < 0.05, (
+                    f"distanceCovered board says {row['value']} for {row['entity']['id']}, "
+                    f"its profile's own match rows sum to {expected}"
                 )
             player = players.get(row["entity"]["id"])
             if player and board["metricCode"] == "topSpeed":

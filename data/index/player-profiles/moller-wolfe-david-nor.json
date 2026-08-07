@@ -1,0 +1,397 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.66,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.21,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.45,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.42,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 108.08,
+      "value": 520
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.04,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 9.56,
+      "value": 46
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 87.1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 33.67,
+      "value": 162
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.95,
+      "value": 19
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 44.9,
+      "value": 216
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.62,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.62,
+      "value": 3
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 1.04,
+      "value": 5
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 33.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10099.58,
+      "value": 48590.2
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 433,
+    "played": 5,
+    "started": 5,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 4,
+      "date": "2026-06-16",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m018-iraq-norway",
+      "minutesPlayed": 73,
+      "opponent": {
+        "id": "iraq",
+        "name": "Iraq"
+      },
+      "passCompletion": 89.0,
+      "passesAttempted": 45,
+      "passesCompleted": 40,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 33.4,
+      "totalDistance": 7988.3
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-22",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m041-norway-senegal",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "senegal",
+        "name": "Senegal"
+      },
+      "passCompletion": 84.0,
+      "passesAttempted": 25,
+      "passesCompleted": 21,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.2,
+      "totalDistance": 10986.1
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 3,
+      "date": "2026-06-30",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m078-cote-d-ivoire-norway",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 89.0,
+      "passesAttempted": 45,
+      "passesCompleted": 40,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 32.7,
+      "totalDistance": 10187.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-05",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m091-brazil-norway",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "brazil",
+        "name": "Brazil"
+      },
+      "passCompletion": 86.0,
+      "passesAttempted": 44,
+      "passesCompleted": 38,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 30.2,
+      "totalDistance": 10583.2
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-11",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m099-norway-england",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 85.0,
+      "passesAttempted": 27,
+      "passesCompleted": 23,
+      "stage": "qf",
+      "started": true,
+      "topSpeed": 32.0,
+      "totalDistance": 8845.1
+    }
+  ],
+  "name": "David MOLLER WOLFE",
+  "physical": {
+    "distanceZone1": 17461.9,
+    "distanceZone2": 21265.9,
+    "distanceZone3": 5915.8,
+    "distanceZone4": 2537.3,
+    "distanceZone5": 1409.1,
+    "highSpeedRuns": 520,
+    "sprints": 216,
+    "topSpeed": 33.4,
+    "totalDistance": 48590.2
+  },
+  "playerId": "moller-wolfe-david-nor",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 5,
+  "team": {
+    "id": "norway",
+    "name": "Norway"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 4
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 1
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 3
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 0
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 0
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 0
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 89.0
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 84.0
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 89.0
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 86.0
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 85.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 40
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 21
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 40
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 38
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 23
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 33.4
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 32.2
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 32.7
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 30.2
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 32.0
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m018-iraq-norway",
+          "value": 7988.3
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 10986.1
+        },
+        {
+          "matchId": "m078-cote-d-ivoire-norway",
+          "value": 10187.5
+        },
+        {
+          "matchId": "m091-brazil-norway",
+          "value": 10583.2
+        },
+        {
+          "matchId": "m099-norway-england",
+          "value": 8845.1
+        }
+      ]
+    }
+  ]
+}

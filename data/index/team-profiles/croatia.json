@@ -1,0 +1,178 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-2-3-1",
+      "matches": 3,
+      "share": 75.0
+    },
+    {
+      "formation": "3-4-3",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "l",
+  "matches": [
+    {
+      "date": "2026-06-17",
+      "distanceCovered": 113.7,
+      "expectedGoals": 0.82,
+      "formation": "3-4-3",
+      "goalsAgainst": 4,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m022-england-croatia",
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 87.0,
+      "possession": 43.5,
+      "result": "loss",
+      "shots": 10,
+      "shotsOnTarget": 5,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-23",
+      "distanceCovered": 110.0,
+      "expectedGoals": 0.82,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m046-panama-croatia",
+      "opponent": {
+        "id": "panama",
+        "name": "Panama"
+      },
+      "passCompletion": 86.0,
+      "possession": 52.5,
+      "result": "win",
+      "shots": 6,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-27",
+      "distanceCovered": 110.5,
+      "expectedGoals": 0.48,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m068-croatia-ghana",
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 91.0,
+      "possession": 50.8,
+      "result": "win",
+      "shots": 8,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-07-02",
+      "distanceCovered": 118.1,
+      "expectedGoals": 1.17,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m083-portugal-croatia",
+      "opponent": {
+        "id": "portugal",
+        "name": "Portugal"
+      },
+      "passCompletion": 85.0,
+      "possession": 37.8,
+      "result": "loss",
+      "shots": 13,
+      "shotsOnTarget": 6,
+      "stage": "r32"
+    }
+  ],
+  "name": "Croatia",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "r32",
+    "goalDifference": -1,
+    "goalsAgainst": 7,
+    "goalsFor": 6,
+    "lost": 2,
+    "played": 4,
+    "points": 6,
+    "won": 2
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 4.5,
+      "low": 21.5,
+      "mid": 28.0
+    },
+    "phasesInPossession": {
+      "attackingTransition": 12.8,
+      "buildUpOpposed": 16.0,
+      "buildUpUnopposed": 39.2,
+      "counterAttack": 1.2,
+      "finalThird": 12.8,
+      "longBall": 4.0,
+      "progression": 16.0,
+      "setPiece": 5.8
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 8.5,
+      "defensiveTransition": 12.0,
+      "highBlock": 4.5,
+      "highPress": 5.2,
+      "lowBlock": 21.5,
+      "lowPress": 0.2,
+      "midBlock": 28.0,
+      "midPress": 4.0,
+      "recovery": 5.2
+    },
+    "possession": 46.1,
+    "pressingIntensity": 252.8,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 17.5,
+          "teamLength": 39.0,
+          "teamWidth": 54.0
+        },
+        "buildUpMid": {
+          "lineHeight": 42.5,
+          "teamLength": 31.0,
+          "teamWidth": 54.5
+        },
+        "finalThirdPhase": {
+          "lineHeight": 56.2,
+          "teamLength": 33.2,
+          "teamWidth": 45.0
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.5,
+          "teamLength": 36.0,
+          "teamWidth": 40.8
+        },
+        "lowBlock": {
+          "lineHeight": 19.8,
+          "teamLength": 19.2,
+          "teamWidth": 37.2
+        },
+        "midBlock": {
+          "lineHeight": 36.5,
+          "teamLength": 23.2,
+          "teamWidth": 41.5
+        }
+      }
+    }
+  },
+  "teamCode": "cro",
+  "teamId": "croatia"
+}

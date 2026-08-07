@@ -1,0 +1,532 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.5,
+      "value": 10
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.3,
+      "value": 2
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 1.79,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 124.68,
+      "value": 834
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.9,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 12.26,
+      "value": 82
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 89.0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 46.94,
+      "value": 314
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 3.59,
+      "value": 24
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 48.29,
+      "value": 323
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 0.9,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.6,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.6,
+      "value": 4
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 32.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10462.32,
+      "value": 69981.3
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 602,
+    "played": 8,
+    "started": 7,
+    "substituteAppearances": 1
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-16",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m017-france-senegal",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "senegal",
+        "name": "Senegal"
+      },
+      "passCompletion": 86.0,
+      "passesAttempted": 64,
+      "passesCompleted": 55,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 31.0,
+      "totalDistance": 11434.7
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 3,
+      "date": "2026-06-22",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m042-france-iraq",
+      "minutesPlayed": 83,
+      "opponent": {
+        "id": "iraq",
+        "name": "Iraq"
+      },
+      "passCompletion": 91.0,
+      "passesAttempted": 45,
+      "passesCompleted": 41,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 29.7,
+      "totalDistance": 9145.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-26",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m061-norway-france",
+      "minutesPlayed": 87,
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 57,
+      "passesCompleted": 50,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 32.8,
+      "totalDistance": 9583.8
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-06-30",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m077-france-sweden",
+      "minutesPlayed": 75,
+      "opponent": {
+        "id": "sweden",
+        "name": "Sweden"
+      },
+      "passCompletion": 92.0,
+      "passesAttempted": 37,
+      "passesCompleted": 34,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 30.3,
+      "totalDistance": 8335.5
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 4,
+      "date": "2026-07-04",
+      "duelsWonAerial": 2,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m089-paraguay-france",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "paraguay",
+        "name": "Paraguay"
+      },
+      "passCompletion": 94.0,
+      "passesAttempted": 64,
+      "passesCompleted": 60,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 31.7,
+      "totalDistance": 10294.3
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-07-09",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m097-france-morocco",
+      "minutesPlayed": 87,
+      "opponent": {
+        "id": "morocco",
+        "name": "Morocco"
+      },
+      "passCompletion": 95.0,
+      "passesAttempted": 40,
+      "passesCompleted": 38,
+      "stage": "qf",
+      "started": true,
+      "topSpeed": 30.3,
+      "totalDistance": 9302.2
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-07-14",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m101-france-spain",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 76.0,
+      "passesAttempted": 42,
+      "passesCompleted": 32,
+      "stage": "sf",
+      "started": true,
+      "topSpeed": 30.7,
+      "totalDistance": 10876.4
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-07-18",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m103-france-england",
+      "minutesPlayed": 0,
+      "opponent": {
+        "id": "england",
+        "name": "England"
+      },
+      "passCompletion": 100.0,
+      "passesAttempted": 4,
+      "passesCompleted": 4,
+      "stage": "third-place",
+      "started": false,
+      "topSpeed": 28.5,
+      "totalDistance": 1008.9
+    }
+  ],
+  "name": "Jules KOUNDE",
+  "physical": {
+    "distanceZone1": 26411.2,
+    "distanceZone2": 28285.5,
+    "distanceZone3": 9381.0,
+    "distanceZone4": 4360.9,
+    "distanceZone5": 1542.8,
+    "highSpeedRuns": 834,
+    "sprints": 323,
+    "topSpeed": 32.8,
+    "totalDistance": 69981.3
+  },
+  "playerId": "kounde-jules-fra",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 5,
+  "team": {
+    "id": "france",
+    "name": "France"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 0
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 3
+        },
+        {
+          "matchId": "m061-norway-france",
+          "value": 0
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 1
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 4
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 1
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 1
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 0
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 0
+        },
+        {
+          "matchId": "m061-norway-france",
+          "value": 0
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 0
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 0
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 0
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 0
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 86.0
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 91.0
+        },
+        {
+          "matchId": "m061-norway-france",
+          "value": 88.0
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 92.0
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 94.0
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 95.0
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 76.0
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 100.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 55
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 41
+        },
+        {
+          "matchId": "m061-norway-france",
+          "value": 50
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 34
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 60
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 38
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 32
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 31.0
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 29.7
+        },
+        {
+          "matchId": "m061-norway-france",
+          "value": 32.8
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 30.3
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 31.7
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 30.3
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 30.7
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 28.5
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 11434.7
+        },
+        {
+          "matchId": "m042-france-iraq",
+          "value": 9145.5
+        },
+        {
+          "matchId": "m061-norway-france",
+          "value": 9583.8
+        },
+        {
+          "matchId": "m077-france-sweden",
+          "value": 8335.5
+        },
+        {
+          "matchId": "m089-paraguay-france",
+          "value": 10294.3
+        },
+        {
+          "matchId": "m097-france-morocco",
+          "value": 9302.2
+        },
+        {
+          "matchId": "m101-france-spain",
+          "value": 10876.4
+        },
+        {
+          "matchId": "m103-france-england",
+          "value": 1008.9
+        }
+      ]
+    }
+  ]
+}

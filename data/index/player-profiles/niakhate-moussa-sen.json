@@ -1,0 +1,352 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.38,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.23,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 2.77,
+      "value": 12
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.23,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 89.08,
+      "value": 386
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 0.92,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 15.92,
+      "value": 69
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 93.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 62.54,
+      "value": 271
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 5.54,
+      "value": 24
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 27.46,
+      "value": 119
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.38,
+      "value": 6
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 0.92,
+      "value": 4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.23,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 30.9
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 9833.47,
+      "value": 42611.7
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 390,
+    "played": 4,
+    "started": 4,
+    "substituteAppearances": 0
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 3,
+      "date": "2026-06-16",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 1,
+      "goals": 0,
+      "matchId": "m017-france-senegal",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 93.0,
+      "passesAttempted": 81,
+      "passesCompleted": 75,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.8,
+      "totalDistance": 10063.2
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-22",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m041-norway-senegal",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 91.0,
+      "passesAttempted": 66,
+      "passesCompleted": 60,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.9,
+      "totalDistance": 9351.4
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 0,
+      "date": "2026-06-26",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m062-senegal-iraq",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "iraq",
+        "name": "Iraq"
+      },
+      "passCompletion": 92.0,
+      "passesAttempted": 65,
+      "passesCompleted": 60,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 27.4,
+      "totalDistance": 10089.4
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 2,
+      "date": "2026-07-01",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m082-belgium-senegal",
+      "minutesPlayed": 120,
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 97.0,
+      "passesAttempted": 78,
+      "passesCompleted": 76,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 29.1,
+      "totalDistance": 13107.7
+    }
+  ],
+  "name": "Moussa NIAKHATE",
+  "physical": {
+    "distanceZone1": 16791.2,
+    "distanceZone2": 19471.4,
+    "distanceZone3": 4524.9,
+    "distanceZone4": 1446.4,
+    "distanceZone5": 377.8,
+    "highSpeedRuns": 386,
+    "sprints": 119,
+    "topSpeed": 30.9,
+    "totalDistance": 42611.7
+  },
+  "playerId": "niakhate-moussa-sen",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 19,
+  "team": {
+    "id": "senegal",
+    "name": "Senegal"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 3
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 1
+        },
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 0
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 0
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 0
+        },
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 0
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 93.0
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 91.0
+        },
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 92.0
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 97.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 75
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 60
+        },
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 60
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 76
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 30.8
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 30.9
+        },
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 27.4
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 29.1
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m017-france-senegal",
+          "value": 10063.2
+        },
+        {
+          "matchId": "m041-norway-senegal",
+          "value": 9351.4
+        },
+        {
+          "matchId": "m062-senegal-iraq",
+          "value": 10089.4
+        },
+        {
+          "matchId": "m082-belgium-senegal",
+          "value": 13107.7
+        }
+      ]
+    }
+  ]
+}

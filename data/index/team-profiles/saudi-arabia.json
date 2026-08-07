@@ -1,0 +1,158 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-4-2",
+      "matches": 2,
+      "share": 66.7
+    },
+    {
+      "formation": "5-4-1",
+      "matches": 1,
+      "share": 33.3
+    }
+  ],
+  "group": "h",
+  "matches": [
+    {
+      "date": "2026-06-15",
+      "distanceCovered": 109.5,
+      "expectedGoals": 1.06,
+      "formation": "4-4-2",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m013-saudi-arabia-uruguay",
+      "opponent": {
+        "id": "uruguay",
+        "name": "Uruguay"
+      },
+      "passCompletion": 73.0,
+      "possession": 27.1,
+      "result": "draw",
+      "shots": 7,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-21",
+      "distanceCovered": 115.0,
+      "expectedGoals": 0.11,
+      "formation": "5-4-1",
+      "goalsAgainst": 4,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m038-spain-saudi-arabia",
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 79.0,
+      "possession": 30.0,
+      "result": "loss",
+      "shots": 3,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-26",
+      "distanceCovered": 113.9,
+      "expectedGoals": 0.35,
+      "formation": "4-4-2",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m065-cabo-verde-saudi-arabia",
+      "opponent": {
+        "id": "cabo-verde",
+        "name": "Cabo Verde"
+      },
+      "passCompletion": 81.0,
+      "possession": 41.9,
+      "result": "draw",
+      "shots": 7,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    }
+  ],
+  "name": "Saudi Arabia",
+  "record": {
+    "drawn": 2,
+    "furthestStage": "group",
+    "goalDifference": -4,
+    "goalsAgainst": 5,
+    "goalsFor": 1,
+    "lost": 1,
+    "played": 3,
+    "points": 2,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 4.3,
+      "low": 30.7,
+      "mid": 24.3
+    },
+    "phasesInPossession": {
+      "attackingTransition": 19.0,
+      "buildUpOpposed": 12.0,
+      "buildUpUnopposed": 29.3,
+      "counterAttack": 1.7,
+      "finalThird": 10.0,
+      "longBall": 6.0,
+      "progression": 15.7,
+      "setPiece": 7.3
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 9.0,
+      "defensiveTransition": 12.3,
+      "highBlock": 4.3,
+      "highPress": 4.0,
+      "lowBlock": 30.7,
+      "lowPress": 0.0,
+      "midBlock": 24.3,
+      "midPress": 3.0,
+      "recovery": 5.0
+    },
+    "possession": 33.0,
+    "pressingIntensity": 345.0,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 17.0,
+          "teamLength": 38.0,
+          "teamWidth": 51.7
+        },
+        "buildUpMid": {
+          "lineHeight": 40.0,
+          "teamLength": 33.0,
+          "teamWidth": 54.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 53.7,
+          "teamLength": 36.0,
+          "teamWidth": 43.3
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.0,
+          "teamLength": 36.3,
+          "teamWidth": 39.3
+        },
+        "lowBlock": {
+          "lineHeight": 17.0,
+          "teamLength": 19.7,
+          "teamWidth": 33.3
+        },
+        "midBlock": {
+          "lineHeight": 38.0,
+          "teamLength": 25.3,
+          "teamWidth": 38.0
+        }
+      }
+    }
+  },
+  "teamCode": "ksa",
+  "teamId": "saudi-arabia"
+}

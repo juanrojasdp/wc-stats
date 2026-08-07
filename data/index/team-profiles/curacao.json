@@ -1,0 +1,163 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 1,
+      "share": 33.3
+    },
+    {
+      "formation": "5-3-2",
+      "matches": 1,
+      "share": 33.3
+    },
+    {
+      "formation": "5-4-1",
+      "matches": 1,
+      "share": 33.3
+    }
+  ],
+  "group": "e",
+  "matches": [
+    {
+      "date": "2026-06-14",
+      "distanceCovered": 103.5,
+      "expectedGoals": 0.4,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 7,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m010-germany-curacao",
+      "opponent": {
+        "id": "germany",
+        "name": "Germany"
+      },
+      "passCompletion": 80.0,
+      "possession": 35.3,
+      "result": "loss",
+      "shots": 8,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-20",
+      "distanceCovered": 106.1,
+      "expectedGoals": 0.63,
+      "formation": "5-3-2",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m034-ecuador-curacao",
+      "opponent": {
+        "id": "ecuador",
+        "name": "Ecuador"
+      },
+      "passCompletion": 70.0,
+      "possession": 23.4,
+      "result": "draw",
+      "shots": 10,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 106.2,
+      "expectedGoals": 0.66,
+      "formation": "5-4-1",
+      "goalsAgainst": 2,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m055-curacao-cote-d-ivoire",
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 85.0,
+      "possession": 37.9,
+      "result": "loss",
+      "shots": 11,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    }
+  ],
+  "name": "Curaçao",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "group",
+    "goalDifference": -8,
+    "goalsAgainst": 9,
+    "goalsFor": 1,
+    "lost": 2,
+    "played": 3,
+    "points": 1,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 2.3,
+      "low": 36.7,
+      "mid": 23.7
+    },
+    "phasesInPossession": {
+      "attackingTransition": 20.3,
+      "buildUpOpposed": 11.3,
+      "buildUpUnopposed": 24.7,
+      "counterAttack": 2.3,
+      "finalThird": 10.7,
+      "longBall": 6.3,
+      "progression": 16.3,
+      "setPiece": 6.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 8.3,
+      "defensiveTransition": 11.0,
+      "highBlock": 2.3,
+      "highPress": 2.7,
+      "lowBlock": 36.7,
+      "lowPress": 0.7,
+      "midBlock": 23.7,
+      "midPress": 3.7,
+      "recovery": 2.0
+    },
+    "possession": 32.2,
+    "pressingIntensity": 327.7,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 17.3,
+          "teamLength": 38.0,
+          "teamWidth": 47.3
+        },
+        "buildUpMid": {
+          "lineHeight": 39.3,
+          "teamLength": 32.7,
+          "teamWidth": 51.3
+        },
+        "finalThirdPhase": {
+          "lineHeight": 53.0,
+          "teamLength": 37.3,
+          "teamWidth": 39.7
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 49.0,
+          "teamLength": 38.0,
+          "teamWidth": 38.7
+        },
+        "lowBlock": {
+          "lineHeight": 18.7,
+          "teamLength": 24.7,
+          "teamWidth": 36.0
+        },
+        "midBlock": {
+          "lineHeight": 36.0,
+          "teamLength": 23.7,
+          "teamWidth": 40.7
+        }
+      }
+    }
+  },
+  "teamCode": "cuw",
+  "teamId": "curacao"
+}

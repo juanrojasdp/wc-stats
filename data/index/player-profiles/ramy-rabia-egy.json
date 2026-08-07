@@ -1,0 +1,397 @@
+{
+  "aggregates": [
+    {
+      "aggregation": "sum",
+      "metricCode": "ballProgressions",
+      "perNinety": 1.96,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "crossesCompleted",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonAerial",
+      "perNinety": 3.42,
+      "value": 14
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "duelsWonPhysical",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "goals",
+      "perNinety": 0.0,
+      "value": 0
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "highSpeedRuns",
+      "perNinety": 106.39,
+      "value": 435
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "interceptions",
+      "perNinety": 1.22,
+      "value": 5
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "lineBreaksCompleted",
+      "perNinety": 9.05,
+      "value": 37
+    },
+    {
+      "aggregation": "average",
+      "metricCode": "passCompletion",
+      "perNinety": null,
+      "value": 91.8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "passesCompleted",
+      "perNinety": 54.78,
+      "value": 224
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "possessionRegains",
+      "perNinety": 5.14,
+      "value": 21
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "sprints",
+      "perNinety": 31.3,
+      "value": 128
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "stepIns",
+      "perNinety": 1.71,
+      "value": 7
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "switchesOfPlay",
+      "perNinety": 1.96,
+      "value": 8
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "tacklesWon",
+      "perNinety": 0.24,
+      "value": 1
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "takeOns",
+      "perNinety": 0.24,
+      "value": 1
+    },
+    {
+      "aggregation": "max",
+      "metricCode": "topSpeed",
+      "perNinety": null,
+      "value": 31.4
+    },
+    {
+      "aggregation": "sum",
+      "metricCode": "totalDistance",
+      "perNinety": 10010.59,
+      "value": 40932.2
+    }
+  ],
+  "appearances": {
+    "minutesPlayed": 368,
+    "played": 5,
+    "started": 3,
+    "substituteAppearances": 2
+  },
+  "matches": [
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 1,
+      "date": "2026-06-15",
+      "duelsWonAerial": 0,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m016-belgium-egypt",
+      "minutesPlayed": 19,
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 86.0,
+      "passesAttempted": 22,
+      "passesCompleted": 19,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 31.1,
+      "totalDistance": 2634.9
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 3,
+      "date": "2026-06-21",
+      "duelsWonAerial": 3,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m040-new-zealand-egypt",
+      "minutesPlayed": 49,
+      "opponent": {
+        "id": "new-zealand",
+        "name": "New Zealand"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 32,
+      "passesCompleted": 28,
+      "stage": "group",
+      "started": false,
+      "topSpeed": 31.2,
+      "totalDistance": 6403.0
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 0,
+      "date": "2026-06-26",
+      "duelsWonAerial": 4,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m063-egypt-ir-iran",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "ir-iran",
+        "name": "IR Iran"
+      },
+      "passCompletion": 98.0,
+      "passesAttempted": 81,
+      "passesCompleted": 79,
+      "stage": "group",
+      "started": true,
+      "topSpeed": 30.5,
+      "totalDistance": 10121.2
+    },
+    {
+      "attemptsAtGoal": 1,
+      "ballProgressions": 1,
+      "date": "2026-07-03",
+      "duelsWonAerial": 6,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m088-australia-egypt",
+      "minutesPlayed": 120,
+      "opponent": {
+        "id": "australia",
+        "name": "Australia"
+      },
+      "passCompletion": 91.0,
+      "passesAttempted": 76,
+      "passesCompleted": 69,
+      "stage": "r32",
+      "started": true,
+      "topSpeed": 29.8,
+      "totalDistance": 12418.7
+    },
+    {
+      "attemptsAtGoal": 0,
+      "ballProgressions": 3,
+      "date": "2026-07-07",
+      "duelsWonAerial": 1,
+      "duelsWonPhysical": 0,
+      "goals": 0,
+      "matchId": "m095-argentina-egypt",
+      "minutesPlayed": 90,
+      "opponent": {
+        "id": "argentina",
+        "name": "Argentina"
+      },
+      "passCompletion": 88.0,
+      "passesAttempted": 33,
+      "passesCompleted": 29,
+      "stage": "r16",
+      "started": true,
+      "topSpeed": 31.4,
+      "totalDistance": 9354.4
+    }
+  ],
+  "name": "RAMY RABIA",
+  "physical": {
+    "distanceZone1": 16392.6,
+    "distanceZone2": 17363.0,
+    "distanceZone3": 5106.5,
+    "distanceZone4": 1568.7,
+    "distanceZone5": 501.3,
+    "highSpeedRuns": 435,
+    "sprints": 128,
+    "topSpeed": 31.4,
+    "totalDistance": 40932.2
+  },
+  "playerId": "ramy-rabia-egy",
+  "position": "df",
+  "schemaVersion": 4,
+  "shirtNumber": 5,
+  "team": {
+    "id": "egypt",
+    "name": "Egypt"
+  },
+  "trends": [
+    {
+      "metricCode": "ballProgressions",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 1
+        },
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 3
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 0
+        },
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 1
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "metricCode": "goals",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 0
+        },
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 0
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 0
+        },
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 0
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "metricCode": "passCompletion",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 86.0
+        },
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 88.0
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 98.0
+        },
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 91.0
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 88.0
+        }
+      ]
+    },
+    {
+      "metricCode": "passesCompleted",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 19
+        },
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 28
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 79
+        },
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 69
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 29
+        }
+      ]
+    },
+    {
+      "metricCode": "topSpeed",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 31.1
+        },
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 31.2
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 30.5
+        },
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 29.8
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 31.4
+        }
+      ]
+    },
+    {
+      "metricCode": "totalDistance",
+      "points": [
+        {
+          "matchId": "m016-belgium-egypt",
+          "value": 2634.9
+        },
+        {
+          "matchId": "m040-new-zealand-egypt",
+          "value": 6403.0
+        },
+        {
+          "matchId": "m063-egypt-ir-iran",
+          "value": 10121.2
+        },
+        {
+          "matchId": "m088-australia-egypt",
+          "value": 12418.7
+        },
+        {
+          "matchId": "m095-argentina-egypt",
+          "value": 9354.4
+        }
+      ]
+    }
+  ]
+}

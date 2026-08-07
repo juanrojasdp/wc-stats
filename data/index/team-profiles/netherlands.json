@@ -1,0 +1,183 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 2,
+      "share": 50.0
+    },
+    {
+      "formation": "3-4-3",
+      "matches": 1,
+      "share": 25.0
+    },
+    {
+      "formation": "4-3-3",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "f",
+  "matches": [
+    {
+      "date": "2026-06-14",
+      "distanceCovered": 102.9,
+      "expectedGoals": 0.63,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 2,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m011-netherlands-japan",
+      "opponent": {
+        "id": "japan",
+        "name": "Japan"
+      },
+      "passCompletion": 89.0,
+      "possession": 54.9,
+      "result": "draw",
+      "shots": 10,
+      "shotsOnTarget": 6,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-20",
+      "distanceCovered": 108.4,
+      "expectedGoals": 2.25,
+      "formation": "4-3-3",
+      "goalsAgainst": 1,
+      "goalsFor": 5,
+      "isHome": true,
+      "matchId": "m035-netherlands-sweden",
+      "opponent": {
+        "id": "sweden",
+        "name": "Sweden"
+      },
+      "passCompletion": 89.0,
+      "possession": 48.2,
+      "result": "win",
+      "shots": 10,
+      "shotsOnTarget": 7,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 106.8,
+      "expectedGoals": 1.79,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 1,
+      "goalsFor": 3,
+      "isHome": false,
+      "matchId": "m058-tunisia-netherlands",
+      "opponent": {
+        "id": "tunisia",
+        "name": "Tunisia"
+      },
+      "passCompletion": 93.0,
+      "possession": 64.6,
+      "result": "win",
+      "shots": 20,
+      "shotsOnTarget": 7,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-29",
+      "distanceCovered": 137.6,
+      "expectedGoals": 0.33,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m075-netherlands-morocco",
+      "opponent": {
+        "id": "morocco",
+        "name": "Morocco"
+      },
+      "passCompletion": 78.0,
+      "possession": 31.1,
+      "result": "draw",
+      "shots": 6,
+      "shotsOnTarget": 2,
+      "stage": "r32"
+    }
+  ],
+  "name": "Netherlands",
+  "record": {
+    "drawn": 2,
+    "furthestStage": "r32",
+    "goalDifference": 6,
+    "goalsAgainst": 5,
+    "goalsFor": 11,
+    "lost": 0,
+    "played": 4,
+    "points": 7,
+    "won": 2
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 4.2,
+      "low": 25.8,
+      "mid": 21.8
+    },
+    "phasesInPossession": {
+      "attackingTransition": 11.0,
+      "buildUpOpposed": 15.0,
+      "buildUpUnopposed": 43.0,
+      "counterAttack": 1.0,
+      "finalThird": 17.0,
+      "longBall": 3.0,
+      "progression": 16.2,
+      "setPiece": 6.2
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 8.0,
+      "defensiveTransition": 13.2,
+      "highBlock": 4.2,
+      "highPress": 5.0,
+      "lowBlock": 25.8,
+      "lowPress": 0.5,
+      "midBlock": 21.8,
+      "midPress": 3.0,
+      "recovery": 6.0
+    },
+    "possession": 49.7,
+    "pressingIntensity": 234.8,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 21.5,
+          "teamLength": 38.2,
+          "teamWidth": 51.0
+        },
+        "buildUpMid": {
+          "lineHeight": 46.8,
+          "teamLength": 29.8,
+          "teamWidth": 54.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 60.5,
+          "teamLength": 29.5,
+          "teamWidth": 44.0
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.0,
+          "teamLength": 36.8,
+          "teamWidth": 41.8
+        },
+        "lowBlock": {
+          "lineHeight": 18.0,
+          "teamLength": 20.8,
+          "teamWidth": 36.2
+        },
+        "midBlock": {
+          "lineHeight": 38.0,
+          "teamLength": 23.5,
+          "teamWidth": 41.5
+        }
+      }
+    }
+  },
+  "teamCode": "ned",
+  "teamId": "netherlands"
+}

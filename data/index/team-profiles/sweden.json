@@ -1,0 +1,188 @@
+{
+  "formationUsage": [
+    {
+      "formation": "3-4-1-2",
+      "matches": 1,
+      "share": 25.0
+    },
+    {
+      "formation": "3-4-3",
+      "matches": 1,
+      "share": 25.0
+    },
+    {
+      "formation": "3-5-2",
+      "matches": 1,
+      "share": 25.0
+    },
+    {
+      "formation": "4-4-2",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "f",
+  "matches": [
+    {
+      "date": "2026-06-14",
+      "distanceCovered": 111.3,
+      "expectedGoals": 2.09,
+      "formation": "3-4-1-2",
+      "goalsAgainst": 1,
+      "goalsFor": 5,
+      "isHome": true,
+      "matchId": "m012-sweden-tunisia",
+      "opponent": {
+        "id": "tunisia",
+        "name": "Tunisia"
+      },
+      "passCompletion": 81.0,
+      "possession": 47.4,
+      "result": "win",
+      "shots": 13,
+      "shotsOnTarget": 7,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-20",
+      "distanceCovered": 110.1,
+      "expectedGoals": 1.3,
+      "formation": "3-5-2",
+      "goalsAgainst": 5,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m035-netherlands-sweden",
+      "opponent": {
+        "id": "netherlands",
+        "name": "Netherlands"
+      },
+      "passCompletion": 86.0,
+      "possession": 43.3,
+      "result": "loss",
+      "shots": 16,
+      "shotsOnTarget": 8,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 111.1,
+      "expectedGoals": 0.56,
+      "formation": "3-4-3",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m057-japan-sweden",
+      "opponent": {
+        "id": "japan",
+        "name": "Japan"
+      },
+      "passCompletion": 80.0,
+      "possession": 44.6,
+      "result": "draw",
+      "shots": 11,
+      "shotsOnTarget": 5,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-30",
+      "distanceCovered": 107.3,
+      "expectedGoals": 0.71,
+      "formation": "4-4-2",
+      "goalsAgainst": 3,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m077-france-sweden",
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 81.0,
+      "possession": 38.0,
+      "result": "loss",
+      "shots": 8,
+      "shotsOnTarget": 3,
+      "stage": "r32"
+    }
+  ],
+  "name": "Sweden",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "r32",
+    "goalDifference": -3,
+    "goalsAgainst": 10,
+    "goalsFor": 7,
+    "lost": 2,
+    "played": 4,
+    "points": 4,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 3.8,
+      "low": 29.5,
+      "mid": 23.8
+    },
+    "phasesInPossession": {
+      "attackingTransition": 14.5,
+      "buildUpOpposed": 12.0,
+      "buildUpUnopposed": 38.2,
+      "counterAttack": 2.2,
+      "finalThird": 14.8,
+      "longBall": 5.2,
+      "progression": 16.0,
+      "setPiece": 7.2
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 9.8,
+      "defensiveTransition": 12.8,
+      "highBlock": 3.8,
+      "highPress": 2.8,
+      "lowBlock": 29.5,
+      "lowPress": 0.5,
+      "midBlock": 23.8,
+      "midPress": 2.2,
+      "recovery": 3.5
+    },
+    "possession": 43.3,
+    "pressingIntensity": 214.8,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 20.0,
+          "teamLength": 39.2,
+          "teamWidth": 54.8
+        },
+        "buildUpMid": {
+          "lineHeight": 42.0,
+          "teamLength": 32.2,
+          "teamWidth": 55.5
+        },
+        "finalThirdPhase": {
+          "lineHeight": 57.8,
+          "teamLength": 34.0,
+          "teamWidth": 40.2
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.8,
+          "teamLength": 37.5,
+          "teamWidth": 40.0
+        },
+        "lowBlock": {
+          "lineHeight": 20.0,
+          "teamLength": 21.2,
+          "teamWidth": 36.0
+        },
+        "midBlock": {
+          "lineHeight": 37.0,
+          "teamLength": 25.5,
+          "teamWidth": 40.0
+        }
+      }
+    }
+  },
+  "teamCode": "swe",
+  "teamId": "sweden"
+}

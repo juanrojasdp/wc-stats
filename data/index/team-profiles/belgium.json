@@ -1,0 +1,213 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-2-3-1",
+      "matches": 6,
+      "share": 100.0
+    }
+  ],
+  "group": "g",
+  "matches": [
+    {
+      "date": "2026-06-15",
+      "distanceCovered": 113.3,
+      "expectedGoals": 1.07,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m016-belgium-egypt",
+      "opponent": {
+        "id": "egypt",
+        "name": "Egypt"
+      },
+      "passCompletion": 87.0,
+      "possession": 45.5,
+      "result": "draw",
+      "shots": 15,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-21",
+      "distanceCovered": 111.7,
+      "expectedGoals": 1.48,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m039-belgium-ir-iran",
+      "opponent": {
+        "id": "ir-iran",
+        "name": "IR Iran"
+      },
+      "passCompletion": 88.0,
+      "possession": 59.2,
+      "result": "draw",
+      "shots": 23,
+      "shotsOnTarget": 7,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-26",
+      "distanceCovered": 119.8,
+      "expectedGoals": 3.99,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 5,
+      "isHome": false,
+      "matchId": "m064-new-zealand-belgium",
+      "opponent": {
+        "id": "new-zealand",
+        "name": "New Zealand"
+      },
+      "passCompletion": 90.0,
+      "possession": 50.1,
+      "result": "win",
+      "shots": 35,
+      "shotsOnTarget": 10,
+      "stage": "group"
+    },
+    {
+      "date": "2026-07-01",
+      "distanceCovered": 160.5,
+      "expectedGoals": 1.74,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 2,
+      "goalsFor": 3,
+      "isHome": true,
+      "matchId": "m082-belgium-senegal",
+      "opponent": {
+        "id": "senegal",
+        "name": "Senegal"
+      },
+      "passCompletion": 87.0,
+      "possession": 48.3,
+      "result": "win",
+      "shots": 19,
+      "shotsOnTarget": 5,
+      "stage": "r32"
+    },
+    {
+      "date": "2026-07-06",
+      "distanceCovered": 117.9,
+      "expectedGoals": 1.99,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 4,
+      "isHome": false,
+      "matchId": "m094-usa-belgium",
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 80.0,
+      "possession": 40.0,
+      "result": "win",
+      "shots": 15,
+      "shotsOnTarget": 7,
+      "stage": "r16"
+    },
+    {
+      "date": "2026-07-10",
+      "distanceCovered": 116.2,
+      "expectedGoals": 0.34,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m098-spain-belgium",
+      "opponent": {
+        "id": "spain",
+        "name": "Spain"
+      },
+      "passCompletion": 79.0,
+      "possession": 31.0,
+      "result": "loss",
+      "shots": 5,
+      "shotsOnTarget": 2,
+      "stage": "qf"
+    }
+  ],
+  "name": "Belgium",
+  "record": {
+    "drawn": 2,
+    "furthestStage": "qf",
+    "goalDifference": 7,
+    "goalsAgainst": 7,
+    "goalsFor": 14,
+    "lost": 1,
+    "played": 6,
+    "points": 5,
+    "won": 3
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 4.8,
+      "low": 21.8,
+      "mid": 24.5
+    },
+    "phasesInPossession": {
+      "attackingTransition": 13.8,
+      "buildUpOpposed": 14.2,
+      "buildUpUnopposed": 33.7,
+      "counterAttack": 1.5,
+      "finalThird": 18.5,
+      "longBall": 5.3,
+      "progression": 16.2,
+      "setPiece": 6.5
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 8.5,
+      "defensiveTransition": 13.0,
+      "highBlock": 4.8,
+      "highPress": 3.8,
+      "lowBlock": 21.8,
+      "lowPress": 0.7,
+      "midBlock": 24.5,
+      "midPress": 3.5,
+      "recovery": 4.8
+    },
+    "possession": 45.7,
+    "pressingIntensity": 263.7,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 19.5,
+          "teamLength": 39.0,
+          "teamWidth": 52.5
+        },
+        "buildUpMid": {
+          "lineHeight": 42.8,
+          "teamLength": 31.7,
+          "teamWidth": 52.7
+        },
+        "finalThirdPhase": {
+          "lineHeight": 59.2,
+          "teamLength": 32.2,
+          "teamWidth": 41.2
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 49.0,
+          "teamLength": 36.3,
+          "teamWidth": 38.8
+        },
+        "lowBlock": {
+          "lineHeight": 17.8,
+          "teamLength": 22.2,
+          "teamWidth": 34.3
+        },
+        "midBlock": {
+          "lineHeight": 37.8,
+          "teamLength": 25.0,
+          "teamWidth": 38.5
+        }
+      }
+    }
+  },
+  "teamCode": "bel",
+  "teamId": "belgium"
+}

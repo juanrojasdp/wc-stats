@@ -18,10 +18,12 @@ green.
 | `matches/m001-mexico-south-africa.json` | Group match; `momentum` series present; `decidedBy: "regulation"` |
 | `matches/m002-korea-republic-czechia.json` | Group match; **`momentum: null`** (the empty state — SYNTHETIC, see below) |
 | `matches/m074-germany-paraguay.json` | Knockout; extra time **and** shoot-out; **own goal**; `ShootoutAttempt` rows |
+| `matches/m082-belgium-senegal.json` | Knockout; `decidedBy: "extra-time"`; **`players: null`**, **`goalkeeping: null`**, null `events.*` beyond `shootoutAttempts`, an empty `[]` event array, `movementType: null`, `CardRecord`s, a `penalty: true` goal (Story 1.18, FR-1) |
 | `index/tournament.json` | Group A standings with `rank` + form, results, entity lists |
 | `index/leaderboards.json` | One team board (×2) and one player board, ranked |
 | `index/team-profiles/mexico.json` | One full team profile |
 | `index/player-profiles/quinones-julian-mex.json` | One full player profile |
+| `index/player-profiles/acevedo-carlos-mex.json` | A **zero-appearance** player: 18 zeroed aggregates, six empty trend series, `matches: []` (Story 1.18) |
 
 Every file is stamped `schemaVersion: 4` and validates against `/contract`. The tests live in
 `pipeline/tests/test_fixtures.py`.
@@ -147,14 +149,15 @@ It is done so that every real number still reconciles:
 
 ## The fixture world is deliberately partial
 
-- **Entity lists name only what has an artifact.** `tournament.json` lists the three fixture
-  matches, the one team with a profile (`mexico`) and the one player with a profile
-  (`quinones-julian-mex`).
+- **Entity lists name only what has an artifact.** `tournament.json` lists the four fixture
+  matches, the one team with a profile (`mexico`) and the two players with profiles
+  (`quinones-julian-mex` and the zero-appearance `acevedo-carlos-mex`).
 - **Standings and lineups reference entities with no profile.** Group A's table ranks all
   four teams; the team sheets name ~50 players. That is intentional and fine. AR-4's
   bijection assert runs against real `/data` in Story 1.17, not against fixtures.
-- **Team and player profiles reference matches with no bundle.** Mexico's profile breaks down
-  all three of its group matches; only `m001` has a bundle here.
+- **Team and player profiles reference matches with no bundle.** Since Story 1.18 regenerated
+  them from the real corpus, Mexico's profile breaks down all **five** of its matches — three
+  group and two knockout — and only `m001` has a bundle here.
 
 What *is* enforced, and tested, is the other direction: every artifact that exists on disk is
 listed in the entity index, so the route manifest never omits a page that has data behind it.
@@ -171,16 +174,42 @@ rows saying `matchesPlayed: 1` where the standings said 3. Epic 2 renders severa
 by side, and a developer who spots a discrepancy cannot tell whether it is their bug or ours.
 
 Every cross-artifact number now reconciles, and each invariant has a test in
-`pipeline/tests/test_fixtures.py` so it stays that way. Two consequences worth knowing:
+`pipeline/tests/test_fixtures.py` so it stays that way.
+
+> **It stopped reconciling once, and the way it broke is the thing to remember.** Story 1.18
+> regenerated `mexico.json` and `quinones-julian-mex.json` from the real corpus, taking Mexico
+> from three synthetic group matches to its five real ones. `leaderboards.json` was then
+> updated on exactly the two values the coupling test reads — `possession` and `topSpeed` —
+> and nothing else, which left the `distanceCovered` row at `315.0`, a figure that was neither
+> the new five-match sum (563.8) nor the group-only three-match sum (338.5): it was the old
+> synthetic world's total, stranded. `matchesPlayed` stayed at 3 on all three rows. The suite
+> was green throughout, because
+> `test_leaderboard_rows_agree_with_the_profiles_and_standings_they_duplicate` compares
+> `matchesPlayed` against the STANDINGS rather than against the profile it is named for, and
+> checks `value` on only two of the boards — so a five-match figure sat against a three-match
+> denominator inside the very test whose purpose is to stop that. Repaired in Story 1.18's
+> code review by moving the whole board to the five-match world. **A partial regeneration is
+> how this file's own bug list gets rewritten; regenerate the cascade or re-scope the source,
+> never patch the two fields a test happens to read.**
+>
+> Note that `tournament.json`'s Group A standings correctly stayed at `played: 3`:
+> `StandingsRow` is "one team's row in a **group table**", so it counts group matches only and
+> reconciles exactly with the three group rows of Mexico's five-match profile. Two different
+> denominators, both right — which is precisely why the leaderboard's was worth checking.
+
+Two consequences worth knowing:
 
 - **Domain G is synthetic but no longer free.** The per-player in/out-of-possession values are
   still invented, but they are scaled so each team's rows sum to that team's *real* printed
   Domain B total. Attempts at goal and goals are taken straight from the real shot events
   rather than scaled at all.
-- **Mexico's `tacticalIdentity` equals `m001`'s.** It is declared a match-count-weighted mean
-  over three matches, and only one of those three has a bundle here, so the two unobserved
-  matches are modelled as identical to the observed one. The mean is therefore correct under a
-  stated assumption rather than a copy passed off as an aggregate.
+- **Mexico's `tacticalIdentity` is a real five-match mean.** It no longer equals `m001`'s.
+  Story 1.18 regenerated the profile from the 104 committed bundles, so every leaf is the
+  genuine per-leaf mean over Mexico's five real matches — `possession` 48.2,
+  `pressingIntensity` 213.0, `shapeByPhase.inPossession.buildUpLow.lineHeight` 19.4 — and four
+  of the five matches it aggregates have no bundle here. It is an observed aggregate now, not
+  a modelled one, which is why it no longer needs the stated assumption this bullet used to
+  carry.
 
 ---
 

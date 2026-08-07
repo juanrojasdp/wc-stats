@@ -1,0 +1,178 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-4-2",
+      "matches": 3,
+      "share": 75.0
+    },
+    {
+      "formation": "3-5-2",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "e",
+  "matches": [
+    {
+      "date": "2026-06-14",
+      "distanceCovered": 108.4,
+      "expectedGoals": 1.36,
+      "formation": "4-4-2",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m009-cote-d-ivoire-ecuador",
+      "opponent": {
+        "id": "cote-d-ivoire",
+        "name": "Côte d'Ivoire"
+      },
+      "passCompletion": 85.0,
+      "possession": 49.9,
+      "result": "loss",
+      "shots": 12,
+      "shotsOnTarget": 1,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-20",
+      "distanceCovered": 103.7,
+      "expectedGoals": 2.76,
+      "formation": "3-5-2",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m034-ecuador-curacao",
+      "opponent": {
+        "id": "curacao",
+        "name": "Curaçao"
+      },
+      "passCompletion": 91.0,
+      "possession": 65.8,
+      "result": "draw",
+      "shots": 27,
+      "shotsOnTarget": 15,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 109.8,
+      "expectedGoals": 1.29,
+      "formation": "4-4-2",
+      "goalsAgainst": 1,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m056-ecuador-germany",
+      "opponent": {
+        "id": "germany",
+        "name": "Germany"
+      },
+      "passCompletion": 84.0,
+      "possession": 39.2,
+      "result": "win",
+      "shots": 7,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-30",
+      "distanceCovered": 105.0,
+      "expectedGoals": 0.47,
+      "formation": "4-4-2",
+      "goalsAgainst": 2,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m079-mexico-ecuador",
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 84.0,
+      "possession": 52.9,
+      "result": "loss",
+      "shots": 7,
+      "shotsOnTarget": 1,
+      "stage": "r32"
+    }
+  ],
+  "name": "Ecuador",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "r32",
+    "goalDifference": -2,
+    "goalsAgainst": 4,
+    "goalsFor": 2,
+    "lost": 2,
+    "played": 4,
+    "points": 4,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 4.0,
+      "low": 16.2,
+      "mid": 13.0
+    },
+    "phasesInPossession": {
+      "attackingTransition": 13.0,
+      "buildUpOpposed": 14.0,
+      "buildUpUnopposed": 39.5,
+      "counterAttack": 1.2,
+      "finalThird": 16.5,
+      "longBall": 4.5,
+      "progression": 17.0,
+      "setPiece": 5.2
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 13.5,
+      "defensiveTransition": 19.2,
+      "highBlock": 4.0,
+      "highPress": 5.8,
+      "lowBlock": 16.2,
+      "lowPress": 0.5,
+      "midBlock": 13.0,
+      "midPress": 4.8,
+      "recovery": 5.2
+    },
+    "possession": 52.0,
+    "pressingIntensity": 231.2,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 20.0,
+          "teamLength": 39.0,
+          "teamWidth": 54.0
+        },
+        "buildUpMid": {
+          "lineHeight": 44.5,
+          "teamLength": 31.2,
+          "teamWidth": 55.8
+        },
+        "finalThirdPhase": {
+          "lineHeight": 56.5,
+          "teamLength": 34.5,
+          "teamWidth": 46.2
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 47.5,
+          "teamLength": 39.0,
+          "teamWidth": 41.8
+        },
+        "lowBlock": {
+          "lineHeight": 15.2,
+          "teamLength": 23.2,
+          "teamWidth": 36.0
+        },
+        "midBlock": {
+          "lineHeight": 37.2,
+          "teamLength": 29.8,
+          "teamWidth": 40.2
+        }
+      }
+    }
+  },
+  "teamCode": "ecu",
+  "teamId": "ecuador"
+}

@@ -1,0 +1,203 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 2,
+      "share": 40.0
+    },
+    {
+      "formation": "4-3-3",
+      "matches": 2,
+      "share": 40.0
+    },
+    {
+      "formation": "4-4-2",
+      "matches": 1,
+      "share": 20.0
+    }
+  ],
+  "group": "c",
+  "matches": [
+    {
+      "date": "2026-06-13",
+      "distanceCovered": 113.7,
+      "expectedGoals": 0.99,
+      "formation": "4-4-2",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m007-brazil-morocco",
+      "opponent": {
+        "id": "morocco",
+        "name": "Morocco"
+      },
+      "passCompletion": 89.0,
+      "possession": 46.7,
+      "result": "draw",
+      "shots": 12,
+      "shotsOnTarget": 5,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-19",
+      "distanceCovered": 113.6,
+      "expectedGoals": 1.42,
+      "formation": "4-3-3",
+      "goalsAgainst": 0,
+      "goalsFor": 3,
+      "isHome": true,
+      "matchId": "m029-brazil-haiti",
+      "opponent": {
+        "id": "haiti",
+        "name": "Haiti"
+      },
+      "passCompletion": 88.0,
+      "possession": 49.0,
+      "result": "win",
+      "shots": 7,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-24",
+      "distanceCovered": 110.7,
+      "expectedGoals": 3.78,
+      "formation": "4-3-3",
+      "goalsAgainst": 0,
+      "goalsFor": 3,
+      "isHome": false,
+      "matchId": "m049-scotland-brazil",
+      "opponent": {
+        "id": "scotland",
+        "name": "Scotland"
+      },
+      "passCompletion": 93.0,
+      "possession": 51.1,
+      "result": "win",
+      "shots": 21,
+      "shotsOnTarget": 9,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-29",
+      "distanceCovered": 110.0,
+      "expectedGoals": 2.12,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 1,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m076-brazil-japan",
+      "opponent": {
+        "id": "japan",
+        "name": "Japan"
+      },
+      "passCompletion": 91.0,
+      "possession": 61.6,
+      "result": "win",
+      "shots": 19,
+      "shotsOnTarget": 7,
+      "stage": "r32"
+    },
+    {
+      "date": "2026-07-05",
+      "distanceCovered": 113.3,
+      "expectedGoals": 2.57,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m091-brazil-norway",
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 86.0,
+      "possession": 32.1,
+      "result": "loss",
+      "shots": 14,
+      "shotsOnTarget": 4,
+      "stage": "r16"
+    }
+  ],
+  "name": "Brazil",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "r16",
+    "goalDifference": 6,
+    "goalsAgainst": 4,
+    "goalsFor": 10,
+    "lost": 1,
+    "played": 5,
+    "points": 7,
+    "won": 3
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 7.4,
+      "low": 23.6,
+      "mid": 20.8
+    },
+    "phasesInPossession": {
+      "attackingTransition": 11.0,
+      "buildUpOpposed": 13.0,
+      "buildUpUnopposed": 43.2,
+      "counterAttack": 1.8,
+      "finalThird": 16.8,
+      "longBall": 2.2,
+      "progression": 19.0,
+      "setPiece": 4.4
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 7.2,
+      "defensiveTransition": 10.8,
+      "highBlock": 7.4,
+      "highPress": 5.4,
+      "lowBlock": 23.6,
+      "lowPress": 0.4,
+      "midBlock": 20.8,
+      "midPress": 3.0,
+      "recovery": 4.6
+    },
+    "possession": 48.1,
+    "pressingIntensity": 267.6,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 18.2,
+          "teamLength": 40.8,
+          "teamWidth": 55.2
+        },
+        "buildUpMid": {
+          "lineHeight": 44.4,
+          "teamLength": 30.4,
+          "teamWidth": 56.8
+        },
+        "finalThirdPhase": {
+          "lineHeight": 57.2,
+          "teamLength": 33.2,
+          "teamWidth": 46.0
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.8,
+          "teamLength": 36.4,
+          "teamWidth": 42.4
+        },
+        "lowBlock": {
+          "lineHeight": 18.6,
+          "teamLength": 24.2,
+          "teamWidth": 35.2
+        },
+        "midBlock": {
+          "lineHeight": 38.2,
+          "teamLength": 28.0,
+          "teamWidth": 40.0
+        }
+      }
+    }
+  },
+  "teamCode": "bra",
+  "teamId": "brazil"
+}

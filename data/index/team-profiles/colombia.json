@@ -1,0 +1,193 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 5,
+      "share": 100.0
+    }
+  ],
+  "group": "k",
+  "matches": [
+    {
+      "date": "2026-06-17",
+      "distanceCovered": 108.7,
+      "expectedGoals": 1.16,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 1,
+      "goalsFor": 3,
+      "isHome": false,
+      "matchId": "m024-uzbekistan-colombia",
+      "opponent": {
+        "id": "uzbekistan",
+        "name": "Uzbekistan"
+      },
+      "passCompletion": 88.0,
+      "possession": 56.7,
+      "result": "win",
+      "shots": 15,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-23",
+      "distanceCovered": 104.0,
+      "expectedGoals": 1.54,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m048-colombia-congo-dr",
+      "opponent": {
+        "id": "congo-dr",
+        "name": "Congo DR"
+      },
+      "passCompletion": 87.0,
+      "possession": 58.5,
+      "result": "win",
+      "shots": 20,
+      "shotsOnTarget": 9,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-27",
+      "distanceCovered": 103.0,
+      "expectedGoals": 1.85,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m071-colombia-portugal",
+      "opponent": {
+        "id": "portugal",
+        "name": "Portugal"
+      },
+      "passCompletion": 90.0,
+      "possession": 51.9,
+      "result": "draw",
+      "shots": 24,
+      "shotsOnTarget": 7,
+      "stage": "group"
+    },
+    {
+      "date": "2026-07-03",
+      "distanceCovered": 107.4,
+      "expectedGoals": 1.8,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m087-colombia-ghana",
+      "opponent": {
+        "id": "ghana",
+        "name": "Ghana"
+      },
+      "passCompletion": 90.0,
+      "possession": 54.6,
+      "result": "win",
+      "shots": 20,
+      "shotsOnTarget": 8,
+      "stage": "r32"
+    },
+    {
+      "date": "2026-07-07",
+      "distanceCovered": 136.9,
+      "expectedGoals": 0.97,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m096-switzerland-colombia",
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 82.0,
+      "possession": 44.3,
+      "result": "draw",
+      "shots": 15,
+      "shotsOnTarget": 3,
+      "stage": "r16"
+    }
+  ],
+  "name": "Colombia",
+  "record": {
+    "drawn": 2,
+    "furthestStage": "r16",
+    "goalDifference": 4,
+    "goalsAgainst": 1,
+    "goalsFor": 5,
+    "lost": 0,
+    "played": 5,
+    "points": 7,
+    "won": 3
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 7.8,
+      "low": 16.2,
+      "mid": 26.6
+    },
+    "phasesInPossession": {
+      "attackingTransition": 9.0,
+      "buildUpOpposed": 16.6,
+      "buildUpUnopposed": 42.2,
+      "counterAttack": 1.0,
+      "finalThird": 16.0,
+      "longBall": 4.2,
+      "progression": 16.0,
+      "setPiece": 5.4
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 7.8,
+      "defensiveTransition": 11.4,
+      "highBlock": 7.8,
+      "highPress": 4.0,
+      "lowBlock": 16.2,
+      "lowPress": 0.4,
+      "midBlock": 26.6,
+      "midPress": 3.6,
+      "recovery": 3.4
+    },
+    "possession": 53.2,
+    "pressingIntensity": 217.6,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 19.6,
+          "teamLength": 39.8,
+          "teamWidth": 55.0
+        },
+        "buildUpMid": {
+          "lineHeight": 41.8,
+          "teamLength": 31.8,
+          "teamWidth": 55.6
+        },
+        "finalThirdPhase": {
+          "lineHeight": 53.2,
+          "teamLength": 36.6,
+          "teamWidth": 44.4
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.2,
+          "teamLength": 37.4,
+          "teamWidth": 38.6
+        },
+        "lowBlock": {
+          "lineHeight": 17.8,
+          "teamLength": 26.0,
+          "teamWidth": 35.4
+        },
+        "midBlock": {
+          "lineHeight": 37.2,
+          "teamLength": 27.6,
+          "teamWidth": 38.6
+        }
+      }
+    }
+  },
+  "teamCode": "col",
+  "teamId": "colombia"
+}

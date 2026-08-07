@@ -1,0 +1,208 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-4-2",
+      "matches": 2,
+      "share": 40.0
+    },
+    {
+      "formation": "4-2-3-1",
+      "matches": 1,
+      "share": 20.0
+    },
+    {
+      "formation": "5-3-2",
+      "matches": 1,
+      "share": 20.0
+    },
+    {
+      "formation": "5-4-1",
+      "matches": 1,
+      "share": 20.0
+    }
+  ],
+  "group": "d",
+  "matches": [
+    {
+      "date": "2026-06-12",
+      "distanceCovered": 114.3,
+      "expectedGoals": 0.6,
+      "formation": "4-4-2",
+      "goalsAgainst": 4,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m004-usa-paraguay",
+      "opponent": {
+        "id": "usa",
+        "name": "USA"
+      },
+      "passCompletion": 74.0,
+      "possession": 28.7,
+      "result": "loss",
+      "shots": 9,
+      "shotsOnTarget": 1,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-19",
+      "distanceCovered": 117.0,
+      "expectedGoals": 0.36,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m031-turkiye-paraguay",
+      "opponent": {
+        "id": "turkiye",
+        "name": "Türkiye"
+      },
+      "passCompletion": 54.0,
+      "possession": 19.2,
+      "result": "win",
+      "shots": 7,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 113.1,
+      "expectedGoals": 0.29,
+      "formation": "5-3-2",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m060-paraguay-australia",
+      "opponent": {
+        "id": "australia",
+        "name": "Australia"
+      },
+      "passCompletion": 83.0,
+      "possession": 42.2,
+      "result": "draw",
+      "shots": 7,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-29",
+      "distanceCovered": 143.8,
+      "expectedGoals": 0.61,
+      "formation": "4-4-2",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m074-germany-paraguay",
+      "opponent": {
+        "id": "germany",
+        "name": "Germany"
+      },
+      "passCompletion": 63.0,
+      "possession": 23.7,
+      "result": "draw",
+      "shots": 7,
+      "shotsOnTarget": 3,
+      "stage": "r32"
+    },
+    {
+      "date": "2026-07-04",
+      "distanceCovered": 104.4,
+      "expectedGoals": 0.13,
+      "formation": "5-4-1",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m089-paraguay-france",
+      "opponent": {
+        "id": "france",
+        "name": "France"
+      },
+      "passCompletion": 57.0,
+      "possession": 22.5,
+      "result": "loss",
+      "shots": 5,
+      "shotsOnTarget": 0,
+      "stage": "r16"
+    }
+  ],
+  "name": "Paraguay",
+  "record": {
+    "drawn": 2,
+    "furthestStage": "r16",
+    "goalDifference": -3,
+    "goalsAgainst": 6,
+    "goalsFor": 3,
+    "lost": 2,
+    "played": 5,
+    "points": 4,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 2.0,
+      "low": 39.0,
+      "mid": 17.6
+    },
+    "phasesInPossession": {
+      "attackingTransition": 27.8,
+      "buildUpOpposed": 8.8,
+      "buildUpUnopposed": 21.0,
+      "counterAttack": 2.2,
+      "finalThird": 7.6,
+      "longBall": 11.8,
+      "progression": 12.0,
+      "setPiece": 9.2
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 9.2,
+      "defensiveTransition": 12.0,
+      "highBlock": 2.0,
+      "highPress": 2.6,
+      "lowBlock": 39.0,
+      "lowPress": 0.6,
+      "midBlock": 17.6,
+      "midPress": 2.0,
+      "recovery": 5.0
+    },
+    "possession": 27.3,
+    "pressingIntensity": 337.8,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 19.8,
+          "teamLength": 34.0,
+          "teamWidth": 42.6
+        },
+        "buildUpMid": {
+          "lineHeight": 40.4,
+          "teamLength": 34.0,
+          "teamWidth": 51.6
+        },
+        "finalThirdPhase": {
+          "lineHeight": 53.6,
+          "teamLength": 38.2,
+          "teamWidth": 41.2
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 47.8,
+          "teamLength": 37.6,
+          "teamWidth": 38.0
+        },
+        "lowBlock": {
+          "lineHeight": 17.4,
+          "teamLength": 20.8,
+          "teamWidth": 34.2
+        },
+        "midBlock": {
+          "lineHeight": 36.8,
+          "teamLength": 26.4,
+          "teamWidth": 37.8
+        }
+      }
+    }
+  },
+  "teamCode": "par",
+  "teamId": "paraguay"
+}

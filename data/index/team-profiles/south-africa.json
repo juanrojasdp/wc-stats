@@ -1,0 +1,183 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-2-3-1",
+      "matches": 2,
+      "share": 50.0
+    },
+    {
+      "formation": "4-3-3",
+      "matches": 1,
+      "share": 25.0
+    },
+    {
+      "formation": "5-3-2",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "a",
+  "matches": [
+    {
+      "date": "2026-06-11",
+      "distanceCovered": 97.1,
+      "expectedGoals": 0.1,
+      "formation": "5-3-2",
+      "goalsAgainst": 2,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m001-mexico-south-africa",
+      "opponent": {
+        "id": "mexico",
+        "name": "Mexico"
+      },
+      "passCompletion": 83.0,
+      "possession": 36.1,
+      "result": "loss",
+      "shots": 3,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-18",
+      "distanceCovered": 112.0,
+      "expectedGoals": 1.34,
+      "formation": "4-3-3",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m025-czechia-south-africa",
+      "opponent": {
+        "id": "czechia",
+        "name": "Czechia"
+      },
+      "passCompletion": 89.0,
+      "possession": 60.3,
+      "result": "draw",
+      "shots": 17,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-24",
+      "distanceCovered": 111.8,
+      "expectedGoals": 0.89,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m054-south-africa-korea-republic",
+      "opponent": {
+        "id": "korea-republic",
+        "name": "Korea Republic"
+      },
+      "passCompletion": 81.0,
+      "possession": 30.3,
+      "result": "win",
+      "shots": 13,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-28",
+      "distanceCovered": 108.2,
+      "expectedGoals": 0.16,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m073-south-africa-canada",
+      "opponent": {
+        "id": "canada",
+        "name": "Canada"
+      },
+      "passCompletion": 85.0,
+      "possession": 55.8,
+      "result": "loss",
+      "shots": 6,
+      "shotsOnTarget": 1,
+      "stage": "r32"
+    }
+  ],
+  "name": "South Africa",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "r32",
+    "goalDifference": -2,
+    "goalsAgainst": 4,
+    "goalsFor": 2,
+    "lost": 2,
+    "played": 4,
+    "points": 4,
+    "won": 1
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 5.2,
+      "low": 18.2,
+      "mid": 23.5
+    },
+    "phasesInPossession": {
+      "attackingTransition": 11.0,
+      "buildUpOpposed": 13.5,
+      "buildUpUnopposed": 42.5,
+      "counterAttack": 1.2,
+      "finalThird": 9.5,
+      "longBall": 5.8,
+      "progression": 14.5,
+      "setPiece": 5.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 11.2,
+      "defensiveTransition": 15.8,
+      "highBlock": 5.2,
+      "highPress": 4.2,
+      "lowBlock": 18.2,
+      "lowPress": 0.8,
+      "midBlock": 23.5,
+      "midPress": 3.0,
+      "recovery": 3.5
+    },
+    "possession": 45.6,
+    "pressingIntensity": 270.2,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 18.0,
+          "teamLength": 41.0,
+          "teamWidth": 55.8
+        },
+        "buildUpMid": {
+          "lineHeight": 40.5,
+          "teamLength": 34.0,
+          "teamWidth": 53.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 53.2,
+          "teamLength": 37.2,
+          "teamWidth": 43.0
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 47.5,
+          "teamLength": 37.0,
+          "teamWidth": 40.2
+        },
+        "lowBlock": {
+          "lineHeight": 18.2,
+          "teamLength": 23.2,
+          "teamWidth": 34.5
+        },
+        "midBlock": {
+          "lineHeight": 37.0,
+          "teamLength": 26.8,
+          "teamWidth": 39.5
+        }
+      }
+    }
+  },
+  "teamCode": "rsa",
+  "teamId": "south-africa"
+}

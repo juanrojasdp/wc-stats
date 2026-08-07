@@ -1,0 +1,163 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-3-3",
+      "matches": 1,
+      "share": 33.3
+    },
+    {
+      "formation": "5-2-3",
+      "matches": 1,
+      "share": 33.3
+    },
+    {
+      "formation": "5-4-1",
+      "matches": 1,
+      "share": 33.3
+    }
+  ],
+  "group": "g",
+  "matches": [
+    {
+      "date": "2026-06-15",
+      "distanceCovered": 113.0,
+      "expectedGoals": 1.85,
+      "formation": "4-3-3",
+      "goalsAgainst": 2,
+      "goalsFor": 2,
+      "isHome": true,
+      "matchId": "m015-ir-iran-new-zealand",
+      "opponent": {
+        "id": "new-zealand",
+        "name": "New Zealand"
+      },
+      "passCompletion": 80.0,
+      "possession": 43.3,
+      "result": "draw",
+      "shots": 17,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-21",
+      "distanceCovered": 112.6,
+      "expectedGoals": 0.48,
+      "formation": "5-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m039-belgium-ir-iran",
+      "opponent": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "passCompletion": 73.0,
+      "possession": 30.2,
+      "result": "draw",
+      "shots": 7,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-26",
+      "distanceCovered": 118.8,
+      "expectedGoals": 2.24,
+      "formation": "5-4-1",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m063-egypt-ir-iran",
+      "opponent": {
+        "id": "egypt",
+        "name": "Egypt"
+      },
+      "passCompletion": 78.0,
+      "possession": 36.4,
+      "result": "draw",
+      "shots": 13,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    }
+  ],
+  "name": "IR Iran",
+  "record": {
+    "drawn": 3,
+    "furthestStage": "group",
+    "goalDifference": 0,
+    "goalsAgainst": 3,
+    "goalsFor": 3,
+    "lost": 0,
+    "played": 3,
+    "points": 3,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 2.3,
+      "low": 29.3,
+      "mid": 21.3
+    },
+    "phasesInPossession": {
+      "attackingTransition": 17.3,
+      "buildUpOpposed": 10.3,
+      "buildUpUnopposed": 36.3,
+      "counterAttack": 2.0,
+      "finalThird": 11.0,
+      "longBall": 6.3,
+      "progression": 15.7,
+      "setPiece": 6.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 9.3,
+      "defensiveTransition": 12.7,
+      "highBlock": 2.3,
+      "highPress": 3.0,
+      "lowBlock": 29.3,
+      "lowPress": 1.0,
+      "midBlock": 21.3,
+      "midPress": 4.0,
+      "recovery": 4.0
+    },
+    "possession": 36.6,
+    "pressingIntensity": 291.3,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 17.3,
+          "teamLength": 39.3,
+          "teamWidth": 52.7
+        },
+        "buildUpMid": {
+          "lineHeight": 40.3,
+          "teamLength": 32.0,
+          "teamWidth": 57.3
+        },
+        "finalThirdPhase": {
+          "lineHeight": 55.3,
+          "teamLength": 37.3,
+          "teamWidth": 40.3
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 45.7,
+          "teamLength": 37.7,
+          "teamWidth": 41.3
+        },
+        "lowBlock": {
+          "lineHeight": 18.0,
+          "teamLength": 23.0,
+          "teamWidth": 37.3
+        },
+        "midBlock": {
+          "lineHeight": 36.0,
+          "teamLength": 26.7,
+          "teamWidth": 41.7
+        }
+      }
+    }
+  },
+  "teamCode": "irn",
+  "teamId": "ir-iran"
+}

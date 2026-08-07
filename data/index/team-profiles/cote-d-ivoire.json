@@ -1,0 +1,178 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 3,
+      "share": 75.0
+    },
+    {
+      "formation": "4-4-2",
+      "matches": 1,
+      "share": 25.0
+    }
+  ],
+  "group": "e",
+  "matches": [
+    {
+      "date": "2026-06-14",
+      "distanceCovered": 109.6,
+      "expectedGoals": 1.88,
+      "formation": "4-4-2",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m009-cote-d-ivoire-ecuador",
+      "opponent": {
+        "id": "ecuador",
+        "name": "Ecuador"
+      },
+      "passCompletion": 88.0,
+      "possession": 41.9,
+      "result": "win",
+      "shots": 15,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-20",
+      "distanceCovered": 113.1,
+      "expectedGoals": 1.27,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m033-germany-cote-d-ivoire",
+      "opponent": {
+        "id": "germany",
+        "name": "Germany"
+      },
+      "passCompletion": 86.0,
+      "possession": 41.2,
+      "result": "loss",
+      "shots": 9,
+      "shotsOnTarget": 2,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-25",
+      "distanceCovered": 106.4,
+      "expectedGoals": 0.93,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 0,
+      "goalsFor": 2,
+      "isHome": false,
+      "matchId": "m055-curacao-cote-d-ivoire",
+      "opponent": {
+        "id": "curacao",
+        "name": "Curaçao"
+      },
+      "passCompletion": 89.0,
+      "possession": 55.2,
+      "result": "win",
+      "shots": 7,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-30",
+      "distanceCovered": 105.8,
+      "expectedGoals": 1.43,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m078-cote-d-ivoire-norway",
+      "opponent": {
+        "id": "norway",
+        "name": "Norway"
+      },
+      "passCompletion": 87.0,
+      "possession": 41.3,
+      "result": "loss",
+      "shots": 14,
+      "shotsOnTarget": 5,
+      "stage": "r32"
+    }
+  ],
+  "name": "Côte d'Ivoire",
+  "record": {
+    "drawn": 0,
+    "furthestStage": "r32",
+    "goalDifference": 1,
+    "goalsAgainst": 4,
+    "goalsFor": 5,
+    "lost": 2,
+    "played": 4,
+    "points": 6,
+    "won": 2
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 6.8,
+      "low": 20.2,
+      "mid": 24.8
+    },
+    "phasesInPossession": {
+      "attackingTransition": 13.8,
+      "buildUpOpposed": 14.8,
+      "buildUpUnopposed": 32.5,
+      "counterAttack": 2.0,
+      "finalThird": 19.8,
+      "longBall": 3.2,
+      "progression": 17.0,
+      "setPiece": 5.8
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 9.8,
+      "defensiveTransition": 12.5,
+      "highBlock": 6.8,
+      "highPress": 4.5,
+      "lowBlock": 20.2,
+      "lowPress": 0.5,
+      "midBlock": 24.8,
+      "midPress": 5.0,
+      "recovery": 3.8
+    },
+    "possession": 44.9,
+    "pressingIntensity": 280.8,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 18.5,
+          "teamLength": 39.8,
+          "teamWidth": 53.5
+        },
+        "buildUpMid": {
+          "lineHeight": 41.2,
+          "teamLength": 33.0,
+          "teamWidth": 57.2
+        },
+        "finalThirdPhase": {
+          "lineHeight": 55.0,
+          "teamLength": 36.2,
+          "teamWidth": 44.8
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.0,
+          "teamLength": 37.0,
+          "teamWidth": 39.2
+        },
+        "lowBlock": {
+          "lineHeight": 16.2,
+          "teamLength": 25.0,
+          "teamWidth": 34.2
+        },
+        "midBlock": {
+          "lineHeight": 36.0,
+          "teamLength": 26.5,
+          "teamWidth": 38.5
+        }
+      }
+    }
+  },
+  "teamCode": "civ",
+  "teamId": "cote-d-ivoire"
+}

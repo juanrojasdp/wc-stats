@@ -60,6 +60,67 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-07
+# 2026-08-07: story 1-18 CODE REVIEW COMPLETE (review -> done). Three adversarial layers over the
+#             1.18-scoped diff (~2,800 hand-written lines) plus a property sweep of all 1,296
+#             emitted artifacts. 1 decision, 16 patches, 1 deferral, 2 dismissed. ALL PATCHES
+#             APPLIED AND VERIFIED.
+#             WHAT WAS ALREADY RIGHT, stated so it is not re-reviewed: all 18 rows of AC 2's
+#             reduction table re-derived over 1,248 artifacts (0 violations); the team side 40
+#             leaves x 48 teams = 1,920 (0 violations); AC 4's anti-tautology fix PROVEN real by
+#             in-process mutation (848 violations of the topSpeed expectation, 897 of the
+#             passCompletion one, cleanly separated, 0/0 at baseline); all 20 landmines avoided;
+#             R1-R5 implemented as ruled; registry bijection, byte-identity, determinism, budget
+#             (1,543 gzip-9 = 0.31%) and schema-validity all hold on all 1,296.
+#             HEADLINE: THREE GATES READ GREEN WHILE THE PROPERTY THEY GUARD WAS FALSE. (1) The
+#             write was all-or-nothing PER NAMESPACE, not across both -- a mid-write failure
+#             committed team-profiles against the new corpus and left player-profiles on the old,
+#             and the covering test corrupted a BUNDLE (aborting during build, before any byte is
+#             written) then compared only the namespace written FIRST, which always survives.
+#             Both halves pointed away from the defect. A failed run also left a several-hundred-
+#             file .staged dir inside the committed tree, un-gitignored. FIXED: stage both, swap
+#             both, roll back the first if the second fails, `finally` cleanup, .gitignore
+#             entries, and a test that fails DURING THE WRITE and asserts both namespaces.
+#             (2) `check_committed_data`'s "unavailable" branch checked the UNION of its globs,
+#             so an entirely missing player namespace still printed "all pinned" -- the
+#             gate-that-cannot-fail its own docstring argues against, reintroduced per namespace
+#             by the widening meant to close it. FIXED: per-glob, plus an empty-globs guard.
+#             (3) The leaderboards fixture was patched on only the two values its coupling test
+#             reads after the profiles were regenerated, leaving `distanceCovered` at 315.0 --
+#             neither the 5-match sum (563.8) nor the group-only 3-match sum (338.5), but the old
+#             synthetic total, stranded. The test could not see it because it compared
+#             matchesPlayed against the STANDINGS (a group-only denominator) and checked values
+#             on 2 of 3 boards. JUAN RULED: complete the cascade to the 5-match world. Board
+#             regenerated and re-ranked; test now compares against the profile that owns the
+#             count, scope-aware, and covers the third board.
+#             CORRECTION MADE MID-FIX AND RECORDED: the review initially claimed tournament.json's
+#             standings were part of the inconsistency. They were not -- `StandingsRow` is "one
+#             team's row in a GROUP table", so played:3 is group-only and reconciles EXACTLY with
+#             the profile's three group rows, field for field. tournament.json was not changed.
+#             ALSO FIXED: 1,672 leaves shipped as JSON integers in 1-decimal slots across the 209
+#             zero-appearance profiles (`max(default=0)` and `sum([])` are ints; the corpus ships
+#             23,023 such values as floats, all 261 zeros included) -- the precision test was
+#             strict only in the places==0 direction and could not see it; untyped KeyError /
+#             TypeError / UnicodeDecodeError escaping main() as tracebacks against the 0/1/2 exit
+#             contract; a player listed twice in one match silently double-counting to 120
+#             minutes in a 90-minute match; substitution-stamp anomalies silently dropping or
+#             inflating an appearance; and a stale data/fixtures/README.md asserting "Every
+#             cross-artifact number now reconciles".
+#             VERIFIED: 582 tests green across 10 modules (391 + 191, 0 failed); 18/18 of the
+#             defects the review layers reproduced now behave correctly; artifacts re-emitted and
+#             byte-identical to the emitter, 209 files changed and every change classified as
+#             int->float spelling only, no value moved.
+#             DEFERRED (1): test_emit_profiles.py costs 8m40s alone on a ~45-min suite -- a
+#             coverage-vs-runtime tradeoff, not a defect; owner is whoever next needs the suite to
+#             fit an un-chunked run.
+#             NOT RE-RUN AND DISCLOSED: the Task 9.12 mutation harness. It edits profiles.py in
+#             place, and it is what corrupted 1,296 artifacts during implementation when a killed
+#             run skipped its restore. Re-running it against the main tree would reintroduce the
+#             failure mode under review; it belongs in an isolated worktree.
+#             ATTRIBUTION: three concurrent Story 1.17 commits (5d251bb, 1181a1a, 119b707) landed
+#             DURING this review and captured 1.18's test_index_tournament.py R3 hand-off and this
+#             review's own deferred-work.md section. Content verified intact at HEAD; attribution
+#             only, not repaired, per the standing precedent. The 1,296 artifacts were not
+#             captured and remain unstaged.
 # 2026-08-07: story 1-17 CODE REVIEW COMPLETE (review -> done). Three adversarial layers over
 #             74b1789..ae207ed + 5d251bb (3,134 lines, 10 files; the 59,798 lines of emitted
 #             JSON were sampled against the emitter and the schemas rather than read). 46 raw
@@ -3019,7 +3080,7 @@ development_status:
   # re-shaped by D1, and CorpusNullableGoalkeeperRecord collapses to a re-export under D2.
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
   1-17-tournament-index-results-standings-leaderboards: done
-  1-18-team-player-profile-artifacts: review
+  1-18-team-player-profile-artifacts: done
   1-19-full-batch-run-batch-report-104-104-acceptance: backlog
   epic-1-retrospective: optional
   epic-2: in-progress

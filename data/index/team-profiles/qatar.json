@@ -1,0 +1,163 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-1-2-3",
+      "matches": 1,
+      "share": 33.3
+    },
+    {
+      "formation": "4-2-3-1",
+      "matches": 1,
+      "share": 33.3
+    },
+    {
+      "formation": "4-3-3",
+      "matches": 1,
+      "share": 33.3
+    }
+  ],
+  "group": "b",
+  "matches": [
+    {
+      "date": "2026-06-13",
+      "distanceCovered": 109.2,
+      "expectedGoals": 0.52,
+      "formation": "4-2-3-1",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m008-qatar-switzerland",
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 74.0,
+      "possession": 28.8,
+      "result": "draw",
+      "shots": 6,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-18",
+      "distanceCovered": 90.8,
+      "expectedGoals": 0.2,
+      "formation": "4-3-3",
+      "goalsAgainst": 6,
+      "goalsFor": 0,
+      "isHome": false,
+      "matchId": "m027-canada-qatar",
+      "opponent": {
+        "id": "canada",
+        "name": "Canada"
+      },
+      "passCompletion": 64.0,
+      "possession": 20.5,
+      "result": "loss",
+      "shots": 2,
+      "shotsOnTarget": 0,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-24",
+      "distanceCovered": 110.0,
+      "expectedGoals": 1.17,
+      "formation": "4-1-2-3",
+      "goalsAgainst": 3,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m052-bosnia-and-herzegovina-qatar",
+      "opponent": {
+        "id": "bosnia-and-herzegovina",
+        "name": "Bosnia and Herzegovina"
+      },
+      "passCompletion": 85.0,
+      "possession": 42.6,
+      "result": "loss",
+      "shots": 9,
+      "shotsOnTarget": 3,
+      "stage": "group"
+    }
+  ],
+  "name": "Qatar",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "group",
+    "goalDifference": -8,
+    "goalsAgainst": 10,
+    "goalsFor": 2,
+    "lost": 2,
+    "played": 3,
+    "points": 1,
+    "won": 0
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 4.0,
+      "low": 40.7,
+      "mid": 17.3
+    },
+    "phasesInPossession": {
+      "attackingTransition": 17.0,
+      "buildUpOpposed": 13.0,
+      "buildUpUnopposed": 28.0,
+      "counterAttack": 2.0,
+      "finalThird": 8.3,
+      "longBall": 9.0,
+      "progression": 12.3,
+      "setPiece": 7.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 7.7,
+      "defensiveTransition": 9.7,
+      "highBlock": 4.0,
+      "highPress": 1.7,
+      "lowBlock": 40.7,
+      "lowPress": 0.7,
+      "midBlock": 17.3,
+      "midPress": 2.0,
+      "recovery": 4.0
+    },
+    "possession": 30.6,
+    "pressingIntensity": 277.3,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 15.3,
+          "teamLength": 37.7,
+          "teamWidth": 52.7
+        },
+        "buildUpMid": {
+          "lineHeight": 42.0,
+          "teamLength": 31.7,
+          "teamWidth": 53.3
+        },
+        "finalThirdPhase": {
+          "lineHeight": 52.0,
+          "teamLength": 36.3,
+          "teamWidth": 44.3
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 48.0,
+          "teamLength": 35.0,
+          "teamWidth": 38.0
+        },
+        "lowBlock": {
+          "lineHeight": 17.3,
+          "teamLength": 18.0,
+          "teamWidth": 32.0
+        },
+        "midBlock": {
+          "lineHeight": 37.7,
+          "teamLength": 24.0,
+          "teamWidth": 37.3
+        }
+      }
+    }
+  },
+  "teamCode": "qat",
+  "teamId": "qatar"
+}

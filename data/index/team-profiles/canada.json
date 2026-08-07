@@ -1,0 +1,193 @@
+{
+  "formationUsage": [
+    {
+      "formation": "4-4-2",
+      "matches": 5,
+      "share": 100.0
+    }
+  ],
+  "group": "b",
+  "matches": [
+    {
+      "date": "2026-06-12",
+      "distanceCovered": 111.3,
+      "expectedGoals": 1.49,
+      "formation": "4-4-2",
+      "goalsAgainst": 1,
+      "goalsFor": 1,
+      "isHome": true,
+      "matchId": "m003-canada-bosnia-and-herzegovina",
+      "opponent": {
+        "id": "bosnia-and-herzegovina",
+        "name": "Bosnia and Herzegovina"
+      },
+      "passCompletion": 77.0,
+      "possession": 52.8,
+      "result": "draw",
+      "shots": 13,
+      "shotsOnTarget": 4,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-18",
+      "distanceCovered": 111.2,
+      "expectedGoals": 3.9,
+      "formation": "4-4-2",
+      "goalsAgainst": 0,
+      "goalsFor": 6,
+      "isHome": true,
+      "matchId": "m027-canada-qatar",
+      "opponent": {
+        "id": "qatar",
+        "name": "Qatar"
+      },
+      "passCompletion": 93.0,
+      "possession": 65.8,
+      "result": "win",
+      "shots": 33,
+      "shotsOnTarget": 11,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-24",
+      "distanceCovered": 114.6,
+      "expectedGoals": 1.61,
+      "formation": "4-4-2",
+      "goalsAgainst": 2,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m051-switzerland-canada",
+      "opponent": {
+        "id": "switzerland",
+        "name": "Switzerland"
+      },
+      "passCompletion": 78.0,
+      "possession": 40.1,
+      "result": "loss",
+      "shots": 13,
+      "shotsOnTarget": 7,
+      "stage": "group"
+    },
+    {
+      "date": "2026-06-28",
+      "distanceCovered": 117.0,
+      "expectedGoals": 1.33,
+      "formation": "4-4-2",
+      "goalsAgainst": 0,
+      "goalsFor": 1,
+      "isHome": false,
+      "matchId": "m073-south-africa-canada",
+      "opponent": {
+        "id": "south-africa",
+        "name": "South Africa"
+      },
+      "passCompletion": 81.0,
+      "possession": 35.6,
+      "result": "win",
+      "shots": 12,
+      "shotsOnTarget": 7,
+      "stage": "r32"
+    },
+    {
+      "date": "2026-07-04",
+      "distanceCovered": 116.2,
+      "expectedGoals": 0.68,
+      "formation": "4-4-2",
+      "goalsAgainst": 3,
+      "goalsFor": 0,
+      "isHome": true,
+      "matchId": "m090-canada-morocco",
+      "opponent": {
+        "id": "morocco",
+        "name": "Morocco"
+      },
+      "passCompletion": 77.0,
+      "possession": 37.5,
+      "result": "loss",
+      "shots": 10,
+      "shotsOnTarget": 3,
+      "stage": "r16"
+    }
+  ],
+  "name": "Canada",
+  "record": {
+    "drawn": 1,
+    "furthestStage": "r16",
+    "goalDifference": 3,
+    "goalsAgainst": 6,
+    "goalsFor": 9,
+    "lost": 2,
+    "played": 5,
+    "points": 4,
+    "won": 2
+  },
+  "schemaVersion": 4,
+  "tacticalIdentity": {
+    "defensiveBlockDistribution": {
+      "high": 8.0,
+      "low": 4.4,
+      "mid": 26.8
+    },
+    "phasesInPossession": {
+      "attackingTransition": 16.6,
+      "buildUpOpposed": 11.8,
+      "buildUpUnopposed": 28.6,
+      "counterAttack": 1.6,
+      "finalThird": 24.2,
+      "longBall": 2.6,
+      "progression": 19.4,
+      "setPiece": 11.0
+    },
+    "phasesOutOfPossession": {
+      "counterPress": 13.4,
+      "defensiveTransition": 20.2,
+      "highBlock": 8.0,
+      "highPress": 7.4,
+      "lowBlock": 4.4,
+      "lowPress": 0.4,
+      "midBlock": 26.8,
+      "midPress": 4.6,
+      "recovery": 4.8
+    },
+    "possession": 46.4,
+    "pressingIntensity": 236.6,
+    "shapeByPhase": {
+      "inPossession": {
+        "buildUpLow": {
+          "lineHeight": 21.4,
+          "teamLength": 37.8,
+          "teamWidth": 50.0
+        },
+        "buildUpMid": {
+          "lineHeight": 46.2,
+          "teamLength": 29.8,
+          "teamWidth": 51.0
+        },
+        "finalThirdPhase": {
+          "lineHeight": 63.0,
+          "teamLength": 28.6,
+          "teamWidth": 39.8
+        }
+      },
+      "outOfPossession": {
+        "highBlockPress": {
+          "lineHeight": 49.2,
+          "teamLength": 32.8,
+          "teamWidth": 39.0
+        },
+        "lowBlock": {
+          "lineHeight": 19.4,
+          "teamLength": 23.0,
+          "teamWidth": 33.4
+        },
+        "midBlock": {
+          "lineHeight": 40.8,
+          "teamLength": 25.6,
+          "teamWidth": 37.6
+        }
+      }
+    }
+  },
+  "teamCode": "can",
+  "teamId": "canada"
+}

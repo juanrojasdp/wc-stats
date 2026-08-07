@@ -48,9 +48,34 @@
           "home": 1
         },
         "stage": "r32"
+      },
+      {
+        "awayTeam": {
+          "id": "senegal",
+          "name": "Senegal"
+        },
+        "homeTeam": {
+          "id": "belgium",
+          "name": "Belgium"
+        },
+        "matchId": "m082-belgium-senegal",
+        "score": {
+          "away": 2,
+          "home": 3
+        },
+        "stage": "r32"
       }
     ],
     "players": [
+      {
+        "name": "Carlos ACEVEDO",
+        "playerId": "acevedo-carlos-mex",
+        "position": "gk",
+        "team": {
+          "id": "mexico",
+          "name": "Mexico"
+        }
+      },
       {
         "name": "Julian QUINONES",
         "playerId": "quinones-julian-mex",
@@ -269,6 +294,41 @@
       },
       "stage": "r32",
       "venue": "Boston Stadium"
+    },
+    {
+      "awayTeam": {
+        "id": "senegal",
+        "name": "Senegal"
+      },
+      "date": "2026-07-01",
+      "group": null,
+      "homeTeam": {
+        "id": "belgium",
+        "name": "Belgium"
+      },
+      "kickoff": "2026-07-01T13:00:00-07:00",
+      "knockoutScore": {
+        "decidedBy": "extra-time",
+        "scoreAfter90": {
+          "away": 2,
+          "home": 2
+        },
+        "scoreAfterET": {
+          "away": 2,
+          "home": 3
+        },
+        "shootoutScore": null,
+        "winnerTeamId": "belgium"
+      },
+      "matchId": "m082-belgium-senegal",
+      "matchNumber": 82,
+      "matchdayRound": "r32",
+      "score": {
+        "away": 2,
+        "home": 3
+      },
+      "stage": "r32",
+      "venue": "Seattle Stadium"
     }
   ],
   "schemaVersion": 4,

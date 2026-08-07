@@ -21,31 +21,31 @@
         },
         {
           "entity": {
-            "id": "mexico",
-            "name": "Mexico"
-          },
-          "matchesPlayed": 3,
-          "perMatch": 59.3,
-          "rank": 2,
-          "team": {
-            "id": "mexico",
-            "name": "Mexico"
-          },
-          "value": 59.3
-        },
-        {
-          "entity": {
             "id": "korea-republic",
             "name": "Korea Republic"
           },
           "matchesPlayed": 3,
           "perMatch": 55.8,
-          "rank": 3,
+          "rank": 2,
           "team": {
             "id": "korea-republic",
             "name": "Korea Republic"
           },
           "value": 55.8
+        },
+        {
+          "entity": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "matchesPlayed": 5,
+          "perMatch": 48.2,
+          "rank": 3,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 48.2
         },
         {
           "entity": {
@@ -99,12 +99,26 @@
       "rows": [
         {
           "entity": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "matchesPlayed": 5,
+          "perMatch": 112.76,
+          "rank": 1,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 563.8
+        },
+        {
+          "entity": {
             "id": "czechia",
             "name": "Czechia"
           },
           "matchesPlayed": 3,
           "perMatch": 117.6,
-          "rank": 1,
+          "rank": 2,
           "team": {
             "id": "czechia",
             "name": "Czechia"
@@ -118,26 +132,12 @@
           },
           "matchesPlayed": 3,
           "perMatch": 111.8,
-          "rank": 2,
+          "rank": 3,
           "team": {
             "id": "korea-republic",
             "name": "Korea Republic"
           },
           "value": 335.4
-        },
-        {
-          "entity": {
-            "id": "mexico",
-            "name": "Mexico"
-          },
-          "matchesPlayed": 3,
-          "perMatch": 105.0,
-          "rank": 3,
-          "team": {
-            "id": "mexico",
-            "name": "Mexico"
-          },
-          "value": 315.0
         },
         {
           "entity": {
@@ -331,26 +331,12 @@
         },
         {
           "entity": {
-            "id": "quinones-julian-mex",
-            "name": "Julian QUINONES"
-          },
-          "matchesPlayed": 3,
-          "perMatch": null,
-          "rank": 7,
-          "team": {
-            "id": "mexico",
-            "name": "Mexico"
-          },
-          "value": 33.3
-        },
-        {
-          "entity": {
             "id": "enciso-julio-par",
             "name": "Julio ENCISO"
           },
           "matchesPlayed": 1,
           "perMatch": null,
-          "rank": 12,
+          "rank": 11,
           "team": {
             "id": "paraguay",
             "name": "Paraguay"
@@ -359,12 +345,26 @@
         },
         {
           "entity": {
+            "id": "quinones-julian-mex",
+            "name": "Julian QUINONES"
+          },
+          "matchesPlayed": 5,
+          "perMatch": null,
+          "rank": 12,
+          "team": {
+            "id": "mexico",
+            "name": "Mexico"
+          },
+          "value": 33.0
+        },
+        {
+          "entity": {
             "id": "wirtz-florian-ger",
             "name": "Florian WIRTZ"
           },
           "matchesPlayed": 1,
           "perMatch": null,
-          "rank": 13,
+          "rank": 12,
           "team": {
             "id": "germany",
             "name": "Germany"
