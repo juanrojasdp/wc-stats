@@ -39,8 +39,50 @@ const CLOSE_GRACE_MS = 180;
  * "do not add a new Context" is a standing rule, and @/lib/i18n.ts's
  * `reportedMissing` is the shipped precedent for module-scope state of exactly
  * this shape. Opening runs every OTHER registered closer first.
+ *
+ * 🔴 THE REGISTRY IS NOW PAGE-WIDE IN FACT, NOT ONLY IN NAME (Story 2.14 Task
+ * 7.7). It was module-PRIVATE, so "page-wide" meant "every glossary popover" and
+ * nothing else. Glossary popovers ship on /glossary, on every match route and on
+ * the Hub — the same four routes the global header search now covers — so
+ * opening a popover and then typing in the header produced exactly the 2-deep
+ * overlay stack UX-DR15 forbids and this Set exists to prevent.
+ *
+ * The fix is to EXPORT a registration API, not to add a second registry: two
+ * registries cannot see each other, which is the same defect with more moving
+ * parts. Any overlay that opens on this page registers here.
  */
 const openPopoverClosers = new Set<() => void>();
+
+/**
+ * Join the page-wide single-open registry. Returns the unregister function, so
+ * the caller can hand it straight to a `useEffect` cleanup.
+ *
+ * The closer MUST be idempotent and safe to call when already closed: every
+ * other overlay's open path calls it, at any time, including while this one is
+ * already shut.
+ */
+export function registerOverlayCloser(closer: () => void): () => void {
+  openPopoverClosers.add(closer);
+  return () => {
+    openPopoverClosers.delete(closer);
+  };
+}
+
+/**
+ * Close every registered overlay EXCEPT `self`. Call this from an open path,
+ * before opening — that ordering is what keeps the stack at depth 1.
+ *
+ * `self` is the caller's own registered closer, compared by identity: passing
+ * it is what stops an overlay from closing itself on the way open. A caller
+ * with nothing registered passes `null`.
+ */
+export function closeOtherOverlays(self: (() => void) | null): void {
+  for (const other of openPopoverClosers) {
+    if (other !== self) {
+      other();
+    }
+  }
+}
 
 export interface GlossaryPopoverHandlers {
   onPointerEnter: (event: { pointerType: string }) => void;
@@ -124,9 +166,9 @@ export function useGlossaryPopover(): GlossaryPopover {
       setOpen(false);
     };
     selfCloser.current = closer;
-    openPopoverClosers.add(closer);
+    const unregister = registerOverlayCloser(closer);
     return () => {
-      openPopoverClosers.delete(closer);
+      unregister();
       closer();
       if (suppressTimer.current !== null) {
         window.clearTimeout(suppressTimer.current);
@@ -146,11 +188,7 @@ export function useGlossaryPopover(): GlossaryPopover {
   const openNow = useCallback(() => {
     cancelTimer();
     clearSuppression();
-    for (const other of openPopoverClosers) {
-      if (other !== selfCloser.current) {
-        other();
-      }
-    }
+    closeOtherOverlays(selfCloser.current);
     setOpen(true);
   }, [cancelTimer, clearSuppression]);
 

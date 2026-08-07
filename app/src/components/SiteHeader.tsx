@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { HeaderSearch } from "@/components/HeaderSearch";
 import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useLocale, useT } from "@/lib/i18n-provider";
@@ -69,10 +70,19 @@ export function SiteHeader() {
             {t("app.siteName")}
           </Link>
           {/*
-           * Header-search slot — placement only; Story 2.14 owns all search
-           * behavior (input, typeahead, <md icon-button collapse live here).
+           * Header search (Story 2.14). It KEEPS this slot's `data-slot` and
+           * `min-w-0 flex-1` on its own root — `min-w-0` is what lets the input
+           * shrink inside this flex row, and without it the toggles are pushed
+           * off a 320 px viewport.
+           *
+           * NO `aria-hidden` HERE. Story 2.2's review removed it specifically
+           * for this story: "2.14 mounting search inside it would create
+           * focusable-content-inside-aria-hidden". Do not reintroduce it.
+           *
+           * Element order is AC 1's and is unchanged: wordmark → search →
+           * ES|EN → theme.
            */}
-          <div data-slot="header-search-slot" className="min-w-0 flex-1" />
+          <HeaderSearch />
           <ToggleGroup
             type="single"
             value={locale}

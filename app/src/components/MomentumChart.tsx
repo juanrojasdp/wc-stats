@@ -35,9 +35,19 @@ import {
 } from "@/viz/momentum-model";
 
 /*
- * The recharts-bearing leaf (Task 5), imported by MomentumSection through
- * next/dynamic so ~147 kB gzipped of chart library lands in its own chunk. This
- * module is the ONLY place recharts is imported.
+ * The FIRST of THREE recharts-bearing leaves (Task 5). The claim this docblock
+ * used to make — "this module is the ONLY place recharts is imported" — was
+ * already false when Story 2.10 added `TacticalCharts.tsx` beside it, and Story
+ * 2.15 adds `ProfileCharts.tsx` as the third; it is corrected here rather than
+ * left to mislead the next reader.
+ *
+ * MomentumSection NO LONGER IMPORTS THIS FILE FROM ITS `dynamic()` CALL (Story
+ * 2.15 ruled D1). It names `@/components/Charts` — the ONE lazy boundary — and
+ * reaches `MomentumChart` through that barrel. `next/dynamic` mints one async
+ * chunk group per distinct import SPECIFIER, so two call sites naming two leaves
+ * produced two groups and two 300.4 kB copies of the recharts vendor; one
+ * specifier produces one. The chart library still lands in its own deferred
+ * chunk, which is what the code-split was for.
  *
  * It resolves NO copy: every string arrives pre-resolved from the section,
  * which owns the locale and the format layer. That is not tidiness — the i18n

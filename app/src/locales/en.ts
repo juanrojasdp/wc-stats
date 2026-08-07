@@ -1246,4 +1246,140 @@ export const en: Dictionary = {
       false: "Lower is better",
     },
   },
+  /*
+   * Story 2.14 — the header search. Mirrors es.ts key for key; see that file for
+   * what this namespace reuses rather than mints, and why each minted key had to
+   * be new. Player, team and tournament NAMES pass through from the artifact
+   * untranslated (FR-30) — only the chrome around them is localized.
+   *
+   * Either file alone is BOTH a tsc error and a test failure: `i18n.test.ts`
+   * runs `expect(keyShape(en).sort()).toEqual(keyShape(es).sort())` plus a leaf
+   * sweep that throws on any non-string leaf.
+   */
+  search: {
+    // Sr-only, not visible — the h-14 header bar has no room for a label line.
+    label: "Search players, teams and matches",
+    placeholder: "Type a name or a match",
+    open: "Search",
+    close: "Close search",
+    sheetTitle: "Search the tournament",
+    listLabel: "Search results",
+    /*
+     * The player form only; the team and match prefixes are reused from hub.*.
+     * Not a link-list prefix — `role="option"` is Children Presentational, so
+     * this joins the option's name-from-content instead. See `es.ts` and
+     * `search-model.ts` for the full ruling (code review 2026-08-07, R1).
+     */
+    playerRowLink: "View the player",
+    /*
+     * Composed at the call site — t() has no interpolation. The guillemets are
+     * kept in EN too: they are the ruled glyph for this sentence (EXPERIENCE.md
+     * quotes it verbatim), and swapping in double quotes would give the two
+     * locales different punctuation for one string.
+     */
+    noResultsBefore: "No results for «",
+    noResultsAfter: "».",
+    loading: "Searching the tournament index",
+    error: "We could not load the tournament index.",
+    invalid: "The tournament index does not match this version of the site.",
+    // "Showing the first 10 of 214 results." Announced only when the cap bites;
+    // below it the shorter leaderboards.filterResults sentence is reused. See
+    // es.ts for the ruling (code review 2026-08-07, R2).
+    cappedBefore: "Showing the first ",
+    cappedMiddle: " of ",
+    cappedAfter: " results",
+  },
+  /*
+   * Story 2.15 — the Player Profile. Mirrors es.ts key for key; see that file
+   * for what this namespace REUSES rather than mints (the speed-zone bands and
+   * labels, every metric term and unit, positions, stages, the row-link
+   * prefixes, the column disclosure, the whole `viz.*` vocabulary) and why each
+   * minted key had to be new.
+   *
+   * Player and team NAMES pass through from the artifact untranslated (AD-7),
+   * so only the chrome around them is localized here.
+   *
+   * Either file alone is BOTH a tsc error and a test failure: `i18n.test.ts`
+   * runs `expect(keyShape(en).sort()).toEqual(keyShape(es).sort())` plus a leaf
+   * sweep that throws on any non-string leaf.
+   */
+  player: {
+    meta: {
+      separator: " · ",
+    },
+    shirt: "Shirt",
+    // Label-first and count-agnostic, so no counter needs a plural key.
+    appearances: {
+      played: "Matches",
+      started: "Started",
+      substitute: "Substitute",
+      minutes: "Minutes",
+    },
+    compare: "Compare",
+    sections: {
+      physical: { title: "Physical profile" },
+      trends: { title: "Match by match trend" },
+      aggregates: { title: "Tournament totals" },
+      matches: { title: "Match by match" },
+    },
+    axis: {
+      distance: "Distance",
+      speedZone: "Speed zones",
+      match: "Match",
+    },
+    column: {
+      speedZone: "Zone",
+      speedBand: "Band",
+      date: "Date",
+      opponent: "Opponent",
+      stage: "Stage",
+      started: "Started",
+      minutesPlayed: "Minutes",
+      metric: "Metric",
+      value: "Value",
+    },
+    started: {
+      yes: "Yes",
+      no: "No",
+    },
+    matchOne: "match",
+    matchMany: "matches",
+    // Lowercase: the counted noun in a sentence, not the axis title. See es.ts.
+    zonesNoun: "speed zones",
+    trendSelector: "Trend metric",
+    caption: {
+      physical: "Sorted by speed zone.",
+      // Not "sorted by metric": the artifact's order is alphabetical by metric
+      // CODE, which the displayed terms do not always follow.
+      aggregates: "Original data order.",
+      trends: "Sorted by date.",
+      trendsNote: "All series, one match per row.",
+      matches: "Sorted by date.",
+      matchesLink: "Each row opens that match in the expert layer.",
+    },
+    tableName: {
+      physical: "Speed zone table",
+      trends: "Match by match trend table",
+      aggregates: "Tournament totals table",
+      matches: "Player match table",
+    },
+    // PROPOSED copy — Juan to confirm or overturn at review (ruled D8). Neither
+    // sentence may imply the page is broken: 209 players have no appearances at
+    // all, and that is a fact about the tournament, not a gap in the site.
+    empty: {
+      trendsHeadline: "No match by match trend.",
+      trendsExplanation: "Per-match series need at least one match with minutes.",
+      matchesHeadline: "No matches in the tournament.",
+      matchesExplanation: "This player has no minutes yet, so there are no per-match rows.",
+    },
+    region: {
+      loading: "Loading the player data",
+      loaded: "Player data loaded.",
+      error: "We could not load the player data. Check your connection and try again.",
+      invalid: "This player's data does not match this version of the site.",
+      invalidExplanation: "We are aware. Please try again later.",
+      crashed: "We could not show this player's profile.",
+      crashedExplanation: "The rest of the page is still available.",
+    },
+  },
 };

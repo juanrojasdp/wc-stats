@@ -11,15 +11,19 @@ import {
 } from "@/viz/phases-model";
 
 /*
- * The SECOND recharts-bearing leaf (Story 2.10, Task 6), imported by all four
- * of this story's sections through next/dynamic so the ~147 kB gzipped chart
- * library stays in its own chunk.
+ * The SECOND of THREE recharts-bearing leaves (Story 2.10, Task 6): this file,
+ * `MomentumChart.tsx` and `ProfileCharts.tsx`. Its geometry — a grouped
+ * horizontal bar chart and a single-series involvement timeline — is shared with
+ * neither sibling, which is why there are three leaves rather than one module.
  *
- * MomentumChart.tsx's docblock says "This module is the ONLY place recharts is
- * imported". THIS FILE UPDATES THAT CLAIM BY ADDING A SIBLING, not by widening
- * that file — MomentumChart is shipped, reviewed and on this story's
- * do-not-touch list, and its geometry (a diverging area chart with a slider,
- * goal markers and a cursor chip) shares nothing with a grouped bar chart.
+ * NO SECTION IMPORTS THIS FILE FROM A `dynamic()` CALL ANY MORE (Story 2.15
+ * ruled D1, correcting the claim this docblock used to make). Every call site
+ * names `@/components/Charts`, the ONE lazy boundary, and reaches these two
+ * charts through it. The reason is measured: `next/dynamic` mints one async
+ * chunk group per distinct import SPECIFIER, so this file being named directly
+ * while `MomentumChart` was named directly produced two groups and two 300.4 kB
+ * copies of the recharts vendor. Adding a chart means exporting it from the
+ * barrel, never pointing a new `dynamic()` at a leaf.
  *
  * IT RESOLVES NO COPY. Every string arrives pre-resolved from the section,
  * which owns the locale and the format layer. That is not tidiness: THE i18n
@@ -527,10 +531,21 @@ export function InvolvementChart({
                 patternTransform="rotate(45)"
               >
                 <rect width={HATCH_TILE_PX} height={HATCH_TILE_PX} fill="var(--viz-team-b)" />
+                {/*
+                 * CENTRED, like DistributionChart's (Story 2.15, D11 — the
+                 * defect Story 2.13 filed against "whoever next opens this
+                 * file"). This copy was drawn at x=0: an SVG pattern tile CLIPS
+                 * rather than wraps, so half of a 1.5 px stroke centred on the
+                 * tile EDGE falls at negative x and is discarded, rendering a
+                 * 0.75 px stripe with no compensating mark at the opposite edge
+                 * — half the texture UX-DR11(b) is discharged with, and
+                 * invisible unless measured. Centring keeps the full width
+                 * inside the tile (2.25..3.75).
+                 */}
                 <line
-                  x1={0}
+                  x1={HATCH_TILE_PX / 2}
                   y1={0}
-                  x2={0}
+                  x2={HATCH_TILE_PX / 2}
                   y2={HATCH_TILE_PX}
                   stroke="var(--ink-primary)"
                   strokeWidth={HATCH_STROKE_PX}

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -412,7 +412,17 @@ describe.skipIf(!anyBuilt)("the footer reaches both /about and /glossary on ever
 const ARTIFACT_ALLOW_LIST = ["/index/leaderboards.json", "/index/tournament.json"];
 const SRC_DIR = fileURLToPath(new URL("../", import.meta.url));
 const ALIAS_IMPORT = /from\s+"@\/([^"]+)"/g;
-const FETCH_ARTIFACT_PATH = /fetchArtifact\s*<[^>]*>\s*\(\s*"([^"]+)"/g;
+/*
+ * BOTH SPELLINGS, and the second one is Story 2.14 Task 10.5 closing a blind
+ * spot rather than a tidy-up. The string-literal form is what `/`'s two fetches
+ * use; `MatchBundleRegion` uses a TEMPLATE literal
+ * (`` fetchArtifact<MatchBundle>(`/matches/${matchId}.json`) ``), which the
+ * literal-only pattern could never see — so a walk from the match route found
+ * ZERO artifacts and would have reported an empty allow-list as if the route
+ * fetched nothing at all. The interpolation is normalized to `{}` below, since
+ * the id is per-route by construction.
+ */
+const FETCH_ARTIFACT_PATH = /fetchArtifact\s*<[^>]*>\s*\(\s*(?:"([^"]+)"|`([^`]+)`)/g;
 
 /** Resolves an `@/x/y` specifier to a real file, or null for type-only paths. */
 function resolveAlias(specifier: string): string | null {
@@ -437,7 +447,9 @@ function artifactPathsReachableFrom(entry: string): string[] {
     seen.add(file);
     const source = readFileSync(file, "utf8");
     for (const match of source.matchAll(FETCH_ARTIFACT_PATH)) {
-      found.add(match[1]);
+      // Group 1 = "literal"; group 2 = `template`, whose ${…} holes collapse to
+      // {} so the path is comparable across routes.
+      found.add(match[1] ?? match[2].replace(/\$\{[^}]*\}/g, "{}"));
     }
     for (const match of source.matchAll(ALIAS_IMPORT)) {
       const resolved = resolveAlias(match[1]);
@@ -472,5 +484,270 @@ describe("/ artifact fetches (AC 5, Task 9.3)", () => {
   it("does NOT reach the match bundle — that path belongs to /matches/{id} (FR-34)", () => {
     const reachable = artifactPathsReachableFrom(SRC_DIR + "app/page.tsx");
     expect(reachable.some((artifactPath) => artifactPath.includes("matches"))).toBe(false);
+  });
+});
+
+/*
+ * ══════════ STORY 2.14 — HEADER SEARCH IN THE EXPORTED HTML (Task 10.4) ═════
+ *
+ * WHAT THIS FILE CAN AND CANNOT SEE HERE, stated plainly. `SiteHeader` is
+ * PRERENDERED into all five HTML files, and ruling 4 makes the `<md` collapse
+ * pure CSS — so the exported markup contains BOTH branches on every route. That
+ * is exactly what makes their PRESENCE assertable and their VISIBILITY not: this
+ * file can prove both branches shipped everywhere, and can prove nothing about
+ * which one a reader sees. That is browser work (Task 11.4).
+ *
+ * The open listbox and the sheet's contents are not assertable at all — both
+ * mount on open, and nothing here opens anything.
+ *
+ * MATCHED AS REAL DOM ATTRIBUTES (`role="combobox"`, never the payload's
+ * JSON-quoted spelling). The RSC flight payload has faked a pass in this file
+ * twice before — once on a serialized prop, once on a name that also occurs in
+ * markup — so every marker below is anchored to the `attr="value"` form.
+ */
+describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)", () => {
+  /** Every exported route document, DISCOVERED rather than enumerated. */
+  function everyRouteHtml(): { route: string; html: string }[] {
+    const documents = [
+      { route: "/", file: INDEX_HTML },
+      { route: "/404", file: NOT_FOUND_HTML },
+      { route: "/about", file: ABOUT_HTML },
+      { route: "/glossary", file: GLOSSARY_HTML },
+    ].filter((entry) => existsSync(entry.file));
+    const matchesDir = OUT_DIR + "matches/";
+    if (existsSync(matchesDir)) {
+      for (const slug of readdirSync(matchesDir)) {
+        const file = `${matchesDir}${slug}/index.html`;
+        if (existsSync(file)) {
+          documents.push({ route: `/matches/${slug}`, file });
+        }
+      }
+    }
+    return documents.map(({ route, file }) => ({ route, html: readFileSync(file, "utf8") }));
+  }
+
+  /*
+   * Local rather than imported: `glossary.ts` has a private one, and exporting a
+   * shipped module's internal helper to satisfy a test widens its surface for
+   * nobody's benefit. Locale copy is data, so it is escaped before it becomes a
+   * pattern.
+   */
+  function escapeForRegExp(source: string): string {
+    return source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  it("found every exported route to sweep — a vacuous sweep is not a pass", () => {
+    // Driven off what the export actually contains, never off a pinned count.
+    expect(everyRouteHtml().length).toBeGreaterThanOrEqual(4);
+  });
+
+  it("ships the combobox input on EVERY exported route", () => {
+    for (const { route, html } of everyRouteHtml()) {
+      expect(html, `no combobox on ${route}`).toContain('role="combobox"');
+      /*
+       * EXACTLY ONE. The sheet's input mounts only on open, so a second one in
+       * the STATIC markup would mean two comboboxes exposed at some width —
+       * which is the duplicate-roles failure ruling 4's CSS collapse avoids.
+       */
+      expect((html.match(/role="combobox"/g) ?? []).length, route).toBe(1);
+      /*
+       * 🔴 SCOPED TO A REAL `<label class="sr-only">`, NOT A BARE `toContain`
+       * (code review 2026-08-07). Task 10.4 says "Use `class="…"`-scoped
+       * matching — the RSC flight payload has faked a pass twice before", and
+       * this assertion was an unscoped substring search for the locale string.
+       * The serialized flight payload carries `es.search.label` as a prop value
+       * whether or not a `<label>` element exists in the DOM, so the old form
+       * would have stayed green through the exact failure it is here to catch:
+       * an input whose accessible name never rendered.
+       *
+       * The `for` attribute is asserted too — an sr-only label that names
+       * nothing is not an accessible name.
+       */
+      const labelled = html.match(
+        new RegExp(`<label\\b([^>]*)>${escapeForRegExp(es.search.label)}</label>`)
+      );
+      expect(labelled, `combobox has no rendered <label> on ${route}`).not.toBeNull();
+      // Attributes asserted separately, so React's emission order cannot break
+      // this the way a single fused pattern would.
+      const attributes = labelled?.[1] ?? "";
+      expect(attributes, `label names nothing on ${route}`).toMatch(/\bfor="[^"]+"/);
+      expect(attributes, `label is not sr-only on ${route}`).toMatch(
+        /class="[^"]*\bsr-only\b/
+      );
+    }
+  });
+
+  it("ships the `<md` icon button on EVERY exported route", () => {
+    for (const { route, html } of everyRouteHtml()) {
+      expect(html, `no search icon button on ${route}`).toContain(
+        `aria-label="${es.search.open}"`
+      );
+    }
+  });
+
+  it("keeps BOTH breakpoint branches in the markup, which is what ruling 4 requires", () => {
+    /*
+     * The collapse is CSS, not a JS breakpoint branch: `useMediaQuery`'s
+     * getServerSnapshot returns false and `SiteHeader` is prerendered, so a JS
+     * branch would emit narrow markup on the server and hydrate wide on desktop
+     * — a mismatch on every page. `hidden md:flex` and `md:hidden` are the
+     * mechanism; their presence here is the evidence it was used.
+     */
+    const { html } = everyRouteHtml()[0];
+    expect(html).toMatch(/class="[^"]*\bhidden\b[^"]*\bmd:flex\b/);
+    expect(html).toMatch(/class="[^"]*\bmd:hidden\b/);
+  });
+
+  it("keeps the reserved slot's own two classes on the mounted component", () => {
+    // Story 2.2 Task 5.3's slot: `min-w-0` is what lets the input shrink inside
+    // the header's flex row, and dropping it pushes the toggles off a 320 px
+    // viewport. `data-slot` stays as the slot's identity.
+    const { html } = everyRouteHtml()[0];
+    expect(html).toContain('data-slot="header-search-slot"');
+    expect(html).toMatch(/data-slot="header-search-slot"[^>]*class="[^"]*\bmin-w-0\b/);
+  });
+
+  it("emits NO <section> from the header — heroSection() slices on the first one", () => {
+    /*
+     * 🔴 `matches/static-output.test.ts`'s `heroSection()` slices the WHOLE
+     * document at its first `<section>`, and the header renders before <main>.
+     * A `<section>` here would silently re-target 19 Hero assertions onto search
+     * markup — green tests asserting the wrong DOM, which is the exact
+     * lying-about-completion failure this story must not cause.
+     *
+     * Asserted on a match route, since that is the document heroSection() reads.
+     */
+    const matchRoute = everyRouteHtml().find((entry) => entry.route.startsWith("/matches/"));
+    expect(matchRoute, "no match route in the export").toBeDefined();
+    const html = (matchRoute as { html: string }).html;
+    const firstSection = html.indexOf("<section");
+    const header = html.indexOf("<header");
+    expect(firstSection).toBeGreaterThan(-1);
+    expect(header).toBeGreaterThan(-1);
+    // The first <section> comes AFTER the header, i.e. the header emits none.
+    expect(firstSection).toBeGreaterThan(header);
+    expect(html.slice(header, firstSection)).not.toContain("<section");
+  });
+
+  it("does NOT inline the search corpus into any route's HTML (AD-11, ruling 1)", () => {
+    /*
+     * The corpus is joined at RUNTIME from `knockoutResults` (Task 2.6) and is
+     * never prerendered — "do not optimise by prerendering the corpus" is the
+     * ruling. The sibling guard above asserts this for `/`; every OTHER route is
+     * new surface this story put a header search on, and none of them referenced
+     * this artifact at all before.
+     */
+    for (const { route, html } of everyRouteHtml()) {
+      expect(html, `${route} inlines the index`).not.toContain("knockoutResults");
+      expect(html, `${route} inlines the index`).not.toContain("goalDifference");
+    }
+  });
+});
+
+/*
+ * ══════════ STORY 2.14 Task 10.5 — THE ALLOW-LIST BLIND SPOT ══════════
+ *
+ * The walk above starts at `src/app/page.tsx` — the HUB's entry. Nothing has
+ * ever walked from `layout.tsx`, so the GLOBAL CHROME's fetches were invisible
+ * to this gate: a fetch added to the header appears on all five routes and no
+ * test could see it. This story adds exactly such a fetch, so it closes the hole
+ * in the same diff rather than filing it.
+ *
+ * PER-ROUTE ALLOW-LISTS, because the routes genuinely differ: the Hub reaches
+ * two index artifacts, the chrome reaches one, the match route reaches its own
+ * bundle. A single global list would have to be their union, which is the
+ * assertion that permits everything.
+ */
+describe("global-chrome and match-route artifact fetches (Story 2.14 Task 10.5)", () => {
+  it("the LAYOUT reaches exactly the tournament index — the header's one fetch", () => {
+    const reachable = artifactPathsReachableFrom(SRC_DIR + "app/layout.tsx");
+    // Set equality, deliberately: a MISSING fetch is as much a defect as an
+    // extra one. If this list ever grows, the global chrome grew a data
+    // dependency that every route pays for — precisely ruling 1's subject.
+    expect(reachable).toEqual(["/index/tournament.json"]);
+  });
+
+  it("the layout's fetch is LAZY, so AC 7's declared departure stays bounded", () => {
+    /*
+     * A static module-graph edge is what this walk measures, and the header
+     * genuinely has one — the honest half of ruling 1's disclosure. What bounds
+     * the cost is that nothing FIRES on load: the loader is called only from an
+     * engagement handler. Pinned structurally, so a later refactor cannot turn
+     * the edge into an on-mount fetch without failing here.
+     */
+    const loader = readFileSync(SRC_DIR + "lib/tournament-index.ts", "utf8");
+    expect(loader).toContain('fetchArtifact<Tournament>("/index/tournament.json")');
+    const component = readFileSync(SRC_DIR + "components/HeaderSearch.tsx", "utf8");
+    expect(component).toContain("loadTournamentIndex()");
+    /*
+     * `attempt === 0` IS THE LAZINESS GUARD, and it replaced `!engaged` at code
+     * review 2026-08-07. The boolean was a one-way latch, which made the guard
+     * do double duty as "never loaded" AND "never load again" — so a rejected
+     * fetch was permanent. The counter separates the two: 0 still means nothing
+     * has been requested (which is what this test pins), and every later value
+     * is one attempt, which is what makes a retry expressible at all.
+     */
+    expect(component).toMatch(/if \(attempt === 0\) \{/);
+    // And the loader is still reached only from an effect gated on it, never
+    // from module scope or a render path.
+    expect(component).toMatch(/}, \[attempt\]\);/);
+  });
+
+  it("the MATCH route reaches its own bundle and NOT the tournament index (FR-34)", () => {
+    /*
+     * FR-34 — "no tournament.json at runtime" — is scoped to this route (Story
+     * 2.12 scoped it). The route's OWN module graph must stay clean of the
+     * index: the header's fetch reaches this route through the LAYOUT, on
+     * demand, which is the departure ruling 1 declares and bounds.
+     */
+    const reachable = artifactPathsReachableFrom(SRC_DIR + "app/matches/[slug]/page.tsx");
+    expect(reachable).toEqual(["/matches/{}.json"]);
+    expect(reachable).not.toContain("/index/tournament.json");
+  });
+
+  it("still walks far enough to see a TEMPLATE-literal fetch several modules deep", () => {
+    /*
+     * Guards the guard, as its sibling does for `/`. This one also guards the
+     * regex extension itself: the match bundle's call is a template literal, and
+     * before Task 10.5 the literal-only pattern could not see it — so a walk
+     * from this route returned an empty array and would have reported "this
+     * route fetches nothing" as a pass.
+     */
+    expect(readFileSync(SRC_DIR + "app/matches/[slug]/page.tsx", "utf8")).not.toContain(
+      "fetchArtifact"
+    );
+    expect(artifactPathsReachableFrom(SRC_DIR + "app/matches/[slug]/page.tsx")).toHaveLength(1);
+  });
+
+  /*
+   * ───────────── STORY 2.15 — /players/[slug] (Task 9.3) ─────────────
+   *
+   * The third per-route allow-list, on the two above's terms exactly. It needed
+   * no change to the walker: Task 10.5 already extended `FETCH_ARTIFACT_PATH` to
+   * match BOTH the string-literal and the TEMPLATE-literal spellings, and this
+   * route's call is the template form
+   * (`` fetchArtifact<PlayerProfile>(`/index/player-profiles/${slug}.json`) ``),
+   * which the literal-only pattern could never have seen.
+   */
+  it("the PLAYER route reaches its own profile and NOTHING else (AD-11, FR-26)", () => {
+    /*
+     * SET EQUALITY, deliberately: a MISSING fetch is as much a defect as an
+     * extra one. A profile is cross-match by definition, so the temptation to
+     * pull `tournament.json` in — for opponent team codes, say — is real and
+     * specific; this is what would catch it.
+     */
+    const reachable = artifactPathsReachableFrom(SRC_DIR + "app/players/[slug]/page.tsx");
+    expect(reachable).toEqual(["/index/player-profiles/{}.json"]);
+    expect(reachable).not.toContain("/index/tournament.json");
+    expect(reachable).not.toContain("/index/leaderboards.json");
+  });
+
+  it("still walks far enough to see the player route's template-literal fetch", () => {
+    // Guards the guard, as both siblings do: page.tsx holds no fetch itself —
+    // the only one lives two hops away in PlayerProfileRegion.
+    expect(readFileSync(SRC_DIR + "app/players/[slug]/page.tsx", "utf8")).not.toContain(
+      "fetchArtifact"
+    );
+    expect(artifactPathsReachableFrom(SRC_DIR + "app/players/[slug]/page.tsx")).toHaveLength(1);
   });
 });

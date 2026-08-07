@@ -160,6 +160,27 @@ export function teamHref(teamId: string): string {
   return `/teams/${teamId}/`;
 }
 
+/**
+ * `/players/{playerId}/` — DOES NOT RESOLVE UNTIL STORY 2.15, on exactly the
+ * footing `teamHref` above describes.
+ *
+ * Added by Story 2.14, which is the first surface to need a PLAYER href from a
+ * helper: `LineupsDisclosure.tsx` and `LeaderboardsRegion.tsx` both interpolate
+ * this route inline today, so the shape was already shipped three times over
+ * before it had a home. It lives here, beside its two siblings, because a
+ * caller that imports `matchHref` and `teamHref` from this module and then
+ * hand-writes the third is exactly how a missing trailing slash gets in — and
+ * `trailingSlash: true` makes a slash-less href a redirect rather than a link.
+ *
+ * The id IS the slug (AD-3), and `contract/common.schema.json` constrains
+ * `playerId` to `^[a-z0-9]+(-[a-z0-9]+)*-[a-z]{3}$` — verified 0 violations
+ * across all 1,248 real player ids — so no `encodeURIComponent` is needed here
+ * any more than it is above.
+ */
+export function playerHref(playerId: string): string {
+  return `/players/${playerId}/`;
+}
+
 /* ------------------------------------------------------------ dictionary keys */
 
 /**

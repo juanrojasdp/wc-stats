@@ -2,7 +2,12 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { Leaderboards, MatchBundle, Tournament } from "@/lib/contract/contract-types";
+import type {
+  Leaderboards,
+  MatchBundle,
+  PlayerProfile,
+  Tournament,
+} from "@/lib/contract/contract-types";
 import { SCHEMA_VERSION } from "@/lib/contract/schema-version";
 
 /*
@@ -69,6 +74,40 @@ export function readLeaderboards(): Leaderboards {
     throw new Error(
       `build-data: leaderboards.json is at schemaVersion ${String(payload.schemaVersion)}, ` +
         `but this build expects ${String(SCHEMA_VERSION)}.`
+    );
+  }
+  return payload;
+}
+
+/**
+ * One player's profile artifact, read at build time for the pre-rendered Hero
+ * and for `<title>`/OG (Story 2.15, AD-11). `playerId` IS the route slug (AD-3).
+ *
+ * IT FAILS LOUD TWICE, and both throws are load-bearing at 2.19's scale.
+ *
+ * The first is `readJson`'s not-found throw. `generateStaticParams` maps the
+ * route manifest 1:1 with NO existence filter (ruled D10) precisely so that a
+ * listed player with no artifact BREAKS THE BUILD rather than silently
+ * disappearing from the site: AD-4's bijection ("one profile artifact per listed
+ * entity — empty sections allowed, absence not") is pipeline-asserted, and a
+ * filter here would convert a real pipeline breach into 1,247 routes that look
+ * complete.
+ *
+ * The second is the `schemaVersion` gate, on `readLeaderboards`' pattern and for
+ * its reason. `PlayerProfileRegion` refuses a mismatched payload at runtime and
+ * shows the "invalid" panel; a build-time read that gated on nothing would let
+ * the two halves of one screen contradict each other — a pre-rendered Hero full
+ * of real figures above a panel saying the data does not match this version. A
+ * static export that cannot state its own schema is not one worth publishing.
+ */
+export function readPlayerProfile(playerId: string): PlayerProfile {
+  const payload = readJson<PlayerProfile>(
+    path.join("index", "player-profiles", `${playerId}.json`)
+  );
+  if (payload.schemaVersion !== SCHEMA_VERSION) {
+    throw new Error(
+      `build-data: player-profiles/${playerId}.json is at schemaVersion ` +
+        `${String(payload.schemaVersion)}, but this build expects ${String(SCHEMA_VERSION)}.`
     );
   }
   return payload;

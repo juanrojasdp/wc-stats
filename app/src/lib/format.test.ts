@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   compareText,
+  foldForSearch,
   formatDate,
   formatDecimal,
   formatInteger,
@@ -168,5 +169,92 @@ describe("includesText (Story 2.13)", () => {
     // The one behavioural difference that made a new export necessary.
     expect(textEquals("Núñez", "nun")).toBe(false);
     expect(includesText("Núñez", "nun")).toBe(true);
+  });
+});
+
+/*
+ * STORY 2.14 — `foldForSearch` AS A PUBLIC FUNCTION.
+ *
+ * The header typeahead highlights the MATCHED SUBSTRING, which needs indices;
+ * `includesText` returns a boolean and discards them. So 2.14 folds the
+ * haystack itself and does the arithmetic there — and the arithmetic is only
+ * sound while the fold is LENGTH-PRESERVING on the string being folded.
+ *
+ * That property is pinned here rather than in the search model, because it is a
+ * property of THIS function: a future change to `DIACRITICS` that starts
+ * dropping a character the corpus contains would silently shift every highlight
+ * one column left, and the search model's own guard (fold length !== original
+ * length → no highlight) would quietly swallow it instead of failing.
+ */
+describe("foldForSearch (Story 2.14)", () => {
+  /*
+   * TWO GROUPS, AND THE NAME USED TO HIDE THAT (code review 2026-08-07). The
+   * comment claimed the whole array was "the real index's ENTIRE non-ASCII
+   * inventory", which is true of the first three and invented of the last three
+   * — the corpus inventory is exactly `ü`, `ô`, `ç`, as the sibling assertion in
+   * `search-model.test.ts` proves. The last three are READER-typed forms, which
+   * the test title has always covered ("the corpus and its readers") but the
+   * constant's name and comment did not.
+   *
+   * Both groups matter and both belong here: the fold must be length-preserving
+   * on the haystack (group one, or `matchSpan` silently drops every highlight)
+   * and on the needle (group two, or a reader who correctly types "Quiñones"
+   * gets a shifted span).
+   */
+  // The corpus's entire non-ASCII inventory across all 3,008 `name` fields.
+  const CORPUS_ACCENTS = ["Türkiye", "Côte d'Ivoire", "Curaçao"];
+  // Accented forms a reader types that the stripped corpus does not contain.
+  const READER_ACCENTS = ["Núñez", "Quiñones", "Rüdiger"];
+
+  it("is length-preserving for every accented form the corpus and its readers produce", () => {
+    for (const name of [...CORPUS_ACCENTS, ...READER_ACCENTS]) {
+      expect(foldForSearch(name), name).toHaveLength(name.length);
+    }
+  });
+
+  it("folds accents and case so a correctly-spelled needle matches stripped data", () => {
+    // The actual justification for AC 2: all 1,248 real player names arrive
+    // with diacritics ALREADY stripped ("Julian QUINONES", "Darwin NUNEZ"), so
+    // it is the READER who types the accent. Folding both sides is what works.
+    expect(foldForSearch("Quiñones")).toBe("quinones");
+    expect(foldForSearch("Núñez")).toBe("nunez");
+    expect(foldForSearch("Türkiye")).toBe("turkiye");
+  });
+
+  /*
+   * NOT length-preserving on the needle, and this is the property Story 2.14's
+   * ruling 6 rests on. `\p{Diacritic}` covers SPACING characters that are not
+   * combining marks — `^` U+005E, `´` U+00B4, `¨` U+00A8 — all of which are
+   * dead-key-adjacent on a Spanish keyboard, so a reader really can type them.
+   * They are DELETED rather than combined, so the fold shortens the string.
+   */
+  it("is NOT length-preserving for the spacing diacritics a Spanish keyboard emits", () => {
+    for (const typed of ["a^b", "a´b", "a¨b"]) {
+      expect(foldForSearch(typed).length, typed).toBeLessThan(typed.length);
+    }
+  });
+
+  /*
+   * 🔴 THE OLD ASSERTION COULD NOT FAIL (code review 2026-08-07). It read
+   * `expect(includesText("Türkiye","turk")).toBe(
+   * foldForSearch("Türkiye").includes("turk"))` — and `includesText` IS
+   * `foldForSearch(h).includes(foldForSearch(n))`, with `foldForSearch("turk")`
+   * equal to `"turk"`. Both sides were the same expression, so the test passed
+   * for any implementation of either function, including a broken one.
+   *
+   * Replaced with assertions on LITERAL expected values, which is this repo's
+   * standing rule: "an expectation built by the function under test reproduces
+   * that function's bugs and can only prove it was called."
+   */
+  it("matches accent- and case-insensitively in both directions", () => {
+    // Accent on the haystack, plain needle — the real corpus shape.
+    expect(includesText("Türkiye", "turk")).toBe(true);
+    // Accent on the NEEDLE, stripped haystack — the reader shape, and the one
+    // that actually justifies AC 2: all 1,248 player names ship stripped.
+    expect(includesText("Julian QUINONES", "quiñones")).toBe(true);
+    // Case alone.
+    expect(includesText("Curaçao", "CURACAO")).toBe(true);
+    // A genuine non-match must stay false, or the folding is matching too much.
+    expect(includesText("Türkiye", "turkmenistan")).toBe(false);
   });
 });

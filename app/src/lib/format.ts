@@ -92,6 +92,52 @@ export function formatDate(iso: string, locale: Locale): string {
   }).format(utcDateFrom(year, month, day, iso));
 }
 
+/**
+ * COMPACT NUMERIC date from an ISO 8601 string — es-CO: "11/6", en: "06/11".
+ *
+ * ADDED BY STORY 2.15 for a chart AXIS, which is the one place `formatDate`'s
+ * full form cannot go. A trend chart plots up to 8 matches on a categorical x
+ * axis, and recharts renders an axis tick as ONE `<text>` with NO WRAPPING and
+ * no truncation: "11 de junio de 2026" is ~19 characters per tick against a
+ * ~220 px plot at 320 px, so eight of them collide into illegibility.
+ *
+ * NUMERIC RATHER THAN AN ABBREVIATED MONTH NAME, and that is measured rather
+ * than aesthetic. `{day: "numeric", month: "short"}` gives "Jun 11" in EN but
+ * "11 de jun" in es-CO — Spanish inserts the preposition — so the locale that
+ * decides the geometry would be NINE characters wide, and stripping that "de "
+ * would mean hand-editing Intl output. This request is at most FIVE characters
+ * in either dictionary and is still locale-ORDERED by Intl (day-first in es,
+ * month-first in en) rather than by a hardcoded pattern.
+ *
+ * `2-digit` IS A REQUEST, NOT A GUARANTEE, and es-CO declines it: it renders its
+ * own short form ("11/6", "5/7") while en zero-pads ("06/11"). That is correct
+ * per-locale behaviour and is why nothing downstream may assume a fixed width —
+ * the axis reserves space from the LONGEST FORMATTED tick, never from a count.
+ *
+ * The full date and the opponent both remain reachable: the chart's data-table
+ * alternative and the per-match table directly below it carry them.
+ *
+ * IT LIVES HERE, not beside its caller, because this module's header declares
+ * itself the ONLY formatting path (AD-7) — a second `Intl.DateTimeFormat` in a
+ * viz module is precisely the drift that declaration exists to prevent.
+ *
+ * Same contract as `formatDate` in every other respect: the same anchored
+ * `DATE_ONLY` read, the same `utcDateFrom` rejection of a rolled-over calendar
+ * date, and the same UTC formatting so no host timezone can move the day.
+ */
+export function formatDateShort(iso: string, locale: Locale): string {
+  const match = DATE_ONLY.exec(iso);
+  if (!match) {
+    throw new Error(`format: "${iso}" is not an ISO 8601 date`);
+  }
+  const [, year, month, day] = match;
+  return new Intl.DateTimeFormat(NUMBER_LOCALE[locale], {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: "UTC",
+  }).format(utcDateFrom(year, month, day, iso));
+}
+
 // A numeric offset is REQUIRED. `Z` is deliberately rejected: the contract
 // defines kickoff as venue-local time with the venue's UTC offset, and no
 // 2026 venue is at UTC — a `Z` timestamp can only be a pipeline bug emitting
@@ -179,6 +225,27 @@ export function includesText(haystack: string, needle: string): boolean {
  */
 const DIACRITICS = /\p{Diacritic}/gu;
 
-function foldForSearch(value: string): string {
+/**
+ * The fold itself, EXPORTED for its second consumer (Story 2.14).
+ *
+ * `includesText` above answers "does it match" and throws the arithmetic away.
+ * The header typeahead needs the arithmetic: it highlights the matched
+ * substring, so it must locate the needle INSIDE the folded haystack and then
+ * slice the ORIGINAL string at those indices. Only the fold can give it an
+ * index domain that lines up with what it searched.
+ *
+ * THE CALLER OWNS THE 1:1 QUESTION, and it is not answered here. Folding is
+ * length-preserving for every accented form the corpus contains (all three of
+ * them — `ü`, `ô`, `ç` — decompose to base + combining mark, and only the mark
+ * is dropped), but it is NOT length-preserving in general: the spacing
+ * diacritics named above are DELETED outright, so `"a^b"` (3) folds to `"ab"`
+ * (2) and any index computed on the folded form points at the wrong character
+ * of the original. `format.test.ts` pins both halves of that property;
+ * `search-model.ts` guards on it before it slices.
+ *
+ * Prefer `includesText` whenever a boolean is enough — it keeps the fold in one
+ * place and cannot get the index arithmetic wrong by construction.
+ */
+export function foldForSearch(value: string): string {
   return value.normalize("NFD").replace(DIACRITICS, "").toLowerCase();
 }

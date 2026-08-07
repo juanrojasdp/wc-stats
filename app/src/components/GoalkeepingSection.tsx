@@ -74,8 +74,15 @@ function ChartFallback() {
  * import promise. Only the TYPE crosses back the other way — a value import
  * would re-link recharts onto the critical path.
  */
+/*
+ * `@/components/Charts`, the ONE lazy boundary (Story 2.15 ruled D1) — never
+ * `@/components/TacticalCharts` directly. `next/dynamic` mints one async chunk
+ * group per distinct import specifier, and a second specifier means a second
+ * ~300 kB recharts vendor copy. The `loading` fallback and `ssr: false` are
+ * unchanged.
+ */
 const InvolvementChart = dynamic(
-  () => import("@/components/TacticalCharts").then((module) => module.InvolvementChart),
+  () => import("@/components/Charts").then((module) => module.InvolvementChart),
   { ssr: false, loading: () => <ChartFallback /> }
 );
 

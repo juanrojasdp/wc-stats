@@ -3016,3 +3016,34 @@ than a pre-composed `"Hora (hora local)"`, so no shipped head reaches the unguar
   rather than deleted because the measurement — a spawning test is the shape that flakes under
   worker contention — is the reusable part, and because the next story to add a heavy test file
   should expect to meet it again.
+
+## Deferred from: code review of 2-14-header-search (2026-08-07)
+
+- **`playerHref` ships without converting the three inline `/players/` call sites.** Story 2.14
+  added `playerHref` to `hub-model.ts`, and the helper's own docblock justifies its existence by
+  naming call sites that interpolate the route by hand — *"a caller that … hand-writes the third
+  is exactly how a missing trailing slash gets in"*. All three remain hand-written:
+  `LineupsDisclosure.tsx:34`, `LeaderboardsSection.tsx:200` and `LeaderboardsRegion.tsx:424` (the
+  last two also hand-write `/teams/${…}/` beside the existing `teamHref`). So the helper currently
+  adds a fourth spelling rather than consolidating three. **Not deferred to nobody — Story 2.15
+  already owns it by name.** Its D10 rules: *"Three surfaces interpolate `/players/` inline today
+  and all three become live links when this route ships … Switch all three to `playerHref()`."*
+  Recorded here only so the interval between 2.14 landing and 2.15 shipping is not mistaken for an
+  oversight. **Owner: 2.15. Close this entry when 2.15 converts them.**
+
+- **The static-output module-graph walk cannot see two legal spellings of the fetch it asserts set
+  equality over.** `app/src/app/static-output.test.ts:425`'s `FETCH_ARTIFACT_PATH` is
+  `/fetchArtifact\s*<[^>]*>\s*\(\s*(?:"([^"]+)"|`([^`]+)`)/g` — the `<[^>]*>` segment is
+  **mandatory**, so a `fetchArtifact("/index/x.json")` written with an inferred type argument
+  matches nothing, and `[^>]*` terminates early on any nested generic
+  (`fetchArtifact<Record<string, T>>`). `ALIAS_IMPORT` (`:414`) follows only `from "@/…"`, so a
+  relative import or a dynamic `import()` truncates the walk silently. The assertion built on it,
+  `expect(reachable).toEqual(["/index/tournament.json"])`, describes itself as catching a MISSING
+  fetch as well as an extra one; against either unmatched spelling it stays green. **Pre-existing:
+  the mandatory-generic segment predates 2.14, which only added the template-literal alternation.**
+  Partly mitigated in place — `tournament-index.ts:81-88` documents the resulting constraint at the
+  call site in red (*"THE FETCH CALL IS WRITTEN VERBATIM AND MUST STAY THAT WAY"*) — but the
+  mitigation is a comment, not a gate, and it protects only the one call site that carries it.
+  **Owner: unassigned.** The fix is to make the generic optional and to walk relative and dynamic
+  imports, or to replace the regex walk with a real module-graph read.
+

@@ -11,6 +11,7 @@ import type { Leaderboard, Leaderboards } from "@/lib/contract/contract-types";
 import { SCHEMA_VERSION } from "@/lib/contract/schema-version";
 import { fetchArtifact } from "@/lib/data";
 import { includesText, formatInteger } from "@/lib/format";
+import { playerHref, teamHref } from "@/lib/hub-model";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import {
   formatLeaderboardValue,
@@ -421,7 +422,7 @@ function LeaderboardBoard({ board, initiallyOpen }: { board: Leaderboard; initia
          */
         render: (row) => (
           <Link
-            href={entityIsTeam ? `/teams/${row.entityId}/` : `/players/${row.entityId}/`}
+            href={entityIsTeam ? teamHref(row.entityId) : playerHref(row.entityId)}
             prefetch={PREFETCH}
             className="underline underline-offset-2 hover:no-underline"
           >

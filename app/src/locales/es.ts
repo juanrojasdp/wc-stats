@@ -2269,6 +2269,316 @@ export const es = {
       false: "Menos es mejor",
     },
   },
+  /*
+   * ══════════ STORY 2.14 — LA BÚSQUEDA DEL ENCABEZADO ══════════
+   *
+   * A NEW TOP-LEVEL NAMESPACE, at the tail, deliberately: it is the one append
+   * point that cannot collide with a story extending an existing namespace, and
+   * three stories are in flight against this file.
+   *
+   * WHAT THIS REUSES AND DOES NOT RE-MINT (ruling 9). `leaderboards`' own
+   * docblock is the binding precedent — "NO COLUMN LABEL FOR THE ENTITY OR THE
+   * TEAM. Those two heads resolve viz.table.player / viz.table.team … a second
+   * pair here would be two sources for one term."
+   *   · entity-type labels → `viz.table.player`, `viz.table.team`,
+   *     `hub.results.column.match` (via `entityKindLabelKey`)
+   *   · the sr-only link prefixes → `hub.standings.rowLink` ("Ver el equipo")
+   *     and `hub.results.rowLink` ("Ver el partido"). Only the PLAYER form is
+   *     minted below, because no surface had one.
+   *   · the result count → `leaderboards.filterResults` / `filterResultsOne`
+   *   · the link to `/` → `notFound.homeLink`
+   *   · the match decider → `hub.results.extraTimeShort`, `match.meta.penShort`
+   *   · the composition glyphs → `hub.separator`, `match.hero.scoreSeparator`
+   *     (the en dash is also the only fold-safe joiner — see `search-model.ts`)
+   *
+   * WHAT IT MINTS, and why each one had to be new. Every key below has a
+   * rendering call site in this story's diff (2.18's BINDING prohibition: "a row
+   * whose surface does not exist cannot be implemented in a locale file without
+   * minting a dead key"). The six render states Task 7.8 enumerates are
+   * idle-no-query · corpus-loading · results · no-results · error · invalid, and
+   * the last four each carry their own copy here. `error` and `invalid` are
+   * NEVER the AC's empty state: "no corpus" and "zero matches" are different
+   * facts, and the AC's copy asserts the second.
+   *
+   * NOT UNDER `a11y.*`. `i18n.test.ts` pins `Object.keys(es.a11y)` EXACTLY to
+   * ["localeAnnouncement"], and `es.app` to ["siteName"]; a live-region string
+   * parked there goes instantly red.
+   */
+  search: {
+    /*
+     * The input's accessible name, and SR-ONLY rather than visible — a declared
+     * departure from `LeaderboardsRegion`'s visible filter label, which this
+     * component otherwise copies wholesale. The header bar is a fixed h-14
+     * (56 px) holding the wordmark, the input, the ES|EN toggle and the theme
+     * toggle; a label line above the input does not fit without growing the bar,
+     * and Task 8.4 requires it not to grow. It is still a real <label htmlFor>,
+     * so the name is programmatically associated exactly as the visible one is.
+     *
+     * It NAMES ALL THREE ENTITY TYPES, which is why `leaderboards.filterLabel`
+     * ("Filtrar por nombre") could not be reused: that copy is leaderboard-
+     * scoped and would be false about a control that also finds matches.
+     */
+    label: "Busca jugadores, equipos y partidos",
+    /*
+     * A HINT, never the only label. `leaderboards.filterPlaceholder` is "Escribe
+     * un nombre" — true of a name filter over one board, false here, where a
+     * match is found by two team names rather than by a name at all.
+     */
+    placeholder: "Escribe un nombre o un partido",
+    /** The `<md` icon button that opens the sheet (UX-DR4). */
+    open: "Buscar",
+    /** The sheet's own close control; Radix also closes it on Esc. */
+    close: "Cerrar la búsqueda",
+    /*
+     * The sheet's accessible title. Radix Dialog requires one, and it must not
+     * simply repeat the trigger's name — a reader who has already activated
+     * "Buscar" learns nothing from a panel called "Buscar".
+     */
+    sheetTitle: "Buscar en el torneo",
+    /** The listbox's accessible name, so the option list is not anonymous. */
+    listLabel: "Resultados de la búsqueda",
+    /*
+     * The sr-only prefix on a PLAYER row, on `hub.*.rowLink`'s idiom, so an
+     * option reads as an entity to open rather than a bare proper noun. The team
+     * and match forms are REUSED from `hub.*`.
+     *
+     * 🔴 NOT A LINK-LIST PREFIX HERE (code review 2026-08-07, ruled R1). This
+     * key used to be justified as making "a screen reader's link list read 'Ver
+     * el jugador Julian QUINONES'". That cannot happen: the row's anchor sits
+     * inside `role="option"`, which is Children Presentational in ARIA 1.2, so
+     * it never reaches a link list at all. What the prefix actually does is join
+     * the option's name-from-content. Kept on that basis — naming the entity
+     * type before the proper noun still earns its place when three kinds
+     * interleave in one list and `Emiliano MARTINEZ` occurs twice in the real
+     * corpus. `search-model.ts` carries the full ruling.
+     */
+    playerRowLink: "Ver el jugador",
+    /*
+     * "Sin resultados para «{query}»." — COMPOSED AT THE CALL SITE, because
+     * t() has no interpolation (stated seven times in this file) and because
+     * `react/jsx-no-literals` with noStrings bans the guillemets as JSX text.
+     * The two fragments are joined into a const and passed through an expression
+     * container — the shipped `…Before`/`…After` idiom. «» is legal here: the
+     * forbidden-register sweep bans [¡!], not guillemets.
+     */
+    noResultsBefore: "Sin resultados para «",
+    noResultsAfter: "».",
+    /*
+     * CORPUS-LOADING. The header searches on four routes where nothing else
+     * fetches the index, so the first keystroke can land before the artifact
+     * does. Silence there reads as "no matches", which is a different and false
+     * fact.
+     */
+    loading: "Buscando en el índice del torneo",
+    /** The fetch failed — a network problem, distinct from zero matches. */
+    error: "No pudimos cargar el índice del torneo.",
+    /*
+     * It arrived intact and failed the schemaVersion gate — a data-integrity
+     * problem. Mirrors `hub.region.invalid`'s distinction rather than restating
+     * it, because this region is on routes the Hub never reaches.
+     */
+    invalid: "El índice del torneo no coincide con esta versión del sitio.",
+    /*
+     * THE CAPPED-RESULTS ANNOUNCEMENT (code review 2026-08-07, ruled R2).
+     * "Mostrando los primeros 10 de 214 resultados."
+     *
+     * The panel renders at most `RESULT_LIMIT` rows while the announcement used
+     * to state only the uncapped total, so a reader was told 214 and given 10
+     * with nothing disclosing the gap. Announced ONLY when the two numbers
+     * differ; below the cap the shorter `leaderboards.filterResults` sentence
+     * still applies and is reused rather than restated.
+     *
+     * Three fragments on the `noResultsBefore`/`noResultsAfter` idiom above,
+     * because t() has no interpolation and both numbers go through
+     * `formatInteger` for the locale's own digit grouping. Composed into a const
+     * at the call site, never in JSX.
+     */
+    cappedBefore: "Mostrando los primeros ",
+    cappedMiddle: " de ",
+    cappedAfter: " resultados",
+  },
+  /*
+   * STORY 2.15 — the Player Profile, `/players/{slug}`.
+   *
+   * Register: TUTEO, neutral LatAm, no exclamation marks (the file's standing
+   * registration, restated because this namespace is appended after 2.14's).
+   *
+   * WHAT THIS NAMESPACE DELIBERATELY DOES NOT CONTAIN, because it already ships
+   * elsewhere and two sources for one term is how they diverge (ruled D12):
+   *   · the speed-zone BANDS  → `expert.fieldTitle.distanceZone1..5`
+   *     ("0-7 km/h" … "25 km/h o más")
+   *   · the speed-zone LABELS → `expert.field.distanceZone1..5` ("Zona 1" …)
+   *   · high-speed runs, sprints, take-ons, step-ins, both duel types,
+   *     attemptsAtGoal and passesAttempted → `expert.field.*`
+   *   · every metric term and its unit → `enums.leaderboardMetric.*`,
+   *     `enums.unit.*` (`enums.metric` is SEALED — i18n.test.ts pins it to the
+   *     19 Domain B fields — so no Domain G label may ever go there)
+   *   · positions → `enums.position.*`; stages → `enums.stage.*`
+   *   · the row-link prefixes → `hub.results.rowLink` ("Ver el partido") and
+   *     `hub.standings.rowLink` ("Ver el equipo")
+   *   · the `<md` column disclosure → `hub.columns.more` / `hub.columns.fewer`
+   *   · the data-alternative control, the attribution and the sort vocabulary →
+   *     `viz.*`; the retry button → `match.bundle.retry`
+   */
+  player: {
+    /*
+     * Title/OG composition fragment. Punctuation only — registered so the
+     * composer never hardcodes it, on `match.meta.separator`'s idiom.
+     */
+    meta: {
+      separator: " · ",
+    },
+    /** The shirt-number word in the identity line, beside the badge glyph. */
+    shirt: "Dorsal",
+    /*
+     * LABEL-FIRST, COUNT-AGNOSTIC, and that is what makes it plural-safe. t()
+     * has no plural machinery, so the shipped idiom picks a singular or plural
+     * key at the call site — four counters would need eight keys and would still
+     * read "1 partidos" the day one is missed. "Partidos: 1" is correct at every
+     * count.
+     */
+    appearances: {
+      played: "Partidos",
+      started: "Titular",
+      substitute: "Suplente",
+      minutes: "Minutos",
+    },
+    /*
+     * AC 4's FR-29 entry. The verb, not "Comparación": this is an action the
+     * reader takes, and `/compare` does not exist until Story 2.17.
+     */
+    compare: "Comparar",
+    /*
+     * The four `<h2>`s, in the ruled disclosure-grammar order. "Totales del
+     * torneo" rather than "Agregados": the artifact's word is `aggregates`, but
+     * "agregado" in LatAm Spanish reads as "added on", not "aggregate".
+     */
+    sections: {
+      physical: { title: "Perfil físico" },
+      trends: { title: "Evolución por partido" },
+      aggregates: { title: "Totales del torneo" },
+      matches: { title: "Partido por partido" },
+    },
+    /** Chart axis titles. Rendered inside recharts <Label>, never as JSX text. */
+    axis: {
+      distance: "Distancia",
+      speedZone: "Zonas de velocidad",
+      match: "Partido",
+    },
+    /*
+     * The five genuinely new column heads (`date`, `opponent`, `stage`,
+     * `started`, `minutesPlayed`) plus the transposed aggregates table's two,
+     * which no existing surface has: every shipped table is metric-per-column,
+     * so "Métrica"/"Valor" as HEADS exist nowhere yet. `speedZone`/`speedBand`
+     * head the zone table's own two columns.
+     */
+    column: {
+      speedZone: "Zona",
+      speedBand: "Rango",
+      date: "Fecha",
+      opponent: "Rival",
+      stage: "Fase",
+      started: "Titular",
+      minutesPlayed: "Minutos",
+      metric: "Métrica",
+      value: "Valor",
+    },
+    /*
+     * A boolean is never printed raw. "Sí"/"No" rather than "Titular"/"Suplente"
+     * — the COLUMN is already headed "Titular", so repeating the noun in every
+     * cell says the same word twice and loses the answer.
+     */
+    started: {
+      yes: "Sí",
+      no: "No",
+    },
+    /** The noun the figure summary counts. Singular and plural, per the idiom. */
+    matchOne: "partido",
+    matchMany: "partidos",
+    /*
+     * The zone figure summary's counted noun, LOWERCASE — deliberately NOT
+     * `player.axis.speedZone`, which is an axis TITLE and is therefore
+     * sentence-capitalized ("Zonas de velocidad"). Reusing it produced
+     * "Perfil físico, 5 Zonas de velocidad, m", with a capital mid-sentence.
+     * Caught in the browser; one term, two grammatical positions, two keys.
+     *
+     * The glossary's `speed-zones` pair could not be reused either: its `es`/`en`
+     * leaves are byte-identical BY DESIGN (the term pair is locale-invariant), so
+     * it would render Spanish in the English dictionary.
+     */
+    zonesNoun: "zonas de velocidad",
+    /** The trend chart's metric selector — a radiogroup, per Radix semantics. */
+    trendSelector: "Métrica de la evolución",
+    /*
+     * Each caption STATES ITS OWN DEFAULT ORDER and never mutates (2.11a
+     * decision 7): it is the one durable statement of canonical order, and sort
+     * state lives in `aria-sort` plus the polite announcement.
+     */
+    caption: {
+      physical: "Ordenado por zona de velocidad.",
+      /*
+       * NOT "ordenado por métrica": the artifact's order is alphabetical by
+       * metric CODE, which is English, so the Spanish labels are not in
+       * alphabetical order on screen. Claiming they were would be false.
+       */
+      aggregates: "Orden original de los datos.",
+      trends: "Ordenado por fecha.",
+      trendsNote: "Todas las series, un partido por fila.",
+      matches: "Ordenado por fecha.",
+      matchesLink: "Cada fila abre ese partido en la capa experta.",
+    },
+    /*
+     * Every `DataTable` on a route with more than one MUST be named: a single
+     * polite live region serves them all and cannot otherwise say which moved.
+     */
+    tableName: {
+      physical: "Tabla de zonas de velocidad",
+      trends: "Tabla de evolución por partido",
+      aggregates: "Tabla de totales del torneo",
+      matches: "Tabla de partidos del jugador",
+    },
+    /*
+     * PROPOSED COPY — Juan to confirm or overturn at review (ruled D8).
+     *
+     * `useEmptyHeadline()` COULD NOT BE REUSED and that is the whole reason
+     * these exist: it composes "Sin datos de {sección} PARA ESTE PARTIDO", which
+     * is false on a route that is not a match. The Hub hit the same wall and
+     * answered it the same way, with its own `empty.headline`/`explanation`
+     * pairs.
+     *
+     * NEITHER SENTENCE MAY IMPLY THE PAGE IS BROKEN. 209 players (16.7%) have
+     * no appearances at all, and a goalkeeper's profile legitimately carries no
+     * goalkeeping data (Story 1.18 R1(A), ruled by Juan: "Emit no
+     * goalkeeping-shaped field and synthesize nothing"). The absence is a fact
+     * about the tournament, not a gap in the site — so the copy states the fact
+     * and stops.
+     */
+    empty: {
+      trendsHeadline: "Sin evolución por partido.",
+      trendsExplanation: "Las series por partido necesitan al menos un partido con minutos.",
+      matchesHeadline: "Sin partidos en el torneo.",
+      matchesExplanation:
+        "Este jugador todavía no registra minutos, así que no hay filas por partido.",
+    },
+    /*
+     * The runtime region's four states, mirroring `MatchBundleRegion`'s machine
+     * with profile-scoped copy. `invalid` is NOT a network failure and carries
+     * no retry — re-fetching the identical artifact cannot change the answer.
+     */
+    region: {
+      loading: "Cargando los datos del jugador",
+      loaded: "Datos del jugador cargados.",
+      error: "No pudimos cargar los datos del jugador. Revisa tu conexión e intenta de nuevo.",
+      invalid: "Los datos de este jugador no coinciden con esta versión del sitio.",
+      invalidExplanation: "Estamos al tanto. Vuelve a intentarlo más tarde.",
+      /*
+       * The render-time crash the error boundary catches — a DIFFERENT failure
+       * from `error` (never arrived) and `invalid` (arrived, wrong version).
+       */
+      crashed: "No pudimos mostrar el perfil de este jugador.",
+      crashedExplanation: "El resto de la página sigue disponible.",
+    },
+  },
 };
 
 export type Dictionary = typeof es;

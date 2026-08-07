@@ -60,6 +60,71 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-07
+# 2026-08-07: story 2-16 CONTEXT CREATED (backlog -> ready-for-dev). Baseline 12fad17 (NOT the
+#             119b707 the brief pinned — HEAD MOVED MID-CREATION and the story was re-based).
+#             app/ + locales + EXPERIENCE.md policy rows + the two ledger artifacts ONLY;
+#             fixture-driven. THIRTEEN RULINGS, ONE OPEN (R1).
+#             HEADLINE: STORY 2.15 LANDED ITS CODE DURING THIS STORY'S CREATION AND INVERTED THE
+#             BRIEF'S TWO CENTRAL PREMISES. The first draft ruled "reach DistributionChart through
+#             the existing @/components/TacticalCharts dynamic() specifier" — but 2.15's D1 made
+#             components/Charts.tsx THE ONE lazy boundary and repointed all five call sites, so
+#             TacticalCharts is no longer a dynamic() specifier at all and naming it would have
+#             MINTED the second vendor chunk the ruling existed to avoid. Pass condition corrected
+#             two -> ONE 300.4 KB vendor chunk (2.15 measured 2 -> 1; discriminate on CartesianAxis
+#             AND Brush AND redux together, since CartesianAxis alone also matches the 34.5 KB leaf).
+#             D2 RE-RULED: generalize 2.15's SHIPPED SpeedZoneChart (ProfileCharts.tsx:203, already
+#             single-series on --viz-single, already in the barrel) into CategoryBarChart, rather
+#             than widening the two-series DistributionChart. Zero edits to TacticalCharts.tsx, zero
+#             regression surface on its four shipped mounts, zero new specifier. Carries a
+#             coordination condition: if ProfileCharts.tsx is dirty from another session, consume
+#             under the existing name and file the rename — a misleading name is cheaper than a
+#             merge collision.
+#             THE BRIEF'S TacticalCharts DEFECT ATTRIBUTION WAS INVERTED. DistributionChart's hatch
+#             is CORRECT (centred at HATCH_TILE_PX/2, with the explanatory docblock); the edge-drawn
+#             x1={0} defect was InvolvementChart's — and 2.15 ALREADY FIXED IT (:546,:548). Recorded,
+#             not claimed. seriesLabelIndex IS still unfixed (:239-247, ledger's :229-237 has
+#             drifted) but its owner condition is "the first story to reuse DistributionChart" and
+#             this story does not — routed onward with the citation corrected.
+#             D1: THE TEAM B CHANNEL IS NOT THIS STORY'S. 2.13 routed it to "2.16/2.17" guessing a
+#             profile is the first two-team surface. The artifact settles it: tacticalIdentity is one
+#             team's aggregates and matches[].opponent is a bare EntityRef with NO opponent metrics,
+#             so no chart here plots two teams. 2.15's own ProfileCharts.tsx:49 already says the same.
+#             Routed to 2.17 alone, evidence carried verbatim (13.56/4.99, 10.30/5.36, 1.07:1,
+#             3.30/1.53, and the dashed-stroke-cannot-work-on-a-filled-bar conclusion).
+#             R1 IS OPEN AND BLOCKING: AC 1 says "line heights", CS-2 turned that into 18 values
+#             across six NAMED panels, and 4 of 6 panel labels plus the whole teamWidth measure have
+#             NO copy in either locale — teamWidth has no per-term policy row either, and searches
+#             across every UX/PRD/architecture doc return 0 hits. CS-2 filed the minting to 2.19,
+#             which has not run, while 2.16 is the first surface that can render the values.
+#             Recommended (A) 2.16 mints it — 2.18's dead-key prohibition LICENSES the per-surface
+#             story — with a new EXPERIENCE.md row for "amplitud" and a correction to two shipped
+#             glossary definitions that CS-2 made factually false.
+#             D13 ADDED BY VALIDATION: shapeByPhase renders as TABLES, not charts. 3 measures need 3
+#             series; every chart here is single-series, --viz-single is one colour, and a 6-category
+#             chart throws in distributionChartHeightClass (3|4|8|9 only). The draft left the form
+#             unspecified, which is the story's largest deliverable.
+#             TWO BRIEF PREMISES CORRECTED FROM THE LEDGER: the Hub standings prefetch is NOT open —
+#             2.12's review fixed it in 29e90fb and 2.14 appended the correction; the genuinely
+#             UNFILED gap is MatchHero.tsx:103,:119, which carry no prefetch prop at all, so every
+#             match page speculatively fetches two non-existent routes. And the "three surfaces"
+#             count is stale by one: seven /teams emitting sites across five files, HeaderSearch
+#             (2.14) being the fourth surface.
+#             MEASURED: 48 teams <-> 48 artifacts, 1 <-> 1 on fixtures, 0 mismatches either way;
+#             largest artifact 5,974 B raw / 1,254 B gzip-9 = 0.25% of the 500 KB ceiling; matches[]
+#             max 8 rows, formationUsage max 4; results 80 win / 80 loss / 48 draw. DISCLOSED: the
+#             fixture build makes ONE route while EIGHT distinct /teams hrefs ship, so 7 of 8 still
+#             404, and only m001 of mexico's five per-match links resolves.
+#             CARRIES 1.18's R1 (goalkeeping is in NO profile artifact — this page has no
+#             goalkeeping section, ruled not missing) and R4 (the 8 shootout rows read `draw`, so a
+#             finalist shows a draw chip on the match it advanced through; furthestStage carries
+#             progression). INHERITS deferred-work.md:721-736, which names 2.16 by number for the
+#             #phases/#pressing duplication, and the linked-row focus ring, whose owner line is
+#             "Story 2.16 ships /teams and makes these links live".
+#             Validation: 2 fresh-context subagents. The first caught that the baseline itself was
+#             stale and that D2's premise was dead — the story was re-based and re-ruled rather than
+#             patched. The second added D13's missing form, four unmapped decisions (the runtime
+#             region, TacticalErrorBoundary, formationUsage's empty state, D11) and a bijection
+#             assertion that would not have compiled. Both applied.
 # 2026-08-07: story 1-18 CODE REVIEW COMPLETE (review -> done). Three adversarial layers over the
 #             1.18-scoped diff (~2,800 hand-written lines) plus a property sweep of all 1,296
 #             emitted artifacts. 1 decision, 16 patches, 1 deferral, 2 dismissed. ALL PATCHES
@@ -3104,9 +3169,9 @@ development_status:
   2-11c-expert-layer-event-logs: done
   2-12-tournament-hub-results-standings: done
   2-13-tournament-leaderboards: done
-  2-14-header-search: review
-  2-15-player-profile: ready-for-dev
-  2-16-team-profile: backlog
+  2-14-header-search: done
+  2-15-player-profile: in-progress
+  2-16-team-profile: ready-for-dev
   2-17-comparison-mode: backlog
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19

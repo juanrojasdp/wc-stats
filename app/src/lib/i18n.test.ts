@@ -26,6 +26,16 @@ import {
   matchdayRoundLabelKey,
 } from "@/lib/hub-model";
 import { t, type Locale } from "@/lib/i18n";
+import {
+  entityKindLabelKey,
+  entityKindRowLinkKey,
+  type SearchEntityKind,
+} from "@/lib/search-model";
+import {
+  speedZoneBandKey,
+  speedZoneLabelKey,
+  startedLabelKey,
+} from "@/lib/player-profile-format";
 import { composeHeadAccessibleName } from "@/lib/table-sort";
 import {
   COLLAPSIBLE_SECTION_IDS,
@@ -36,6 +46,7 @@ import {
 } from "@/lib/tactical-sections";
 import type { CollapsibleSectionId, SectionId } from "@/lib/tactical-sections";
 import { CROSS_DELIVERY_TYPES, crossDeliveryKey } from "@/viz/cross-map-model";
+import { SPEED_ZONES } from "@/viz/player-profile-model";
 import { EXPERT_FIELDS, expertFieldKey, expertFieldTitleKey } from "@/viz/expert-model";
 import {
   ABBREVIATED_METRICS,
@@ -743,6 +754,32 @@ describe("key-builder resolution sweep (Story 2.18 Task 9.1a)", () => {
         const value = t(sectionSummaryKey(id), locale);
         expect(value, `${id} summary in ${locale}`).not.toBe("");
         expect(value, `${id} summary in ${locale}`).not.toContain("tactical.sections");
+      }
+    }
+  });
+
+  /*
+   * STORY 2.14's TWO BUILDERS, REGISTERED HERE (code review 2026-08-07).
+   *
+   * Task 5.7 says "Register any key builder in the key-builder resolution
+   * sweep", and this describe is that sweep. They were instead resolved inside
+   * 2.14's own `search` describe further down — equivalent coverage, but it
+   * defeats the point of having ONE place a reader checks that every builder in
+   * the repo resolves, and a second home for one concept is the pattern ruling 9
+   * polices in the dictionary itself.
+   *
+   * The `search` describe keeps its REUSE assertions, which are about which
+   * shipped key each kind maps to and are genuinely story-local.
+   */
+  it("resolves both search entity-kind builders over their full domain", () => {
+    const kinds: SearchEntityKind[] = ["player", "team", "match"];
+    for (const kind of kinds) {
+      for (const locale of locales) {
+        for (const key of [entityKindLabelKey(kind), entityKindRowLinkKey(kind)]) {
+          const value = t(key, locale);
+          expect(value, `${key} in ${locale}`).not.toBe("");
+          expect(value, `${key} in ${locale}`).not.toBe(key);
+        }
       }
     }
   });
@@ -1562,6 +1599,29 @@ describe("Story 2.11c's receiving log and log links", () => {
       });
     }
 
+    /*
+     * Story 2.15's four, mirroring each section's composition exactly. The
+     * trends and matches captions carry a SECOND clause because their order
+     * statement alone is byte-identical ("Ordenado por fecha."): the note and
+     * the link sentence are what separate them, and this is where that is
+     * pinned.
+     */
+    function profileCaptions(locale: Locale): string[] {
+      const title = (key: Parameters<typeof t>[0]) => t(key, locale);
+      return [
+        `${title("player.sections.physical.title")}${SEPARATOR}${title("player.caption.physical")}`,
+        `${title("player.sections.trends.title")}${SEPARATOR}${title(
+          "player.caption.trends"
+        )}${SEPARATOR}${title("player.caption.trendsNote")}`,
+        `${title("player.sections.aggregates.title")}${SEPARATOR}${title(
+          "player.caption.aggregates"
+        )}`,
+        `${title("player.sections.matches.title")}${SEPARATOR}${title(
+          "player.caption.matches"
+        )}${SEPARATOR}${title("player.caption.matchesLink")}`,
+      ];
+    }
+
     for (const locale of locales) {
       const shipped = composedCaptions(locale);
       expect(shipped, locale).toHaveLength(27);
@@ -1590,6 +1650,22 @@ describe("Story 2.11c's receiving log and log links", () => {
       expect(hub, `the Hub captions in ${locale}`).toHaveLength(LEADERBOARD_FIXTURE.boards.length);
       expect(new Set(hub).size, `the Hub captions in ${locale}`).toBe(hub.length);
       expect(new Set([...shipped, receiving, ...hub]).size, locale).toBe(28 + hub.length);
+
+      /*
+       * STORY 2.15 ADDS FOUR: /players/{slug} renders three DataTables plus the
+       * trends data-alternative. Every one is `${sectionTitle} - ...`, the same
+       * prefixing all 27 above use, which is both why they are distinct from
+       * each other and why they cannot collide with the match route's.
+       *
+       * 2.13 WARNED THAT THE PIN ABOVE HAS GONE RED ON A STALE COUNT BEFORE, so
+       * this block carries its own count rather than editing 27/28.
+       */
+      const profile = profileCaptions(locale);
+      expect(profile, `the profile captions in ${locale}`).toHaveLength(4);
+      expect(new Set(profile).size, `the profile captions in ${locale}`).toBe(4);
+      expect(new Set([...shipped, receiving, ...hub, ...profile]).size, locale).toBe(
+        28 + hub.length + 4
+      );
     }
   });
 
@@ -2165,6 +2241,285 @@ describe("the leaderboards namespaces (Story 2.13, AD-2 / AD-7)", () => {
     for (const locale of locales) {
       expect(t("viz.table.team", locale)).not.toBe("");
       expect(t("viz.table.player", locale)).not.toBe("");
+    }
+  });
+});
+
+/*
+ * ============= STORY 2.14 — THE HEADER SEARCH NAMESPACE (Task 5.7) =============
+ *
+ * `entityKindLabelKey` and `entityKindRowLinkKey` are KEY BUILDERS, so they join
+ * the resolution sweep: both return `DictionaryKey` from a switch, and a switch
+ * arm pointing at a path that does not exist is invisible to tsc in exactly the
+ * way a template-literal cast is. Resolving every arm in both locales is the
+ * only thing between a wrong address and a raw dot path reaching a reader.
+ *
+ * The rest of this describe polices RULING 9: reuse first, mint only what has a
+ * rendering call site, and never mint a second name for a shipped term.
+ */
+describe("the search namespace (Story 2.14, AD-7 / ruling 9)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  /*
+   * BUILDER RESOLUTION LIVES IN THE KEY-BUILDER SWEEP, not here (code review
+   * 2026-08-07) — see "resolves both search entity-kind builders over their full
+   * domain" in `describe("key-builder resolution sweep …")` above. What stays in
+   * this describe is what is specific to this story: WHICH shipped key each kind
+   * maps to, and that nothing was minted that could have been reused.
+   */
+
+  it("resolves the three capped-announcement fragments in both locales", () => {
+    /*
+     * Ruled R2 at code review: the announcement discloses the RESULT_LIMIT cap
+     * ("Mostrando los primeros 10 de 214 resultados"). Three fragments on the
+     * noResultsBefore/After idiom, because t() has no interpolation.
+     */
+    for (const locale of locales) {
+      for (const key of [
+        "search.cappedBefore",
+        "search.cappedMiddle",
+        "search.cappedAfter",
+      ] as const) {
+        const value = t(key, locale);
+        expect(value, `${key} in ${locale}`).not.toBe("");
+        expect(value, `${key} in ${locale}`).not.toBe(key);
+      }
+    }
+  });
+
+  it("REUSES the shipped entity labels — no second source for one term", () => {
+    /*
+     * `leaderboards`' binding precedent, applied again: "NO COLUMN LABEL FOR THE
+     * ENTITY OR THE TEAM. Those two heads resolve viz.table.player /
+     * viz.table.team … a second pair here would be two sources for one term."
+     */
+    expect(entityKindLabelKey("player")).toBe("viz.table.player");
+    expect(entityKindLabelKey("team")).toBe("viz.table.team");
+    expect(entityKindLabelKey("match")).toBe("hub.results.column.match");
+    // And two of the three row prefixes are the shipped hub.* ones.
+    expect(entityKindRowLinkKey("team")).toBe("hub.standings.rowLink");
+    expect(entityKindRowLinkKey("match")).toBe("hub.results.rowLink");
+  });
+
+  it("mints NO duplicate of any string it could have reused", () => {
+    /*
+     * The dead-key prohibition's mirror image. A `search.*` value that already
+     * exists verbatim elsewhere in the dictionary is a second home for one term
+     * — the drift `leaderboards` and `format.ts` both police in their own
+     * domains. The player row prefix is the only genuinely new NAME, and it
+     * deliberately parallels the two hub.* forms without repeating either.
+     */
+    for (const locale of locales) {
+      const dictionary = locale === "es" ? es : en;
+      const searchValues = Object.values(dictionary.search);
+      const elsewhere = stringLeaves(dictionary)
+        .filter(([path]) => !path.startsWith("search."))
+        .map(([, value]) => value);
+      const duplicated = searchValues.filter((value) => elsewhere.includes(value));
+      expect(duplicated, `${locale} re-mints a shipped string`).toEqual([]);
+    }
+  });
+
+  it("keeps the placeholder and label DISTINCT from the leaderboard filter's", () => {
+    // The leaderboard copy is board-scoped ("Filtrar por nombre" / "Escribe un
+    // nombre") and would be FALSE on a control that also finds matches — which
+    // is why these two were minted rather than reused.
+    for (const locale of locales) {
+      expect(t("search.label", locale)).not.toBe(t("leaderboards.filterLabel", locale));
+      expect(t("search.placeholder", locale)).not.toBe(
+        t("leaderboards.filterPlaceholder", locale)
+      );
+    }
+  });
+
+  it("composes the AC's empty-state sentence from its two fragments", () => {
+    /*
+     * `t()` HAS NO INTERPOLATION, and `react/jsx-no-literals` bans the
+     * guillemets as JSX text — so the sentence exists only as a call-site
+     * composition, and this is where its SHAPE is pinned. EXPERIENCE.md quotes
+     * the Spanish verbatim.
+     */
+    expect(`${es.search.noResultsBefore}Messi${es.search.noResultsAfter}`).toBe(
+      "Sin resultados para «Messi»."
+    );
+    // The guillemets are the ruled glyph and are legal: the forbidden-register
+    // sweep bans [¡!], not «».
+    expect(es.search.noResultsBefore).toContain("«");
+    expect(es.search.noResultsAfter).toContain("»");
+    // Both locales keep the same punctuation — one string, one glyph pair.
+    expect(en.search.noResultsBefore).toContain("«");
+  });
+
+  it("gives the four non-result states DISTINCT copy, so none can stand in for another", () => {
+    /*
+     * Task 7.8: "no corpus" and "zero matches" are different facts, and the AC's
+     * copy asserts the second. Error, invalid and loading must each say their
+     * own thing, or the component can render a true-looking falsehood.
+     */
+    for (const locale of locales) {
+      const states = [
+        t("search.loading", locale),
+        t("search.error", locale),
+        t("search.invalid", locale),
+        `${t("search.noResultsBefore", locale)}x${t("search.noResultsAfter", locale)}`,
+      ];
+      expect(new Set(states).size, locale).toBe(4);
+    }
+  });
+
+  it("keeps the invalid copy distinct from the Hub's, which covers other routes", () => {
+    // The header searches on four routes the Hub never reaches, so it carries
+    // its own copy rather than borrowing region-scoped wording.
+    for (const locale of locales) {
+      expect(t("search.invalid", locale)).not.toBe(t("hub.region.invalid", locale));
+    }
+  });
+
+  it("is tuteo and clean of the forbidden register", () => {
+    // The global sweep above already walks every es leaf; this names the
+    // namespace explicitly so a reader sees it was considered rather than
+    // covered by accident. "Busca"/"Escribe" are the tuteo imperatives.
+    expect(es.search.label).toMatch(/^Busca\b/);
+    expect(es.search.placeholder).toMatch(/^Escribe\b/);
+    for (const value of Object.values(es.search)) {
+      expect(value, value).not.toMatch(/[¡!]/);
+      expect(value, value).not.toMatch(/usted|vosotros|clasificaci/i);
+    }
+  });
+
+  it("is a11y-safe by placement — the live-region copy is NOT under a11y.*", () => {
+    // `es.a11y` and `es.app` are pinned EXACTLY by the Story 2.12 test above; a
+    // live-region string parked in either goes instantly red. This states where
+    // it went instead.
+    expect(Object.keys(es.a11y)).toEqual(["localeAnnouncement"]);
+    expect(es.search.loading).toBeTypeOf("string");
+  });
+});
+
+/*
+ * ============ STORY 2.15 - THE PLAYER-PROFILE NAMESPACE (Task 9.2) ============
+ *
+ * `speedZoneLabelKey`, `speedZoneBandKey` and `startedLabelKey` are KEY
+ * BUILDERS, so they join the resolution sweep: each returns a `DictionaryKey`
+ * built by template-literal cast or by a boolean branch, and an address that
+ * does not exist is invisible to tsc in exactly the way every other cast in this
+ * file is. Resolving each over its FULL domain in both locales is the only thing
+ * between a wrong address and a raw dot path reaching a reader.
+ *
+ * The rest of this describe polices D12: REUSE FIRST, mint only what has a
+ * rendering call site, and never mint a second name for a shipped term.
+ */
+describe("the player namespace (Story 2.15, AD-7 / D12)", () => {
+  // Declared per-describe, the way every other block in this file does it.
+  const locales: Locale[] = ["es", "en"];
+
+  it("resolves every key builder over its full domain, in both locales", () => {
+    for (const locale of locales) {
+      for (const zone of SPEED_ZONES) {
+        expect(t(speedZoneLabelKey(zone), locale), `zone ${zone} label`).not.toBe("");
+        expect(t(speedZoneLabelKey(zone), locale)).not.toContain("expert.field.");
+        expect(t(speedZoneBandKey(zone), locale), `zone ${zone} band`).not.toBe("");
+        expect(t(speedZoneBandKey(zone), locale)).not.toContain("expert.fieldTitle.");
+      }
+      for (const started of [true, false]) {
+        expect(t(startedLabelKey(started), locale), `started ${String(started)}`).not.toBe("");
+      }
+    }
+  });
+
+  it("REUSES the shipped speed-zone labels and bands - it mints neither", () => {
+    /*
+     * D12's table, asserted rather than trusted. `es.ts` warns in place that
+     * restating these "would be two sources for one term"; the addresses below
+     * are `expert.*`, which is what proves the reuse.
+     */
+    expect(speedZoneLabelKey(1)).toBe("expert.field.distanceZone1");
+    expect(speedZoneBandKey(5)).toBe("expert.fieldTitle.distanceZone5");
+    expect(es.expert.fieldTitle.distanceZone1).toBe("0-7 km/h");
+    // The `player` namespace must carry NO zone label or band of its own.
+    expect(JSON.stringify(es.player)).not.toContain("Zona ");
+    expect(JSON.stringify(es.player)).not.toContain("km/h");
+  });
+
+  it("mints ONLY the heads the artifact has no shipped label for", () => {
+    /*
+     * `attemptsAtGoal` and `passesAttempted` are NOT MetricCodes (Story 1.18),
+     * so their heads come from `expert.field.*`; every metric head comes from
+     * `enums.leaderboardMetric.*`. What was genuinely missing is the five
+     * per-match heads plus the transposed table's two, which no
+     * metric-per-column surface has.
+     */
+    expect(Object.keys(es.player.column).sort()).toEqual([
+      "date",
+      "metric",
+      "minutesPlayed",
+      "opponent",
+      "speedBand",
+      "speedZone",
+      "stage",
+      "started",
+      "value",
+    ]);
+    for (const locale of locales) {
+      expect(t("expert.field.attemptsAtGoal", locale)).not.toBe("");
+      expect(t("expert.field.passesAttempted", locale)).not.toBe("");
+    }
+  });
+
+  it("adds NO Domain G label to the SEALED enums.metric namespace", () => {
+    // enums.metric is pinned to KEY_STAT_FIELDS (19 Domain B fields) elsewhere
+    // in this file; this asserts Story 2.15 did not widen it.
+    expect(Object.keys(es.enums.metric).sort()).toEqual([...KEY_STAT_FIELDS].sort());
+  });
+
+  it("gives the region's states DISTINCT copy, so none stands in for another", () => {
+    /*
+     * A fetch that never arrived, a payload that arrived at the wrong version, a
+     * render-time crash and a load in progress are four different facts. Copy
+     * that collapses any two tells the reader something false about what went
+     * wrong and about whether retrying can help.
+     */
+    for (const locale of locales) {
+      const states = [
+        t("player.region.loading", locale),
+        t("player.region.loaded", locale),
+        t("player.region.error", locale),
+        t("player.region.invalid", locale),
+        t("player.region.crashed", locale),
+      ];
+      expect(new Set(states).size, `player.region.* in ${locale}`).toBe(states.length);
+    }
+  });
+
+  it("keeps the empty-state copy off the match-scoped composition", () => {
+    /*
+     * `useEmptyHeadline()` composes "Sin datos de {seccion} PARA ESTE PARTIDO",
+     * which is FALSE on a route that is not a match - which is why this route
+     * authors its own pair. This asserts the profile copy did not inherit that
+     * clause.
+     */
+    for (const locale of locales) {
+      for (const key of [
+        "player.empty.trendsHeadline",
+        "player.empty.trendsExplanation",
+        "player.empty.matchesHeadline",
+        "player.empty.matchesExplanation",
+      ] as const) {
+        expect(t(key, locale), key).not.toBe("");
+        expect(t(key, locale), key).not.toContain(t("tactical.empty.headlineAfter", locale));
+      }
+    }
+  });
+
+  it("gives the four tables distinct names, since one live region serves them all", () => {
+    for (const locale of locales) {
+      const names = [
+        t("player.tableName.physical", locale),
+        t("player.tableName.trends", locale),
+        t("player.tableName.aggregates", locale),
+        t("player.tableName.matches", locale),
+      ];
+      expect(new Set(names).size, `player.tableName.* in ${locale}`).toBe(names.length);
     }
   });
 });

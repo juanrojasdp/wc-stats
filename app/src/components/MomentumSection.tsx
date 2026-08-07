@@ -65,8 +65,18 @@ function ChartFallback() {
   );
 }
 
+/*
+ * THE SPECIFIER IS `@/components/Charts`, NOT `@/components/MomentumChart`
+ * (Story 2.15 ruled D1). `next/dynamic` mints one async chunk group per distinct
+ * import specifier, so this call site pointing at the leaf directly while the
+ * Tactical sections pointed at theirs produced TWO groups and therefore TWO
+ * 300.4 kB copies of the recharts vendor. Every `dynamic()` in the app now names
+ * the one barrel, which collapses them into one group and one copy.
+ *
+ * The `.then(module => module.X)` shape and both options below are unchanged.
+ */
 const MomentumChart = dynamic(
-  () => import("@/components/MomentumChart").then((module) => module.MomentumChart),
+  () => import("@/components/Charts").then((module) => module.MomentumChart),
   {
     // Legal by AR-11: TacticalLayer is already client-only, so no Tactical
     // markup exists in out/ and there is no server render to skip.

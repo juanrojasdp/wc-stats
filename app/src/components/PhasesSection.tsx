@@ -94,7 +94,13 @@ function ChartFallback({ heightClass }: { heightClass: string }) {
  */
 function distributionChart(heightClass: string) {
   return dynamic(
-    () => import("@/components/TacticalCharts").then((module) => module.DistributionChart),
+    /*
+     * `@/components/Charts`, the ONE lazy boundary (Story 2.15 ruled D1). The
+     * specifier — not the module identity — is what `next/dynamic` dedupes on,
+     * so the two handles below still share one chunk group AND now share it with
+     * every other chart in the app instead of minting a second vendor copy.
+     */
+    () => import("@/components/Charts").then((module) => module.DistributionChart),
     {
       // Legal by AR-11: TacticalLayer is already client-only, so no Tactical
       // markup exists in out/ and there is no server render to skip.

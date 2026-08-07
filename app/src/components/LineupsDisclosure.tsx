@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 
 import type { Lineup, LineupEntry, TeamRef } from "@/lib/contract/contract-types";
+import { playerHref } from "@/lib/hub-model";
 import { useT } from "@/lib/i18n-provider";
 import { cn } from "@/lib/utils";
 
@@ -30,8 +31,16 @@ function PlayerRow({ player }: { player: LineupEntry }) {
        * min-h-11 belongs on the Link, not the row: the row is what the eye
        * measures but the anchor is what the finger hits (Task 5.3, ≥44×44px).
        */}
+      {/*
+       * `playerHref()`, not an inline template (Story 2.15 D10). `/players/`
+       * BECOMES A LIVE ROUTE with this story, so the trailing slash stops being
+       * cosmetic: `trailingSlash: true` rewrites a slash-less href at request
+       * time, and the helper is where that slash has exactly one definition —
+       * which is the failure `hub-model.ts` records this trio existing to
+       * prevent.
+       */}
       <Link
-        href={`/players/${player.playerId}/`}
+        href={playerHref(player.playerId)}
         className="flex min-h-11 flex-1 items-center type-body text-ink-primary hover:underline"
       >
         {player.name}

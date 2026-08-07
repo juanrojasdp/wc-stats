@@ -76,7 +76,13 @@ function ChartFallback({ heightClass }: { heightClass: string }) {
  */
 function distributionChart(heightClass: string) {
   return dynamic(
-    () => import("@/components/TacticalCharts").then((module) => module.DistributionChart),
+    /*
+     * `@/components/Charts`, the ONE lazy boundary (Story 2.15 ruled D1). Both
+     * handles below keep their own `loading` fallback and still share one chunk
+     * group — `next/dynamic` dedupes on the SPECIFIER — which is now the app's
+     * single group rather than one of two.
+     */
+    () => import("@/components/Charts").then((module) => module.DistributionChart),
     { ssr: false, loading: () => <ChartFallback heightClass={heightClass} /> }
   );
 }

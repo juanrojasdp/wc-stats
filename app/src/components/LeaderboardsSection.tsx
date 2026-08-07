@@ -8,6 +8,7 @@ import {
 } from "@/components/LeaderboardsRegion";
 import { TacticalErrorBoundary } from "@/components/TacticalErrorBoundary";
 import { formatInteger } from "@/lib/format";
+import { playerHref, teamHref } from "@/lib/hub-model";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import { NBSP, formatLeaderboardValue, leaderboardUnitKey } from "@/lib/leaderboard-format";
 import {
@@ -197,7 +198,12 @@ function BoardTeaser({ teaser }: { teaser: LeaderboardTeaser }) {
                * departure.
                */}
               <Link
-                href={entityIsTeam ? `/teams/${row.entityId}/` : `/players/${row.entityId}/`}
+                /*
+                 * `playerHref`/`teamHref` (Story 2.15 D10): `/players/` is a
+                 * LIVE route from this story on, and the trailing slash has one
+                 * definition in `hub-model` rather than three restatements.
+                 */
+                href={entityIsTeam ? teamHref(row.entityId) : playerHref(row.entityId)}
                 /*
                  * Prefetch OFF, for AC 4 and for waste alike — see the PREFETCH
                  * const in LeaderboardsRegion, which records the 48 -> 75

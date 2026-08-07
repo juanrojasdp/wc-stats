@@ -8,8 +8,8 @@ import { TournamentHub } from "@/components/TournamentHub";
 import { Button } from "@/components/ui/button";
 import type { Tournament } from "@/lib/contract/contract-types";
 import { SCHEMA_VERSION } from "@/lib/contract/schema-version";
-import { fetchArtifact } from "@/lib/data";
 import { useT } from "@/lib/i18n-provider";
+import { loadTournamentIndex } from "@/lib/tournament-index";
 
 /*
  * The Hub's runtime data region (Story 2.12, ruled D1). On mount it fetches
@@ -79,7 +79,23 @@ export function TournamentHubRegion() {
     // Initial state is already "loading"; retry resets it in its handler, so
     // the effect never sets state synchronously (react-hooks/set-state-in-effect).
     let cancelled = false;
-    fetchArtifact<Tournament>("/index/tournament.json")
+    /*
+     * THE SHARED LOADER, NOT A BARE `fetchArtifact` (Story 2.14 Task 4.4). The
+     * global header now searches over this same artifact, so a Hub visitor who
+     * focuses the search input would otherwise download ~39 KB gzip TWICE on
+     * the one route that already had it. `loadTournamentIndex` holds a
+     * module-scope promise and hands both callers the same one.
+     *
+     * SAFE ONLY BECAUSE THE LOADER CLEARS ON REJECTION. A cache that kept a
+     * rejected promise would hand this region a pre-rejected promise it did not
+     * cause — the header engages first on a slow or offline load — and no retry
+     * click could ever recover, because `attempt` re-runs this effect and the
+     * effect would re-await the same dead promise. See that module's docblock.
+     *
+     * The schemaVersion gate and the whole status machine stay exactly where
+     * they were: the loader fetches, this region decides.
+     */
+    loadTournamentIndex()
       .then((payload) => {
         if (cancelled) {
           return;
