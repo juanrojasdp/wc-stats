@@ -60,6 +60,35 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-07
+# 2026-08-07: story 2-17 IMPLEMENTED and moved to review — COMPARISON MODE, /compare (FR-29, UJ-3).
+#             Resumed from a partition the story itself recorded as "NOT READY FOR REVIEW": the URL
+#             layer (74993a5), the seriesLabelIndex sentinel (6c90d80) and the compare locale
+#             namespace (7caeebe) had landed; the route had not. This session built it — page shell,
+#             CompareRegion's four-state machine, ComparePicker over 2.14's reused SearchField,
+#             CompareRows' mirrored grid, CompareCharts, and the two pure modules — and closed the
+#             locale namespace's dead-key exposure that the earlier partition flagged as blocking.
+#
+#             COORDINATION: ran alongside an active 2.16 session writing the same tree. Landed under
+#             this story mid-run: 937f305, af0a9ab, 1b93797, 5c52643, 4c0aed5, 8c076fe. Because
+#             TeamHero.tsx and team-profile.ts were CLEAN when 2.16 committed them, D2's coordination
+#             condition finally permitted the full reconciliation rather than filing it —
+#             compareTeamHref is deleted and both inbound links now build through one compareHref.
+#             The code slice is committed as be85651; four files (i18n.test.ts,
+#             teams/static-output.test.ts, TeamHero.tsx, team-profile.ts) carry this story's edits
+#             MIXED with 2.16's still-uncommitted work and were deliberately left unstaged rather
+#             than capture another story's half-landed changes in this one's commit.
+#
+#             VERIFIED: lint 0, tsc 0, 1,231 tests / 45 files. Vendor chunk count 1 before and 1
+#             after (359.0 -> 362.0 KB). Live browser pass closed AC 5's four states, D10's DOM
+#             order, D4/D5's accents and hatch, the contrast table in both themes (method validated
+#             against the recorded figures first), reflow at 320 and 390 px for all three types, and
+#             the sticky mini-header's actual offset. ONE VERIFICATION GAP, filed not hidden: the
+#             mini-header's IntersectionObserver switching is unverified — the harness could not
+#             produce a narrow top-level viewport and IO fires no callbacks inside an iframe here.
+#
+#             OPEN FOR JUAN AT REVIEW: R1 (type=matches ships under option A); D12 (compare.type.*
+#             minted rather than reused); D3 (no metadata on /compare, which depends on 2.18's still
+#             -open Decision 2).
 # 2026-08-07: story 2-15 IMPLEMENTED and moved to review — THE PLAYER PROFILE, /players/{slug}
 #             (FR-27). Baseline 119b707 (HEAD at start; 5d251bb..119b707 touched nothing under
 #             app/, data/ or contract/, so the story's measured Data Reality still held).
@@ -3268,8 +3297,8 @@ development_status:
   2-13-tournament-leaderboards: done
   2-14-header-search: done
   2-15-player-profile: done
-  2-16-team-profile: review
-  2-17-comparison-mode: in-progress
+  2-16-team-profile: done
+  2-17-comparison-mode: review
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
   2-19-performance-accessibility-hardening-real-data-swap-launch: backlog
@@ -3466,3 +3495,61 @@ development_status:
 #             VERIFIED in an isolated worktree at HEAD plus the slice, because the shared tree was
 #             red from story 2-17 in flight: build green, 1,155 tests across 41 files, exactly one
 #             VENDOR chunk.
+
+# 2026-08-07: story 2-16 CODE REVIEW complete, status review -> done. THE TEAM PROFILE,
+#             /teams/{slug}. Three parallel adversarial layers (Blind Hunter, Edge Case Hunter,
+#             Acceptance Auditor) over the five commits 937f305, af0a9ab, 1b93797, 5c52643 plus the
+#             two 2.16 files swept into 79bd7aa by a concurrent session's git add. 46 raw findings
+#             deduplicated to 35: 4 decisions, 20 patches, 7 deferred, 4 dismissed.
+#             NOTE ON THE DIFF: a straight baseline..HEAD would have swept in 2.17 and 1.19, whose
+#             commits interleave with 2.16's, so the change set was assembled per-commit.
+#             RULED BY JUAN (4): (1) do the missing i18n work now rather than accept the ledger's
+#             routing to 2.17/2.19 — Task 9.3 and Task 10.4 both shipped CHECKED with no work
+#             done, i18n.test.ts had zero `team.` references and the caption inventory still read
+#             27/27/28; (2) anchor-box focus ring site-wide — already true in the tree, because
+#             2.15's own code review overturned its row-wide treatment WHILE THIS REVIEW WAS
+#             RUNNING, so only the missing test remained; (3) mint per-family table category heads
+#             rather than head six tables "Fase" when only two have phases in their rows;
+#             (4) fix the section-spacing grammar on BOTH profile routes together.
+#             THE HIGH-SEVERITY FINDING: the ~60-key `team` namespace shipped with no i18n
+#             coverage at all, and three key builders cast `as DictionaryKey` under a docblock
+#             reading "the cast is exactly why the exhaustiveness test in i18n.test.ts is not
+#             optional" — the test did not exist, so a renamed team.shape.* leaf would have
+#             rendered as a raw dotted path with the whole suite green.
+#             PATCHED beyond the rulings: the loading skeleton's role-less aria-label (the SAME
+#             defect 2.13 patched in LeaderboardsRegion and 2.15 in PlayerProfileRegion — this
+#             file mirrored the pre-patch shape) and its five blocks for eight sections, now
+#             sized from distributionChartHeightClass; a non-object fetch payload taking the
+#             RETRYABLE error branch instead of no-retry invalid; `invalid` copy telling the
+#             reader to retry in the one branch built to refuse it; normal-case on one hero tile
+#             of eight, the exact mixed-casing defect this story's own 1b93797 removed from
+#             PhysicalSection; expected goals rendered through the KILOMETRES formatter, whose
+#             docblock forbids crossing scopes; a hand-interpolated result key beside a shipped
+#             matchResultWordKey builder; the score column's undisclosed goalsFor-only sort, now
+#             stated in the caption because obligation 11 bans it in headTitle; a sort on a hidden
+#             column surviving "Menos columnas" invisibly; the independent-rates note rendered
+#             four times as two identical pairs; formResults dead in production while its three
+#             D3/AR-5 tests graded it and the route ran an untested duplicate; en "Round" vs
+#             "Stage" for one enum across the two profile routes; the 2.16 policy rows splitting
+#             the Requirements-traceability table in two; and this note block, which Task 12.2
+#             marked done and never wrote.
+#             TWO GATES THAT COULD NOT FAIL, BOTH REPLACED: the "real-data escaping trap" asserted
+#             a string literal it declared two lines earlier — reading no artifact, no locale, no
+#             HTML and no product code — and is now driven off the REAL 48-team manifest; and
+#             teamHtml() at describe-body scope crashed COLLECTION on a partial export, taking
+#             down the very bijection assertion the file's docblock names as what a partial export
+#             must fail on.
+#             DRIVEN RED ON PURPOSE (2, both reverted): the new corpus-inventory gate, which
+#             reported the real Côte d'Ivoire against an empty expectation; and the extended
+#             caption inventory, where colliding team.caption.shape with the rate order statement
+#             collapsed 8 distinct captions to 6.
+#             DEFERRED (7): a /teams -> /teams client navigation rendering the previous team's
+#             sections under the new hero (PlayerProfileRegion has the identical shape — one fix,
+#             both files); the double build-time artifact read; the AD-11 inline gate's missing
+#             standings probe; the hardcoded route-family list; classAttrCount's third private
+#             copy; D6's projection carrying one extra scalar; and Tasks 9.4/10.6/10.7.
+#             STILL UNVERIFIED AND STATED PLAINLY: reflow at 320/390 px in both themes and both
+#             locales was never measured, and this route ships the site's widest table (13
+#             columns) plus a narrow-layout column reduction whose only reason to exist is those
+#             widths. The blocker was environmental — the browser automation reported a successful
+#             resize while the window stayed at 1920. Routed to 2.19.

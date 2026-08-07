@@ -3568,6 +3568,37 @@ The Hub standings prefetch (resolved in `29e90fb`); the `assert-schema-version` 
   this story's authorised surface. **Owner: Story 2.19**, which already owns the `DATA_ROOT`
   flip and the App-side data-tree questions.
 
+- **`check_route_manifest`'s docstring describes a world that ended when Story 1.18
+  committed, and Story 1.19 added one more stale line to it rather than pay a full re-extract
+  to fix prose.** The passage states that *"`data/index/team-profiles/` and `player-profiles/`
+  are Story 1.18's output and do not exist"* — false since 1.18 committed 1,296 artifacts —
+  and cites `test_the_repository_has_no_committed_profiles_yet`, which **Story 1.19 removed**
+  (see below). The staleness is therefore **pre-existing**, introduced by 1.18's commit; 1.19
+  added the dangling test citation to an already-stale paragraph. Anchor: *"the profile
+  direction PRINTS that it could not run"*.
+  **Deferred, and the reason is mechanical rather than a judgement call:** `index.py` is
+  inside `code_version()`'s fingerprint, so a comment-only edit invalidates all 104 staged
+  Extraction Records and forces a full re-extract plus a fresh byte-identity proof before this
+  story's recorded figures would be true again. That is the exact trade ruling D1.7 already
+  names — *"editing them is a no-op that re-invalidates all 104 staged records for nothing"*.
+  The free half was taken: `pipeline/README.md` and the surviving test's own docstring were
+  both corrected, since neither is fingerprinted.
+  **Owner: whichever story next edits `pipeline/precompute/index.py` for a substantive reason
+  and is therefore already paying for the re-extract.**
+
+- **Story 1.19 REMOVED `test_the_repository_has_no_committed_profiles_yet`
+  (`pipeline/tests/test_index_tournament.py`), which is the one deletion in its change set.**
+  Recorded here because a deleted test is invisible in a diff read from the outside. It was
+  Story 1.17's tripwire, red by design from the moment 1.18 committed, and its own docstring
+  named the action: *"**When it fires, delete this test — do not weaken it.** The populated
+  bijection above is its replacement and needs no further work."* It fired in 1.19's full
+  suite (`1296 profile artifact(s) are now tracked by git`). Verified BEFORE the deletion, not
+  after: `test_the_route_manifest_bijection_holds_against_the_committed_profiles` no longer
+  skips — it runs and asserts all three directions on real data. The D2 design worked exactly
+  as built; the pair swapped over together. Deleting a test does not disturb this story's
+  byte-identity proof, because `tests` is in `fingerprint.EXCLUDED_DIRS` and so sits outside
+  `code_version()`. Owner: none — this is a record, not an open item.
+
 ### Measured by the 104-report run; the entries stay where they are
 
 - **Cover-line reconstruction thresholds — measured, entry STAYS OPEN.** Anchor: *"Cover-line
@@ -3626,7 +3657,14 @@ The Hub standings prefetch (resolved in `29e90fb`); the `assert-schema-version` 
 - **[Story 1.19, 2026-08-07] The pipeline-suite runtime entry is routed to *"whichever story
   next needs the pipeline suite to fit in a single un-chunked run"* — this story IS that story,
   and it RE-DEFERS with the measurement attached.** Anchor: *"costs 8m40s on its own"*.
-  Measured on this story's tree: SUITE_MEASUREMENT
+  Measured on this story's tree: the full `pipeline/tests` suite ran **un-chunked in a single
+  background invocation** and completed — **1,778 passed, 1 failed, 4 skipped in 4,097 s
+  (1 h 08 m 17 s)**. So it does now "fit in a single un-chunked run" in the literal sense, but
+  at more than double the ~45-minute figure this ledger records, with two concurrent Epic 2
+  sessions active (1.17 measured 112 minutes under the same conditions, so this sits between
+  the quiet-tree and contended figures). The single failure was Story 1.17's red-by-design
+  tripwire, triaged individually and removed per its own instruction — not a regression, and
+  not attributable to suite length.
   **Deferred:** the honest fix the original entry names — a session-scoped fixture for the
   read-only assertions while the write-path tests keep their own trees — is a real piece of work
   with a real risk of quietly coupling tests that are currently independent. This story made
@@ -3677,3 +3715,182 @@ The Hub standings prefetch (resolved in `29e90fb`); the `assert-schema-version` 
 - **Everything routed to Story 2.19** — the `DATA_ROOT` flip, 104-at-scale App verification,
   Lighthouse, sort collation over real names, accent-insensitivity in the browser, cluster
   density at 320px, the header-search payload question. **Owner:** unchanged.
+
+## Deferred from: code review of 2-16-team-profile (2026-08-07)
+
+Seven items triaged as pre-existing or cosmetic during the code review of Story 2.16. Each was
+verified against the working tree before being deferred; none is caused by this story alone.
+
+- **A `/teams/{slug}` → `/teams/{slug}` client navigation renders the previous team's sections
+  under the new team's hero.** The fetch effect at `TeamProfileRegion.tsx` (the `useEffect` keyed
+  on `[slug, attempt]`) resets neither `status` nor `profile` before refetching, so the stale
+  payload stays mounted until the new one resolves. **Deferred as pre-existing:**
+  `PlayerProfileRegion.tsx` carries the identical shape, and the reachable entry point
+  (header-search team rows) hits both routes equally. **Owner:** whichever story next touches the
+  profile region pattern — the fix belongs on both files in one edit, not on `/teams` alone.
+
+- **The build reads each team artifact twice, and the docblock says it is read once per AD-11
+  path.** `generateMetadata` and the page body both call `readTeamProfile(slug)`, which does a
+  fresh `readFileSync` + `JSON.parse` with no memoisation, so the real count is three reads (two
+  at build time, one client fetch) against the two the comment claims. 96 parses at 2.19's 48
+  routes. **Deferred as pre-existing:** `/players/[slug]` has the same shape. **Owner:** 2.19, with
+  the real-data sizing that Task 9.4 left unmeasured.
+
+- **The AD-11 inline gate lost its standings-row-level probe.** `5c52643` correctly retired
+  `goalDifference` — the premise that it was Tournament-only was already false, since
+  `contract-types.d.ts` declares it on both `StandingsRow` and `TeamTournamentRecord` — and
+  replaced it with `tournamentName`. The retirement was right and was driven red on purpose. What
+  is left is that no token now asserts the absence of `standings` itself, so a route inlining only
+  `groups[].standings[]` rows would pass the gate. **Deferred:** adding `standings` as a third
+  token is cheap but needs a build to confirm it is not red on an already-correct route.
+
+- **The dynamic-route family list in the every-route sweep is hardcoded.** `5c52643` replaced a
+  `matches/`-only walk with an explicit `["matches", "players", "teams"]` list plus a vacuity guard
+  per family — a clear net improvement over a sweep that had silently skipped `/players` and
+  `/teams` since 2.15. The residual gap is that a family added later is still silently skipped
+  until someone edits the literal. **Owner:** 2.17, which ships `/compare`.
+
+- **`classAttrCount` now exists as a third private copy**, in the story that hoisted `RowAnchor` on
+  the grounds that "every private copy is deleted" (2.11a decision 1). Copies live in
+  `teams/`, `matches/` and `players/static-output.test.ts`. The new copy's docblock also states a
+  premise that was already false in the tree it shipped into — "`/players` shipped **no**
+  static-output test at all" — when `app/src/app/players/static-output.test.ts` exists.
+  **Deferred:** two of the three copies predate this story; hoisting is one edit for whoever next
+  adds a static-output suite.
+
+- **D6's projection field list is exceeded by one scalar.** D6 rules the hero projection to be
+  "exactly" nine `record` fields plus `name`, `teamCode`, `group`, `possession`,
+  `pressingIntensity` and `matches[].result`, "nothing else". `TeamHeroData` also carries `teamId`,
+  used only for `compareTeamHref`, a value the page already holds as `slug`. **Deferred as
+  cosmetic:** the over-projection is harmless and the alternative is threading `slug` through the
+  hero's props.
+
+- **Tasks 9.4, 10.6 and 10.7 are unrun while the story sits at `review`.** Real-data sizing, reflow
+  at 320/390 CSS px in both themes and both locales, 200% zoom and a real
+  `prefers-reduced-motion: reduce` media state. Named honestly by the story under "NOT DONE" and
+  already routed to 2.19. **Recorded here because of what they cover:** this route introduces the
+  site's widest table (13 columns) and a narrow-layout column reduction whose only reason to exist
+  is those widths, so reflow is the unmeasured obligation that would have exercised the new code.
+  The blocker was environmental — the browser automation reported a successful resize while the
+  window stayed at 1920, and both `window.resizeTo` and a same-origin popup were blocked.
+  **Owner:** 2.19, or a manual pass.
+
+---
+
+## Filed by Story 2.17 — comparison mode (2026-08-07)
+
+**CLOSED — the Team B non-hue channel.** Closes the entry filed by 2.10 with **Owner:** *"whichever
+of 2.13 / 2.15 / 2.16 / 2.17 lands first"*, routed onward by 2.13 ruling 2 to *"2.16 / 2.17"* and by
+2.16's D1 to this story by name — *"the genuine first two-team surface"*. `/compare` is that surface:
+`type=players` and `type=teams` paint side A in `--viz-team-a` and side B in `--viz-team-b`, which is
+the 1.32:1 (dark) / 1.07:1 (light) pair that makes a second channel mandatory rather than optional.
+
+**THE HATCH SHIPS, AND NOT ONE MEASURED NUMBER WAS RE-DERIVED.** The 2.10 evidence was carried
+verbatim and re-verified live in the browser at this story's Task 11.7, in both themes, with the
+method validated against the recorded figures BEFORE any new number was trusted:
+
+| mark | dark | light | measured against | matches the filed figure |
+|---|---|---|---|---|
+| `--viz-team-a` | 13.56 | 4.99 | `--surface-raised` | yes |
+| `--viz-team-b` | 10.30 | 5.36 | `--surface-raised` | yes |
+| team-a vs team-b | 1.32 | 1.07 | each other | yes |
+| hatch stripe (`--ink-primary`) | 1.53 | 3.30 | its own **solid** `--viz-team-b` ground | yes |
+
+The 1.53 dark figure does not trip decision 10(b), in that decision's own words: with the hatch over
+a *solid* ground rather than transparent gaps, *"the measured solid figures … govern, and the hatch
+only adds texture"*. WCAG 1.4.11's 3:1 floor applies to the mark against its background — 10.30 /
+5.36, which passes in both themes — not to a mark's internal texture.
+
+**THE BINDING CONCLUSION IS RESTATED RATHER THAN QUIETLY DROPPED:** the declared dashed-stroke
+fallback **cannot work on a filled bar at all**, and `/compare` has no line marks, so that half of
+the ruling is untested here by construction rather than by omission. A future story that needs a
+line-shaped second channel still has `TEAM_B_DASH_ARRAY`; one that needs a third bar channel must
+rule a new mechanism.
+
+**CLOSED — `seriesLabelIndex` returning 0 for both series on an all-equal set.** Closes the entry
+whose owner line was *"the first successor story to reuse `DistributionChart`"*. 2.13 did not reuse
+it, 2.15 was told not to, 2.16 does not — and `type=matches` renders a two-series home/away
+distribution through the shipped `DistributionChart`, so this story is the first. Fixed in
+`TacticalCharts.tsx` with the `-1` sentinel plus a co-located test; `SeriesEndLabel`'s existing
+`index !== labelIndex` guard was already sentinel-compatible and needed no change.
+
+- **CORRECTION TO THE ORIGINAL ENTRY, APPENDED RATHER THAN EDITED IN PLACE.** The filed citation
+  `TacticalCharts.tsx:229-237` had drifted; the function was at `:238-247` at this story's baseline.
+- **AND THE RULED REMEDY WAS NARROWER THAN THE SHIPPED ONE, DELIBERATELY.** The ledger's recorded
+  fix is "return `-1` when no value beats the first", which is a REGRESSION as written: on `[10, 3,
+  2]` nothing beats the first value either, so it would suppress the label on an ordinary series
+  whose peak simply sits at index 0. The degenerate case the entry actually describes — and the only
+  one where both series collide at the axis origin — is the FLAT series. That is what ships and what
+  the test pins.
+
+**RECORDED, NOT CLAIMED — two 2.15 fixes that are live in code and were never filed.**
+
+- **`InvolvementChart`'s hatch IS centred** (`x1 = x2 = HATCH_TILE_PX / 2`), and so is the
+  `TacticalCharts` copy. That is 2.15's fix, verified present at this story's baseline and reused
+  verbatim by `CompareCharts`. Recorded here because the ledger still reads as though it were open.
+- **The recharts vendor duplication is fixed and its entry is already closed above** by the
+  `Charts.tsx` barrel. Re-measured by this story before its first edit and after its last, with the
+  classifier discriminating on `CartesianAxis` **AND** `Brush` **AND** `redux` together: **one line
+  classified VENDOR both times, 359.0 KB → 362.0 KB.** The fourth recharts leaf costs 3 KB because
+  the duplication is per `dynamic()` SPECIFIER, not per leaf module. `static-output.test.ts`'s
+  comment claiming "exactly two recharts import specifiers … a third would put a third ~300 KB
+  chunk" was stale on both halves and is corrected in this story's diff.
+
+### Filed, not fixed
+
+- **`/compare` has no AD-4 route-payload set.** AD-4 enumerates exactly three — Match Bundle,
+  profile artifact, and `tournament.json` + `leaderboards.json` combined — and this route is none of
+  them. It reaches four artifacts (`tournament.json` as picker corpus AND slug manifest, plus one
+  entity family per comparable type), and the per-route allow-list test now pins that set. Measured
+  worst case on real-data sizes, `type=matches`: 39,137 + 2 × 14,251 = **67,639 B gzip ≈ 66 KB
+  against the 500 KB cap.** The risk is nil; the DOCUMENT gap is real. The adversary review closed
+  the same hole for the Hub only (C3). **Owner:** 2.19 or an architecture amendment.
+
+- **`/compare` has no Lighthouse target.** NFR-1 names only the Match Dashboard and the Hub, so this
+  route's JS weight is ungoverned by any written rule — which is exactly why the story self-imposed
+  the vendor-chunk count as its gate. **Owner:** 2.19.
+
+- **A shared comparison link's preview card is the generic shell's.** `/compare` takes no
+  `export const metadata`, ruled rather than omitted: `<title>`/OG stay Spanish after an EN toggle,
+  so `en.*` metadata keys would be unreachable by construction — the pattern 2.18's BINDING
+  prohibition forbids, and the open ruling 2.18 filed rather than resolved ("either both routes take
+  metadata or neither does"). NFR-4 also excludes this route by enumeration, and entity-specific OG
+  is architecturally impossible under `output: 'export'` with one shell per query string. **The
+  `<title>`-language decision itself is NOT re-filed here — it is 2.12's, owner Juan, one entry and
+  one owner.** What is filed is only the consequence. **Owner:** whoever takes 2.18's Decision 2.
+
+- **The `<md` sticky mini-header's `IntersectionObserver` is UNVERIFIED, while the sticky itself is
+  verified.** Split deliberately, because they failed differently:
+  - **VERIFIED LIVE, in a real 386 px viewport:** `position: sticky`, `top: 56px`, `z-index: 30`,
+    zero clipping ancestors, `display: none` at `≥md` / `block` below it — and, decisively, it
+    ACTUALLY OFFSETS: `getBoundingClientRect().top === 56` at every scrolled probe. That closes, for
+    this header, the class of defect recorded above where twenty-two sticky headers shipped green
+    and silently did not stick.
+  - **NOT VERIFIED:** that the observer renames the header as the second figure comes on screen. The
+    browser automation reported a successful window resize while the window stayed at 1920 (the same
+    environmental blocker 2.16 recorded), so the only narrow viewport available was a same-origin
+    iframe — and `IntersectionObserver` delivers **zero callbacks** for content inside that iframe in
+    this environment. An in-realm observer constructed over the same nodes also fired nothing, so the
+    harness is what failed, not necessarily the page. One real defect WAS found and fixed during the
+    attempt: the callback decided from the `entries` argument alone, which is only what CHANGED, so a
+    scroll delivering one entry could never compare the two figures; it now decides over a persistent
+    visibility map. `data-compare-showing` on the mini-header and `data-compare-side` on the figures
+    exist to make the next pass cheap. **Owner:** 2.19's accessibility pass, or a manual check.
+
+- **No term on `/compare` is glossary-marked.** UX-DR20's per-term policy table governs marking
+  row-by-row and names no row for this route; the mirrored-row labels are also BUILT rather than
+  named at the call site (`leaderboardMetricKey`, `hub.standings.columnTitle.*`, `enums.metric.*`),
+  so marking them would require a key→`GlossaryTermId` map that exists nowhere in the codebase plus
+  roughly nineteen new policy rows. 2.5 decision 8: *"a dotted underline with no popover behind it
+  is a broken promise."* A policy row recording this decision is appended to `EXPERIENCE.md`.
+  **Owner:** a successor with the terminology mandate.
+
+- **`CompareLineChart` was NOT built, against Task 7.1's literal wording.** Every mark on this route
+  is a bar: players plot speed bands, teams plot phase rates, and matches reuse `DistributionChart`.
+  Shipping an unmounted chart component would be dead code on the deferred side of the lazy boundary
+  — and D4's line-mark channel (`TEAM_B_DASH_ARRAY`) already ships in `MomentumChart` for whoever
+  needs it. Recorded so the omission is a decision rather than a discovery.
+
+- **`/compare` mounts no `RowAnchor`, so the two surviving private copies are untouched.** The
+  Reuse Inventory asked this story not to add a fourth; it adds none. The two at
+  `TournamentHub.tsx` and `PlayerMatchesSection.tsx` remain open under their existing owner.
