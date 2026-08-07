@@ -2773,6 +2773,127 @@ export const es = {
       crashedExplanation: "El resto de la página sigue disponible.",
     },
   },
+  /*
+   * ------------------------------ STORY 2.17 — /compare ---------------------
+   *
+   * Tail append, after `team`. Register: tuteo, neutral LatAm, NO exclamation
+   * marks (`[¡!]` banned; guillemets legal).
+   *
+   * MOST OF THIS ROUTE'S COPY IS REUSED, NOT MINTED. The leader treatment comes
+   * from `match.hero.leader` («líder») with `StoryStatTiles`' `LEADER_GLYPH`; the
+   * mirrored match rows label themselves from `enums.metric.*` through the
+   * shipped `buildKeyStatRows`; the entity-kind row-link prefixes come from
+   * `search-model`'s `entityKindRowLinkKey`; the units come from `enums.unit.*`.
+   *
+   * 🔴 `type.*` IS MINTED, AND THE ARGUMENT IS THE DIFF'S (ruled D12).
+   * `EXPERIENCE.md:322` says entity-type labels are "deliberately NOT a new row",
+   * and three plausible homes already ship — so minting needs a reason, not a
+   * shrug. The reason is that all three are a different part of speech from what
+   * this selector needs:
+   *   - `viz.table.player` / `.team` / `hub.results.column.match` are SINGULAR
+   *     COLUMN HEADS. AC 1 names the selector "Jugadores/Equipos/Partidos".
+   *   - `leaderboards.scope.*` carries a docblock scoping it to "what the whole
+   *     board ranks" — board vocabulary on a non-board surface, the same
+   *     objection 2.14 raised when it declined `leaderboards.filterLabel`.
+   *   - `player.appearances.played` = "Partidos" is a COUNTER LABEL on one
+   *     player's appearance line; reusing it as a selector segment is a
+   *     coincidence of spelling, not a shared term.
+   * There is no "Partidos" plural in the entity vocabulary at all, so even a
+   * full-reuse strategy would have to mint one of the three and leave the
+   * selector with two homes for one concept. Minting the coherent triple is the
+   * smaller drift. Juan may overturn this; it is three keys and this comment.
+   *
+   * 🔴 `word.*` IS A SECOND, LOWERCASE TRIPLE AND THAT IS DELIBERATE. The empty
+   * state reads "Elige dos jugadores para comparar." — mid-sentence, lowercase —
+   * while the selector segment reads "Jugadores". Lowercasing the label in JS
+   * would be a case transform applied to DISPLAY COPY, which is the locale
+   * layer's job to state rather than the component's to compute; `es` and `en`
+   * agree today but a locale where the two forms diverge would have nowhere to
+   * say so.
+   */
+  compare: {
+    // The route's sr-only <h1>. The visible entry points say "Comparar"; this
+    // names the page itself.
+    heading: "Comparar",
+    type: {
+      // Labels the three-segment selector as a group (it is a radiogroup, so the
+      // group needs its own accessible name).
+      label: "Qué comparar",
+      players: "Jugadores",
+      teams: "Equipos",
+      matches: "Partidos",
+    },
+    /*
+     * The same three concepts, lowercase, for use INSIDE a sentence. See the
+     * block comment above for why this is not a duplicate of `type.*`.
+     */
+    word: {
+      players: "jugadores",
+      teams: "equipos",
+      matches: "partidos",
+    },
+    picker: {
+      // The two search-selects. "Lado" rather than "Columna": below `md` they
+      // stack, so they are not columns there.
+      sideA: "Lado A",
+      sideB: "Lado B",
+      swap: "Intercambiar lados",
+    },
+    /*
+     * COMPOSED COPY (ruled D11). `t()` takes (key, locale) and nothing else, so
+     * these fragments are joined into a `const` at the call site and never
+     * rendered as `{t(a)} {word} {t(b)}` — that form emits literal whitespace
+     * children and fails the i18n gate.
+     *
+     * Reads: "Elige dos " + word + " para comparar."
+     * `EXPERIENCE.md:93` quotes the Spanish verbatim; this implements it.
+     */
+    empty: {
+      headlineBefore: "Elige dos",
+      headlineAfter: "para comparar.",
+      explanation: "Busca por nombre en cualquiera de los dos lados.",
+    },
+    // One side chosen, the other still open. Its own copy, NOT the empty state's:
+    // telling a reader who has already picked to "elige dos" ignores what they did.
+    partial: {
+      headline: "Te falta un lado.",
+      explanation: "Elige el segundo para ver la comparación.",
+    },
+    /*
+     * Reads: "No encontramos " + slug + ". Elige de la lista."
+     *
+     * `headlineAfter` OPENS WITH THE PERIOD and is joined WITHOUT a space, so the
+     * sentence closes tight against the slug. `EXPERIENCE.md:94` carries the
+     * second sentence and it ships; AC 5 truncates the quote, it does not drop it.
+     */
+    invalid: {
+      headlineBefore: "No encontramos",
+      headlineAfter: ". Elige de la lista.",
+    },
+    section: {
+      stats: "Estadísticas",
+      charts: "Visualizaciones",
+    },
+    // The <md sticky mini-header (UX-DR17) names whose viz is on screen.
+    miniHeader: {
+      showing: "En pantalla",
+    },
+    /*
+     * The four-state machine, mirroring `player.region.*` and `team.region.*`.
+     * `error` and `invalid` stay distinct for the reason every region on this
+     * site states: a fetch that failed is retryable, a payload that arrived and
+     * failed the schemaVersion gate is not.
+     */
+    region: {
+      loading: "Cargando la comparación",
+      loaded: "Comparación cargada.",
+      error: "No pudimos cargar la comparación. Revisa tu conexión e intenta de nuevo.",
+      invalid: "Estos datos no coinciden con esta versión del sitio.",
+      invalidExplanation: "Estamos al tanto. Vuelve a intentarlo más tarde.",
+      crashed: "No pudimos mostrar esta comparación.",
+      crashedExplanation: "El resto de la página sigue disponible.",
+    },
+  },
 };
 
 export type Dictionary = typeof es;

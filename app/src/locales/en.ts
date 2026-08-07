@@ -1484,4 +1484,69 @@ export const en: Dictionary = {
       crashedExplanation: "The rest of the page is still available.",
     },
   },
+  /*
+   * ------------------------------ STORY 2.17 — /compare ---------------------
+   *
+   * The `es` half is the source of truth: `EXPERIENCE.md:93-94` quotes the
+   * Spanish for the empty and invalid states verbatim, so those were implemented
+   * rather than authored. NEITHER STRING HAS AN ENGLISH VARIANT ANYWHERE IN THE
+   * UX DOCS — this half is authored here under the same per-term procedure, and
+   * the policy rows appended to EXPERIENCE.md record it.
+   *
+   * `word.*` mirrors `type.*` in lowercase for mid-sentence use. In English the
+   * two differ only by case, exactly as in Spanish; they stay separate keys so a
+   * locale whose sentence form is NOT a case transform of its label form has
+   * somewhere to say so. Duplicate values across keys are normal in this
+   * dictionary and are in places deliberately pinned.
+   */
+  compare: {
+    heading: "Compare",
+    type: {
+      label: "What to compare",
+      players: "Players",
+      teams: "Teams",
+      matches: "Matches",
+    },
+    word: {
+      players: "players",
+      teams: "teams",
+      matches: "matches",
+    },
+    picker: {
+      sideA: "Side A",
+      sideB: "Side B",
+      swap: "Swap sides",
+    },
+    // Reads: "Pick two " + word + " to compare."
+    empty: {
+      headlineBefore: "Pick two",
+      headlineAfter: "to compare.",
+      explanation: "Search by name on either side.",
+    },
+    partial: {
+      headline: "One side to go.",
+      explanation: "Pick the second to see the comparison.",
+    },
+    // Reads: "We could not find " + slug + ". Pick one from the list."
+    invalid: {
+      headlineBefore: "We could not find",
+      headlineAfter: ". Pick one from the list.",
+    },
+    section: {
+      stats: "Statistics",
+      charts: "Charts",
+    },
+    miniHeader: {
+      showing: "On screen",
+    },
+    region: {
+      loading: "Loading the comparison",
+      loaded: "Comparison loaded.",
+      error: "We could not load the comparison. Check your connection and try again.",
+      invalid: "This data does not match this version of the site.",
+      invalidExplanation: "We are aware. Please try again later.",
+      crashed: "We could not show this comparison.",
+      crashedExplanation: "The rest of the page is still available.",
+    },
+  },
 };
