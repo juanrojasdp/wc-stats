@@ -44,3 +44,4 @@
 export { MomentumChart } from "@/components/MomentumChart";
 export { DistributionChart, InvolvementChart } from "@/components/TacticalCharts";
 export { CategoryBarChart, TrendChart } from "@/components/ProfileCharts";
+export { CompareBarChart } from "@/components/CompareCharts";

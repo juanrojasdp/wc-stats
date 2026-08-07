@@ -365,9 +365,26 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
     /*
      * EXPERIENCE.md's Visualization Layering row gives leaderboards exactly two
      * altitudes — "Top-3 teaser rows | — | Full sortable table" — and the em
-     * dash at Tactical altitude is the ruling. There are exactly two recharts
-     * import specifiers in the app and the vendor duplication is PER SPECIFIER,
-     * so a third would put a third ~300 KB chunk on a Lighthouse->=90 route.
+     * dash at Tactical altitude is the ruling. A chart here would put the
+     * recharts vendor chunk on a Lighthouse->=90 route.
+     *
+     * 🔴 THE OLD REASON GIVEN HERE WAS STALE AND IS CORRECTED (Story 2.17 Task
+     * 10.3). It read "There are exactly two recharts import specifiers in the app
+     * and the vendor duplication is PER SPECIFIER, so a third would put a third
+     * ~300 KB chunk …". Both halves stopped being true at Story 2.15, which
+     * introduced `@/components/Charts` — the ONE barrel every `dynamic()` call
+     * site now names — and collapsed the two chunk groups into one. There are
+     * FOUR recharts-bearing leaf modules today (`MomentumChart`,
+     * `TacticalCharts`, `ProfileCharts`, `CompareCharts`) and exactly ONE vendor
+     * chunk, measured on the built export at this story's baseline and again
+     * after it: 359.0 KB → 362.0 KB, one line classified VENDOR both times.
+     *
+     * The DUPLICATION IS PER `dynamic()` SPECIFIER, not per leaf module, which is
+     * why adding a fourth leaf costs 3 KB rather than 359. The classifier that
+     * proves it discriminates on `CartesianAxis` AND `Brush` AND `redux`
+     * together — `CartesianAxis` alone also matches a leaf — and it is a
+     * verification step run and recorded per story, deliberately NOT a committed
+     * assertion: "the App never measures bytes."
      */
     const page = html();
     expect(page).not.toContain("recharts");
@@ -835,5 +852,61 @@ describe("global-chrome and match-route artifact fetches (Story 2.14 Task 10.5)"
       "fetchArtifact"
     );
     expect(artifactPathsReachableFrom(SRC_DIR + "app/teams/[slug]/page.tsx")).toHaveLength(1);
+  });
+
+  /*
+   * ───────────── STORY 2.17 — /compare (Task 10.4) ─────────────
+   *
+   * The fifth per-route allow-list, and the FIRST whose correct answer is more
+   * than one artifact. `/compare` reaches four, and every one of them is
+   * deliberate:
+   *
+   *  · `/index/tournament.json` — the picker's CORPUS and the slug MANIFEST. It
+   *    belongs here in a way it belongs on no other entity route, and 2.14
+   *    measured it as reachable from `/` alone. The route validates `?a=`/`?b=`
+   *    against the manifest rather than against a 404, because AD-4 guarantees
+   *    one artifact per listed entity — so a manifest hit means a failed fetch is
+   *    a genuine `error` (retry may help) rather than an `invalid` (retry cannot).
+   *  · the three ENTITY families, one per comparable type. Only ONE pair is ever
+   *    fetched at runtime — the type in the URL decides — but all three call
+   *    sites are statically reachable from the region, which is exactly what this
+   *    walk measures and exactly what it should report.
+   *
+   * THE THREE FETCH CALL SITES ARE WRITTEN OUT SEPARATELY IN `CompareRegion` FOR
+   * THIS TEST. A single call over a path built from a variable would make this
+   * allow-list read as `[]` — the same blind spot Task 10.5 closed for the match
+   * route, where a template-literal fetch was invisible to a literal-only regex.
+   */
+  it("the COMPARE route reaches the index plus the three entity families (AC 1, FR-34)", () => {
+    /*
+     * SET EQUALITY, deliberately: a MISSING fetch is as much a defect as an extra
+     * one. Dropping `tournament.json` would silently disable slug validation and
+     * turn every invalid comparison into a fetch error; dropping an entity family
+     * would mean one of the three type-selector segments had stopped loading its
+     * own data.
+     */
+    const reachable = artifactPathsReachableFrom(SRC_DIR + "app/compare/page.tsx");
+    expect(reachable).toEqual([
+      "/index/player-profiles/{}.json",
+      "/index/team-profiles/{}.json",
+      "/index/tournament.json",
+      "/matches/{}.json",
+    ]);
+    /*
+     * `leaderboards.json` IS THIS ROUTE'S SPECIFIC TRAP. The Hub already fetches
+     * it and it carries thirty-odd ranked boards of exactly the metrics a
+     * comparison shows — so reaching for it to answer "who ranks higher?" is the
+     * obvious move, and it is WRONG twice over: it is +29 KB gzip this route has
+     * no use for, and a RANK BETWEEN THE TWO SIDES is a displayed cross-entity
+     * derivation banned outright by AD-5.
+     */
+    expect(reachable).not.toContain("/index/leaderboards.json");
+  });
+
+  it("still walks far enough to see the compare route's three fetches", () => {
+    // Guards the guard, as all four siblings do: page.tsx holds no fetch itself —
+    // all three live two hops away in CompareRegion.
+    expect(readFileSync(SRC_DIR + "app/compare/page.tsx", "utf8")).not.toContain("fetchArtifact");
+    expect(artifactPathsReachableFrom(SRC_DIR + "app/compare/page.tsx")).toHaveLength(4);
   });
 });

@@ -520,8 +520,32 @@ export function HeaderSearch() {
  * presentations differ only in where they sit, whether they autofocus, and what
  * Escape means. Everything an assistive technology can observe — the roles, the
  * keyboard model, the highlight, the empty state — is this one component.
+ *
+ * 🔴 EXPORTED FOR `/compare` (Story 2.17 Task 4.1), AND THAT WAS THIS FILE'S
+ * DECLARED PURPOSE FROM THE START. 2.14's ruling 2 says so in the header docblock:
+ * "EXPERIENCE.md's Comparison entity picker (Story 2.17) specifies the same
+ * primitive: this is built so 2.17 CAN reuse it." Forking it would have meant a
+ * second `role="combobox"` with a second keyboard model, a second
+ * `aria-activedescendant` contract and a second highlight — five roles this
+ * codebase had never shipped before 2.14, duplicated.
+ *
+ * EXPORTED IN PLACE RATHER THAN LIFTED TO ITS OWN MODULE. Task 4.1 permits
+ * either; in place is the smaller change, and `HeaderSearch.test.tsx:462-475`
+ * asserts against THIS file's source path — lifting would have meant moving that
+ * assertion in the same commit, for no gain to either caller.
+ *
+ * TWO PROPS ARE NEW AND BOTH ARE OPTIONAL, so the header's two call sites are
+ * untouched:
+ *  · `onSelect` turns every result row from a `<Link>` into a
+ *    `<button type="button">`. The comparison picker CHOOSES an entity — it does
+ *    not navigate to one — and a link that suppresses its own navigation is a
+ *    lie to every assistive technology that reports it as a link.
+ *  · `fieldLabel` names the field, because a route with TWO of these needs them
+ *    told apart ("Lado A" / "Lado B"); the header's single field keeps
+ *    `search.label`. It is NOT called `label`: that name is on the sixteen-name
+ *    i18n gated list, and the gate matches `^label$` exactly.
  */
-function SearchField({
+export function SearchField({
   corpus,
   status,
   onEngage,
@@ -529,6 +553,8 @@ function SearchField({
   locale,
   autoFocus = false,
   dismissClosesHost,
+  onSelect,
+  fieldLabel,
 }: {
   corpus: readonly SearchEntity[];
   status: Status;
@@ -538,6 +564,16 @@ function SearchField({
   autoFocus?: boolean;
   /** True in the sheet: Escape belongs to the host dialog, not to the listbox. */
   dismissClosesHost: boolean;
+  /**
+   * Present ⇒ rows are BUTTONS that call this instead of anchors that navigate.
+   *
+   * The field also clears itself after a choice: the picker's chosen entity is
+   * shown by the comparison, not by a query string left in the box, and leaving
+   * the previous needle behind would re-open the same list on the next keystroke.
+   */
+  onSelect?: (entity: SearchEntity) => void;
+  /** Already-resolved accessible name for the input. Defaults to `search.label`. */
+  fieldLabel?: string;
 }) {
   const t = useT();
   const inputId = useId();
@@ -554,7 +590,12 @@ function SearchField({
    * control whose first result changes on every keystroke.
    */
   const [activeIndex, setActiveIndex] = useState(-1);
-  const anchorRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  /*
+   * `HTMLElement`, not `HTMLAnchorElement` (Story 2.17): a row is an anchor in
+   * the header and a button in the comparison picker, and both paths dispatch
+   * through this same ref list on Enter.
+   */
+  const anchorRefs = useRef<(HTMLElement | null)[]>([]);
   /** The input + panel wrapper, so an outside pointer can be told from an inside one. */
   const fieldRef = useRef<HTMLDivElement | null>(null);
 
@@ -904,9 +945,9 @@ function SearchField({
     }
   }
 
-  const label = t("search.label");
+  const label = fieldLabel ?? t("search.label");
   const placeholder = t("search.placeholder");
-  const listLabel = t("search.listLabel");
+  const listLabel = fieldLabel ?? t("search.listLabel");
 
   return (
     <div ref={fieldRef} className="relative w-full">
@@ -976,6 +1017,21 @@ function SearchField({
             anchorRefs={anchorRefs}
             noResultsSentence={noResultsSentence}
             /*
+             * Present only in the comparison picker. It CLEARS THE BOX as well as
+             * reporting the choice: the picked entity is shown by the comparison
+             * itself, and a needle left behind would re-open the same list on the
+             * reader's next keystroke over a selection they have already made.
+             */
+            onSelect={
+              onSelect === undefined
+                ? undefined
+                : (entity) => {
+                    onSelect(entity);
+                    setQuery("");
+                    onAnnounce("");
+                  }
+            }
+            /*
              * A ROW CLICK CLOSES THE PANEL (code review 2026-08-07). Nothing did
              * this: the mouse path was a bare `<Link>` with no handler, and a
              * `next/link` navigation is a SOFT App Router transition in which
@@ -1011,6 +1067,7 @@ function SearchPanel({
   activeIndex,
   anchorRefs,
   noResultsSentence,
+  onSelect,
   onActivate,
 }: {
   status: Status;
@@ -1020,8 +1077,10 @@ function SearchPanel({
   listLabel: string;
   optionIdPrefix: string;
   activeIndex: number;
-  anchorRefs: React.RefObject<(HTMLAnchorElement | null)[]>;
+  anchorRefs: React.RefObject<(HTMLElement | null)[]>;
   noResultsSentence: (query: string) => string;
+  /** Present ⇒ rows are buttons that CHOOSE, absent ⇒ links that NAVIGATE. */
+  onSelect?: (entity: SearchEntity) => void;
   /** Dismiss the panel once a row has been chosen — see the call site. */
   onActivate: () => void;
 }) {
@@ -1089,6 +1148,7 @@ function SearchPanel({
           anchorRef={(node) => {
             anchorRefs.current[index] = node;
           }}
+          onSelect={onSelect}
           onActivate={onActivate}
         />
       ))}
@@ -1102,18 +1162,78 @@ function SearchOption({
   optionId,
   active,
   anchorRef,
+  onSelect,
   onActivate,
 }: {
   result: SearchResult;
   optionId: string;
   active: boolean;
-  anchorRef: (node: HTMLAnchorElement | null) => void;
+  anchorRef: (node: HTMLElement | null) => void;
+  onSelect?: (entity: SearchEntity) => void;
   onActivate: () => void;
 }) {
   const t = useT();
   const { entity, span } = result;
   const typeLabel = t(entityKindLabelKey(entity.kind));
   const linkPrefix = t(entityKindRowLinkKey(entity.kind));
+
+  /*
+   * 🔴 A BUTTON, NOT A SUPPRESSED LINK (Story 2.17 Task 4.1). The comparison
+   * picker CHOOSES an entity and stays on `/compare`; rendering that as an
+   * `<a href>` with `preventDefault()` would report a link to every assistive
+   * technology, put a real URL on the status bar and in the context menu, and
+   * open a route the reader did not ask for on Ctrl+click — the exact modifier
+   * path the header's Enter handler goes out of its way to PRESERVE, because
+   * there navigation is the point.
+   *
+   * The row's inner markup is identical either way, so the two presentations
+   * cannot drift in what they announce.
+   */
+  const rowClassName = "flex w-full flex-col gap-0.5 rounded-sm px-2 py-2 text-left";
+  const rowChildren = (
+    <>
+      {/* The sr-only prefix, on `hub.*.rowLink`'s idiom, so a screen reader's
+          option name leads with the entity type rather than a bare proper noun. */}
+      <span className="sr-only">{linkPrefix}</span>
+      <span className="type-body text-ink-primary">
+        <HighlightedName name={entity.name} span={span} />
+      </span>
+      <span className="type-label-caps text-ink-secondary">
+        {typeLabel}
+        {entity.detail === null ? null : DETAIL_JOIN}
+        {entity.detail}
+      </span>
+    </>
+  );
+
+  if (onSelect !== undefined) {
+    return (
+      <li
+        id={optionId}
+        role="option"
+        aria-selected={active}
+        className={active ? "rounded-sm bg-surface-raised" : "rounded-sm"}
+      >
+        <button
+          ref={anchorRef}
+          type="button"
+          /*
+           * `tabIndex={-1}` for the same reason the anchor carries it: this is an
+           * `aria-activedescendant` combobox, so DOM focus never leaves the input
+           * and the options must not be in the tab order.
+           */
+          tabIndex={-1}
+          onClick={() => {
+            onSelect(entity);
+            onActivate();
+          }}
+          className={rowClassName}
+        >
+          {rowChildren}
+        </button>
+      </li>
+    );
+  }
 
   return (
     <li
@@ -1151,19 +1271,9 @@ function SearchOption({
         prefetch={false}
         tabIndex={-1}
         onClick={onActivate}
-        className="flex flex-col gap-0.5 rounded-sm px-2 py-2"
+        className={rowClassName}
       >
-        {/* The sr-only prefix, on `hub.*.rowLink`'s idiom, so a screen reader's
-            link list does not read a column of bare proper nouns. */}
-        <span className="sr-only">{linkPrefix}</span>
-        <span className="type-body text-ink-primary">
-          <HighlightedName name={entity.name} span={span} />
-        </span>
-        <span className="type-label-caps text-ink-secondary">
-          {typeLabel}
-          {entity.detail === null ? null : DETAIL_JOIN}
-          {entity.detail}
-        </span>
+        {rowChildren}
       </Link>
     </li>
   );
