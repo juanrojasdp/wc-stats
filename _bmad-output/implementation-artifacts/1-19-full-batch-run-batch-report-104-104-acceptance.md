@@ -1,10 +1,22 @@
 ---
 baseline_commit: 12fad17
+head_at_creation_close: 79bd7aa
 ---
 
 # Story 1.19: Full-Batch Run, Batch Report & 104/104 Acceptance
 
-Status: ready-for-dev
+Status: review
+
+> **Baseline disclosure, recorded rather than repaired (house precedent).** This story was
+> written against `12fad17`, and every figure and line number in it was verified there. Partway
+> through creation the concurrent Story 2.14 code-review session committed `79bd7aa` and its
+> sweeping stage **captured a mid-draft copy of this file** (696 lines; the finished draft is
+> longer). `79bd7aa` touches **`app/` only** — verified: `git show --stat 79bd7aa -- pipeline/ data/`
+> is empty, `git status --short data/ pipeline/` is clean, and `git ls-files data/` is still
+> **1,412**. **So this story's entire work surface is byte-unchanged from its baseline and no
+> figure below is stale.** Re-verify with `git status --short data/ pipeline/` before Task 1.1
+> anyway — HEAD may have moved again. This is exactly the capture hazard §Coordination names,
+> and the ruled response is: verify content integrity, disclose, do not repair.
 
 ## Story
 
@@ -16,9 +28,10 @@ So that the complete, validated dataset exists and SM-1 is met — or every resi
 > re-derive them; do re-measure any figure you intend to assert.**
 >
 > 1. **THE ARTIFACTS ALREADY EXIST AND ARE TRACKED. This story is not a first emission.**
->    `git ls-files data/ | wc -l` → **1412**: 104 bundles (`data/matches/`, 1.16), 2 index
->    artifacts (`data/index/{tournament,leaderboards}.json`, 1.17), 1,248 player profiles + 48
->    team profiles (1.18), and 10 fixture files. `git status --short data/ pipeline/` is
+>    `git ls-files data/ | wc -l` → **1,412 tracked = 1,402 non-fixture artifacts + 10 fixtures**:
+>    104 bundles (`data/matches/`, 1.16), 2 index artifacts
+>    (`data/index/{tournament,leaderboards}.json`, 1.17), 1,248 player profiles + 48 team
+>    profiles (1.18), plus `data/fixtures/`. `git status --short data/ pipeline/` is
 >    **empty** — both trees are clean. Your ACs are the **end-to-end run, the report, the
 >    acceptance and the reproducibility proof**, not a first write.
 > 2. **THE BATCH EXITS 1 BY DESIGN AND HAS SINCE STORY 1.12. Never assert exit 0.** The ruled
@@ -44,14 +57,18 @@ So that the complete, validated dataset exists and SM-1 is met — or every resi
 >    concurrent session saved `domain_e.py` at 21:40 mid-run. **The byte-identical re-run is an
 >    acceptance condition and requires a quiet `pipeline/` tree.** Sequence it last.
 >    [Source: `1-14-…md:496-498`, `1-9-…md:483-489`, `sprint-status.yaml:2016-2024`]
-> 6. **A NAIVE ONE-PASS E2E RUN DEADLOCKS.** `check_route_manifest`'s profile direction is
->    **write-blocking** and runs before the first `write_canonical`, so with profiles on disk,
->    `index.py` refuses to emit `tournament.json` until a profile artifact exists for every
->    entity — but profiles are built *from* that manifest. The documented recourse is ugly
->    (empty both profile directories → run `index` → re-run `profiles`). The ledger says
->    **"Story 1.19 owns end-to-end orchestration, which is where the phase ordering should be
->    expressed."** [Source: `pipeline/precompute/index.py:1178-1212`; `deferred-work.md` anchor
->    *"the profile direction PRINTS that it could not run"*]
+> 6. **THE E2E ORDERING IS DEADLOCK-PRONE — CONDITIONALLY, WHICH IS THE SUBTLE PART.**
+>    `check_route_manifest`'s profile direction is **write-blocking** and runs before the first
+>    `write_canonical`, but it raises only on a **set difference** (`index.py:1256-1266`:
+>    `missing = listed_kind - set(profiles)`, `orphans = set(profiles) - listed_kind`). **A clean
+>    re-run over the unchanged committed entity set PASSES.** The deadlock fires the moment the
+>    entity set moves: the ledger's own wording is *"**adding a single entity to the spine** makes
+>    `index.py` refuse to emit `tournament.json` until a profile artifact exists for it"* — but
+>    profiles are built *from* that manifest. The documented recourse is ugly (empty both profile
+>    directories → run `index` → re-run `profiles`). The ledger says **"Story 1.19 owns
+>    end-to-end orchestration"**, *"which is where the phase ordering should be expressed."*
+>    [Source: `pipeline/precompute/index.py:1178-1212`, `:1256-1266`; `deferred-work.md`,
+>    greppable anchor *"The profile direction of AD-4's bijection is WRITE-BLOCKING"*]
 > 7. **TWO COMMITTED WRITE PATHS ARE STILL NOT ALL-OR-NOTHING, AND THAT DIRECTLY THREATENS
 >    AC 3.** `emit_bundles` (→ `data/matches/`) and `emit_index` (→ `data/index/*.json`) write
 >    per file with no rollback. An `OSError` on bundle 57 exits **2** — the code whose stated
@@ -66,9 +83,12 @@ So that the complete, validated dataset exists and SM-1 is met — or every resi
 > 9. **The `assert-schema-version.test.ts` premise routed here is STALE and you must say so
 >    rather than act on it.** The ledger reconciled ownership to 1.19 on the reasoning that
 >    *"Story 1.19's full batch run will multiply the tree again."* **It will not.** The tree is
->    already at its full 1,402 committed artifacts — 1.16/1.17/1.18 emitted them. Story 2.14
->    already raised all three `it`s to a 20 s budget and verified four consecutive full-suite
->    runs at 964/964. **Measure and record; do not edit `app/`.** See §OPEN RULINGS R4.
+>    already at its full 1,402 committed artifacts — 1.16/1.17/1.18 emitted them. Story 2.14's
+>    fix (all three `it`s raised to a 20 s budget, verified over four consecutive full-suite runs
+>    at 964/964) exists **only in the concurrent Epic 2 session's UNCOMMITTED working tree** —
+>    `git show 12fad17:app/src/lib/assert-schema-version.test.ts` contains no `SPAWN_TIMEOUT_MS`.
+>    Re-check `git log -1 -- app/src/lib/assert-schema-version.test.ts` before relying on it.
+>    **Either way: measure and record; do not edit `app/`.** See §OPEN RULINGS R4.
 
 ## Acceptance Criteria
 
@@ -82,22 +102,35 @@ aggregate counts **And** from the summary alone a reader can identify every fail
 without opening logs or artifacts.
 [Source: `epics.md:597-600`, `### Story 1.19`; FR-16 `prd.md:217-221`]
 
-> **BINDING — five separate obligations hide in this AC. Take them one at a time.**
+> **BINDING — six separate obligations hide in this AC. Take them one at a time.**
 >
-> **(a) "exactly 104 terminal entries" is already structurally enforced; the *assertion* is
-> not.** `batch.py:333-338` raises `ValueError` unless every entry reaches one of
-> `STATUSES = ("extracted", "failed", "skipped-unchanged")` — note the hyphen. `--expect-reports 104`
-> gates the corpus size, but **only its mismatch path has ever been asserted by a test**
-> (`deferred-work.md` anchor *"No test exercises the batch beyond three reports"*). Close the
-> match path. Beware: `_corpus` (`pipeline/tests/test_ingest_batch.py:33`) indexes a
-> five-element `TEAMS` list, so a synthetic corpus above 5 raises `IndexError` — widen `TEAMS`
-> or assert the match path against the real run rather than a synthetic 104.
+> **(a) "exactly 104 terminal entries" is already structurally enforced, and the assertion gap
+> is SCALE, not the match path.** `batch.py:333-338` raises `ValueError` unless every entry
+> reaches one of `STATUSES = ("extracted", "failed", "skipped-unchanged")` — note the hyphen.
+> `--expect-reports`'s **match** path is already green at the CLI:
+> `test_ingest_batch.py:446` `test_a_clean_run_exits_zero` passes `--expect-reports 2` over a
+> 2-report corpus; the mismatch path is covered twice (`:427`, `:546`) and the arg-type guard at
+> `:718`. **The real gap is the one the ledger names — *"No test exercises the batch beyond
+> three reports"*.** `_corpus` (`test_ingest_batch.py:36`) indexes the five-element `TEAMS` list
+> at `:27-33`, so a synthetic corpus above 5 raises `IndexError`. Either widen `TEAMS` and build
+> a synthetic ≥104 corpus, or assert the real run's manifest at 104 and say so explicitly.
 >
 > **(b) "end-to-end" is FIVE CLIs, not one, and their order is forced.**
 > `ingest.batch` → `precompute.run` → `precompute.emit` → `precompute.index` →
 > `precompute.profiles`. `profiles` reads `data/matches/`, not `work/spine/`, so it must run
-> after `emit`. And `index` **cannot run cleanly after `profiles` exists** unless you resolve
-> the deadlock in §probe-6. Expressing that ordering is this story's named obligation.
+> after `emit`. `index`'s profile-direction bijection is write-blocking but **conditional on the
+> entity set moving** (§probe-6) — a clean re-run passes, an entity-set change deadlocks.
+> Expressing that ordering is this story's named obligation.
+>
+> **(f) "per-report status" is an AC clause with NO implementation, and it is easy to miss.**
+> `format_summary` renders **aggregate** `counts_by_status` (`for status in STATUSES: …`), then
+> the warnings / failed / self-validation / orphans / corpus-gaps blocks and the RUN RESULT
+> line. **There is no per-report status listing anywhere in the function** — a `skipped-unchanged`
+> or `extracted` report appears nowhere by name. FR-16 (`prd.md:217`) and AC 1 both name it.
+> **Rule it explicitly** (Task 3.4): either `counts_by_status` plus the failed/self-validation
+> blocks discharge "per-report status" because only non-clean reports need naming, or the
+> summary gains a status listing. Silence on an AC-named clause is a review finding — the same
+> treatment R2 gives "near-miss parses".
 >
 > **(c) "warnings (unlinked markers, near-miss parses)" — three different mechanisms.**
 > *Unlinked markers* reach the summary through the `shots-link-rate` branch of the
@@ -210,7 +243,7 @@ byte-identically (NFR-6).
 > - the printed `code version` line must be **identical across both runs**.
 >
 > **What is NOT byte-identical and must not be asserted:** `work/run-manifest.json` carries
-> `run_timestamp` (`batch.py:363`) — the one volatile field — and `work/` is gitignored anyway.
+> `run_timestamp` (`batch.py:360`) — the one volatile field — and `work/` is gitignored anyway.
 >
 > **The refactors in Tasks 5 and 6 must be byte-neutral.** Bundles carry no timestamp, no
 > absolute path, no `code_version`, no host name (1.16 landmine). A staged-directory rewrite of
@@ -239,7 +272,8 @@ summary and 728 lines of structural noise is exactly what AC 1 forbids.**
   without changing the manifest. **Deferred: touches `format_summary`'s shared rendering, which
   several stories' checks depend on.**"*
 - Story 1.13 (anchor *"so the batch summary now prints 208 more warning lines"*): *"would now fix
-  three warnings at once … **Still deferred for the same reason.**"*
+  three warnings at once … **Still deferred for the same reason: it touches `format_summary`'s
+  shared rendering.**"*
 - Story 1.14 (anchor *"A fourth family of absence warning now fires on every report"*): *"a record
   now carries **seven**, and the summary-level de-duplication … would now collapse **728 lines to
   seven**. **Still deferred for the same reason.**"*
@@ -264,14 +298,17 @@ count.
    iteration from *entry → warnings* to *warning → count of entries carrying it*, preserving
    first-appearance order so the output is deterministic (never `set` iteration order).
 2. **Emit the warning text VERBATIM.** No truncation, no elision, no reflow, no re-wrapping.
-   Truncating is the one change that breaks the three tests above. Render as
-   `  {n} report(s): {warning}` — singular/plural handled so a one-report fixture reads
-   `1 report: …`.
-3. **When a warning is carried by some but not all reports, name the reports.** A warning on
-   ≤ 3 of the run's reports is genuinely per-report information and AC 1 requires it be
-   identifiable; render those as today (`  {report_id}: {warning}`). Above that threshold, collapse
-   with the count. Pick and document the threshold in the docstring; a bare count that hides
-   *which* three reports differ would violate AC 1 in the other direction.
+   Truncating is the one change that breaks the three tests above. The collapsed form is
+   `  {n} reports: {warning}`.
+3. **When a warning is carried by some but not all reports, name the reports.** A warning on a
+   small minority is genuinely per-report information and AC 1 requires it be identifiable;
+   render those as today (`  {report_id}: {warning}`). Above the threshold, collapse with the
+   count. **Pick one threshold, document it in the docstring with its AC-1 rationale, and apply
+   it uniformly — the collapsed and named forms must never both be reachable for the same
+   count.** A bare count that hides *which* three reports differ violates AC 1 in the other
+   direction. (The three existing dependents all use single-report corpora and assert only
+   substring containment, so either form keeps them green — build a **≥4-report** synthetic
+   manifest to exercise the collapse, per Task 2.4.)
 4. **The manifest is unchanged.** All three filings say so. Per-report `warnings` arrays keep one
    entry per report, mirrored at `batch.py:314-319`. This is a **rendering** change only.
 5. **Do not touch** the "Failed reports", "Self-validation failures", "Orphan records" or
@@ -279,8 +316,13 @@ count.
 6. **Ship a constructed failure that drives it red** (house rule): a synthetic manifest where two
    reports carry warning A and one carries warning B must render A collapsed and B named, and a
    mutation that drops the count must turn a test red.
-7. **Update the doc-comments that describe the rendering:** `pipeline/markers/crosses.py:220`,
-   `pipeline/markers/receiving.py:503`, and `pipeline/README.md:96-120` and `:513-523`.
+7. **Update only the prose that actually describes the warnings block.** Verified: the
+   `format_summary` mentions in `pipeline/markers/crosses.py:220` (*"count branch"*) and
+   `pipeline/markers/receiving.py:503` (*"fallback branch"*) describe the **Self-validation
+   failures** renderer, which rule 5 forbids touching — **editing them is a no-op that
+   re-invalidates all 104 staged records for nothing.** Leave them alone. The prose to update is
+   `pipeline/README.md:117-118` (the console-summary flow) and the absence-warning sections at
+   `README.md:898-901`, `:1130`, `:1339`.
 
 **Expected effect, measured against the live manifest:** 728 warning lines → 7.
 
@@ -308,8 +350,17 @@ fix `emit_bundles`"*).
 - **The `>=` → `==` pass-network tightening.** 1.18 proved the precondition is **unreachable**:
   `events.passNetworkNodes` is `null` on 104/104 corpus bundles, so the invariant skips on every
   real bundle and can only run against hand-authored fixtures whose edge lists are a subset by
-  construction. 38 of 66 fixture nodes still go red under `==`. **Not 1.19's. Do not "fix" it by
-  regenerating fixtures — 1.18 measured that it does not help.**
+  construction. 38 of 66 fixture nodes still go red under `==`. The ledger's **corrected owner**
+  is *"whoever makes the node/edge fixtures total, or a decision to retire the test"* — not this
+  story. **Do not "fix" it by regenerating fixtures — 1.18 measured that it does not help.**
+- **`domain_e_checks` reads its own payload by bare subscript** (`deferred-work.md`, anchor
+  *"`domain_e_checks` reads its own payload by bare subscript"*, owner *"whichever story next
+  edits `pipeline/validate/checks.py` — Story 1.19's batch acceptance is the natural point"*).
+  **Named for 1.19, and deliberately not taken.** This story plans no `pipeline/validate/checks.py`
+  edit; the prescribed fix (a record-shape guard, or a `RECORD_VERSION` bump with a real
+  migration path) is a module-wide ruling, and taking it adds an unruled production edit that
+  forces another full re-extract before the byte-identity proof can even start. **Say this in
+  the Completion Notes so the omission is not read as a miss.**
 - **Everything routed to Story 2.19** — the `DATA_ROOT` flip, 104-at-scale App verification,
   Lighthouse, sort collation over real names, accent-insensitivity in the browser, cluster
   density at 320px, the header-search payload question.
@@ -347,26 +398,36 @@ discharges the category and record that reading in the Completion Notes.
 
 ### R3 — `_parse_rows`' silent row skip: take the raise now, or re-defer?
 
-`pipeline/extract/pass_network.py:301-315` `continue`s on any body row carrying no shirt span and
-no name span — a silent skip on a page family whose whole discipline is assert-on-unknown. The
-ledger deferred it because *"turning the skip into a raise is a behaviour change on all 104 reports
-and needs a full batch re-run to validate"* — **and this story has that re-run.** The second half is
-unruled: raise **always**, or raise only when the skipped row carries digit spans?
+**Read the code before ruling — the ledger's framing is looser than the source.**
+`pipeline/extract/pass_network.py:307-317` **already raises** `PassNetworkParseError` when a
+shirt-less row carries a name span (*"a wrapped row label"*). The residual silent skip is the
+`continue` at **`:319`**, which fires only on a row that bucketed nothing into cell 0 **and**
+nothing into cell 1 — page furniture (a footer, a legend, a note) whose x-centres fall inside the
+matrix columns. The ledger deferred it because *"turning the skip into a raise is a behaviour
+change on all 104 reports and needs a full batch re-run to validate"* — **and this story has that
+re-run.** The unruled half is: raise always, or raise only when the skipped row carries digit
+spans?
 **Recommendation: re-defer.** It is required by no AC, it is a second unruled decision, and each
 production edit forces another full re-extract cycle before the byte-identity proof can start. If
-Juan wants it taken, take the **conservative** form (raise only on digit spans) and sequence it
-with the Task 6 edits so one re-extract covers both.
+Juan wants it taken, take the **conservative** form and sequence it with the Task 6 edits so one
+re-extract covers both.
 
 ### R4 — `assert-schema-version.test.ts`: measure-and-report, or is the architectural question answered here?
 
 The ledger reconciled ownership to 1.19 on a premise that is now false (§probe-9): the data tree is
-already at full size and 2.14 already raised the per-test budget to 20 s with four consecutive
-964/964 full-suite runs. The still-open question the reconciliation names is real, though:
-*"whether a unit-test run should re-walk the entire emitted corpus at all."*
+already at full size. The **timeout flake itself is already closed** by 2.14's appended entry
+(*"FIXED IN THIS STORY (2026-08-07), not deferred … all three `it`s … now carry an explicit
+`20_000` ms budget … Verified: four consecutive full-suite runs at 964/964"*) — though that fix
+sits in an uncommitted working tree, so re-check before relying on it. The **residual** open
+question is the real one the reconciliation names: whether a unit-test run should re-walk the
+entire emitted corpus at all, now that the corpus is real rather than fixture-sized. (That
+sentence hard-wraps in the ledger at both occurrences — grep the fragment
+*"re-walk the entire emitted"*, not the whole phrase.)
 **Recommendation: measure `node scripts/assert-schema-version.mjs` against the post-run tree,
-record the runtime and the artifact count in the Completion Notes, append a correction to the
-ledger stating the "multiplies the tree again" premise was wrong, and route the scoped-walk
-question to 2.19 with the measurement attached. Change no file under `app/`.**
+record the runtime and the artifact count in the Completion Notes, append ONE correction to the
+ledger stating the "multiplies the tree again" premise was wrong — the item was filed FOUR times,
+so say the correction applies to all four — note that 2.14's closure already covers the flake, and
+route only the scoped-walk question onward. Change no file under `app/`.**
 
 ### R5 — How is the phase-ordering deadlock resolved: orchestrator, or gate semantics?
 
@@ -389,88 +450,91 @@ assert.
 > (Tasks 2–6) BEFORE the authoritative run (Task 7).** A batch run taken mid-edit is discarded
 > work. [Source: `1-15-…md:166` *"Do not re-run the batch yet."*]
 
-- [ ] **Task 1 — Baseline, environment, and the quiet-tree plan** (AC: 1, 2, 3)
-  - [ ] 1.1 Confirm `git rev-parse HEAD` is `12fad17` and `git status --short data/ pipeline/` is empty. Record both.
-  - [ ] 1.2 Record the pre-change baseline: `git ls-files data/ | wc -l` (expect 1412), the counts in `data/matches/` (104), `data/index/*.json` (2), `data/index/team-profiles/` (48), `data/index/player-profiles/` (1248), `data/fixtures/` (10). **Baselines drift by design — measure your own, do not copy these forward as assertions without re-measuring.**
-  - [ ] 1.3 Record the current `work/run-manifest.json` state as the "before" reference: 104 entries, `counts_by_status`, `run` block, `code_version` (first 12 chars). Do **not** treat it as the acceptance artifact — Task 7 produces that.
-  - [ ] 1.4 Create the isolated git worktree for verification (house practice since 1.17/1.18; three commits landed under 1.18 mid-run). Use a private port for anything served. **Expect one known worktree artefact:** `test_contract_schemas.py::test_the_committed_generated_types_still_match_the_schemas` fails in a fresh worktree because `json-schema-to-typescript` lives in a gitignored `node_modules`. It is not a finding.
-  - [ ] 1.5 Write down the quiet-tree plan for Task 9 explicitly: which interval must be free of `pipeline/**/*.py` and `pipeline/requirements.txt` saves, and how you will evidence it (the printed `code version` line identical across both runs is the check).
+- [x] **Task 1 — Baseline, environment, and the quiet-tree plan** (AC: 1, 2, 3)
+  - [x] 1.1 Confirm `git rev-parse HEAD` is `12fad17` and `git status --short data/ pipeline/` is empty. Record both.
+  - [x] 1.2 Record the pre-change baseline: `git ls-files data/ | wc -l` (expect 1412), the counts in `data/matches/` (104), `data/index/*.json` (2), `data/index/team-profiles/` (48), `data/index/player-profiles/` (1248), `data/fixtures/` (10). **Baselines drift by design — measure your own, do not copy these forward as assertions without re-measuring.**
+  - [x] 1.3 Record the current `work/run-manifest.json` state as the "before" reference: 104 entries, `counts_by_status`, `run` block, `code_version` (first 12 chars). Do **not** treat it as the acceptance artifact — Task 7 produces that.
+  - [x] 1.4 Create the isolated git worktree for verification (house practice since 1.17/1.18; three commits landed under 1.18 mid-run). Use a private port for anything served. **Expect one known worktree artefact:** `test_contract_schemas.py::test_the_committed_generated_types_still_match_the_schemas` fails in a fresh worktree because `json-schema-to-typescript` lives in a gitignored `node_modules`. It is not a finding.
+  - [x] 1.5 Write down the quiet-tree plan for Task 9 explicitly: which interval must be free of `pipeline/**/*.py` and `pipeline/requirements.txt` saves, and how you will evidence it (the printed `code version` line identical across both runs is the check).
 
-- [ ] **Task 2 — De-duplicate the batch summary's warnings block** (AC: 1) — **implements §RULINGS D1**
-  - [ ] 2.1 Read `pipeline/ingest/batch.py:392-499` in full before editing. Confirm you are in `ingest/batch.py`, not `validate/verify.py`.
-  - [ ] 2.2 Replace lines 417-419 with the count-collapsed rendering. Preserve first-appearance order (deterministic; never `set` iteration). Emit warning text verbatim.
-  - [ ] 2.3 Implement the ≤N-reports carve-out from D1.3 so a warning carried by a minority of reports still names them. Document the threshold in the docstring with its AC-1 rationale.
-  - [ ] 2.4 Add tests: (i) the collapse renders `{n} report(s): {warning}` with the warning verbatim; (ii) a minority-carried warning still names its reports; (iii) **a constructed mutation that drops the count or truncates the text turns a test red**; (iv) the total summary line count for a synthetic 104-report manifest with 7 uniform warnings is 7 warning lines, not 728.
-  - [ ] 2.5 Run the targeted chunk: `pipeline/tests/test_ingest_batch.py pipeline/tests/test_cli.py` (`test_cli.py` proves no cross-contamination with the other `format_summary`). All seven pre-existing dependents must stay green.
-  - [ ] 2.6 Update `pipeline/markers/crosses.py:220`, `pipeline/markers/receiving.py:503`, and `pipeline/README.md:96-120` / `:513-523` so no doc-comment describes the old rendering.
+- [x] **Task 2 — De-duplicate the batch summary's warnings block** (AC: 1) — **implements §RULINGS D1**
+  - [x] 2.1 Read `pipeline/ingest/batch.py:392-499` in full before editing. Confirm you are in `ingest/batch.py`, not `validate/verify.py`.
+  - [x] 2.2 Replace lines 417-419 with the count-collapsed rendering. Preserve first-appearance order (deterministic; never `set` iteration). Emit warning text verbatim.
+  - [x] 2.3 Implement the ≤N-reports carve-out from D1.3 so a warning carried by a minority of reports still names them. Document the threshold in the docstring with its AC-1 rationale.
+  - [x] 2.4 Add tests over a **≥4-report** synthetic manifest: (i) the collapse renders `{n} reports: {warning}` with the warning verbatim; (ii) a minority-carried warning still names its reports; (iii) **a constructed mutation that drops the count or truncates the text turns a test red**; (iv) the warning-line count for a synthetic 104-report manifest with 7 uniform warnings is 7, not 728.
+  - [x] 2.5 Run the targeted chunk: `pipeline/tests/test_ingest_batch.py pipeline/tests/test_cli.py` (`test_cli.py` proves no cross-contamination with the other `format_summary`). All seven pre-existing dependents must stay green.
+  - [x] 2.6 Update `pipeline/README.md:117-118` (console-summary flow) and the absence-warning sections at `:898-901`, `:1130`, `:1339`. **Do not edit `pipeline/markers/crosses.py:220` or `receiving.py:503`** — verified: both describe the Self-validation failures renderer, not the warnings block, so the edits are no-ops that re-invalidate all 104 staged records.
 
-- [ ] **Task 3 — Warning-category coverage in the summary** (AC: 1) — **gated on §OPEN RULINGS R2**
-  - [ ] 3.1 Confirm the unlinked-marker path: verify the corpus still links **2571/2571 (100%)** and that `shots-link-rate` therefore never fires. State the measured figure; do not assume it.
-  - [ ] 3.2 Prove the branch would fire if it should: a constructed manifest with an unlinked marker must render `{team}: {linked}/{total} markers linked; unlinked: {outcome}@({pdf_x},{pdf_y})` in the summary.
-  - [ ] 3.3 Per R2's ruling, either add the aggregate near-miss section (one line per bounded check with any non-zero delta) or record in the Completion Notes the reading that the documented-absence family discharges the category. **Whichever you do, state it — silence on an AC-named category is a review finding.**
+- [x] **Task 3 — Warning-category coverage in the summary** (AC: 1) — **gated on §OPEN RULINGS R2**
+  - [x] 3.1 Confirm the unlinked-marker path: verify the corpus still links **2571/2571 (100%)** and that `shots-link-rate` therefore never fires. State the measured figure; do not assume it.
+  - [x] 3.2 Prove the branch would fire if it should: a constructed manifest with an unlinked marker must render `{team}: {linked}/{total} markers linked; unlinked: {outcome}@({pdf_x},{pdf_y})` in the summary.
+  - [x] 3.3 Per R2's ruling, either add the aggregate near-miss section (one line per bounded check with any non-zero delta) or record in the Completion Notes the reading that the documented-absence family discharges the category. **Whichever you do, state it — silence on an AC-named category is a review finding.**
+  - [x] 3.4 **Rule "per-report status" (AC-1 obligation (f)).** `format_summary` today lists no report by status — only aggregate `counts_by_status` plus the failed / self-validation blocks. Either rule that naming only the non-clean reports discharges the clause (and say why in the docstring and Completion Notes), or add the listing. **Do not leave it unaddressed**, and if you add a listing, do not recreate the 104-line noise D1 just removed — a status listing that names all 104 reports one per line is the same defect in a new block.
 
-- [ ] **Task 4 — Assert "exactly 104 terminal entries"** (AC: 1)
-  - [ ] 4.1 Close the ledger's `--expect-reports` gap (anchor *"No test exercises the batch beyond three reports"*): assert the **match** path, not only the mismatch path. Widening `TEAMS` in `test_ingest_batch.py:33` is the enabler if you build a synthetic 104-report corpus; otherwise assert against the real run and say so.
-  - [ ] 4.2 Assert the manifest carries exactly 104 entries, every one at a terminal status from `STATUSES`, and that `counts_by_status` sums to 104.
-  - [ ] 4.3 Note in the docstring (do not fix) the known lossy case: a **three-way** match-id collision erases one collision fact from the manifest (`batch.py:178-186`, `match_id_owner` is never reassigned). Two-way collisions are correct and are the realistic case. This is an existing ledgered item, not yours.
+- [x] **Task 4 — Assert "exactly 104 terminal entries"** (AC: 1)
+  - [x] 4.1 Close the ledger's gap (anchor *"No test exercises the batch beyond three reports"*). **The gap is SCALE, not the match path** — `test_a_clean_run_exits_zero` (`test_ingest_batch.py:446`) already asserts `--expect-reports 2` green at the CLI. Either widen `TEAMS` (`:27-33`, five elements; `_corpus` at `:36` raises `IndexError` above 5) and build a synthetic ≥104 corpus, or assert the real run's manifest at 104 and state that as the closure.
+  - [x] 4.2 Assert the manifest carries exactly 104 entries, every one at a terminal status from `STATUSES`, and that `counts_by_status` sums to 104.
+  - [x] 4.3 Note in the docstring (do not fix) the known lossy case: a **three-way** match-id collision erases one collision fact from the manifest — `match_id_owner` (`batch.py:263`, read `:297`, assigned `:305` only when `owner is None`) is never reassigned. Two-way collisions are correct and are the realistic case. This is an existing ledgered item, not yours.
 
-- [ ] **Task 5 — Express the end-to-end phase ordering** (AC: 1) — **gated on §OPEN RULINGS R5**
-  - [ ] 5.1 Reproduce the deadlock first so the fix is measured against a real failure: with profiles on disk, run `precompute.index` and capture the `RouteManifestError`. Do not skip this — a fix for a failure you have not seen is a guess.
-  - [ ] 5.2 Implement R5's chosen shape. If (a), the runner must invoke `ingest.batch` → `precompute.run` → `precompute.emit` → `precompute.index` → `precompute.profiles`, propagate each phase's exit code under the house contract (`0` clean / `1` a finding / `2` the harness could not run), and **never mask a phase's exit 1** — the batch's exit 1 is a true signal (§probe-2).
-  - [ ] 5.3 The runner must not weaken any gate. `check_route_manifest`, `check_pins`, `check_committed_data`, the budget gates and the schema asserts all stay exactly as they are.
-  - [ ] 5.4 Document the resolved ordering in `pipeline/README.md`, replacing the "empty the two profile directories" recourse paragraph with the real procedure.
-  - [ ] 5.5 Tests: the ordering is exercised end-to-end (a small synthetic corpus is fine) and a constructed out-of-order invocation still fails loudly.
+- [x] **Task 5 — Express the end-to-end phase ordering** (AC: 1) — **gated on §OPEN RULINGS R5**
+  - [x] 5.1 Reproduce the deadlock first so the fix is measured against a real failure — **and note it will NOT reproduce on a clean re-run.** `check_route_manifest` raises only on a set difference (`index.py:1256-1266`), and the committed 1,248 + 48 profiles match `entities` exactly, so `precompute.index` **passes** today. Perturb the entity set to see it: remove one file from `data/index/player-profiles/`, run `precompute.index`, expect `RouteManifestError: … listed players have no profile artifact`, then **restore the file**. A fix for a failure you have not seen is a guess — and a dev who runs 5.1 literally without this note will conclude there is no deadlock and skip Task 5.
+  - [x] 5.2 Implement R5's chosen shape. If (a), the runner must invoke `ingest.batch` → `precompute.run` → `precompute.emit` → `precompute.index` → `precompute.profiles`, propagate each phase's exit code under the house contract (`0` clean / `1` a finding / `2` the harness could not run), and **never mask a phase's exit 1** — the batch's exit 1 is a true signal (§probe-2).
+  - [x] 5.3 The runner must not weaken any gate. `check_route_manifest`, `check_pins`, `check_committed_data`, the budget gates and the schema asserts all stay exactly as they are.
+  - [x] 5.4 Document the resolved ordering in `pipeline/README.md`, replacing the "empty the two profile directories" recourse paragraph with the real procedure.
+  - [x] 5.5 Tests: the ordering is exercised end-to-end (a small synthetic corpus is fine) and a constructed out-of-order invocation still fails loudly.
 
-- [ ] **Task 6 — Make the two committed write paths all-or-nothing** (AC: 3) — closes the ledger entries anchored *"An `OSError` mid-write leaves `data/matches/` partially populated"* and *"A partial `data/index/` with no rollback, now on a second write path"*
-  - [ ] 6.1 Reuse 1.18's shipped pattern — `pipeline/precompute/profiles.py:1152-1183` `_swap_directory` (retire-then-install with rollback). **Do not invent a second mechanism.** Consider lifting it to a shared helper rather than copying; if you copy, say why.
-  - [ ] 6.2 `emit_bundles` (`pipeline/precompute/emit.py`): stage all 104 bundles beside the target and swap. Preserve the load-bearing ordering already documented at `emit.py:1568-1578` — `expect_matches` is checked inside `emit_bundles` because the stale sweep deletes every bundle this run did not produce.
-  - [ ] 6.3 `emit_index` (`pipeline/precompute/index.py`): make the two `write_canonical` calls all-or-nothing so `tournament.json` and `leaderboards.json` can never disagree. Keep the stale sweep's non-recursive `data/index/*.json` glob — it must never reach `team-profiles/` or `player-profiles/`.
-  - [ ] 6.4 Fix the exit-code lie the ledger names: an `OSError` after the filesystem was mutated must not print exit **2** (*"nothing was learned"*). With an all-or-nothing swap the filesystem genuinely is untouched on failure, so verify the mapping now tells the truth rather than merely re-labelling it.
-  - [ ] 6.5 **Add the matching `.gitignore` entries** for any new scratch namespace under `data/matches/` (`data/matches/*.staged/`, `data/matches/*.previous.rollback/`), with a comment stating the same failure mode as `.gitignore:26-32`. This is not optional — a killed run plus a sweeping `git add` pins orphans as the AD-3 baseline.
-  - [ ] 6.6 **Prove byte-neutrality**: emit into an independent tree and diff against the committed `data/`. Expected `0 differ` over 104 bundles and 2 index artifacts. Use the two-tree byte comparison shape `test_emit_profiles.py` already established.
-  - [ ] 6.7 Tests: a constructed mid-write failure must leave the target namespace **completely untouched** and roll back; the success path must clean its scratch directories; a killed-run simulation must leave only ignored directories.
+- [x] **Task 6 — Make the two committed write paths all-or-nothing** (AC: 3) — closes the ledger entries anchored *"An `OSError` mid-write leaves `data/matches/` partially populated"* and *"A partial `data/index/` with no rollback, now on a second write path"*
+  - [x] 6.1 Reuse 1.18's shipped pattern — `pipeline/precompute/profiles.py:1152-1183` `_swap_directory` (retire-then-install with rollback). **Do not invent a second mechanism.** Consider lifting it to a shared helper rather than copying; if you copy, say why.
+  - [x] 6.2 `emit_bundles` (`pipeline/precompute/emit.py`): stage all 104 bundles beside the target and swap. **Only the final write loop at `emit.py:1656-1663` and the stale sweep at `:1665-1670` are non-atomic** — `:1562-1578` already guarantees building, validation, rounding, the budget measurement **and** the expected-count check all complete before the first byte. **Do not restructure the collection phase.** Preserve the load-bearing reason `expect_matches` is checked inside `emit_bundles`: the sweep deletes every bundle this run did not produce.
+  - [x] 6.3 `emit_index` (`pipeline/precompute/index.py`): make the two `write_canonical` calls at `index.py:1396-1401` all-or-nothing so `tournament.json` and `leaderboards.json` can never disagree. All gates already run before the write (`:1377-1394`). Keep the sweep at `:1403-1410` non-recursive — its `data/index/*.json` glob must never reach `team-profiles/` or `player-profiles/`.
+  - [x] 6.4 Fix the exit-code lie the ledger names: an `OSError` after the filesystem was mutated must not print exit **2** (*"nothing was learned"*). With an all-or-nothing swap the filesystem genuinely is untouched on failure, so verify the mapping now tells the truth rather than merely re-labelling it.
+  - [x] 6.5 **Add the matching `.gitignore` entries — and get the shape right.** 1.18's `_swap_directory` puts scratch dirs as **siblings of the target**, not children (`profiles.py:1169`: `target.with_name(f"{target.name}.previous.rollback")`), which is why `.gitignore:33-34` reads `data/index/*.staged/` and matches `data/index/team-profiles.staged/`. For bundles the target **is** `data/matches/`, so the swap produces `data/matches.staged/` and `data/matches.previous.rollback/` at the `data/` level. **`data/matches/*.staged/` would match nothing.** Add the correct patterns with a comment stating the same failure mode as `.gitignore:26-32`. This is not optional — a killed run plus a sweeping `git add` pins orphans as the AD-3 baseline. (The gates themselves cannot see the scratch dirs: `check_committed_data`'s default glob is `("matches/*.json",)` at `identity.py:548` and `check_route_manifest` uses a non-recursive `matches_dir.glob("*.json")`. The sweeping `git add` is the whole exposure.)
+  - [x] 6.6 **Prove byte-neutrality**: emit into an independent tree and diff against the committed `data/`. Expected `0 differ` over 104 bundles and 2 index artifacts. Use the two-tree byte comparison shape `test_emit_profiles.py` already established.
+  - [x] 6.7 Tests: a constructed mid-write failure must leave the target namespace **completely untouched** and roll back; the success path must clean its scratch directories; a killed-run simulation must leave only ignored directories. **Drive the constructed failure through the emitter in memory, not off the committed tree** — 1.18's first mutation run scored zero red because its fixtures loaded the already-committed artifacts from `data/index/`, so mutating the emitter changed nothing the assertions could see.
 
-- [ ] **Task 7 — THE AUTHORITATIVE FULL RUN** (AC: 1, 2) — **run only after Tasks 2–6 have landed**
-  - [ ] 7.1 Confirm the tree is quiet and record the `code_version` you are about to run at.
-  - [ ] 7.2 Run the five phases **in the background** (long runs in this environment get killed). **To recover from a kill, RE-INVOKE — never `--force`.** Resume is structural: records already staged at the current `code_version` return `skipped-unchanged` and the run continues from where the kill stopped. `--force` throws away completed work.
-  - [ ] 7.3 Capture the batch summary stdout **verbatim** to the session scratchpad (not the repo), and the exit code of every phase.
-  - [ ] 7.4 Assert the ruled baseline — **not** exit 0: `extracted 104 / failed 0 / skipped-unchanged 0 / corpus_gaps 0 / orphan_record_paths 0`, `self_validation_fail_count == 2`, `failed_count == 0`, `RUN RESULT: FAIL`, exit **1**. Copy 1.15's precedent phrasing: *"full batch, asserted against the adjudicated baseline rather than against exit 0."*
-  - [ ] 7.5 Record every downstream phase's headline: `precompute.run` (pins held, `1400 pinned id(s)`), `emit` (104 bundles, budget max), `index` (bijection all three directions, Hub combined vs 500,000), `profiles` (48 + 1,248, largest artifact). **Watch for `index.py:1499-1512`'s qualified headline** — `INDEX RESULT: PASS (N check(s) COULD NOT RUN)`. A qualified PASS is not a PASS; report it as-is.
-  - [ ] 7.6 Re-measure and record the AD-4 budget figures against the real corpus. On any breach, **SM-C2 binds: split artifacts or log a decision, never drop fields, truncate an array, or lower a precision to fit.**
+- [x] **Task 7 — THE AUTHORITATIVE FULL RUN** (AC: 1, 2) — **run only after Tasks 2–6 have landed**
+  - [x] 7.1 Confirm the tree is quiet and record the `code_version` you are about to run at.
+  - [x] 7.2 Run the five phases **in the background** (long runs in this environment get killed). **To recover from a kill, RE-INVOKE — never `--force`.** Resume is structural: records already staged at the current `code_version` return `skipped-unchanged` and the run continues from where the kill stopped. `--force` throws away completed work.
+  - [x] 7.3 Capture the batch summary stdout **verbatim** to the session scratchpad (not the repo), and the exit code of every phase.
+  - [x] 7.4 Assert the ruled baseline — **not** exit 0: `extracted 104 / failed 0 / skipped-unchanged 0 / corpus_gaps 0 / orphan_record_paths 0`, `self_validation_fail_count == 2`, `failed_count == 0`, `RUN RESULT: FAIL`, exit **1**. Copy 1.15's precedent phrasing: *"full batch, asserted against the adjudicated baseline rather than against exit 0."*
+  - [x] 7.5 Record every downstream phase's headline: `precompute.run` (pins held, `1400 pinned id(s)`), `emit` (104 bundles, budget max), `index` (bijection all three directions, Hub combined vs 500,000), `profiles` (48 + 1,248, largest artifact). **Watch for `index.py:1499-1512`'s qualified headline** — `INDEX RESULT: PASS (N check(s) COULD NOT RUN)`. A qualified PASS is not a PASS; report it as-is.
+  - [x] 7.6 Re-measure and record the AD-4 budget figures against the real corpus. On any breach, **SM-C2 binds: split artifacts or log a decision, never drop fields, truncate an array, or lower a precision to fit.**
 
-- [ ] **Task 8 — SM-1 acceptance record** (AC: 2)
-  - [ ] 8.1 Document the two residual failures **individually, each with its cause**, in the Completion Notes: report id, match id, check, team, family, both counts, and the verbatim cause from §AC-2's binding block. This is the literal wording SM-1's "or" branch requires.
-  - [ ] 8.2 State affirmatively that **no check was weakened** to reach the result, naming what was considered and rejected (tolerance band, waiver/allowlist, dropping the counterpart, filtering the records). SM-C1 is the hard gate.
-  - [ ] 8.3 **The third-failure tripwire.** If the run reports exactly 2, say so explicitly (*"no third"*, the phrasing 1.9 and 1.14 both used). If it reports a third, **stop and treat it as a regression**: name the report and check, do not absorb it, and re-open the 1.12 ruling. Optionally close the automation gap with a **baseline assertion** over the real manifest — never a tolerance, never an allowlist (that mechanism was explicitly rejected).
-  - [ ] 8.4 Confirm the ruled-consumed property still holds: both records reach precompute (`status`-only filter, `records.py:16-21`), so `m019-argentina-algeria` and `m058-tunisia-netherlands` are present in `data/matches/` and in the route manifest.
+- [x] **Task 8 — SM-1 acceptance record** (AC: 2)
+  - [x] 8.1 Document the two residual failures **individually, each with its cause**, in the Completion Notes: report id, match id, check, team, family, both counts, and the verbatim cause from §AC-2's binding block. This is the literal wording SM-1's "or" branch requires.
+  - [x] 8.2 State affirmatively that **no check was weakened** to reach the result, naming what was considered and rejected (tolerance band, waiver/allowlist, dropping the counterpart, filtering the records). SM-C1 is the hard gate.
+  - [x] 8.3 **The third-failure tripwire.** If the run reports exactly 2, say so explicitly (*"no third"*, the phrasing 1.9 and 1.14 both used). If it reports a third, **stop and treat it as a regression**: name the report and check, do not absorb it, and re-open the 1.12 ruling. Optionally close the automation gap with a **baseline assertion** over the real manifest — never a tolerance, never an allowlist (that mechanism was explicitly rejected).
+  - [x] 8.4 Confirm the ruled-consumed property still holds: both records reach precompute (`status`-only filter, `records.py:16-21`), so `m019-argentina-algeria` and `m058-tunisia-netherlands` are present in `data/matches/` and in the route manifest.
 
-- [ ] **Task 9 — Byte-identical re-run on a quiet tree** (AC: 3, NFR-6)
-  - [ ] 9.1 Snapshot SHA-256 of all 104 files in `work/extracted/` **on bytes**, and confirm `git status --short data/` is empty.
-  - [ ] 9.2 **Verify the tree stayed quiet** across the interval — no `pipeline/**/*.py` or `requirements.txt` save by any session. Then re-run the full sequence without `--force`.
-  - [ ] 9.3 Assert: `extracted 0 / skipped-unchanged 104`; all 104 record SHA-256s unchanged (**0 differences**); the printed `code version` line identical to Task 7's; `git status --short data/` still empty after every phase re-emits.
-  - [ ] 9.4 If the first attempt shows 104 re-extracted with changed hashes, **that is the known false alarm, not a determinism defect** — identify which file was saved and when, wait for the tree to go quiet, and repeat. Record the incident honestly (both 1.9 and 1.14 did); a re-run on a moving tree proves nothing either way.
-  - [ ] 9.5 Assert the pinning guarantee explicitly: `check_pins` held all 1,400 ids and **no player slug moved**; `check_committed_data` reports the populated baseline (`104 bundle(s), 89358 id reference(s), all pinned` and its index/profile counterparts) and **never** the "baseline unavailable … This is NOT a pass" branch.
+- [x] **Task 9 — Byte-identical re-run on a quiet tree** (AC: 3, NFR-6)
+  - [x] 9.1 Snapshot SHA-256 of all 104 files in `work/extracted/` **on bytes**, and confirm `git status --short data/` is empty. **Before snapshotting, confirm no test mutation survives in the tree** (see landmine 13) — a snapshot taken over mutated output proves the wrong thing byte-perfectly.
+  - [x] 9.2 **Verify the tree stayed quiet** across the interval — no `pipeline/**/*.py` or `requirements.txt` save by any session. The cheap canary is `pipeline/tests/test_ingest_fingerprint.py::test_code_version_is_stable_across_calls`: it fails exactly when `pipeline/` changes mid-run and passes clean in isolation, and it fires *during* the run rather than after. Then re-run the full sequence without `--force`.
+  - [x] 9.3 Assert: `extracted 0 / skipped-unchanged 104`; all 104 record SHA-256s unchanged (**0 differences**); the printed `code version` line identical to Task 7's; `git status --short data/` still empty after every phase re-emits.
+  - [x] 9.4 If the first attempt shows 104 re-extracted with changed hashes, **that is the known false alarm, not a determinism defect** — identify which file was saved and when, wait for the tree to go quiet, and repeat. Record the incident honestly (both 1.9 and 1.14 did); a re-run on a moving tree proves nothing either way.
+  - [x] 9.5 Assert the pinning guarantee explicitly: `check_pins` held all 1,400 ids and **no player slug moved**; `check_committed_data` reports the populated baseline and **never** the *"baseline unavailable … This is NOT a pass"* branch. The exact string is `committed /data baseline: {n} {noun}(s), {seen} id reference(s), all pinned` (`identity.py:646-649`), which `run.py:191` prefixes again with `data baseline   : ` — expect `104 bundle(s), 89358 id reference(s)` for bundles (integer, no thousands separator), plus the index and profile counterparts.
 
-- [ ] **Task 10 — Finalize `/data`; retain fixtures** (AC: 3)
-  - [ ] 10.1 Verify `data/fixtures/` is untouched (10 tracked files) and that no test suite was re-pointed at real data.
-  - [ ] 10.2 Verify no `.staged/` or `.previous.rollback/` directory survives anywhere under `data/`. Run `git status --short --ignored data/` and state the result.
-  - [ ] 10.3 Confirm the committed artifact count is unchanged at 1,402 non-fixture artifacts (1,412 tracked under `data/`) — or, if it moved, explain exactly why before committing.
-  - [ ] 10.4 **Stage by explicit path. Never `git add -A`.** A concurrent Epic 2 session is live in `app/` and `_bmad-output/`; a sweeping stage captures its files (and vice versa). Commit directly to `main` — solo repo, no branch, no PR. Disclose any co-committed in-flight state in a `COMMIT SCOPE` note in the message body.
+- [x] **Task 10 — Finalize `/data`; retain fixtures** (AC: 3)
+  - [x] 10.1 Verify `data/fixtures/` is untouched (10 tracked files) and that no test suite was re-pointed at real data.
+  - [x] 10.2 Verify no `.staged/` or `.previous.rollback/` directory survives anywhere under `data/`. Run `git status --short --ignored data/` and state the result.
+  - [x] 10.3 Confirm the committed artifact count is unchanged at 1,402 non-fixture artifacts (1,412 tracked under `data/`) — or, if it moved, explain exactly why before committing.
+  - [x] 10.4 **Stage by explicit path. Never `git add -A`.** A concurrent Epic 2 session is live in `app/` and `_bmad-output/`; a sweeping stage captures its files (and vice versa). Commit directly to `main` — solo repo, no branch, no PR. Disclose any co-committed in-flight state in a `COMMIT SCOPE` note in the message body.
 
-- [ ] **Task 11 — Ledger triage** (AC: 1, 2, 3)
-  - [ ] 11.1 Append a `## Filed by Story 1.19 implementation (…, YYYY-MM-DD)` section at the **end** of `deferred-work.md`, with `### Closed by this story` and `### Filed, not fixed` sub-sections. **APPEND-ONLY** — never edit another story's paragraph; corrections are appended as corrections. **Cite by quoted anchor phrase, never by line number. The ledger mints no ids — do not invent a `DW-nn`.**
-  - [ ] 11.2 Close, with evidence, only what you actually fixed: the three `format_summary` warning-collapse filings (1.12/1.13/1.14); the `emit_bundles` and `emit_index` rollback entries (**only if** Task 6 actually changed those loops — 1.18's task explicitly forbids closing this falsely); the phase-ordering entry; `--expect-reports`'s match path.
-  - [ ] 11.3 Close by measurement the items whose stated precondition was *"requires the real 104-report corpus"*: the cover-line threshold boundaries (`_LINE_TOLERANCE_PT = 3.0`, `_SPACE_GAP_PT = 1.0`) and the zero-width/format-character survival in `normalize`. Record what the corpus actually exhibits, or state plainly that 104/104 covers parse and the margin is unmeasured.
-  - [ ] 11.4 Mark the combined-budget entries discharged (built by 1.17, first exercised at full corpus here).
-  - [ ] 11.5 Append the `assert-schema-version` correction per R4 — the "multiplies the tree again" premise was wrong — with the measured runtime and artifact count.
-  - [ ] 11.6 **Do NOT close** anything in §RULINGS D3. State explicitly that they remain open and why, so the omission is not read as a miss.
+- [x] **Task 11 — Ledger triage** (AC: 1, 2, 3)
+  - [x] 11.1 Append a `## Filed by Story 1.19 implementation (…, YYYY-MM-DD)` section at the **end** of `deferred-work.md`, with `### Closed by this story` and `### Filed, not fixed` sub-sections. Entry shape: **one bold-headline bullet per finding, body with citations and the measurement, closing with an explicit `Deferred:` clause and an explicit `Owner:`** — there is no `Status:` field in this ledger. Rules, all four enforced by precedent: **APPEND-ONLY** (never edit another story's paragraph — corrections are appended as corrections); **cite by quoted anchor phrase, never by line number**; **the ledger mints no ids — do not invent a `DW-nn`**; and **DO NOT FILE what is already owned** (a literal heading in the file — *"duplicating is the failure mode this list exists to prevent"*).
+  - [x] 11.2 Close, with evidence, only what you actually fixed: the three `format_summary` warning-collapse filings (1.12/1.13/1.14); the `emit_bundles` and `emit_index` rollback entries; the phase-ordering entry; the batch-scale test gap. **Two of these are filed TWICE and a sweep that closes one leaves the other open** — the `emit_bundles` `OSError` entry has 1.16's original *and* 1.18's re-filing (*"stays OPEN with its existing owner"*), and `data/index/` has 1.17's filing *and* its code review's re-filing. Close both or neither, and say which pair you closed. **And only if Task 6 actually changed those loops** — 1.18's task explicitly forbids closing this falsely: *"Closing it without touching that loop closes it falsely."*
+  - [x] 11.3 Close by measurement, **citing each by its own anchor** — they are two entries with two different preconditions, not one: the cover-line thresholds (`_LINE_TOLERANCE_PT = 3.0`, `_SPACE_GAP_PT = 1.0`), anchor *"Cover-line reconstruction thresholds are unvalidated at the boundary"*, precondition *"validating the thresholds requires the real 104-report corpus"*; and zero-width/format characters, anchor *"Zero-width and format characters survive `normalize`"*, precondition *"cannot confirm the corpus exhibits this without the 104 PDFs"*. Record what the corpus actually exhibits, or state plainly that 104/104 covers parse and the margin is unmeasured.
+  - [x] 11.4 **Do NOT file or re-open the combined-budget entries** — they are Story 1.17's, 1.17 is `done`, and one of them sits under the ledger's literal `### DO NOT FILE — already owned` heading. Record the measured combined figure (117,638 / 500,000) as a **measurement note** in this story's section and state that the entries stay closed under 1.17.
+  - [x] 11.5 Append the `assert-schema-version` correction per R4 — one correction, applying to all four filings — with the measured runtime and artifact count, noting 2.14's closure already covers the flake and only the scoped-walk question remains.
+  - [x] 11.6 Close the ledger's standing staleness note (anchor *"All 104 staged Extraction Records are already stale against the current tree"*) — Task 7's fresh full re-extract discharges it by construction, and its blocker (*"while `pipeline/validate/` is still being edited by Story 1.1"*) is long gone.
+  - [x] 11.7 Route the suite-runtime entry (anchor *"costs 8m40s on its own"*, owner *"whichever story next needs the pipeline suite to fit in a single un-chunked run"*) — **this story is that story.** Record Task 12.1's measured runtime and either take the session-scoped-fixture work or re-defer with the measurement attached. Do not leave it silent.
+  - [x] 11.8 **Do NOT close** anything in §RULINGS D3 — including the `domain_e_checks` entry that names 1.19 by name. State explicitly that each remains open and why, so the omission is not read as a miss.
 
-- [ ] **Task 12 — Regression suite, docs, status**
-  - [ ] 12.1 Run the **full** `pipeline/tests` suite. **~45 minutes — run it in the background, not in chunks that time out.** If you must chunk, state the arithmetic and make the tally reconcile **exactly**: 1.16 took a review finding for an off-by-one, and *"off by one it substituted for nothing."* Note `test_emit_profiles.py` alone costs ~8m40s.
-  - [ ] 12.2 Record collected / passed / failed / skipped with attribution for **every** pre-existing failure. Collection counts drift by design — do not treat a mismatch with this file as a finding. Do not report a sum in place of a run.
-  - [ ] 12.3 Update `pipeline/README.md`: the batch console summary section, the baseline paragraph, the resolved phase ordering, and the reproducibility procedure.
-  - [ ] 12.4 Update `sprint-status.yaml`: `1-19-full-batch-run-batch-report-104-104-acceptance: review`, `last_updated`, and an append-only dated log comment. Do not flip `epic-1` to `done` — that is a manual transition after the code review.
-  - [ ] 12.5 Fill the Dev Agent Record: Agent Model Used, Debug Log References (scratchpad script names, worktree path, concurrency notes), Completion Notes List (bold-headline paragraphs, each a claim plus its evidence — including the **verbatim batch summary** per §RULINGS D2), File List (**New** / **Modified** / **Unchanged by design**), Change Log.
+- [x] **Task 12 — Regression suite, docs, status**
+  - [x] 12.1 Run the **full** `pipeline/tests` suite. **~45 minutes — run it in the background, not in chunks that time out.** If you must chunk, state the arithmetic and make the tally reconcile **exactly**: 1.16 took a review finding for an off-by-one, and *"off by one it substituted for nothing."* Note `test_emit_profiles.py` alone costs ~8m40s. **~45 min is the QUIET-TREE figure** — 1.17 measured **112 minutes** with two concurrent sessions writing to `pipeline/`, `data/fixtures/` and `data/index/`. With 2-14/2-15/2-16 in flight, do not read a slow run as a hung one.
+  - [x] 12.2 Record collected / passed / failed / skipped. **Triage every failure individually before attributing it to the tree** — 1.18's first full run surfaced four failures and *"three were real"*. Collection counts drift by design; do not treat a mismatch with this file as a finding. Do not report a sum in place of a run.
+  - [x] 12.3 Update `pipeline/README.md`: the batch console summary section, the baseline paragraph, the resolved phase ordering, and the reproducibility procedure. **NFR-7 binds: code, comments, artifacts and BMad documents in English** — including README prose, docstrings, ledger entries and the commit body.
+  - [x] 12.4 Update `sprint-status.yaml`: `1-19-full-batch-run-batch-report-104-104-acceptance: review`, `last_updated`, and an append-only dated log comment. Do not flip `epic-1` to `done` — that is a manual transition after the code review.
+  - [x] 12.5 Fill the Dev Agent Record: Agent Model Used, Debug Log References (scratchpad script names, worktree path, concurrency notes), Completion Notes List (bold-headline paragraphs, each a claim plus its evidence — including the **verbatim batch summary** per §RULINGS D2), File List (**New** / **Modified** / **Unchanged by design**), Change Log.
 
 ## Dev Notes
 
@@ -522,7 +586,7 @@ on a tree nobody is saving into.
 | Run manifest | `work/run-manifest.json` (`DEFAULT_MANIFEST_PATH`, `batch.py:59`) | gitignored; 104 entries; `run_timestamp` is the only volatile field |
 | Terminal statuses | `batch.py:63` `STATUSES = ("extracted", "failed", "skipped-unchanged")` | note the hyphen |
 | Code fingerprint | `pipeline/ingest/fingerprint.py:132-139` `code_version()` | SHA-256 over `pipeline/**/*.py` (minus `tests/`, venvs, build, `__pycache__`) **+ `requirements.txt`**; path is hashed too, so a rename invalidates; empty-tree vacuity guard at `:113-119` |
-| Idempotence comparison | `pipeline/precompute/records.py:113-135` `is_unchanged` | also gates on `RECORD_VERSION` |
+| Idempotence comparison | **`pipeline/ingest/records.py:113-135`** `is_unchanged` | also gates on `RECORD_VERSION` (`ingest/records.py:33`). **Two `records.py` modules exist** — `ingest/` has the idempotence machinery, `precompute/` has the status-only consumption filter. Same trap as `format_summary`. |
 | Self-validation aggregation | `pipeline/extract/__init__.py:32-41` | `"fail"` if any present check is not literally `"pass"`; `"not-applicable"` when there are no checks |
 | The M19/M58 check | `pipeline/markers/defensive_actions.py:323-346` | families with `table is None` emit **no check** and travel as a warning instead |
 | Link-rate check | `pipeline/markers/linking.py:325-359` | binary; `unlinked` carries pdf position + outcome |
@@ -535,6 +599,7 @@ on a tree nobody is saving into.
 | Budget gates | `pipeline/precompute/budget.py` | `BUDGET_BYTES = 500_000`; `gzip.compress(..., compresslevel=9, mtime=0)` over the canonical string, **not** what shell `gzip -9` reports |
 | Route-manifest bijection | `pipeline/precompute/index.py:1177-1270` | write-blocking profile direction — the deadlock |
 | Rounding / precision | `pipeline/precompute/serialize.py` | *"Rounding is not cosmetic — it is what makes byte-identity possible."* No `multipleOf` exists in any schema; nothing else will catch you |
+| `schemaVersion` reader | `pipeline/validate/schema.py:54-78` `schema_version()` | *"Never hard-code this anywhere else."* `contract/version.json` = `{"schemaVersion": 4}` |
 
 ### Figures to reproduce (re-measure; do not copy forward as assertions)
 
@@ -577,6 +642,9 @@ on a tree nobody is saving into.
   in this environment; chunking has its own failure mode (an off-by-one reconciliation was a
   review finding).
 - **Derive expected values from parsed data; never restate the implementation.**
+- **A figure that does not reproduce is a finding, not a rounding difference.** Every number this
+  story re-measures is either confirmed or reported as a discrepancy — 1.18 took a review patch
+  for omitting two.
 - **Every gate ships with a constructed failure that drives it red.** Mutation-check each new
   test — each mutation must turn something red.
 - **Byte-identity is tested on bytes, not parsed dicts.**
@@ -598,6 +666,11 @@ on a tree nobody is saving into.
   git status shows dirty files under `app/` and `_bmad-output/` that are not yours.
 - **Never `git add -A`.** A concurrent session's sweeping stage can capture your files and vice
   versa. **Stage your own paths explicitly and commit your slice early.**
+- **An uncommitted edit to a shared-contention file is not private — a concurrent session's
+  `git add` will carry it.** If your work lands in someone else's commit (or theirs in yours),
+  the ruled response is: **verify content integrity, disclose it in the Dev Agent Record, and do
+  NOT repair.** It is an attribution defect, not a content defect — that is this repo's standing
+  precedent, not a judgement call to re-make.
 - **`deferred-work.md` and `sprint-status.yaml` are shared.** Append-only, at the end, in both.
 - **Verify in an isolated worktree** — three commits landed in the shared tree during 1.18's
   implementation and changed `pipeline/precompute/*.py` underneath it mid-run.
@@ -620,9 +693,10 @@ on a tree nobody is saving into.
 5. **`--force` is not a resume.** It discards completed work. Re-invoke instead.
 6. **Editing `format_summary` changes `code_version()`** and invalidates all 104 staged records.
    Every production edit does. Sequence the run last.
-7. **The bijection deadlock will bite on the first re-run**, because profiles now exist on disk.
-   It is a `RouteManifestError` before the first byte, not a silent failure — but a naive
-   one-command E2E run stops there.
+7. **The bijection deadlock is CONDITIONAL — it bites on any run that changes the entity set,
+   not on a clean re-run.** `check_route_manifest` raises only on a set difference, so a re-run
+   over the unchanged committed entities passes. It is a `RouteManifestError` before the first
+   byte, never a silent failure. Do not conclude "no deadlock" from a green clean re-run.
 8. **A partial write pinned as the AD-3 baseline is expensive to undo** — an id, once emitted,
    never changes. This is why Task 6 exists and why `.gitignore` needs the matching entry.
 9. **`schemaVersion` is never a literal.** One reader: `pipeline/validate/schema.py:54-77`.
@@ -634,6 +708,15 @@ on a tree nobody is saving into.
     `/contract` and `/data`.**
 12. **The known worktree artefact** (`test_contract_schemas.py::test_the_committed_generated_types_still_match_the_schemas`)
     fails in a fresh worktree and passes in the main tree. Not a finding.
+13. **A KILLED MUTATION HARNESS CAN BAKE A MUTATION INTO COMMITTED ARTIFACTS THAT VALIDATE
+    CLEAN.** This is the loaded gun of this story: Tasks 2.4 and 6.7 mandate constructed
+    mutations, Task 12.1 runs a suite this environment kills, and Tasks 7/10 commit `/data`
+    while asserting byte-identity. It has already happened once — 1.18's harness was killed
+    mid-run, its `finally` restore did not complete, the `perNinety` mutation survived in
+    `profiles.py`, and **1,296 artifacts shipped with `2.34` rounded to `2` and validated
+    clean**; only a diff against an independent worktree emission caught it (1,019 of 1,296
+    differing). **Mutations run ONLY in the worktree, the harness verifies its own restore, and
+    Task 9.1's snapshot is taken only after confirming no mutation survives.**
 
 ### Project Structure Notes
 
@@ -647,22 +730,32 @@ budget**) · `validate/` (check registry, sample selection, FR-15 verification r
 
 Declared departure, recorded so it is not read as a violation: `pipeline/precompute/budget.py`
 sits in `precompute/`, not `validate/`, because it is a property of the bytes that module writes,
-measured at the moment of writing. `ARCHITECTURE-SPINE.md:176` files budget asserts under
+measured at the moment of writing. `ARCHITECTURE-SPINE.md:177` files budget asserts under
 `validate/`; the departure is deliberate and ledgered with no action owed.
 
-`data/` is the committed artifact tree (AD-13). `work/` is gitignored scratch. Nothing this story
-writes belongs anywhere else.
+`data/` is the committed artifact tree (AD-13). `work/` is gitignored scratch.
+
+**Files outside `pipeline/` and `data/` this story is authorised to touch, declared so the edits
+are not read as scope violations:** the repo-root `.gitignore` (Task 6.5),
+`_bmad-output/implementation-artifacts/deferred-work.md` (Task 11),
+`_bmad-output/implementation-artifacts/sprint-status.yaml` (Task 12.4), and this story file.
+**Nothing under `app/` or `contract/`.**
 
 ### References
 
+> Path roots, stated once: PRD files live under `_bmad-output/planning-artifacts/prds/prd-wc-stats-2026-07-21/`;
+> the spine lives at `_bmad-output/planning-artifacts/architecture/architecture-wc-stats-2026-07-21/ARCHITECTURE-SPINE.md`.
+
 - Story definition and ACs — `_bmad-output/planning-artifacts/epics.md:589-609`
-- FR-16 batch run report — `prds/prd-wc-stats-2026-07-21/prd.md:217-221`
+- FR-16 batch run report — `prd.md:217-221`
 - FR-1 batch ingestion + idempotence — `prd.md:98-103`
 - FR-14 per-report Self-Validation — `prd.md:205-209`
 - NFR-6 pipeline reproducibility — `prd.md:392`
+- NFR-7 language discipline (English in code, comments, artifacts, docs) — `prd.md:393`, `epics.md:73`
+- NFR-1 payload budget — `epics.md:67`; enforced via AD-4 / SM-C2
 - SM-1 / SM-C1 / SM-C2 — `prd.md:441`, `:451`, `:452`
 - UJ-5 (re-run after a parser fix) — `prd.md:51-52`
-- AD-3 one identity / an ID once emitted never changes — `architecture/…/ARCHITECTURE-SPINE.md:58-62`
+- AD-3 one identity / an ID once emitted never changes — `ARCHITECTURE-SPINE.md:58-62`
 - AD-4 exact artifact set, budget, route-manifest bijection — `ARCHITECTURE-SPINE.md:64-68`
 - AD-8 fail loud, validate per report, deterministic output — `ARCHITECTURE-SPINE.md:88-92`
 - AD-9 two-phase pipeline — `ARCHITECTURE-SPINE.md:94-98`
@@ -672,8 +765,8 @@ writes belongs anywhere else.
 - M19/M58 ruling — `deferred-work.md`, anchor *"ACCEPTED — two corpus pages draw one forced-turnover marker fewer than their own printed total"*; `pipeline/README.md:516-523`; discovery at `1-12-…md:238-245`
 - The three `format_summary` warning filings — `deferred-work.md`, anchors *"so the batch summary prints 104 identical warning lines"*, *"so the batch summary now prints 208 more warning lines"*, *"A fourth family of absence warning now fires on every report"*
 - The two write-rollback filings — anchors *"An `OSError` mid-write leaves `data/matches/` partially populated"*, *"A partial `data/index/` with no rollback, now on a second write path"*
-- Phase-ordering ownership — anchor *"the profile direction PRINTS that it could not run"*; `pipeline/precompute/index.py:1178-1212`
-- `--expect-reports` coverage gap — anchor *"No test exercises the batch beyond three reports"*
+- Phase-ordering ownership — greppable anchor *"The profile direction of AD-4's bijection is WRITE-BLOCKING"* (the ledger's *"the profile direction PRINTS that it could not run"* hard-wraps mid-phrase and will not grep as one string; use *"direction PRINTS that it could not run"* if you need that one); `pipeline/precompute/index.py:1178-1212`, `:1256-1266`
+- Batch-scale coverage gap — anchor *"No test exercises the batch beyond three reports"*
 - `code_version` false alarms — `1-14-…md:496-498`, `1-9-…md:483-489`, `sprint-status.yaml:2016-2024`, `:2480-2484`
 - Slug registry pinning rule — `1-15-…md:121`, `pipeline/precompute/identity.py:454-469`, `slug_registry.py:1-28`
 - `.gitignore` staged/rollback rationale — `.gitignore:26-34`
@@ -683,14 +776,481 @@ writes belongs anywhere else.
 
 ### Agent Model Used
 
+Claude Opus 5 (1M context) — `claude-opus-5[1m]`, via the `bmad-dev-story` workflow.
+
 ### Debug Log References
+
+All probe scripts and captures live in the session scratchpad, never the repo:
+
+| Artifact | What it holds |
+|---|---|
+| `task1-baseline.md` | Task 1's baseline, worktree note and the written quiet-tree plan |
+| `run-authoritative.sh` | The Task 7 runner (one `pipeline.orchestrate` invocation, never `--force`) |
+| `task7-authoritative.log` | Task 7's full five-phase stdout, plus `code_version` before/after and `git status` |
+| `task9-snapshot.json` | SHA-256 of all 104 staged records, taken on BYTES, before the re-run |
+| `task9-rerun.log` | Task 9's full re-run stdout and the post-run `git status --short --ignored data/` |
+| `batch-summary-verbatim.txt` | The batch summary re-rendered in true UTF-8 (see the encoding note below) |
+| `t2-green.log`, `t5.log`, `t6b.log`, `task12-suite.log` | Targeted chunks and the full regression suite |
+| `t5-deadlock/` | The scratch copy of `data/` used to reproduce the bijection deadlock |
+
+**Isolation.** Verification worktree at `C:/Users/ADMINSTRADOR/Documents/wc-stats-verify-119`,
+detached at `79bd7aa`. It was used for the RED phase of Task 2 — the seven new D1 tests were
+run there against the unmodified original and all seven failed, before a line of the fix
+existed. Landmine 13's rule was held absolutely: **no mutation was ever written to a source
+file in either tree.** Every constructed failure in Tasks 2, 5 and 6 is driven by
+`monkeypatch` in-process, so there is no mutation that a killed harness could leave behind.
+
+**The capture hazard fired again, and again the ruled response is disclosure, not repair.**
+This story's own header records that Story 2.14's sweeping stage captured a mid-draft copy of
+the story file during creation. The same thing happened during implementation: the concurrent
+Story 2.15 code-review session's sweeping `git add` captured **this story's `deferred-work.md`
+section** into commit `4c0aed5`, and its `sprint-status.yaml` changes into `8c076fe`.
+**Content integrity verified rather than assumed** — the committed copies carry the complete
+1.19 ledger section including the late-added `index.py` staleness entry, the resolved suite
+measurement with no placeholder left behind, and `1-19-…: review`. It is an attribution defect,
+not a content defect. Per this repo's standing precedent it is disclosed here and **not
+repaired**. It is also the reason the pipeline slice was committed early as `92adb09` rather
+than held to the end — that mitigation worked, and the two shared append-only files are
+precisely the ones it cannot protect.
+
+**Concurrency.** Three other worktrees were live throughout (`wc-stats-verify-215` and a
+scratchpad worktree, both other sessions'). HEAD moved twice under this story: to `79bd7aa`
+during story creation (disclosed in the story's own header) and to `6c90d80` (Stories 2.16 and
+2.17) during implementation. **Both are `app/`-only** — verified with
+`git log 79bd7aa..HEAD --stat -- pipeline/ data/ .gitignore`, which is empty — and neither
+captured any of this story's files. The pipeline slice was committed early (`92adb09`) rather
+than held to the end, which is this repo's standing mitigation for a concurrent sweeping stage.
+
+**Console-encoding note, so a reader of the raw logs is not misled.** `batch.main()` calls
+`stream.reconfigure(errors="replace")` deliberately, because PDF-derived text can hold
+characters a redirected Windows console cannot encode and a `UnicodeEncodeError` there would
+make a completed run look like a crashed harness. A consequence is that em dashes appear as
+`U+FFFD` in the captured `.log` files. That is a **capture** artifact, not a property of the
+summary: `batch-summary-verbatim.txt` re-renders the same manifest through
+`format_summary` to UTF-8 bytes and the em dashes are intact.
 
 ### Completion Notes List
 
+**The five acceptance obligations, and where each is discharged.** AC 1 is the summary's
+self-sufficiency (D1's collapse, R2's near-miss block, the per-report-status ruling and the
+104-terminal-entry assertion). AC 2 is the SM-1 record below. AC 3 is the byte-identical
+re-run plus the two write paths made all-or-nothing. Four of the five are evidentiary; the
+engineering exists only where a filed defect stood against an AC.
+
+**AC 1 (d) — "from the summary alone, without opening logs or artifacts" — is now measurable,
+and measured.** The authoritative run's summary is **35 lines, of which 7 are warnings.**
+Before this story the same manifest rendered ~740 lines of which **728** were the same seven
+sentences repeated once per report — 104 x 7. The two self-validation failures a reader is
+actually looking for were buried under them. The collapse is bounded exactly as D1 ruled:
+only `batch.py`'s warnings block changed; `verify.py:57`'s identically-named function was not
+touched; the warning text is emitted verbatim; the manifest is unchanged, with per-report
+`warnings` arrays still carrying one entry per report. All seven pre-existing dependents stay
+green because every one asserts the warning text as a **substring**, which was verified by
+reading them rather than assumed — that reading is what retired a blocker three stories had
+accepted.
+
+**The D1 threshold is 3, and it is uniform in both directions.** A warning carried by more
+than three reports collapses to `  {n} reports: {warning}`; one carried by three or fewer
+still names each report. A bare count that hides *which* three reports differ breaks AC 1 just
+as badly as 728 lines do, so both forms exist and neither is reachable for the same count —
+pinned by a test that walks every count from 1 to `WARNING_NAMED_MAX + 3` and asserts exactly
+one form fires at each. Ordering is first appearance over `manifest["reports"]`, never `set`
+order, because byte-identical output is an acceptance condition of this same story.
+
+**R2 — "near-miss parses" now has output, and the category had more implementations than the
+ruling anticipated.** AC 1 and FR-16 both name the category and nothing implemented it: the
+pipeline's bounded checks record how far the drawn set sits from the printed count on every
+report, and a check that PASSES reached the summary nowhere. R2 named the two goalkeeping
+bounded checks; reading the source found two more, `pass-network-row-bound` and
+`pass-network-total-bound`. All four now carry a machine-readable `max_delta` via a shared
+`bounded_check` helper, and `format_summary` keys off the **presence** of that field rather
+than a registry of check ids, so a bounded check added by a later story reaches the summary
+without editing `batch.py`. Measured on the corpus:
+
+    goalkeeping-involvement-bound:     95/104 report(s) with a non-zero delta (max +5)
+    pass-network-row-bound:           104/104 report(s) with a non-zero delta (max +15)
+    pass-network-total-bound:         104/104 report(s) with a non-zero delta (max +35)
+    goalkeeping-distribution-printed:  20/104 report(s) with a non-zero delta (max +2)
+
+R2's illustrative example was `20/104 report(s) with a non-zero delta (max +2)` for the
+distribution check. That is what the corpus actually reports.
+
+**One bounded check is deliberately EXCLUDED, and saying so is the point.**
+`pass-network-top5-pct` is a tolerance check whose delta is a printed-precision rounding
+residual, not a parse near-miss; including it would produce a `104/104` line carrying no
+information. The exclusion is stated in the `bounded_check` docstring rather than left silent.
+Only checks that PASSED contribute — a bounded check that actually breached its bound is named
+in full by the Self-validation failures block, and counting it here too would report one
+defect twice under two different meanings.
+
+**AC 1 (f) — "per-report status" — is RULED, not left silent.** `format_summary` lists no
+report by status and this story does not add such a listing. The ruling, recorded in the
+function's own docstring and here: `counts_by_status` carries the aggregate, and the Failed
+reports, Self-validation failures and Near-miss blocks name every report that is anything
+other than cleanly extracted, so a reader can identify every failure and why. **A listing
+naming all 104 reports one per line would rebuild, in a new block, the exact defect D1 just
+removed.** Pinned by a test over a 104-entry manifest asserting the two non-clean reports are
+named with their causes, that no clean report appears, and that the whole summary stays under
+30 lines.
+
+**AC 1 (a) — exactly 104 terminal entries — asserted, and the ledger's scale gap closed at its
+real cause.** The gap was never the `--expect-reports` match path, which was already green at
+the CLI over a 2-report corpus. It was that `_corpus` indexed a five-element `TEAMS` list
+directly, so any count above five raised `IndexError`. The first five pairs stay pinned
+(existing tests name `PMSR-M02-CHA-V-DEL` by hand); beyond them pairs are generated, which is
+all that is needed since ids are keyed on the match NUMBER. The batch is now exercised at
+twelve reports, and a corpus test asserts the real manifest carries 104 entries, every one at
+a terminal status, `counts_by_status` summing to 104 and `failed_count == 0`.
+
+**The third-failure tripwire is now automated as a BASELINE ASSERTION — never a tolerance and
+never an allowlist.** The rule "exactly 2, no third" lived only as prose in story Dev Notes and
+`pipeline/README.md`. It is now pinned over the real manifest: the failing set must equal
+`["PMSR-M19-ARG-V-ALG", "PMSR-M58-TUN-V-NED"]` exactly, `self_validation_fail_count == 2`, and
+`run.result == "fail"` — with the reason in the assertion message, so a future reader cannot
+mistake it for a check to relax. The allowlist mechanism was considered and REJECTED in the
+1.12 ruling and is not reintroduced here; this asserts the adjudicated baseline rather than
+excusing anything.
+
+**R5 — the write-blocking deadlock is resolved by ORDERING, and no gate was touched.** The
+ledger routed this here and recorded an ugly recourse: empty both profile directories, emit
+the index, re-run 1.18. It is not needed. **`profiles` reads `data/matches/` and nothing else**
+— its CLI takes only `--data-dir`, and it reads neither `work/spine/` nor `tournament.json` —
+so it has no dependency on `index` at all, while `index` has a hard one on it. Running
+`profiles` BEFORE `index` means the profile artifacts already match the entity set by the time
+`check_route_manifest` looks. **Reproduced before it was fixed**, on a scratch copy of `data/`
+rather than the committed tree: deleting one player profile makes `precompute.index` raise
+`RouteManifestError: … 1 listed players have no profile artifact ['aaronson-brenden-usa']` and
+write nothing; running `profiles` first over the same perturbed tree then yields all three
+bijection directions asserted and an **unqualified** `INDEX RESULT: PASS`. 1.17 explicitly
+rejected moving the bijection *assertion* here; this story inherited the **orchestration**, not
+the assert, and moved neither.
+
+**The orchestrator never masks a phase's exit 1, and the one conditional continue is
+deliberate.** `python -m pipeline.orchestrate` runs the five phases and exits with the worst
+code any returned. A phase exiting 2 stops the run — nothing was learned, so a later phase must
+not write on the strength of it. A **precompute** phase exiting 1 stops it: a failed gate means
+the artifacts it guards are not trustworthy. `ingest.batch` exiting 1 **continues, but only
+when the finding is self-validation and nothing else**, because the ruled clean-corpus baseline
+for this corpus IS exit 1 and `precompute/records.py` rules both records CONSUMED; stopping
+there would make the documented baseline unrunnable end to end. Any failed report, corpus gap
+or orphan record stops it instead, since those mean the corpus is short and every downstream
+`--expect-*` count would be measuring a truncated run. An unreadable or off-shape manifest is
+never read as consumable — `check_committed_data`'s "absence of evidence is not evidence" rule
+applied at a second seam. In the authoritative run this fired exactly as designed and printed
+its own reasoning.
+
+**A defect this story introduced and its own test caught, disclosed rather than quietly
+repaired.** The first version of `orchestrate.py` did not forward `--output` to `ingest.batch`,
+so the phase wrote to its default `work/run-manifest.json` while the orchestrator inspected a
+different path. A test running against a temporary tree therefore **overwrote the repository's
+real run manifest** with a 6-report synthetic one. `work/` is gitignored and fully regenerable,
+`work/extracted/` was untouched at 104 (the `--extracted-dir` flag WAS forwarded), Task 1.3 had
+already captured the previous manifest's state, and Task 7 regenerated the authoritative one —
+so nothing was lost. The fix forwards the path and a regression test now asserts every path the
+orchestrator owns reaches the phase that writes it.
+
+**AC 3 — the two remaining committed write paths are all-or-nothing.** `emit_bundles` wrote 104
+bundles one at a time with no rollback and `emit_index` wrote two the same way. An `OSError` on
+bundle 57 left 56 files written, the stale sweep skipped, and the caller exiting **2** — the
+code whose stated meaning is "nothing was learned" — over a namespace the next
+`check_committed_data` would PIN as the AD-3 immutability baseline. `pipeline/precompute/swap.py`
+**lifts** 1.18's shipped `_swap_directory` rather than copying or reinventing it (`profiles.py`
+imports it and keeps the private name as an alias, so 1.18's ruling and tests are untouched) and
+adds a file-swap form. `emit_bundles` stages the namespace and installs it with one rename,
+which **subsumes the stale sweep by construction** — a swap installs exactly what the run built.
+`emit_index` installs its two artifacts as one unit with rollback, using a **file** swap and not
+a directory swap, because `data/index/` also holds 1,296 profile artifacts the run never built.
+
+**Exit code 2 now tells the truth rather than being re-labelled.** With an all-or-nothing swap
+the filesystem genuinely is untouched on failure, so the existing mapping is honest. That is
+asserted, not assumed: a constructed `OSError` on bundle 57 driven **through the real emitter in
+memory** leaves the target namespace unchanged **on bytes**, not merely at the same file count —
+and the same for the index pair, where failing the second install rolls the first back.
+
+**The `.gitignore` shape is the part that is easy to get wrong.** `swap.py` puts scratch beside
+the target, so `emit_bundles` produces `data/matches.staged/` at the `data/` level —
+`data/matches/*.staged/` would match **nothing**. `emit_index`'s scratch paths are FILES
+(`tournament.json.staged`), which the existing directory-only patterns could not match either.
+Four new patterns were added with a comment stating the same failure mode as the block above
+them.
+
+**AC 3 — byte-neutrality of the refactor, proven twice.** In a test, by emitting into an
+independent tree and diffing against the committed one (the two-tree shape 1.18 established) —
+0 of 104 bundles and 0 of 2 index artifacts differ. And on the real tree: after the
+authoritative run re-emitted all 1,402 artifacts through the rewritten write paths,
+`git status --short data/` is **empty**. A staged-directory rewrite changes *when* bytes land,
+never *which*.
+
+**AC 3 / NFR-6 — the byte-identical re-run, on a tree that stayed quiet.** Re-invoked without
+`--force`. `extracted 0 / skipped-unchanged 104`; all 104 record SHA-256s taken **on bytes**
+are unchanged (**0 differing, 0 missing, 0 new**); the printed `code version` line is identical
+across both runs (`ad4735a216e2`); `git status --short data/` is empty after every phase
+re-emits; `git status --short --ignored data/` shows no `.staged/` or `.previous.rollback/`
+survived. **The known false alarm did not occur** — Stories 1.9 and 1.14 each lost a run to a
+concurrent `pipeline/**/*.py` save, and this interval was evidenced three independent ways: the
+identical `code_version`, the `test_code_version_is_stable_across_calls` canary passing
+immediately before the re-run, and no concurrent commit touching `pipeline/`.
+
+**AC 3 (d) — the pinning guarantee held.** `check_pins` reported `1400 pinned id(s), all held`
+on both runs. `check_committed_data` reported the populated baseline on all three namespaces
+and **never** the *"baseline unavailable … This is NOT a pass"* branch: `104 bundle(s), 89358
+id reference(s)`, `1296 profile(s), 29264 id reference(s)`, `2 index artifact(s), 1608 id
+reference(s)`. **No player slug moved** — a moved slug renames a file, and `git status --short
+data/` is empty. `OVERRIDES` was not edited and `--write-registry` was not run.
+
+**Every AD-4 budget figure re-measured against the real corpus, and every one reproduces.**
+104 bundles totalling 17,887,538 canonical bytes; largest `m082-belgium-senegal` at **14,251**
+gzip-9 = **2.85%** of the 500,000-byte ceiling. Hub combined: `tournament.json` 39,137 +
+`leaderboards.json` 78,501 = **117,638 / 500,000 = 23.5%**. 1,296 profiles, largest
+`bellingham-jude-eng` at **1,543** = **0.31%**. No breach, so SM-C2 never engages.
+
+**R4 — measured, and the premise that routed it here was false.** `node
+scripts/assert-schema-version.mjs` reports `1411 artifact(s) at schemaVersion 4`, exit 0, in
+**1,659 ms** against the post-run tree. That reconciles exactly with `git ls-files data/` =
+1,412 (1,411 `.json` plus `data/fixtures/README.md`). The reconciliation that gave this story
+ownership reasoned that *"Story 1.19's full batch run will multiply the tree again"* — it did
+not and could not, because the tree was already at full size before this story began and the
+artifact count is unchanged. One correction covering all filings is appended to the ledger.
+**No file under `app/` was changed.**
+
+**Ledger closures are evidence-backed, and the double filings are closed in pairs.** Two of the
+entries this story closes are filed TWICE, and a sweep that closes one leaves the other open:
+`emit_bundles`' `OSError` has 1.16's original and 1.18's re-filing; `data/index/` has 1.17's
+filing and its code review's re-filing. **Both pairs are closed, and the ledger entry says
+which.** The three `format_summary` warning filings (1.12/1.13/1.14) are closed together. The
+phase-ordering entry, the batch-scale gap and the standing staleness note are closed. Nothing
+was closed that this story did not actually fix.
+
+**What this story deliberately did NOT close, stated so the omission is not read as a miss.**
+The `domain_e_checks` bare-subscript entry names Story 1.19 by name and is **not** taken: this
+story planned no `pipeline/validate/checks.py` edit and made none, and the prescribed fix is a
+module-wide ruling whose production edit would force another full re-extract before the
+byte-identity proof could start. (Disclosure: this story *did* edit
+`pipeline/extract/domain_e.py` to add `max_delta` to two bounded checks — that is the
+extractor, not `validate/checks.py`, and it does not touch the payload reads the entry is
+about.) Also not taken: the `>=` -> `==` pass-network tightening, `_parse_rows`' silent row skip
+(re-deferred by ruling R3), the 219 `OVERRIDES` slugs, the FR-15 check-id renames, and
+everything routed to Story 2.19.
+
+**Two ledger entries were measured and left OPEN on purpose.** The cover-line threshold entry's
+precondition was the real corpus, and 104/104 reports parsed their covers with zero failures —
+but that establishes only that nothing TRIPS the thresholds, not the MARGIN the entry asks
+about, and recording "the corpus parses" as a closure would be the gate-that-cannot-fail
+mistake restated in prose. The zero-width-character entry was measured directly: **zero**
+occurrences of U+200B, U+00AD, U+FEFF, U+2060, U+200E, U+200F, U+00A0 or the `ﬁ`/`ﬂ` ligatures,
+and **zero** characters of Unicode category `Cf`, across all 104 staged records. It stays open
+because its concern is a *future* font change, which no measurement of today's corpus can
+close.
+
+**One item was routed to this story by name and is RE-DEFERRED with its measurement attached,
+rather than left silent.** The pipeline-suite runtime entry is owned by *"whichever story next
+needs the pipeline suite to fit in a single un-chunked run"*. This story made that tradeoff
+strictly worse and did so knowingly: `test_swap.py` adds five more full-emission passes,
+because Task 6's rollback and byte-neutrality proofs each need their own tree by construction,
+and driving a constructed write failure through a shared emission is exactly the mistake that
+scored 1.18's first mutation run zero red. Taking the runtime fix here would mean weakening the
+independence in the same story that added the proofs depending on it.
+
+**The full regression suite: 1,778 passed, 1 failed, 4 skipped in 4,097 s (1 h 08 m 17 s).**
+Run un-chunked in a single background invocation, so there is no chunk arithmetic to
+reconcile and no off-by-one to make. The runtime sits between this project's two reference
+points — ~45 min quiet, 112 min when 1.17 measured it with concurrent sessions writing — and
+two Epic 2 sessions were active throughout, so a slow run here is not a hung one. `git status
+--short data/` after the suite is empty: no test wrote into the committed tree.
+
+**The one failure was triaged individually, and it was NOT a regression — it was a tripwire
+doing its job.** `test_index_tournament.py::test_the_repository_has_no_committed_profiles_yet`
+is Story 1.17's tripwire, **red by design from the moment Story 1.18 committed**, which
+happened before this story began. It reads `git ls-files` and touches nothing this story
+changed. Its own docstring names the action: *"**When it fires, delete this test — do not
+weaken it.** The populated bijection above is its replacement and needs no further work."*
+
+**It was removed, and both preconditions were verified BEFORE the deletion rather than
+after.** First, that the replacement genuinely runs: with the 1,296 artifacts tracked,
+`test_the_route_manifest_bijection_holds_against_the_committed_profiles` no longer skips — it
+runs and asserts all three directions on real data. Second, that removing it cannot disturb
+this story's byte-identity proof: `tests` is in `fingerprint.EXCLUDED_DIRS`, so `pipeline/tests/`
+sits outside `code_version()` entirely and no re-extract is implied. `test_index_tournament.py`
+is 69 passed after the change. **This is the one deletion in this story's change set**, it is
+marked in place by a comment where the test stood, and it is recorded in the ledger, because a
+deleted test is invisible in a diff read from the outside.
+
+**One dangling citation was deliberately left, and the reason is mechanical.** Removing the
+test left three prose references. Two were fixed for free — `pipeline/README.md` and the
+surviving test's own docstring, neither of which is fingerprinted. The third is in
+`check_route_manifest`'s docstring in `pipeline/precompute/index.py`, which **is** inside
+`code_version()`: a comment-only edit there invalidates all 104 staged records and forces a
+full re-extract plus a fresh byte-identity proof before this story's recorded figures would be
+true again. That is the exact trade ruling D1.7 already names — *"editing them is a no-op that
+re-invalidates all 104 staged records for nothing."* The paragraph was **already stale
+independently of this story**: it states the profile directories *"do not exist"*, which
+1.18's commit falsified. Filed with an owner (whichever story next edits `index.py` for a
+substantive reason and is therefore already paying for the re-extract) rather than fixed at
+the cost of the acceptance evidence.
+
+#### SM-1 acceptance record (AC 2)
+
+**104/104 was NOT reached, and SM-1's "or" branch is the correct outcome. Both residual
+failures are documented individually with their causes.** SM-1 reads *"Target: 100%, with any
+residual failures individually documented and explained"*; SM-C1 is the hard gate, and *"a
+documented failure beats a silently wrong extraction."*
+
+| Report | Match id | Check | Team | Family | Drawn | Page prints |
+|---|---|---|---|---|---|---|
+| `PMSR-M19-ARG-V-ALG` | `m019-argentina-algeria` | `defensive-actions-marker-count` | away | forced-turnover | **39** | **40** |
+| `PMSR-M58-TUN-V-NED` | `m058-tunisia-netherlands` | `defensive-actions-marker-count` | away | forced-turnover | **33** | **34** |
+
+**Cause, verbatim from the 1.12 ruling:** *"two corpus pages draw one forced-turnover marker
+fewer than their own printed total … Verified not to be a parse defect: both pages were
+rendered and the dots counted by hand (39 and 33), every marker-sized circle on each page is
+accounted for (left panel + right panel + exactly the 7 bullet swatches), no marker sits
+outside the panels, there are no exactly-coincident pairs at threshold 0.0, and no
+drawing-anatomy variant hides a 40th marker (the only other marker-sized circles are the four
+stroke-only corner arcs per panel). The remaining 206 of 208 pages agree exactly."*
+
+**The tripwire: the run reported exactly two, and NO THIRD.** Both runs named the same two
+reports and the same two checks. The 1.12 ruling does not re-open.
+
+**No check was weakened to reach this result (SM-C1).** Stated affirmatively, naming what was
+considered and rejected: `defensive_actions_self_validation_block`'s equality was **not**
+loosened; **no** tolerance band was added; **no** known-discrepancy waiver or allowlist was
+added (that mechanism was considered and REJECTED in the 1.12 ruling — deviation categories
+stay frozen at 4); the forced-turnover counterpart was **not** dropped to take the
+documented-absence branch; and the two records were **not** filtered out of precompute. The
+new automation added by this story is a **baseline assertion** over the real manifest, which
+asserts the adjudicated result rather than excusing it.
+
+**The ruled-consumed property still holds.** `precompute/records.py`'s filter is on `status`
+alone and never on `self_validation`, so both records reach precompute. Confirmed on disk:
+`data/matches/m019-argentina-algeria.json` and `data/matches/m058-tunisia-netherlands.json`
+are present, and `precompute.index` reports `matches: 104 committed bundle(s) <-> 104 listed
+route(s) — bijection holds`, so both are in the route manifest.
+
+#### The batch report of record (ruling D2)
+
+D2 rules that the batch summary of record is the stdout of `python -m pipeline.ingest.batch`
+and that the authoritative run's summary is captured verbatim here. No `.json` batch report
+was added under `data/` — `app/scripts/assert-schema-version.mjs` walks every `*.json` there
+and would fail the App build on a file carrying no `schemaVersion`. Per ruling R1 (answered by
+Juan), no separate committed artifact was created either.
+
+Reproduced below is the summary rendered from the manifest in true UTF-8. **It is the
+byte-identity re-run's**, and the authoritative run's differed in exactly two lines — its
+`Reports by status` block read `extracted 104 / failed 0 / skipped-unchanged 0` where this
+reads `extracted 0 / failed 0 / skipped-unchanged 104`. Every other line is identical, which
+is itself the clearest statement of AC 3.
+
+```
+Batch ingestion
+===============
+corpus          : pmsr-corpus
+reports found   : 104 (expected 104)
+code version    : ad4735a216e2
+
+Reports by status
+  extracted          0
+  failed             0
+  skipped-unchanged  104
+
+Warnings (non-fatal)
+  104 reports: defensive-actions: no marker-count check recorded for the possession-regain map (that panel's marker count matches no total printed on the page)
+  104 reports: receiving: no per-type check recorded for the movement donuts (their slice values are inside the raster images; only the four centre totals are text)
+  104 reports: receiving: no phase-sum check recorded for movement by-phase totals (they are independent totals, not a partition of the movement total)
+  104 reports: goalkeeping: goalkeeping.distribution.*_techniques is not extractable — the Kick from Feet / Kick from Hands / Throw distribution technique breakdowns are printed only as donut SLICE labels inside raster images; only the centre total is in the text layer
+  104 reports: goalkeeping: goalkeeping.goal_prevention.by_body_type is not extractable — the Intervention Body Type breakdown is raster-only, and this page's text-layer donut centres are demonstrably untrustworthy (PMSR-M01 prints 4 against a table of 3), so neither is staged
+  104 reports: goalkeeping: goalkeeping.aerial_control.crosses_faced_completed is not extractable — the completed/attempted split is drawn only as marker colour on a goal-mouth crop, not a full pitch, and the page prints no counterpart to validate a count against
+  104 reports: pass_network: node_positions is not extractable — the Passing Networks page carries no pitch, no markers and no coordinates (0 pitch frames on 208/208), and no page anywhere in the corpus prints average positions
+
+Self-validation failures (record written; run fails)
+  PMSR-M19-ARG-V-ALG
+      [defensive-actions-marker-count] away forced-turnover: 39 markers, page prints 40
+  PMSR-M58-TUN-V-NED
+      [defensive-actions-marker-count] away forced-turnover: 33 markers, page prints 34
+
+Near-miss parses (bounded checks that PASSED with a non-zero delta; not failures)
+  goalkeeping-involvement-bound: 95/104 report(s) with a non-zero delta (max +5)
+  pass-network-row-bound: 104/104 report(s) with a non-zero delta (max +15)
+  pass-network-total-bound: 104/104 report(s) with a non-zero delta (max +35)
+  goalkeeping-distribution-printed: 20/104 report(s) with a non-zero delta (max +2)
+
+RUN RESULT: FAIL (0 failed report(s), 2 self-validation-failed report(s), 0 corpus gap(s), 0 orphan record(s))
+```
+
+**Asserted against the adjudicated baseline rather than against exit 0** (1.15's precedent
+phrasing): `extracted 104 / failed 0 / skipped-unchanged 0` on the authoritative run,
+`corpus_gaps 0`, `orphan_record_paths 0`, `self_validation_fail_count == 2`,
+`failed_count == 0`, `RUN RESULT: FAIL`, exit **1**. A verification step asserting exit 0 here
+would be wrong, and would invite a future dev to "fix" a correctly reported source defect.
+
+#### Downstream phase headlines (Task 7.5)
+
+| Phase | Exit | Headline |
+|---|---|---|
+| `ingest.batch` | **1** | the summary above; exit 1 by design |
+| `precompute.run` | 0 | `records consumed: 104`, 48 teams / 1,248 players / 104 matches, `registry: 1400 pinned id(s), all held`, `data baseline: 104 bundle(s), 89358 id reference(s), all pinned`, `PRECOMPUTE RESULT: PASS` |
+| `precompute.emit` | 0 | `schemaVersion 4`, `bundles: 104`, `EMIT RESULT: PASS` |
+| `precompute.profiles` | 0 | `team profiles: 48`, `player profiles: 1248`, `1296 profile(s), 29264 id reference(s), all pinned`, `PROFILE EMIT RESULT: PASS` |
+| `precompute.index` | 0 | all three directions — `matches: 104 <-> 104`, `teams: 48 <-> 48`, `players: 1248 <-> 1248` — `2 index artifact(s), 1608 id reference(s), all pinned`, **`INDEX RESULT: PASS`** |
+
+`PIPELINE RESULT: FAIL (5 of 5 phase(s) run)`, orchestrator exit **1**.
+
+**The index headline is UNQUALIFIED and that is the load-bearing detail.** `index.py` prints
+`INDEX RESULT: PASS (N check(s) COULD NOT RUN)` whenever a direction of AD-4's bijection could
+not be checked, and a qualified PASS is not a PASS. Because `profiles` ran first, all three
+directions were actually asserted and the headline carries no qualification.
+
 ### File List
+
+Paths are relative to the repo root.
+
+**New**
+
+- `pipeline/orchestrate.py` — the five-phase end-to-end runner (ruling R5a)
+- `pipeline/precompute/swap.py` — all-or-nothing installation: directory and file swaps
+- `pipeline/tests/test_orchestrate.py` — ordering, exit-code contract, out-of-order failure
+- `pipeline/tests/test_swap.py` — rollback, scratch-path shape, byte-neutrality
+
+**Modified**
+
+- `pipeline/ingest/batch.py` — `WARNING_NAMED_MAX`; warnings block inverted and collapsed; `near_misses` mirrored and aggregated; `format_summary` docstring carries the D1 threshold rationale and the AC-1(f) ruling
+- `pipeline/extract/__init__.py` — `bounded_check(...)`, carrying `max_delta`
+- `pipeline/extract/domain_e.py` — `max_delta` on `goalkeeping-distribution-printed` and `goalkeeping-involvement-bound`
+- `pipeline/extract/pass_network.py` — `max_delta` on `pass-network-row-bound` and `pass-network-total-bound`
+- `pipeline/precompute/emit.py` — `emit_bundles` stages and swaps the whole namespace
+- `pipeline/precompute/index.py` — `emit_index` installs its two artifacts as one unit
+- `pipeline/precompute/profiles.py` — `_swap_directory` lifted to `swap.py` and re-exported
+- `pipeline/tests/test_ingest_batch.py` — `_corpus` past its five-report ceiling; D1, R2, AC-1(f) and 104-terminal-entry tests
+- `pipeline/README.md` — new *Running the whole pipeline* section; the collapse and near-miss blocks; the resolved phase ordering replacing the recourse paragraph
+- `.gitignore` — the four sibling-shaped scratch patterns for the two new write paths
+- `_bmad-output/implementation-artifacts/deferred-work.md` — appended, at the end, append-only
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — status and dated log comment
+- `_bmad-output/implementation-artifacts/1-19-full-batch-run-batch-report-104-104-acceptance.md` — this file
+
+**Unchanged by design — stated because a reader may expect otherwise**
+
+- **All 1,412 tracked files under `data/`.** The run re-emitted every one of them and every one
+  came back byte-identical, which is AC 3's reproducibility clause. `data/fixtures/` (10 files)
+  is retained untouched; no suite was re-pointed at real data.
+- **`pipeline/validate/verify.py`** — carries a second `format_summary`; touching it would have
+  been a silent scope error.
+- **`pipeline/validate/checks.py`** — see the `domain_e_checks` note above.
+- **`pipeline/markers/crosses.py` and `pipeline/markers/receiving.py`** — their `format_summary`
+  mentions describe the Self-validation failures renderer, which D1 forbids touching. Verified
+  by reading both; editing them would have been a no-op that re-invalidated all 104 staged
+  records for nothing.
+- **`pipeline/precompute/slug_registry.py`** — `--write-registry` was not run and `OVERRIDES`
+  was not edited.
+- **Everything under `app/` and `contract/`.**
 
 ## Change Log
 
 | Date | Change |
 |---|---|
-| 2026-08-07 | Story context created; status backlog → ready-for-dev. |
+| 2026-08-07 | Story context created against baseline `12fad17`; status backlog → ready-for-dev. Two fresh-context validation subagents run against the checklist; 14 corrections applied. HEAD moved to `79bd7aa` (Story 2.14 code review, `app/`-only) during creation and its sweeping stage captured a mid-draft copy — disclosed above, not repaired; `pipeline/` and `data/` verified byte-unchanged. |
+| 2026-08-07 | Open rulings R1, R2, R3 and R5 answered by Juan; all four took the story's recommendation (no committed batch-report artifact; add the aggregate near-miss section; re-defer `_parse_rows`' silent row skip; resolve the phase ordering with an orchestrator). R4 proceeded on its recommendation — measure and report, change no file under `app/`. |
+| 2026-08-07 | Tasks 1–6 implemented: D1's warnings collapse (728 lines → 7), R2's near-miss aggregate, the AC-1(f) per-report-status ruling, the batch-scale test gap closed at its real cause, `pipeline/orchestrate.py` expressing the five-phase ordering, and `pipeline/precompute/swap.py` making `emit_bundles` and `emit_index` all-or-nothing. Committed as `92adb09` (pipeline slice only, staged by explicit path). |
+| 2026-08-07 | Task 7 — authoritative 104-report run at `code_version ad4735a216e2`. Asserted against the adjudicated baseline rather than exit 0: `extracted 104 / failed 0 / skipped-unchanged 0`, 0 gaps, 0 orphans, `self_validation_fail_count 2`, `RUN RESULT: FAIL`, exit 1. Tripwire clean — exactly the two ruled forced-turnover deviations, no third. `precompute.index` printed an UNQUALIFIED `INDEX RESULT: PASS`, all three bijection directions asserted. |
+| 2026-08-07 | Task 9 — byte-identical re-run on a quiet tree, no `--force`: `extracted 0 / skipped-unchanged 104`, **0 of 104** record SHA-256s differ (compared on bytes), identical printed `code version`, `git status --short --ignored data/` empty. `check_pins` held all 1,400 ids; no player slug moved. |
+| 2026-08-07 | Defect found and disclosed rather than repaired silently: the first `orchestrate.py` did not forward `--output` to `ingest.batch`, so a test overwrote the repository's gitignored `work/run-manifest.json` with a 6-report synthetic one. Caught by this story's own test, fixed, and pinned by a regression test. `work/extracted/` was untouched at 104 and Task 7 regenerated the manifest; nothing was lost. |
+| 2026-08-07 | HEAD moved again mid-implementation to `6c90d80` (Stories 2.16/2.17). Verified `app/`-only — `git log 79bd7aa..HEAD --stat -- pipeline/ data/ .gitignore` is empty — and no file of this story's was captured. Disclosed, not repaired, per the standing precedent. |
+| 2026-08-07 | Tasks 8, 10–12: SM-1 acceptance record with both residuals documented individually and SM-C1 affirmed; ledger triage appended (three `format_summary` filings, both `emit_bundles` filings, both `data/index` filings, the phase-ordering entry, the batch-scale gap and the staleness note closed; two entries measured and left open; R4's correction and the suite-runtime re-deferral appended); `pipeline/README.md` updated; status → review. |

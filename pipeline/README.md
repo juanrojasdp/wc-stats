@@ -2040,6 +2040,16 @@ pass.**", and `test_the_repository_has_no_committed_profiles_yet` goes RED BY DE
 moment 1.18 **commits**. `check_route_manifest`'s populated branch is already live and is
 exercised by a constructed test, so the successor does not inherit a gate nobody has run.
 
+**Superseded — the swap has happened (Story 1.19).** 1.18's 1,296 artifacts are committed, so
+all three directions of the bijection are now asserted against real data by
+`test_the_route_manifest_bijection_holds_against_the_committed_profiles`, which no longer
+skips. The tripwire named above fired at that same moment and was **removed** by 1.19, the
+story that saw it fire, exactly as its own docstring instructed ("when it fires, delete this
+test — do not weaken it"). The paragraph above is kept because it records why the pair was
+built that way; the D2 design worked as intended. A run in the correct phase order
+(`profiles` before `index`) now prints an **unqualified** `INDEX RESULT: PASS` — see *Running
+the whole pipeline* at the top of this file.
+
 **"Commits", not "emits" — the 1.17 code review corrected this and the difference is not
 pedantic.** A concurrent 1.18 session emitted 1,296 profile artifacts into the shared
 working tree while this story was in review. Tests keyed on the directory therefore passed

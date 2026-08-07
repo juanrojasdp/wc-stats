@@ -592,12 +592,20 @@ def test_the_route_manifest_bijection_holds_against_the_committed_profiles(
     **Guarded on TRACKED profiles by the 1.17 code review.** As written this read the
     working tree, where a concurrent 1.18 session's untracked output happened to sit — so it
     passed here and failed on every clean checkout, which is where committed tests are
-    supposed to be green. It now skips until 1.18 commits, and
-    `test_the_repository_has_no_committed_profiles_yet` below fires at that same moment.
+    supposed to be green.
+
+    **The swap has HAPPENED (Story 1.19).** 1.18's 1,296 artifacts are committed, so this no
+    longer skips — it runs and asserts all three directions on real data. Its tripwire
+    counterpart fired at that same moment and was removed by 1.19, as that test's own
+    docstring instructed; see the note below where it stood. The guard is kept rather than
+    deleted, because it is what keeps this test honest on a checkout that does not yet have
+    the artifacts — a bijection asserted over an absent namespace is the gate-that-cannot-fail
+    this pair exists to rule out.
     """
     if not tracked_profiles:
-        pytest.skip("no profile artifacts are tracked yet; Story 1.18 has not committed. "
-                    "test_the_repository_has_no_committed_profiles_yet owns this state.")
+        pytest.skip("no profile artifacts are tracked; a bijection cannot be asserted over an "
+                    "absent namespace. On a normal checkout this never fires — the 1,296 "
+                    "artifacts have been committed since Story 1.18.")
     tournament = json.loads(
         (repo_root / "data" / "index" / "tournament.json").read_text(encoding="utf-8"))
     notes = index_module.check_route_manifest(tournament, repo_root / "data")
@@ -609,29 +617,21 @@ def test_the_route_manifest_bijection_holds_against_the_committed_profiles(
     assert "players: 1248 profile(s) <-> 1248 listed route(s)" in joined
 
 
-def test_the_repository_has_no_committed_profiles_yet(
-        tracked_profiles: "set[str]") -> None:
-    """RED BY DESIGN the moment Story 1.18 commits — restored by the 1.17 code review.
-
-    D2 ruled two things: the gate never reports a silent pass, AND a successor test goes red
-    by design so the populated branch becomes primary deliberately rather than by accident.
-    The second half was deleted when 1.18's session replaced it with the populated
-    assertion, leaving this story with no tripwire at all while its own module docstring and
-    `pipeline/README.md` still cited this test by name.
-
-    It is restored in the only form that is honest now: 1.18 has EMITTED profiles into the
-    working tree but has COMMITTED none, so the state this pins is "not tracked", not "not
-    present". When 1.18 commits, this goes red, the guard on the test above lifts in the
-    same run, and the pair swaps over together.
-
-    **When it fires, delete this test — do not weaken it.** The populated bijection above
-    is its replacement and needs no further work.
-    """
-    assert not tracked_profiles, (
-        f"{len(tracked_profiles)} profile artifact(s) are now tracked by git. Story 1.18 "
-        f"has committed. This tripwire has done its job: delete it, and confirm "
-        f"test_the_route_manifest_bijection_holds_against_the_committed_profiles now runs "
-        f"rather than skipping.")
+# `test_the_repository_has_no_committed_profiles_yet` stood here and was REMOVED by Story
+# 1.19, which is the story that saw it fire. It was Story 1.17's tripwire, red by design from
+# the moment Story 1.18 committed its 1,296 profile artifacts, and its own docstring named the
+# action: "**When it fires, delete this test — do not weaken it.** The populated bijection
+# above is its replacement and needs no further work."
+#
+# It fired, and the pair swapped over together exactly as designed: with the profiles tracked,
+# `test_the_route_manifest_bijection_holds_against_the_committed_profiles` above no longer
+# skips — it RUNS and asserts all three directions on real data, verified before this deletion
+# rather than after. The tripwire had therefore done its whole job, and leaving it in place
+# would have meant Epic 1's acceptance story reporting a permanently red suite for a test whose
+# purpose was to become red.
+#
+# Recorded rather than silently dropped, because a deleted test is invisible in a diff read
+# from the outside, and because this is the one deletion in Story 1.19's change set.
 
 
 def test_a_profile_namespace_that_exists_is_asserted_rather_than_skipped(
