@@ -5,6 +5,7 @@ import type {
   TeamProfile,
   TeamTournamentRecord,
 } from "@/lib/contract/contract-types";
+import { formResults } from "@/viz/team-profile-model";
 
 /*
  * `/teams/{slug}`'s pure display logic (Story 2.16), on `player-profile.ts`'s
@@ -87,7 +88,17 @@ export function toTeamHeroData(profile: TeamProfile): TeamHeroData {
     record: profile.record,
     possession: profile.tacticalIdentity.possession,
     pressingIntensity: profile.tacticalIdentity.pressingIntensity,
-    form: profile.matches.map((row) => row.result),
+    /*
+     * THROUGH THE MODEL'S `formResults`, not a second inline map (code review
+     * 2026-08-07). `team-profile-model.ts` exports `formResults` documented as
+     * "the Hero's form strip", and three tests pin D3 and AR-5 against it —
+     * that it is a projection and never an aggregation, and that it matches the
+     * artifact's own order. Nothing imported it: this line was a duplicate of
+     * the same projection, so the shipped strip was the untested copy and the
+     * tested one was dead. One behaviour, one implementation, and the D3 tests
+     * now grade the code the route actually runs.
+     */
+    form: formResults(profile),
   };
 }
 
@@ -153,34 +164,3 @@ export function composeTeamDescription(input: {
   return `${name}${separator}${record}${separator}${furthestStageLabel}`;
 }
 
-/* ------------------------------- Compare link ------------------------------ */
-
-/**
- * The "Comparar equipo" deep link (AC 4): `/compare?type=teams&a={slug}`.
- *
- * COMPOSED IN A HELPER rather than interpolated at the call site, which is the
- * house rule for every route this app emits. The target does not exist yet —
- * Story 2.17 owns `/compare` — and linking to an unbuilt route is itself ruled
- * (Story 2.12 D2 and 2.13 ruling 3 both ruled navigation surfaces link to
- * unbuilt routes), which is why the caller passes `prefetch={false}`.
- *
- * THE TRAILING SLASH BEFORE THE QUERY IS MANDATORY AND IS EMITTED HERE, not left
- * to Next. `trailingSlash: true` normalises a slash-less path at request time,
- * so `/compare?…` is rewritten to `/compare/?…` and the href in the exported
- * HTML stops matching what this helper returns — which is exactly the drift
- * `matchHref`'s docblock records ("emits its own trailing slash, which is why it
- * is called rather than interpolated"). Caught by the static-output test, which
- * asserts against the EMITTED markup rather than this function's return value.
- *
- * AC 4 spells the target `/compare?type=teams&a={slug}`; `/compare/?…` is that
- * same target in this site's canonical path form, and every other href builder
- * in the codebase emits the slash the same way.
- *
- * NO `encodeURIComponent`. `AD-3` fixes `TeamId` as "lowercase ASCII kebab,
- * accent-stripped", so a slug carries nothing a query string could misread —
- * and encoding it would make the emitted href differ from the slug the route
- * was generated under.
- */
-export function compareTeamHref(teamId: string): string {
-  return `/compare/?type=teams&a=${teamId}`;
-}

@@ -242,7 +242,16 @@ export function PhysicalSection({ physical }: { physical: PhysicalModel }) {
   ];
 
   return (
-    <section id={PHYSICAL_SECTION_ID} className="mt-layer-gap">
+    /*
+     * NO TOP MARGIN — `PlayerProfileRegion`'s wrapper already supplies the ONE
+     * `layer-gap` the hero→body boundary gets (code review 2026-08-07). Route
+     * Composition rules `layer-gap` (64px) at that boundary and `section-gap`
+     * (48px) within the layer; the wrapper and every section carried
+     * `mt-layer-gap`, so the boundary rendered at 128px and each body gap at
+     * 64px. Applied to `/players` and `/teams` in one edit so the two profile
+     * routes keep an identical vertical rhythm.
+     */
+    <section id={PHYSICAL_SECTION_ID}>
       <h2 className="type-title text-ink-primary">{title}</h2>
       {/*
        * An UNNAMED <figure> grouping the chart with its data alternative. It

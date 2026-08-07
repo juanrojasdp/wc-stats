@@ -43,7 +43,7 @@ export function TeamFormationsSection({ rows }: { rows: readonly FormationRow[] 
    */
   if (rows.length === 0) {
     return (
-      <section id={FORMATIONS_SECTION_ID} className="mt-layer-gap">
+      <section id={FORMATIONS_SECTION_ID} className="mt-section-gap">
         <h2 className="type-title text-ink-primary">{title}</h2>
         <div className="mt-3">
           <EmptyStatePanel
@@ -94,7 +94,7 @@ export function TeamFormationsSection({ rows }: { rows: readonly FormationRow[] 
   const caption = `${title}${CAPTION_SEPARATOR}${t("team.caption.formations")}`;
 
   return (
-    <section id={FORMATIONS_SECTION_ID} className="mt-layer-gap">
+    <section id={FORMATIONS_SECTION_ID} className="mt-section-gap">
       <h2 className="type-title text-ink-primary">{title}</h2>
       <div className="mt-3 w-full min-w-0 overflow-x-auto">
         <DataTable

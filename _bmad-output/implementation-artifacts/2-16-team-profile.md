@@ -4,7 +4,7 @@ baseline_commit: 12fad17
 
 # Story 2.16: Team Profile
 
-Status: review
+Status: done
 
 **Scope: `app/` + the two locale files + `EXPERIENCE.md`'s policy table + the two ledger artifacts.** Nothing under `pipeline/`, `contract/`, or `data/`. You consume `data/fixtures/index/team-profiles/*.json`; you never write it.
 
@@ -611,6 +611,93 @@ Every match page currently speculatively fetches **two non-existent routes**.
 
 ---
 
+### Review Findings
+
+Code review 2026-08-07. Three layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor) run
+blind and in parallel over the five commits `937f305`, `af0a9ab`, `1b93797`, `5c52643` plus the two
+2.16 files swept into `79bd7aa`. Every finding below was re-verified against the working tree
+before it was rated.
+
+#### Decisions — all four ruled by Juan, 2026-08-07
+
+> **A note on timing.** HEAD moved twice while this review was running: `4c0aed5` (Story 2.15 code
+> review, 17 patches) and `8c076fe` (sprint status). Every finding below was re-verified against
+> the post-move tree. One ruling was overtaken by that move and is recorded as such.
+
+- [x] **D-R1 → do the i18n work now in 2.16.** Extend `i18n.test.ts` with an exhaustiveness sweep
+  for the three new key builders, extend the caption inventory past 27/28 for the route's captions,
+  and retire the orphan `viz.pressing.metre*` family in the same edit. Re-verified at `4c0aed5`:
+  still `toHaveLength(27)` / `.toBe(27)` / `.toBe(28)` at `i18n.test.ts:1660-1668`, still zero
+  `team.` references. Becomes patches.
+- [x] **D-R2 → anchor-box ring site-wide. ALREADY TRUE IN THE TREE; no behaviour change needed.**
+  Story 2.15's code review overturned its own row-wide treatment while this review was running:
+  `PlayerMatchesSection.tsx:63-69` now reads *"that ruling is OVERTURNED … `outline-none` is a house
+  prohibition that has already cost two review patches"*, and cites `:focus-within` matching any
+  descendant `:focus` as the second reason. Both routes now carry the anchor-box ring, and the
+  contradiction this review found is resolved. **What remains is the real gap: no test asserts
+  either treatment**, so the next repoint can still revert it silently. Becomes one patch.
+- [x] **D-R3 → mint per-family category heads.** Four heads rather than one shared "Fase": phases
+  keep "Fase", block levels get "Bloque", press rates get "Tipo de presión", the shape tables get
+  "Panel". Both locales, flagged `PROPOSED — Juan to confirm or overturn` as R1's strings were.
+  Becomes patches.
+- [x] **D-R4 → fix the section spacing on both profile routes together.** `layer-gap` once at the
+  hero boundary, `section-gap` between body sections, applied to `/teams` and `/players` in one
+  edit so the two routes stay identical. Coordination re-checked after the HEAD move: all six
+  affected files are clean in the working tree. Becomes patches.
+
+#### Superseded decision detail
+
+- [x] [Review][Decision] **The `team` namespace ships with zero i18n coverage, and two tasks are checked that did no work** — Task 9.3 (`[x]`) and Task 10.4 (`[x]`) both claim work that is absent. `git log -- app/src/lib/i18n.test.ts` stops at `79bd7aa`; the file contains **zero** `team.` references. The caption inventory still reads `toHaveLength(27)` / `.toBe(27)` / `.toBe(28)` (`i18n.test.ts:1627-1635`) while the route adds ≥8 captions, and `viz.pressing.{metreNote,metreTableCaption}` are still shipped (`es.ts:1296,1298`) though 10.4 ordered them retired in the same edit. Compounding it, `shapeMeasureKey` / `inPossessionShapePanelKey` / `outOfPossessionShapePanelKey` (`team-profile-model.ts:530-533`) each cast a template literal `as DictionaryKey` under a docblock that reads *"the cast is exactly why the exhaustiveness test in i18n.test.ts is not optional"* — so for exactly these nine keys `tsc` cannot catch a missing leaf and no runtime sweep exists. A renamed `team.shape.*` leaf ships as a raw key on screen with a green suite. **The story's own ledger append admits the retirement was not done and routes it to 2.17/2.19.** Decision: do the i18n work now in 2.16, or uncheck 9.3/10.4 and accept the ledger's routing? Severity **high**.
+- [x] [Review][Decision] **Two contradictory shipped rulings on the row-link focus ring** — the 2.15 ledger block added by this very diff reads *"RULED AND FIXED — the row-link focus ring … the ring moves off the anchor (`focus-visible:outline-none`) and onto the `<tr>`"*; the 2.16 block four hundred lines later reads *"RULED by Juan (Q2): accept the anchor-box ring"*, and `RowAnchor.tsx` hard-codes that (*"NO `outline-none` appears in this file"*). Q2 was put to you on the story's premise that a row-wide treatment *"was prototyped and not shipped"* — the Completion Notes concede that premise was stale. Repointing `PlayerMatchesSection` at the hoisted component, which the ledger files to 2.17 as cleanup, will silently delete 2.15's ruled-and-verified fix. No test asserts either treatment. Decision: which ruling stands site-wide? Severity **medium**.
+- [x] [Review][Decision] **Four of the six tables in the tactical-identity section are headed "Fase" although their rows are not phases** — `TeamIdentitySection.tsx:160` builds one shared `rateColumns` whose category head is `t("viz.table.phase")` ("Fase"), and passes it to all four `rateBlock` calls (`:328/:336/:344/:352`), including "Bloques defensivos" (block levels) and "Intensidad de la presión" (press rates); `:281` reuses it again for the shape tables, whose rows are shape *panels*. This story mints `team.column.stage: "Etapa"` specifically because *"`viz.table.phase` already owns 'Fase' on this page … one term with two meanings would collide"* — the rule was enforced against a column that did not need it and ignored on five that do. Fixing it means minting new category-head copy, which is a ruling like R1. Decision: mint the heads, or accept the collision and file it? Severity **medium**.
+- [x] [Review][Decision] **Section spacing departs from the ruled grammar** — Route Composition rules `section-gap` (48px) within a layer and `layer-gap` (64px) at the hero→body boundary. `TeamProfileRegion.tsx:103` applies `mt-layer-gap` at the boundary and `TeamIdentitySection.tsx:324`, `TeamFormationsSection.tsx:97`, `TeamMatchesSection.tsx:343` each apply `mt-layer-gap` again — 128px at the boundary and 64px between body sections. It matches the shipped `/players` precedent exactly, so correcting 2.16 alone would make the two profile routes diverge. Decision: fix to spec on both routes, fix 2.16 only, or record a departure? Severity **medium**.
+
+#### Patches
+
+Patches arising from the four rulings:
+
+- [x] [Review][Patch] [D-R1] Add an exhaustiveness sweep for `shapeMeasureKey`, `inPossessionShapePanelKey` and `outOfPossessionShapePanelKey` — the three `as DictionaryKey` casts `tsc` cannot check [app/src/lib/i18n.test.ts]
+- [x] [Review][Patch] [D-R1] Extend the caption inventory past `toHaveLength(27)` / `.toBe(27)` / `.toBe(28)` for the route's captions, and drive the extended assertion red once on purpose [app/src/lib/i18n.test.ts:1660]
+- [x] [Review][Patch] [D-R1] Retire the orphan `viz.pressing.{metres,metreNote,metreTableCaption,metre.*}` family in the same edit as the count change, both locales [app/src/locales/es.ts:1296]
+- [x] [Review][Patch] [D-R2] Assert the row-link focus treatment so neither ruling can silently revert on the next repoint — no test covers it on either route [app/src/components/RowAnchor.tsx]
+- [x] [Review][Patch] [D-R3] Mint four per-family category heads ("Fase" / "Bloque" / "Tipo de presión" / "Panel"), both locales, flagged `PROPOSED`, and stop sharing `viz.table.phase` across all six tables [app/src/components/TeamIdentitySection.tsx:160]
+- [x] [Review][Patch] [D-R4] Apply the ruled spacing grammar to both profile routes — `layer-gap` once at the hero boundary, `section-gap` between body sections [TeamProfileRegion.tsx:103, TeamIdentitySection.tsx:324, TeamFormationsSection.tsx:46,97, TeamMatchesSection.tsx:330,343, PlayerProfileRegion.tsx:100, PlayerMatchesSection.tsx:322, PlayerAggregatesSection.tsx:109]
+
+Patches from the review layers:
+
+- [x] [Review][Patch] Loading skeleton is an `aria-label` on a role-less `<div>` — the sibling it claims to mirror was patched for exactly this [app/src/components/TeamProfileRegion.tsx:117]
+- [x] [Review][Patch] A non-object fetch payload throws into `.catch` and offers a futile retry instead of the no-retry `invalid` state [app/src/components/TeamProfileRegion.tsx:85]
+- [x] [Review][Patch] `invalid` copy tells the reader to retry in the one branch built to refuse it; also the sixth byte-identical copy of that sentence in `es.ts` [app/src/components/TeamProfileRegion.tsx:154]
+- [x] [Review][Patch] Skeleton is not layout-shaped despite the UX-DR14 claim — five hardcoded blocks for eight rendered sections, no height derived from `distributionChartHeightClass` [app/src/components/TeamProfileRegion.tsx:126]
+- [x] [Review][Patch] `normal-case` on the glossary-marked tile produces the exact mixed-casing row the same commit removed from `PhysicalSection` — 7 of 8 tiles uppercase, the pressing tile not [app/src/components/TeamHero.tsx:143]
+- [x] [Review][Patch] Expected goals is rendered through the kilometres formatter, whose own docblock says it must never cross scope; no test covers the xG cell [app/src/components/TeamMatchesSection.tsx:239]
+- [x] [Review][Patch] Result column hand-interpolates a dictionary key that has a shipped, tested builder (`matchResultWordKey`, `hub-model.ts:201`) [app/src/components/TeamMatchesSection.tsx:189]
+- [x] [Review][Patch] Score column sorts on `goalsFor` alone with `headTitle: null` — 2-0 and 2-3 tie arbitrarily and nothing discloses the key [app/src/components/TeamMatchesSection.tsx:209]
+- [x] [Review][Patch] Sorting a hidden column then collapsing with "Menos columnas" leaves rows ordered by an invisible column with no `aria-sort` and no visible cue [app/src/components/TeamMatchesSection.tsx:296]
+- [x] [Review][Patch] The independent-rates note renders four times per page as two pairs of identical paragraphs and is spoken twice per chart — applied per-chart where it belongs per-family [app/src/components/TeamIdentitySection.tsx:219]
+- [x] [Review][Patch] `formResults` is dead in production; the shipped strip is an untested duplicate at `team-profile.ts:90`, so the three D3/AR-5 tests grade a function the route never runs [app/src/viz/team-profile-model.ts:542]
+- [x] [Review][Patch] `team-profile.ts` ships with no unit test — and that is where the one real bug was (`compareTeamHref` shipped without the trailing slash in `937f305`, caught only by a build-gated assertion) [app/src/lib/team-profile.ts]
+- [x] [Review][Patch] The "real-data escaping trap" test asserts a string literal it declares two lines earlier — it reads no artifact, no locale, no HTML, no product code, and cannot fail. This is the "gate that cannot fail" the story's own Testing Requirements ban, shipped in the same file whose bijection gate was red-driven to avoid it [app/src/app/teams/static-output.test.ts:230]
+- [x] [Review][Patch] `teamHtml()` at describe-body scope crashes collection on a partial export, taking down the bijection assertion the file's docblock says is what a partial export must fail on [app/src/app/teams/static-output.test.ts:94]
+- [x] [Review][Patch] `player.column.stage: "Stage"` vs `team.column.stage: "Round"` — the stage unification was applied to Spanish only, leaving English with the exact divergence the edit was made to remove [app/src/locales/en.ts:1340]
+- [x] [Review][Patch] The Story 2.16 policy rows were appended inside `## Requirements traceability`, splitting that table in two — `FR-30` now sits under the policy table's header. Rows are correctly worded; only the placement is wrong [EXPERIENCE.md:347]
+- [x] [Review][Patch] Task 12.2 is `[x]` but no 2-16 note block was written — the commit added note blocks for 2-15 and 1-19 instead [sprint-status.yaml:3271]
+- [x] [Review][Patch] Story record overstates three things: the File List calls `PhysicalSection.tsx` a "D2 repoint" when `1b93797` also carries 2.15-code-review glossary markup, a label-namespace switch and a sort-kind change; `EXPERIENCE.md` is called "appended policy rows" when the commit also carries rows headed "Story 2.15 Task 10.2"; and Task 2.3's cited evidence (an exported-HTML diff) cannot detect the chart change at all, because the chart mounts `ssr: false` and emits no SVG into the HTML [2-16-team-profile.md:764,781,913]
+- [x] [Review][Patch] `formationRows` keys on the formation string with no uniqueness guard, though the schema declares no `uniqueItems` — a repeat yields duplicate `DataTable` row keys and misdirected focus restore [app/src/viz/team-profile-model.ts:446]
+- [x] [Review][Patch] `RATE_CATEGORY_AXIS_WIDTH` and `categoryAxisWidth` — the fix for the story's headline browser defect — ship with no assertion; the axis test covers `ticks`, `axisMax` and `heightClass` only, and `CategoryTick` has no test [app/src/viz/team-profile-model.test.ts]
+
+#### Deferred
+
+- [x] [Review][Defer] Client navigation between two `/teams/{slug}` routes renders the previous team's sections under the new team's hero — the effect resets neither `status` nor `profile` [app/src/components/TeamProfileRegion.tsx:67] — deferred, pre-existing: `PlayerProfileRegion.tsx:63` has the identical shape and the fix belongs on both together
+- [x] [Review][Defer] `readTeamProfile` runs twice at build time (`generateMetadata` and the page body) with no memoisation, so the docblock's "read twice, once per AD-11 path" is three reads — 96 parses at 2.19's 48 routes [app/src/app/teams/[slug]/page.tsx:85,111] — deferred, pre-existing: the `/players` route has the same shape
+- [x] [Review][Defer] The AD-11 inline gate's token set no longer carries a standings-row-level probe after `goalDifference` was retired, so a route inlining only `groups[].standings[]` rows would pass [app/src/app/static-output.test.ts:687] — deferred, pre-existing: the retirement itself was correct and red-driven; adding `standings` as a third token needs a build to verify
+- [x] [Review][Defer] The dynamic-route family list in the every-route sweep is hardcoded, so a family added later is silently skipped [app/src/app/static-output.test.ts:525] — deferred, pre-existing: `5c52643` was a net improvement over the `matches`-only walk it replaced
+- [x] [Review][Defer] `classAttrCount` is now copied a third time, in the story that hoists `RowAnchor` on the grounds that "every private copy is deleted"; its docblock also states a premise already false in the tree it shipped into ("`/players` shipped no static-output test") [app/src/app/teams/static-output.test.ts:41] — deferred, pre-existing: two copies predate this story
+- [x] [Review][Defer] D6's projection field list is exceeded — `teamId` was added to `TeamHeroData` for `compareTeamHref`, a value the page already holds as `slug` [app/src/lib/team-profile.ts:49,83] — deferred, cosmetic: the over-projection is one scalar and harmless
+- [x] [Review][Defer] Tasks 9.4, 10.6 and 10.7 are unrun and the story sits at `review`; this route introduces the site's widest table (13 columns) and a narrow-layout column reduction whose only reason to exist is those widths, so the unmeasured obligation is the one covering the new code — deferred: honestly declared under "NOT DONE" and already filed to 2.19
+
+---
+
 ## Testing Requirements
 
 **Harness: vitest, `environment: "node"`, `include: ["src/**/*.test.{ts,tsx}"]`, alias `@` → `./src`.** No jsdom by default — nothing mounted can be unit-tested. That is why `table-sort.ts` is a pure module and why `TacticalCharts.tsx` says *"NO UNIT TESTS EXIST FOR THIS FILE and none can."*
@@ -874,6 +961,47 @@ duplicates `enums.inPossessionPhase["final-third"]`, and "Bloque medio"/"Bloque 
 R1; filed for review.
 
 ---
+
+### Corrections to this record (code review 2026-08-07)
+
+Four claims above were checked against the diff and do not hold as written. They are corrected
+here rather than edited in place, so the original assertion and its correction both stay readable.
+
+- **Tasks 9.3, 10.4 and 12.2 were checked `[x]` with none of their work done.** `i18n.test.ts` was
+  never touched by any 2.16 commit and carried zero `team.` references; the caption inventory still
+  read `toHaveLength(27)` / `.toBe(27)` / `.toBe(28)` with none of the route's eight captions in it;
+  the orphaned `viz.pressing.metre*` family was still shipped; and `sprint-status.yaml` got the
+  status flip but no 2-16 note block — the commit wrote note blocks for 2-15 and 1-19 instead. The
+  ledger append written in the same commit **admits** the retirement was not done and routes it to
+  2.17/2.19, which contradicts the checkbox in the same diff. **All three are now genuinely
+  complete**, done at code review under Juan's D-R1 ruling rather than by the story.
+
+- **Task 2.3's evidence cannot support its claim, and the claim is false of the commit.** The
+  Completion Notes state the exported-HTML diff for `out/players/quinones-julian-mex/index.html`
+  showed "only … content-addressed chunk FILENAMES; every element, prop and datum is identical".
+  The chart mounts through `dynamic(..., { ssr: false })`, so the exported HTML contains **no chart
+  SVG at all** — that diff is structurally incapable of detecting the change it was cited for,
+  which is the y-axis tick swap from `TICK_STYLE` to the custom wrapping `CategoryTick`. Separately,
+  the same commit's tile-label and glossary-markup changes to `PhysicalSection` **do** alter that
+  exported HTML, so "every element, prop and datum is identical" is not true of the commit either.
+  The regression itself was genuinely verified — but in the BROWSER (tabular-nums restored, five
+  zone labels present, none clipped), which is the evidence that stands.
+
+- **`1b93797` carries three other stories' work under a Story 2.16 message.** The File List
+  describes `PhysicalSection.tsx` as "D2 repoint" only; the commit also carries `GlossaryTerm`
+  markup on two tiles, a label switch from `expert.field.*` to `enums.leaderboardMetric.*`, and a
+  sort-kind change from `text` to `number` — all self-attributed in their own comments to Story
+  2.15's D12 correction and "code review 2026-08-07". It also carries `EXPERIENCE.md` rows headed
+  "Story 2.15 Task 10.2", ledger sections for 2-15 and 1-19, and `sprint-status.yaml` transitions
+  for 1-19, 2-15 and 2-17. This does not contradict "every commit staged by explicit path" — the
+  paths were explicit — but it does contradict the File List's description of what those paths
+  contained.
+
+- **The `EXPERIENCE.md` policy rows were appended into the wrong table.** Task 10.2 requires them
+  under the per-term policy procedure; they landed inside `## Requirements traceability`, between
+  the `FR-29` and `FR-30` rows, so `FR-30` onwards rendered under the 2.16 policy table's own
+  `| Term (en) | Decision | …` header and the traceability table was split in two. The rows
+  themselves were correctly worded. Moved to the end of `## i18n & Terminology` at code review.
 
 ### NOT DONE — named rather than implied
 

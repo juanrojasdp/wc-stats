@@ -16,7 +16,8 @@ import {
   formatRateValue,
   formatTeamCount,
 } from "@/lib/team-profile-format";
-import { compareTeamHref, type TeamHeroData } from "@/lib/team-profile";
+import { compareHref } from "@/lib/compare-url";
+import { type TeamHeroData } from "@/lib/team-profile";
 
 /*
  * The pre-rendered Hero for `/teams/{slug}` (Story 2.16, AC 1 and AC 4) — the
@@ -139,8 +140,18 @@ export function TeamHero({ data }: { data: TeamHeroData }) {
        * and `div` inside `span` is an invalid content model that React's
        * validateDOMNesting does NOT warn about.
        */
+      /*
+       * NO `normal-case` (code review 2026-08-07). `type-stat-label` sets
+       * `text-transform: uppercase` and every shipped tile on the site takes
+       * it, so the override made this ONE tile of eight render in sentence
+       * case: seven read "PARTIDOS", "BALANCE (G-E-P)" … and this one read
+       * "Presiones defensivas". It is the same defect `PhysicalSection` had —
+       * removed there in this story's own `1b93797` with the same reasoning —
+       * and it arrived here the same way, incidental to the glossary markup
+       * rather than as a ruling.
+       */
       labelNode: (
-        <div className="inline-flex items-center gap-1 normal-case">
+        <div className="inline-flex items-center gap-1">
           <GlossaryTerm termId="pressing">{t("team.tile.pressingIntensity")}</GlossaryTerm>
         </div>
       ),
@@ -207,7 +218,19 @@ export function TeamHero({ data }: { data: TeamHeroData }) {
        */}
       <div className="mt-5 flex justify-center">
         <Link
-          href={compareTeamHref(data.teamId)}
+          /*
+           * 🔴 THE ONE `compareHref` HELPER (Story 2.17, ruled D2). `team-profile.ts`'s
+           * private `compareTeamHref` is DELETED: the route had two inbound links
+           * built by two helpers that disagreed about the trailing slash, and
+           * `PlayerHero` is repointed at this same function. `/compare` owns the
+           * shape of its own URL, and one home is what stops the two from drifting
+           * apart again.
+           *
+           * `prefetch={false}` STAYS. The route exists now, but this is a
+           * navigation surface rendered on every team page and 2.13 MEASURED
+           * Next's default prefetch taking the resource count 48 → 75.
+           */
+          href={compareHref("teams", data.teamId)}
           prefetch={false}
           className="flex min-h-11 items-center underline underline-offset-4 type-body text-accent-cyan"
         >

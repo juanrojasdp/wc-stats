@@ -106,7 +106,7 @@ export function PlayerAggregatesSection({ rows }: { rows: readonly AggregateRow[
   ];
 
   return (
-    <section id={AGGREGATES_SECTION_ID} className="mt-layer-gap">
+    <section id={AGGREGATES_SECTION_ID} className="mt-section-gap">
       <h2 className="type-title text-ink-primary">{title}</h2>
       <div className="mt-3 w-full min-w-0 overflow-x-auto">
         <DataTable

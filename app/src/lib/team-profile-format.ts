@@ -71,6 +71,26 @@ export function formatKilometres(value: number, locale: Locale): string {
   return formatDecimal(value, locale, 2);
 }
 
+/**
+ * `matches[].expectedGoals` — a DIMENSIONLESS xG value at 2 dp.
+ *
+ * IT HAS ITS OWN FUNCTION BECAUSE IT IS NOT A DISTANCE (code review
+ * 2026-08-07). The xG column rendered through `formatKilometres`, which is
+ * numerically identical today — both want 2 dp — and wrong in the one way this
+ * module exists to prevent: the docblock directly above declares kilometres
+ * "THE TEAM-SCOPE FIELD, AND IT MUST NEVER CROSS THE PLAYER-SCOPE ONE", and its
+ * call site was crossing it into a quantity that is not measured in anything.
+ * The coupling was silent and would have bitten the day either precision moved:
+ * a unit suffix on kilometres, or FIFA's xG precision changing, would have
+ * dragged the other column with it.
+ *
+ * 2 dp is the artifact's own precision; rounding a precomputed value breaches
+ * AR-5. xG is FIFA's published value, used as-is and never recomputed.
+ */
+export function formatExpectedGoals(value: number, locale: Locale): string {
+  return formatDecimal(value, locale, 2);
+}
+
 /** Counts — goals, shots, matches, points. 0 dp with locale grouping. */
 export function formatTeamCount(value: number, locale: Locale): string {
   return formatInteger(value, locale);

@@ -33,6 +33,28 @@ function teamHtml(teamId: string): string {
 }
 
 /*
+ * THE COLLECTION-SAFE READ, FOR DESCRIBE-BODY SCOPE ONLY (code review
+ * 2026-08-07).
+ *
+ * Vitest evaluates a `describe` body even when `skipIf` will skip its tests, and
+ * three describes below read the fixture route's HTML at that scope. So on the
+ * one state this file's header docblock says must "fail loudly" — `out/` exists
+ * but `out/teams/mexico/index.html` does not — `readFileSync` threw during
+ * COLLECTION and took the whole file down with it, including the bijection
+ * assertion that the docblock names as what a partial export must fail on, and
+ * including the `"out/teams/ was not emitted by the build"` message written to
+ * report exactly this.
+ *
+ * Returning "" instead keeps collection alive, so the named assertions run and
+ * report the real cause; the content assertions then fail on their own terms
+ * rather than being silently skipped.
+ */
+function teamHtmlIfBuilt(teamId: string): string {
+  const file = `${TEAMS_DIR}${teamId}/index.html`;
+  return existsSync(file) ? readFileSync(file, "utf8") : "";
+}
+
+/*
  * Count a class only where it appears as a real DOM `class="..."` attribute —
  * the RSC flight payload carries "className" strings that must not be counted,
  * and it fakes passes on raw props generally. COPIED from
@@ -91,7 +113,7 @@ describe.skipIf(!anyBuilt)("the /teams route exists and covers the manifest (AC 
 });
 
 describe.skipIf(!anyBuilt)("<title> and OG metadata (AC 3, NFR-4)", () => {
-  const html = anyBuilt ? teamHtml(FIXTURE_SLUG) : "";
+  const html = teamHtmlIfBuilt(FIXTURE_SLUG);
 
   /*
    * BUILT FROM FIXTURE LITERALS, never by calling the composer under test.
@@ -120,7 +142,7 @@ describe.skipIf(!anyBuilt)("<title> and OG metadata (AC 3, NFR-4)", () => {
 });
 
 describe.skipIf(!anyBuilt)("the pre-rendered Hero (AC 1, AC 4)", () => {
-  const html = anyBuilt ? teamHtml(FIXTURE_SLUG) : "";
+  const html = teamHtmlIfBuilt(FIXTURE_SLUG);
   const profile = anyBuilt ? readTeamProfile(FIXTURE_SLUG) : null;
 
   it("ships the team identity block in the HTML, not only in the client payload", () => {
@@ -177,7 +199,7 @@ describe.skipIf(!anyBuilt)("the pre-rendered Hero (AC 1, AC 4)", () => {
     expect(classAttrCount(html, "bg-result-draw")).toBe(0);
   });
 
-  it('deep-links "Comparar equipo" to the unbuilt /compare route (AC 4)', () => {
+  it('deep-links "Comparar equipo" to the /compare route (AC 4)', () => {
     /*
      * `/compare/?…` WITH THE SLASH, and `&amp;` because React escapes the
      * ampersand in an href attribute.
@@ -185,8 +207,15 @@ describe.skipIf(!anyBuilt)("the pre-rendered Hero (AC 1, AC 4)", () => {
      * The slash is not cosmetic: `trailingSlash: true` normalises a slash-less
      * path at request time, so an href written `/compare?…` ships as
      * `/compare/?…` and the emitted markup stops matching the helper that built
-     * it. `compareTeamHref` emits the slash itself for exactly that reason —
-     * this assertion is what caught the drift.
+     * it. This assertion is what caught the drift.
+     *
+     * 🔴 THE TITLE SAID "the UNBUILT /compare route" AND WENT STALE THE MOMENT
+     * STORY 2.17 SHIPPED IT (2.17 Task 2.4). The helper behind this href changed
+     * with it: `team-profile.ts`'s private `compareTeamHref` is DELETED and this
+     * link is built by the one `compareHref` in `@/lib/compare-url`, which
+     * `PlayerHero` also uses. The EMITTED STRING is unchanged, which is the whole
+     * point of asserting on markup rather than on a function's return value —
+     * this line is byte-identical across the de-duplication.
      */
     expect(html).toContain('href="/compare/?type=teams&amp;a=mexico"');
     expect(html).toContain(es.team.action.compare);
@@ -199,7 +228,7 @@ describe.skipIf(!anyBuilt)("the pre-rendered Hero (AC 1, AC 4)", () => {
 });
 
 describe.skipIf(!anyBuilt)("AD-11's split is respected — the Hero is a PROJECTION", () => {
-  const html = anyBuilt ? teamHtml(FIXTURE_SLUG) : "";
+  const html = teamHtmlIfBuilt(FIXTURE_SLUG);
 
   /*
    * The below-Hero payload must NOT be inlined. `shapeByPhase`'s metre values,
@@ -216,18 +245,72 @@ describe.skipIf(!anyBuilt)("AD-11's split is respected — the Hero is a PROJECT
   });
 });
 
-describe.skipIf(!anyBuilt)("the real-data escaping trap", () => {
+/*
+ * THE REAL-DATA ESCAPING TRAP — and it is now driven off the REAL manifest
+ * (code review 2026-08-07).
+ *
+ * WHAT WAS HERE COULD NOT FAIL. It declared `const emitted = "Côte d&#x27;Ivoire"`
+ * and then asserted that that literal contains `d&#x27;Ivoire` and not
+ * `d'Ivoire` — reading no artifact, no locale, no exported HTML and no product
+ * code. No change to this application could ever have turned it red. That is the
+ * "gate that cannot fail" this story's own Testing Requirements ban ("A test
+ * that can only pass is not a gate"), shipped in the same file whose bijection
+ * assertion was driven red on purpose to avoid exactly it.
+ *
+ * The real risk it was written for is a substring probe spelled with a raw
+ * apostrophe, which silently never matches the emitted markup. Two things make
+ * that a genuine gate: the ESCAPING RULE, applied rather than hand-written, and
+ * the CORPUS INVENTORY, read from `data/index/` rather than recited from a
+ * comment. The second is the one that bites — it goes red at 2.19 the moment a
+ * team name arrives carrying a character HTML escaping changes, which is the
+ * event that would invalidate every substring probe in this suite.
+ */
+const REAL_MANIFEST = fileURLToPath(new URL("../../../../data/index/tournament.json", import.meta.url));
+const realManifestPresent = existsSync(REAL_MANIFEST);
+
+/** The five characters HTML escaping rewrites, and what React emits for each. */
+const HTML_ESCAPES: ReadonlyArray<readonly [string, string]> = [
+  ["&", "&amp;"],
+  ["<", "&lt;"],
+  [">", "&gt;"],
+  ['"', "&quot;"],
+  ["'", "&#x27;"],
+];
+
+function escapeLikeReact(value: string): string {
+  return HTML_ESCAPES.reduce((acc, [raw, escaped]) => acc.split(raw).join(escaped), value);
+}
+
+function realTeamNames(): string[] {
+  const parsed = JSON.parse(readFileSync(REAL_MANIFEST, "utf8")) as {
+    entities: { teams: { name: string }[] };
+  };
+  return parsed.entities.teams.map((team) => team.name);
+}
+
+describe.skipIf(!realManifestPresent)("the real-data escaping trap", () => {
   /*
-   * The corpus's ENTIRE non-ASCII inventory is three characters — ü, ô, ç — all
-   * in team names: Türkiye, Côte d'Ivoire, Curaçao. React escapes `'` as
-   * `&#x27;`, so `Côte d'Ivoire` ships as `Côte d&#x27;Ivoire`.
-   *
-   * THE FIXTURE IS ESCAPE-FREE, so this only bites at 2.19's real scale — the
-   * assertion is written correctly NOW so the trap is closed before it can fire.
-   * It is a property of the escaping rule, not of any shipped team.
+   * THE INVENTORY GATE. Exactly one of the 48 real team names contains a
+   * character HTML escaping rewrites: "Côte d'Ivoire". (ü, ô and ç are the
+   * corpus's only other non-ASCII characters and escaping leaves all three
+   * alone — they are emitted as themselves in a UTF-8 document.) A 49th name,
+   * or a rename introducing an ampersand, turns this red and tells whoever
+   * added it that every substring probe in this suite needs rechecking.
+   */
+  it("names every real-corpus team whose emitted markup differs from its raw name", () => {
+    const affected = realTeamNames().filter((name) => escapeLikeReact(name) !== name);
+    expect(affected).toEqual(["Côte d'Ivoire"]);
+  });
+
+  /*
+   * THE PROBE GATE, applied to a name taken FROM THE MANIFEST rather than
+   * retyped here — so it exercises the transform against real data instead of
+   * grading a literal against itself.
    */
   it("escapes an apostrophe the way React does, so substring probes must match", () => {
-    const emitted = "Côte d&#x27;Ivoire";
+    const raw = realTeamNames().find((name) => name.includes("'"));
+    expect(raw, "no apostrophe-bearing team name in the real manifest").toBeDefined();
+    const emitted = escapeLikeReact(raw ?? "");
     expect(emitted).not.toContain("d'Ivoire");
     expect(emitted).toContain("d&#x27;Ivoire");
   });

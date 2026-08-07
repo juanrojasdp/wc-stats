@@ -736,20 +736,20 @@ export const en: Dictionary = {
       note: "These are independent rates: they do not sum to 100 and are not parts of a whole.",
       axisRate: "Share of time",
       axisPhase: "Phase",
-      metres: "Defensive line height and team length",
-      metre: {
-        lineHeight: {
-          inPossession: "Line height in possession",
-          outOfPossession: "Line height out of possession",
-        },
-        teamLength: {
-          inPossession: "Team length in possession",
-          outOfPossession: "Team length out of possession",
-        },
-      },
-      metreNote: "The report does not state which phase of play these distances describe.",
+      /*
+       * THE `metre*` FAMILY WAS RETIRED (code review 2026-08-07, discharging
+       * Story 2.16 Task 10.4). Five orphaned entries — `metres`,
+       * `metre.lineHeight.*`, `metre.teamLength.*`, `metreNote` and
+       * `metreTableCaption`. `PressingSection`'s metre table was retired and no
+       * component read them again; `metreTableCaption` was still counted in
+       * `i18n.test.ts`'s caption inventory, which is why it pinned 27 captions
+       * for 26 actually rendered. Their successor is `team.shape.*`, minted by
+       * Story 2.16 under R1(A) as panel-NEUTRAL labels rather than possession
+       * compounds — so they are retired, not repointed. `metreNote` in
+       * particular asserted the report "does not state which phase these
+       * distances describe", and CS-2 established the opposite.
+       */
       tableCaption: "Sorted by phase, in the report's order.",
-      metreTableCaption: "Distances in metres, by measure and possession state.",
     },
     setPlays: {
       figurePrefix: "Set plays:",
@@ -1447,21 +1447,41 @@ export const en: Dictionary = {
     column: {
       date: "Date",
       opponent: "Opponent",
-      // "Round", not "Phase": `viz.table.phase` already owns "Phase" here.
-      stage: "Round",
+      /*
+       * "Stage", NOT "Round" — code review 2026-08-07, completing the
+       * unification the Spanish half already got. `player.column.stage` reads
+       * "Stage" and this read "Round": two English names for one contracted
+       * enum across the two profile routes, in the locale that received no
+       * unifying edit when `es` was corrected to "Etapa" everywhere.
+       *
+       * "Stage" is the right survivor, not "Round". The original reason for
+       * "Round" was to avoid `viz.table.phase` ("Phase"), but "Stage" and
+       * "Phase" are different words and never collided; "Round" DOES collide,
+       * with `enums.matchdayRound`, which emits "Round of 32" and "Round of 16"
+       * on this same site. "Stage" is also the contract's own word for the enum
+       * and matches `enums.stage`.
+       */
+      stage: "Stage",
       venue: "Venue",
       result: "Result",
       score: "Score",
       formation: "Formation",
       matchesPlayed: "Matches",
       share: "Share",
+      // One category head per family, not one shared "Phase" across all six
+      // tables — only two of them have phases in their rows (code review
+      // 2026-08-07, R-D3). PROPOSED — Juan to confirm or overturn at review.
+      categoryBlock: "Block",
+      categoryPress: "Press type",
+      categoryPanel: "Panel",
     },
     venue: { home: "Home", away: "Away" },
     caption: {
       matches: "Sorted chronologically, in the report's order.",
       matchesLink: "Each row opens the match.",
+      matchesScoreSort: "The Score column sorts by goals for.",
       formations: "Sorted by match count, highest first.",
-      shape: "Distances in metres, by panel and measure.",
+      shape: "Sorted by panel, in the report's order. Distances in metres.",
     },
     tableName: {
       inPossession: "In-possession phases table",
@@ -1484,7 +1504,14 @@ export const en: Dictionary = {
       loaded: "Team data loaded.",
       error: "We could not load the team data. Check your connection and try again.",
       invalid: "This team's data does not match this version of the site.",
-      invalidExplanation: "We are aware. Please try again later.",
+      /*
+       * DOES NOT INVITE A RETRY (code review 2026-08-07). This is the branch
+       * that deliberately offers no retry button — "a retry cannot change the
+       * answer" — and the previous text asked for exactly what the branch
+       * prevents, while asserting monitoring nobody performs on a schemaVersion
+       * mismatch.
+       */
+      invalidExplanation: "This page will work again once the site updates.",
       crashed: "We could not show this team's profile.",
       crashedExplanation: "The rest of the page is still available.",
     },

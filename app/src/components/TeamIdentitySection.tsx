@@ -153,11 +153,25 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
 
   /* ------------------------------ The rate charts --------------------------- */
 
-  /** One chart's data-table alternative: category name plus its one rate. */
-  const rateColumns: TableColumn<CategoryRow>[] = [
+  /**
+   * One chart's data-table alternative: category name plus its one rate.
+   *
+   * THE CATEGORY HEAD IS PER-FAMILY, NOT SHARED (code review 2026-08-07, R-D3
+   * ruled by Juan). This was one array reused by all four rate tables with
+   * `viz.table.phase` ("Fase") as its head — but only two of the four have
+   * phases in their rows; the other two carry defensive blocks and press types,
+   * and the shape tables below carried shape PANELS under the same word. That is
+   * the one-term-two-meanings collision this story mints `stage: "Etapa"` to
+   * avoid, applied to a column that did not need it and skipped on four that
+   * did. The two phase tables still pass `viz.table.phase`: the term is already
+   * right for them, and a twin key holding "Fase" would be a second home for one
+   * term (2.18's prohibition).
+   */
+  function rateColumnsFor(categoryHeadKey: DictionaryKey): TableColumn<CategoryRow>[] {
+    return [
     {
       key: "category",
-      headText: t("viz.table.phase"),
+      headText: t(categoryHeadKey),
       headTitle: null,
       render: (row) => t(row.labelKey),
       align: "text",
@@ -178,7 +192,8 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
        * wrongly as text under es-CO commas. */
       sort: { kind: "number", valueOf: (row) => row.value },
     },
-  ];
+    ];
+  }
 
   function rateBlock(input: {
     model: RateChartModel;
@@ -187,8 +202,10 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
     note: string;
     figurePrefixKey: DictionaryKey;
     tableNameKey: DictionaryKey;
+    categoryHeadKey: DictionaryKey;
   }) {
-    const { model, Chart, headingKey, note, figurePrefixKey, tableNameKey } = input;
+    const { model, Chart, headingKey, note, figurePrefixKey, tableNameKey, categoryHeadKey } =
+      input;
     const heading = t(headingKey);
     const tableName = t(tableNameKey);
     /*
@@ -203,20 +220,14 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
       <div className="flex flex-col gap-1">
         <p className="type-stat-label text-ink-secondary">{heading}</p>
         {/*
-         * THE INDEPENDENT-RATES NOTE, VISIBLE (D10). `es.ts` calls it "THE
-         * SINGLE MOST IMPORTANT SENTENCE ON THIS SURFACE": the eight and nine
-         * values are INDEPENDENT RATES — corpus in-possession sums run 84-149
-         * and equal 100 on five of 208 team-innings, out-of-possession 73-97 and
-         * equal 100 on ZERO. Without it a reader reasonably assumes the bars
-         * partition the match.
-         *
-         * It ships as VISIBLE TEXT and not only inside `figureSummary`. The
-         * summary is the figure's accessible name, so a sighted reader would
-         * never see the one sentence that stops the chart being misread —
-         * `PhasesSection` renders the same note as a visible `<p>` above its
-         * charts for exactly this reason.
+         * THE NOTE IS NOT RENDERED HERE — it is rendered ONCE PER FAMILY by the
+         * caller (code review 2026-08-07). D10's fix was right that the
+         * independent-rates sentence must be VISIBLE and not only inside
+         * `figureSummary`, but it was applied per-CHART: `rateBlock` runs four
+         * times against two distinct notes, so the page carried each sentence
+         * twice as a pair of identical paragraphs. It still rides
+         * `figureSummary` below, which is the figure's accessible name.
          */}
-        <p className="type-caption text-ink-secondary">{note}</p>
         {/*
          * NO SECOND `role` AND NO SECOND `aria-label` AT THIS CALL SITE. The
          * chart component already supplies `role="img"` and takes its accessible
@@ -242,7 +253,7 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
         <ViewDataDisclosure panelTitle={heading} surface="canvas">
           <DataTable
             caption={caption}
-            columns={rateColumns}
+            columns={rateColumnsFor(categoryHeadKey)}
             rows={model.rows}
             surface="canvas"
             tableName={tableName}
@@ -275,10 +286,11 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
   const shapeColumns: TableColumn<ShapeRow>[] = [
     {
       key: "panel",
-      /* REUSED: `viz.table.phase` already names this column on the Match
-       * Dashboard's identical Domain C block. A second key holding "Fase" would
-       * be a second home for one term and fails the duplicate-value gate. */
-      headText: t("viz.table.phase"),
+      /* "Panel", NOT "Fase" (code review 2026-08-07, R-D3). These rows are
+       * shape PANELS — `buildUpLow`, `midBlock` and the rest — and the previous
+       * head borrowed the phase term for them, putting two meanings on one word
+       * within a single screen. */
+      headText: t("team.column.categoryPanel"),
       headTitle: null,
       render: (row) => t(row.labelKey),
       align: "text",
@@ -320,43 +332,78 @@ export function TeamIdentitySection({ charts, shape, teamName }: TeamIdentitySec
     "team.caption.shape"
   )}`;
 
+  /*
+   * NO TOP MARGIN ON THE SECTION — the region wrapper already supplies the ONE
+   * `layer-gap` the hero→body boundary gets (code review 2026-08-07). Route
+   * Composition rules `layer-gap` (64px) at that boundary and `section-gap`
+   * (48px) within the layer; this section and the wrapper both carried
+   * `mt-layer-gap`, so the boundary rendered at 128px and every body gap at 64px.
+   */
   return (
-    <section id={IDENTITY_SECTION_ID} className="mt-layer-gap">
+    <section id={IDENTITY_SECTION_ID}>
       <h2 className="type-title text-ink-primary">{title}</h2>
 
       <div className="mt-3 flex flex-col gap-section-gap">
-        {rateBlock({
-          model: charts.inPossession,
-          Chart: InPossessionChart,
-          headingKey: "viz.phases.inPossession",
-          note: phasesNote,
-          figurePrefixKey: "viz.phases.figurePrefix",
-          tableNameKey: "team.tableName.inPossession",
-        })}
-        {rateBlock({
-          model: charts.outOfPossession,
-          Chart: OutOfPossessionChart,
-          headingKey: "viz.phases.outOfPossession",
-          note: phasesNote,
-          figurePrefixKey: "viz.phases.figurePrefix",
-          tableNameKey: "team.tableName.outOfPossession",
-        })}
-        {rateBlock({
-          model: charts.blocks,
-          Chart: BlocksChart,
-          headingKey: "viz.pressing.blocks",
-          note: pressingNote,
-          figurePrefixKey: "viz.pressing.figurePrefix",
-          tableNameKey: "team.tableName.blocks",
-        })}
-        {rateBlock({
-          model: charts.press,
-          Chart: PressChart,
-          headingKey: "viz.pressing.pressRates",
-          note: pressingNote,
-          figurePrefixKey: "viz.pressing.figurePrefix",
-          tableNameKey: "team.tableName.press",
-        })}
+        {/*
+         * ONE NOTE PER FAMILY, ABOVE THE PAIR IT GOVERNS (code review
+         * 2026-08-07). `es.ts` calls this "THE SINGLE MOST IMPORTANT SENTENCE ON
+         * THIS SURFACE": the eight and nine values are INDEPENDENT RATES —
+         * corpus in-possession sums run 84-149 and equal 100 on five of 208
+         * team-innings, out-of-possession 73-97 and equal 100 on ZERO. Without
+         * it a reader reasonably assumes the bars partition the match.
+         *
+         * There are TWO notes and FOUR charts, so rendering it inside
+         * `rateBlock` printed each sentence twice. The two phase charts share
+         * `viz.phases.note`; the blocks and press charts share
+         * `viz.pressing.note`. Grouping the pairs is also what the sentence
+         * means — it is true of the family, not of one chart.
+         */}
+        <div className="flex flex-col gap-section-gap">
+          <p className="type-caption text-ink-secondary">{phasesNote}</p>
+          {rateBlock({
+            model: charts.inPossession,
+            Chart: InPossessionChart,
+            headingKey: "viz.phases.inPossession",
+            note: phasesNote,
+            figurePrefixKey: "viz.phases.figurePrefix",
+            tableNameKey: "team.tableName.inPossession",
+            /* These rows ARE phases — `viz.table.phase` is already the right
+             * term and a twin key would be a second home for it. */
+            categoryHeadKey: "viz.table.phase",
+          })}
+          {rateBlock({
+            model: charts.outOfPossession,
+            Chart: OutOfPossessionChart,
+            headingKey: "viz.phases.outOfPossession",
+            note: phasesNote,
+            figurePrefixKey: "viz.phases.figurePrefix",
+            tableNameKey: "team.tableName.outOfPossession",
+            categoryHeadKey: "viz.table.phase",
+          })}
+        </div>
+        <div className="flex flex-col gap-section-gap">
+          <p className="type-caption text-ink-secondary">{pressingNote}</p>
+          {rateBlock({
+            model: charts.blocks,
+            Chart: BlocksChart,
+            headingKey: "viz.pressing.blocks",
+            note: pressingNote,
+            figurePrefixKey: "viz.pressing.figurePrefix",
+            tableNameKey: "team.tableName.blocks",
+            /* Block LEVELS, not phases (R-D3). */
+            categoryHeadKey: "team.column.categoryBlock",
+          })}
+          {rateBlock({
+            model: charts.press,
+            Chart: PressChart,
+            headingKey: "viz.pressing.pressRates",
+            note: pressingNote,
+            figurePrefixKey: "viz.pressing.figurePrefix",
+            tableNameKey: "team.tableName.press",
+            /* Press TYPES, not phases (R-D3). */
+            categoryHeadKey: "team.column.categoryPress",
+          })}
+        </div>
 
         <div className="flex flex-col gap-tile-gap">
           <h3 className="type-stat-label text-ink-secondary">{t("team.shape.title")}</h3>

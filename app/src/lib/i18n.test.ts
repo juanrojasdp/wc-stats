@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { en } from "@/locales/en";
 import { es } from "@/locales/es";
+import { compareTypeKey, compareWordKey } from "@/lib/compare-format";
+import { COMPARE_TYPES } from "@/lib/compare-url";
 import type { Leaderboards, MetricCode, PossessionContestType } from "@/lib/contract/contract-types";
 import {
   GLOSSARY_TERMS,
@@ -53,6 +55,14 @@ import {
   leaderboardMetricAbbrKey,
   leaderboardMetricKey,
 } from "@/viz/leaderboard-model";
+import {
+  IN_POSSESSION_SHAPE_PANELS,
+  OUT_OF_POSSESSION_SHAPE_PANELS,
+  SHAPE_MEASURES,
+  inPossessionShapePanelKey,
+  outOfPossessionShapePanelKey,
+  shapeMeasureKey,
+} from "@/viz/team-profile-model";
 
 /*
  * The leaderboards fixture, for the caption-uniqueness list (Story 2.13 Task
@@ -816,6 +826,73 @@ describe("key-builder resolution sweep (Story 2.18 Task 9.1a)", () => {
       }
     }
   });
+
+  /*
+   * STORY 2.16's THREE BUILDERS, REGISTERED HERE (code review 2026-08-07).
+   *
+   * THIS IS THE TEST THE SHIPPED CODE ALREADY NAMED AND THAT DID NOT EXIST.
+   * `shapeMeasureKey`'s own docblock reads: "`as DictionaryKey` is mandatory:
+   * DictionaryKey is a literal union (DotPaths<Dictionary>) and a
+   * template-literal expression infers `string`. The cast is exactly why the
+   * exhaustiveness test in i18n.test.ts is not optional." Story 2.16's Task 9.3
+   * ("extend i18n.test.ts for the new namespace") shipped checked with no such
+   * change, so these nine keys were the one place on the route where `tsc`
+   * could not catch a missing leaf and no runtime sweep looked either — a
+   * renamed `team.shape.*` leaf would have rendered as a raw dotted path on
+   * screen with the whole suite green.
+   *
+   * THE VOCABULARY THEY REACH IS THE ONE R1 MINTED. Four of the six panel
+   * labels and `teamWidth` had no copy in either locale before this story, so
+   * these are also the newest and least-exercised leaves in the dictionary.
+   *
+   * The counts are asserted first: a frozen list that silently emptied would
+   * make every loop below vacuous, which is the failure mode this file has
+   * shipped before.
+   */
+  it("resolves all three team-profile shape builders over their full domain", () => {
+    expect(SHAPE_MEASURES).toHaveLength(3);
+    expect(IN_POSSESSION_SHAPE_PANELS).toHaveLength(3);
+    expect(OUT_OF_POSSESSION_SHAPE_PANELS).toHaveLength(3);
+    for (const locale of locales) {
+      const keys = [
+        ...SHAPE_MEASURES.map(shapeMeasureKey),
+        ...IN_POSSESSION_SHAPE_PANELS.map(inPossessionShapePanelKey),
+        ...OUT_OF_POSSESSION_SHAPE_PANELS.map(outOfPossessionShapePanelKey),
+      ];
+      for (const key of keys) {
+        const value = t(key, locale);
+        expect(value, `${key} in ${locale}`).not.toBe("");
+        expect(value, `${key} in ${locale}`).not.toBe(key);
+        expect(value, `${key} in ${locale}`).not.toContain("team.");
+      }
+    }
+  });
+
+  /*
+   * STORY 2.17's TWO BUILDERS, REGISTERED HERE rather than in the `compare`
+   * describe below — Task 11.3, and the same reason 2.14's and 2.15's were moved
+   * here at code review: the whole value of this sweep is that it is ONE place a
+   * reader checks that every builder in the repo resolves.
+   *
+   * BOTH ARE TEMPLATE-LITERAL CASTS over `CompareType`, which is a URL value
+   * (`players|teams|matches`) and NOT a dictionary path — so the two vocabularies
+   * are only coincidentally aligned, and nothing but this resolution would notice
+   * if one of them drifted. The `compare` describe below keeps its REUSE and
+   * DISTINCTNESS assertions, which are genuinely story-local.
+   */
+  it("resolves both compare key builders over their full domain", () => {
+    expect(COMPARE_TYPES).toHaveLength(3);
+    for (const type of COMPARE_TYPES) {
+      for (const locale of locales) {
+        for (const key of [compareTypeKey(type), compareWordKey(type)]) {
+          const value = t(key, locale);
+          expect(value, `${key} in ${locale}`).not.toBe("");
+          expect(value, `${key} in ${locale}`).not.toBe(key);
+          expect(value, `${key} in ${locale}`).not.toContain("compare.");
+        }
+      }
+    }
+  });
 });
 
 describe("forbidden-register sweep (Story 2.18 Task 9.1b)", () => {
@@ -967,11 +1044,20 @@ describe("ruled-term pins (Story 2.18 Task 9.1c)", () => {
   it("row 38 — the possession vocabulary is the RULED form, not the rejected one", () => {
     expect(es.viz.phases.inPossession).toBe("En posesión");
     expect(es.viz.phases.outOfPossession).toBe("Sin posesión");
-    // The four compound metric labels keep their metric name (decision 4).
-    expect(es.viz.pressing.metre.lineHeight.inPossession).toBe("Altura de la línea en posesión");
-    expect(es.viz.pressing.metre.teamLength.outOfPossession).toBe(
-      "Longitud del equipo sin posesión"
-    );
+    /*
+     * THE FOUR COMPOUND METRIC LABELS ARE GONE and this row now pins the
+     * possession vocabulary alone (code review 2026-08-07). `viz.pressing.metre.*`
+     * was retired with the rest of the orphaned `metre*` family — CS-2 replaced
+     * the `line_height`/`team_length` pair with `shapeByPhase`, and Story 2.16
+     * minted `team.shape.*` as its panel-NEUTRAL successor. Decision 4's point
+     * survives in the successor and is asserted where that vocabulary now
+     * lives: the compound labels kept their metric name, and the new leaves are
+     * measure names with no possession clause baked in at all.
+     */
+    expect(es.team.shape.measure.lineHeight).toBe("Altura de la línea");
+    expect(es.team.shape.measure.teamLength).toBe("Longitud del equipo");
+    expect(es.team.shape.measure.lineHeight).not.toContain("posesión");
+    expect(es.team.shape.measure.teamLength).not.toContain("posesión");
   });
 
   it("the peninsular goal-frame noun is gone — the app says arco, never puerta", () => {
@@ -1589,7 +1675,17 @@ describe("Story 2.11c's receiving log and log links", () => {
         `${pressing}${SEPARATOR}${title("viz.pressing.blocks")}${SEPARATOR}${title(
           "viz.pressing.tableCaption"
         )}`,
-        `${pressing}${SEPARATOR}${title("viz.pressing.metreTableCaption")}`,
+        /*
+         * THE METRE CAPTION IS GONE — it was counted here and rendered nowhere
+         * (code review 2026-08-07, discharging Story 2.16 Task 10.4).
+         * `PressingSection` retired its metre table and says so in its own
+         * comment ("A third, the metre table, was retired with…"), but this
+         * inventory kept counting the caption, so the list pinned 27 for 26
+         * actually-rendered captions. That is the `metreTableCaption`
+         * off-by-one `deferred-work.md` records. The whole
+         * `viz.pressing.metre*` family is retired from both locales in the same
+         * edit, so the counts below drop 27→26 and 28→27.
+         */
         // SetPlaysSection (4)
         `${setPlays}${SEPARATOR}${title("viz.setPlays.totalsCaption")}`,
         `${setPlays}${SEPARATOR}${title("viz.setPlays.freeKickCaption")}`,
@@ -1655,17 +1751,109 @@ describe("Story 2.11c's receiving log and log links", () => {
       ];
     }
 
+    /*
+     * Story 2.17's six, mirroring `CompareChartsSection`'s composition exactly —
+     * INCLUDING the entity-name prefix, which is the whole reason six render and
+     * the whole reason they are distinct.
+     *
+     * 🔴 THE COPY-ONLY STEMS ARE NOT ALL NEW, AND ONE OF THEM COLLIDES BY DESIGN.
+     * `"Perfil físico — Ordenado por zona de velocidad."` is byte-identical to
+     * `/players/{slug}`'s own physical caption, because `/compare` plots the same
+     * five speed bands under the same title with the same order statement —
+     * reusing that copy is correct, and minting a near-synonym to dodge a
+     * distinctness check would be exactly the manufactured gate 2.17's D12 warns
+     * against. The route's answer is the PREFIX: two figures of two different
+     * entities mount at once, so every caption leads with whose it is.
+     *
+     * DERIVED FROM STAND-IN NAMES the way `hubLeaderboardCaptions` derives from
+     * the fixture's board list. The names are artifact data (FR-30 — they
+     * translate nowhere), and the route guarantees `a !== b`: both are distinct
+     * manifest ids by construction, so two equal names cannot reach this shape.
+     *
+     * Every order statement is a SHIPPED key reused verbatim:
+     * `player.caption.physical` for the speed bands, `viz.phases.tableCaption`
+     * for the phase rates, and `player.caption.aggregates` ("Orden original de
+     * los datos.") for the match key stats — which is precisely what
+     * `KEY_STAT_FIELDS` is, the contract's own `required[]` order. NOT ONE
+     * `compare.*` caption key was minted.
+     */
+    const SIDE_A_NAME = "Julian QUINONES";
+    const SIDE_B_NAME = "Carlos ACEVEDO";
+
+    function compareCaptions(locale: Locale): string[] {
+      const title = (key: Parameters<typeof t>[0]) => t(key, locale);
+      const stems = [
+        `${title("player.sections.physical.title")}${SEPARATOR}${title(
+          "player.caption.physical"
+        )}`,
+        `${title("viz.phases.inPossession")}${SEPARATOR}${title("viz.phases.tableCaption")}`,
+        `${title("tactical.sections.key-stats.title")}${SEPARATOR}${title(
+          "player.caption.aggregates"
+        )}`,
+      ];
+      return [SIDE_A_NAME, SIDE_B_NAME].flatMap((name) =>
+        stems.map((stem) => `${name}${SEPARATOR}${stem}`)
+      );
+    }
+
+    /*
+     * STORY 2.16's EIGHT, mirroring `/teams/{slug}`'s three sections exactly
+     * (code review 2026-08-07, discharging Task 10.4's "you WILL touch the
+     * caption inventory").
+     *
+     * FOUR RATE ALTERNATIVES, TWO SHAPE TABLES, FORMATIONS, PER-MATCH. The four
+     * rate captions and the two shape captions SHARE TWO PREFIXES — both
+     * "Fases con balón" and "Fases sin balón" head one rate table and one shape
+     * table — so their second clause is the only thing keeping them distinct.
+     * That is exactly why `team.caption.shape` had to state the artifact order
+     * (D13) rather than describe the content: as shipped it read "Distancias en
+     * metros, por panel y medida", which was still distinct but said nothing
+     * about order, and D13 requires the statement.
+     *
+     * The per-match caption carries FOUR clauses because the fourth discloses
+     * that the Score column sorts on `goalsFor` alone — the row-level fact
+     * UX-DR12 obligation 1 puts in the caption and obligation 11 keeps out of
+     * `headTitle`.
+     *
+     * NOTE THE RATE CAPTIONS TAKE NO SECTION PREFIX, unlike the match route's:
+     * `PhasesSection` composes `${sectionTitle} — ${heading} — ${order}` while
+     * this route composes `${heading} — ${order}`. That is what keeps the two
+     * routes' phase captions from colliding, and it is asserted below rather
+     * than assumed.
+     */
+    function teamCaptions(locale: Locale): string[] {
+      const title = (key: Parameters<typeof t>[0]) => t(key, locale);
+      const rateOrder = title("viz.phases.tableCaption");
+      const shapeOrder = title("team.caption.shape");
+      return [
+        `${title("viz.phases.inPossession")}${SEPARATOR}${rateOrder}`,
+        `${title("viz.phases.outOfPossession")}${SEPARATOR}${rateOrder}`,
+        `${title("viz.pressing.blocks")}${SEPARATOR}${rateOrder}`,
+        `${title("viz.pressing.pressRates")}${SEPARATOR}${rateOrder}`,
+        `${title("viz.phases.inPossession")}${SEPARATOR}${shapeOrder}`,
+        `${title("viz.phases.outOfPossession")}${SEPARATOR}${shapeOrder}`,
+        `${title("team.sections.formations.title")}${SEPARATOR}${title(
+          "team.caption.formations"
+        )}`,
+        `${title("team.sections.matches.title")}${SEPARATOR}${title(
+          "team.caption.matches"
+        )}${SEPARATOR}${title("team.caption.matchesLink")}${SEPARATOR}${title(
+          "team.caption.matchesScoreSort"
+        )}`,
+      ];
+    }
+
     for (const locale of locales) {
       const shipped = composedCaptions(locale);
-      expect(shipped, locale).toHaveLength(27);
-      expect(new Set(shipped).size, `the 27 shipped captions in ${locale}`).toBe(27);
+      expect(shipped, locale).toHaveLength(26);
+      expect(new Set(shipped).size, `the 26 shipped captions in ${locale}`).toBe(26);
 
       const receiving = `${t("expert.logs.receivingHeading", locale)}${SEPARATOR}${t(
         "expert.logs.receivingOrder",
         locale
       )}`;
       expect(shipped, `the new caption in ${locale}`).not.toContain(receiving);
-      expect(new Set([...shipped, receiving]).size, locale).toBe(28);
+      expect(new Set([...shipped, receiving]).size, locale).toBe(27);
 
       /*
        * The Hub captions (Story 2.13): distinct from each other AND from all 28
@@ -1682,7 +1870,7 @@ describe("Story 2.11c's receiving log and log links", () => {
       const hub = hubLeaderboardCaptions(locale);
       expect(hub, `the Hub captions in ${locale}`).toHaveLength(LEADERBOARD_FIXTURE.boards.length);
       expect(new Set(hub).size, `the Hub captions in ${locale}`).toBe(hub.length);
-      expect(new Set([...shipped, receiving, ...hub]).size, locale).toBe(28 + hub.length);
+      expect(new Set([...shipped, receiving, ...hub]).size, locale).toBe(27 + hub.length);
 
       /*
        * STORY 2.15 ADDS FOUR: /players/{slug} renders three DataTables plus the
@@ -1697,8 +1885,50 @@ describe("Story 2.11c's receiving log and log links", () => {
       expect(profile, `the profile captions in ${locale}`).toHaveLength(4);
       expect(new Set(profile).size, `the profile captions in ${locale}`).toBe(4);
       expect(new Set([...shipped, receiving, ...hub, ...profile]).size, locale).toBe(
-        28 + hub.length + 4
+        27 + hub.length + 4
       );
+
+      /*
+       * STORY 2.17 ADDS SIX — three figures' worth of copy, each rendered TWICE
+       * with a different entity name in front of it.
+       *
+       * `/compare` mounts TWO figures at once, the same figure of two different
+       * entities, so a caption built from copy alone would be byte-identical
+       * twice on ONE page: precisely the property this inventory protects, and
+       * precisely what would leave the route's single polite sort announcement
+       * unable to say which table moved. The prefix is the answer, and one of the
+       * three stems collides with `/players/{slug}`'s physical caption ON PURPOSE
+       * — same bands, same title, same order, so the copy is reused rather than
+       * near-synonymed to satisfy a check.
+       */
+      const compare = compareCaptions(locale);
+      expect(compare, `the compare captions in ${locale}`).toHaveLength(6);
+      expect(new Set(compare).size, `the compare captions in ${locale}`).toBe(6);
+      expect(new Set([...shipped, receiving, ...hub, ...profile, ...compare]).size, locale).toBe(
+        27 + hub.length + 4 + 6
+      );
+
+      /*
+       * STORY 2.16 ADDS EIGHT — `/teams/{slug}` is the caption-densest route on
+       * the site (code review 2026-08-07). Carrying its own count rather than
+       * editing the numbers above, which is the pattern 2.15 and 2.17 already
+       * follow and which 2.13's review established after the pinned totals went
+       * red on a stale count.
+       *
+       * TWO PREFIXES ARE SHARED WITHIN THIS BLOCK ITSELF — the in- and
+       * out-of-possession headings each front one rate table and one shape
+       * table — so distinctness here is carried entirely by the order
+       * statements, and this assertion is the only thing that would catch
+       * `team.caption.shape` drifting back into something that does not state
+       * an order.
+       */
+      const team = teamCaptions(locale);
+      expect(team, `the team captions in ${locale}`).toHaveLength(8);
+      expect(new Set(team).size, `the team captions in ${locale}`).toBe(8);
+      expect(
+        new Set([...shipped, receiving, ...hub, ...profile, ...compare, ...team]).size,
+        locale
+      ).toBe(27 + hub.length + 4 + 6 + 8);
     }
   });
 
@@ -2576,6 +2806,180 @@ describe("dictionary mirroring (AD-12)", () => {
       for (const key of keyShape(dictionary)) {
         expect(t(key as Parameters<typeof t>[0], dictionary === es ? "es" : "en")).not.toBe("");
       }
+    }
+  });
+});
+
+/*
+ * ============ STORY 2.17 — THE COMPARISON NAMESPACE (Task 11.4) ============
+ *
+ * BUILDER RESOLUTION LIVES IN THE KEY-BUILDER SWEEP, not here — `compareTypeKey`
+ * and `compareWordKey` are resolved over their full `CompareType` domain up in
+ * `describe("key-builder resolution sweep …")`, which is the ONE place a reader
+ * checks that every builder in the repo resolves. What stays here is what is
+ * genuinely story-local: the distinctness of the render states' copy, the reuse
+ * pins, and the register.
+ *
+ * 🔴 THERE IS DELIBERATELY NO `compare.*` NO-DUPLICATE SWEEP, AND THAT IS RULED
+ * (D12). Several story specs in this epic assert that "a value that already
+ * exists verbatim elsewhere is a second home for one term, and `i18n.test.ts`
+ * enforces it." THAT IS NOT WHAT THIS SUITE ENFORCES. The only such sweep is the
+ * one 2.14 scoped to `dictionary.search`; nothing checks any other namespace, and
+ * duplicate values across namespaces are normal here and in places DELIBERATELY
+ * PINNED — `es.expert.field.ballProgressions` is asserted EQUAL to
+ * `es.enums.metric.ballProgressions`, and `enums.metric.*` /
+ * `enums.leaderboardMetric.*` ship identical strings for four codes. Copying
+ * 2.14's sweep here would manufacture a gate that does not exist and push this
+ * namespace toward awkward near-synonyms for "Jugadores". The real distinctness
+ * gate in this suite is the composed caption inventory above, and this story
+ * extends it by six.
+ */
+describe("the compare namespace (Story 2.17, AD-7 / D11 / D12)", () => {
+  const locales: Locale[] = ["es", "en"];
+
+  it("gives every RENDER STATE its own copy — no state reads like another", () => {
+    /*
+     * The route has five copy-bearing states and a reader must be able to tell
+     * which one they are in: empty (nothing picked), partial (one side picked),
+     * invalid (a slug the manifest does not list), error (the fetch failed) and
+     * schema-invalid (it arrived and failed the version gate). A `Set` over the
+     * five headlines is what proves none collapsed into another — "Te falta un
+     * lado." must never be the same sentence as "Elige dos …".
+     */
+    for (const locale of locales) {
+      const headlines = [
+        `${t("compare.empty.headlineBefore", locale)}${t("compare.empty.headlineAfter", locale)}`,
+        t("compare.partial.headline", locale),
+        `${t("compare.invalid.headlineBefore", locale)}${t(
+          "compare.invalid.headlineAfter",
+          locale
+        )}`,
+        t("compare.region.error", locale),
+        t("compare.region.invalid", locale),
+      ];
+      expect(new Set(headlines).size, `the five compare states in ${locale}`).toBe(5);
+      for (const headline of headlines) {
+        expect(headline, `a compare state headline in ${locale}`).not.toBe("");
+      }
+    }
+  });
+
+  it("does NOT reuse the empty state's copy for the partial state", () => {
+    /*
+     * Named separately from the Set above because it is the SPECIFIC mistake:
+     * telling a reader who has already picked one side to "elige dos" ignores
+     * what they did. The partial state has its own headline and its own
+     * explanation for exactly that reason.
+     */
+    for (const locale of locales) {
+      expect(t("compare.partial.headline", locale)).not.toBe(
+        t("compare.empty.headlineBefore", locale)
+      );
+      expect(t("compare.partial.explanation", locale)).not.toBe(
+        t("compare.empty.explanation", locale)
+      );
+    }
+  });
+
+  it("composes both templated sentences correctly — t() has NO interpolation", () => {
+    /*
+     * The one property a per-key sweep can never see. `t()` takes `(key, locale)`
+     * and nothing else, so these two sentences are assembled from `…Before` /
+     * `…After` fragments into a `const` at the call site — and the SPACING is
+     * carried by the fragments, not by the joiner.
+     *
+     * `invalid.headlineAfter` OPENS WITH THE PERIOD, so the sentence closes tight
+     * against the reader's own slug. If that leading "." is ever dropped from the
+     * locale value, the rendered form becomes "brasil-99 Elige de la lista." and
+     * nothing else in this file would notice.
+     */
+    expect(es.compare.empty.headlineBefore).toBe("Elige dos");
+    expect(es.compare.empty.headlineAfter).toBe("para comparar.");
+    expect(es.compare.invalid.headlineAfter.startsWith(".")).toBe(true);
+    expect(en.compare.invalid.headlineAfter.startsWith(".")).toBe(true);
+    // The `before` fragments must NOT carry a trailing space — the composer adds
+    // it, and a doubled space would ship invisibly.
+    expect(es.compare.empty.headlineBefore.endsWith(" ")).toBe(false);
+    expect(es.compare.invalid.headlineBefore.endsWith(" ")).toBe(false);
+  });
+
+  it("REUSES the shipped leader word rather than minting a second one", () => {
+    /*
+     * D14. The mirrored rows mark the leading value with the entity accent PLUS a
+     * ▲ glyph PLUS an `sr-only` word — never colour alone (WCAG 1.4.1, filed as
+     * [high] against this surface BY NAME in `review-accessibility.md:26`). The
+     * word is `match.hero.leader`, which already ships for the Hero's tiles, and
+     * this pins that `compare.*` did not grow its own copy of it.
+     */
+    for (const locale of locales) {
+      expect(t("match.hero.leader", locale)).not.toBe("");
+    }
+    expect(Object.keys(es.compare)).not.toContain("leader");
+    expect(JSON.stringify(es.compare)).not.toContain(es.match.hero.leader);
+  });
+
+  it("MINTS the type triple, and mints it as a coherent THREE (D12)", () => {
+    /*
+     * The counter-pressure is `EXPERIENCE.md:322` — "Entity-type labels are
+     * deliberately NOT a new row" — and the full argument against it lives in
+     * `compareTypeKey`'s docblock. The DECISIVE half is pinned here: each
+     * selector segment is the PLURAL of a shipped singular column head, which is
+     * both why they are the same term in a different register and why minting a
+     * coherent triple beats reusing two and minting the third.
+     */
+    expect(es.compare.type.players).toBe("Jugadores");
+    expect(es.compare.type.teams).toBe("Equipos");
+    expect(es.compare.type.matches).toBe("Partidos");
+    // The singular heads this triple is NOT reusing, named so the relationship is
+    // visible in the diff rather than merely asserted in prose.
+    expect(es.viz.table.player).toBe("Jugador");
+    expect(es.viz.table.team).toBe("Equipo");
+    expect(es.hub.results.column.match).toBe("Partido");
+    for (const [plural, singular] of [
+      [es.compare.type.players, es.viz.table.player],
+      [es.compare.type.teams, es.viz.table.team],
+      [es.compare.type.matches, es.hub.results.column.match],
+    ]) {
+      expect(plural, `${plural} vs ${singular}`).not.toBe(singular);
+      expect(plural.startsWith(singular), `${plural} extends ${singular}`).toBe(true);
+    }
+  });
+
+  it("keeps type.* and word.* apart in CASE, not in wording", () => {
+    // Two forms of ONE term: capitalised as a selector segment, lowercase inside
+    // a sentence. Spanish has no title case for common nouns, so "Elige dos
+    // Jugadores para comparar." would be a copy defect in both languages — and a
+    // second WORDING for the same concept would be the drift D12 argues against.
+    for (const type of COMPARE_TYPES) {
+      expect(t(compareWordKey(type), "es")).toBe(t(compareTypeKey(type), "es").toLowerCase());
+    }
+  });
+
+  it("is tuteo and clean of the forbidden register", () => {
+    /*
+     * The global sweep already walks every `es` leaf; this names the namespace
+     * explicitly so a reader sees it was considered rather than covered by
+     * accident. "Elige" and "Busca" are the tuteo imperatives.
+     */
+    expect(es.compare.empty.headlineBefore).toMatch(/^Elige\b/);
+    expect(es.compare.empty.explanation).toMatch(/^Busca\b/);
+    const walk = (node: unknown): string[] =>
+      typeof node === "string"
+        ? [node]
+        : Object.values(node as Record<string, unknown>).flatMap(walk);
+    for (const value of walk(es.compare)) {
+      expect(value, value).not.toMatch(/[¡!]/);
+      expect(value, value).not.toMatch(/usted|vosotros|clasificaci/i);
+    }
+  });
+
+  it("mirrors the four-state region machine the other routes ship", () => {
+    // `error` and `invalid` stay DISTINCT: a fetch that failed is retryable, a
+    // payload that arrived and failed the schemaVersion gate is not. Every region
+    // in this tree states the rule; this pins that `compare` did not collapse it.
+    expect(Object.keys(es.compare.region).sort()).toEqual(Object.keys(es.player.region).sort());
+    for (const locale of locales) {
+      expect(t("compare.region.error", locale)).not.toBe(t("compare.region.invalid", locale));
     }
   });
 });

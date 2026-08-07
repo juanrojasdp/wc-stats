@@ -8,11 +8,17 @@ import { ResultChip } from "@/components/ResultChip";
 import { RowAnchor } from "@/components/RowAnchor";
 import { TableSortMenu, useTableSort } from "@/components/TableSortMenu";
 import { formatDate } from "@/lib/format";
-import { matchHref, stageLabelKey, visibleColumnKeys } from "@/lib/hub-model";
+import {
+  matchHref,
+  matchResultWordKey,
+  stageLabelKey,
+  visibleColumnKeys,
+} from "@/lib/hub-model";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import type { TableColumn } from "@/lib/table-sort";
 import {
+  formatExpectedGoals,
   formatKilometres,
   formatRateValue,
   formatTeamCount,
@@ -76,6 +82,11 @@ const MATCH_COLUMN_KEYS = [
 ] as const;
 
 const MATCH_NARROW_COLUMN_KEYS = ["date", "opponent", "result", "score", "possession"] as const;
+
+/* The same set as a `ReadonlySet<string>`, for membership tests against a
+ * `SortState.columnKey` — a plain `string` that the `as const` tuple's own
+ * `.includes` will not accept. */
+const MATCH_NARROW_COLUMN_KEY_SET: ReadonlySet<string> = new Set(MATCH_NARROW_COLUMN_KEYS);
 
 const HIDDEN_COLUMN_CLASS = "hidden";
 
@@ -186,7 +197,13 @@ export function TeamMatchesSection({ rows }: { rows: readonly TeamMatchRow[] }) 
        * full word re-orders under the EN toggle, which is the sort contract's
        * rule for any column whose rendered value is locale-resolved.
        */
-      sort: { kind: "text", valueOf: (row) => t(`enums.matchResultFull.${row.result}`) },
+      /* THROUGH THE SHIPPED BUILDER, never a hand-interpolated template (code
+       * review 2026-08-07). `matchResultWordKey` is exported from `hub-model.ts`
+       * and pinned by `hub-model.test.ts`; the `stage` column two rows above
+       * already calls `stageLabelKey` from the same module, so interpolating
+       * here was inconsistent inside one array literal and skipped the one
+       * builder that keeps the key and the enum from drifting apart. */
+      sort: { kind: "text", valueOf: (row) => t(matchResultWordKey(row.result)) },
     },
     {
       key: "score",
@@ -235,8 +252,10 @@ export function TeamMatchesSection({ rows }: { rows: readonly TeamMatchRow[] }) 
       headText: t("enums.leaderboardMetric.expectedGoals"),
       headTitle: null,
       /* 2 dp: the artifact ships xG at two decimals and rounding a precomputed
-       * value breaches AR-5. */
-      render: (row) => formatKilometres(row.expectedGoals, locale),
+       * value breaches AR-5. `formatExpectedGoals`, NOT `formatKilometres` —
+       * xG is dimensionless and the kilometres formatter's own docblock forbids
+       * crossing scopes (code review 2026-08-07). */
+      render: (row) => formatExpectedGoals(row.expectedGoals, locale),
       align: "numeric",
       sort: { kind: "number", valueOf: (row) => row.expectedGoals },
     },
@@ -283,9 +302,19 @@ export function TeamMatchesSection({ rows }: { rows: readonly TeamMatchRow[] }) 
    * mounts at `null`, which IS the artifact order (AD-5). The caption never
    * mutates.
    */
+  /*
+   * THE SCORE COLUMN'S SORT KEY IS DISCLOSED HERE, IN THE CAPTION (code review
+   * 2026-08-07). "Marcador" renders `2-0` but sorts on `goalsFor` alone, so 2-0
+   * and 2-3 tie arbitrarily and nothing on screen or in the announcement said
+   * so. The caption is the ruled slot for sort semantics — UX-DR12 obligation 1
+   * discharges "default sort is stated" through the caption and never through a
+   * sorted-on-mount column — and it is the ONLY correct slot here: obligation 11
+   * bans pre-composing a parenthetical into `headTitle`, which would render as
+   * "Ordenar por Marcador (…)" through `composeHeadAccessibleName`.
+   */
   const caption = `${title}${CAPTION_SEPARATOR}${t("team.caption.matches")}${CAPTION_SEPARATOR}${t(
     "team.caption.matchesLink"
-  )}`;
+  )}${CAPTION_SEPARATOR}${t("team.caption.matchesScoreSort")}`;
 
   const visibleKeys: readonly string[] = visibleColumnKeys(
     MATCH_COLUMN_KEYS,
@@ -327,7 +356,7 @@ export function TeamMatchesSection({ rows }: { rows: readonly TeamMatchRow[] }) 
    */
   if (rows.length === 0) {
     return (
-      <section id={TEAM_MATCHES_SECTION_ID} className="mt-layer-gap">
+      <section id={TEAM_MATCHES_SECTION_ID} className="mt-section-gap">
         <h2 className="type-title text-ink-primary">{title}</h2>
         <div className="mt-3">
           <EmptyStatePanel
@@ -340,7 +369,7 @@ export function TeamMatchesSection({ rows }: { rows: readonly TeamMatchRow[] }) 
   }
 
   return (
-    <section id={TEAM_MATCHES_SECTION_ID} className="mt-layer-gap">
+    <section id={TEAM_MATCHES_SECTION_ID} className="mt-section-gap">
       <h2 className="type-title text-ink-primary">{title}</h2>
 
       {isNarrow ? (
@@ -358,7 +387,31 @@ export function TeamMatchesSection({ rows }: { rows: readonly TeamMatchRow[] }) 
           <button
             type="button"
             aria-expanded={expanded}
-            onClick={() => setExpanded((value) => !value)}
+            /*
+             * COLLAPSING CLEARS A SORT THAT IS ABOUT TO GO INVISIBLE (code
+             * review 2026-08-07). Sorting a hidden column through the menu
+             * reveals it (`menuController.sortByColumn` below); pressing "Menos
+             * columnas" afterwards hid it again while the rows stayed ordered
+             * by it — no `aria-sort` on screen, no visible cue, and on the
+             * narrowest layout the site supports.
+             *
+             * `useTableSort`'s own backstop cannot catch this: it fires when a
+             * column LEAVES THE MODEL, and this table hides with `display: none`
+             * and keeps every column in the list precisely so the sort menu can
+             * offer all thirteen. So the toggle owns it, and `clearSort()`
+             * ANNOUNCES the reversion rather than dropping it silently — the
+             * exact defect 2.11b ledgered.
+             */
+            onClick={() => {
+              if (
+                expanded &&
+                controller.sortState !== null &&
+                !MATCH_NARROW_COLUMN_KEY_SET.has(controller.sortState.columnKey)
+              ) {
+                controller.clearSort();
+              }
+              setExpanded(!expanded);
+            }}
             className="flex min-h-11 items-center underline underline-offset-4 type-caption text-ink-primary"
           >
             {t(columnsLabelKey)}

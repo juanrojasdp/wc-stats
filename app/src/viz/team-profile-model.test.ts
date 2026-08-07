@@ -9,6 +9,7 @@ import {
   IDENTITY_SECTION_ID,
   IN_POSSESSION_SHAPE_PANELS,
   OUT_OF_POSSESSION_SHAPE_PANELS,
+  RATE_CATEGORY_AXIS_WIDTH,
   SHAPE_MEASURES,
   TEAM_MATCHES_SECTION_ID,
   formResults,
@@ -170,6 +171,38 @@ describe("team-profile-model — identityCharts (AC 1, AC 2)", () => {
       expect(chart.axisMax, name).toBeGreaterThanOrEqual(peak);
       expect(chart.ticks[chart.ticks.length - 1], name).toBe(chart.axisMax);
       expect(chart.heightClass, name).toMatch(/^h-\[\d+px\] md:h-\[\d+px\]$/);
+    }
+  });
+
+  /*
+   * THE CATEGORY-AXIS WIDTH, PINNED (added at code review 2026-08-07).
+   *
+   * This is the story's own headline browser defect and it shipped with no
+   * assertion at all. `CategoryBarChart` was generalized out of `SpeedZoneChart`,
+   * whose category axis is hardcoded at 62 px — sized for "Zona 1".."Zona 5" —
+   * and at Spanish phase-name length recharts broke words mid-character
+   * ("Salidadebalónsinpresión"), overlapped labels, clipped "Progresión" to
+   * "rogresión" and DROPPED TWO of the eight labels entirely. The fix added a
+   * `categoryAxisWidth` prop defaulted from this constant, and the axis test
+   * next to this one asserts `ticks`, `axisMax` and `heightClass` while never
+   * touching the field the fix introduced.
+   *
+   * THE ASSERTION IS A FLOOR, NOT THE LITERAL 96. Pinning the exact number would
+   * make any future widening red for no behavioural reason; what must never
+   * regress is that the four rate charts get MORE room than the five-zone chart
+   * this component was carved out of. The longest Spanish label on this route is
+   * "Salida de balón sin presión" at 27 characters.
+   */
+  it("reserves more category-axis room than the five-zone chart it was generalized from", () => {
+    const SPEED_ZONE_AXIS_WIDTH = 62;
+    expect(RATE_CATEGORY_AXIS_WIDTH).toBeGreaterThan(SPEED_ZONE_AXIS_WIDTH);
+    for (const [name, chart] of [
+      ["inPossession", charts.inPossession],
+      ["outOfPossession", charts.outOfPossession],
+      ["blocks", charts.blocks],
+      ["press", charts.press],
+    ] as [string, RateChartModel][]) {
+      expect(chart.categoryAxisWidth, name).toBe(RATE_CATEGORY_AXIS_WIDTH);
     }
   });
 

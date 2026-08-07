@@ -445,12 +445,32 @@ export interface FormationRow {
  */
 export function formationRows(profile: TeamProfile): FormationRow[] {
   const { teamId } = profile;
-  return profile.formationUsage.map((row) => ({
-    key: row.formation,
-    formation: row.formation,
-    matches: finite(row.matches, teamId, `formationUsage.${row.formation}.matches`),
-    share: finite(row.share, teamId, `formationUsage.${row.formation}.share`),
-  }));
+  /*
+   * THE FORMATION STRING IS THE ROW KEY, SO IT MUST BE UNIQUE — and the schema
+   * does not say so (code review 2026-08-07). `formationUsage` declares no
+   * `uniqueItems`, so a repeated formation is contract-legal and would give
+   * `DataTable` two rows with the same `key`: React reconciles them wrongly, a
+   * sort re-order lands focus on the wrong row, and nothing would report it.
+   * The real emission is one row per DISTINCT formation, so this cannot fire on
+   * a correct artifact — which is exactly the argument for failing loudly
+   * rather than rendering a quietly broken table, and it is the same fail-loud
+   * discipline every `finite()` call on this line already applies.
+   */
+  const seen = new Set<string>();
+  return profile.formationUsage.map((row) => {
+    if (seen.has(row.formation)) {
+      throw new Error(
+        `team-profile-model: ${teamId} repeats formation ${row.formation} in formationUsage`
+      );
+    }
+    seen.add(row.formation);
+    return {
+      key: row.formation,
+      formation: row.formation,
+      matches: finite(row.matches, teamId, `formationUsage.${row.formation}.matches`),
+      share: finite(row.share, teamId, `formationUsage.${row.formation}.share`),
+    };
+  });
 }
 
 /* --------------------------- The per-match rows ---------------------------- */

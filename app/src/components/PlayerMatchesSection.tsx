@@ -319,7 +319,7 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
   );
 
   return (
-    <section id={MATCHES_SECTION_ID} className="mt-layer-gap">
+    <section id={MATCHES_SECTION_ID} className="mt-section-gap">
       <h2 className="type-title text-ink-primary">{title}</h2>
 
       {isNarrow ? (

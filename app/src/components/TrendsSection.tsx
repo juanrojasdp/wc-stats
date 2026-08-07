@@ -110,7 +110,7 @@ export function TrendsSection({ series }: { series: readonly TrendSeriesModel[] 
 
   if (active === undefined || !hasPoints) {
     return (
-      <section id={TRENDS_SECTION_ID} className="mt-layer-gap">
+      <section id={TRENDS_SECTION_ID} className="mt-section-gap">
         <h2 className="type-title text-ink-primary">{title}</h2>
         <div className="mt-3">
           {/*
@@ -269,7 +269,7 @@ export function TrendsSection({ series }: { series: readonly TrendSeriesModel[] 
   ];
 
   return (
-    <section id={TRENDS_SECTION_ID} className="mt-layer-gap">
+    <section id={TRENDS_SECTION_ID} className="mt-section-gap">
       <h2 className="type-title text-ink-primary">{title}</h2>
 
       {/*

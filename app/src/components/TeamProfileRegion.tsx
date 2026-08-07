@@ -13,6 +13,9 @@ import type { TeamProfile } from "@/lib/contract/contract-types";
 import { SCHEMA_VERSION } from "@/lib/contract/schema-version";
 import { fetchArtifact } from "@/lib/data";
 import { useT } from "@/lib/i18n-provider";
+/* Read-only import: `phases-model.ts` is do-not-touch and stays untouched. The
+ * skeleton takes its chart heights from the SAME function the charts do. */
+import { distributionChartHeightClass } from "@/viz/phases-model";
 import {
   formationRows,
   identityCharts,
@@ -81,7 +84,21 @@ export function TeamProfileRegion({ slug }: { slug: string }) {
          * 200 parses fine and would render another team's numbers under this
          * team's name. `payload` IS TYPED NON-NULL, WHICH PROVES NOTHING HERE —
          * this is the untyped fetch boundary and the type is a cast.
+         *
+         * SO THE SHAPE IS CHECKED BEFORE IT IS DEREFERENCED (code review
+         * 2026-08-07). The line below reads `payload.teamId`, and the docblock
+         * above is the reason that is not safe on its own: a body of `null`, a
+         * bare array or a JSON scalar all parse, all satisfy the cast, and all
+         * throw a TypeError on the dot. That throw landed in `.catch` and became
+         * `"error"` — the RETRYABLE state — so a permanently malformed artifact
+         * offered a retry button forever. A non-object body is a data-integrity
+         * failure exactly like a teamId mismatch, and takes the same no-retry
+         * `"invalid"` branch.
          */
+        if (payload === null || typeof payload !== "object" || Array.isArray(payload)) {
+          setStatus("invalid");
+          return;
+        }
         if (payload.teamId !== slug || payload.schemaVersion !== SCHEMA_VERSION) {
           setStatus("invalid");
           return;
@@ -118,15 +135,44 @@ export function TeamProfileRegion({ slug }: { slug: string }) {
           ref={busyRef}
           tabIndex={-1}
           aria-busy="true"
+          /*
+           * `role="group"` IS LOAD-BEARING, not decoration (code review
+           * 2026-08-07). A `<div>` with no role maps to `role="generic"`, for
+           * which ARIA declares name-from-author PROHIBITED — so the
+           * `aria-label` below is DROPPED, axe's `aria-prohibited-attr` flags
+           * it, and the retry `focus()` above lands on an unnamed node. The
+           * sibling this region mirrors carries the same role for the same
+           * reason (`PlayerProfileRegion.tsx`, `LeaderboardsRegion.tsx`); this
+           * file mirrored its PRE-PATCH shape and inherited the defect.
+           */
+          role="group"
           aria-label={t("team.region.loading")}
           className="grid gap-tile-gap"
         >
-          {/* Layout-shaped (UX-DR14): four rate charts, the shape tables, the
-           * formations table, then the per-match table. */}
-          <div className="skeleton h-[302px] w-full" />
-          <div className="skeleton mt-6 h-[332px] w-full" />
-          <div className="skeleton mt-6 h-40 w-full" />
-          <div className="skeleton mt-6 h-32 w-full" />
+          {/*
+           * LAYOUT-SHAPED (UX-DR14), AND NOW ACTUALLY SHAPED LIKE THE PAYLOAD
+           * (code review 2026-08-07). This emitted five blocks for eight
+           * rendered surfaces, with `mt-6` margins fighting the grid's own
+           * `gap-tile-gap` and every height hardcoded — so the anti-CLS claim
+           * the comment made was unbacked, and two of the four charts had no
+           * placeholder at all.
+           *
+           * THE FOUR CHART HEIGHTS COME FROM THE SAME FUNCTION THE CHARTS DO.
+           * `distributionChartHeightClass` is what `identityCharts` calls for
+           * each rate chart's `heightClass` (8, 9, 3 and 4 categories, in the
+           * ruled section order), so the fallback and the chart cannot drift —
+           * which is the whole point of a layout-shaped skeleton. The four
+           * table blocks stay approximate: a table's height is row-count
+           * driven and no shipped helper predicts it.
+           */}
+          <div className={`skeleton w-full ${distributionChartHeightClass(8)}`} />
+          <div className={`skeleton w-full ${distributionChartHeightClass(9)}`} />
+          <div className={`skeleton w-full ${distributionChartHeightClass(3)}`} />
+          <div className={`skeleton w-full ${distributionChartHeightClass(4)}`} />
+          {/* The two `shapeByPhase` tables (D13), formations, then per-match. */}
+          <div className="skeleton h-40 w-full" />
+          <div className="skeleton h-40 w-full" />
+          <div className="skeleton h-32 w-full" />
           <div className="skeleton h-32 w-full" />
         </div>
       ) : null}

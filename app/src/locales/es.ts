@@ -1263,39 +1263,27 @@ export const es = {
       note: "Son tasas independientes: no suman 100 y no son partes de un total.",
       axisRate: "Porcentaje del tiempo",
       axisPhase: "Fase",
-      metres: "Altura de la línea y longitud del equipo",
       /*
-       * Keyed by measure and possession state (AD-7). The unit is NOT baked in
-       * — enums.unit.m carries it.
+       * LA FAMILIA `metre*` FUE RETIRADA (revisión de código 2026-08-07,
+       * discharging Story 2.16 Task 10.4).
+       *
+       * Eran cinco entradas huérfanas: `metres`, `metre.lineHeight.*`,
+       * `metre.teamLength.*`, `metreNote` y `metreTableCaption`. La tabla de
+       * metros de `PressingSection` se retiró y ningún componente volvió a
+       * leerlas — `metreTableCaption` seguía además contada en el inventario de
+       * pies de tabla de `i18n.test.ts`, que por eso pinchaba 27 pies para 26
+       * realmente renderizados (el off-by-one que registra `deferred-work.md`).
+       *
+       * CS-2 las dejó sin dueño al reemplazar el par `line_height`/`team_length`
+       * por `shapeByPhase` (2 estados x 3 paneles x 3 medidas). Su sucesor es
+       * `team.shape.*`, acuñado por la historia 2.16 bajo R1(A): son etiquetas
+       * NEUTRAS respecto del panel, no compuestos de posesión, así que no se
+       * repuntaron sino que se retiraron. `viz.pressing.metreNote` en concreto
+       * afirmaba que "el informe no define a qué fase corresponden estas
+       * distancias", y CS-2 estableció lo contrario: el informe imprime tres
+       * paneles NOMBRADOS por estado.
        */
-      /*
-       * STORY 2.18 REMEDIATION, decision 4's SECOND half. These four are
-       * COMPOUND METRIC LABELS, not standalone possession vocabulary — the
-       * naive "repoint the six leaves to En posesión" would have deleted the
-       * metric name and left four labels reading "En posesión". Only the
-       * possession-state clause moves.
-       */
-      metre: {
-        lineHeight: {
-          inPossession: "Altura de la línea en posesión",
-          outOfPossession: "Altura de la línea sin posesión",
-        },
-        teamLength: {
-          inPossession: "Longitud del equipo en posesión",
-          outOfPossession: "Longitud del equipo sin posesión",
-        },
-      },
-      /*
-       * Ruled decision 5. The corpus prints THREE panels per possession state
-       * with three measures each (including team_width, which the contract does
-       * not model), and m001's staged line_height of 19/39/54 matches neither
-       * the fixture's single 44.4 nor any mean of them. This sentence states
-       * the gap WITHOUT claiming which phase the number describes — the one
-       * thing decision 5 forbids. Story 1.16 owns the aggregation rule.
-       */
-      metreNote: "El informe no define a qué fase del juego corresponden estas distancias.",
       tableCaption: "Ordenado por fase, en el orden del informe.",
-      metreTableCaption: "Distancias en metros, por medida y estado de posesión.",
     },
     setPlays: {
       figurePrefix: "Balón parado:",
@@ -2739,6 +2727,26 @@ export const es = {
       formation: "Formación",
       matchesPlayed: "Partidos",
       share: "Porcentaje",
+      /*
+       * LOS ENCABEZADOS DE CATEGORÍA, UNO POR FAMILIA (revisión de código
+       * 2026-08-07, R-D3 resuelta por Juan). Las seis tablas de esta sección
+       * compartían `viz.table.phase` ("Fase") como encabezado de la primera
+       * columna, pero solo dos de ellas tienen fases en sus filas: las otras
+       * llevan bloques defensivos, tipos de presión y paneles de forma. Es la
+       * misma colisión de un término con dos significados en una pantalla que
+       * llevó a esta historia a acuñar `stage: "Etapa"` en vez de reutilizar
+       * "Fase" — la regla se aplicaba a una columna que no la necesitaba y se
+       * omitía en cuatro que sí.
+       *
+       * Las dos tablas de fases SIGUEN usando `viz.table.phase`: ese término ya
+       * es correcto para ellas y acuñar un gemelo sería un segundo hogar para
+       * un mismo término (prohibición de 2.18).
+       *
+       * PROPOSED — Juan to confirm or overturn at review.
+       */
+      categoryBlock: "Bloque",
+      categoryPress: "Tipo de presión",
+      categoryPanel: "Panel",
     },
     venue: {
       // A boolean is never printed raw — `isHome` goes through a ruled pair.
@@ -2751,8 +2759,23 @@ export const es = {
       // caption here mutates.
       matches: "Ordenado cronológicamente, en el orden del informe.",
       matchesLink: "Cada fila abre el partido.",
+      /*
+       * LA CLAVE DE ORDENAMIENTO DE "MARCADOR", DECLARADA (revisión de código
+       * 2026-08-07). La columna muestra `2-0` pero ordena solo por goles a
+       * favor, así que 2-0 y 2-3 empatan de forma arbitraria. El pie de tabla es
+       * la ranura reglada para la semántica de orden (UX-DR12, obligación 1); la
+       * obligación 11 prohíbe componer el paréntesis dentro de `headTitle`.
+       */
+      matchesScoreSort: "La columna Marcador ordena por goles a favor.",
       formations: "Ordenado por cantidad de partidos, de mayor a menor.",
-      shape: "Distancias en metros, por panel y medida.",
+      /*
+       * DECLARA EL ORDEN DEL ARTEFACTO (revisión de código 2026-08-07). D13
+       * exige que cada pie de las dos tablas de forma indique el orden; el texto
+       * anterior describía el contenido ("Distancias en metros, por panel y
+       * medida") sin decir en qué orden vienen las filas, a diferencia de los
+       * cuatro pies de tasas, que sí lo hacen.
+       */
+      shape: "Ordenado por panel, en el orden del informe. Distancias en metros.",
     },
     tableName: {
       inPossession: "Tabla de fases con balón",
@@ -2788,7 +2811,14 @@ export const es = {
       loaded: "Datos del equipo cargados.",
       error: "No pudimos cargar los datos del equipo. Revisa tu conexión e intenta de nuevo.",
       invalid: "Los datos de este equipo no coinciden con esta versión del sitio.",
-      invalidExplanation: "Estamos al tanto. Vuelve a intentarlo más tarde.",
+      /*
+       * NO INVITA A REINTENTAR (revisión de código 2026-08-07). Esta rama es la
+       * que deliberadamente NO ofrece botón de reintento — "un reintento no
+       * puede cambiar la respuesta" — y el texto anterior ("Vuelve a intentarlo
+       * más tarde") pedía justamente lo que la rama impide, además de afirmar
+       * un monitoreo que nadie hace sobre un desajuste de schemaVersion.
+       */
+      invalidExplanation: "Esta página volverá a funcionar cuando el sitio se actualice.",
       // The render-time crash the error boundary catches — a DIFFERENT failure
       // from `error` (never arrived) and `invalid` (arrived, wrong version).
       crashed: "No pudimos mostrar el perfil de este equipo.",
