@@ -3243,7 +3243,7 @@ development_status:
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
   1-17-tournament-index-results-standings-leaderboards: done
   1-18-team-player-profile-artifacts: done
-  1-19-full-batch-run-batch-report-104-104-acceptance: in-progress
+  1-19-full-batch-run-batch-report-104-104-acceptance: review
   epic-1-retrospective: optional
   epic-2: in-progress
   # i18n scaffolding first within Epic 2 (per sprint-planning directive); requires 1-1 fixtures
@@ -3267,7 +3267,7 @@ development_status:
   2-12-tournament-hub-results-standings: done
   2-13-tournament-leaderboards: done
   2-14-header-search: done
-  2-15-player-profile: review
+  2-15-player-profile: done
   2-16-team-profile: review
   2-17-comparison-mode: in-progress
   2-18-glossary-about-terminology-completion: done
@@ -3393,3 +3393,76 @@ development_status:
 #             so a goalkeeper's profile is Domain G only, and 2.16 gets no goalkeeping section
 #             unless a CS-3 is authorized; R3 the bijection owner, which is Story 1.17's
 #             DECISION D2 seen from the other side — rule them together or they diverge.
+# 2026-08-07: story 1-19 IMPLEMENTED and moved to review — FULL-BATCH RUN, BATCH REPORT,
+#             104/104 ACCEPTANCE (FR-16, SM-1, SM-C1, NFR-6). Baseline 12fad17 per the story
+#             frontmatter; HEAD was 79bd7aa at start and moved to 6c90d80 (2.16/2.17) mid-run —
+#             BOTH app/-only, verified `git log 79bd7aa..HEAD --stat -- pipeline/ data/
+#             .gitignore` empty, and nothing of 1.19's was captured. Pipeline slice committed
+#             early as 92adb09 (explicit paths, never git add -A).
+#             AUTHORITATIVE RUN at code_version ad4735a216e2, asserted against the ADJUDICATED
+#             BASELINE and never against exit 0: extracted 104 / failed 0 / skipped-unchanged 0,
+#             corpus_gaps 0, orphan_record_paths 0, self_validation_fail_count 2, RUN RESULT:
+#             FAIL, exit 1. TRIPWIRE CLEAN — exactly PMSR-M19-ARG-V-ALG (39 vs 40) and
+#             PMSR-M58-TUN-V-NED (33 vs 34), NO THIRD, so the 1.12 ruling does not re-open.
+#             SM-1 lands on its "or" branch: both residuals documented individually with the
+#             verbatim cause; SM-C1 affirmed — no equality loosened, no tolerance band, no
+#             waiver or allowlist (that mechanism was REJECTED in 1.12), no counterpart dropped,
+#             no record filtered from precompute.
+#             AC 1: D1's warnings collapse measured at 728 lines -> 7; the whole summary is 35
+#             lines. R2's near-miss block added (the category had FOUR implementations, not the
+#             two the ruling named). AC-1(f) per-report status RULED rather than left silent.
+#             AC 3: byte-identical re-run on a quiet tree — 0 of 104 record SHA-256s differ
+#             (compared on BYTES), identical printed code version, git status --short --ignored
+#             data/ empty, check_pins 1400/1400, no player slug moved. data/ is UNCHANGED at
+#             1,412 tracked files: the run re-emitted all 1,402 artifacts and every one came
+#             back byte-identical, which IS the reproducibility clause.
+#             R5(a): the write-blocking bijection deadlock is CLOSED BY ORDERING, no gate
+#             touched. profiles reads data/matches/ and nothing else, so running it BEFORE index
+#             makes the gate pass first time — precompute.index printed an UNQUALIFIED
+#             INDEX RESULT: PASS. New pipeline/orchestrate.py; the documented "empty both
+#             profile directories" recourse is retired.
+#             Budgets re-measured, all reproduce: hub combined 117,638 / 500,000 = 23.5%;
+#             largest bundle m082-belgium-senegal 14,251 gzip-9 = 2.85%; largest profile 1,543 =
+#             0.31%. No breach, so SM-C2 never engages.
+#             DISCLOSED, NOT REPAIRED: 1.19's own first orchestrator omitted --output to
+#             ingest.batch, so a test overwrote the gitignored work/run-manifest.json with a
+#             6-report synthetic one. Caught by this story's own test, fixed, regression-pinned;
+#             work/extracted/ was untouched at 104 and Task 7 regenerated it.
+#             LEDGER: three format_summary filings (1.12/1.13/1.14) closed together; BOTH
+#             emit_bundles filings (1.16 + 1.18's re-filing) and BOTH data/index filings (1.17 +
+#             its code review) closed in pairs; phase-ordering, batch-scale and staleness entries
+#             closed. Two entries measured and deliberately LEFT OPEN (cover-line thresholds —
+#             104/104 parse but the MARGIN is unmeasured; zero-width chars — 0 occurrences and 0
+#             Cf-category chars across all 104 records, but the hazard is a future font change).
+#             R4 correction appended: the "1.19 will multiply the tree again" premise was FALSE
+#             (walker: 1411 artifacts, schemaVersion 4, 1,659 ms; tree size unchanged); only the
+#             scoped-walk question remains, routed to 2.19. domain_e_checks NOT closed despite
+#             naming 1.19 — no validate/checks.py edit was made. Suite-runtime entry re-deferred
+#             WITH its measurement.
+#             DO NOT flip epic-1 to done here — that is a manual transition after the code
+#             review.
+#
+# 2026-08-07: story 2-15 CODE REVIEW complete, status review -> done. Three parallel adversarial
+#             layers, 43 raw findings, 16 dismissed after reading the code, 2 deferred, 3 decisions
+#             ruled by Juan, 17 patches applied.
+#             RULED (1) the linked-row FOCUS RING: 2.16 Q2's anchor-box ring wins over 2.15's
+#             focus-within row ring. 2.15's private RowAnchor deleted for @/components/RowAnchor,
+#             and the undisclosed HubTable fork (~200 lines) went with it. `:focus-within` also
+#             matched MOUSE focus, painting the row ring for pointer users. Ledger entry RESTATED,
+#             not closed. (2) all eight EXPERIENCE.md copy rows CONFIRMED, and the `Stage` enum
+#             unified on "Etapa" — 2.15 shipped "Fase" and 2.16 "Etapa" for one enum, invisible to
+#             per-namespace i18n checks. (3) the transposed aggregates VALUE column is no longer
+#             sortable (four unit families in one column).
+#             PATCHED beyond those: three meaningless sort orders (speed bands collated zone 5
+#             between 1 and 2; stage sorted alphabetically where STAGES ships the tournament
+#             order), the loading skeleton's role-less aria-label (the defect 2.13 patched in
+#             LeaderboardsRegion), readPlayerProfile's missing playerId gate, a blank line
+#             orphaning eight policy rows from their table, everyRouteHtml() never sweeping
+#             out/players, AC 3's untested #expert href (matchAnchorHref extracted and pinned),
+#             decimalAxis flooring below zero, and the ledger's /players chunk row (-89 KB is an
+#             export-total figure that inverts to ~+14 KB as page weight).
+#             DEFERRED: the data-table scroll affordance (no shipped surface has one — codebase
+#             gap, not this story's) and MatchBundleRegion's identical role-less aria-label.
+#             VERIFIED in an isolated worktree at HEAD plus the slice, because the shared tree was
+#             red from story 2-17 in flight: build green, 1,155 tests across 41 files, exactly one
+#             VENDOR chunk.
