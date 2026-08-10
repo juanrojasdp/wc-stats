@@ -18,12 +18,25 @@ import { SCHEMA_VERSION } from "@/lib/contract/schema-version";
  * be imported from client code — eslint.config.mjs bars it from
  * src/components/**, mirroring the t() seam.
  *
- * DATA_ROOT flip point (Story 2.19): fixtures live under /data/fixtures today.
- * This constant and DATA_ROOT in src/lib/data.ts are the TWO cutover points and
- * MUST flip together — flipping one without the other splits the build-time and
- * runtime views of the same match.
+ * DATA_ROOT: FLIPPED TO REAL DATA BY STORY 2.19 — this resolved to
+ * ../data/fixtures until the cutover. This constant and DATA_ROOT in
+ * src/lib/data.ts are the TWO cutover points and MUST agree; flipping one
+ * without the other splits the build-time and runtime views of the same match,
+ * silently. `data-root-agreement.test.ts` is the guard that enforces it, which
+ * is why the resolved root is exported below rather than re-derived there.
  */
-const DATA_ROOT = path.join(process.cwd(), "..", "data", "fixtures");
+const DATA_ROOT = path.join(process.cwd(), "..", "data");
+
+/**
+ * The RESOLVED build-time root, exported for exactly one consumer: the
+ * two-constant guard in `data-root-agreement.test.ts` (ledger L133, ruled D1).
+ *
+ * It is exported rather than re-derived in the test on purpose. A test that
+ * rebuilds `path.join(cwd, "..", "data")` for itself asserts its own literal
+ * against its own literal and stays green through the exact edit it exists to
+ * catch — that is how you build a guard that cannot fail.
+ */
+export const BUILD_DATA_ROOT = DATA_ROOT;
 
 function readJson<T>(relativePath: string): T {
   const absolutePath = path.join(DATA_ROOT, relativePath);

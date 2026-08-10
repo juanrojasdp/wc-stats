@@ -3332,7 +3332,7 @@ development_status:
   2-17-comparison-mode: done
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
-  2-19-performance-accessibility-hardening-real-data-swap-launch: backlog
+  2-19-performance-accessibility-hardening-real-data-swap-launch: in-progress
   epic-2-retrospective: optional
 
 # 2026-08-04: story 2-11a code review — 3 layers, 30 raw findings triaged to 4 decisions (all ruled
@@ -3625,3 +3625,35 @@ development_status:
 #             sit behind skip guards and the first one exists precisely because "a skip is exactly
 #             how a missing input comes to read as a pass". The other 44 pipeline test files were
 #             NOT re-run in this session; they are untouched by this story's slice.
+#
+# 2026-08-09: story 2-19 context created and moved to ready-for-dev — the FINAL story. Built from a
+#             full sweep of the deferred-work ledger, not from epics.md: 66 blocks name 2.19, now
+#             partitioned 32 implement / 6 rulings-for-Juan / 9 re-defer-with-successor / 7
+#             already-closed. Four rulings taken by Juan at creation, all maximal: (R1) #pass-networks
+#             is RE-SCOPED so a populated edge table renders without nodes — at real data
+#             passNetworkNodes is null on 104/104 while passNetworkEdges carries 23,597 rows, and 2.8
+#             fails closed on exactly that shape, so the section would otherwise ship as an
+#             EmptyStatePanel on every match; (R2) the product COMMITS to reflow below 320 CSS px, so
+#             SiteHeader + Hero score row + #key-stats move as one change; (R3) Story 1.19's twelve
+#             batched pipeline edits are TAKEN HERE, spending the one re-extract and a fresh
+#             byte-identity proof off ad4735a216e2; (R4) production deploy to Netlify is AUTHORIZED as
+#             an AC 4 deliverable — the dev agent does not re-ask.
+#             THE VIEWPORT BLOCKER IS SOLVED AND PROVEN, not planned around. Browser automation still
+#             reports a successful resize while staying at 1920 (it killed 2.16's and 2.17's reflow
+#             work), but a dependency-free headless-Chrome CDP harness — Node 24's global WebSocket,
+#             no puppeteer — delivers real 320/390/195 CSS px layout viewports, prefers-reduced-motion
+#             and prefers-color-scheme emulation, and IntersectionObserver DOES fire. Measured
+#             gotcha carried into the story: under mobile emulation innerWidth reads 400 at every
+#             width, so the assertion must use documentElement.clientWidth.
+#             MEASURED AT CREATION so the dev does not re-derive: payload budgets all PASS with room
+#             (Hub combined 114.9 KB of 500; largest bundle 13.9 KB; largest profile 1.5 KB);
+#             es-vs-en collation over the REAL corpus gives 0 disagreements in 784,612 pairs, so
+#             2.11a decision 8 stands and no useLocale() threading is owed; exactly ONE name in the
+#             whole corpus needs HTML escaping (Cote d'Ivoire, on 4 matches) and zero player names do;
+#             Emiliano MARTINEZ occurs twice, making the /compare identical-caption defect reachable;
+#             and m001/m074's hard-coded test ids and scores survive the flip.
+#             CORRECTION THE STORY CARRIES: the "#defensive-actions collapses to ONE cluster at 320px
+#             at 153-marker density" figure is MOOT — it was measured over staged extraction records,
+#             and events.defensiveActions is null on 104/104 in the EMITTED bundles. crosses,
+#             receiving and passNetworkNodes are null too. The heatmap stays deferred for the same
+#             reason: its 1.16 re-open trigger fired and the answer is that no input exists.

@@ -1,10 +1,19 @@
 /*
- * Data access root (AD-10, FR-33). ONE build-time constant is the single flip
- * point for the Story 2.19 real-data swap: fixtures ship under /data/fixtures
- * today; flipping this to "/data" is the entire cutover. Runtime env vars are
- * structurally banned — this is a compile-time constant on purpose.
+ * Data access root (AD-10, FR-33). FLIPPED TO REAL DATA BY STORY 2.19 — this
+ * read "/data/fixtures" until the cutover. Runtime env vars are structurally
+ * banned; this is a compile-time constant on purpose.
+ *
+ * It is one of TWO constants that must agree: this one is the runtime (client
+ * fetch) root, and `build-data.ts`'s is the build-time filesystem root. Nothing
+ * derives one from the other, and the failure when they disagree is silent and
+ * split — the pre-rendered Hero shows one corpus while the below-Hero region
+ * fetches the other or 404s. `data-root-agreement.test.ts` is the guard that
+ * makes flipping one alone impossible to land.
+ *
+ * `/data/fixtures` still exists and is still shipped; the fixture-pinned unit
+ * tests read it by relative path and are deliberately NOT swept by the flip (D2).
  */
-export const DATA_ROOT = "/data/fixtures";
+export const DATA_ROOT = "/data";
 
 /**
  * Same-origin JSON fetch keyed off DATA_ROOT. `path` is artifact-relative

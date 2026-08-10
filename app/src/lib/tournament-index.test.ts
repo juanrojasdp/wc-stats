@@ -77,7 +77,15 @@ describe("loadTournamentIndex", () => {
       json: async () => PAYLOAD,
     }));
     await loadTournamentIndex();
-    expect(spy).toHaveBeenCalledWith("/data/fixtures/index/tournament.json");
+    /*
+     * A LITERAL, deliberately, and flipped by hand at the 2.19 cutover — it read
+     * "/data/fixtures/index/tournament.json" before. Deriving it from DATA_ROOT
+     * would assert the module's own constant against itself and go green on any
+     * value; the point of this assertion is that the runtime root is what the
+     * loader actually prefixes. `data-root-agreement.test.ts` is what pins the
+     * value; this is what pins the loader's use of it.
+     */
+    expect(spy).toHaveBeenCalledWith("/data/index/tournament.json");
   });
 
   it("does NOT cache a rejection — the next engagement retries", async () => {

@@ -43,11 +43,39 @@ async function readContractVersion() {
   return version.schemaVersion;
 }
 
+/*
+ * THE GATE WALKS THE WORKING TREE, NOT THE COMMITTED TREE (ledger A9/L3558).
+ *
+ * The pipeline stages every emission into a sibling directory and swaps it in:
+ * `data/matches.staged/`, `data/index/<kind>.staged/`, and the retired
+ * `*.previous.rollback/` backups. They are gitignored, so they are invisible to
+ * a reviewer — but they are real directories on disk, and a KILLED run (which
+ * this environment produces routinely: long pipeline runs get killed) leaves
+ * them behind full of artifacts. This walker then visited them and failed the
+ * build on files that ship nowhere.
+ *
+ * Skipping is by directory NAME SUFFIX rather than by an exact path list
+ * because the staging siblings exist at two levels (`data/` and `data/index/`)
+ * and `profiles.py` derives its own names per entity kind.
+ *
+ * The file-level staging shapes need no rule: they are named
+ * `tournament.json.staged` and `tournament.json.previous.rollback`, which do
+ * not end in `.json` and so never enter the walk.
+ */
+const SKIPPED_DIR_SUFFIXES = [".staged", ".previous.rollback"];
+
+function isTransientPipelineDir(name) {
+  return SKIPPED_DIR_SUFFIXES.some((suffix) => name.endsWith(suffix));
+}
+
 async function* walkJsonFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   for (const entry of entries.sort((a, b) => (a.name < b.name ? -1 : 1))) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
+      if (isTransientPipelineDir(entry.name)) {
+        continue;
+      }
       yield* walkJsonFiles(fullPath);
     } else if (entry.isFile() && entry.name.endsWith(".json")) {
       yield fullPath;

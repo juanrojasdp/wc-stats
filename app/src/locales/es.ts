@@ -946,7 +946,10 @@ export const es = {
       // Story 2.10 columns, shared by the four Tactical closing sections.
       phase: "Fase",
       category: "Categoría",
-      measure: "Medida",
+      // `measure` ("Medida") retired at the 2.19 cutover (ledger A12). It was
+      // the metre table's column head; CS-2 deleted the table, Story 2.17's
+      // review retired the rest of the `viz.pressing.metre*` family, and this
+      // key outlived it with zero consumers.
       count: "Cantidad",
       share: "Participación",
       left: "Izquierda",

@@ -11,12 +11,22 @@ import { t } from "@/lib/i18n";
 import { es } from "@/locales/es";
 import { leaderboardMetricKey } from "@/viz/leaderboard-model";
 
-/** The leaderboards fixture the Hub is built from (Story 2.13). */
-const LEADERBOARD_FIXTURE: Leaderboards = JSON.parse(
-  readFileSync(
-    path.join(process.cwd(), "..", "data", "fixtures", "index", "leaderboards.json"),
-    "utf8"
-  )
+/*
+ * The leaderboards artifact the Hub is built from (Story 2.13).
+ *
+ * REPOINTED FROM THE FIXTURE TO THE SHIPPED ARTIFACT AT THE 2.19 CUTOVER, and
+ * this one is not a cosmetic swap. `data/fixtures/index/leaderboards.json`
+ * carries 3 boards; the emitted artifact carries 36. The "renders EVERY board"
+ * case below loops over this list against the EXPORTED page, so while it read
+ * the fixture it proved three headings and stayed green — silently checking 8%
+ * of what the Hub actually ships.
+ *
+ * That is the opposite of D2's rule rather than an exception to it: D2 keeps
+ * fixture-pinned UNIT tests pinned, and this file is not a unit test. Every
+ * assertion in it reads `out/`, so its inputs have to be what shipped.
+ */
+const LEADERBOARDS_SHIPPED: Leaderboards = JSON.parse(
+  readFileSync(path.join(process.cwd(), "..", "data", "index", "leaderboards.json"), "utf8")
 ) as Leaderboards;
 
 /*
@@ -256,13 +266,17 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
 
   it("renders EVERY board in the artifact, keyed off metricCode + scope", () => {
     /*
-     * Driven off the fixture's own board list, never off three (AC 2). A board
-     * carries no id and no title, so its heading IS its identity: metric label
-     * + scope label.
+     * Driven off the artifact's own board list, never off a literal (AC 2). A
+     * board carries no id and no title, so its heading IS its identity: metric
+     * label + scope label.
+     *
+     * At the 2.19 cutover that list went from 3 to 36. The floor below is
+     * asserted at the real scale so the case cannot quietly shrink back to a
+     * three-board check if the artifact is ever regenerated short.
      */
     const page = html();
-    expect(LEADERBOARD_FIXTURE.boards.length).toBeGreaterThan(0);
-    for (const board of LEADERBOARD_FIXTURE.boards) {
+    expect(LEADERBOARDS_SHIPPED.boards.length).toBeGreaterThanOrEqual(36);
+    for (const board of LEADERBOARDS_SHIPPED.boards) {
       const label = t(leaderboardMetricKey(board.metricCode));
       expect(page, `missing heading for ${board.metricCode}`).toContain(label);
     }
@@ -282,13 +296,18 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
      * the entire <ol> from BoardTeaser and it stayed green.
      *
      * A LOCALE-FORMATTED VALUE cannot appear in the payload: the artifact
-     * carries `35.2` as a raw number and only the render produces "35,2 km/h",
-     * with a NON-BREAKING space (ruling 6). That string is proof the component
-     * ran.
+     * carries the figure as a raw number and only the render produces
+     * "37,6 km/h", with a NON-BREAKING space (ruling 6). That string is proof
+     * the component ran.
+     *
+     * RE-ANCHORED AT THE 2.19 CUTOVER: the fixture's top topSpeed row was
+     * SON Heungmin at 35.2; the real corpus's is Kylian MBAPPE at 37.6 over 111
+     * rows. The property is unchanged — only a rendered value carries a comma
+     * and a non-breaking space — so only the literal moved.
      */
     const page = html();
     expect(page).toContain(es.leaderboards.teaserHeading);
-    expect(page).toContain(`35,2 ${es.enums.unit.kmh}`);
+    expect(page).toContain(`37,6 ${es.enums.unit.kmh}`);
   });
 
   it("inlines ONLY the teaser rows, never the whole artifact (AD-11)", () => {
@@ -303,13 +322,20 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
      * The sibling guard for `tournament.json` asserts on `knockoutResults` —
      * a Tournament-only field name, which is why it could never fire on this.
      * These are the leaderboards' own tells: `aggregation` and `higherIsBetter`
-     * are board fields the teaser does not paint, and `gonzalez-armando-mex`
-     * sits at rank 20 of topSpeed, in no teaser at all.
+     * are board fields the teaser does not paint, and the third is an entity in
+     * a board but in no teaser.
+     *
+     * RE-ANCHORED AT THE 2.19 CUTOVER, and the guard got much stronger by it.
+     * The fixture's witness was `gonzalez-armando-mex` at rank 20 of a 32-row
+     * corpus; the real artifact holds 715 entities across 36 boards of which
+     * only 39 reach any top three, so 676 of them would fail this assertion if
+     * the whole payload were inlined again. `haaland-erling-nor` is one of them
+     * — present in the 111-row topSpeed board, absent from every teaser.
      */
     const page = html();
     expect(page).not.toContain("aggregation");
     expect(page).not.toContain("higherIsBetter");
-    expect(page).not.toContain("gonzalez-armando-mex");
+    expect(page).not.toContain("haaland-erling-nor");
   });
 
   it("links every player row to its Player Profile and every team row to its team", () => {
@@ -321,7 +347,7 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
      * green, not a departure. AD-3 makes the entity id the slug.
      */
     const page = html();
-    expect(page).toContain('href="/players/son-heungmin-kor/"');
+    expect(page).toContain('href="/players/mbappe-kylian-fra/"');
     expect(page).toMatch(/href="\/teams\/[a-z0-9-]+\/"/);
   });
 
@@ -332,7 +358,7 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
      * NON-BREAKING space, which is what the   below is. In a table cell the
      * value stays bare and the unit rides the head instead.
      */
-    expect(html()).toContain(`35,2 ${es.enums.unit.kmh}`);
+    expect(html()).toContain(`37,6 ${es.enums.unit.kmh}`);
   });
 
   it("names its section exactly once, and adds NO display-score element", () => {

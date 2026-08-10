@@ -1,7 +1,9 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
-import type { KnockoutScore, TeamScore } from "@/lib/contract/contract-types";
-import { readMatchBundle } from "@/lib/build-data";
+import type { KnockoutScore, MatchBundle, TeamScore } from "@/lib/contract/contract-types";
 import {
   composeMatchTitle,
   decidedByCaption,
@@ -13,13 +15,26 @@ import {
 } from "@/lib/match-hero";
 
 /*
- * Pure Hero display logic (Task 8.2), node env. Real-data assertions read the
- * fixtures through the build-time reader (cwd is app/); the unfixtured
- * "extra-time" branch (FR-1 gap) is proved on a constructed object.
+ * Pure Hero display logic (Task 8.2), node env. Fixture assertions read the
+ * fixtures off the filesystem (cwd is app/); the unfixtured "extra-time" branch
+ * (FR-1 gap) is proved on a constructed object.
+ *
+ * PINNED EXPLICITLY AT THE 2.19 CUTOVER (ruled decision D2). This file used to
+ * read through `build-data`'s `readMatchBundle`, which made it a fixture-pinned
+ * unit test only by coincidence: flipping DATA_ROOT to the real corpus
+ * repointed it silently, and it stayed green purely because m001 and m074 carry
+ * the same ids and scores in both corpora. The viz model tests already read by
+ * relative path for the same reason; this file now does too, so the corpus it
+ * asserts against cannot move underneath it again.
  */
 
-const m074 = readMatchBundle("m074-germany-paraguay");
-const m001 = readMatchBundle("m001-mexico-south-africa");
+function readMatchFixture(slug: string): MatchBundle {
+  const file = path.join(process.cwd(), "..", "data", "fixtures", "matches", `${slug}.json`);
+  return JSON.parse(readFileSync(file, "utf8")) as MatchBundle;
+}
+
+const m074 = readMatchFixture("m074-germany-paraguay");
+const m001 = readMatchFixture("m001-mexico-south-africa");
 
 describe("groupScorers — benefiting-team attribution (AD-6)", () => {
   it("puts m074's own-goal scorer GOMEZ in Germany's (home) column", () => {

@@ -71,6 +71,34 @@ function documentTitle(html: string): string {
   return html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
 }
 
+/*
+ * ESCAPE THE EXPECTATION, DO NOT STOP SUBSTRING-MATCHING (Story 2.19, ledger A2,
+ * ruled decision D3).
+ *
+ * Every assertion in this file compares a value taken from the artifact against
+ * the EXPORTED BYTES, and that is the whole point of the file — it is what makes
+ * it a check on the export rather than a re-run of the renderer. But the bytes
+ * are HTML, and React escapes text before writing them, so a name carrying any
+ * of the five escaped characters never matches its own raw form.
+ *
+ * Measured over the real corpus at the 2.19 cutover: exactly ONE name in the
+ * entire tournament needs this — `Côte d'Ivoire`, which exports as
+ * `Côte d&#x27;Ivoire`, on four matches (m009, m033, m055, m078). Zero of the
+ * 1,248 player names do. That is precisely the shape of defect that ships: it
+ * is invisible on fixtures, invisible on 100 of 104 real matches, and would
+ * have turned red for the first time on a corpus nobody re-reads.
+ *
+ * The five replacements and their order are React's own `escapeHtml`.
+ */
+function escapeForHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
 const esStage = (stage: keyof typeof es.enums.stage) => es.enums.stage[stage];
 
 describe.skipIf(!anyBuilt)("exported /matches/[slug] routes (AC 1)", () => {
@@ -96,7 +124,9 @@ describe.skipIf(!anyBuilt)("exported /matches/[slug] routes (AC 1)", () => {
       // composeMatchTitle: an expectation built by the function under test
       // reproduces that function's bugs and can only prove it was called.
       expect(title).toContain(
-        `${metadata.homeTeam.name} ${metadata.score.home}–${metadata.score.away} ${metadata.awayTeam.name}`
+        escapeForHtml(
+          `${metadata.homeTeam.name} ${metadata.score.home}–${metadata.score.away} ${metadata.awayTeam.name}`
+        )
       );
       expect(title).toContain(` · ${esStage(metadata.stage)} · `);
       expect(title).toContain(es.app.siteName);
@@ -120,9 +150,21 @@ describe.skipIf(!anyBuilt)("m001 Hero markup (AC 2)", () => {
   const html = anyBuilt ? matchHtml("m001-mexico-south-africa") : "";
 
   it("lists Mexico's scorers with minutes, in the home column", () => {
+    /*
+     * MINUTES RE-ANCHORED ON THE REAL CORPUS AT THE 2.19 CUTOVER. The hand-built
+     * 1.1 fixture put these goals at 8′ and 66′; the extracted bundle puts them
+     * at 9′ and 67′ — both exactly one minute later. The scoreline (Mexico 2–0),
+     * the scorers and their order are unchanged, which is why the ids and titles
+     * survived the flip while these two literals did not.
+     *
+     * The consistent +1 was checked against the source PDF as part of the SM-3
+     * spot-check (Task 4.3) rather than assumed: the extraction is right and the
+     * fixture was the approximation. This file asserts the EXPORT, so the export
+     * is what it now pins.
+     */
     const { home, away } = scorerColumns(html);
-    expect(home).toContain("Julian QUINONES 8′");
-    expect(home).toContain("Raul JIMENEZ 66′");
+    expect(home).toContain("Julian QUINONES 9′");
+    expect(home).toContain("Raul JIMENEZ 67′");
     // South Africa was not on the scoresheet — the away column stays empty.
     expect(away).not.toContain("QUINONES");
     expect(away).not.toContain("JIMENEZ");
@@ -146,16 +188,28 @@ describe.skipIf(!anyBuilt)("m001 Hero markup (AC 2)", () => {
   });
 });
 
-describe.skipIf(!anyBuilt)("m074 Hero markup — own goal, shoot-out, knockout (AC 2)", () => {
+describe.skipIf(!anyBuilt)("m074 Hero markup — shoot-out, knockout (AC 2)", () => {
   const html = anyBuilt ? matchHtml("m074-germany-paraguay") : "";
 
-  it("attributes the own goal to Germany's (home) column with (a.g.)", () => {
+  /*
+   * THIS MATCH LOST ITS OWN GOAL AT THE 2.19 CUTOVER, and that is a corpus fact
+   * rather than a defect. The 1.1 fixture invented a Gustavo GOMEZ own goal at
+   * 5′ to exercise AD-6's benefiting-team attribution; the real m074 is
+   * Germany 1–1 Paraguay through Enciso 42′ and Havertz 54′, with no own goal
+   * anywhere in it. The shoot-out and knockout facts the fixture carried DO
+   * survive verbatim, which is why the two cases below are untouched.
+   *
+   * The AD-6 assertion is not deleted with the fixture that motivated it — it
+   * moves to m004, a REAL own goal, in the block below. Deleting it would have
+   * retired the only export-level check on the one goal-attribution rule that is
+   * counter-intuitive enough to need one.
+   */
+  it("lists each side's scorer in its own column", () => {
     const { home, away } = scorerColumns(html);
-    // GOMEZ is a Paraguay player; teamId is the BENEFITING team (AD-6), so the
-    // line must sit in Germany's column and nowhere else.
-    expect(home).toContain(`Gustavo GOMEZ 5′ ${es.match.hero.ownGoal}`);
-    expect(away).not.toContain("GOMEZ");
-    expect(away).toContain("Julio ENCISO");
+    expect(home).toContain("Kai HAVERTZ 54′");
+    expect(away).toContain("Julio ENCISO 42′");
+    expect(home).not.toContain("ENCISO");
+    expect(away).not.toContain("HAVERTZ");
   });
 
   it("shows the shoot-out caption in home–away order", () => {
@@ -165,6 +219,28 @@ describe.skipIf(!anyBuilt)("m074 Hero markup — own goal, shoot-out, knockout (
   it("shows the Round-of-32 stage chip with no group", () => {
     expect(html).toContain(esStage("r32")); // Dieciseisavos de final
     expect(html).not.toContain(es.match.hero.group); // no "Grupo" on a knockout
+  });
+});
+
+describe.skipIf(!anyBuilt)("m004 Hero markup — a REAL own goal (AC 2, AD-6)", () => {
+  const html = anyBuilt ? matchHtml("m004-usa-paraguay") : "";
+
+  /*
+   * The real corpus carries 14 own goals across 14 matches, so AD-6's rule has
+   * a genuine anchor now that m074's invented one is gone. m004 is USA 4–1
+   * Paraguay, opened by a Paraguay player putting it into his own net at 7′.
+   */
+  it("attributes the own goal to the BENEFITING team's column with (a.g.)", () => {
+    const { home, away } = scorerColumns(html);
+    // BOBADILLA is a Paraguay player; `teamId` on the goal is the benefiting
+    // team (AD-6), so the line must sit in USA's (home) column and nowhere else.
+    expect(home).toContain(`Damian BOBADILLA 7′ ${es.match.hero.ownGoal}`);
+    expect(away).not.toContain("BOBADILLA");
+  });
+
+  it("keeps the scorer's own side clean of it — Paraguay's column is its own goal only", () => {
+    const { away } = scorerColumns(html);
+    expect(away).not.toContain(es.match.hero.ownGoal);
   });
 });
 

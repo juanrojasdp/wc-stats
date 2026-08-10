@@ -1,6 +1,8 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
-import { readMatchBundle } from "@/lib/build-data";
 import type { MatchBundle } from "@/lib/contract/contract-types";
 import { t, type Locale } from "@/lib/i18n";
 import {
@@ -21,15 +23,29 @@ import {
 
 /*
  * Pure registry tests (node env — the harness has no jsdom by the Story 2.2
- * decision). Fixtures are read off the filesystem through the build-time
- * reader, the same path static-output.test.ts uses.
+ * decision). Fixtures are read off the filesystem by relative path.
+ *
+ * PINNED EXPLICITLY AT THE 2.19 CUTOVER (ruled decision D2). This file used to
+ * read through `build-data`'s `readMatchBundle`, so flipping DATA_ROOT to the
+ * real corpus repointed it silently — and unlike match-hero.test.ts it did NOT
+ * stay green, because the real bundles carry `crosses`, `defensiveActions`,
+ * `receiving` and `passNetworkNodes` as null on 104/104 and these cases assert
+ * the all-sections-ready shape. That behaviour at real data is verified where it
+ * belongs, against the built export (Task 4.4); what this file tests is the
+ * REGISTRY, on a corpus with a known shape, and that corpus must not be able to
+ * move underneath it.
  */
+
+function readMatchFixture(slug: string): MatchBundle {
+  const file = path.join(process.cwd(), "..", "data", "fixtures", "matches", `${slug}.json`);
+  return JSON.parse(readFileSync(file, "utf8")) as MatchBundle;
+}
 
 const LOCALES: Locale[] = ["es", "en"];
 
-const m001 = readMatchBundle("m001-mexico-south-africa");
-const m002 = readMatchBundle("m002-korea-republic-czechia");
-const m074 = readMatchBundle("m074-germany-paraguay");
+const m001 = readMatchFixture("m001-mexico-south-africa");
+const m002 = readMatchFixture("m002-korea-republic-czechia");
+const m074 = readMatchFixture("m074-germany-paraguay");
 
 describe("SECTION_IDS (AC 1)", () => {
   it("is the normative order, verbatim", () => {

@@ -583,7 +583,8 @@ export const en: Dictionary = {
       // Story 2.10 columns.
       phase: "Phase",
       category: "Category",
-      measure: "Measure",
+      // `measure` ("Measure") retired at the 2.19 cutover (ledger A12) — see
+      // the note on its Spanish counterpart. Both locales drop it together.
       count: "Count",
       share: "Share",
       left: "Left",
