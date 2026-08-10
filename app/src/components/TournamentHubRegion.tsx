@@ -148,13 +148,37 @@ export function TournamentHubRegion() {
         {status === "invalid" ? t("hub.region.invalid") : null}
       </span>
 
+      {/*
+       * `min-h-[120vh]` IS THE CLS FIX, and it is sized by measurement rather
+       * than taste (Story 2.19 Task 5.2, AC 2).
+       *
+       * MEASURED at the cutover: this skeleton is 428 px tall and the settled
+       * region is **14,990 px** at 412 px wide — 30 tables, one per results
+       * section and group standings table. At fixture scale (3 matches, 1
+       * group) the two were comparable and the swap was invisible. At 104
+       * matches the region grows by ~14,500 px in one frame, and
+       * `LeaderboardsSection` — which sits below it and was fully in view while
+       * the skeleton held — is thrown off-screen. Lighthouse mobile scored the
+       * Hub **CLS 0.758**, which alone put the route at 56.
+       *
+       * The reservation does NOT try to predict the settled height: that is
+       * data-dependent, and over-reserving shifts content UP just as badly as
+       * under-reserving shifts it down. It only has to exceed the VIEWPORT, so
+       * that everything below the region is off-screen both before and after
+       * the swap — an off-screen element moving further off-screen is not a
+       * layout shift. 120vh clears the fold with margin at every mobile height.
+       *
+       * The same pattern is not owed on the match, player or team regions:
+       * all three measured CLS 0 at real data, because what sits below them
+       * grows with them rather than being displaced by them.
+       */}
       {status === "loading" ? (
         <div
           ref={busyRef}
           tabIndex={-1}
           aria-busy="true"
           aria-label={t("hub.region.loading")}
-          className="grid gap-tile-gap"
+          className="grid min-h-[120vh] content-start gap-tile-gap"
         >
           {/* Layout-SHAPED, not a spinner: a heading block, then two table
               blocks roughly the height of a group standings table. */}

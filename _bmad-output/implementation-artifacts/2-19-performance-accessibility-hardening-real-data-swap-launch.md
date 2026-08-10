@@ -587,12 +587,12 @@ binary mode or a one-line change commits as a whole-file CRLF rewrite.
 - [x] 4.7 Run `domain-g-zone-sum` over the real player profiles as an acceptance gate (A25).
 
 ### Task 5 — AC 2: budgets
-- [ ] 5.1 Re-verify and record the payload table (already measured — reproduce it).
-- [ ] 5.2 Lighthouse mobile on **Match Dashboard** and **Tournament Hub** against the served production export. ≥90. Record all five category scores and the Lighthouse version.
-- [ ] 5.3 Lighthouse on `/compare` (A31); file the AD-4 route-payload amendment or record the documented gap.
-- [ ] 5.4 If tuning is needed: **disclosure, never deletion** (SM-C2). Declare any change.
-- [ ] 5.5 A16: memoise the `columns` construction; A19: memoise the profile reads.
-- [ ] 5.6 A30: rule the header-search payload question with the measured 39,137 B (see Open questions Q1).
+- [x] 5.1 Re-verify and record the payload table (already measured — reproduce it).
+- [x] 5.2 Lighthouse mobile on **Match Dashboard** and **Tournament Hub** against the served production export. ≥90. Record all five category scores and the Lighthouse version. — **measured; gate NOT met, see the record and Q5**
+- [x] 5.3 Lighthouse on `/compare` (A31); file the AD-4 route-payload amendment or record the documented gap.
+- [~] 5.4 If tuning is needed: **disclosure, never deletion** (SM-C2). Declare any change. — **CLS fix landed; the disclosure restructuring is Q5, open for Juan**
+- [~] 5.5 A16: memoise the `columns` construction; A19: memoise the profile reads. — **A19 done; A16 pending**
+- [x] 5.6 A30: rule the header-search payload question with the measured 39,137 B (see Open questions Q1).
 
 ### Task 6 — AC 3: the accessibility floor
 - [ ] 6.1 **Reflow matrix**: 320 / 390 / 195 CSS px × {dark, light} × {es, en} × 8 routes. Report the table and the offending selectors.
@@ -697,6 +697,40 @@ WONTFIX with the reason recorded?
 2.12 took it de facto for `/`. **NFR-4 forces the question here**, at 104 + 1,248 + 48 + Hub routes.
 Options: accept ES canonical for a static export (zero work), or sync `document.title` client-side.
 Ledger L147, L2697, L3227.
+
+**Q5 — AC 2's Lighthouse floor is not reachable on either gated route by the lever SM-C2 authorises.
+This is the one thing in the story that needs a ruling rather than more work.** *(raised 2026-08-10
+during implementation; Q1 is now RULED — see the Task 5 record.)*
+
+Measured, median of 3, mobile, against a host-realistic server: **Match Dashboard 83, Tournament Hub
+68**, floor 90. The payload half of AC 2 passes with 4× margin, so this is entirely about execution
+and render time. The two routes fail for *different* reasons and only one of them is SM-C2's:
+
+- **Tournament Hub (68).** Renders **6,025 DOM nodes, 33 tables and 2,442 cells at 412 px**, none of
+  it collapsed. This is exactly SM-C2's case and the lever would work: putting the 12 group standings
+  and 9 results sections behind disclosures would cut the render commit by roughly an order of
+  magnitude, and LCP is currently gated on it (`h2#standings`, **1,802 ms of element render delay**).
+  **But it is a visible product change to Story 2.12's ruled surface**, and 2.12 chose to render both
+  surfaces open. AC 2 pre-authorises it ("density moved behind disclosure, never deleted") and Task
+  5.4 says to declare it — so it is mine to take if you want it taken. It is not mine to take quietly.
+- **Match Dashboard (83).** Has **638 DOM nodes and 0 tables** at 412 px — all eleven Tactical
+  sections are already collapsed. There is no density left to move behind a disclosure. Its cost is
+  **1,141 ms of script evaluation** against a 461 KiB route weight (43 KiB of it unused JS): the app
+  bundle itself, plus the eagerly-constructed section content that ledger **L1504 names and Partition
+  C RE-DEFERS**. SM-C2's lever does not apply here at all. Closing this gap means bundle/code-split
+  work or taking L1504 — both outside this story's declared scope.
+
+**Options, and the cheapest honest one first:**
+1. **Accept and record the gap** (0 work): AC 2's payload half passes with margin, a11y is 96, best
+   practices 96, SEO 100, CLS is fixed, and the two scores are 83/68 rather than catastrophic. The
+   shortfall and its causes are documented above. NFR-1 is then partially met and said to be.
+2. **Take SM-C2 on the Hub only** (~half a day): likely lands the Hub near or above 90; the Match
+   Dashboard stays ~83. Changes how the Hub looks on arrival.
+3. **Take SM-C2 on the Hub AND pull L1504 back out of Partition C** (multi-day): the only route to
+   both routes ≥90, and it re-opens a re-deferred architectural item at the end of the project.
+
+**Recommendation: option 1 for the Hub's sake of shipping, or option 2 if the Hub's arrival state is
+worth changing.** Option 3 is not proportionate in the last story.
 
 **Q4 — Copy rulings, all cheap, all optional.** (a) ~25 per-table announcement identifiers (L1246);
 (b) the two-stacked-parentheticals head composition (L2335); (c) glossary marks on the five Tactical
@@ -963,6 +997,82 @@ the shipped data.
 > proportional tolerance computed `NaN` and `drift > NaN` is false for every row — a gate that could
 > not fail, printing PASS. It now reads `appearances.played` and throws on a non-finite tolerance
 > rather than silently passing.
+
+#### Task 5 — AC 2 budgets and Lighthouse
+
+**5.1 — the payload half of AC 2 PASSES with large margin**, reproduced independently (gzip -9 over
+the canonical committed bytes) and agreeing with the story's creation-time figures to within 0.7%:
+
+| route payload set | measured | cap | result |
+|---|---|---|---|
+| Hub (`tournament.json` + `leaderboards.json`) | 38,860 + 77,676 = **116,536 B (113.8 KB)** | 500 KB | **PASS**, 23% of budget |
+| largest match bundle (`m082-belgium-senegal`) | **14,232 B (13.9 KB)**, median 12,191 | 500 KB | **PASS** |
+| largest player profile (`bellingham-jude-eng`) | **1,542 B**, median 1,023 | 500 KB | **PASS** |
+| largest team profile (`england`) | **1,258 B**, median 1,026 | 500 KB | **PASS** |
+| `/compare` worst case (`type=matches`) | **67,324 B (65.7 KB)** | 500 KB (unassigned) | **PASS** |
+
+Confirmed live in the browser: each route fetches **exactly one** artifact (the Hub two), with zero
+external requests on all five routes measured.
+
+**5.2 / 5.3 — Lighthouse mobile, 13.4.1, median of 3 runs against a host-realistic server.**
+
+| route | perf (min–max) | a11y | best practices | SEO | FCP | LCP | TBT | CLS | SI |
+|---|---|---|---|---|---|---|---|---|---|
+| **Match Dashboard** | **83** (80–83) | 96 | 96 | 100 | 1.1 s | 3.7 s | 368 ms | 0.000 | 2.8 s |
+| **Tournament Hub** | **68** (67–71) | 96 | 96 | 100 | 1.0 s | 4.1 s | 674 ms | 0.044 | 3.8 s |
+| `/compare` | 88 (88–90) | 96 | 96 | 100 | 0.9 s | 3.4 s | 162 ms | 0.000 | 2.2 s |
+| Player Profile | 85 (84–88) | 96 | 96 | 100 | 0.9 s | 1.8 s | 561 ms | 0.000 | 1.8 s |
+| Team Profile | 75 (75–77) | 96 | 96 | 100 | 0.9 s | 3.9 s | 488 ms | 0.000 | 2.7 s |
+
+**AC 2's Lighthouse half is NOT met: 83 and 68 against a floor of 90.** See Q5 — it needs a ruling,
+not more measurement.
+
+**Two harness facts had to be established before any of those numbers meant anything (D4).**
+
+1. **`python -m http.server` is not a model of the host.** It is single-threaded and serves NO
+   compression, so Lighthouse's simulated throttling charges the page for uncompressed bytes
+   delivered one request at a time. The Hub's document alone is 100,758 B raw and **11,023 B**
+   gzipped — a 9× difference on the critical path. Measured both ways: Match Dashboard **53 → 79**,
+   `/compare` **76 → 96**, purely from serving it the way Netlify does. A small Node server with
+   gzip/brotli, keep-alive and Netlify's own cache-control is what the table above ran against.
+2. **A single Lighthouse run on this machine is not a measurement.** Between two builds, routes that
+   were *not touched* moved 99 → 91 and 88 → 66. The first pass of this work drew a conclusion from
+   single runs and it was worthless. Every figure above is a median of 3 with the spread printed;
+   the spreads are now ±3.
+
+**5.4 — one tuning change landed, and it is a real defect fix rather than a score chase.**
+The Hub scored **CLS 0.758** — one shift, weight 25, in the client-fetched region. Measured cause:
+the loading skeleton is **428 px** and the settled region is **14,990 px** at 412 px wide (30 tables:
+one per results section and group standings table). At fixture scale the two were comparable; at 104
+matches the region grows by ~14,500 px in one frame and throws `LeaderboardsSection` — fully in view
+under the skeleton — off-screen. `min-h-[120vh]` on the loading container fixes it: the reservation
+does not try to predict the settled height (over-reserving shifts content up just as badly), it only
+has to exceed the viewport so that everything below is off-screen before and after.
+**Hub CLS 0.758 → 0.044, and the Hub's score moved 56 → 68–79.** No density was deleted or hidden.
+
+**A `content-visibility: auto` experiment was tried on the Hub's 33 section blocks and REVERTED.**
+It showed no benefit that survived the noise, and the run it was measured in moved five untouched
+routes by up to 22 points — which is what exposed the single-run problem above. It is not in the tree.
+
+**5.5 — A19 done, A16 outstanding.** `build-data.ts` now caches parsed artifacts by resolved absolute
+path. Every dynamic route reads its artifact twice (`generateMetadata` + page body) because they are
+separate Next entry points with no shared scope: 96 parses across 48 team routes at fixture scale,
+**2,496 parses of 1,248 files** on `/players/[slug]` at real scale. **Build wall clock 89–91 s →
+78 s.** A16's `columns` memoisation is not applied — see Q5, because whether it is worth doing
+depends on which way the Lighthouse gap is ruled.
+
+**5.6 / A30 / Q1 — RULED: ACCEPT the header-search payload as it stands, no contract change.**
+Re-measured at the cutover: `tournament.json` is **38,860 B gzip / 409,524 B raw**, fetched lazily on
+first engagement with the header search, once per page load, never on load. Verified in the browser:
+the match, player and team routes each fetch exactly one artifact on load and the index is not among
+them. At 38.9 KB it is **7.8% of the 500 KB route budget**, it is paid only by a reader who actually
+opens the search, and the `entities` slice (29,758 B gzip) would save 9 KB for a contract change and
+a second artifact to keep in bijection. Not worth it. Recorded, closed.
+
+**A31 — `/compare` has a number now: median 88 (88–90) mobile, payload 65.7 KB of the 500 KB cap.**
+The AD-4 amendment is filed as a recorded gap rather than a contract change: `/compare`'s payload set
+is `tournament.json` + up to two entity artifacts, which is bounded by the two per-entity caps that
+already exist. It needs no cap of its own.
 
 ### Completion Notes List
 

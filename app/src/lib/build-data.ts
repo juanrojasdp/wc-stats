@@ -38,8 +38,35 @@ const DATA_ROOT = path.join(process.cwd(), "..", "data");
  */
 export const BUILD_DATA_ROOT = DATA_ROOT;
 
+/*
+ * ONE PARSE PER ARTIFACT PER BUILD WORKER (Story 2.19, ledger A19/L3732).
+ *
+ * Every dynamic route reads its own artifact TWICE — once in
+ * `generateMetadata` for `<title>`/OG and once in the page body — because the
+ * two are separate Next entry points with no shared scope. At fixture scale
+ * that was 96 parses across 48 team routes and nobody noticed. At real data
+ * `/players/[slug]` alone is **2,496 parses of 1,248 files**, and
+ * `readTournament` is re-read by `generateStaticParams` and by pages besides.
+ *
+ * The cache is keyed on the RESOLVED absolute path, so the two flip points
+ * cannot collide with each other, and it is safe for exactly one reason: this
+ * module is build-time only (ESLint bars it from `src/components/**`) and the
+ * corpus is immutable for the life of a build. Next runs ten workers, each with
+ * its own module instance, so each holds only what it rendered.
+ *
+ * Cached BEFORE the per-artifact validation in the readers below, not after:
+ * the gates are pure functions of the payload, so re-running them on a cached
+ * object costs nothing and keeps every read fully gated rather than gating only
+ * the first caller.
+ */
+const artifactCache = new Map<string, unknown>();
+
 function readJson<T>(relativePath: string): T {
   const absolutePath = path.join(DATA_ROOT, relativePath);
+  const cached = artifactCache.get(absolutePath);
+  if (cached !== undefined) {
+    return cached as T;
+  }
   if (!existsSync(absolutePath)) {
     // A bare ENOENT here names a path but not the assumption that produced it.
     // DATA_ROOT is cwd-relative, so running next/vitest from the repo root
@@ -49,7 +76,9 @@ function readJson<T>(relativePath: string): T {
         `DATA_ROOT is resolved from process.cwd() (${process.cwd()}), which must be the app/ directory.`
     );
   }
-  return JSON.parse(readFileSync(absolutePath, "utf8")) as T;
+  const payload = JSON.parse(readFileSync(absolutePath, "utf8")) as T;
+  artifactCache.set(absolutePath, payload);
+  return payload;
 }
 
 /** The route manifest and index, read at build time from tournament.json. */
