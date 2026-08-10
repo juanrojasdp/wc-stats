@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import type { Leaderboards } from "@/lib/contract/contract-types";
 import { readTournament } from "@/lib/build-data";
@@ -549,8 +549,25 @@ describe("/ artifact fetches (AC 5, Task 9.3)", () => {
  * markup — so every marker below is anchored to the `attr="value"` form.
  */
 describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)", () => {
+  /*
+   * MEMOISED AT THE 2.19 CUTOVER, and it is a correctness fix rather than a
+   * tidy-up.
+   *
+   * Seven cases in this block call `everyRouteHtml()`, and on fixtures that was
+   * 7 x 13 documents — free. At real data it is 7 x 1,406 documents, ~35 MB of
+   * `readFileSync` per call and ~245 MB across the block, which pushed the first
+   * case past vitest's 5 s default under ten-worker contention and failed the
+   * suite on a TIMEOUT, not on an assertion. The export is immutable for the
+   * duration of a run, so reading it once is the whole fix; a raised timeout
+   * would only have made the same waste take longer.
+   */
+  let routeHtmlCache: { route: string; html: string }[] | null = null;
+
   /** Every exported route document, DISCOVERED rather than enumerated. */
   function everyRouteHtml(): { route: string; html: string }[] {
+    if (routeHtmlCache !== null) {
+      return routeHtmlCache;
+    }
     const documents = [
       { route: "/", file: INDEX_HTML },
       { route: "/404", file: NOT_FOUND_HTML },
@@ -577,8 +594,25 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
         }
       }
     }
-    return documents.map(({ route, file }) => ({ route, html: readFileSync(file, "utf8") }));
+    routeHtmlCache = documents.map(({ route, file }) => ({
+      route,
+      html: readFileSync(file, "utf8"),
+    }));
+    return routeHtmlCache;
   }
+
+  /*
+   * WARMED HERE, with its own budget, on `assert-schema-version.test.ts`'s
+   * precedent. Memoising alone was not enough: the FIRST call still reads 1,406
+   * documents off disk, and at ~35 MB under ten-worker contention that one call
+   * exceeds vitest's 5 s default on its own — so whichever case happened to run
+   * first failed on a timeout rather than on anything it asserted. Paying the
+   * read once in a hook with a generous budget keeps every case below on
+   * in-memory work, which is what they are actually about.
+   */
+  beforeAll(() => {
+    everyRouteHtml();
+  }, 60_000);
 
   /*
    * Local rather than imported: `glossary.ts` has a private one, and exporting a

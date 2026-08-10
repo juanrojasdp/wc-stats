@@ -578,13 +578,13 @@ binary mode or a one-line change commits as a whole-file CRLF rewrite.
 - [x] 3.4 Verify live on ≥3 real matches at 390px and 1920px, both locales.
 
 ### Task 4 — Real-data verification at scale (AC 1)
-- [ ] 4.1 Route bijection: 104 match + 1,248 player + 48 team routes pre-rendered, exactly the manifest (A4, A6, A11).
-- [ ] 4.2 All 48 `/teams/` slugs resolve; no dead links from standings, `MatchHero`, leaderboards, header search or `/players/{slug}` (A6). Repoint the two remaining route literals (A28); verify `prefetch={false}` holds.
-- [ ] 4.3 **SM-3 spot-check: shot maps vs source PDFs on ≥10 matches.** Sample across venues and matchday rounds, not the first ten. Record match ids and what was compared.
-- [ ] 4.4 Verify the section census in *Real-data reality* renders as described: `#shot-maps` (no cross map), `#defensive-actions` empty, `#offers-*` populated, `#goalkeeping` gates closed with `gateNote` (A32).
-- [ ] 4.5 Browser accent-insensitivity on real data (A5) — `Türkiye`, `Curaçao`, `Côte d'Ivoire`, plus the reader typing `Nunez`/`Núñez`, `Quinones`/`Quiñones`.
-- [ ] 4.6 Record the real-data collation result from Partition D; change no code.
-- [ ] 4.7 Run `domain-g-zone-sum` over the real player profiles as an acceptance gate (A25).
+- [x] 4.1 Route bijection: 104 match + 1,248 player + 48 team routes pre-rendered, exactly the manifest (A4, A6, A11).
+- [x] 4.2 All 48 `/teams/` slugs resolve; no dead links from standings, `MatchHero`, leaderboards, header search or `/players/{slug}` (A6). Repoint the two remaining route literals (A28); verify `prefetch={false}` holds.
+- [x] 4.3 **SM-3 spot-check: shot maps vs source PDFs on ≥10 matches.** Sample across venues and matchday rounds, not the first ten. Record match ids and what was compared.
+- [x] 4.4 Verify the section census in *Real-data reality* renders as described: `#shot-maps` (no cross map), `#defensive-actions` empty, `#offers-*` populated, `#goalkeeping` gates closed with `gateNote` (A32).
+- [x] 4.5 Browser accent-insensitivity on real data (A5) — `Türkiye`, `Curaçao`, `Côte d'Ivoire`, plus the reader typing `Nunez`/`Núñez`, `Quinones`/`Quiñones`.
+- [x] 4.6 Record the real-data collation result from Partition D; change no code.
+- [x] 4.7 Run `domain-g-zone-sum` over the real player profiles as an acceptance gate (A25).
 
 ### Task 5 — AC 2: budgets
 - [ ] 5.1 Re-verify and record the payload table (already measured — reproduce it).
@@ -839,6 +839,131 @@ matches, zero gaps in either. `metadata.lineups` is used because it is REQUIRED 
   the shell and the first run measured **0 tables at 390 px** on all six mobile cells — a
   false negative that would have read as "the matrix does not render on mobile".
 
+#### Task 4 — real-data verification at scale
+
+**4.1 Route bijection — exact, all three families:**
+
+| route family | manifest | built | missing | extra |
+|---|---|---|---|---|
+| `/matches/[slug]` | 104 | **104** | 0 | 0 |
+| `/players/[slug]` | 1,248 | **1,248** | 0 | 0 |
+| `/teams/[slug]` | 48 | **48** | 0 | 0 |
+
+**4.2 Link integrity — every internal anchor in every exported document:** 1,407 documents scanned,
+1,303 distinct internal hrefs, 16,802 occurrences, **0 dead links**. All 48 team routes and all 1,248
+player routes carry at least one inbound link (A6 closed: the seven-of-eight 404 was a fixture
+artefact). No `/matches/` links appear in pre-rendered HTML because the Hub's results and standings
+mount from the client fetch — expected under AR-11/AD-11, and those links were exercised in the
+browser sweeps.
+
+**Speculative fetch, measured in the browser rather than grepped** (`prefetch` is not serialised into
+the exported HTML at all, so a search for `"prefetch":true` returns zero on a page that prefetches
+everything — the grep proves nothing):
+
+| route | requests | RSC `.txt` | RSC for OTHER routes | `/data/` fetches | external |
+|---|---|---|---|---|---|
+| Match Dashboard | 32 | 4 | 4 (root only) | 1 | **0** |
+| Tournament Hub | 26 | 3 | **0** | 2 | **0** |
+| Player Profile | 32 | 4 | 4 (root only) | 1 | **0** |
+| Team Profile | 33 | 4 | 4 (root only) | 1 | **0** |
+| `/compare` | 40 | 12 | 12 (root + about + glossary) | 1 | **0** |
+
+`prefetch={false}` **holds where the ledger cared**: zero of the 1,248 player, 48 team or 104 match
+routes are speculatively fetched from anywhere. What does prefetch is the CHROME — the header
+wordmark's `/` link and the footer's `/about` + `/glossary`, which set no `prefetch` prop. Cost
+measured: the root route's four RSC payloads are 33,211 B raw / **5,076 B gzip**, once, on every
+non-home page. Left as is — three fixed routes at 1% of the route budget, and they are the genuinely
+likely next navigation. The AD-4 artifact fetches are exactly one per route (two on the Hub),
+matching the measured payload table.
+
+**4.3 SM-3 — emitted shot maps vs the source PDFs. PASS: 24 team shot maps over 12 matches, 0
+disagreements.** Sample stratified across **11 distinct venues and all 9 matchday rounds**
+(group-md1/2/3, r32, r16, qf, sf, third-place, final) — deliberately not the first ten:
+
+| # | match | round | venue |
+|---|---|---|---|
+| 1 | `m001-mexico-south-africa` | group-md1 | Mexico City |
+| 2 | `m002-korea-republic-czechia` | group-md1 | Guadalajara |
+| 3 | `m003-canada-bosnia-and-herzegovina` | group-md1 | Toronto |
+| 6 | `m006-australia-turkiye` | group-md1 | BC Place Vancouver |
+| 25 | `m025-czechia-south-africa` | group-md2 | Atlanta |
+| 49 | `m049-scotland-brazil` | group-md3 | Miami |
+| 73 | `m073-south-africa-canada` | r32 | Los Angeles |
+| 89 | `m089-paraguay-france` | r16 | Philadelphia |
+| 97 | `m097-france-morocco` | qf | Boston |
+| 101 | `m101-france-spain` | sf | Dallas |
+| 103 | `m103-france-england` | third-place | Miami |
+| 104 | `m104-spain-argentina` | final | New York/New Jersey |
+
+**What was compared, and why it is an independent check.** `events.shots` is produced by the VECTOR
+marker extraction (marker geometry, digit-glyph proximity, RGB→outcome). The check reads the printed
+Key table off the "Attempts at Goal" page's TEXT layer — a channel the extraction never touches — and
+compares three things per team: the full five-way outcome breakdown (Goals / On Target / Off Target /
+Blocked / Incomplete), the shot total against `keyStatistics.shots` (Domain B, a different page
+entirely), and the scoreline against the PDF cover. Every one of the 24 breakdowns matched
+element-for-element; totals ranged 2–30 shots.
+
+**The +1 minute question is resolved, and it resolves in the pipeline's favour.** The fixture put
+m001's goals at 8′/66′ and the emitted bundle puts them at 9′/67′. The PDF's attempts list prints
+`3, 8, 12, 19…` where the bundle carries `4, 9, 13, 20…`, so the extraction adds one — and
+`emit.py:232-252` documents exactly that, with evidence: "`time_raw` is NOT the football minute — it
+is one less", cross-referenced against the goal listing on 208 rows (−1 on 204, −2 on 4). It is the
+ordinary football convention that an event at 8:30 elapsed is reported in the 9th minute. **The
+extraction is right and the 1.1 fixture was the approximation.**
+
+**4.4 Rendered section census over 6 matches** (group-md1 → final, both `Côte d'Ivoire` matches
+included), in a real browser with every disclosure opened. Matches the story's census exactly:
+
+| section | rendered | expected |
+|---|---|---|
+| `#key-stats` | tiles, no table | ✓ |
+| `#momentum` | 1 table, 100–145 rows, 1 figure | ✓ |
+| `#shot-maps` | 1 table (18–38 shots), 7 figures, **1 panel absence** | ✓ shots render, cross map absent |
+| `#pass-networks` | 1 table, 220–309 rows, **0 figures** | ✓ R1's matrix-only shape |
+| `#offers-to-receive` / `#movement-to-receive` | 2 tables each, 33–36 rows | ✓ populated via `players[].inPossession` |
+| `#defensive-actions` | **whole-section empty state** | ✓ null 104/104 |
+| `#phases` / `#pressing` / `#set-plays` | populated | ✓ |
+| `#goalkeeping` | 6 tables, 244–334 rows, 2 figures, **`gateNote` renders** | ✓ **A32 closed** |
+
+> **The first run of this census reported `#shot-maps` EMPTY on all six matches, and it was the
+> probe that was wrong.** It treated any `.border-dashed` descendant as a whole-section empty state,
+> and `#shot-maps` legitimately renders a per-panel absence for the cross map right beside two live
+> shot figures. Corrected to require border-dashed AND no tables AND no figures. Worth recording
+> because it is the same confusion in measurement form that R1 was in code: a panel-level absence
+> and a section-level absence are different things, and conflating them hides real data.
+
+**4.5 / A5 — accent-insensitive search, in a browser, on the real corpus: 10/10.** Both directions,
+teams and players:
+
+| typed | matched | note |
+|---|---|---|
+| `Turkiye` / `Türkiye` | ✓ / ✓ | corpus holds the umlaut |
+| `Curacao` / `Curaçao` | ✓ / ✓ | corpus holds the cedilla |
+| `Cote` / `Côte d'Ivoire` | ✓ / ✓ | corpus holds the circumflex |
+| `Nunez` / `Núñez` | ✓ / ✓ | corpus is STRIPPED — the reader supplies the accent |
+| `Quinones` / `Quiñones` | ✓ / ✓ | corpus is STRIPPED |
+
+**4.6 — the collation measurement is recorded, no code changed.** `table-sort.ts` keeps its `'es'`
+default verbatim per UX-DR12; ruled decision 8 stands on real data (0 disagreements in 784,612 pairs).
+
+**4.7 / A25 — `domain-g-zone-sum` over the EMITTED corpus. GATE PASS:**
+
+| scope | rows | worst drift | tolerance | failures |
+|---|---|---|---|---|
+| per-match (`players[].physical`, 104 bundles) | **3,289** | **0.200 m** | 0.35 m | **0** |
+| season (`player-profiles/*.physical`, 1,248) | **1,248** | 0.600 m | 0.35 m × appearances | **0** |
+
+The per-match line **exactly reproduces the pipeline's own published corpus figure** (3,289 rows,
+0.200 m worst drift) through an independent implementation reading the emitted artifacts — the D4
+house pattern satisfied. The 79-of-96 failures at 4.400 m were a fixture defect and do not exist in
+the shipped data.
+
+> **The season half of this gate was VACUOUS on its first run and is reported only after being
+> fixed.** `appearances` is an object (`{played, started, minutesPlayed, …}`), not a number, so the
+> proportional tolerance computed `NaN` and `drift > NaN` is false for every row — a gate that could
+> not fail, printing PASS. It now reads `appearances.played` and throws on a non-finite tolerance
+> rather than silently passing.
+
 ### Completion Notes List
 
 **Task 1 — baseline and harness.** Baseline captured, CDP harness built and validated against all
@@ -922,6 +1047,32 @@ bundle.
   edges; that many rows of four sortable columns in the initial DOM of a Lighthouse-≥90 route is
   exactly the density trade SM-C2 rules on — behind disclosure, never deleted. The connection count
   renders outside the disclosure so a reader knows what is behind it.
+
+**Task 4 — real-data verification at scale.** Everything the story asked to verify holds, and the
+three ledger items in it are closed: A6 (all 48 team slugs resolve, 0 dead links corpus-wide), A32
+(the five null goalkeeping sub-blocks close their gates and `viz.goalkeeping.gateNote` renders on
+every sampled match — no code was owed and none was written), A25 (the zone-sum gate passes over the
+emitted corpus and reproduces the pipeline's own figure).
+
+**A28 was half-done already, and the remaining half was one line.** The ledger names two hand-written
+`/teams/` literals; `LeaderboardsSection.tsx` already routes through `teamHref`. Only
+`LeaderboardsRegion.tsx:454` was left — in the same table whose entity column twenty lines above
+already used the helper, so one component shipped the route shape two different ways. Repointed.
+
+**The cutover broke a test on SCALE, not on data, and it took two fixes.**
+`static-output.test.ts`'s header-search block calls `everyRouteHtml()` in seven cases. On fixtures
+that was 7 × 13 documents; at real data it is 7 × 1,406 (~245 MB of `readFileSync` across the block),
+and the suite went red on a **timeout** rather than an assertion. Memoising cut it to one read, which
+was not enough on its own — that single read of ~35 MB still exceeded vitest's 5 s default under
+ten-worker contention, so whichever case ran first failed. The read is now warmed in a `beforeAll`
+with its own 60 s budget, on `assert-schema-version.test.ts`'s documented precedent. Green on three
+consecutive full runs at 13.5 s. Raising the timeout alone would have made the same waste take
+longer; this is the shape of defect the cutover exists to surface.
+
+**A4/A11 fold into 4.1's bijection**: the 104-at-scale Hub and the `m082` fourth route are covered by
+the exact manifest↔export match, and `players`/`goalkeeping` are populated on 104/104 at real data
+(the null branches A11 wanted exercised are not reachable there; the census in 4.4 records what does
+render).
 
 **A10 — RULED: yes, a unit-test run re-walks the whole corpus.** ~8.5 s of a ~20 s suite, walking
 1,411 artifacts. Kept because the gate is the only thing between a schema drift and a published site,

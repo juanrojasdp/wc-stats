@@ -451,7 +451,12 @@ function LeaderboardBoard({ board, initiallyOpen }: { board: Leaderboard; initia
               headTitle: null,
               render: (row: LeaderboardTableRow) => (
                 <Link
-                  href={`/teams/${row.teamId}/`}
+                  // `teamHref`, not a template literal (ledger A28). This was
+                  // the LAST hand-written `/teams/${…}/` in the app; the
+                  // entity-column link twenty lines above already routes
+                  // through the helper, so the same table shipped the route
+                  // shape two different ways.
+                  href={teamHref(row.teamId)}
                   prefetch={PREFETCH}
                   className="underline underline-offset-2 hover:no-underline"
                 >
