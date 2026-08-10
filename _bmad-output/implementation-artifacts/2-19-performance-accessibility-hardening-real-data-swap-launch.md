@@ -572,10 +572,10 @@ binary mode or a one-line change commits as a whole-file CRLF rewrite.
 - [x] 2.7 Full build + full suite green on the flipped tree. Record: routes generated, `out/` size, wall clock.
 
 ### Task 3 — R1: the pass-network re-scope (AC 1; D7)
-- [ ] 3.1 Relax `tactical-sections.ts:124-125` so non-empty edges render without nodes. Update `tactical-sections.test.ts:193-199`.
-- [ ] 3.2 `PassNetworksSection`: render the sortable pass-matrix table (UX-DR16) when nodes are absent; suppress the figure. No new locale keys if an existing empty/partial string covers it — check before minting.
-- [ ] 3.3 Three-shape test per D7.
-- [ ] 3.4 Verify live on ≥3 real matches at 390px and 1920px, both locales.
+- [x] 3.1 Relax `tactical-sections.ts:124-125` so non-empty edges render without nodes. Update `tactical-sections.test.ts:193-199`.
+- [x] 3.2 `PassNetworksSection`: render the sortable pass-matrix table (UX-DR16) when nodes are absent; suppress the figure. No new locale keys if an existing empty/partial string covers it — check before minting.
+- [x] 3.3 Three-shape test per D7.
+- [x] 3.4 Verify live on ≥3 real matches at 390px and 1920px, both locales.
 
 ### Task 4 — Real-data verification at scale (AC 1)
 - [ ] 4.1 Route bijection: 104 match + 1,248 player + 48 team routes pre-rendered, exactly the manifest (A4, A6, A11).
@@ -808,6 +808,37 @@ rather than only by table-driven cases:
 bytes. The 109.6 MB figure is the sum of actual file sizes and is the one the AC 4 bandwidth math
 uses. The player-HTML figure re-confirms the AD-11 projection at +291 B against 2.15's measurement.
 
+#### Task 3 — R1, the pass-network re-scope
+
+**Live verification, 3 real matches × {390, 1920} px × {es, en}** — all 12 cells, against the served
+production export with the section's client fetch resolved and every disclosure opened:
+
+| match | edges | matrix rows | figure `<svg>` | empty panel | unresolved names |
+|---|---|---|---|---|---|
+| `m001-mexico-south-africa` | 228 | **228** | none | no | **0** |
+| `m082-belgium-senegal` | 309 | **309** | none | no | **0** |
+| `m009-cote-d-ivoire-ecuador` | 219 | **219** | none | no | **0** |
+
+Locale switched correctly in every cell (`<html lang>` = `es`/`en`, heads `Equipo/Desde/Hacia/Pases`
+↔ `Team/From/To/Passes`, caption `Red de pases — Ordenado por equipo…` ↔ `Pass network — Sorted by
+team…`). First row of m001 es: `MEX · Cesar MONTES · Johan VASQUEZ · 18`.
+
+**Name resolution, measured over the whole corpus before choosing a source:** both `metadata.lineups`
+(starters + substitutes) and `players[]` resolve **47,194 of 47,194** edge endpoints across all 104
+matches, zero gaps in either. `metadata.lineups` is used because it is REQUIRED on the bundle where
+`players` is `PlayerRecords | null`.
+
+**Two harness capabilities were needed and are now in `cdp.mjs`** for Task 6's reuse:
+
+- `setPreferences({locale, theme})` via `Page.addScriptToEvaluateOnNewDocument`. Locale and theme are
+  `localStorage` keys read by a `<head>` bootstrap, so anything set after load leaves the page in the
+  previous state — the first verification run reported `es` copy for all six "EN" cells while
+  claiming to have switched. There is no `?lang=` query parameter.
+- `openAllDisclosures(selector)`, which clicks outward-in until nothing is `aria-expanded="false"`.
+  Below `lg` the section SHELL is collapsed as well as the table disclosure, so a single click opened
+  the shell and the first run measured **0 tables at 390 px** on all six mobile cells — a
+  false negative that would have read as "the matrix does not render on mobile".
+
 ### Completion Notes List
 
 **Task 1 — baseline and harness.** Baseline captured, CDP harness built and validated against all
@@ -862,6 +893,35 @@ rather than a path list, because the siblings exist at both `data/` and `data/in
 `profiles.py` derives its own per-kind names. The file-level shapes (`tournament.json.staged`) never
 entered the walk, since they do not end in `.json`. Three tests pin it: two skip cases and a control
 proving the same tampered bytes still fail in an ordinary directory.
+
+**Task 3 — R1, the pass-network re-scope.** The predicate now admits `nodes === null` alongside a
+non-empty edge array, and the section renders the pass matrix as a sortable table with no figure.
+Before this, all 104 real matches rendered an `EmptyStatePanel` over 23,597 edges sitting in the
+bundle.
+
+- **D7's three shapes are pinned exactly as ruled**, plus the two that surround them: `(null,
+  edges)` → ready; `([], edges)` → **empty**, deliberately, because 1.14 binds the emitter to `null`
+  never `[]` and routing `[]` down the populated branch hands the figure a network with no positions
+  (one throw per edge into the error boundary instead of an honest empty state); `(null, null)`,
+  `(null, [])` → empty; and 2.8's both-populated case unregressed.
+- **The matrix needed a name source, which the story did not call out.** `passEdgeRows` resolves
+  endpoint names from the NODE index and returns `[]` outright when there are no nodes — so relaxing
+  the predicate alone would have shipped a section whose every row read `—`. New `rosterIndex` +
+  `passMatrixRows` resolve names from the roster instead.
+- **`passMatrixRows` deliberately does NOT throw on an unresolved endpoint**, where `passEdgeRows`
+  does. That throw exists because a figure cannot draw an edge whose endpoint has no position; with
+  no figure, an unresolved name is a missing name, which `PassEdgeRow.fromName: string | null`
+  already models and the table renders as the ruled unknown glyph. Throwing would take down the only
+  surface this data has over one cell. Both builders share one comparator, and a test asserts the two
+  paths produce byte-identical rows on the fixture so the orders cannot drift.
+- **One locale key minted** (`viz.passNetwork.matrixOnlyNote`, both locales) after checking that none
+  covered it: `zero` is the per-team empty state and `tactical.empty.*` is whole-section absence,
+  and neither says "the connections are here, the figure is not". The copy states that the reports
+  carry no average-positions page at all rather than implying a pending feature.
+- **The table stays behind `ViewDataDisclosure` (SM-C2 applied, not dodged).** A match averages 227
+  edges; that many rows of four sortable columns in the initial DOM of a Lighthouse-≥90 route is
+  exactly the density trade SM-C2 rules on — behind disclosure, never deleted. The connection count
+  renders outside the disclosure so a reader knows what is behind it.
 
 **A10 — RULED: yes, a unit-test run re-walks the whole corpus.** ~8.5 s of a ~20 s suite, walking
 1,411 artifacts. Kept because the gate is the only thing between a schema drift and a published site,

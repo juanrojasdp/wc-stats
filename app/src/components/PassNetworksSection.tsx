@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import { DataTable } from "@/components/DataTable";
 import { EmptyStatePanel, useEmptyHeadline } from "@/components/EmptyStatePanel";
+import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import {
   DOT_SEPARATOR,
   PitchPanel,
@@ -31,11 +32,13 @@ import {
   involvementDomain,
   nodeKey,
   passEdgeRows,
+  passMatrixRows,
   passNetworkEdgeGeometry,
   passNetworkFigureCounts,
   passNetworkMarkers,
   passNodeRows,
   playerIdFromNodeKey,
+  rosterIndex,
   type PassEdgeRow,
   type PassNodeRow,
   quintileBands,
@@ -77,6 +80,17 @@ export interface PassNetworksSectionProps {
   edges: PassNetworkEdgeTable;
   home: SideRef;
   away: SideRef;
+  /*
+   * Every named player in the match, for the matrix-only branch (Story 2.19 R1).
+   *
+   * With nodes present, edge endpoints resolve to names off the node table. With
+   * `passNetworkNodes: null` — the shape on 104/104 real matches — the edges
+   * carry ids and nothing else, and `bellingham-jude-eng` is not a name a reader
+   * can use. The caller passes `metadata.lineups`' starters and substitutes
+   * flattened; that source is REQUIRED on the bundle (unlike `players`) and was
+   * measured to resolve 47,194 of 47,194 endpoints corpus-wide.
+   */
+  roster: readonly { playerId: string; name: string }[];
 }
 
 /*
@@ -93,7 +107,13 @@ const RANGE_SEPARATOR = "–";
 /** Joins the two panel notes into `PitchPanelProps.note`, which takes one string. */
 const NOTE_SEPARATOR = " ";
 
-export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSectionProps) {
+export function PassNetworksSection({
+  nodes,
+  edges,
+  home,
+  away,
+  roster,
+}: PassNetworksSectionProps) {
   const t = useT();
   const { locale } = useLocale();
   const emptyHeadline = useEmptyHeadline();
@@ -118,6 +138,12 @@ export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSe
    */
   const isMd = useMediaQuery(MD_MEDIA_QUERY);
 
+  /*
+   * Unconditional, and it must stay above every early return — the two branches
+   * below return different trees and React's hook order cannot depend on which.
+   */
+  const rosterMap = useMemo(() => rosterIndex(roster), [roster]);
+
   const title = t("viz.passNetwork.title");
 
   /*
@@ -128,6 +154,97 @@ export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSe
    */
   function countPhrase(count: number, one: DictionaryKey, many: DictionaryKey): string {
     return `${formatInteger(count, locale)} ${t(count === 1 ? one : many)}`;
+  }
+
+  const unknown = t("viz.table.unknown");
+  const edgeCaption = `${title}${CAPTION_SEPARATOR}${t("viz.table.captionEdges")}`;
+
+  /*
+   * HOISTED ABOVE THE BRANCHES (Story 2.19 R1): both the figure branch and the
+   * matrix-only branch render this exact table, and two copies of four column
+   * definitions is two places for a head, an alignment or a sort rule to drift.
+   */
+  const edgeColumns: TableColumn<PassEdgeRow>[] = [
+    {
+      key: "team",
+      headText: t("viz.table.team"),
+      headTitle: null,
+      render: (row) => row.teamCode,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.teamCode },
+    },
+    {
+      key: "from",
+      headText: t("viz.table.from"),
+      headTitle: null,
+      render: (row) => row.fromName ?? unknown,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.fromName },
+    },
+    {
+      key: "to",
+      headText: t("viz.table.to"),
+      headTitle: null,
+      render: (row) => row.toName ?? unknown,
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => row.toName },
+    },
+    {
+      key: "passes",
+      headText: t("viz.table.passes"),
+      headTitle: null,
+      render: (row) => (row.volume === null ? unknown : formatInteger(row.volume, locale)),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row.volume },
+    },
+  ];
+
+  /*
+   * THE MATRIX-ONLY BRANCH — Story 2.19 ruled decision R1, and the shape that
+   * ships on every one of the 104 real matches.
+   *
+   * `passNetworkNodes` is null corpus-wide while `passNetworkEdges` carries
+   * 23,597 rows. There are no coordinates, so there is no figure and there never
+   * will be one; what there is, is the full pass matrix UX-DR16 asks for in
+   * table form. Before this branch existed the whole section rendered an
+   * EmptyStatePanel over data that was sitting right there in the bundle.
+   *
+   * ORDER MATTERS: this must precede the `nodes === null` empty branch below,
+   * which would otherwise swallow it.
+   *
+   * The table stays behind `ViewDataDisclosure` rather than being rendered flat,
+   * and that is SM-C2's rule applied honestly — density moves behind disclosure,
+   * never gets deleted. A match averages 227 edges; 227 rows of four sortable
+   * columns in the initial DOM of a route that must hold Lighthouse >= 90 is
+   * exactly the trade SM-C2 exists to decide. The count sits OUTSIDE the
+   * disclosure so a reader knows what is behind it before opening.
+   */
+  if (nodes === null && edges !== null && edges.length > 0) {
+    const matrixRows = passMatrixRows(edges, rosterMap, home, away);
+    return (
+      <div className="flex flex-col gap-tile-gap">
+        <p className="type-stat-label text-ink-secondary">{t("viz.passNetwork.matrixOnlyNote")}</p>
+        <p className="type-caption tabular-nums text-ink-secondary">
+          {countPhrase(
+            edges.length,
+            "viz.passNetwork.connectionsCountOne",
+            "viz.passNetwork.connectionsCount"
+          )}
+        </p>
+        <ViewDataDisclosure
+          panelTitle={title}
+          surface="canvas"
+          trailing={<p className="type-caption text-ink-secondary">{t("viz.attribution")}</p>}
+        >
+          <DataTable
+            caption={edgeCaption}
+            columns={edgeColumns}
+            rows={matrixRows}
+            surface="canvas"
+          />
+        </ViewDataDisclosure>
+      </div>
+    );
   }
 
   /*
@@ -350,8 +467,6 @@ export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSe
   const nodeRows = passNodeRows(nodes, home, away);
   const edgeRows = passEdgeRows(edges, nodes, home, away);
 
-  const unknown = t("viz.table.unknown");
-
   /*
    * Every nullable column sorts on the NULL, never on the em dash it renders:
    * an unresolvable name or a node with no coordinates goes to the END of the
@@ -413,41 +528,6 @@ export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSe
     },
   ];
 
-  const edgeColumns: TableColumn<PassEdgeRow>[] = [
-    {
-      key: "team",
-      headText: t("viz.table.team"),
-      headTitle: null,
-      render: (row) => row.teamCode,
-      align: "text",
-      sort: { kind: "text", valueOf: (row) => row.teamCode },
-    },
-    {
-      key: "from",
-      headText: t("viz.table.from"),
-      headTitle: null,
-      render: (row) => row.fromName ?? unknown,
-      align: "text",
-      sort: { kind: "text", valueOf: (row) => row.fromName },
-    },
-    {
-      key: "to",
-      headText: t("viz.table.to"),
-      headTitle: null,
-      render: (row) => row.toName ?? unknown,
-      align: "text",
-      sort: { kind: "text", valueOf: (row) => row.toName },
-    },
-    {
-      key: "passes",
-      headText: t("viz.table.passes"),
-      headTitle: null,
-      render: (row) => (row.volume === null ? unknown : formatInteger(row.volume, locale)),
-      align: "numeric",
-      sort: { kind: "number", valueOf: (row) => row.volume },
-    },
-  ];
-
   /*
    * TWO tables in the ONE disclosure region, because the figure encodes two
    * things and UX-DR16 demands the same numbers for both: the node table is the
@@ -470,7 +550,6 @@ export function PassNetworksSection({ nodes, edges, home, away }: PassNetworksSe
   const panelNote = `${t("viz.passNetwork.nodeNote")}${NOTE_SEPARATOR}${t("viz.passNetwork.edgeNote")}`;
 
   const nodeCaption = `${title}${CAPTION_SEPARATOR}${t("viz.table.captionNodes")}`;
-  const edgeCaption = `${title}${CAPTION_SEPARATOR}${t("viz.table.captionEdges")}`;
 
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">

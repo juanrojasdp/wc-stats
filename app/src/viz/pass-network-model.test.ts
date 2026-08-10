@@ -25,11 +25,13 @@ import {
   involvementRadius,
   nodeDegree,
   passEdgeRows,
+  passMatrixRows,
   passNetworkEdgeGeometry,
   passNetworkFigureCounts,
   passNetworkMarkers,
   passNodeRows,
   quintileBands,
+  rosterIndex,
   teamIdOfPlayer,
   visibleEdgeGeometry,
 } from "@/viz/pass-network-model";
@@ -776,6 +778,94 @@ describe("data tables (Task 2.12 / 3.9)", () => {
   it("handles both tables empty", () => {
     expect(passNodeRows([], home, away)).toEqual([]);
     expect(passEdgeRows([], [], home, away)).toEqual([]);
+  });
+});
+
+/*
+ * THE MATRIX-ONLY PATH (Story 2.19 ruled decision R1).
+ *
+ * At the real corpus `passNetworkNodes` is null on 104/104 while
+ * `passNetworkEdges` carries 23,597 rows, so this is not an edge case — it is
+ * the ONLY path any reader of this product will ever take through this module.
+ * `passEdgeRows` cannot serve it: it resolves names out of the node index and
+ * returns `[]` outright when there are no nodes.
+ */
+describe("matrix rows without nodes (Story 2.19 R1)", () => {
+  const home = { teamId: "mexico", teamCode: "MEX" };
+  const away = { teamId: "south-africa", teamCode: "RSA" };
+
+  const ROSTER = rosterIndex([
+    { playerId: "a", name: "Ana ALVAREZ" },
+    { playerId: "b", name: "Beto BLANCO" },
+    { playerId: "c", name: "Caro CRUZ" },
+  ]);
+
+  it("resolves endpoint names from the roster instead of the node table", () => {
+    const rows = passMatrixRows([edge("a", "b", 9, "mexico")], ROSTER, home, away);
+    expect(rows).toEqual([
+      { key: "edge-row-0", teamCode: "MEX", fromName: "Ana ALVAREZ", toName: "Beto BLANCO", volume: 9 },
+    ]);
+  });
+
+  it("renders a MISSING name as null rather than throwing (the one deliberate divergence)", () => {
+    /*
+     * `passEdgeRows` fails loud on an unresolvable endpoint because its rows sit
+     * beside a figure that cannot draw the edge. Here there is no figure: an
+     * unresolved name is a missing NAME, which `PassEdgeRow.fromName` already
+     * models and the table renders as the ruled unknown glyph. Throwing would
+     * take the section — the only surface this data has — down over one cell.
+     */
+    const rows = passMatrixRows([edge("a", "zz-unknown", 4, "mexico")], ROSTER, home, away);
+    expect(rows[0].fromName).toBe("Ana ALVAREZ");
+    expect(rows[0].toName).toBeNull();
+  });
+
+  it("still throws on an unknown teamId — a side that is neither is a real defect", () => {
+    expect(() => passMatrixRows([edge("a", "b", 1, "atlantis")], ROSTER, home, away)).toThrow(
+      /atlantis/
+    );
+  });
+
+  it("orders identically to passEdgeRows — side, then volume descending, stably", () => {
+    /*
+     * The two builders share one comparator precisely so this holds. Asserted
+     * against the FIXTURE through both paths: same corpus, same order, and the
+     * only difference is where the names came from.
+     */
+    const nodes = nodesOf(m001);
+    const edges = edgesOf(m001);
+    const roster = rosterIndex(
+      nodes.map((n) => ({ playerId: n.playerId, name: n.playerName }))
+    );
+    const viaNodes = passEdgeRows(edges, nodes, home, away);
+    const viaRoster = passMatrixRows(edges, roster, home, away);
+    expect(viaRoster).toEqual(viaNodes);
+  });
+
+  it("handles an empty edge list", () => {
+    expect(passMatrixRows([], ROSTER, home, away)).toEqual([]);
+  });
+});
+
+describe("rosterIndex (Story 2.19 R1)", () => {
+  it("maps playerId to name and keeps the FIRST entry for a repeated id", () => {
+    const index = rosterIndex([
+      { playerId: "a", name: "Ana ALVAREZ" },
+      { playerId: "a", name: "Ana ALVAREZ DUPLICATE" },
+    ]);
+    expect(index.get("a")).toBe("Ana ALVAREZ");
+    expect(index.size).toBe(1);
+  });
+
+  it("drops an entry with an unreadable name rather than indexing a blank", () => {
+    const index = rosterIndex([
+      { playerId: "a", name: "" },
+      { playerId: "b", name: null as unknown as string },
+      { playerId: "c", name: "Caro CRUZ" },
+    ]);
+    expect(index.has("a")).toBe(false);
+    expect(index.has("b")).toBe(false);
+    expect(index.get("c")).toBe("Caro CRUZ");
   });
 });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { DefensiveActionsSection } from "@/components/DefensiveActionsSection";
 /*
@@ -104,6 +104,29 @@ interface FocusRequest {
   scroll: boolean;
 }
 
+/**
+ * Every named player in the match — starters and substitutes, both sides —
+ * flattened to the `{ playerId, name }` pairs `PassNetworksSection`'s matrix
+ * table resolves edge endpoints against (Story 2.19 R1).
+ *
+ * `metadata.lineups` and not `bundle.players`: `lineups` is REQUIRED on the
+ * bundle where `players` is `PlayerRecords | null`, and both were measured to
+ * resolve 47,194 of 47,194 edge endpoints across all 104 real matches. With two
+ * total sources, the one that cannot be absent wins.
+ *
+ * Pure and module-level so it stays trivially testable and so the memo in the
+ * component below has something stable to call.
+ */
+function matchRoster(bundle: MatchBundle): { playerId: string; name: string }[] {
+  return (["home", "away"] as const).flatMap((side) => {
+    const lineup = bundle.metadata.lineups[side];
+    return [...lineup.starters, ...lineup.substitutes].map((entry) => ({
+      playerId: entry.playerId,
+      name: entry.name,
+    }));
+  });
+}
+
 export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
   const t = useT();
   // AC 3's section-named absence copy, shared with the panel-level absence
@@ -117,6 +140,15 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
   // breakpoint, so a resize past lg still expands the untouched sections.
   const [overrides, setOverrides] = useState<Partial<Record<SectionId, boolean>>>({});
   const [focus, setFocus] = useState<FocusRequest | null>(null);
+
+  /*
+   * MEMOISED ON THE BUNDLE, not rebuilt in `sectionContent` (Story 2.19 R1).
+   * `sectionContent` runs once per section on every render, and a fresh array
+   * literal there would give `PassNetworksSection`'s roster index a new identity
+   * each time — rebuilding a 30-odd entry Map on every keystroke of any state
+   * this layer owns, for the one section that reads it.
+   */
+  const roster = useMemo(() => matchRoster(bundle), [bundle]);
 
   useEffect(() => {
     function openFromHash() {
@@ -194,6 +226,15 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
               teamCode: bundle.metadata.awayTeam.teamCode.toUpperCase(),
               name: bundle.metadata.awayTeam.name,
             }}
+            /*
+             * Story 2.19 R1. With `passNetworkNodes: null` — the shape on
+             * 104/104 real matches — the edges carry player IDS and no names, so
+             * the matrix table needs a roster to resolve them.
+             * `metadata.lineups` is REQUIRED on the bundle where `players` is
+             * nullable, and both were measured to resolve all 47,194 endpoints
+             * corpus-wide, so the required one is used.
+             */
+            roster={roster}
           />
         );
       case "momentum":

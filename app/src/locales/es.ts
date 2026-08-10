@@ -1087,6 +1087,21 @@ export const es = {
       passes: "pases",
       passesOne: "pase",
       zero: "El informe no registra una red de pases para este equipo.",
+      /*
+       * STORY 2.19 R1 — the ONE key this re-scope mints, and only after
+       * checking that no existing string covers it. `zero` above is the
+       * per-team "this team has no network" state and `tactical.empty.*` is the
+       * whole-section absence; neither states the thing a reader needs here,
+       * which is that the connections ARE present and the figure is not.
+       *
+       * The figure is not late, it is impossible: the official reports carry no
+       * average-positions page at all (0 of 5,448 pages), so there are no
+       * coordinates to place nodes with. The copy says what is missing and what
+       * remains rather than apologising for a pending feature.
+       */
+      matrixOnlyNote:
+        "El informe no incluye las posiciones medias de los jugadores, así que esta sección " +
+        "presenta la matriz de pases en tabla, sin la figura sobre el campo.",
       // No on-pitch text labels exist (an 11 px numeral does not fit a 10-20 px
       // circle at 390 px), so the note is what explains the size channel.
       nodeNote: "Nodo: jugador · el tamaño indica la participación.",

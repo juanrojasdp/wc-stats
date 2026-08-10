@@ -268,12 +268,60 @@ describe("sectionDataState: null vs [] (AC 3)", () => {
     expect(sectionDataState(withPlayers([]), "defensive-actions")).toBe("ready");
   });
 
-  it("needs BOTH pass-network tables to call the section ready", () => {
-    expect(sectionDataState(withEvents({ passNetworkNodes: [], passNetworkEdges: [] }), "pass-networks")).toBe(
-      "ready"
-    );
-    expect(sectionDataState(withEvents({ passNetworkNodes: null }), "pass-networks")).toBe("empty");
+  /*
+   * STORY 2.19 RULED DECISION R1 / D7 — this case previously read "needs BOTH
+   * pass-network tables to call the section ready", which is what made every
+   * one of the 104 real matches render an EmptyStatePanel over 23,597 edges.
+   *
+   * The corpus shape is `passNetworkNodes: null` with populated
+   * `passNetworkEdges`, on 104/104. The three shapes D7 names are pinned below,
+   * plus the two that surround them.
+   */
+  it("renders a populated edge table with NO nodes — the real-corpus shape (R1)", () => {
+    const realShape = withEvents({
+      passNetworkNodes: null,
+      passNetworkEdges: m001.events.passNetworkEdges,
+    });
+    expect(realShape.events.passNetworkEdges?.length).toBeGreaterThan(0);
+    expect(sectionDataState(realShape, "pass-networks")).toBe("ready");
+  });
+
+  it("keeps an EMPTY node array failing closed, even beside populated edges (D7)", () => {
+    /*
+     * Story 1.14 binds the emitter to `null`, NEVER `[]`, because
+     * `pass-network-model`'s `positionOf` throws on every unresolvable endpoint.
+     * `[]` is therefore a shape the contract cannot produce — and routing it
+     * down the populated branch would hand the FIGURE a network with no
+     * positions, reaching the error boundary through one throw per edge instead
+     * of an honest empty state.
+     */
+    const emptyNodes = withEvents({
+      passNetworkNodes: [],
+      passNetworkEdges: m001.events.passNetworkEdges,
+    });
+    expect(sectionDataState(emptyNodes, "pass-networks")).toBe("empty");
+  });
+
+  it("is empty with no edges at all, whatever the nodes say", () => {
     expect(sectionDataState(withEvents({ passNetworkEdges: null }), "pass-networks")).toBe("empty");
+    expect(
+      sectionDataState(
+        withEvents({ passNetworkNodes: null, passNetworkEdges: null }),
+        "pass-networks"
+      )
+    ).toBe("empty");
+    // No nodes AND no edges to tabulate: nothing to render either way.
+    expect(
+      sectionDataState(withEvents({ passNetworkNodes: null, passNetworkEdges: [] }), "pass-networks")
+    ).toBe("empty");
+  });
+
+  it("still calls the fixture's both-populated shape ready (2.8's case, unregressed)", () => {
+    expect(m001.events.passNetworkNodes?.length).toBeGreaterThan(0);
+    expect(sectionDataState(m001, "pass-networks")).toBe("ready");
+    // An empty EDGE array beside real nodes stays ready — "the page was present
+    // and listed zero connections" is a fact about the match (2.8's zero state).
+    expect(sectionDataState(withEvents({ passNetworkEdges: [] }), "pass-networks")).toBe("ready");
   });
 
   it("treats an empty goalkeeping array as ready and null as empty", () => {

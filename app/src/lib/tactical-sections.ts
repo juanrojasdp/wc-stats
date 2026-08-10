@@ -121,8 +121,46 @@ export function sectionDataState(bundle: MatchBundle, id: SectionId): SectionDat
     case "shot-maps":
       // Two panels, two tables (Story 2.7 ruled decision 2) — see the docblock.
       return events.shots !== null || events.crosses !== null ? "ready" : "empty";
-    case "pass-networks":
-      return events.passNetworkNodes !== null && events.passNetworkEdges !== null ? "ready" : "empty";
+    /*
+     * STORY 2.19 RULED DECISION R1 / D7 — the second ruled exception to this
+     * file's do-not-touch, and the reason is the whole cutover.
+     *
+     * 2.8's decision 13 required BOTH tables non-null. At the real corpus
+     * `passNetworkNodes` is null on 104/104 while `passNetworkEdges` carries
+     * **23,597 rows**, so that predicate returned "empty" for every match in the
+     * tournament and the fully-real pass matrix never reached a reader. This is
+     * the FR-22 failure mode inverted, at the largest scale it occurs anywhere
+     * in the product.
+     *
+     * The node figure is not buildable and never will be — 0 pitch frames on
+     * 208/208 pass-network pages and no average-positions page in any of the
+     * 5,448 report pages (the 1.14 AD-14 filing) — so this is not a temporary
+     * relaxation waiting on data.
+     *
+     * The three shapes, and why each lands where it does:
+     *
+     *   (null, non-empty edges) → READY. The matrix table renders alone; there
+     *     is no figure and the section says so. This is the shape that ships.
+     *   ([], anything)          → EMPTY, deliberately. Story 1.14 binds the
+     *     emitter to `null`, NEVER `[]`, because `pass-network-model.ts`'s
+     *     `positionOf` throws on every unresolvable endpoint. An empty node
+     *     array is therefore a shape the contract cannot produce, and routing it
+     *     down the populated branch hands the figure a network with no
+     *     positions — which used to reach the error boundary through 228 throws
+     *     instead of an honest empty state.
+     *   (null, null) or (null, []) → EMPTY. No edges is no matrix.
+     */
+    case "pass-networks": {
+      const nodes = events.passNetworkNodes;
+      const edges = events.passNetworkEdges;
+      if (edges === null) {
+        return "empty";
+      }
+      if (nodes === null) {
+        return edges.length > 0 ? "ready" : "empty";
+      }
+      return nodes.length > 0 ? "ready" : "empty";
+    }
     /*
      * STORY 2.9 RULED DECISION 3 — a ruled exception to the standing
      * do-not-touch on this file, and the ONLY predicate 2.9 changes.

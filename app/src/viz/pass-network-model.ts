@@ -650,6 +650,105 @@ export function passNodeRows(
 }
 
 /**
+ * A playerId → display-name index, for the matrix table when there are no nodes
+ * to resolve names from (Story 2.19 R1).
+ *
+ * The node table carries `playerName` on every node, so with nodes present the
+ * edge table resolves names for free. With `passNetworkNodes: null` — which is
+ * the shape on 104/104 real matches — the edges carry ids and nothing else, and
+ * an id is not a name a reader can use.
+ *
+ * `metadata.lineups` is the source because it is REQUIRED on the bundle where
+ * `players` is nullable, and because it is already what the Hero's lineup
+ * disclosure reads. Measured over the whole corpus before choosing it: both
+ * `metadata.lineups` and `players[]` resolve **47,194 of 47,194** edge endpoints
+ * across all 104 matches, with zero gaps in either. The required one wins.
+ *
+ * Deliberately takes the two already-flattened entry lists rather than the
+ * `MatchLineups` object: this module is inside the client-import seam and pure,
+ * and keeping the contract shape at the call site is what lets the caller feed
+ * it `players[]` instead if that ever becomes the better source.
+ */
+export function rosterIndex(
+  entries: readonly { playerId: string; name: string }[]
+): Map<string, string> {
+  const index = new Map<string, string>();
+  for (const entry of entries) {
+    const name = textOrNull(entry.name);
+    if (name !== null && !index.has(entry.playerId)) {
+      index.set(entry.playerId, name);
+    }
+  }
+  return index;
+}
+
+/**
+ * The matrix table WITHOUT a node table beside it (Story 2.19 R1, ruled D7).
+ *
+ * Same rows, same order and the same `PassEdgeRow` shape as `passEdgeRows`, but
+ * names come from the roster rather than from the node index — because in this
+ * branch there are no nodes at all.
+ *
+ * IT DOES NOT THROW ON AN UNRESOLVED ENDPOINT, and that is the one deliberate
+ * difference. `passEdgeRows` fails loud because its rows sit beside a FIGURE
+ * that cannot draw an edge whose endpoint has no position, and a silent drop
+ * would publish a network missing connections nobody can see are missing. Here
+ * there is no figure and no geometry: an unresolvable name is a missing NAME,
+ * which `PassEdgeRow.fromName: string | null` already models and the table
+ * already renders as the ruled unknown glyph. Throwing would take the whole
+ * section — the only surface this data has — into the error boundary over a
+ * cell.
+ */
+export function passMatrixRows(
+  edges: readonly PassNetworkEdge[],
+  roster: ReadonlyMap<string, string>,
+  home: LogSide,
+  away: LogSide
+): PassEdgeRow[] {
+  const decorated = edges.map((edge, position) => ({
+    edge,
+    position,
+    side: resolveSide(edge.teamId, home, away, "pass-network-model"),
+  }));
+  return [...decorated]
+    .sort((a, b) => compareEdgeRows(a, b, home))
+    .map(({ edge, position, side }) => ({
+      key: `edge-row-${position}`,
+      teamCode: side.teamCode,
+      fromName: roster.get(edge.fromPlayerId) ?? null,
+      toName: roster.get(edge.toPlayerId) ?? null,
+      volume: finiteOrNull(edge.volume),
+    }));
+}
+
+/**
+ * The stated default order, shared by both row builders so the two branches
+ * cannot drift: side (home first), then volume DESCENDING, then fromPlayerId,
+ * then toPlayerId, then emission position for total stability.
+ */
+function compareEdgeRows(
+  a: { edge: PassNetworkEdge; position: number },
+  b: { edge: PassNetworkEdge; position: number },
+  home: LogSide
+): number {
+  const bySide = sideRank(a.edge.teamId, home) - sideRank(b.edge.teamId, home);
+  if (bySide !== 0) {
+    return bySide;
+  }
+  const byVolume = (finiteOrNull(b.edge.volume) ?? 0) - (finiteOrNull(a.edge.volume) ?? 0);
+  if (byVolume !== 0) {
+    return byVolume;
+  }
+  if (a.edge.fromPlayerId !== b.edge.fromPlayerId) {
+    return a.edge.fromPlayerId < b.edge.fromPlayerId ? -1 : 1;
+  }
+  if (a.edge.toPlayerId !== b.edge.toPlayerId) {
+    return a.edge.toPlayerId < b.edge.toPlayerId ? -1 : 1;
+  }
+  return a.position - b.position;
+}
+
+/**
  * The edge table: EXPERIENCE's "full pass-matrix edges in table form". An 11x11
  * grid is explicitly not what the contract asks for.
  *
@@ -674,23 +773,7 @@ export function passEdgeRows(
     side: resolveSide(edge.teamId, home, away, "pass-network-model"),
   }));
   return [...decorated]
-    .sort((a, b) => {
-      const bySide = sideRank(a.edge.teamId, home) - sideRank(b.edge.teamId, home);
-      if (bySide !== 0) {
-        return bySide;
-      }
-      const byVolume = (finiteOrNull(b.edge.volume) ?? 0) - (finiteOrNull(a.edge.volume) ?? 0);
-      if (byVolume !== 0) {
-        return byVolume;
-      }
-      if (a.edge.fromPlayerId !== b.edge.fromPlayerId) {
-        return a.edge.fromPlayerId < b.edge.fromPlayerId ? -1 : 1;
-      }
-      if (a.edge.toPlayerId !== b.edge.toPlayerId) {
-        return a.edge.toPlayerId < b.edge.toPlayerId ? -1 : 1;
-      }
-      return a.position - b.position;
-    })
+    .sort((a, b) => compareEdgeRows(a, b, home))
     .map(({ edge, position, side }) => {
       // Same fail-loud rule the geometry uses: an endpoint with no node is a
       // data defect, and the table must not quietly print a blank for it.

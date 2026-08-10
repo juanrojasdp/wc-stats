@@ -656,6 +656,11 @@ export const en: Dictionary = {
       passes: "passes",
       passesOne: "pass",
       zero: "The report records no pass network for this team.",
+      // Story 2.19 R1 — see the note on the Spanish counterpart for why this key
+      // is minted rather than reusing `zero` or `tactical.empty.*`.
+      matrixOnlyNote:
+        "The report carries no average player positions, so this section presents the pass " +
+        "matrix as a table, without the pitch figure.",
       nodeNote: "Node: player · size shows involvement.",
       edgeNote: "Line: passes between two players · thickness and colour show how many.",
       showAll: "Show all passes",
