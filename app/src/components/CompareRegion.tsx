@@ -122,6 +122,13 @@ const COMPARE_LOG_LABEL = "CompareRegion render failed";
  */
 const ANNOUNCE_SETTLE_MS = 400;
 
+/**
+ * What joins two announced sentences. A const rather than a literal because a
+ * bare string in JSX trips the i18n gate — and because the shipped code had no
+ * separator at all, which read two sentences out as one word.
+ */
+const SENTENCE_JOIN = " ";
+
 /** One side's fetched artifact, discriminated by the type that fetched it. */
 type ComparePair =
   | { type: "players"; a: PlayerProfile; b: PlayerProfile }
@@ -145,6 +152,19 @@ function droppedSides(
   params: CompareParams,
   manifest: Record<CompareType, Map<string, SearchEntity>>
 ): RejectedSide[] {
+  /*
+   * 🔴 A BAD `type` DISQUALIFIES ITS OWN SLUGS FROM JUDGEMENT (code review
+   * 2026-08-07). `?type=team&a=mexico` used to do two contradictory things at
+   * once: fall the type back to `players` AND tell the reader "No encontramos
+   * mexico" — blaming them for a slug that is perfectly valid for the type they
+   * plainly meant, and that was only ever checked against the WRONG manifest.
+   *
+   * The slugs are still dropped from the URL by the cleanup effect; what is
+   * suppressed here is the accusation, which is the part that was false.
+   */
+  if (params.droppedType) {
+    return [];
+  }
   const listed = manifest[params.type];
   const dropped: RejectedSide[] = [];
   if (params.a !== null && !listed.has(params.a)) {
@@ -163,6 +183,35 @@ function matchHeads(bundle: MatchBundle): { a: string; b: string } {
     a: displayTeamCode(bundle.metadata.homeTeam.teamCode),
     b: displayTeamCode(bundle.metadata.awayTeam.teamCode),
   };
+}
+
+/**
+ * The comparison's layout-shaped placeholder: two headers, a row block, two
+ * charts.
+ *
+ * ONE COPY FOR BOTH WAITS. The route has two of them — the index fetch that
+ * precedes a pasted URL's comparison, and the artifact fetch that follows it —
+ * and a placeholder that does not match the layout it stands in for is a CLS hit
+ * rather than a courtesy. Two hand-maintained copies would drift the first time
+ * a section moved.
+ *
+ * It carries NO `aria-busy` and NO label of its own: each caller owns the
+ * announced state, and only one of them takes focus.
+ */
+function ComparisonSkeleton() {
+  return (
+    <div className="grid gap-tile-gap">
+      <div className="grid gap-tile-gap md:grid-cols-2">
+        <div className="skeleton h-16 w-full" />
+        <div className="skeleton h-16 w-full" />
+      </div>
+      <div className="skeleton mt-6 h-64 w-full" />
+      <div className="grid gap-tile-gap md:grid-cols-2">
+        <div className="skeleton h-[228px] w-full" />
+        <div className="skeleton h-[228px] w-full" />
+      </div>
+    </div>
+  );
 }
 
 /** What the picker and the headers need about one chosen entity. */
@@ -455,16 +504,27 @@ export function CompareRegion() {
     const listed = manifest[current.type];
     const badA = current.a !== null && !listed.has(current.a);
     const badB = current.b !== null && !listed.has(current.b);
-    if (!badA && !badB && !current.droppedType) {
+    /*
+     * `?a=X&b=X` IS NOT A COMPARISON, and it was reachable in two clicks. Side B
+     * is the one dropped: A is the side the reader fills first and the one every
+     * inbound `compareHref` from a profile populates, so dropping B leaves the
+     * partial state pointing at the entity they arrived with.
+     */
+    const duplicate = current.a !== null && current.a === current.b;
+    if (!badA && !badB && !duplicate && !current.droppedType) {
       return;
     }
-    // THE VALID SIDE IS PRESERVED (AC 5). Only the offending params are dropped,
-    // and this is a pure external-system write — nothing is assigned here.
+    /*
+     * THE VALID SIDE IS PRESERVED (AC 5) — except under `droppedType`, where
+     * neither slug was ever validated against the type it was written for and
+     * keeping one would silently reinterpret it as a player id. This is a pure
+     * external-system write; nothing is assigned here.
+     */
     replaceUrlQuery(
       compareSearch({
         type: current.type,
-        a: badA ? null : current.a,
-        b: badB ? null : current.b,
+        a: current.droppedType || badA ? null : current.a,
+        b: current.droppedType || badB || duplicate ? null : current.b,
       })
     );
   }, [search, indexReady, manifest]);
@@ -478,8 +538,19 @@ export function CompareRegion() {
   const type = params.type;
   const idA = params.a;
   const idB = params.b;
+  /*
+   * `idA !== idB` IS PART OF "BOTH LISTED", not a separate check. The cleanup
+   * effect above drops the duplicate, but it lands one render later — and without
+   * this the degenerate pair renders in the meantime with duplicate React keys
+   * and two byte-identical figure captions.
+   */
   const bothListed =
-    indexReady && idA !== null && idB !== null && manifest[type].has(idA) && manifest[type].has(idB);
+    indexReady &&
+    idA !== null &&
+    idB !== null &&
+    idA !== idB &&
+    manifest[type].has(idA) &&
+    manifest[type].has(idB);
 
   const [dataAttempt, setDataAttempt] = useState(0);
   const busyRef = useRef<HTMLDivElement>(null);
@@ -682,19 +753,64 @@ export function CompareRegion() {
     after: t("compare.empty.headlineAfter"),
   });
 
+  /**
+   * EVERY OUTCOME THIS REGION CAN REACH, AS ONE SENTENCE.
+   *
+   * 🔴 THREE DEFECTS ARE FIXED BY BUILDING IT HERE RATHER THAN INLINE IN JSX
+   * (code review 2026-08-07). Adjacent JSX children are concatenated with NO
+   * separator, so a settled keystroke beside a loaded comparison was announced as
+   * "5 resultadosComparación cargada." — two sentences read as one word. The
+   * `rejected`, `indexStatus === "error"` and `indexStatus === "invalid"` panels
+   * were not announced AT ALL, though each is a visible change of state. And a
+   * reader who never leaves the picker heard the load confirmation re-read on
+   * every settled keystroke, because any change to a live region's text re-reads
+   * ALL of it — which is why the picker's counts now live in their own region
+   * below rather than sharing this one.
+   */
+  const regionSentences: string[] = [];
+  if (indexStatus === "error") {
+    regionSentences.push(t("compare.region.error"));
+  }
+  if (indexStatus === "invalid") {
+    regionSentences.push(t("compare.region.invalid"));
+  }
+  for (const entry of rejected) {
+    regionSentences.push(
+      composeInvalidHeadline({
+        before: t("compare.invalid.headlineBefore"),
+        slug: entry.slug,
+        after: t("compare.invalid.headlineAfter"),
+      })
+    );
+  }
+  if (dataStatus === "loaded") {
+    regionSentences.push(t("compare.region.loaded"));
+  }
+  if (dataStatus === "error") {
+    regionSentences.push(t("compare.region.error"));
+  }
+  if (dataStatus === "invalid") {
+    regionSentences.push(t("compare.region.invalid"));
+  }
+  const regionAnnouncement = regionSentences.join(SENTENCE_JOIN);
+
   return (
     <div className="mt-6">
       {/*
-       * Persistent polite live region, mounted UNCONDITIONALLY at the top — "a
-       * live region that mounts already-populated does not announce reliably" is
-       * stated verbatim in four files in this tree. It carries the picker's
-       * result counts and the comparison's own load outcome.
+       * TWO polite regions, both mounted UNCONDITIONALLY — "a live region that
+       * mounts already-populated does not announce reliably" is stated verbatim in
+       * four files in this tree.
+       *
+       * They are SEPARATE because they answer to different events. The picker's
+       * result count changes on every settled keystroke; the comparison's outcome
+       * changes when an artifact lands. Sharing one region made each re-read the
+       * other's text, which is the stale-confirmation defect above.
        */}
       <span aria-live="polite" className="sr-only">
         {announcement}
-        {dataStatus === "loaded" ? t("compare.region.loaded") : null}
-        {dataStatus === "error" ? t("compare.region.error") : null}
-        {dataStatus === "invalid" ? t("compare.region.invalid") : null}
+      </span>
+      <span aria-live="polite" className="sr-only">
+        {regionAnnouncement}
       </span>
 
       <ComparePicker
@@ -703,6 +819,8 @@ export function CompareRegion() {
         type={type}
         aName={refA?.name ?? null}
         bName={refB?.name ?? null}
+        aId={idA}
+        bId={idB}
         onEngage={handleEngage}
         onAnnounce={announce}
         onTypeChange={handleTypeChange}
@@ -770,6 +888,29 @@ export function CompareRegion() {
         ) : null}
 
         {/*
+         * 🔴 THE INDEX IS STILL IN FLIGHT AND THE URL ALREADY NAMES A SIDE — AC
+         * 6's OWN PATH, and it rendered a blank, unannounced region until the
+         * fetch landed (code review 2026-08-07).
+         *
+         * Every other branch on this route is gated on `chosenCount === 0`, on
+         * `indexReady`, or on `bothListed` (which implies `indexReady`), and NONE
+         * of them can be true first: a pasted `?a=&b=` has a non-zero
+         * `chosenCount`, so the empty state is suppressed, while the partial,
+         * loading, error and comparison branches all wait on the manifest. The
+         * reader who followed a shared link — the exact reader UJ-3 is about —
+         * saw the picker over dead space with nothing to announce it.
+         *
+         * It is `aria-busy` and NOT focused: unlike the retry path below there is
+         * no unmounted panel that owned the caret, so moving focus here would
+         * steal it from a reader already tabbing the picker.
+         */}
+        {chosenCount > 0 && indexStatus === "loading" ? (
+          <div aria-busy="true" aria-label={t("compare.region.loading")}>
+            <ComparisonSkeleton />
+          </div>
+        ) : null}
+
+        {/*
          * THE PARTIAL STATE, SINGLE-COLUMN (AC 5). One side chosen, the other
          * still open.
          *
@@ -806,18 +947,8 @@ export function CompareRegion() {
             tabIndex={-1}
             aria-busy="true"
             aria-label={t("compare.region.loading")}
-            className="grid gap-tile-gap"
           >
-            {/* Layout-shaped: two headers, a row block, two charts. */}
-            <div className="grid gap-tile-gap md:grid-cols-2">
-              <div className="skeleton h-16 w-full" />
-              <div className="skeleton h-16 w-full" />
-            </div>
-            <div className="skeleton mt-6 h-64 w-full" />
-            <div className="grid gap-tile-gap md:grid-cols-2">
-              <div className="skeleton h-[228px] w-full" />
-              <div className="skeleton h-[228px] w-full" />
-            </div>
+            <ComparisonSkeleton />
           </div>
         ) : null}
 

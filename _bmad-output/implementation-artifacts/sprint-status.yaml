@@ -59,7 +59,38 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-08-07
+last_updated: 2026-08-09
+# 2026-08-09: story 2-17 CODE REVIEW complete, status review -> done. COMPARISON MODE, /compare.
+#             RESUMED AN INTERRUPTED REVIEW rather than re-running the layers: the findings record
+#             (3 decisions ruled 1a/2a/3a, 18 patches, 7 deferred, 2 dismissed) was already written
+#             to the story file but had never been committed, and four of its patches sat in a dirty
+#             tree. Juan chose to finish the existing list. That uncommitted state was committed
+#             FIRST as 5eaa654, before any new edit — a concurrent session had already swept four of
+#             this story's files into 2.16's commit (82888b4), which is what made decision D3a moot.
+#             ALL 18 PATCHES NOW CLOSED. The ones with teeth: /compare had no <h1> at all (only
+#             route in the app without one) and its side headers ran h3 under a missing h1; a pasted
+#             URL naming both sides rendered a BLANK, UNANNOUNCED region for the whole index fetch —
+#             AC 6's own path, because every branch was gated on chosenCount===0, indexReady or
+#             bothListed and none can be true first; the lazy chart fallback was pinned to
+#             heightClass(5) while TeamFigures mounts at (8), shifting ~110 px per chart x2;
+#             ?a=X&b=X was reachable in two clicks; and a bad `type` param both rewrote the URL and
+#             blamed the reader for a slug it had checked against the wrong manifest.
+#             THREE GATES COULD NOT FAIL and were rebuilt: the AR-10 "no state holds the comparison"
+#             regex was defeated by renaming a variable (now an ALLOW-LIST of the seven legal slots,
+#             so any new state goes red until it is written down); the combobox count was a >=2
+#             floor that passed with a SearchField deleted (now measured as a difference against
+#             /about, the header-only baseline); and every team-model test compared Mexico with
+#             ITSELF, which is why the inverted-leader bug D1a fixed had survived at all.
+#             ONE STRUCTURAL MOVE: seriesLabelIndex + its 8 tests out of TacticalCharts into
+#             viz/phases-model — a VALUE import between two recharts leaves broke the Recharts
+#             Contract, and moving it also returns TacticalCharts.tsx to D9's declared "only edit".
+#             VERIFIED: lint 0, tsc 0, build green, 1,238 tests / 45 files all passing, and the
+#             vendor chunk re-measured on the export at exactly 1 (361.9 KB) — the risk the second
+#             dynamic() handle carried, checked rather than assumed.
+#             FILED NOT FIXED: two entities sharing a display name still render byte-identical
+#             captions. The route now guarantees a !== b three ways, but distinct IDS are not
+#             distinct NAMES and the caption prefix is the name; unreachable on the 2-player
+#             fixture, owner 2.19 at the real-data swap.
 # 2026-08-07: story 2-17 IMPLEMENTED and moved to review — COMPARISON MODE, /compare (FR-29, UJ-3).
 #             Resumed from a partition the story itself recorded as "NOT READY FOR REVIEW": the URL
 #             layer (74993a5), the seriesLabelIndex sentinel (6c90d80) and the compare locale
@@ -3298,7 +3329,7 @@ development_status:
   2-14-header-search: done
   2-15-player-profile: done
   2-16-team-profile: done
-  2-17-comparison-mode: review
+  2-17-comparison-mode: done
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
   2-19-performance-accessibility-hardening-real-data-swap-launch: backlog

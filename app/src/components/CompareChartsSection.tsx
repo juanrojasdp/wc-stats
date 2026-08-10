@@ -81,10 +81,44 @@ function ChartFallback({ heightClass }: { heightClass: string }) {
   );
 }
 
-const CompareBarChart = dynamic(
-  () => import("@/components/Charts").then((module) => module.CompareBarChart),
-  { ssr: false, loading: () => <ChartFallback heightClass={compareBarChartHeightClass(5)} /> }
-);
+/**
+ * The two category counts this route mounts the compare bar at: five speed zones
+ * for `type=players`, eight in-possession phases for `type=teams`.
+ *
+ * Named constants because each count is used TWICE — once for the lazy
+ * boundary's fallback height and once for the chart's own — and the shipped code
+ * hard-coded them separately.
+ */
+const PLAYER_ZONE_COUNT = 5;
+const TEAM_PHASE_COUNT = 8;
+
+/**
+ * 🔴 ONE LAZY HANDLE PER MOUNTED HEIGHT, because `next/dynamic`'s `loading` takes
+ * NO PROPS (code review 2026-08-07).
+ *
+ * The shipped code declared a single handle whose fallback was pinned to
+ * `compareBarChartHeightClass(5)` — correct for `PlayerFigures`, 106 px short for
+ * `TeamFigures`, which mounts at `(8)`. Every `type=teams` comparison therefore
+ * jumped ~110 px per chart, TWICE, the instant the chunk resolved: the exact CLS
+ * defect the "fallback and chart call the same height function" rule exists to
+ * prevent, reintroduced by the one call site that could not pass an argument.
+ *
+ * BOTH HANDLES POINT AT THE SAME IMPORT SPECIFIER, so `next/dynamic` still
+ * dedupes them into ONE async chunk group and the export keeps exactly one
+ * recharts vendor copy — the property `Charts.tsx` exists to hold and
+ * `static-output.test.ts` counts. Two handles cost two module-scope objects and
+ * nothing at the network layer; `PhasesSection` already ships five for the same
+ * reason.
+ */
+function lazyCompareBarChart(categoryCount: 5 | 8) {
+  return dynamic(() => import("@/components/Charts").then((module) => module.CompareBarChart), {
+    ssr: false,
+    loading: () => <ChartFallback heightClass={compareBarChartHeightClass(categoryCount)} />,
+  });
+}
+
+const PlayerCompareBarChart = lazyCompareBarChart(PLAYER_ZONE_COUNT);
+const TeamCompareBarChart = lazyCompareBarChart(TEAM_PHASE_COUNT);
 
 const DistributionChart = dynamic(
   () => import("@/components/Charts").then((module) => module.DistributionChart),
@@ -449,7 +483,7 @@ function PlayerFigures({
             figureRefs.current[index] = node;
           }}
         >
-          <CompareBarChart
+          <PlayerCompareBarChart
             points={categories.map((label, position) => ({
               label,
               value: entry.values[position] ?? 0,
@@ -466,10 +500,10 @@ function PlayerFigures({
               entityName: entry.ref.name,
               unitLabel,
             })}
-            heightClass={compareBarChartHeightClass(5)}
+            heightClass={compareBarChartHeightClass(PLAYER_ZONE_COUNT)}
             colorVar={entry.side === "a" ? "--viz-team-a" : "--viz-team-b"}
             hatch={entry.side === "b"}
-            seriesCode={entry.ref.code ?? entry.ref.name}
+            seriesCode={entry.ref.code}
           />
         </CompareFigure>
       ))}
@@ -529,7 +563,7 @@ function TeamFigures({
             figureRefs.current[index] = node;
           }}
         >
-          <CompareBarChart
+          <TeamCompareBarChart
             points={categories.map((label, position) => ({
               label,
               value: entry.values[position] ?? 0,
@@ -544,10 +578,10 @@ function TeamFigures({
               entityName: entry.ref.name,
               unitLabel: null,
             })}
-            heightClass={compareBarChartHeightClass(8)}
+            heightClass={compareBarChartHeightClass(TEAM_PHASE_COUNT)}
             colorVar={entry.side === "a" ? "--viz-team-a" : "--viz-team-b"}
             hatch={entry.side === "b"}
-            seriesCode={entry.ref.code ?? entry.ref.name}
+            seriesCode={entry.ref.code}
           />
         </CompareFigure>
       ))}

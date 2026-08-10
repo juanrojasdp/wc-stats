@@ -1767,8 +1767,28 @@ describe("Story 2.11c's receiving log and log links", () => {
      *
      * DERIVED FROM STAND-IN NAMES the way `hubLeaderboardCaptions` derives from
      * the fixture's board list. The names are artifact data (FR-30 — they
-     * translate nowhere), and the route guarantees `a !== b`: both are distinct
-     * manifest ids by construction, so two equal names cannot reach this shape.
+     * translate nowhere).
+     *
+     * ⚠️ WHAT THE ROUTE ACTUALLY GUARANTEES, RESTATED HONESTLY (code review
+     * 2026-08-07). This comment used to assert "the route guarantees `a !== b`",
+     * which was simply FALSE when it was written: `?a=X&b=X` was reachable in two
+     * clicks, and a self-comparison renders two byte-identical captions — the one
+     * input that breaks distinctness on this route, and the one this inventory is
+     * distinct-by-construction against ever seeing.
+     *
+     * `a !== b` IS TRUE NOW, and it is enforced in three places rather than
+     * assumed: `ComparePicker` filters each side's pick out of the other's
+     * corpus, `CompareRegion`'s cleanup effect drops a duplicate `b` from the
+     * URL, and `bothListed` refuses to render the pair in the render that
+     * precedes that write. `compare/static-output.test.ts` pins all three.
+     *
+     * 🔴 DISTINCT IDS ARE STILL NOT DISTINCT NAMES, and the caption prefix is the
+     * NAME. `search-model.ts` records that "Emiliano MARTINEZ occurs twice in the
+     * real corpus", so two different players CAN produce two byte-identical
+     * captions on this route. The fixture corpus carries two players with
+     * different names, so nothing here is red today — it is a real gap in what
+     * this inventory can see, filed in `deferred-work.md` rather than papered
+     * over with a stand-in pair chosen to avoid it.
      *
      * Every order statement is a SHIPPED key reused verbatim:
      * `player.caption.physical` for the speed bands, `viz.phases.tableCaption`

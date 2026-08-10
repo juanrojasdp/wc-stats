@@ -11,9 +11,13 @@ import {
   YAxis,
 } from "recharts";
 
-import { seriesLabelIndex } from "@/components/TacticalCharts";
 import { cn } from "@/lib/utils";
-import { AXIS_LABEL_MAX_CHARS, AXIS_LABEL_MAX_LINES, wrapAxisLabel } from "@/viz/phases-model";
+import {
+  AXIS_LABEL_MAX_CHARS,
+  AXIS_LABEL_MAX_LINES,
+  seriesLabelIndex,
+  wrapAxisLabel,
+} from "@/viz/phases-model";
 
 /*
  * ═══════ THE FOURTH RECHARTS LEAF: `/compare`'s per-side bar (Story 2.17) ═══
@@ -141,11 +145,19 @@ function CategoryTick(props: { x?: number; y?: number; payload?: { value?: strin
  * longest bar (UX-DR11 channel 1, decision 10(a)). NOT A LEGEND, and shown ALWAYS.
  *
  * 🔴 THE `-1` SENTINEL IS HONOURED HERE, and this route is why it exists.
- * `seriesLabelIndex` is imported from `TacticalCharts` — the PURE decision, shared
- * — and returns `-1` for a FLAT series, which no bar index can equal, so the
- * guard below suppresses the label rather than anchoring it at the axis origin.
- * That case is real on this route: 209 corpus players have no appearances at all,
- * so an all-zero speed-zone series is the common comparison, not the edge.
+ * `seriesLabelIndex` is imported from `@/viz/phases-model` — the PURE decision,
+ * shared — and returns `-1` for a FLAT series, which no bar index can equal, so
+ * the guard below suppresses the label rather than anchoring it at the axis
+ * origin. That case is real on this route: 209 corpus players have no appearances
+ * at all, so an all-zero speed-zone series is the common comparison, not the edge.
+ *
+ * THE SAME SENTINEL CARRIES THE "NO CODE" CASE (code review 2026-08-07). This
+ * gutter is 34 px — it holds a three-letter code and nothing else. The section
+ * used to fall back to the entity's FULL DISPLAY NAME when no team code resolved,
+ * which the SVG viewport then clipped silently, painting a fragment of a player's
+ * name as though it were their team. Suppressing is honest and costs the reader
+ * nothing: `CompareFigure` prints the entity's name directly above the chart and
+ * the figure summary names it again.
  *
  * A LOCAL PAINTER over that shared model, on `CategoryTick`'s terms exactly:
  * `TacticalCharts`' own `SeriesEndLabel` is private, sits on a two-series
@@ -229,8 +241,12 @@ export interface CompareBarChartProps {
    * "transparent gaps" case decision 10(b) bans by name.
    */
   hatch: boolean;
-  /** The entity's short code, painted at this series' longest bar. */
-  seriesCode: string;
+  /**
+   * The entity's short code, painted at this series' longest bar — or `null`
+   * when none resolved, which SUPPRESSES the label. Never a display name: the
+   * gutter is 34 px and anything longer is clipped by the SVG viewport.
+   */
+  seriesCode: string | null;
 }
 
 /**
@@ -270,7 +286,12 @@ export function CompareBarChart({
    * where the browser tolerates the fill.
    */
   const patternId = `compare-b-hatch-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
-  const labelIndex = seriesLabelIndex(points.map((point) => point.value));
+  /*
+   * `-1` FOR BOTH SUPPRESSION CAUSES — a flat series, and a series with no code
+   * to paint. One sentinel, one guard in `SeriesEndLabel`, no second branch.
+   */
+  const labelIndex =
+    seriesCode === null ? -1 : seriesLabelIndex(points.map((point) => point.value));
 
   return (
     <div role="img" aria-label={figureSummary} className="min-w-0">
@@ -367,7 +388,13 @@ export function CompareBarChart({
             >
               <LabelList
                 dataKey="value"
-                content={<SeriesEndLabel labelIndex={labelIndex} code={seriesCode} colorVar={colorVar} />}
+                content={
+                  <SeriesEndLabel
+                    labelIndex={labelIndex}
+                    code={seriesCode ?? ""}
+                    colorVar={colorVar}
+                  />
+                }
               />
             </Bar>
           </BarChart>

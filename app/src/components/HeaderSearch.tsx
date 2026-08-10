@@ -543,7 +543,9 @@ export function HeaderSearch() {
  *  · `fieldLabel` names the field, because a route with TWO of these needs them
  *    told apart ("Lado A" / "Lado B"); the header's single field keeps
  *    `search.label`. It is NOT called `label`: that name is on the sixteen-name
- *    i18n gated list, and the gate matches `^label$` exactly.
+ *    i18n gated list, and the gate matches `^label$` exactly. It names the FIELD
+ *    ONLY — the listbox keeps `search.listLabel` on every call site, for the
+ *    reason recorded at that assignment below.
  */
 export function SearchField({
   corpus,
@@ -947,7 +949,19 @@ export function SearchField({
 
   const label = fieldLabel ?? t("search.label");
   const placeholder = t("search.placeholder");
-  const listLabel = fieldLabel ?? t("search.listLabel");
+  /*
+   * 🔴 THE LISTBOX KEEPS ITS OWN NAME (code review 2026-08-07). `fieldLabel`
+   * named BOTH, so on `/compare` the input and the listbox it owns both announced
+   * as "Lado A" — the reader heard the same name twice for two different objects
+   * and nothing said which one they had landed on. The field names the SIDE; the
+   * listbox names WHAT IT HOLDS, and those are different facts.
+   *
+   * Two listboxes on that route therefore share one name, which is correct here:
+   * `use-glossary-popover.ts`'s page-wide single-open registry means only ever
+   * one of them is in the accessibility tree (UX-DR15 forbids the depth-2 stack),
+   * so there is nothing for the name to disambiguate against.
+   */
+  const listLabel = t("search.listLabel");
 
   return (
     <div ref={fieldRef} className="relative w-full">

@@ -56,8 +56,16 @@ import type { SearchEntity, SearchEntityKind } from "@/lib/search-model";
  * from Task 4.5, not as an omission.
  */
 
-/** Composition glyph, hoisted: a bare literal in JSX trips the i18n gate. */
-const SIDE_JOIN = " ";
+/**
+ * What joins the swap control's verb to the pair it will exchange —
+ * "Intercambiar lados: México / Brasil".
+ *
+ * Hoisted because a bare literal in JSX trips the i18n gate, and punctuation
+ * rather than a bare space because the docblock at the call site advertised the
+ * colon while the code shipped without it (code review 2026-08-07). The colon is
+ * the same in both locales, which is why it is a const and not a key.
+ */
+const SIDE_JOIN = ": ";
 
 /**
  * The corpus kind a comparison type selects over.
@@ -100,6 +108,8 @@ export function ComparePicker({
   type,
   aName,
   bName,
+  aId,
+  bId,
   onEngage,
   onAnnounce,
   onTypeChange,
@@ -113,6 +123,9 @@ export function ComparePicker({
   /** The chosen entities' display names, or null. Used only for accessible names. */
   aName: string | null;
   bName: string | null;
+  /** The chosen entities' ids, or null — each side filters the other's out. */
+  aId: string | null;
+  bId: string | null;
   onEngage: () => void;
   onAnnounce: (sentence: string) => void;
   onTypeChange: (next: CompareType) => void;
@@ -130,6 +143,21 @@ export function ComparePicker({
    */
   const kind = CORPUS_KIND[type];
   const scoped = corpus.filter((entity) => entity.kind === kind);
+  /*
+   * 🔴 NEITHER SIDE MAY OFFER WHAT THE OTHER ALREADY HOLDS (code review
+   * 2026-08-07). `?a=X&b=X` was reachable in two clicks — nothing filtered the
+   * opposite pick out of the corpus — and a self-comparison produces duplicate
+   * React keys, two byte-identical figure captions and two identically named
+   * mini-header entries, which is also the one input the caption inventory
+   * cannot see.
+   *
+   * FILTERED HERE RATHER THAN REJECTED ON SELECT: an option the reader can see,
+   * highlight and choose, only to have it silently do nothing, is worse than one
+   * that was never offered. The URL cleanup in `CompareRegion` still covers the
+   * pasted case, which this cannot reach.
+   */
+  const scopedForA = bId === null ? scoped : scoped.filter((entity) => entity.id !== bId);
+  const scopedForB = aId === null ? scoped : scoped.filter((entity) => entity.id !== aId);
 
   const sideALabel = t("compare.picker.sideA");
   const sideBLabel = t("compare.picker.sideB");
@@ -145,9 +173,19 @@ export function ComparePicker({
 
   return (
     <section className="mt-6">
-      {/* The picker names itself for a reader listing the page's regions; the
-          visible type selector carries its own group label below. */}
-      <h2 className="sr-only">{t("compare.heading")}</h2>
+      {/*
+       * THE ROUTE'S `<h1>`, AND IT IS `sr-only` — the shipped shape on every
+       * other route (`MatchHero`, `PlayerHero`, `TeamHero` all emit exactly one
+       * sr-only `<h1>`). Code review 2026-08-07: this shipped as an `<h2>`, which
+       * left `/compare` the ONLY route in the app with no `<h1>` at all and its
+       * document outline starting one level down.
+       *
+       * It lives here rather than in `CompareRegion` because the picker is the
+       * route's permanent first region — the one block that renders in every one
+       * of the four states, including the pre-rendered empty shell. A heading
+       * mounted anywhere else would be absent from `out/compare/index.html`.
+       */}
+      <h1 className="sr-only">{t("compare.heading")}</h1>
 
       {/*
        * The four non-negotiables at every shipped `ToggleGroup` call site:
@@ -192,7 +230,7 @@ export function ComparePicker({
       <div className="mt-tile-gap grid gap-tile-gap md:grid-cols-[1fr_auto_1fr] md:items-end">
         <div className="min-w-0">
           <SearchField
-            corpus={scoped}
+            corpus={scopedForA}
             status={corpusStatus}
             onEngage={onEngage}
             onAnnounce={onAnnounce}
@@ -214,7 +252,7 @@ export function ComparePicker({
 
         <div className="min-w-0">
           <SearchField
-            corpus={scoped}
+            corpus={scopedForB}
             status={corpusStatus}
             onEngage={onEngage}
             onAnnounce={onAnnounce}

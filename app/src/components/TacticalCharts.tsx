@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   AXIS_LABEL_MAX_CHARS,
   AXIS_LABEL_MAX_LINES,
+  seriesLabelIndex,
   wrapAxisLabel,
 } from "@/viz/phases-model";
 
@@ -233,50 +234,6 @@ function SeriesEndLabel(props: {
       {code}
     </text>
   );
-}
-
-/**
- * The index of a series' largest value — where its direct label is anchored, or
- * `-1` when no value beats the first and the label must be suppressed.
- *
- * 🔴 THE `-1` SENTINEL IS LOAD-BEARING (Story 2.17, ruled D9; ledger owner line
- * "the first successor story to reuse `DistributionChart`"). `best` starts at 0
- * and the test is strict `>`, so an ALL-EQUAL series — the all-zero case
- * included — used to return `0` for BOTH series. `SeriesEndLabel` then anchored
- * both team codes at the axis origin, overlapping, and decision 10(a)'s primary
- * UX-DR11 channel failed silently: the two direct labels are the ONLY thing
- * distinguishing the series once `<Legend>` is banned.
- *
- * Suppression rather than a fallback position is correct: when every value is
- * equal there is no "largest" bar to label, and drawing the code at an arbitrary
- * index would assert a peak the data does not have.
- *
- * `SeriesEndLabel`'s existing `if (index !== labelIndex) return null` guard
- * (`:212-214`) is ALREADY sentinel-compatible — no bar index can equal -1, so
- * the label suppresses itself with no change there.
- *
- * ⚠️ THE CONDITION IS "EVERY VALUE EQUAL", NOT D9's LITERAL "no value beats the
- * first". Those differ, and the literal form is a regression: on `[10, 3, 2]`
- * nothing beats the first value either, so it would suppress the label on a
- * perfectly ordinary series whose peak simply sits at index 0 — silently
- * deleting a label that ships correctly today. The degenerate case the ruling
- * actually describes, and the only one where both series collide at the origin,
- * is the FLAT series. That is what is tested for here.
- */
-export function seriesLabelIndex(values: readonly number[]): number {
-  if (values.length === 0) {
-    return -1;
-  }
-  if (values.every((value) => value === values[0])) {
-    return -1;
-  }
-  let best = 0;
-  for (let index = 1; index < values.length; index += 1) {
-    if (values[index] > values[best]) {
-      best = index;
-    }
-  }
-  return best;
 }
 
 /**

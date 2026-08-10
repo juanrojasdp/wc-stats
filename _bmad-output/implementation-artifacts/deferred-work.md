@@ -4083,3 +4083,22 @@ but not actionable in this story.
   the sticky mini-header exists only inside the charts section and only below `md`, so the other
   anchors never land under it — but the coverage is narrower than the task text reads.
   **Owner:** a successor if the mini-header is ever hoisted above the charts section.
+
+## Filed by the code review of story 2-17-comparison-mode (2026-08-09)
+
+- **Two entities with the SAME DISPLAY NAME still produce byte-identical captions on `/compare`.**
+  The route now guarantees `a !== b` three ways (the picker filters each side's pick out of the
+  other's corpus, the URL cleanup drops a duplicate `b`, and `idA !== idB` gates `bothListed`), and
+  `i18n.test.ts`'s composed-caption inventory records that guarantee. But **distinct ids are not
+  distinct names**, and the caption prefix is the NAME: `CompareChartsSection` composes every
+  caption, table name and mini-header entry as `${ref.name} — …`. `search-model.ts` records that
+  "Emiliano MARTINEZ occurs twice in the real corpus", so two different players on the two sides can
+  render two identical `<caption>`s, two identical table names, and a mini-header that cannot say
+  which figure is on screen — which also leaves the route's single polite sort announcement unable
+  to name the table that moved.
+  Not reachable today: the fixture index carries two players with different names, so nothing is
+  red. The fix is a design choice this review did not have the standing to make — the disambiguator
+  would be the side's `detail` line (team and position, already on `SideRef`) or the entity id, and
+  either changes six shipped captions plus the two figure headings.
+  **Owner:** Story 2.19, at the real-data swap — that is the first point the collision becomes
+  reachable, since the real corpus is where the duplicate names live.

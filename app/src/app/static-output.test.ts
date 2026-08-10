@@ -903,9 +903,19 @@ describe("global-chrome and match-route artifact fetches (Story 2.14 Task 10.5)"
     expect(reachable).not.toContain("/index/leaderboards.json");
   });
 
-  it("still walks far enough to see the compare route's three fetches", () => {
-    // Guards the guard, as all four siblings do: page.tsx holds no fetch itself —
-    // all three live two hops away in CompareRegion.
+  it("still walks far enough to see all FOUR of the compare route's artifact paths", () => {
+    /*
+     * Guards the guard, as all four siblings do: page.tsx holds no fetch itself —
+     * every one of them lives two hops away in CompareRegion.
+     *
+     * FOUR PATHS, THREE FETCHES PER LOAD, and the title used to say "three" while
+     * asserting four (code review 2026-08-07). Both numbers are right about
+     * different things: a single load fetches `tournament.json` plus the TWO
+     * artifacts of the chosen type, but the type is a URL parameter, so all three
+     * type branches of `fetchSide` are reachable from this entry point and the
+     * allow-list must carry all four. A walk that returned three would mean one
+     * branch had gone invisible to it.
+     */
     expect(readFileSync(SRC_DIR + "app/compare/page.tsx", "utf8")).not.toContain("fetchArtifact");
     expect(artifactPathsReachableFrom(SRC_DIR + "app/compare/page.tsx")).toHaveLength(4);
   });

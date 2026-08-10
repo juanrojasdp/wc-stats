@@ -202,6 +202,87 @@ describe("teamCompareRows (AC 3)", () => {
     expect(rows.every((row) => row.leader === "tie")).toBe(true);
   });
 
+  /*
+   * 🔴 THE ONLY TEAM FIXTURE IS MEXICO, WHICH IS WHY THE BUG SURVIVED. Every
+   * team assertion above compares Mexico with ITSELF, so every row ties, and
+   * `rows.every(leader === "tie")` was green no matter what `teamCompareRows`
+   * decided about direction. A self-comparison cannot see a comparator at all.
+   *
+   * Synthesised by spread, on the pattern the non-finite test one block below
+   * already uses. RIVAL IS DELIBERATELY WORSE ON THE LOWER-IS-BETTER METRICS and
+   * better on nothing: it concedes five more goals and loses two more matches, so
+   * a model that feeds `resolveLeader` raw hands it the accent, the ▲ and the
+   * `sr-only` «líder» on both rows.
+   */
+  const rival = {
+    ...mexico,
+    teamId: "rival",
+    record: {
+      ...mexico.record,
+      won: mexico.record.won - 1,
+      drawn: mexico.record.drawn + 1,
+      lost: mexico.record.lost + 2,
+      goalsAgainst: mexico.record.goalsAgainst + 5,
+      // Both are CONTRACT fields the model reads rather than derives, so they are
+      // moved explicitly: leaving them at Mexico's values would tie two
+      // higher-is-better rows and quietly narrow what this test covers.
+      goalDifference: mexico.record.goalDifference - 5,
+      points: mexico.record.points - 2,
+    },
+    tacticalIdentity: {
+      ...mexico.tacticalIdentity,
+      pressingIntensity: mexico.tacticalIdentity.pressingIntensity + 50,
+    },
+  } as TeamProfile;
+
+  it("resolves each leader THROUGH the metric's direction, never on the raw value", () => {
+    const byKey = new Map(teamCompareRows(mexico, rival).map((row) => [row.key, row]));
+
+    /*
+     * LOWER IS BETTER, so Mexico leads by conceding and losing FEWER. Both of
+     * these read "away" — the worse team — without the direction field.
+     */
+    expect(byKey.get("team-lost")?.leader, "conceding more matches must not lead").toBe("home");
+    expect(byKey.get("team-goalsAgainst")?.leader, "conceding more goals must not lead").toBe(
+      "home"
+    );
+
+    // HIGHER IS BETTER, unchanged: the direction routes rather than inverts.
+    expect(byKey.get("team-won")?.leader).toBe("home");
+    expect(byKey.get("team-points")?.leader).toBe("home");
+    expect(byKey.get("team-goalDifference")?.leader).toBe("home");
+    // Untouched on the rival, so it ties — a tie gets no marks either way.
+    expect(byKey.get("team-goalsFor")?.leader).toBe("tie");
+
+    /*
+     * NO DIRECTION AT ALL. A draw is not a win and not a loss; pressing harder is
+     * a style, not an achievement — 2.16's Hero prints it as a descriptive mean.
+     * The route may not assert a leader that does not exist, so these tie on
+     * UNEQUAL values, which is the case a self-comparison can never produce.
+     */
+    expect(byKey.get("team-drawn")?.a).not.toBe(byKey.get("team-drawn")?.b);
+    expect(byKey.get("team-drawn")?.leader).toBe("tie");
+    expect(byKey.get("team-pressingIntensity")?.a).not.toBe(
+      byKey.get("team-pressingIntensity")?.b
+    );
+    expect(byKey.get("team-pressingIntensity")?.leader).toBe("tie");
+    expect(byKey.get("team-played")?.leader).toBe("tie");
+  });
+
+  it("declares a direction on every one of the ten fields", () => {
+    // There is no default: a new metric that forgets one is a compile error, and
+    // this pins that none of the ten drifted to a direction it does not have.
+    for (const field of TEAM_COMPARE_FIELDS) {
+      expect(["higher", "lower", "none"], field.key).toContain(field.direction);
+    }
+    const byKey = new Map(TEAM_COMPARE_FIELDS.map((field) => [field.key, field.direction]));
+    expect(byKey.get("lost")).toBe("lower");
+    expect(byKey.get("goalsAgainst")).toBe("lower");
+    expect(byKey.get("drawn")).toBe("none");
+    expect(byKey.get("pressingIntensity")).toBe("none");
+    expect(byKey.get("played")).toBe("none");
+  });
+
   it("does NOT subtract goalsFor − goalsAgainst for the difference", () => {
     /*
      * `goalDifference` ships PRECOMPUTED (`TeamTournamentRecord`), and computing
@@ -238,6 +319,36 @@ describe("teamChartModel — the shared phase-rate domain (AC 4)", () => {
     // Peak is 38.0; `percentAxisMax` nices it up. Never below the peak.
     expect(model.axis.max).toBeGreaterThanOrEqual(38);
     expect(model.axis.ticks[0]).toBe(0);
+  });
+
+  /*
+   * 🔴 AC 4's ACTUAL CLAIM — "vizzes render per entity with IDENTICAL SCALES" —
+   * is unfalsifiable against a team compared with itself, where one peak is
+   * trivially both peaks. The one licensed cross-entity derivation on this route
+   * is that shared maximum, so it needs two different series to mean anything.
+   */
+  it("spans BOTH teams with one domain when the peaks differ", () => {
+    const spiky = {
+      ...mexico,
+      teamId: "spiky",
+      tacticalIdentity: {
+        ...mexico.tacticalIdentity,
+        phasesInPossession: {
+          ...mexico.tacticalIdentity.phasesInPossession,
+          // Mexico's own peak is 38.0 (build-up-unopposed); this clears it.
+          progression: 91.5,
+        },
+      },
+    } as TeamProfile;
+
+    const model = teamChartModel(mexico, spiky);
+    expect(model.a).not.toEqual(model.b);
+    // The domain is driven by the LARGER side and still covers the smaller one.
+    expect(model.axis.max).toBeGreaterThanOrEqual(91.5);
+    expect(Math.max(...model.a)).toBeLessThanOrEqual(model.axis.max);
+    expect(Math.max(...model.b)).toBeLessThanOrEqual(model.axis.max);
+    // One axis object serves both sides — there is no per-side domain to diverge.
+    expect(teamChartModel(spiky, mexico).axis.max).toBe(model.axis.max);
   });
 });
 

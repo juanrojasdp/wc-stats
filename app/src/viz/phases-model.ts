@@ -466,6 +466,62 @@ export function wrapAxisLabel(label: string, maxChars: number, maxLines: number)
 export const AXIS_LABEL_MAX_CHARS = 16;
 export const AXIS_LABEL_MAX_LINES = 2;
 
+/* --------------------------- The direct series label ---------------------- */
+
+/**
+ * The index of a series' largest value — where its direct label is anchored, or
+ * `-1` when the series is FLAT and the label must be suppressed.
+ *
+ * 🔴 THE `-1` SENTINEL IS LOAD-BEARING (Story 2.17, ruled D9; ledger owner line
+ * "the first successor story to reuse `DistributionChart`"). `best` starts at 0
+ * and the test is strict `>`, so an ALL-EQUAL series — the all-zero case
+ * included — used to return `0` for BOTH series. `SeriesEndLabel` then anchored
+ * both team codes at the axis origin, overlapping, and decision 10(a)'s primary
+ * UX-DR11 channel failed silently: the two direct labels are the ONLY thing
+ * distinguishing the series once `<Legend>` is banned.
+ *
+ * Suppression rather than a fallback position is correct: when every value is
+ * equal there is no "largest" bar to label, and drawing the code at an arbitrary
+ * index would assert a peak the data does not have.
+ *
+ * `SeriesEndLabel`'s existing `if (index !== labelIndex) return null` guard is
+ * ALREADY sentinel-compatible — no bar index can equal -1, so the label
+ * suppresses itself with no change there.
+ *
+ * ⚠️ THE CONDITION IS "EVERY VALUE EQUAL", NOT D9's LITERAL "no value beats the
+ * first". Those differ, and the literal form is a regression: on `[10, 3, 2]`
+ * nothing beats the first value either, so it would suppress the label on a
+ * perfectly ordinary series whose peak simply sits at index 0 — silently
+ * deleting a label that ships correctly today. The degenerate case the ruling
+ * actually describes, and the only one where both series collide at the origin,
+ * is the FLAT series. That is what is tested for.
+ *
+ * ═══ WHY IT LIVES HERE AND NOT IN `TacticalCharts` (code review 2026-08-07) ═══
+ *
+ * It shipped as an export ON `TacticalCharts.tsx`, and `CompareCharts.tsx`
+ * imported it from there — a VALUE crossing between two recharts leaves, against
+ * the Recharts Contract's "only `import type` may cross into a chart module".
+ * Both leaves now import it from the pure layer, which is where every other
+ * decision they share already lives (`wrapAxisLabel`, `AXIS_LABEL_MAX_CHARS`,
+ * `distributionChartHeightClass`) and the only layer the node-env harness can
+ * unit-test. It also returns `TacticalCharts.tsx` to D9's declared "only edit".
+ */
+export function seriesLabelIndex(values: readonly number[]): number {
+  if (values.length === 0) {
+    return -1;
+  }
+  if (values.every((value) => value === values[0])) {
+    return -1;
+  }
+  let best = 0;
+  for (let index = 1; index < values.length; index += 1) {
+    if (values[index] > values[best]) {
+      best = index;
+    }
+  }
+  return best;
+}
+
 /* ------------------------------- Table rows -------------------------------- */
 
 /*

@@ -67,9 +67,22 @@ const ROW_GAP_CLASS = "gap-tile-gap";
  * THE BORDER IS THE ONLY ENTITY COLOUR ON THE WHOLE ROW GRID. No tinted column,
  * no tinted background, no coloured label — `DESIGN.md:338` held exactly.
  *
- * The heading level is `<h3>`: the comparison's own `<h2>`s are the Statistics
- * and Charts sections, and a side header that outranked them would put the two
- * entities above the sections they contain in the document outline.
+ * THE HEADING LEVEL IS `<h2>`, WHICH IS RULED RATHER THAN INFERRED. Route
+ * Composition names it: *"Header row (`<h2>` per side, `sr-only` where the visual
+ * header carries the name)"*, alongside the Statistics and Charts sections at the
+ * same level.
+ *
+ * 🔴 THIS SHIPPED AS `<h3>` ON THE ARGUMENT THAT A SIDE HEADER MUST NOT OUTRANK
+ * THE SECTIONS IT SITS ABOVE — and that argument reads the layout backwards. The
+ * side headers do not CONTAIN the Statistics and Charts sections; they are the
+ * comparison's own second-level blocks, siblings of those sections under the
+ * route's one `<h1>`. The `<h3>` made the outline run h2 → h3 → h2, which is a
+ * skipped-then-restored level, and with no `<h1>` above it (fixed in
+ * `ComparePicker`) the whole document began at depth two.
+ *
+ * The resulting outline is deliberately FLAT — h1, then every comparison block at
+ * h2 — because on a mirrored two-entity page there is no containment to express:
+ * the sides and the sections are four peers, not a hierarchy.
  */
 export function CompareSideHeader({
   heading,
@@ -87,7 +100,7 @@ export function CompareSideHeader({
         side === "a" ? "border-viz-team-a" : "border-viz-team-b"
       )}
     >
-      <h3 className="type-title text-ink-primary">{heading}</h3>
+      <h2 className="type-title text-ink-primary">{heading}</h2>
       {meta === null || meta === "" ? null : (
         <p className="mt-0.5 type-caption text-ink-secondary">{meta}</p>
       )}
@@ -199,7 +212,14 @@ export function CompareStatRows({
     <div className="mt-tile-gap flex flex-col gap-2">
       {heads === null ? null : <ColumnHeads heads={heads} />}
       {rows.map((row) => {
-        const unitKey = row.unit === null ? null : leaderboardUnitKey(row.unit);
+        /*
+         * `== null`, NOT `=== null`. `row.unit` is typed `LeaderboardUnit | null`,
+         * but it arrives from a model that reads a metric code off an artifact —
+         * an out-of-union code yields `undefined`, which `=== null` waves through
+         * into `leaderboardUnitKey` to build `enums.unit.undefined` and render a
+         * raw key beside the number. One character covers both empty cases.
+         */
+        const unitKey = row.unit == null ? null : leaderboardUnitKey(row.unit);
         const label = composeMetricLabel(
           t(row.labelKey),
           unitKey === null ? null : t(unitKey)
