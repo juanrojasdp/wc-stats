@@ -274,8 +274,13 @@ def test_a_clean_run_exits_zero_and_runs_every_phase(monkeypatch, capsys):
 
     assert code == 0
     assert RAN == [name for name, _main in PHASES]
-    assert "PIPELINE RESULT: PASS" in capsys.readouterr().out
-    assert "NOT RUN" not in capsys.readouterr().out
+    # ONE `readouterr()`, deliberately: it DRAINS the buffer, so a second call returns "" and
+    # `assert "NOT RUN" not in ""` can never fail. That is how this test shipped, leaving the
+    # clean path's every-phase-ran guarantee unasserted (2026-08-07 code review).
+    out = capsys.readouterr().out
+
+    assert "PIPELINE RESULT: PASS" in out
+    assert "NOT RUN" not in out
 
 
 # --- out-of-order invocation still fails loudly ------------------------------------

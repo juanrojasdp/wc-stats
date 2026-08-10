@@ -46,8 +46,16 @@ NATO = [
 
 
 def _team_pair(i: int) -> "tuple[str, str]":
-    """Report `i`'s (home, away). Offsetting the away index by 7 (coprime with 26)
-    guarantees the two are never the same team, which `derive_match_id` refuses."""
+    """Report `i`'s (home, away), never the same team — which `derive_match_id` refuses.
+
+    The guarantee is simply that the offset is not a multiple of the list length:
+    `7 % 26 != 0`, so `NATO[i % 26]` and `NATO[(i + 7) % 26]` can never coincide. **It is NOT
+    a coprimality argument**, which is what this docstring claimed until the 2026-08-07 code
+    review — coprimality would matter for a cycle-length property nothing here relies on, and
+    a reader who trusted the stated reason could "safely" pick another coprime offset, or 26
+    itself, and break the guarantee. Pinned by
+    `test_generated_team_pairs_never_repeat_a_team_within_a_report` below.
+    """
     if i < len(TEAMS):
         return TEAMS[i]
     return NATO[i % len(NATO)], NATO[(i + 7) % len(NATO)]
@@ -85,6 +93,19 @@ def _run(tmp_path: Path, corpus: Path, **kwargs) -> dict:
         extracted_dir=tmp_path / "work" / "extracted",
         **kwargs,
     )
+
+
+# --- the synthetic-corpus helper's own guarantees ---------------------------------
+
+
+def test_generated_team_pairs_never_repeat_a_team_within_a_report():
+    """`derive_match_id` refuses a report whose two teams are the same, so `_team_pair`'s
+    offset is load-bearing — and it shipped unasserted, justified by a coprimality argument
+    that is not the reason it works (2026-08-07 code review). Walked well past the 26-name
+    wrap so the modular arithmetic is exercised rather than assumed."""
+    for i in range(200):
+        home, away = _team_pair(i)
+        assert home != away, f"report {i} drew {home!r} against itself"
 
 
 # --- AC 1: one terminal entry per report -----------------------------------------

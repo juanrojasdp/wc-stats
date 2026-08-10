@@ -158,6 +158,33 @@ def test_clear_removes_a_killed_runs_leftovers_whatever_shape_they_are(tmp_path)
 # --- emit_bundles ------------------------------------------------------------------
 
 
+def test_the_committed_matches_namespace_holds_nothing_but_bundles(repo_root: Path):
+    """The directory swap WIDENED the deletion scope, and this is what keeps that safe.
+
+    The loop it replaced swept only unmatched `*.json`, so any non-bundle file under
+    `data/matches/` survived a run. `swap_directory` installs exactly what this run built and
+    discards the rest of the namespace by construction — which is the point, but it means a
+    stray `.gitkeep`, a README or a crashed run's leftover would be deleted silently.
+
+    The mirror-image hazard on `data/index/` was considered load-bearing enough to force a FILE
+    swap and its own dedicated test; the bundle side shipped with neither (2026-08-07 code
+    review). This is the missing half: it does not forbid the widening, it pins the precondition
+    that makes the widening harmless, and it goes red the moment someone adds a non-bundle file
+    that the next emission would eat.
+    """
+    matches = repo_root / "data" / "matches"
+    if not matches.is_dir():
+        pytest.skip("no committed data/matches/ in this tree")
+
+    strays = sorted(p.name for p in matches.iterdir() if p.is_dir() or p.suffix != ".json")
+
+    assert strays == [], (
+        f"data/matches/ holds {len(strays)} non-bundle entrie(s): {strays}. `emit_bundles` "
+        f"installs the namespace by directory swap, so the next emission DELETES every one of "
+        f"them without a word. Either carry them into the staged directory or keep them "
+        f"elsewhere.")
+
+
 def _spine(tmp_path: Path, repo_root: Path) -> Path:
     """The real staged spine, or a skip. Building a synthetic one that survives
     `build_bundle` is a whole fixture library; the rollback assertions need real input."""

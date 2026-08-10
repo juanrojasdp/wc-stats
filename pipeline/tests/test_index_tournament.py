@@ -77,8 +77,12 @@ def tracked_profiles(repo_root: Path) -> "set[str]":
     checkout, where the directories do not exist at all. `git ls-files` asks the question
     that survives a fresh clone.
 
-    Tests that assert the POPULATED bijection depend on this being non-empty; the tripwire
-    below asserts the opposite and is the thing that goes red when 1.18 commits.
+    Tests that assert the POPULATED bijection depend on this being non-empty. The original
+    tripwire asserted the opposite and went red when 1.18 committed, exactly as designed;
+    Story 1.19 removed it on its own instruction, and the 2026-08-07 code review replaced it
+    with `test_the_committed_profile_namespace_is_populated` — because this fixture is
+    otherwise read only behind a `pytest.skip`, and a namespace that vanished would then read
+    as a pass.
     """
     import subprocess
     try:
@@ -615,6 +619,32 @@ def test_the_route_manifest_bijection_holds_against_the_committed_profiles(
     assert "matches: 104 committed bundle(s) <-> 104 listed route(s)" in joined
     assert "teams: 48 profile(s) <-> 48 listed route(s)" in joined
     assert "players: 1248 profile(s) <-> 1248 listed route(s)" in joined
+
+
+def test_the_committed_profile_namespace_is_populated(tracked_profiles: "set[str]") -> None:
+    """The tripwire's REPLACEMENT, added by the 2026-08-07 code review of Story 1.19.
+
+    Deleting `test_the_repository_has_no_committed_profiles_yet` (see the note below) was
+    correct — it had fired and its own docstring ordered the deletion. But it was also the only
+    test that read `tracked_profiles` UNCONDITIONALLY, and removing it left the pair with no
+    unconditional assertion at all: `test_the_route_manifest_bijection_holds_against_the_committed_profiles`
+    consumes the same fixture behind `if not tracked_profiles: pytest.skip(...)`.
+
+    So if the 1,296 artifacts ever stop being tracked — a bad merge, a `git rm`, a branch cut
+    before 1.18 — that test SKIPS, and all three directions of AD-4's bijection go unasserted
+    while the suite reports fully green. That is the exact shape this repo rules out twice over:
+    *"a skip is exactly how a missing input comes to read as a pass"* and *"a gate that cannot
+    fail is worse than no gate"*.
+
+    This is the tripwire inverted: it pins the state that makes the skip guard unreachable in
+    practice, so the guard stays honest on a clean checkout without being able to hide a
+    regression on a normal one.
+    """
+    assert tracked_profiles, (
+        "no profile artifacts are tracked by git. Story 1.18 committed 1,296 of them, so this "
+        "means they have been lost rather than not yet created — and while they are missing, "
+        "test_the_route_manifest_bijection_holds_against_the_committed_profiles SKIPS and AD-4's "
+        "bijection is asserted nowhere. Restore them; do not weaken this test.")
 
 
 # `test_the_repository_has_no_committed_profiles_yet` stood here and was REMOVED by Story

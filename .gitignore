@@ -49,3 +49,14 @@ data/matches.staged/
 data/matches.previous.rollback/
 data/index/*.json.staged
 data/index/*.json.previous.rollback
+
+# `write_canonical`'s own temp, added by the 2026-08-07 code review of Story 1.19. It names
+# temps `<name>.<pid>.tmp` (pipeline/ingest/records.py) and unlinks them itself on any
+# exception -- but a HARD kill cannot, and the patterns above do not match a name ending
+# `.tmp`. Bundle temps were already covered, because `data/matches.staged/` is ignored as a
+# DIRECTORY and the temps live inside it; the index staging siblings are files at the
+# `data/index/` level, so `data/index/tournament.json.staged.1234.tmp` was the one shape
+# nothing matched. Pre-existing in kind -- the identical exposure existed for direct
+# `tournament.json` writes before the staging siblings were introduced -- but the block above
+# claims every scratch path is ignored, so it should be true.
+data/index/*.tmp

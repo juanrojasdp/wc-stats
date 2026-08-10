@@ -3272,7 +3272,7 @@ development_status:
   1-16-match-bundle-emission-canonical-serialization-version-stamp-budget-gate: done
   1-17-tournament-index-results-standings-leaderboards: done
   1-18-team-player-profile-artifacts: done
-  1-19-full-batch-run-batch-report-104-104-acceptance: review
+  1-19-full-batch-run-batch-report-104-104-acceptance: done
   epic-1-retrospective: optional
   epic-2: in-progress
   # i18n scaffolding first within Epic 2 (per sprint-planning directive); requires 1-1 fixtures
@@ -3553,3 +3553,44 @@ development_status:
 #             columns) plus a narrow-layout column reduction whose only reason to exist is those
 #             widths. The blocker was environmental — the browser automation reported a successful
 #             resize while the window stayed at 1920. Routed to 2.19.
+# 2026-08-09: story 1-19 code review CLOSED and status -> done. Four decisions ruled by Juan, and
+#             decision 1 is the one that shapes the rest: (b) — free patches only. Every P10-P19
+#             item touches `pipeline/**/*.py` outside tests/, so applying any one of them moves
+#             `code_version()` off the recorded `ad4735a216e2` and makes every figure in the
+#             byte-identity proof (extracted 0 / skipped-unchanged 104, 0 of 104 SHA-256s
+#             differing) untrue until a fresh full run. All twelve are `low`/`medium` and none
+#             produces a wrong artifact, so Epic 1's acceptance evidence stands exactly as
+#             recorded and the twelve are filed to the ledger AS ONE BATCH, so whoever takes them
+#             spends ONE re-extract rather than twelve. Decisions 3 (MANIFEST_VERSION -> 2, keep
+#             the `.get`) and 4 (drop the near-miss `+`) are RULED BUT UNAPPLIED for that reason —
+#             recorded in the ledger so the successor applies them without re-deriving them, and
+#             decision 4 carries the note that the Dev Agent Record quotes the `+` form verbatim,
+#             so that block must be re-rendered in the same change or it stops matching the code.
+#             Decision 2: the consumability gate stays a test, not a runtime bound — a hard-coded
+#             `2` in `orchestrate.py` would be the known-discrepancy allowlist the 1.12 ruling
+#             explicitly REJECTED and AC-2 forbids, wearing a different name.
+#             NINE FREE PATCHES APPLIED. Two are new tests closing gates that could not fail:
+#             deleting 1.17's tripwire (correctly — it had fired) left `tracked_profiles` read
+#             only behind a `pytest.skip`, so a lost profile namespace would have SKIPPED the
+#             bijection test and reported green with all three of AD-4's directions unasserted;
+#             and nothing pinned that `data/matches/` holds only bundles, though the directory
+#             swap now discards the whole namespace by construction and the mirror-image hazard
+#             on `data/index/` was considered load-bearing enough to force a file swap AND its own
+#             test. A third was vacuous: `capsys.readouterr()` called twice, the first call
+#             draining the buffer, so `assert "NOT RUN" not in ""` could never fail and the clean
+#             path's every-phase-ran guarantee was unasserted. `_team_pair`'s docstring justified
+#             its guarantee by coprimality, which is not the reason it works (`7 % 26 != 0` is),
+#             and now has a test. `.gitignore` gained `data/index/*.tmp` — `write_canonical` names
+#             temps `<name>.<pid>.tmp` and only a hard kill leaves one, but the block above it
+#             claims every scratch path is ignored. On the doc side: AC 1(b) and Task 5.2 both
+#             prescribe `emit -> index -> profiles` while the runner ships `emit -> profiles ->
+#             index` and pins it — the CODE IS RIGHT (that reversal is what dissolves the
+#             write-blocking deadlock) so it is reconciled in place, this repo's record-rather-
+#             than-repair form. Task 3.1's mandated link-rate measurement was missing entirely and
+#             is now measured, not assumed: 2,571 / 2,571 = 100.00%, zero failing team-innings of
+#             208, so the Dev Notes figure reproduces exactly.
+#             VERIFIED BEFORE THE FLIP: the four touched test files run 178 passed, 0 failed,
+#             0 SKIPPED in 18m42s against the real tree — the zero matters, because both new tests
+#             sit behind skip guards and the first one exists precisely because "a skip is exactly
+#             how a missing input comes to read as a pass". The other 44 pipeline test files were
+#             NOT re-run in this session; they are untouched by this story's slice.

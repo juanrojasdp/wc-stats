@@ -3894,3 +3894,192 @@ distribution through the shipped `DistributionChart`, so this story is the first
 - **`/compare` mounts no `RowAnchor`, so the two surviving private copies are untouched.** The
   Reuse Inventory asked this story not to add a fourth; it adds none. The two at
   `TournamentHub.tsx` and `PlayerMatchesSection.tsx` remain open under their existing owner.
+
+## Deferred from: code review of 1-19-full-batch-run-batch-report-104-104-acceptance (2026-08-07)
+
+Six items from the three-layer adversarial review of Story 1.19's diff. Each was verified
+against the source before filing. **None is a defect Story 1.19 introduced and left unhandled**
+— they are pre-existing properties, ruled tradeoffs, or new rulings that exceed a review's remit.
+The review's actionable findings live in that story file's §Review Findings and are not
+duplicated here.
+
+- **A killed process mid-swap leaves `data/matches/` absent entirely, and nothing restores it.**
+  `swap_directory` (`pipeline/precompute/swap.py`) retires the target to a `*.previous.rollback`
+  sibling and only then installs the staged copy. A kill inside that window leaves 104 committed
+  bundles surviving *only* in a gitignored sibling; no run restores from it, and the `.gitignore`
+  entry added by 1.19 makes the survivor invisible to `git status`. Before 1.19 that window did
+  not exist for `data/matches/` — the old loop could leave a *partial* namespace but never an
+  absent one. **This is the same tradeoff Story 1.18 ruled and shipped** for the wider
+  1,296-artifact profile namespace, under the anchor *"Ruled over per-file `.tmp` renames"*, so
+  it is not re-litigated by a review of 1.19. **Deferred:** reversing it means re-opening 1.18's
+  ruling, and a restore-on-startup path is a new mechanism, not a fix.
+  **Owner:** whichever story next revisits the directory-swap mechanism itself.
+
+- **Staging and rollback paths are fixed rather than process-scoped.** `staged_sibling` and
+  `rollback_sibling` (`pipeline/precompute/swap.py`) derive from the target name alone, so two
+  runs against the same `--data-dir` collide: run B's `clear(staged_dir)` deletes run A's
+  in-flight staging, then both swap and one namespace is a mix. `write_canonical`
+  (`pipeline/ingest/records.py`) already solves exactly this for its own temp by interpolating
+  `os.getpid()`. **Deferred:** concurrent runs against one data directory are not a supported
+  mode, and 1.18's shipped mechanism has the identical property, so fixing it here would leave
+  the two halves inconsistent. **Owner:** whichever story makes concurrent pipeline runs a
+  supported mode, or the one that unifies the profile path onto `swap.py`'s helpers.
+
+- **The corpus-gated tests skip on a clean checkout and their `CI=1` escape hatch is dead code.**
+  Story 1.19's rollback, byte-neutrality and phase-ordering proofs (`test_swap.py`,
+  `test_orchestrate.py`, and the 104-entry manifest assertion in `test_ingest_batch.py`) all gate
+  on `work/spine/` or `work/run-manifest.json`, both under the gitignored `work/`. Each falls
+  back to `pytest.fail` *"under `CI=1`"* — but the repository has **no `.github/` directory and
+  no CI configuration of any kind**, so that branch never executes anywhere. On a fresh clone the
+  evidence base for AC 3's headline claims silently skips, which is the *"a skip is exactly how a
+  missing input comes to read as a pass"* rule the same test files invoke as a principle.
+  Measured during the review: all 12 `test_swap.py` tests genuinely ran here (0 skipped), because
+  this tree's `work/spine/` is populated. **Deferred:** repo-wide and pre-existing — the pattern
+  predates 1.19 and closing it means either committing a CI config or re-shaping every corpus
+  fixture. **Owner:** whichever story introduces CI, or decides the corpus-gated suite needs a
+  checked-in minimal spine.
+
+- **A stale comment in `profiles.py` asserts that `data/index/*.staged` is not gitignored.** The
+  `finally` block's comment reads *"`data/index/*.staged` is not gitignored, so a sweeping
+  `git add` would commit them"* — false since 1.18's own review added `data/index/*.staged/` and
+  `data/index/*.previous.rollback/` to `.gitignore`. It was already false before Story 1.19
+  began. **Deferred:** correcting it is an edit to `pipeline/**/*.py`, which changes
+  `code_version()` and re-invalidates all 104 staged Extraction Records — the exact trade ruling
+  D1.7 names as *"a no-op that re-invalidates all 104 staged records for nothing."*
+  **Owner:** whichever story next edits `pipeline/precompute/profiles.py` for a substantive
+  reason and is therefore already paying for the re-extract.
+
+- **`PIPELINE RESULT: FAIL` is permanent on the ruled-clean corpus, with no way to read the
+  headline as "as designed".** `pipeline/orchestrate.py` computes `worst = max(worst, code)`
+  before the consumability check, so the ruled clean-corpus baseline — `ingest.batch` exit 1 for
+  the two adjudicated forced-turnover deviations — makes every *correct* end-to-end run print
+  `FAIL`. Nothing in the headline distinguishes that from a broken gate. The runner is right to
+  refuse to mask a phase's exit 1 (landmine 2: asserting exit 0 *"will make you 'fix' a correctly
+  reported source defect"*), so the fix is not to change the code but to give the verdict a
+  distinct token, e.g. `FAIL (ruled baseline)`. **Deferred:** that is a new ruling on the
+  house-wide exit-code contract's presentation layer, which exceeds a code review's remit — the
+  same reasoning 1.17's review used to decline reversing a gate's failure semantics.
+  **Owner:** whichever story next rules on the orchestrator's operator-facing output.
+
+- **TWELVE production edits from Story 1.19's code review, deliberately batched so ONE re-extract
+  covers all of them.** Ruled by Juan on 2026-08-07 during the review: the fixes are correct and
+  none is applied, because every one is an edit to `pipeline/**/*.py` outside `tests/`, which
+  changes `code_version()` from the recorded `ad4735a216e2` and invalidates Story 1.19's
+  byte-identity evidence — all 104 staged Extraction Records plus every figure in AC 3's
+  reproducibility proof. Measured, not assumed: `EXCLUDED_DIRS`
+  (`pipeline/ingest/fingerprint.py`) contains `tests`, so test-only fixes were free and *were*
+  applied; these were not. This is ruling D1.7's own trade — *"a no-op that re-invalidates all
+  104 staged records for nothing"* — applied to the review itself. **Whoever takes these must
+  take them together and re-run the five phases plus a fresh byte-identity proof afterwards; the
+  full detail and evidence for each sits in Story 1.19's §Review Findings and is not duplicated
+  here.** The two exit-code items are the only ones touching a shipped guarantee.
+  1. **Post-swap cleanup turns a SUCCESSFUL emission into exit 2** — `clear(backup)` in
+     `emit_bundles` and the retired-backup `unlink` in `swap_files` both sit outside the guarded
+     block, so an `OSError` during cleanup reports *"nothing was learned"* over a namespace
+     already correctly installed. Found independently by all three review layers. Story 1.18
+     already shipped the answer with its reasoning, under the anchor *"a failure to remove a
+     scratch directory must not turn a successful emission into a failed one"*.
+  2. **Cleanup inside the failure handlers can replace the exception it is cleaning up after** —
+     four unguarded I/O sites inside `except BaseException:` before `raise`, including both
+     rollback loops, where a mid-undo failure discards the original error *and* leaves the tree
+     half-swapped.
+  3. **The near-miss renderer never re-filters `max_delta == 0`** — the filter lives only in
+     `_mirror_self_validation`, so the renderer trusts its input where the mirror carries four
+     `isinstance` guards. Production output is correct today; a shipped test asserts a false
+     count and must be fixed with it.
+  4. **The orchestrator catches only `SystemExit`** — any other exception yields the
+     tracebackless death its own comment says the handler exists to prevent, and CPython exits 1
+     when the truth is 2. `profiles.py`'s `main` already establishes the repo's pattern.
+  5. **`len(gaps)` / `len(orphans)` sit outside the `try`** in `_batch_finding_is_consumable`,
+     the one function documented as never reading absence of evidence as evidence.
+  6. **`swap.py` bypasses its own shape-agnostic `clear()`** when removing backups, so a backup
+     left in the other shape by a killed run kills the next swap before it starts.
+  7. **`emit_index` never clears a leftover staging sibling** before writing into it, where
+     `emit_bundles` does — `swap.py`'s own docstring states the rule it half-enforces.
+  8. **The `.staged` suffix literal now lives in two places** — `profiles.py` still hard-codes it
+     rather than importing `staged_sibling`/`STAGED_SUFFIX`, so the lift that was meant to avoid
+     a second mechanism reached `_swap_directory` only.
+  9. **`bounded_check`'s docstring is missing the `pass-network-top5-pct` exclusion rationale**
+     that Story 1.19's Completion Notes claim is there.
+  10. **`run_batch`'s docstring is missing Task 4.3's three-way match-id collision note**, which
+      that task was marked complete without writing.
+  11. **`MANIFEST_VERSION` bump `1` → `2`** — RULED by Juan 2026-08-07. `_entry` gained a
+      `near_misses` key while the version stayed put and `format_summary` compensates with a
+      defensive read; the version field exists to signal exactly this. Keep the `.get`.
+  12. **Drop the `+` from the near-miss delta** — RULED by Juan 2026-08-07. No producer is
+      signed; every one feeds an `abs()` or a one-directional shortfall, so the glyph asserts a
+      direction the data does not carry. **The batch summary quoted verbatim in Story 1.19's Dev
+      Agent Record must be re-rendered in the same change**, or it stops matching the code.
+  **Deferred:** applying any one of them costs the full re-extract, so they are worth exactly one
+  cycle between them. **Owner:** whichever story next edits `pipeline/**/*.py` for a substantive
+  reason and is therefore already paying for the re-extract — Story 2.19 is the natural candidate
+  if it touches the pipeline at all, otherwise the first Epic 3 story that does.
+
+- **The orchestrator takes no lock, so two runs can interleave their swap windows.**
+  `pipeline/orchestrate.py` runs `precompute.profiles` and `precompute.index` back to back
+  against the same `data/index/`, both installing by in-place swap, with no lock file and no
+  staleness check. Two orchestrators — or an orchestrator plus a hand-run phase — can interleave
+  retire/install windows and leave one namespace from run A beside one from run B. That is
+  precisely the cross-namespace inconsistency `emit_profiles`' two-phase swap was built to
+  prevent, defeated one level above it. **Deferred:** out of scope for 1.19, which was routed the
+  *ordering* problem and not concurrency; and this repo's live concurrency hazard is concurrent
+  *editing sessions*, not concurrent pipeline runs. **Owner:** whichever story makes concurrent
+  pipeline runs a supported mode.
+
+## Deferred from: code review of 2-17-comparison-mode (2026-08-07)
+
+Seven items triaged as deferred during the code review of Story 2.17. Three adversarial layers
+raised 28 findings; after dedup and re-verification against the working tree, 3 went to Juan as
+decisions, 16 became patches on the story, 2 were dismissed, and the seven below were judged real
+but not actionable in this story.
+
+- **A fourth private `LEADER_GLYPH = "\342\226\262"` copy now ships** (`CompareRows.tsx:52`). D14 and the Reuse
+  Inventory both name `StoryStatTiles.tsx:22` as the single home, but three copies already shipped
+  before this story (`StoryStatTiles.tsx:22`, `KeyStatisticsSection.tsx:42`,
+  `OffersToReceiveSection.tsx:62`) and 2.17 followed the shipped pattern rather than the ruling.
+  Consolidating all four is a cross-story refactor touching three other stories' files.
+  **Owner:** whichever story next needs a leader mark, or a dedicated cleanup pass.
+
+- **The two-series peak is re-minted inline twice** (`viz/compare-model.ts:418` in `teamChartModel`,
+  and the equivalent block in `matchChartModel`) as
+  `[...].reduce((best, value) => (value > best ? value : best), 0)`. The Shared-Domain Seam ruled
+  *"Build `PhaseRow`-shaped rows, not `CategoryRow`-shaped ones, and the shared domain falls out"*
+  over `rowsPeak(rows: PhaseRow[])` (`phases-model.ts:345`), which is present and exported. The
+  inline form is functionally identical; the reuse was simply not taken.
+  **Owner:** a successor touching `compare-model.ts`'s chart models.
+
+- **`?? 0` defaults sit on displayed values** (`CompareChartsSection.tsx:445, :455, :525, :535,
+  :636, :644, :645`), contradicting `compare-model.ts`'s own stated rule that *"`?? 0` would assert
+  a real measured zero on a row that has no measurement, which is the same lie as a derived
+  number."* Dead today: every value reaching those sites has already passed the model's `finite()`
+  guard, so the default can only fire if that guard is removed. Latent, not live.
+  **Owner:** whoever next changes the model's entry guards.
+
+- **An artifact returning HTTP 200 with a `null` body falls into the retryable `error` branch**
+  (`CompareRegion.tsx:208` `isSideValid`, `:257` the index check). Both read `.schemaVersion` off a
+  payload typed non-null at an untyped fetch boundary; a `null` body throws a `TypeError` into
+  `.catch`, which shows the retry affordance for a condition retrying cannot fix. The correct state
+  is `invalid`. Requires a contract violation to reach.
+  **Owner:** a successor hardening the fetch boundary; the same shape exists on the profile routes.
+
+- **An unrecognised `type` param persists in the URL when the index fetch errors.** The cleanup
+  effect early-returns on `if (!indexReady)` (`CompareRegion.tsx:438-441`), so `?type=bogus` stays
+  in the address bar while the selector silently shows `players`. Harmless in practice: when the
+  index has failed the whole route is already in its error state with a retry.
+  **Owner:** a successor revisiting the URL cleanup ordering.
+
+- **Metric codes present on one side and absent on the other are dropped silently**
+  (`viz/compare-model.ts:176`), and if the two profiles share no codes at all the Statistics
+  heading renders over an empty container. The drop itself is deliberate and documented — `?? 0`
+  there would assert a measurement that does not exist — but there is no "these rows could not be
+  paired" disclosure, and no empty-state panel under the heading. Both artifacts are total today,
+  so reaching it needs a truncated emission.
+  **Owner:** a successor, or 2.19 if real-data emission ever goes partial.
+
+- **`scroll-padding-top` coverage is narrower than Task 8.4's wording.** The implementation is a
+  per-element `max-md:scroll-mt-28` on the two `CompareFigure` wrappers only
+  (`CompareChartsSection.tsx:201`); the `#stats` / `#charts` headings and every mirrored row keep
+  the global `scroll-padding-top: 4.5rem` (72 px, `globals.css:446`). Judged not a live defect —
+  the sticky mini-header exists only inside the charts section and only below `md`, so the other
+  anchors never land under it — but the coverage is narrower than the task text reads.
+  **Owner:** a successor if the mini-header is ever hoisted above the charts section.
