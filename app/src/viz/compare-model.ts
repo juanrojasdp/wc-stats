@@ -57,7 +57,9 @@ import {
  *      so the two charts are read against the same scale. Tick labels are the
  *      axis's own scale, not a cross-entity number.
  *   2. `resolveLeader(a, b)` — imported from `match-hero.ts`, NEVER re-minted
- *      (ruled D14). Ties get no marks.
+ *      (ruled D14). Ties get no marks. On the team rows it is reached through
+ *      `directedLeader`, which routes the metric's OWN direction into it rather
+ *      than re-implementing the comparison — see `CompareDirection`.
  *
  * Selecting WHICH metrics to show is licensed too (AD-5 permits "filter,
  * select"), which is what `TEAM_COMPARE_FIELDS` and `MATCH_CHART_FIELDS` are.
@@ -252,12 +254,55 @@ function speedZoneMetres(profile: PlayerProfile): number[] {
  * segment is genuinely not a singular column head. There is no such gap here —
  * "Puntos" on a comparison row is the same term as "Puntos" on a standings head.
  */
+/**
+ * WHICH WAY A METRIC IS GOOD. Code review 2026-08-07, decision 1a.
+ *
+ * 🔴 `resolveLeader` IS DOCUMENTED "higher value leads (UX-DR7)" AND EVERY ONE OF
+ * THE NINETEEN `KEY_STAT_FIELDS` IT WAS MINTED FOR IS HIGHER-IS-BETTER.
+ * `TEAM_COMPARE_FIELDS` is the first call site in the app to feed it inverted
+ * metrics, and feeding it `lost` or `goalsAgainst` raw makes the site tell the
+ * reader — in the accent, the ▲ AND the `sr-only` «líder» — that conceding more
+ * goals and losing more matches leads. That is not a formatting slip; it is a
+ * false statement about the data on the one route whose whole job is saying which
+ * of two entities is ahead.
+ *
+ * `"none"` is a THIRD case rather than a default to `"higher"`: `drawn` and
+ * `pressingIntensity` have no better direction at all. A draw is not a win and not
+ * a loss, and pressing harder is a style rather than an achievement — 2.16's own
+ * Hero prints `pressingIntensity` as a descriptive mean, never as a ranking. A
+ * metric with no direction gets NO marks, which is the same treatment a tie gets
+ * and for the same reason: the route may not assert a leader that does not exist.
+ */
+export type CompareDirection = "higher" | "lower" | "none";
+
+/**
+ * The leader for one row, resolved THROUGH its metric's direction.
+ *
+ * `resolveLeader(b, a)` is the whole of the `"lower"` case and it is exact rather
+ * than clever: the helper returns `"home"` when its FIRST argument is greater, so
+ * passing `(b, a)` returns `"home"` exactly when `b > a` — that is, when A's value
+ * is the smaller one and A therefore leads a lower-is-better metric. The token
+ * mapping falls out unchanged, which is why no second comparator is minted here
+ * (D14: "Do not mint a second").
+ */
+function directedLeader(a: number, b: number, direction: CompareDirection): TileLeader {
+  if (direction === "none") {
+    return "tie";
+  }
+  if (direction === "lower") {
+    return resolveLeader(b, a);
+  }
+  return resolveLeader(a, b);
+}
+
 export interface TeamCompareField {
   key: string;
   labelKey: DictionaryKey;
   format: CompareFormat;
   unit: LeaderboardUnit | null;
   read: (profile: TeamProfile) => number;
+  /** Which way this metric is good. See `CompareDirection` — there is no default. */
+  direction: CompareDirection;
   /** Dotted path for the entry guard's error message. */
   path: string;
 }
@@ -276,6 +321,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "hub.standings.columnTitle.played",
     format: "integer",
     unit: "count",
+    direction: "none",
     read: (profile) => profile.record.played,
     path: "record.played",
   },
@@ -284,6 +330,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "hub.standings.columnTitle.won",
     format: "integer",
     unit: "count",
+    direction: "higher",
     read: (profile) => profile.record.won,
     path: "record.won",
   },
@@ -292,6 +339,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "hub.standings.columnTitle.drawn",
     format: "integer",
     unit: "count",
+    direction: "none",
     read: (profile) => profile.record.drawn,
     path: "record.drawn",
   },
@@ -300,6 +348,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "hub.standings.columnTitle.lost",
     format: "integer",
     unit: "count",
+    direction: "lower",
     read: (profile) => profile.record.lost,
     path: "record.lost",
   },
@@ -308,6 +357,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "hub.standings.columnTitle.goalsFor",
     format: "integer",
     unit: "count",
+    direction: "higher",
     read: (profile) => profile.record.goalsFor,
     path: "record.goalsFor",
   },
@@ -316,6 +366,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "hub.standings.columnTitle.goalsAgainst",
     format: "integer",
     unit: "count",
+    direction: "lower",
     read: (profile) => profile.record.goalsAgainst,
     path: "record.goalsAgainst",
   },
@@ -330,6 +381,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "hub.standings.columnTitle.goalDifference",
     format: "integer",
     unit: null,
+    direction: "higher",
     read: (profile) => profile.record.goalDifference,
     path: "record.goalDifference",
   },
@@ -338,6 +390,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "hub.standings.columnTitle.points",
     format: "integer",
     unit: null,
+    direction: "higher",
     read: (profile) => profile.record.points,
     path: "record.points",
   },
@@ -346,6 +399,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "team.tile.possession",
     format: "percent",
     unit: "percent",
+    direction: "higher",
     read: (profile) => profile.tacticalIdentity.possession,
     path: "tacticalIdentity.possession",
   },
@@ -360,6 +414,7 @@ export const TEAM_COMPARE_FIELDS: readonly TeamCompareField[] = [
     labelKey: "team.tile.pressingIntensity",
     format: "decimal1",
     unit: null,
+    direction: "none",
     read: (profile) => profile.tacticalIdentity.pressingIntensity,
     path: "tacticalIdentity.pressingIntensity",
   },
@@ -376,7 +431,7 @@ export function teamCompareRows(a: TeamProfile, b: TeamProfile): CompareRow[] {
       a: valueA,
       b: valueB,
       format: field.format,
-      leader: resolveLeader(valueA, valueB),
+      leader: directedLeader(valueA, valueB, field.direction),
     };
   });
 }

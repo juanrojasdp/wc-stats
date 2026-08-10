@@ -101,13 +101,11 @@ function ValueCell({
   leads,
   side,
   leaderLabel,
-  className,
 }: {
   value: string;
   leads: boolean;
   side: "a" | "b";
   leaderLabel: string;
-  className: string;
 }) {
   const accent = side === "a" ? "text-viz-team-a" : "text-viz-team-b";
   return (
@@ -119,8 +117,7 @@ function ValueCell({
          * eye cannot scan the pairs, which is the entire job of this layout.
          */
         "type-stat-value tabular-nums",
-        leads ? accent : "text-ink-primary",
-        className
+        leads ? accent : "text-ink-primary"
       )}
     >
       {leads ? (
@@ -146,13 +143,61 @@ function ValueCell({
  * glyph and the word, all of which are the leader determination AD-5 licenses by
  * name.
  */
-export function CompareStatRows({ rows }: { rows: readonly CompareRow[] }) {
+/**
+ * The two column heads, when the pair needs naming. Code review 2026-08-07, D2a.
+ *
+ * 🔴 `type=matches` IS THE CASE THIS EXISTS FOR, AND WITHOUT IT THE BLOCK IS
+ * UNREADABLE. For `players` and `teams` the two columns are named by the
+ * `CompareSideHeader` directly above them, so heads would be a second home for one
+ * name and are correctly absent. For `matches` those headers name the two MATCHES,
+ * not the four team-innings the rows actually pair — so nineteen rows of
+ * "Posesión — 57,1% — 36,1%" carried nothing at all naming México or Sudáfrica,
+ * while the chart's own data table beneath them did carry the codes.
+ *
+ * IT ALSO RESOLVES THE ACCENT COLLISION, which is why it is one patch and not two.
+ * Inside a match block `viz-team-a` means HOME and `viz-team-b` means AWAY (D5's
+ * corollary, `DESIGN.md:260`'s "one color means one thing per visualization") —
+ * but side B's block paints those accents under a `viz-team-b` side-header border,
+ * so on side B the same colour carried two meanings twenty pixels apart with
+ * nothing on screen to disambiguate them. Naming the heads IN THEIR OWN ACCENTS
+ * states the local meaning where the reader meets it, which is exactly how the
+ * charts already discharge the same corollary.
+ */
+function ColumnHeads({ heads }: { heads: { a: string; b: string } }) {
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-2 items-baseline px-3 md:grid-cols-[1fr_auto_1fr]",
+        ROW_GAP_CLASS
+      )}
+    >
+      {/* DOM order matches the rows below it exactly: label slot, A, B. */}
+      <div className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-1" />
+      <div className="type-label-caps text-viz-team-a md:col-start-1 md:row-start-1 md:text-right">
+        {heads.a}
+      </div>
+      <div className="type-label-caps text-right text-viz-team-b md:col-start-3 md:row-start-1 md:text-left">
+        {heads.b}
+      </div>
+    </div>
+  );
+}
+
+export function CompareStatRows({
+  rows,
+  heads = null,
+}: {
+  rows: readonly CompareRow[];
+  /** Column heads naming the pair, or `null` when the side header already does. */
+  heads?: { a: string; b: string } | null;
+}) {
   const t = useT();
   const { locale } = useLocale();
   const leaderLabel = t("match.hero.leader");
 
   return (
     <div className="mt-tile-gap flex flex-col gap-2">
+      {heads === null ? null : <ColumnHeads heads={heads} />}
       {rows.map((row) => {
         const unitKey = row.unit === null ? null : leaderboardUnitKey(row.unit);
         const label = composeMetricLabel(
@@ -199,7 +244,6 @@ export function CompareStatRows({ rows }: { rows: readonly CompareRow[] }) {
                 leads={row.leader === "home"}
                 side="a"
                 leaderLabel={leaderLabel}
-                className=""
               />
             </div>
             {/* DOM position 3 — side B. Painted in the THIRD column at ≥md. */}
@@ -209,7 +253,6 @@ export function CompareStatRows({ rows }: { rows: readonly CompareRow[] }) {
                 leads={row.leader === "away"}
                 side="b"
                 leaderLabel={leaderLabel}
-                className=""
               />
             </div>
           </div>

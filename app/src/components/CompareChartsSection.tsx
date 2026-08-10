@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactNode, type RefObject } from "rea
 
 import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
-import { composeCompareFigureSummary } from "@/lib/compare-format";
+import { composeCompareFigureSummary, displayTeamCode } from "@/lib/compare-format";
 import type { MatchBundle, PlayerProfile, TeamProfile } from "@/lib/contract/contract-types";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
@@ -623,7 +623,7 @@ function MatchFigures({
                 /* The team CODE heads the column and the full name rides
                    `headTitle` — UX-DR17's rule for every ruled abbreviation. */
                 key: "home",
-                headText: homeTeam.teamCode,
+                headText: displayTeamCode(homeTeam.teamCode),
                 headTitle: homeTeam.name,
                 render: (row) => format(row.first),
                 align: "numeric",
@@ -631,7 +631,7 @@ function MatchFigures({
               },
               {
                 key: "away",
-                headText: awayTeam.teamCode,
+                headText: displayTeamCode(awayTeam.teamCode),
                 headTitle: awayTeam.name,
                 render: (row) => format(row.second ?? 0),
                 align: "numeric",
@@ -650,8 +650,8 @@ function MatchFigures({
           >
             <DistributionChart
               categoryLabels={categories}
-              home={{ teamCode: homeTeam.teamCode, values: entry.home }}
-              away={{ teamCode: awayTeam.teamCode, values: entry.away }}
+              home={{ teamCode: displayTeamCode(homeTeam.teamCode), values: entry.home }}
+              away={{ teamCode: displayTeamCode(awayTeam.teamCode), values: entry.away }}
               ticks={model.axis.ticks}
               axisMax={model.axis.max}
               axisValueLabel={valueHead}

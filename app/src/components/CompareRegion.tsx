@@ -14,6 +14,7 @@ import {
   composeEmptyHeadline,
   composeInvalidHeadline,
   composeSideHeading,
+  displayTeamCode,
 } from "@/lib/compare-format";
 import {
   compareSearch,
@@ -153,6 +154,15 @@ function droppedSides(
     dropped.push({ side: "b", slug: params.b });
   }
   return dropped;
+}
+
+/** The two column heads for one match block: its own home and away codes. */
+function matchHeads(bundle: MatchBundle): { a: string; b: string } {
+  return {
+    // `matchCompareRows` maps `home` onto column A and `away` onto column B.
+    a: displayTeamCode(bundle.metadata.homeTeam.teamCode),
+    b: displayTeamCode(bundle.metadata.awayTeam.teamCode),
+  };
 }
 
 /** What the picker and the headers need about one chosen entity. */
@@ -348,12 +358,14 @@ export function CompareRegion() {
       }
       const teams = Array.isArray(entities.teams) ? entities.teams : [];
       if (type === "teams") {
-        return teams.find((team) => team.teamId === id)?.teamCode ?? null;
+        const own = teams.find((team) => team.teamId === id)?.teamCode;
+        return own === undefined ? null : displayTeamCode(own);
       }
       if (type === "players") {
         const players = Array.isArray(entities.players) ? entities.players : [];
         const teamId = players.find((player) => player.playerId === id)?.team?.id;
-        return teams.find((team) => team.teamId === teamId)?.teamCode ?? null;
+        const code = teams.find((team) => team.teamId === teamId)?.teamCode;
+        return code === undefined ? null : displayTeamCode(code);
       }
       // Matches carry their own home/away codes inside the bundle.
       return null;
@@ -901,6 +913,14 @@ function ComparisonBody({
    */
   let rowsA: readonly CompareRow[];
   let rowsB: readonly CompareRow[] | null;
+  /*
+   * COLUMN HEADS ONLY WHERE THE SIDE HEADER CANNOT NAME THE PAIR — `matches`.
+   * See `ColumnHeads`' docblock: for `players`/`teams` the header directly above
+   * the rows already names both columns, so heads there would be a second home
+   * for one name.
+   */
+  let headsA: { a: string; b: string } | null = null;
+  let headsB: { a: string; b: string } | null = null;
   if (pair.type === "players") {
     rowsA = playerCompareRows(pair.a, pair.b);
     rowsB = null;
@@ -916,6 +936,8 @@ function ComparisonBody({
      */
     rowsA = matchCompareRows(pair.a);
     rowsB = matchCompareRows(pair.b);
+    headsA = matchHeads(pair.a);
+    headsB = matchHeads(pair.b);
   }
 
   return (
@@ -940,10 +962,10 @@ function ComparisonBody({
         ) : (
           <div className="grid gap-tile-gap md:grid-cols-2">
             <div className="min-w-0">
-              <CompareStatRows rows={rowsA} />
+              <CompareStatRows rows={rowsA} heads={headsA} />
             </div>
             <div className="min-w-0">
-              <CompareStatRows rows={rowsB} />
+              <CompareStatRows rows={rowsB} heads={headsB} />
             </div>
           </div>
         )}

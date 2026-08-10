@@ -1064,3 +1064,69 @@ _bmad-output/implementation-artifacts/sprint-status.yaml
 | 2026-08-07 | Ledger appended (append-only proven byte-for-byte): the Team B non-hue channel and `seriesLabelIndex` CLOSED; 2.15's hatch centring and vendor-chunk collapse RECORDED not claimed; six items filed. |
 | 2026-08-07 | Verification: lint 0, tsc 0, 1,231 tests / 45 files, vendor chunk count 1 → 1 (359.0 → 362.0 KB). Contrast, reflow and the sticky offset verified live in both themes; the mini-header's observer switching filed as unverified. |
 | 2026-08-07 | Status → review. |
+| 2026-08-07 | Code review: three adversarial layers, 26 findings after dedup — 3 decisions, 16 patches, 7 deferred, 2 dismissed. |
+
+---
+
+### Review Findings
+
+Code review 2026-08-07. Three parallel adversarial layers (Blind Hunter, Edge Case
+Hunter, Acceptance Auditor). Every finding below was re-verified against the working
+tree before it was written down; severity is the reviewer's, not the layer's.
+
+**Chain at review time, run independently:** lint 0, tsc 0, and the story's own test
+surface green — 77 model/lib tests (`compare-model`, `compare-format`, `compare-url`,
+`use-url-query`, `TacticalCharts`) plus 150 `i18n` tests.
+
+#### Decisions for Juan
+
+**RESOLVED 2026-08-07 — Juan delegated all three to the reviewer; each was taken as the
+recommended option (a).** The three bullets below are kept verbatim as the record of what was
+asked; the work each one generated is folded into the Patches list beneath them.
+
+- [x] [Review][Decision] **The leader mark is applied to two lower-is-better team metrics, so the site tells the reader that conceding more goals and losing more matches "leads".** `TEAM_COMPARE_FIELDS` carries `lost` (`compare-model.ts:298`) and `goalsAgainst` (`:314`) with no direction field on `TeamCompareField` (`:255-263`), and `teamCompareRows` applies `leader: resolveLeader(valueA, valueB)` unconditionally (`:379`). `resolveLeader`'s own docblock (`match-hero.ts:142-156`) is *"higher value leads (UX-DR7)"*, and all nineteen `KEY_STAT_FIELDS` it was minted for are higher-is-better — `TEAM_COMPARE_FIELDS` is the first call site to feed it inverted metrics. Comparing México (`lost: 1`, `goalsAgainst: 3`) with a team at `lost: 3`, `goalsAgainst: 8` gives the WORSE team the entity accent, the ▲ and the `sr-only` «líder» on both rows. `drawn` and `pressingIntensity` are directionless and arguably should carry no mark either. **Options:** (a) add `direction: "higher" | "lower" | "none"` to `TeamCompareField` and invert or suppress per row; (b) suppress the leader mark on every row that is not unambiguously higher-is-better; (c) accept it as-is. **Recommend (a).**
+- [x] [Review][Decision] **R1(A)'s two live consequences on `type=matches`, both of which need your confirmation of R1 before they can be fixed.** (i) The nineteen mirrored rows never name home or away: `ComparisonBody` renders bare `CompareStatRows` blocks (`CompareRegion.tsx:941-948`) and `CompareStatRows` emits only `label / valueA / valueB` with no head row (`CompareRows.tsx:154-161`), so "Posesión — 57,1% — 36,1%" carries nothing naming México or Sudáfrica — while the chart's own data table does carry the codes (`CompareChartsSection.tsx:626,634`). (ii) Inside side B's block a home-leading value is painted `text-viz-team-a` (`CompareRows.tsx:112`, from `matchCompareRows`' `home`→`a` mapping at `compare-model.ts:496`) directly beneath a `border-viz-team-b` side header — two meanings for one colour about 20 px apart. D5's corollary licensed exactly this for charts and was never extended to rows. **Options:** (a) confirm R1(A) and patch both — add a home/away head row and re-rule the row accent; (b) confirm R1(A), patch the head row only, accept the accent as the corollary's stated cost; (c) overturn R1 for (B) or (C). **Recommend (a).**
+- [x] [Review][Decision] **The four files carrying this story's work outside `be85651` are now orphaned, so no commit reproduces the acceptance record.** `i18n.test.ts`, `teams/static-output.test.ts`, `TeamHero.tsx` and `team-profile.ts` were deliberately left unstaged to be picked up by "2.16's sweep" (Completion Notes, Coordination) — but `2-16-team-profile` is already `done` in `sprint-status.yaml:3300`, so that sweep is not coming. At `be85651`: D2's second half is absent though Task 2.4 is `[x]`, and the `compare` i18n describe and key-builder sweep are absent though Tasks 11.3/11.4 are `[x]`. Separately, `9c18e8a` swept 2.16's code-review ledger block, its `2-16: review → done` flip and Story 1.19's pipeline entries into this story's commit (disclosed in the commit message). **Options:** (a) land the four files now as a 2.17 follow-up commit; (b) land them under a 2.16 amendment; (c) leave them and record the split. **Recommend (a).**
+
+#### Patches
+
+**From the resolved decisions (ruled 1a / 2a / 3a):**
+
+- [ ] [Review][Patch] **[from D1a]** Add `direction: "higher" | "lower" | "none"` to `TeamCompareField`; mark `lost` and `goalsAgainst` as `"lower"`, `drawn` and `pressingIntensity` as `"none"`, the rest `"higher"`. `teamCompareRows` resolves the leader through that direction — inverting for `"lower"` and emitting `"tie"` for `"none"` — so no row ever asserts a leader the metric does not have. Add a distinct-team test that would go red on the current code [`compare-model.ts:255-366, :368-382`]
+- [ ] [Review][Patch] **[from D2a]** Give the `type=matches` mirrored rows a head row naming home and away by team code, so nineteen rows of unattributed pairs become attributable; and re-rule the row accent inside a match block so side B's values do not paint in side A's accent under side B's border [`CompareRegion.tsx:941-948`, `CompareRows.tsx:112,154-161`, `compare-model.ts:491-505`]
+- [ ] [Review][Patch] **[from D3a]** Land `i18n.test.ts`, `teams/static-output.test.ts`, `TeamHero.tsx` and `team-profile.ts` as a 2.17 follow-up commit, so Tasks 2.4 / 11.3 / 11.4 are reproducible from a commit rather than from a dirty tree
+
+**From the review layers:**
+
+- [ ] [Review][Patch] `/compare` ships no `<h1>` — the only route in the app without one; the route's top heading is an `sr-only <h2>`, and both sibling suites carry an `h1`-count gate this one omits [`ComparePicker.tsx:150`, `compare/static-output.test.ts:107`]
+- [ ] [Review][Patch] Side headers ship `<h3>` against Route Composition's ruled `<h2>`, so the outline runs h2 → h3 → h2 with no h1 [`CompareRows.tsx:90`]
+- [ ] [Review][Patch] A pasted URL naming one or two sides renders a blank, unannounced region for the whole index fetch — every branch is gated on `chosenCount === 0`, `indexReady` or `bothListed`, and none can be true first. This is AC 6's own path [`CompareRegion.tsx:756,770,791`]
+- [ ] [Review][Patch] The lazy-chart fallback is pinned to `compareBarChartHeightClass(5)` while `TeamFigures` mounts at `(8)`, so every `type=teams` comparison shifts ~110 px per chart, ×2 — the exact CLS defect the Recharts Contract rule exists to prevent [`CompareChartsSection.tsx:86` vs `:547`]
+- [ ] [Review][Patch] `?a=X&b=X` is reachable in two clicks — nothing filters the other side's pick out of the scoped corpus and `handlePick` does not dedup, producing duplicate React keys and byte-identical figure captions, table names and mini-header names [`CompareRegion.tsx:600-608`, `ComparePicker.tsx:132`, `CompareChartsSection.tsx:434,514,605`]
+- [ ] [Review][Patch] Team codes render lowercase on `/compare` (`mex`/`rsa`) and uppercase everywhere else — `ChartSeries.teamCode` is documented as *"Already uppercased at the TacticalLayer prop boundary"* and `TacticalLayer.tsx` uppercases at 22 sites [`CompareChartsSection.tsx:626,634,653,654`, `CompareRegion.tsx:351,356`]
+- [ ] [Review][Patch] A bad `type` param discards a valid slug and blames the reader for it — `droppedSides` never consults `params.droppedType`, so `?type=team&a=mexico` rewrites to `?type=players` AND shows "No encontramos mexico" [`CompareRegion.tsx:143-156`, `:438-458`]
+- [ ] [Review][Patch] The polite live region concatenates its two children with no separator ("5 resultadosComparación cargada.") and re-reads the stale load confirmation on every settled keystroke; the rejected-slug, index-error and index-invalid panels are not announced at all [`CompareRegion.tsx:681-686`]
+- [ ] [Review][Patch] `seriesLabelIndex` is a **value** import crossing into a chart module, against the Recharts Contract's *"Only `import type` may cross into a chart module"*, and adding its `export` was a second edit to `TacticalCharts.tsx` beyond D9's "only edit" [`CompareCharts.tsx:14`]
+- [ ] [Review][Patch] The AR-10 "no component state holds the comparison" gate is defeated by renaming a variable — the regex misses `const [compareType,`, `const [chosenA,`, `useRef`/`useReducer` — and `toContain("replaceUrlQuery")` is satisfied by the import line or by comment prose [`compare/static-output.test.ts:166-169`]
+- [ ] [Review][Patch] The combobox-count gate cannot detect the failure it names: `toBeGreaterThanOrEqual(2)` still passes with one `SearchField` deleted. Measured on the export — `out/compare/index.html` = 3, `out/about/index.html` = 1 (header only) [`compare/static-output.test.ts:966-974`]
+- [ ] [Review][Patch] Every team-model test compares México with itself, so `expect(model.a).toEqual(model.b)` is tautological and `every(leader === "tie")` masks the inverted-metric bug above. The file already synthesises a second profile by spread one test earlier, so a distinct-team case cost one line [`compare-model.test.ts:4491-4541` in diff]
+- [ ] [Review][Patch] The caption-inventory extension is distinct by construction and excludes `a === b`, the one input that actually breaks caption distinctness on this route — while asserting *"the route guarantees `a !== b`"*, which it does not [`i18n.test.ts` compare captions block]
+- [ ] [Review][Patch] `seriesCode` falls back to the entity's full display name, painted into a 34 px gutter with no truncation and silently clipped by the SVG viewport [`CompareChartsSection.tsx:550`, `CompareCharts.tsx` `COMPARE_MARGIN`]
+- [ ] [Review][Patch] Copy and prop defects: the swap button's accessible name is `"Intercambiar lados México / Brasil"` while its docblock two lines above advertises `"Intercambiar lados: México / Brasil"`; `fieldLabel` overloads the listbox's own name so the input and its listbox both announce as "Lado A"; `className=""` is passed at both `ValueCell` call sites; `row.unit === null` should be `== null` to survive an out-of-union metric code [`ComparePicker.tsx:141-144`, `HeaderSearch.tsx` `listLabel`, `CompareRows.tsx:157,202,212`]
+- [ ] [Review][Patch] Checkbox and traceability integrity: Tasks 7.1/7.2 are `[x]` with no `CompareLineChart` and no `TEAM_B_DASH_ARRAY` anywhere; Task 4.5 is `[x]` with no `<md` sheet. Both departures are argued in the Completion Notes and filed in the ledger — the boxes contradict the notes. Task 11.6's policy rows also lack their own "Rows appended by Story 2.17" heading, landing instead under 2.16's [`EXPERIENCE.md`]
+- [ ] [Review][Patch] Test title says *"the compare route's three fetches"* and asserts `toHaveLength(4)` [`app/src/app/static-output.test.ts:906-910`]
+
+#### Deferred
+
+- [x] [Review][Defer] Fourth private `LEADER_GLYPH = "▲"` copy [`CompareRows.tsx:52`] — deferred, pre-existing; three copies already ship (`StoryStatTiles.tsx:22`, `KeyStatisticsSection.tsx:42`, `OffersToReceiveSection.tsx:62`) and consolidating them is a cross-story refactor
+- [x] [Review][Defer] The two-series peak is re-minted inline twice instead of reusing `rowsPeak(PhaseRow[])` [`compare-model.ts:418`, `matchChartModel`] — deferred, functionally identical; the Shared-Domain Seam's `PhaseRow` shaping was not taken
+- [x] [Review][Defer] `?? 0` defaults on displayed values contradict the model's own stated rule [`CompareChartsSection.tsx:445,455,525,535,636,644,645`] — deferred, dead today behind `finite()`; latent rather than live
+- [x] [Review][Defer] An artifact returning 200 with a `null` body throws into the retryable `error` branch, whose retry can never succeed [`CompareRegion.tsx:208,257`] — deferred, contract-violation-only
+- [x] [Review][Defer] A bad `type` param persists in the URL when the index fetch errors — the cleanup is gated on `indexReady` [`CompareRegion.tsx:438-441`] — deferred, the route is in its error state anyway
+- [x] [Review][Defer] Disjoint metric codes are dropped silently and the Statistics heading can render over an empty container [`compare-model.ts:176`] — deferred, the drop is deliberate and documented; the empty case needs a truncated artifact
+- [x] [Review][Defer] `max-md:scroll-mt-28` covers only the two chart figures, not the section headings or the mirrored rows [`CompareChartsSection.tsx:201`] — deferred, the mini-header is scoped to the charts section, so the other anchors are not under it
+
+#### Dismissed as noise
+
+- `SideRef` / `ComparePair` "duplication" between `CompareRegion.tsx` and `CompareChartsSection.tsx` — a private local `SideRef` is the shipped house pattern; eleven components already declare one.
+- D9's `-1` sentinel firing on a flat series rather than on "no value beats the first" — the departure is argued in the docblock, the ledger and the story. The literal ruling would suppress the label on `[10, 3, 2]`, an ordinary series; the implementation is right and the ruling was wrong.

@@ -180,3 +180,21 @@ export function composeCompareFigureSummary(input: {
 export function composeSidesLabel(a: string, b: string): string {
   return `${a}${VERSUS_SEPARATOR}${b}`;
 }
+
+/**
+ * THE TEAM-CODE PROP BOUNDARY. Code review 2026-08-07.
+ *
+ * 🔴 THE CONTRACT SHIPS `teamCode` LOWERCASE — `"mex"`, `"rsa"` — AND EVERY
+ * SURFACE THAT PRINTS IT UPPERCASES AT THE PROP BOUNDARY. `ChartSeries.teamCode`
+ * says so in its own docblock ("Already uppercased at the TacticalLayer prop
+ * boundary") and `TacticalLayer.tsx` does it at twenty-two call sites. `/compare`
+ * passed the raw value straight through, so the same match read `mex` / `rsa` here
+ * and `MEX` / `RSA` on `/matches/{id}`. `type-label-caps` sets no `text-transform`,
+ * so CSS does not rescue it.
+ *
+ * ONE HELPER RATHER THAN A `.toUpperCase()` AT EACH SITE: this route has six, and
+ * a boundary that is a named function is one a reviewer can grep for.
+ */
+export function displayTeamCode(code: string): string {
+  return code.toUpperCase();
+}
