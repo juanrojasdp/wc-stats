@@ -270,6 +270,93 @@ describe("pitchMarkings", () => {
     }
   });
 
+  /* ═════ THE MIRRORED DEFENDING END — 2.9 decision 9, Story 2.19 D16 ═════ */
+
+  describe("the defending end", () => {
+    const fullSize = panelSize("horizontal", FULL, 246);
+    const full = pitchMarkings("horizontal", FULL, fullSize, PAD);
+
+    it("is absent on a HALF pitch, which has no defending end to draw", () => {
+      expect(markings.defending).toBeNull();
+    });
+
+    it("mirrors the five markings on a full pitch", () => {
+      expect(full.defending).not.toBeNull();
+      const defending = full.defending!;
+      // Every mirrored box hangs off the LEFT edge, as the attacked ones hang
+      // off the right.
+      expect(defending.penaltyArea.x).toBeCloseTo(PAD, 6);
+      expect(defending.sixYardBox.x).toBeCloseTo(PAD, 6);
+      // Same physical sizes as the attacked end — a mirror, not a redraw.
+      expect(defending.penaltyArea.width).toBeCloseTo(full.penaltyArea.width, 6);
+      expect(defending.penaltyArea.height).toBeCloseTo(full.penaltyArea.height, 6);
+      expect(defending.sixYardBox.width).toBeCloseTo(full.sixYardBox.width, 6);
+      expect(defending.penaltySpot.r).toBe(full.penaltySpot.r);
+    });
+
+    it("reflects the two ends about the pitch's midline", () => {
+      const defending = full.defending!;
+      const midX = PAD + (fullSize.width - 2 * PAD) / 2;
+      // Spot: equidistant from the midline, on opposite sides.
+      expect(midX - defending.penaltySpot.cx).toBeCloseTo(full.penaltySpot.cx - midX, 6);
+      // Penalty area: the mirrored right edge matches the attacked left edge.
+      const attackedInnerEdge = full.penaltyArea.x;
+      const defendingInnerEdge = defending.penaltyArea.x + defending.penaltyArea.width;
+      expect(midX - defendingInnerEdge).toBeCloseTo(attackedInnerEdge - midX, 6);
+    });
+
+    it("REFLECTS THE ARC'S ANGLE RANGE — it must fall OUTSIDE the mirrored box", () => {
+      /*
+       * The step that is not projective. The attacked arc sweeps the long way
+       * round through 180 degrees because its box lies toward -x; feeding that
+       * same range to the mirrored spot would draw the arc INSIDE the box,
+       * which is the defect this case exists to catch. Every sampled point must
+       * sit at or RIGHT of the mirrored penalty-area edge.
+       */
+      const defending = full.defending!;
+      const edge = defending.penaltyArea.x + defending.penaltyArea.width;
+      const xs = defending.penaltyArc
+        .slice(1)
+        .split("L")
+        .map((pair) => Number(pair.trim().split(",")[0]));
+      expect(xs.length).toBeGreaterThan(4);
+      for (const x of xs) {
+        expect(Number.isFinite(x)).toBe(true);
+        expect(x).toBeGreaterThanOrEqual(edge - 0.001);
+      }
+    });
+
+    it("REVERSES THE GOAL'S PX DEPTH — horizontal hangs LEFT, vertical hangs DOWN", () => {
+      /*
+       * The second non-projective step. `GOAL_DEPTH_PX` is a screen offset past
+       * the edge of the 0-100 frame, so it cannot be projected and has to be
+       * reversed by hand. Both orientations are asserted because they reverse
+       * along different axes.
+       */
+      const defending = full.defending!;
+      // Horizontal: the attacked goal starts AT its line and extends right; the
+      // defending one ENDS at its line, having extended left past the boundary.
+      expect(defending.goal.x + defending.goal.width).toBeCloseTo(PAD, 6);
+      expect(defending.goal.x).toBeLessThan(PAD);
+      expect(defending.goal.width).toBeCloseTo(full.goal.width, 6);
+      expect(defending.goal.height).toBeCloseTo(full.goal.height, 6);
+
+      const verticalFull = pitchMarkings(
+        "vertical",
+        FULL,
+        panelSize("vertical", FULL, 246),
+        PAD
+      );
+      const verticalDefending = verticalFull.defending!;
+      // Vertical (attacking goal UP): the attacked goal ends at the top edge and
+      // the defending one STARTS at the bottom edge, extending down past it.
+      expect(verticalFull.goal.y + verticalFull.goal.height).toBeCloseTo(PAD, 6);
+      const bottom = panelSize("vertical", FULL, 246).height - PAD;
+      expect(verticalDefending.goal.y).toBeCloseTo(bottom, 6);
+      expect(verticalDefending.goal.y + verticalDefending.goal.height).toBeGreaterThan(bottom);
+    });
+  });
+
   it("transposes cleanly: the vertical penalty area hangs off the TOP edge", () => {
     const verticalSize = panelSize("vertical", HALF, 246);
     const vertical = pitchMarkings("vertical", HALF, verticalSize, PAD);

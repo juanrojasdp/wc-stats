@@ -282,8 +282,25 @@ function PitchDrawing({
         {markings.centreCircle === null ? null : <path d={markings.centreCircle} />}
         {markings.halfwayLine === null ? null : <line {...markings.halfwayLine} />}
         <rect {...markings.goal} />
+        {/*
+         * THE DEFENDING END (2.9 ruled decision 9, taken at Story 2.19 D16).
+         * `null` on a half pitch, which has no defending end; present on the
+         * full-pitch panels, which until now drew a penalty area, a box, a spot,
+         * an arc and a goal at ONE end and bare grass at the other.
+         */}
+        {markings.defending === null ? null : (
+          <>
+            <rect {...markings.defending.penaltyArea} />
+            <rect {...markings.defending.sixYardBox} />
+            <path d={markings.defending.penaltyArc} />
+            <rect {...markings.defending.goal} />
+          </>
+        )}
       </g>
       <circle {...markings.penaltySpot} fill="var(--pitch-line)" />
+      {markings.defending === null ? null : (
+        <circle {...markings.defending.penaltySpot} fill="var(--pitch-line)" />
+      )}
       {markings.centreSpot === null ? null : (
         <circle {...markings.centreSpot} fill="var(--pitch-line)" />
       )}

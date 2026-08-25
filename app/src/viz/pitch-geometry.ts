@@ -191,6 +191,27 @@ export interface PitchMarkings {
   halfwayLine: PitchLine | null;
   centreCircle: string | null;
   centreSpot: PitchSpot | null;
+  /**
+   * The SAME five markings at the DEFENDING end (x=0), or `null` on a half
+   * pitch, which has no defending end to draw.
+   *
+   * ═══ 2.9 ruled decision 9, implemented at Story 2.19 (D16, ledger A29/L527,
+   * L545) ═══ A full pitch drew a penalty area, a six-yard box, a spot, an arc
+   * and a goal at ONE end and nothing at the other, so a pass-network figure
+   * showed half a pitch's furniture on a whole pitch. 2.9 ruled the mirror YES
+   * and routed the implementation to "whichever story next owns
+   * `pitch-geometry.ts` and `PitchPanel.tsx` together, or 2.19". This is 2.19.
+   */
+  defending: DefendingEndMarkings | null;
+}
+
+/** The mirrored furniture at the defending goal line. */
+export interface DefendingEndMarkings {
+  penaltyArea: PitchRect;
+  sixYardBox: PitchRect;
+  penaltySpot: PitchSpot;
+  penaltyArc: string;
+  goal: PitchRect;
 }
 
 /** Rect through two projected corners, normalized so width/height stay positive. */
@@ -206,6 +227,17 @@ function rectThrough(a: Point, b: Point): PitchRect {
 /** An x offset in metres from the attacked goal line, in 0-100 x units. */
 function xFromGoalLine(metres: number): number {
   return 100 - (metres / PITCH_LENGTH_M) * 100;
+}
+
+/**
+ * The same offset measured from the DEFENDING goal line at x=0.
+ *
+ * Written out rather than expressed as `100 - xFromGoalLine(m)`, which is the
+ * same arithmetic but reads as a correction to the other function rather than
+ * as its own statement.
+ */
+function xFromDefendingGoalLine(metres: number): number {
+  return (metres / PITCH_LENGTH_M) * 100;
 }
 
 /** Half of a width in metres, in 0-100 y units either side of the centre. */
@@ -306,7 +338,91 @@ export function pitchMarkings(
           height: GOAL_DEPTH_PX,
         };
 
+  /*
+   * ═══════ THE MIRRORED END (2.9 decision 9, Story 2.19 Task 7.6) ═══════
+   *
+   * Everything above is expressed in the 0-100 frame and projected, so the
+   * mirror is mostly just the reflected x offsets — `project` handles both
+   * orientations and both aspect ratios without further help. TWO STEPS ARE NOT
+   * PROJECTIVE and the story names them both:
+   *
+   * 1. THE ARC'S ANGLE RANGE IS REFLECTED, NOT REUSED. The visible arc is the
+   *    part of the 9.15 m circle OUTSIDE the penalty area. At the attacked end
+   *    the box lies toward -x from the spot, so the visible part sweeps the long
+   *    way round through 180 degrees: `crossingDeg -> 360 - crossingDeg`. At the
+   *    defending end the box lies toward +x, so the visible part is the short
+   *    way round through 0: `-crossingDeg -> +crossingDeg`. Feeding the same
+   *    range in would draw the arc INSIDE the box.
+   *
+   * 2. THE GOAL'S DEPTH IS A PIXEL OFFSET AND IS REVERSED BY HAND. `GOAL_DEPTH_PX`
+   *    is how far the mouth hangs OUTSIDE the goal line, in screen px, so it is
+   *    already past the edge of the 0-100 frame and cannot be projected at all.
+   *    Horizontal: the attacked goal extends right from its mouth, the defending
+   *    one extends LEFT (`x - GOAL_DEPTH_PX`). Vertical (attacking goal UP): the
+   *    attacked goal extends up, the defending one extends DOWN (`y`, not
+   *    `y - GOAL_DEPTH_PX`).
+   *
+   * ⚠️ THIS VISIBLY CHANGES 2.8's SHIPPED PASS-NETWORK FIGURES — they are the
+   * only full-pitch panels in the app. D16 makes re-verifying them part of this
+   * task rather than follow-up.
+   */
   const isFullPitch = extent.xMin === 0;
+
+  const defendingPenaltyAreaX = xFromDefendingGoalLine(PENALTY_AREA_DEPTH_M);
+  const defendingSpotX = xFromDefendingGoalLine(PENALTY_SPOT_DEPTH_M);
+  const defendingSpotPoint = p(defendingSpotX, 50);
+  const defendingGoalMouth = rectThrough(p(0, 50 - goalHalf), p(0, 50 + goalHalf));
+  /*
+   * THE CROSSING ANGLE IS SOLVED AGAIN, NOT REUSED — and reusing it was the
+   * first version's bug, caught by the test that samples the mirrored arc.
+   * At the attacked end the box edge lies toward -x from the spot, so
+   * `(edge - spot)` is NEGATIVE and `acos` gives an obtuse angle (~120 deg);
+   * the visible sweep is the long way round through 180. At the defending end
+   * the same offset is POSITIVE, `acos` gives the supplement (~60 deg), and the
+   * visible sweep is the short way round through 0. Feeding the attacked angle
+   * into a `-a -> +a` range drew the arc straight through the penalty area.
+   */
+  const defendingCrossing = Math.acos(
+    Math.max(-1, Math.min(1, (defendingPenaltyAreaX - defendingSpotX) / arcRadiusX))
+  );
+  const defendingCrossingDeg = (defendingCrossing * 180) / Math.PI;
+  const defending: DefendingEndMarkings | null = !isFullPitch
+    ? null
+    : {
+        penaltyArea: rectThrough(
+          p(0, 50 - penaltyHalf),
+          p(defendingPenaltyAreaX, 50 + penaltyHalf)
+        ),
+        sixYardBox: rectThrough(
+          p(0, 50 - sixYardHalf),
+          p(xFromDefendingGoalLine(SIX_YARD_DEPTH_M), 50 + sixYardHalf)
+        ),
+        penaltySpot: { ...defendingSpotPoint, r: SPOT_RADIUS_PX },
+        penaltyArc: arcPath(
+          p,
+          defendingSpotX,
+          50,
+          arcRadiusX,
+          arcRadiusY,
+          -defendingCrossingDeg,
+          defendingCrossingDeg
+        ),
+        goal:
+          orientation === "horizontal"
+            ? {
+                x: defendingGoalMouth.x - GOAL_DEPTH_PX,
+                y: defendingGoalMouth.y,
+                width: GOAL_DEPTH_PX,
+                height: defendingGoalMouth.height,
+              }
+            : {
+                x: defendingGoalMouth.x,
+                y: defendingGoalMouth.y,
+                width: defendingGoalMouth.width,
+                height: GOAL_DEPTH_PX,
+              },
+      };
+
   const halfwayStart = p(50, 0);
   const halfwayEnd = p(50, 100);
   const centrePoint = p(50, 50);
@@ -324,5 +440,6 @@ export function pitchMarkings(
       : null,
     centreCircle: isFullPitch ? arcPath(p, 50, 50, arcRadiusX, arcRadiusY, 0, 360) : null,
     centreSpot: isFullPitch ? { ...centrePoint, r: SPOT_RADIUS_PX } : null,
+    defending,
   };
 }
