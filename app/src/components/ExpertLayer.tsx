@@ -800,13 +800,27 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
                     }
                   }}
                   aria-label={t("expert.group.label")}
-                  className="mb-tile-gap rounded-full border border-hairline p-0.5"
+                  /*
+                   * `flex-wrap` — Story 2.19 ruled decision D9, and a TRUE 320 px
+                   * reflow failure rather than part of R2's 195 px question.
+                   * MEASURED before the fix: this five-segment group is 339 CSS
+                   * px wide against a 305 px content box at 320 in BOTH locales,
+                   * and 412 against 375 at 390 in EN. Wrapping keeps every
+                   * segment's full ruled label and its 44 px target
+                   * (MIN_HIT_PX); shortening the EN labels was the alternative
+                   * and would have re-opened ruled copy to buy the same pixels.
+                   */
+                  className="mb-tile-gap flex-wrap rounded-full border border-hairline p-0.5"
                 >
                   {GROUP_ORDER.map((candidate) => (
                     <ToggleGroupItem
                       key={candidate}
                       value={candidate}
-                      className="min-h-11 rounded-full px-3 type-label-caps text-ink-secondary data-[state=on]:bg-accent-lime data-[state=on]:text-ink-on-lime data-[state=on]:hover:bg-accent-lime data-[state=on]:hover:text-ink-on-lime"
+                      // `whitespace-normal` overrides the vendored Toggle base's
+                      // `whitespace-nowrap`, so a long segment label wraps
+                      // inside its own pill instead of setting an unshrinkable
+                      // floor for the whole group.
+                      className="min-h-11 max-w-full whitespace-normal rounded-full px-3 type-label-caps text-ink-secondary data-[state=on]:bg-accent-lime data-[state=on]:text-ink-on-lime data-[state=on]:hover:bg-accent-lime data-[state=on]:hover:text-ink-on-lime"
                     >
                       {t(GROUP_LABEL_KEY[candidate])}
                     </ToggleGroupItem>

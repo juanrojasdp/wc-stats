@@ -93,7 +93,20 @@ function StatPairTile({
   leaderLabel: string;
 }) {
   return (
-    <div className="grid min-h-11 grid-cols-[76px_1fr_76px] items-center rounded-md bg-surface-raised px-4 py-3 md:grid-cols-[120px_1fr_120px]">
+    /*
+     * THE VALUE TRACKS ARE `minmax(0, 76px)`, NOT `76px` (Story 2.19 R2, Task
+     * 6.2) — the "documented narrow-width track change" R2 asks for, and the
+     * reason it is preferred over a type-ramp departure.
+     *
+     * MEASURED: a tile's min-content was 247 px — two fixed 76 px value tracks
+     * plus `px-4` plus the label — so at a 195 px layout viewport `#key-stats`
+     * pushed the match route's document to 278. A fixed track cannot shrink
+     * however narrow the viewport gets; `minmax(0, 76px)` is IDENTICAL at every
+     * width with room for 76 and yields gracefully below it. `type-stat-value`
+     * stays at its DESIGN size (26 px): no type-ramp departure is taken here,
+     * and UX-DR2's "no type below 11px" is untouched.
+     */
+    <div className="grid min-h-11 grid-cols-[minmax(0,76px)_minmax(0,1fr)_minmax(0,76px)] items-center rounded-md bg-surface-raised px-4 py-3 md:grid-cols-[minmax(0,120px)_minmax(0,1fr)_minmax(0,120px)]">
       <TileValue
         value={homeValue}
         code={homeCode}

@@ -200,13 +200,13 @@ function matchHeads(bundle: MatchBundle): { a: string; b: string } {
  */
 function ComparisonSkeleton() {
   return (
-    <div className="grid gap-tile-gap">
-      <div className="grid gap-tile-gap md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-tile-gap">
+      <div className="grid grid-cols-1 gap-tile-gap md:grid-cols-2">
         <div className="skeleton h-16 w-full" />
         <div className="skeleton h-16 w-full" />
       </div>
       <div className="skeleton mt-6 h-64 w-full" />
-      <div className="grid gap-tile-gap md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-tile-gap md:grid-cols-2">
         <div className="skeleton h-[228px] w-full" />
         <div className="skeleton h-[228px] w-full" />
       </div>
@@ -921,7 +921,7 @@ export function CompareRegion() {
          * route never fetches one.
          */}
         {indexReady && chosenCount === 1 ? (
-          <div className="grid gap-tile-gap md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-tile-gap md:grid-cols-2">
             {[refA, refB].map((ref, index) =>
               ref === null ? null : (
                 <CompareSideHeader
@@ -1073,7 +1073,7 @@ function ComparisonBody({
 
   return (
     <>
-      <div className="grid gap-tile-gap md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-tile-gap md:grid-cols-2">
         <CompareSideHeader
           heading={refA.name}
           meta={refA.detail}
@@ -1091,7 +1091,7 @@ function ComparisonBody({
         {rowsB === null ? (
           <CompareStatRows rows={rowsA} />
         ) : (
-          <div className="grid gap-tile-gap md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-tile-gap md:grid-cols-2">
             <div className="min-w-0">
               <CompareStatRows rows={rowsA} heads={headsA} />
             </div>

@@ -120,7 +120,20 @@ export function StoryStatTiles({
   const topSpeedLabel = `${t("match.hero.tiles.topSpeed")} (${t("enums.unit.kmh")})`;
 
   return (
-    <div className="mt-5 grid grid-cols-2 gap-tile-gap">
+    /*
+     * ONE COLUMN BELOW 304 CSS px, two at and above it (Story 2.19 Task 6.2).
+     * Two fixed columns of a tile whose content is a label over two
+     * `type-stat-value` figures cannot fit a 195 px viewport, and this pair was
+     * one of the six owners the reflow matrix named.
+     *
+     * A VIEWPORT BREAKPOINT, not `auto-fit`, and that is a measurement rather
+     * than a preference: `repeat(auto-fit, minmax(min(100%, 11rem), 1fr))` is
+     * emitted into the stylesheet correctly and still produced TWO 164 px
+     * tracks inside a 163 px container, which made the route worse (doc 278 ->
+     * 355) rather than better. 19rem sits below the 320 px floor AC 3 names, so
+     * the two-column arrival state every shipped width has today is unchanged.
+     */
+    <div className="mt-5 grid grid-cols-1 gap-tile-gap min-[19rem]:grid-cols-2">
       <Tile
         labelNode={t("match.hero.tiles.possession")}
         homeValue={formatPercent(home.possession, locale, 0)}

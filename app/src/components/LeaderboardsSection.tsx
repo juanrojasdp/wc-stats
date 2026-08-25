@@ -96,7 +96,24 @@ export function LeaderboardsSection({ teasers }: { teasers: readonly Leaderboard
            * the same containment the region has.
            */}
           <TacticalErrorBoundary logLabel={LEADERBOARDS_LOG_LABEL}>
-            <div className="mt-tile-gap grid gap-tile-gap sm:grid-cols-2 lg:grid-cols-3">
+            {/*
+             * THE BASE COLUMN IS DECLARED, not left implicit (Story 2.19 Task
+             * 6.2). With no `grid-template-columns` below `sm` the cards land
+             * in an IMPLICIT auto track, which is floored by the card's
+             * max-content rather than clamped to the container: measured at a
+             * 195 px viewport the container was 163 px wide and the track
+             * resolved to 278.5 px, making `/` the worst reflow failure in the
+             * matrix at doc scrollWidth 295. `grid-cols-1` is
+             * `repeat(1, minmax(0, 1fr))`, which clamps the track to the
+             * container; the `sm:`/`lg:` steps above it are unchanged.
+             *
+             * `repeat(auto-fit, minmax(min(100%, 15rem), 1fr))` was tried first
+             * and REJECTED ON MEASUREMENT: the rule is emitted correctly and
+             * still resolved to two 164 px tracks inside a 163 px container, so
+             * the percentage is not behaving as a clamp under `auto-fit` here.
+             * The explicit base column is boring and it works.
+             */}
+            <div className="mt-tile-gap grid grid-cols-1 gap-tile-gap sm:grid-cols-2 lg:grid-cols-3">
               {teasers.map((teaser) => (
                 <BoardTeaser key={`${teaser.scope}-${teaser.metricCode}`} teaser={teaser} />
               ))}
@@ -183,7 +200,7 @@ function BoardTeaser({ teaser }: { teaser: LeaderboardTeaser }) {
     <article className="rounded-md border border-hairline bg-surface-raised p-4">
       <h4 className="type-stat-label text-ink-secondary">{heading}</h4>
       <p className="type-caption mt-1 text-ink-secondary">{countLabel}</p>
-      <ol className="mt-2 grid gap-1">
+      <ol className="mt-2 grid grid-cols-1 gap-1">
         {rows.map((row) => (
           <li key={row.key} className="flex items-baseline justify-between gap-2">
             <span className="flex min-w-0 items-baseline gap-2">

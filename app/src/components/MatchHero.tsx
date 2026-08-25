@@ -101,7 +101,16 @@ export function MatchHero({ data }: { data: HeroData }) {
       <p className="mt-2 text-center type-caption text-ink-secondary">{contextLine}</p>
 
       {/* Score row */}
-      <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center">
+      {/*
+       * `minmax(0, 1fr)` on the two team columns (Story 2.19 Task 6.2). A bare
+       * `1fr` is `minmax(auto, 1fr)`, so each column was floored by its own
+       * min-content — the 48 px crest beside a team name — and the score row
+       * could not narrow past ~230 px. AC 3 asks the single-column Hero to hold
+       * at 200% zoom; this is what lets the team name wrap instead of pushing
+       * the document sideways. The `auto` centre column is deliberate: the
+       * scoreline must never be the thing that shrinks.
+       */}
+      <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="flex flex-col items-center gap-1.5">
           <span className="grid h-12 w-12 place-items-center rounded-full border border-hairline bg-surface-overlay type-label-caps text-ink-secondary">
             {homeTeam.teamCode.toUpperCase()}

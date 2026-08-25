@@ -184,7 +184,7 @@ export function LeaderboardsRegion() {
           role="group"
           aria-busy="true"
           aria-label={t("leaderboards.loading")}
-          className="grid gap-tile-gap"
+          className="grid grid-cols-1 gap-tile-gap"
         >
           {/* Layout-shaped: a board heading over a block of table rows, twice. */}
           <div className="skeleton h-6 w-48" />
@@ -253,7 +253,7 @@ function LeaderboardTables({ boards }: { boards: readonly Leaderboard[] }) {
        * document-outline heading owning nothing.
        */}
       <h3 className="type-title text-ink-secondary">{t("leaderboards.tablesHeading")}</h3>
-      <div className="mt-tile-gap grid gap-layer-gap">
+      <div className="mt-tile-gap grid grid-cols-1 gap-layer-gap">
         {/*
          * Driven off `boards.length`, never off 3. The fixture happens to carry
          * three boards; Story 1.17's emission carries thirty-six. Nothing here

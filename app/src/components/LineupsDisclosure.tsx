@@ -153,7 +153,7 @@ export function LineupsDisclosure({
       <div
         id={regionId}
         hidden={!open}
-        className="grid gap-6 border-t border-hairline p-3.5"
+        className="grid grid-cols-1 gap-6 border-t border-hairline p-3.5"
       >
         <TeamLineup team={homeTeam} lineup={lineups.home} headingRef={firstHeadingRef} />
         <TeamLineup team={awayTeam} lineup={lineups.away} />

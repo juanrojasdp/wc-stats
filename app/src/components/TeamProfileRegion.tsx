@@ -147,7 +147,7 @@ export function TeamProfileRegion({ slug }: { slug: string }) {
            */
           role="group"
           aria-label={t("team.region.loading")}
-          className="grid gap-tile-gap"
+          className="grid grid-cols-1 gap-tile-gap"
         >
           {/*
            * LAYOUT-SHAPED (UX-DR14), AND NOW ACTUALLY SHAPED LIKE THE PAYLOAD

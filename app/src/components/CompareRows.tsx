@@ -180,7 +180,8 @@ function ColumnHeads({ heads }: { heads: { a: string; b: string } }) {
   return (
     <div
       className={cn(
-        "grid grid-cols-2 items-baseline px-3 md:grid-cols-[1fr_auto_1fr]",
+        // One column below 304 CSS px — see the row below it (Task 6.2).
+        "grid grid-cols-1 items-baseline px-3 min-[19rem]:grid-cols-2 md:grid-cols-[1fr_auto_1fr]",
         ROW_GAP_CLASS
       )}
     >
@@ -249,7 +250,15 @@ export function CompareStatRows({
                * about the announcement changes across the breakpoint — only where
                * the label is painted does.
                */
-              "grid grid-cols-2 items-baseline rounded-md bg-surface-raised px-3 py-2 md:grid-cols-[1fr_auto_1fr]",
+              /*
+               * ONE column below 304 CSS px (Story 2.19 Task 6.2): at a 195 px
+               * viewport each of the two tracks is ~78 px and a
+               * `type-stat-value` figure measures up to 109, which pushed
+               * `/compare` to a document scrollWidth of 213. Stacking label, A
+               * and B is the same DOM in the same order — only where they are
+               * painted changes, exactly as the `md:` step already does.
+               */
+              "grid grid-cols-1 items-baseline rounded-md bg-surface-raised px-3 py-2 min-[19rem]:grid-cols-2 md:grid-cols-[1fr_auto_1fr]",
               ROW_GAP_CLASS
             )}
           >

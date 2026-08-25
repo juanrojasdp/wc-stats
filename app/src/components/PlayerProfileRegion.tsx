@@ -129,7 +129,7 @@ export function PlayerProfileRegion({ slug }: { slug: string }) {
           role="group"
           aria-busy="true"
           aria-label={t("player.region.loading")}
-          className="grid gap-tile-gap"
+          className="grid grid-cols-1 gap-tile-gap"
         >
           {/* Layout-shaped: zone chart block, trend chart block, two tables. */}
           <div className="skeleton h-[196px] w-full" />

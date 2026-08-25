@@ -179,7 +179,7 @@ export function TournamentHubRegion() {
           tabIndex={-1}
           aria-busy="true"
           aria-label={t("hub.region.loading")}
-          className="grid min-h-[120vh] content-start gap-tile-gap"
+          className="grid min-h-[120vh] grid-cols-1 content-start gap-tile-gap"
         >
           {/*
            * THE REAL SURFACE HEADING, NOT A GREY BLOCK — and it is an LCP fix

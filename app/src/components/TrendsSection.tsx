@@ -295,7 +295,14 @@ export function TrendsSection({ series }: { series: readonly TrendSeriesModel[] 
           <ToggleGroupItem
             key={entry.key}
             value={entry.metricCode}
-            className="min-h-11 min-w-11 rounded-full px-3 type-label-caps text-ink-secondary data-[state=on]:bg-accent-lime data-[state=on]:text-ink-on-lime data-[state=on]:hover:bg-accent-lime data-[state=on]:hover:text-ink-on-lime"
+            /*
+             * `whitespace-normal` overrides the vendored Toggle base's
+             * `whitespace-nowrap` (Story 2.19 Task 6.2). The group already
+             * wraps; the ES metric label "Progresiones de balón" is 199 px on
+             * one line and was the last thing holding `/players/{slug}` at a
+             * 221 px document width under a 195 px viewport.
+             */
+            className="min-h-11 max-w-full min-w-11 whitespace-normal rounded-full px-3 type-label-caps text-ink-secondary data-[state=on]:bg-accent-lime data-[state=on]:text-ink-on-lime data-[state=on]:hover:bg-accent-lime data-[state=on]:hover:text-ink-on-lime"
           >
             {t(leaderboardMetricKey(entry.metricCode))}
           </ToggleGroupItem>

@@ -113,7 +113,7 @@ export function MatchBundleRegion({ matchId }: { matchId: string }) {
           tabIndex={-1}
           aria-busy="true"
           aria-label={t("match.bundle.loading")}
-          className="grid gap-tile-gap"
+          className="grid grid-cols-1 gap-tile-gap"
         >
           {/* key-stats paired rows */}
           <div className="skeleton h-11 w-full" />

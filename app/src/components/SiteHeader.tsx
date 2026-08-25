@@ -65,7 +65,34 @@ export function SiteHeader() {
         {t("chrome.skipLink")}
       </a>
       <header className="sticky top-0 z-40 border-b border-hairline bg-surface-base">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-tile-gap px-gutter-mobile md:px-gutter-desktop">
+        {/*
+         * `flex-wrap` + `min-h-14`, NOT `h-14` — Story 2.19 Task 6.2 (R2/D8).
+         *
+         * MEASURED: this row's min-content is 237 CSS px (wordmark + search +
+         * the ES|EN pair at 44 px each + the theme toggle at 44 + three gaps +
+         * two gutters), so at a 195 px layout viewport — a 390 px device at
+         * 200% zoom — it made the WHOLE DOCUMENT scroll sideways on all eight
+         * routes, including /about, /glossary and /404, which have nothing else
+         * in them. It is the universal floor the reflow matrix found.
+         *
+         * WRAPPING IS THE HONEST FIX AND THE ALTERNATIVES WERE MEASURED TOO.
+         * Tightening the gap to 0.25rem buys 24 px and shrinking the gutter
+         * another 8, which still leaves 205 > 195 and only reaches 195 by
+         * truncating the site name. WCAG 1.4.10 asks content to REFLOW into
+         * more rows, not to shrink: every touch target keeps its 44 px
+         * (MIN_HIT_PX), the wordmark keeps its full text, and the row becomes
+         * two rows only at widths where one row cannot fit.
+         *
+         * `min-h-14` rather than `h-14` so the height is unchanged at every
+         * width that does not wrap — verified at 320, 390 and 1920.
+         *
+         * KNOWN AND ACCEPTED: at a wrapped width the sticky header is ~112 px
+         * while `scroll-padding-top: 4.5rem` (globals.css) still reserves 72,
+         * so an anchored heading lands slightly high at 200% zoom. That is a
+         * smaller defect than a document that scrolls sideways, and it is
+         * recorded rather than left to be re-found.
+         */}
+        <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center gap-tile-gap px-gutter-mobile md:px-gutter-desktop">
           <Link href="/" className="flex min-h-11 items-center type-title text-ink-primary">
             {t("app.siteName")}
           </Link>

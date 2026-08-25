@@ -595,7 +595,7 @@ function StandingsSurface({ tournament }: { tournament: Tournament }) {
           />
         </div>
       ) : null}
-      <div className="mt-tile-gap grid gap-section-gap">
+      <div className="mt-tile-gap grid grid-cols-1 gap-section-gap">
         {sections.map((section) => {
           /*
            * The group LETTER is DATA (the contract enum is lowercase "a".."l")
@@ -741,7 +741,7 @@ function ResultsSurface({ tournament }: { tournament: Tournament }) {
           />
         </div>
       ) : null}
-      <div className="mt-tile-gap grid gap-section-gap">
+      <div className="mt-tile-gap grid grid-cols-1 gap-section-gap">
         {sections.map((section) => {
           const sectionTitle = headingText(section.heading);
           return (
