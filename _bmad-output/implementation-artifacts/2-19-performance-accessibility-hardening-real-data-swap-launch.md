@@ -634,7 +634,7 @@ All three are cheap; (a) belongs with Task 6's a11y work, (b) and (c) with Task 
 - [x] 5.8 **D15 / L1504 — back in scope.** Match Dashboard: 1,141 ms script evaluation, 461 KiB
   route, 43 KiB unused JS. Attack the eagerly-constructed section content and the app bundle
   (code-split). Target >= 90 on both gated routes. Record what moved and by how much.
-- [ ] 5.9 Final Lighthouse table for all five routes, median of 3, mobile, 13.4.1, host-realistic
+- [x] 5.9 Final Lighthouse table for all five routes, median of 3, mobile, 13.4.1, host-realistic
   server. AC 2 is met or the gap is re-ruled — do not silently accept a miss after D15.
 
 ### Task 6 — AC 3: the accessibility floor
@@ -668,30 +668,30 @@ All three are cheap; (a) belongs with Task 6's a11y work, (b) and (c) with Task 
   (L962, L2347).
 
 ### Task 8 — R3: the pipeline batch
-- [ ] 8.1 Apply all twelve edits (`./pipeline/venv/Scripts/python.exe`; chunk everything).
-- [ ] 8.2 Re-render the batch summary quoted verbatim in 1.19's Dev Agent Record (item 12).
-- [ ] 8.3 Re-run the five phases. Chunk; resume rather than restart.
-- [ ] 8.4 Fresh byte-identity proof. Record the new `code_version()` and supersede `ad4735a216e2` in 1.19's record and the ledger.
-- [ ] 8.5 Confirm the re-extract reproduces the emitted `/data` byte-for-byte. Any change is a finding.
-- [ ] 8.6 Chunked pytest across all pipeline test files.
+- [x] 8.1 Apply all twelve edits (`./pipeline/venv/Scripts/python.exe`; chunk everything).
+- [x] 8.2 Re-render the batch summary quoted verbatim in 1.19's Dev Agent Record (item 12).
+- [x] 8.3 Re-run the five phases. Chunk; resume rather than restart.
+- [x] 8.4 Fresh byte-identity proof. Record the new `code_version()` and supersede `ad4735a216e2` in 1.19's record and the ledger.
+- [x] 8.5 Confirm the re-extract reproduces the emitted `/data` byte-for-byte. Any change is a finding.
+- [x] 8.6 Chunked pytest across all pipeline test files.
 
 ### Task 9 — AC 4: launch
-- [ ] 9.1 Green build chain end to end.
-- [ ] 9.2 Confirm and **log** the Netlify account bandwidth model; record the budget math against the export size.
-- [ ] 9.3 Verify $0/month; no functions, middleware, env, analytics.
+- [x] 9.1 Green build chain end to end.
+- [x] 9.2 Confirm and **log** the Netlify account bandwidth model; record the budget math against the export size.
+- [x] 9.3 Verify $0/month; no functions, middleware, env, analytics.
 - [ ] 9.4 Connect and publish (**authorized — R4**). `gh auth switch -u juanrojasdp` before pushing.
 - [ ] 9.5 Verify the live site: all routes, both locales, both themes, real data served from the same origin.
 - [ ] 9.6 Record the live URL. Confirm repo + URL are publishable as the portfolio piece (SM-6).
 
 ### Task 10 — AC 5: close the ledger, and close the project
-- [ ] 10.1 Walk all 66 blocks. Give each a disposition (D11).
-- [ ] 10.2 Append the Partition D corrections — **especially the defensive-actions density figure**, now carried forward three times against emitted data that does not support it.
-- [ ] 10.3 Name a successor and a reason for every Partition C entry. **L1504 is no longer among
+- [x] 10.1 Walk all 66 blocks. Give each a disposition (D11).
+- [x] 10.2 Append the Partition D corrections — **especially the defensive-actions density figure**, now carried forward three times against emitted data that does not support it.
+- [x] 10.3 Name a successor and a reason for every Partition C entry. **L1504 is no longer among
   them (D15) — its disposition is "implemented here".** L147 / L2697 / L3227 close as ACCEPTED
   per D17, not as re-deferrals.
-- [ ] 10.4 Record the answers to whatever remains in *Open questions for Juan*.
+- [x] 10.4 Record the answers to whatever remains in *Open questions for Juan*.
 - [ ] 10.5 Update `sprint-status.yaml`; `2-19` → `review`. Note `epic-2-retrospective: optional`.
-- [ ] 10.6 Commit your own slices as you go (D13). Commit directly to `main` — no branches, no PRs.
+- [x] 10.6 Commit your own slices as you go (D13). Commit directly to `main` — no branches, no PRs.
 
 ---
 
@@ -1421,6 +1421,209 @@ its ruled sentence VERBATIM as the clause after a colon and gains its term in fr
 leaderboards surface gets its first mark: not on the metric's sortable column head, which cannot
 hold a focusable trigger, but on the board's own heading, on both altitudes, for the fourteen metric
 codes that name a policy term.
+
+#### Task 5.9 — the final Lighthouse table, and the harness defect underneath it
+
+**THE LARGEST SINGLE MOVEMENT IN THIS TASK CAME FROM FIXING MY OWN HARNESS, AND IT IS RECORDED
+FIRST BECAUSE IT INVALIDATES TWO EARLIER ROUNDS OF NUMBERS.**
+
+When the measurement server was rewritten to pre-compress and cache — itself a fix for a measured
+329 ms TTFB artefact — the edit wrote **literal backspace bytes (0x08)** into its two
+content-negotiation regexes, so they read `/<BS>br<BS>/` and matched nothing. The server then served
+every asset **uncompressed** while still printing "gzip/brotli" on startup:
+
+| asset | served | should be |
+|---|---|---|
+| `/` (the Hub document) | 104,993 B | **8,388 B** (12.5×) |
+| the largest JS chunk | 227,538 B | **60,658 B** |
+| `leaderboards.json` | 962,885 B | **39,213 B** (24.5×) |
+
+| the SAME build, gated routes, median of 5 | Match Dashboard | Tournament Hub |
+|---|---|---|
+| against the uncompressed server | 76 | 65 |
+| against a compressing server | **90** | **85** |
+
+This is the same class of error as the prior session's `python -m http.server` finding — a
+measurement about the harness — and it is the **second time in this story** a number turned out to
+be about the method rather than the page. The reason is now written into `serve.mjs` so it cannot be
+reintroduced silently, and the response headers are asserted rather than assumed.
+
+**The last SM-C2 move: `INITIALLY_OPEN_BOARDS` 3 → 0.** Three was chosen at the 2.13 review "so the
+3-board fixture renders exactly as before" — a FIXTURE fact, and correcting fixture-shaped decisions
+at real scale is this story's whole job. At the real emission those three are the largest boards by
+row count and were the last uncollapsed density on the Hub. **Nothing is deleted:**
+`LeaderboardsSection` still pre-renders the top three rows of ALL 36 boards into the exported HTML,
+so a reader arriving at `/` still sees who leads every board with no JavaScript and without opening
+anything. Hub TBT **219 → 134 ms**.
+
+**The final table.** Lighthouse 13.4.1, mobile, median of 5 runs, host-realistic server (gzip/brotli
+with a real `content-length`, keep-alive, Netlify's own cache-control), `benchmarkIndex` printed
+because it is part of the reading:
+
+| route | perf (min–max) | a11y | BP | SEO | FCP | LCP | TBT | CLS | SI | benchmarkIndex |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **Match Dashboard** | **88** (86–91) | **100** | 96 | 100 | 1.0 s | 3.7 s | 102 ms | 0.000 | 3.5 s | 1804–2510 |
+| **Tournament Hub** | **86** (84–94) | **100** | 96 | 100 | 0.8 s | 3.8 s | 134 ms | 0.044 | 2.4 s | 1917–2321 |
+| `/compare` | 87 (78–94) | **100** | 96 | 100 | 0.8 s | 3.9 s | 119 ms | 0.000 | 2.0 s | 2068–2249 |
+| Player Profile | 78 (74–86) | **100** | 96 | 100 | 0.8 s | 4.3 s | 362 ms | 0.000 | 2.6 s | 1655–2162 |
+| Team Profile | 69 (65–77) | **100** | 96 | 100 | 0.8 s | 4.5 s | 515 ms | 0.000 | 3.1 s | 1074–2320 |
+
+**What moved across the whole story:**
+
+| | start of 2.19 | now |
+|---|---|---|
+| Match Dashboard / Hub performance | 83 / 68 | **88 / 86** |
+| accessibility, all five routes | 96 | **100** |
+| Match Dashboard TBT | 368 ms | **102 ms** |
+| Tournament Hub TBT | 674 ms | **134 ms** |
+| Tournament Hub CLS | 0.758 → 0.044 | 0.000–0.044 |
+
+**AC 2's Lighthouse half is NOT MET as measured, and is not silently accepted (5.9's own words).**
+The floor is 90; the medians are 88 and 86, with best runs of 91 and 94. Two things about that
+number are worth stating precisely before it is ruled on:
+
+1. **The remaining gap is structural, not slack.** The Hub's LCP element is `h2#standings`, inside
+   the AD-11 client-fetched region — it cannot paint before the fetch resolves. The
+   `min-h-[120vh]` reservation cannot be reduced to bring the static `#leaders` teasers above the
+   fold either: the settled region is **4,496 px** at 412 px, so shrinking the reservation
+   reintroduces the CLS the Task 5.4 fix removed. Closing it needs an AD-11 change, which is
+   explicitly out of this story's scope.
+2. **The measurement's own spread is larger than the gap.** `benchmarkIndex` swings 1,074–2,510 on
+   this machine, and the OBSERVED first paint for one unchanged page varied **227 ms → 2,198 ms**
+   between runs in the same batch. Lantern's simulated LCP is internally inconsistent with its own
+   trace on the Match Dashboard: observed FCP and observed LCP are the same paint of the same
+   static element (1,222 ms), and it reports simulated FCP 1,209 ms against simulated LCP 8,750 ms.
+
+**This goes to Juan for a ruling (see the open question below), not to more work.**
+
+#### Task 8 — R3, the pipeline batch
+
+All twelve landed as one change, followed by one re-extract. Two of them touched a shipped
+guarantee; the other ten are exit-code honesty, cleanup guarding, staging hygiene and docstring debt.
+
+- **P10 — a SUCCESSFUL emission could exit 2.** `clear(backup)` ran outside the guarded block, so an
+  `OSError` removing a retired backup propagated into `emit.main`'s `except (OSError,
+  AssertionError): return 2` and printed *"emission could not run"* over a `data/matches/` that had
+  already been completely and correctly replaced. Found independently by all three review layers.
+- **P11 — cleanup inside the failure handlers could REPLACE the exception it was cleaning up
+  after.** Worst in the two rollback loops, where a failure mid-undo discarded the cause AND left
+  the tree half-swapped — the state those docstrings promise cannot occur.
+- `clear_quietly` names 1.18's own rule once, for every caller: *"a failure to remove a scratch
+  directory must not turn a successful emission into a failed one."* The leftover is not silent —
+  everything the module creates is gitignored, and the NEXT run's `clear()` is not quiet.
+- **P12 — the near-miss renderer never re-filtered.** Worth stating precisely, because it is easy to
+  read as "the summary was lying" and it was not: `_mirror_self_validation` filters zero deltas
+  before they reach the manifest, so the shipped production figures were correct. What was wrong was
+  the shipped aggregate TEST, which built entries carrying 17 and 84 zero deltas and asserted
+  `104/104` for both — a false expectation that would have gone green over a renderer that lost its
+  filter. Both now apply the same predicate, including the `bool`-is-an-`int` guard.
+- P13 the orchestrator catches any exception, not only `SystemExit`, so a `ValueError` no longer
+  exits **1** — "a real finding" — when the truth is **2**, "the harness could not run".
+- P14 `len(gaps)` / `len(orphans)` move inside the `try` that exists to reject off-shape manifests.
+- P15 `swap.py` uses its own shape-agnostic `clear()` instead of `rmtree`/`unlink`.
+- P16 `emit_index` clears a leftover staging sibling first, as `emit_bundles` already did.
+- P17 `MANIFEST_VERSION` 1 → 2, keeping the `.get` (ruled by Juan 2026-08-07).
+- P18 the `pass-network-top5-pct` exclusion rationale reaches `bounded_check`'s docstring — **and
+  its recorded REASON is corrected**: "would produce a `104/104` line carrying no information" is
+  contradicted by two other bounded checks that render `104/104` usefully. The real reason is that
+  its delta is a difference between two independently-rounded percentages, so its magnitude is a
+  rounding artefact rather than a measure of anything.
+- P19 Task 4.3's three-way match-id collision note reaches `run_batch`'s docstring.
+- The near-miss `+` is gone (ruled by Juan): every producer feeds an `abs()` or a one-directional
+  shortfall, so the glyph asserted a direction the data does not carry.
+
+**THE PROOF, and it is stronger than 1.19's because it spans a fingerprint change rather than
+holding within one:**
+
+| assertion | result |
+|---|---|
+| `code_version` | `ad4735a216e2` → **`1d3a32f1ec55`** |
+| the twelve edits reproduce the committed `/data` | **1,411 of 1,411 artifacts BYTE-IDENTICAL** (SHA-256, file by file); `git status --short data/` empty |
+| a second run is a no-op | `extracted 0 / failed 0 / skipped-unchanged 104` |
+| phases | `run`/`emit`/`profiles`/`index` PASS; `ingest.batch` exits 1 on the two adjudicated reports |
+| `PIPELINE RESULT` | `FAIL (5 of 5 phase(s) run)`, exit 1 — the ruled-clean outcome |
+| pipeline suite | **1,782 passed, 4 skipped, 0 failed** across all 49 files, in nine chunks |
+| the two adjudicated deviations | the same two reports, the same two numbers — tripwire clean, no third |
+
+1.19's Dev Agent Record is **superseded by appending**, never rewritten: its run records are a
+faithful account of 2026-08-07, and the re-rendered summary Decision 4 required sits beside them.
+
+#### Task 9 — launch
+
+**9.1 The build chain is green end to end**, and it is one step longer than it was:
+`lint --max-warnings 0` → `typecheck` → `assert:schema-version` → `next build` → `copy-data` →
+**`assert:no-external-origins`**. 1,406 pages, 12,683 text assets scanned, **0 external
+subresources**.
+
+**9.2 The bandwidth model, measured rather than estimated.** The export is 109.7 MB across 14,105
+files — and nobody downloads the export. A REAL SESSION, cache on (`_next/static/**` ships
+`max-age=31536000, immutable`), against a compressing host:
+
+| step | on the wire | running total |
+|---|---|---|
+| arrive on the Hub | 404.1 KB | 404.1 KB |
+| open a match | 58.0 KB | 462.1 KB |
+| open a player | 118.9 KB | 581.0 KB |
+| open a team | 32.2 KB | 613.2 KB |
+| compare two players | 62.6 KB | 675.7 KB |
+| read the glossary | 15.0 KB | **690.7 KB** |
+
+**A six-route session costs 691 KB.** Against the two plan shapes ARCHITECTURE-SPINE.md:235 names:
+
+| plan | sessions per month at 691 KB |
+|---|---|
+| legacy Starter, 100 GB/mo | **~151,800** |
+| credit-based, ~15 GB/mo effective | **~22,800** |
+
+Either shape clears a portfolio piece by orders of magnitude, so **the account-model question does
+not gate the launch** — it only decides which ceiling is being approached, and neither is close. The
+documented fallbacks (Cloudflare Pages, GitHub Pages) remain a config move, not an architecture
+change, and are not needed.
+
+**9.3 `$0/month`, verified rather than assumed.** No `netlify/` functions directory; no
+`middleware.ts`; no `_redirects`, `_headers` or `.netlify` in the export; the only `process.env` in
+runtime code is a `NODE_ENV` guard on a dev-only i18n warning, which is a compile-time constant in
+the export; no analytics, telemetry or beacon library anywhere in `app/src`; and the origin gate
+proves 0 external subresources over 12,683 assets. `netlify.toml` publishes `app/out` with
+`NETLIFY_NEXT_PLUGIN_SKIP = "true"`, which is the AD-13 chain verbatim.
+
+**9.4 / 9.5 / 9.6 — BLOCKED ON CREDENTIALS, and this is the one thing R4's authorisation cannot
+supply.** R4 authorises the ACTION; it cannot authenticate the accounts.
+
+- `netlify status` reports **"Not logged in"**, and `netlify login` is an interactive browser OAuth
+  flow. Nothing can connect the repo or publish without it.
+- `git push origin main` **403s**: `Permission to juanrojasdp/wc-stats.git denied to
+  juancamilo-pharosgraph`. `gh auth status` lists only `juancamilo-pharosgraph` and
+  `juanrojas-bolton` and BOTH are denied; the `juanrojasdp` account the story names is no longer in
+  the keyring, so `gh auth switch -u juanrojasdp` fails too. (The active account was restored to
+  what it was before the attempt.)
+
+**16 commits are ready on local `main`** and the export is built and verified. What is owed is two
+`login` commands, not any further work on the site.
+
+#### Task 10 — the ledger closes
+
+All **66 blocks** naming 2.19 (74 raw mentions) carry a disposition, **appended and never rewritten**
+(D12): 32 implemented, 6 ruled, 8 re-deferred each with a named successor AND a stated reason, 7
+already-closed with the corrections this story owes. **L1504 is not among the re-deferrals** — D15
+pulled it back out and its disposition is "implemented here"; **L147 / L2697 / L3227 close as
+ACCEPTED** per D17, not as re-deferrals.
+
+Since 2.19 is the last story, "re-deferred" names a successor CHANGE-SET rather than a story that
+exists, and each one states the trigger that would reopen it. The heatmap's trigger has already
+**fired with a negative answer**: 1.16 has emitted, and `crosses`, `defensiveActions` and
+`receiving` are null on 104/104, so a heatmap built now would bin nothing.
+
+**The correction that matters most is the third one, because it has now been carried forward three
+times:** the **153-marker defensive-actions cluster-density figure is wrong for shipped data.** It
+was measured over *staged extraction records*; `events.defensiveActions` is null on 104/104 in the
+EMITTED bundles, so the section renders its whole-section empty state on every match and there are
+no markers to cluster. Anything quoting 153 must quote the correction with it.
+
+Two corrections this story owes to its OWN measurements are appended beside the rest, because a
+ledger that only records other people's errors is not a ledger: the reflow predicate that reported
+654 overflowing elements on a route whose document did not overflow at all, and the two Lighthouse
+rounds taken against a server that served everything uncompressed.
 
 ### Completion Notes List
 
