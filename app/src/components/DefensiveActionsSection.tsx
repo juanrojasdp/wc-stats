@@ -11,7 +11,7 @@ import type { DefensiveActions } from "@/lib/contract/contract-types";
 import { formatDecimal, formatInteger } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
-import { clockSortValue, type TableColumn } from "@/lib/table-sort";
+import { clockSortValue, markRowHeader, type TableColumn } from "@/lib/table-sort";
 import {
   anyContestType,
   anyMinute,
@@ -249,6 +249,19 @@ export function DefensiveActionsSection({
   ];
 
   /*
+   * THE ROW HEADER, chosen rather than hard-coded (ledger A17/L1877, Story 2.19
+   * Task 6.9). Before this the log's every body cell was a `<td>`, so a screen
+   * reader read the values of a row and never said whose recovery it was.
+   *
+   * `markRowHeader` and not `rowHeader: true` on the player column, because that
+   * column is GATED: `anyPlayerName(rows)` drops it entirely when the report
+   * named nobody, and a hard-coded flag on a conditionally-spread column would
+   * leave exactly those matches — the ones with least context — with no row
+   * header at all. The preference degrades player -> minute -> team.
+   */
+  const columnsWithRowHeader = markRowHeader(columns, ["player", "minute", "team"]);
+
+  /*
    * THE CAPTION MUST STATE THE ORDER THE TABLE ACTUALLY HAS.
    *
    * REVIEW PATCH: this shipped `viz.table.caption` unconditionally — literally
@@ -270,7 +283,7 @@ export function DefensiveActionsSection({
     : "viz.defensiveActions.tableCaptionNoClock";
   const caption = `${title}${CAPTION_SEPARATOR}${t(orderKey)}`;
 
-  const dataTable = <DataTable caption={caption} columns={columns} rows={rows} surface="pitch" />;
+  const dataTable = <DataTable caption={caption} tableName={caption} columns={columnsWithRowHeader} rows={rows} surface="pitch" />;
 
   /*
    * NO `selection` (ruled decision 18): pinning exists to isolate a node's

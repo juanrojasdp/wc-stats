@@ -238,6 +238,14 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
         // Plain text, never a link: /players/{slug} does not exist.
         render: (row) => row.playerName ?? unknown,
         align: "text",
+        /*
+         * THE ROW HEADER (ledger A17/L1877, Story 2.19 Task 6.9). Both shot-map
+         * logs were rows of bare `<td>`s, so a screen reader read eight values
+         * per row and never said WHOSE shot it was. Unlike the two gated logs
+         * this column is unconditional here, so it is marked in place rather
+         * than through `markRowHeader`.
+         */
+        rowHeader: true,
         // NULL, not the em dash: an unnamed player sorts to the END of the
         // array in both directions rather than collating on "—".
         sort: { kind: "text", valueOf: (row) => row.playerName },
@@ -356,11 +364,23 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
   const crossCaption = `${crossTitle}${CAPTION_SEPARATOR}${t("viz.table.caption")}`;
 
   const shotTable = (
-    <DataTable caption={shotCaption} columns={shotColumns} rows={shotRows} surface="pitch" />
+    <DataTable
+      caption={shotCaption}
+      tableName={shotTitle}
+      columns={shotColumns}
+      rows={shotRows}
+      surface="pitch"
+    />
   );
 
   const crossTable = (
-    <DataTable caption={crossCaption} columns={crossColumns} rows={crossRows} surface="pitch" />
+    <DataTable
+      caption={crossCaption}
+      tableName={crossTitle}
+      columns={crossColumns}
+      rows={crossRows}
+      surface="pitch"
+    />
   );
 
   /*

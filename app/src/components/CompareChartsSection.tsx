@@ -5,7 +5,11 @@ import { useEffect, useRef, useState, type ReactNode, type RefObject } from "rea
 
 import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
-import { composeCompareFigureSummary, displayTeamCode } from "@/lib/compare-format";
+import {
+  composeCompareFigureSummary,
+  composeSideHeading,
+  displayTeamCode,
+} from "@/lib/compare-format";
 import type { MatchBundle, PlayerProfile, TeamProfile } from "@/lib/contract/contract-types";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
@@ -124,6 +128,32 @@ const DistributionChart = dynamic(
   () => import("@/components/Charts").then((module) => module.DistributionChart),
   { ssr: false, loading: () => <ChartFallback heightClass={distributionChartHeightClass(4)} /> }
 );
+
+/*
+ * ═══ A23 / L4089: TWO ENTITIES WITH ONE DISPLAY NAME ═══ Story 2.19 Task 6.12.
+ *
+ * CONFIRMED REACHABLE AT REAL DATA. The 1,248-name corpus carries `Emiliano
+ * MARTINEZ` TWICE - `martinez-emiliano-arg` (Argentina, gk) and
+ * `martinez-emiliano-uru` (Uruguay, mf). Comparing the two produced SIX
+ * byte-identical captions and TWO byte-identical figure headings on one route:
+ * a screen reader listing this page's tables heard the same name six times and
+ * could not tell which side it was on, and the distinct ids that make the URL
+ * unambiguous are nowhere in the accessible names.
+ *
+ * The disambiguator is the side's `detail` line, which for a player IS the team
+ * name - `search-model.ts:52` already documents this exact pair as the reason
+ * `detail` exists at all. Reusing `composeSideHeading` rather than minting a
+ * second composition keeps the caption identity and the side's own <h2>
+ * agreeing, which is what a reader cross-referencing them needs.
+ *
+ * DISTINCT IDS ARE STILL NOT DISTINCT NAMES: this makes the NAMES distinct,
+ * which is the thing the caption inventory is about. Where an entity genuinely
+ * has no detail (`null`), `composeSideHeading` returns the bare name and nothing
+ * is claimed that is not known.
+ */
+function sideIdentity(ref: SideRef): string {
+  return composeSideHeading(ref.name, ref.detail);
+}
 
 interface SideRef {
   id: string;
@@ -386,7 +416,18 @@ export function CompareChartsSection({
   return (
     <section id={COMPARE_CHARTS_SECTION_ID} className="mt-section-gap">
       <h2 className="type-title text-ink-primary">{t("compare.section.charts")}</h2>
-      <StickyMiniHeader names={[refA.name, refB.name]} activeIndex={activeIndex} />
+      {/*
+        A23 again, and this is the pair the mini-header exists FOR: with
+        `Emiliano MARTINEZ` on both sides the header renamed itself between two
+        byte-identical strings, so the one control that says WHICH side you are
+        looking at said nothing. `sideIdentity` appends the disambiguating
+        detail line — the same identity the captions and the side headings
+        carry, so the three agree.
+      */}
+      <StickyMiniHeader
+        names={[sideIdentity(refA), sideIdentity(refB)]}
+        activeIndex={activeIndex}
+      />
       {/*
        * TWO COLUMNS AT `≥md`, STACKED BELOW IT (AC 4). The `md`→`lg` band is
        * unspecified in the UX docs — `EXPERIENCE.md:125-134`'s responsive table
@@ -467,11 +508,11 @@ function PlayerFigures({
         <CompareFigure
           key={entry.ref.id}
           side={entry.side}
-          entityName={entry.ref.name}
-          tableCaption={`${entry.ref.name}${CAPTION_SEPARATOR}${title}${CAPTION_SEPARATOR}${t(
+          entityName={sideIdentity(entry.ref)}
+          tableCaption={`${sideIdentity(entry.ref)}${CAPTION_SEPARATOR}${title}${CAPTION_SEPARATOR}${t(
             "player.caption.physical"
           )}`}
-          tableName={`${entry.ref.name}${CAPTION_SEPARATOR}${t("player.tableName.physical")}`}
+          tableName={`${sideIdentity(entry.ref)}${CAPTION_SEPARATOR}${t("player.tableName.physical")}`}
           columns={singleSeriesColumns(categoryHead, valueHead, format)}
           rows={categories.map((category, position) => ({
             key: `${entry.side}-${position}`,
@@ -497,7 +538,7 @@ function PlayerFigures({
             axisCategoryLabel={categoryHead}
             figureSummary={composeCompareFigureSummary({
               title,
-              entityName: entry.ref.name,
+              entityName: sideIdentity(entry.ref),
               unitLabel,
             })}
             heightClass={compareBarChartHeightClass(PLAYER_ZONE_COUNT)}
@@ -547,11 +588,11 @@ function TeamFigures({
         <CompareFigure
           key={entry.ref.id}
           side={entry.side}
-          entityName={entry.ref.name}
-          tableCaption={`${entry.ref.name}${CAPTION_SEPARATOR}${title}${CAPTION_SEPARATOR}${t(
+          entityName={sideIdentity(entry.ref)}
+          tableCaption={`${sideIdentity(entry.ref)}${CAPTION_SEPARATOR}${title}${CAPTION_SEPARATOR}${t(
             "viz.phases.tableCaption"
           )}`}
-          tableName={`${entry.ref.name}${CAPTION_SEPARATOR}${t("team.tableName.inPossession")}`}
+          tableName={`${sideIdentity(entry.ref)}${CAPTION_SEPARATOR}${t("team.tableName.inPossession")}`}
           columns={singleSeriesColumns(categoryHead, valueHead, format)}
           rows={categories.map((category, position) => ({
             key: `${entry.side}-${position}`,
@@ -575,7 +616,7 @@ function TeamFigures({
             axisCategoryLabel={categoryHead}
             figureSummary={composeCompareFigureSummary({
               title,
-              entityName: entry.ref.name,
+              entityName: sideIdentity(entry.ref),
               unitLabel: null,
             })}
             heightClass={compareBarChartHeightClass(TEAM_PHASE_COUNT)}
@@ -638,11 +679,11 @@ function MatchFigures({
           <CompareFigure
             key={entry.ref.id}
             side={entry.side}
-            entityName={entry.ref.name}
-            tableCaption={`${entry.ref.name}${CAPTION_SEPARATOR}${title}${CAPTION_SEPARATOR}${t(
+            entityName={sideIdentity(entry.ref)}
+            tableCaption={`${sideIdentity(entry.ref)}${CAPTION_SEPARATOR}${title}${CAPTION_SEPARATOR}${t(
               "player.caption.aggregates"
             )}`}
-            tableName={`${entry.ref.name}${CAPTION_SEPARATOR}${title}`}
+            tableName={`${sideIdentity(entry.ref)}${CAPTION_SEPARATOR}${title}`}
             columns={[
               {
                 key: "category",
@@ -693,7 +734,7 @@ function MatchFigures({
               formatValue={format}
               figureSummary={composeCompareFigureSummary({
                 title,
-                entityName: entry.ref.name,
+                entityName: sideIdentity(entry.ref),
                 unitLabel: null,
               })}
               heightClass={distributionChartHeightClass(4)}

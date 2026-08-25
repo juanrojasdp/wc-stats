@@ -1,9 +1,9 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type FocusEvent as ReactFocusEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FocusEvent as ReactFocusEvent } from "react";
 
 import { useSortAnnounce } from "@/components/SortAnnouncer";
-import { useT } from "@/lib/i18n-provider";
+import { useLocale, useT } from "@/lib/i18n-provider";
 import {
   ariaSortFor,
   composeHeadAccessibleName,
@@ -227,6 +227,7 @@ export function DataTable<Row extends { key: string }>({
   rowClass,
 }: DataTableProps<Row>) {
   const t = useT();
+  const { locale } = useLocale();
   const announce = useSortAnnounce();
 
   /*
@@ -412,6 +413,45 @@ export function DataTable<Row extends { key: string }>({
     }
     announce(announcementFor(next, column.headText));
   }
+
+  /*
+   * ═══ A LOCALE SWITCH RE-ORDERS A TEXT SORT, AND NOW SAYS SO ═══
+   * Story 2.19 Task 6.10, ledger A26/L1538.
+   *
+   * The rows really do move. A `DictionaryKey` column's `sort.valueOf` returns
+   * the label RESOLVED AT THE CALL SITE, so toggling ES/EN rebuilds the columns
+   * with new labels and the active text sort re-collates over different strings
+   * — the docblock below this one already records that as deliberate. What was
+   * missing is that NOTHING SAID IT: the table silently re-ordered under the
+   * reader, and the polite live region was left holding the announcement from
+   * BEFORE the switch, in the previous language. A screen-reader user was left
+   * with a stale sentence describing an order that no longer existed.
+   *
+   * TEXT SORTS ONLY, and that is the whole point rather than an optimisation: a
+   * numeric or clock column collates identically in both locales, so announcing
+   * a re-order that did not happen would be a second false statement. `null`
+   * sort state is artifact order and never moves either.
+   *
+   * IT ANNOUNCES THE RE-RESOLVED STRING, not the old one — the head text and
+   * every label are read from the CURRENT render, so the sentence arrives in the
+   * language the reader just switched to.
+   *
+   * The nonce guard makes this fire on a locale CHANGE and never on mount: a
+   * table that announced its own order on arrival would talk over the page.
+   */
+  const previousLocale = useRef(locale);
+  useEffect(() => {
+    const changed = previousLocale.current !== locale;
+    previousLocale.current = locale;
+    if (!changed || sortState === null) {
+      return;
+    }
+    const active = columns.find((column) => column.key === sortState.columnKey);
+    if (active === undefined || active.sort === null || active.sort.kind !== "text") {
+      return;
+    }
+    announce(announcementFor(sortState, active.headText));
+  });
 
   /*
    * Sorted DURING RENDER, never memoised on a stale `columns` identity. That is

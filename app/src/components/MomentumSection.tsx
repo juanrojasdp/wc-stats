@@ -369,7 +369,7 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
   ];
 
   const dataTable = (
-    <DataTable caption={tableCaption} columns={columns} rows={tableRows} surface="canvas" />
+    <DataTable caption={tableCaption} tableName={tableCaption} columns={columns} rows={tableRows} surface="canvas" />
   );
 
   const attribution = t("viz.attribution");

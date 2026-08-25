@@ -27,8 +27,25 @@ const MATCHES_DIR = OUT_DIR + "matches/";
 const anyBuilt = existsSync(OUT_DIR);
 
 // trailingSlash: true → out/matches/{matchId}/index.html.
+/*
+ * MEMOISED (Story 2.19 Task 6). Three cases here loop over all 104 manifest
+ * matches and read each route's HTML — 104 x 26 kB per case, re-read from disk
+ * every time. At fixture scale that was 3 files and invisible; at the cutover it
+ * intermittently pushed a case past vitest's 5 s DEFAULT under ten-worker
+ * contention and the suite went red on a TIMEOUT rather than an assertion. Same
+ * defect, same fix and same reason as the `everyRouteHtml` memo this story
+ * already added for the header-search block.
+ */
+const matchHtmlCache = new Map<string, string>();
+
 function matchHtml(matchId: string): string {
-  return readFileSync(`${MATCHES_DIR}${matchId}/index.html`, "utf8");
+  const hit = matchHtmlCache.get(matchId);
+  if (hit !== undefined) {
+    return hit;
+  }
+  const html = readFileSync(`${MATCHES_DIR}${matchId}/index.html`, "utf8");
+  matchHtmlCache.set(matchId, html);
+  return html;
 }
 
 // Count a class only where it appears as a real DOM `class="..."` attribute —
@@ -116,6 +133,16 @@ describe.skipIf(!anyBuilt)("exported /matches/[slug] routes (AC 1)", () => {
     expect(manifest.length).toBeGreaterThan(0);
   });
 
+  /*
+   * EXPLICIT TIMEOUT (Story 2.19 Task 6), and a CUTOVER cost rather than a slow
+   * assertion: these cases loop over all 104 manifest matches, reading each
+   * route's exported HTML and its bundle. At fixture scale that was three
+   * matches and invisible. The reads are memoised above, which fixed most of
+   * it; what is left is ~104 x 26 kB of string scanning per case, which runs in
+   * well under a second alone and intermittently crossed vitest's 5 s DEFAULT
+   * under ten-worker contention. Raised HERE, not globally — the pure-model
+   * suites keep the 5 s default where it is a genuine signal.
+   */
   it("each <title> carries teams + score + stage label (Spanish canonical)", () => {
     for (const entity of readTournament().entities.matches) {
       const { metadata } = readMatchBundle(entity.matchId);
@@ -131,7 +158,7 @@ describe.skipIf(!anyBuilt)("exported /matches/[slug] routes (AC 1)", () => {
       expect(title).toContain(` · ${esStage(metadata.stage)} · `);
       expect(title).toContain(es.app.siteName);
     }
-  });
+  }, 20_000);
 
   it("m074's title carries the shoot-out suffix", () => {
     expect(documentTitle(matchHtml("m074-germany-paraguay"))).toContain(
@@ -143,7 +170,7 @@ describe.skipIf(!anyBuilt)("exported /matches/[slug] routes (AC 1)", () => {
     for (const entity of readTournament().entities.matches) {
       expect(classAttrCount(matchHtml(entity.matchId), "type-display-score")).toBe(1);
     }
-  });
+  }, 20_000);
 });
 
 describe.skipIf(!anyBuilt)("m001 Hero markup (AC 2)", () => {

@@ -228,7 +228,15 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
     `${CAPTION_SEPARATOR}${t("viz.pressing.tableCaption")}`;
 
   function rateTable(caption: string, rows: PhaseRow[]) {
-    return <DataTable caption={caption} columns={rateColumns} rows={rows} surface="canvas" />;
+    return (
+      <DataTable
+        caption={caption}
+        tableName={caption}
+        columns={rateColumns}
+        rows={rows}
+        surface="canvas"
+      />
+    );
   }
 
   const dataTable = (

@@ -505,24 +505,28 @@ export function SetPlaysSection({ setPlays, home, away }: SetPlaysSectionProps) 
     <div className="flex flex-col gap-tile-gap">
       <DataTable
         caption={totalsCaption}
+        tableName={totalsCaption}
         columns={totalsColumns}
         rows={totalsTableRows}
         surface="canvas"
       />
       <DataTable
         caption={freeKickCaption}
+        tableName={freeKickCaption}
         columns={freeKickColumns}
         rows={freeKickRowsForTable}
         surface="canvas"
       />
       <DataTable
         caption={cornerCaption}
+        tableName={cornerCaption}
         columns={cornerColumns}
         rows={cornerRowsForTable}
         surface="canvas"
       />
       <DataTable
         caption={cornerTypeSideCaption}
+        tableName={cornerTypeSideCaption}
         columns={typeSideColumns}
         rows={typeSideRows}
         surface="canvas"

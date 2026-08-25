@@ -738,12 +738,14 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
     <div className="flex flex-col gap-tile-gap">
       <DataTable
         caption={summaryCaption}
+        tableName={summaryCaption}
         columns={summaryColumns}
         rows={summaryRows}
         surface="canvas"
       />
       <DataTable
         caption={timelineCaption}
+        tableName={timelineCaption}
         columns={timelineColumns}
         rows={timelineRows}
         surface="canvas"
@@ -756,18 +758,21 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
        */}
       <DataTable
         caption={distributionCaption}
+        tableName={distributionCaption}
         columns={breakdownColumns()}
         rows={distributionTable}
         surface="canvas"
       />
       <DataTable
         caption={headlineCaption}
+        tableName={headlineCaption}
         columns={headlineColumns}
         rows={headlineRows}
         surface="canvas"
       />
       <DataTable
         caption={preventionCaption}
+        tableName={preventionCaption}
         columns={preventionColumns}
         rows={preventionRows}
         surface="canvas"
@@ -779,6 +784,7 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
       {bodyTypeRows.length === 0 ? null : (
         <DataTable
           caption={bodyTypeCaption}
+          tableName={bodyTypeCaption}
           columns={breakdownColumns()}
           rows={bodyTypeRows}
           surface="canvas"
@@ -786,6 +792,7 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
       )}
       <DataTable
         caption={aerialCaption}
+        tableName={aerialCaption}
         columns={breakdownColumns()}
         rows={aerialTable}
         surface="canvas"

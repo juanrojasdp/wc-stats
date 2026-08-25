@@ -305,6 +305,17 @@ describe("decimalAxis", () => {
    * PROPERTY-TESTED on `momentumYTicks`' model, over the real corpus ranges:
    * topSpeed 15,7-37,6 km/h and totalDistance 90-16.290,4 m.
    */
+  /*
+   * EXPLICIT TIMEOUT, and it is a HARNESS fact rather than a slow model
+   * (Story 2.19 Task 6). 117 low values x 7 spans is 819 axis constructions and
+   * roughly fifteen thousand `expect` calls; the assertions themselves are the
+   * cost, not `decimalAxis`. It runs in well under a second alone and
+   * intermittently crossed vitest's 5 s DEFAULT under ten-worker contention on a
+   * loaded desktop — a red suite that is red at random teaches everyone to
+   * ignore it. Raised HERE rather than globally, on
+   * `assert-schema-version.test.ts`'s established precedent: the other
+   * pure-model cases keep the 5 s default, where it is a genuine signal.
+   */
   it("holds its invariants across the corpus range", () => {
     for (let low = 0; low <= 16000; low += 137) {
       for (const span of [0, 0.1, 0.9, 3, 17.5, 250, 4000]) {
@@ -338,7 +349,7 @@ describe("decimalAxis", () => {
         }
       }
     }
-  });
+  }, 20_000);
 
   it("quantizes to two decimals when asked (kilometres)", () => {
     for (const tick of decimalAxis([1.234, 1.239], 2).ticks) {

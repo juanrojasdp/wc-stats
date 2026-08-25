@@ -238,6 +238,7 @@ export function PassNetworksSection({
         >
           <DataTable
             caption={edgeCaption}
+            tableName={edgeCaption}
             columns={edgeColumns}
             rows={matrixRows}
             surface="canvas"
@@ -553,8 +554,20 @@ export function PassNetworksSection({
 
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">
-      <DataTable caption={nodeCaption} columns={nodeColumns} rows={nodeRows} surface="pitch" />
-      <DataTable caption={edgeCaption} columns={edgeColumns} rows={edgeRows} surface="pitch" />
+      <DataTable
+        caption={nodeCaption}
+        tableName={nodeCaption}
+        columns={nodeColumns}
+        rows={nodeRows}
+        surface="pitch"
+      />
+      <DataTable
+        caption={edgeCaption}
+        tableName={edgeCaption}
+        columns={edgeColumns}
+        rows={edgeRows}
+        surface="pitch"
+      />
     </div>
   );
 

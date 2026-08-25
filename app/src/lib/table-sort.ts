@@ -295,6 +295,45 @@ export interface SortAnnouncementLabels {
  * as the sorted form, and the Hub renders THIRTY on one route (12 group
  * standings + 12 group results + up to 6 knockout stages).
  */
+/**
+ * Marks ONE column as the row header, choosing the first key in `preference`
+ * that the column set actually contains and falling back to the first column.
+ *
+ * ═══ WHY THE FOUR EVENT LOGS NEEDED THIS — ledger A17/L1877, Story 2.19 ═══
+ *
+ * No log table set `rowHeader` at all, so the receiving log's ~609 body cells
+ * were every one a `<td>`. A row of eight bare `<td>`s has NOTHING that names
+ * it: a screen-reader user moving down the table hears eight values per row and
+ * never hears whose shot, whose recovery, whose reception it was, because the
+ * player's name is just another cell. `<th scope="row">` is what makes the
+ * browser announce that cell with every other cell in the row.
+ *
+ * THE FALLBACK IS THE WHOLE REASON THIS IS A FUNCTION. The natural row header
+ * is the PLAYER, and the player column is GATED: `anyPlayerName(rows)` drops it
+ * entirely when the report named nobody, and `anyMinute` does the same to the
+ * minute column. A hard-coded `rowHeader: true` on a conditionally-spread
+ * column silently produces a table with no row header at all on exactly the
+ * matches where the reader has least context. So the preference list degrades:
+ * player, then minute, then whatever is first.
+ *
+ * AT MOST ONE PER ROW, which `DataTable` assumes and HTML requires for
+ * `scope="row"` to mean anything. Marking two would make each row claim two
+ * identities.
+ *
+ * Pure, and returns a NEW array: the column arrays are built fresh per render
+ * and must not be mutated in place.
+ */
+export function markRowHeader<Row>(
+  columns: readonly TableColumn<Row>[],
+  preference: readonly string[]
+): TableColumn<Row>[] {
+  const chosen =
+    preference.find((key) => columns.some((column) => column.key === key)) ?? columns[0]?.key;
+  return columns.map((column) =>
+    column.key === chosen ? { ...column, rowHeader: true } : { ...column, rowHeader: false }
+  );
+}
+
 export function composeSortAnnouncement(input: {
   state: SortState | null;
   headText: string;
@@ -302,13 +341,34 @@ export function composeSortAnnouncement(input: {
   tableName?: string;
 }): string {
   const { state, headText, labels, tableName } = input;
+  /*
+   * A TRAILING PERIOD IS TRIMMED (Story 2.19 Task 6.16, ledger L1246/D18a).
+   *
+   * The ~25 match-route tables had no identifier at all, and the copy ruling
+   * taken here is that a table's announcement identifier IS ITS `<caption>` —
+   * the string that already NAMES the table in HTML, that a screen reader
+   * already reads on entering it, and whose uniqueness across the whole site is
+   * already pinned by `i18n.test.ts`'s caption inventory. No new copy is minted
+   * for it, which is the half of L1246 that was still open.
+   *
+   * Captions are SENTENCES and end in a period, so the composed announcement
+   * would read "…familia y técnica.: Ordenado por…". Trimming one trailing
+   * period is all that is needed; the short hand-written names the other 23
+   * call sites pass carry none and are untouched.
+   *
+   * ACCEPTED AND RECORDED: where a caption itself states the table's DEFAULT
+   * order ("Ordenado por minuto."), the announcement names the default and then
+   * the new order. Verbose, never ambiguous — and the alternative was minting
+   * twenty short names that would have to stay distinct from the captions.
+   */
+  const name = tableName === undefined ? undefined : tableName.replace(/\.$/, "");
   const clause =
     state === null
       ? labels.cleared
       : `${labels.sortedBy}${SPACE}${headText}${CLAUSE_SEPARATOR}${
           state.direction === "ascending" ? labels.ascending : labels.descending
         }${PERIOD}`;
-  return tableName === undefined ? clause : `${tableName}${NAME_SEPARATOR}${clause}`;
+  return name === undefined ? clause : `${name}${NAME_SEPARATOR}${clause}`;
 }
 
 /*

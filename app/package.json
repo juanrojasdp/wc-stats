@@ -11,7 +11,8 @@
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "assert:schema-version": "node scripts/assert-schema-version.mjs",
-    "build": "npm run lint && npm run typecheck && npm run assert:schema-version && next build && node scripts/copy-data.mjs",
+    "assert:no-external-origins": "node scripts/assert-no-external-origins.mjs",
+    "build": "npm run lint && npm run typecheck && npm run assert:schema-version && next build && node scripts/copy-data.mjs && npm run assert:no-external-origins",
     "generate:types": "node ../contract/scripts/generate-types.mjs src/lib/contract",
     "check:types": "node ../contract/scripts/generate-types.mjs src/lib/contract --check",
     "test": "vitest run"

@@ -10,7 +10,7 @@ import { LOG_LINKS } from "@/lib/expert-logs";
 import { formatDecimal, formatInteger, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
-import { clockSortValue, type TableColumn } from "@/lib/table-sort";
+import { clockSortValue, markRowHeader, type TableColumn } from "@/lib/table-sort";
 import { MD_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 import { anyMinute, anyPlayerName } from "@/viz/defensive-actions-model";
@@ -698,6 +698,21 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
   ];
 
   /*
+   * THE ROW HEADER (ledger A17/L1877, Story 2.19 Task 6.9). This is the log the
+   * ledger measured: ~609 body cells, every one a `<td>`, so a screen reader
+   * read eight values per row and never said whose reception it was.
+   *
+   * Chosen rather than hard-coded for the same reason as the defensive log — the
+   * player column is behind `anyPlayerName`, so a fixed flag would produce no
+   * row header at all on the matches that most need one.
+   */
+  const receivingColumnsWithRowHeader = markRowHeader(receivingColumns, [
+    "player",
+    "minute",
+    "team",
+  ]);
+
+  /*
    * COMPOSED, never bare (AC 3). `expert.tableCaption` is already the one
    * unprefixed caption on the page; a second one would give this layer two
    * captions that both open "Ordenado por…" and neither names its table. And
@@ -1033,7 +1048,7 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
                 <div className="mt-tile-gap w-full overflow-x-auto">
                   <DataTable
                     caption={receivingCaption}
-                    columns={receivingColumns}
+                    columns={receivingColumnsWithRowHeader}
                     rows={receivingRows}
                     // The page canvas, never the pitch — getting that backwards
                     // is the defect Story 2.7's review headlined.

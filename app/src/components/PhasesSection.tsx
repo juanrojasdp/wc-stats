@@ -243,7 +243,15 @@ export function PhasesSection({ tacticalIdentity, home, away }: PhasesSectionPro
     `${CAPTION_SEPARATOR}${t("viz.phases.tableCaption")}`;
 
   function tableFor(caption: string, rows: PhaseRow[]) {
-    return <DataTable caption={caption} columns={columns} rows={rows} surface="canvas" />;
+    return (
+      <DataTable
+        caption={caption}
+        tableName={caption}
+        columns={columns}
+        rows={rows}
+        surface="canvas"
+      />
+    );
   }
 
   /*

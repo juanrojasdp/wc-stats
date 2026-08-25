@@ -355,11 +355,18 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
     <div className="flex flex-col gap-tile-gap">
       <DataTable
         caption={totalsCaption}
+        tableName={totalsCaption}
         columns={totalsColumns}
         rows={totals}
         surface="canvas"
       />
-      <DataTable caption={playersCaption} columns={playerColumns} rows={rows} surface="canvas" />
+      <DataTable
+        caption={playersCaption}
+        tableName={playersCaption}
+        columns={playerColumns}
+        rows={rows}
+        surface="canvas"
+      />
     </div>
   );
 
