@@ -625,46 +625,46 @@ All three are cheap; (a) belongs with Task 6's a11y work, (b) and (c) with Task 
 - [x] 5.1 Re-verify and record the payload table (already measured — reproduce it).
 - [x] 5.2 Lighthouse mobile on **Match Dashboard** and **Tournament Hub** against the served production export. ≥90. Record all five category scores and the Lighthouse version. — **measured; gate NOT met, see the record and Q5**
 - [x] 5.3 Lighthouse on `/compare` (A31); file the AD-4 route-payload amendment or record the documented gap.
-- [~] 5.4 If tuning is needed: **disclosure, never deletion** (SM-C2). Declare any change. — **CLS fix landed; the Hub disclosure restructuring is now RULED IN by D15 — see 5.7**
-- [~] 5.5 A16: memoise the `columns` construction; A19: memoise the profile reads. — **A19 done; A16 is now IN per D15**
+- [x] 5.4 If tuning is needed: **disclosure, never deletion** (SM-C2). Declare any change. — **CLS fix landed; the Hub disclosure restructuring shipped in 5.7**
+- [x] 5.5 A16: memoise the `columns` construction; A19: memoise the profile reads. — **A19 done; A16 superseded — see the record**
 - [x] 5.6 A30: rule the header-search payload question with the measured 39,137 B (see Open questions Q1).
-- [ ] 5.7 **D15 / SM-C2 on the Tournament Hub**: move the 12 group standings and the 9 results
+- [x] 5.7 **D15 / SM-C2 on the Tournament Hub**: move the 12 group standings and the 9 results
   sections behind disclosure (never deleted). Declare the change with before/after at 390 px and
   1920 px, both locales, against Story 2.12's ruled arrival state. Re-measure per D4.
-- [ ] 5.8 **D15 / L1504 — back in scope.** Match Dashboard: 1,141 ms script evaluation, 461 KiB
+- [x] 5.8 **D15 / L1504 — back in scope.** Match Dashboard: 1,141 ms script evaluation, 461 KiB
   route, 43 KiB unused JS. Attack the eagerly-constructed section content and the app bundle
   (code-split). Target >= 90 on both gated routes. Record what moved and by how much.
 - [ ] 5.9 Final Lighthouse table for all five routes, median of 3, mobile, 13.4.1, host-realistic
   server. AC 2 is met or the gap is re-ruled — do not silently accept a miss after D15.
 
 ### Task 6 — AC 3: the accessibility floor
-- [ ] 6.1 **Reflow matrix**: 320 / 390 / 195 CSS px × {dark, light} × {es, en} × 8 routes. Report the table and the offending selectors.
-- [ ] 6.2 **R2/D8**: fix SiteHeader + Hero score row + `#key-stats` as one change. Declare any type-ramp departure.
-- [ ] 6.3 **D9**: `flex-wrap` (or shorter EN labels) on the Expert `<md` column-group ToggleGroup; verify 320 both locales and 390 EN.
-- [ ] 6.4 `prefers-reduced-motion: reduce` under real media emulation — confirm zero animation on every route.
-- [ ] 6.5 Focus visible everywhere; `focus-ring-on-pitch` on pitch in **both** themes.
-- [ ] 6.6 Keyboard-only traversal of UJ-1..4 end to end. Note: a real Tab key has never been delivered by this project's automation — use CDP `Input.dispatchKeyEvent` and say so if it still fails.
-- [ ] 6.7 Every viz has its reachable data-table alternative (now includes R1's matrix table).
-- [ ] 6.8 A24: axe over all 8 routes, both themes, both locales. Triage every violation.
-- [ ] 6.9 A17: `rowHeader` across the four log tables with a fallback for the gated player column.
-- [ ] 6.10 A26: announce re-collation on locale change in `DataTable`.
-- [ ] 6.11 A8: verify the `/compare` `<md` sticky mini-header's `IntersectionObserver` renames on scroll, using `data-compare-showing` / `data-compare-side`.
-- [ ] 6.12 A23: disambiguate `/compare` captions — reachable via `Emiliano MARTINEZ`. Six shipped captions plus two figure headings.
-- [ ] 6.13 Spanish screen-reader spot-check resolving the `lang="en"` span decisions.
-- [ ] 6.14 A3: origin-grep script wired into the build chain; zero external requests.
-- [ ] 6.15 A27: record the Hub sticky-header premise check at real row counts.
-- [ ] 6.16 **D18(a)**: the ~25 per-table announcement identifiers (L1246).
+- [x] 6.1 **Reflow matrix**: 320 / 390 / 195 CSS px × {dark, light} × {es, en} × 8 routes. Report the table and the offending selectors.
+- [x] 6.2 **R2/D8**: fix SiteHeader + Hero score row + `#key-stats` as one change. Declare any type-ramp departure.
+- [x] 6.3 **D9**: `flex-wrap` (or shorter EN labels) on the Expert `<md` column-group ToggleGroup; verify 320 both locales and 390 EN.
+- [x] 6.4 `prefers-reduced-motion: reduce` under real media emulation — confirm zero animation on every route.
+- [x] 6.5 Focus visible everywhere; `focus-ring-on-pitch` on pitch in **both** themes.
+- [x] 6.6 Keyboard-only traversal of UJ-1..4 end to end. Note: a real Tab key has never been delivered by this project's automation — use CDP `Input.dispatchKeyEvent` and say so if it still fails.
+- [x] 6.7 Every viz has its reachable data-table alternative (now includes R1's matrix table).
+- [x] 6.8 A24: axe over all 8 routes, both themes, both locales. Triage every violation.
+- [x] 6.9 A17: `rowHeader` across the four log tables with a fallback for the gated player column.
+- [x] 6.10 A26: announce re-collation on locale change in `DataTable`.
+- [x] 6.11 A8: verify the `/compare` `<md` sticky mini-header's `IntersectionObserver` renames on scroll, using `data-compare-showing` / `data-compare-side`.
+- [x] 6.12 A23: disambiguate `/compare` captions — reachable via `Emiliano MARTINEZ`. Six shipped captions plus two figure headings.
+- [x] 6.13 Spanish screen-reader spot-check resolving the `lang="en"` span decisions.
+- [x] 6.14 A3: origin-grep script wired into the build chain; zero external requests.
+- [x] 6.15 A27: record the Hub sticky-header premise check at real row counts.
+- [x] 6.16 **D18(a)**: the ~25 per-table announcement identifiers (L1246).
 
 ### Task 7 — The remaining App-side ledger items
-- [ ] 7.1 A13: re-present `shapeByPhase` on `#pressing` using 2.16's `team.shape.*` vocabulary.
-- [ ] 7.2 A14: re-open the involvement tick model against `momentumTickIndices` now that `stoppageMinute` exists.
-- [ ] 7.3 A15: honest per-team key (`teamId`); move the `" / "` composition into the locale layer.
-- [ ] 7.4 A18: rename `#lideres` → English slug; update every link.
-- [ ] 7.5 A20: centre the `InvolvementChart` hatch at `HATCH_TILE_PX / 2`.
-- [ ] 7.6 A29: mirror the goal furniture at the defending end (**re-verify 2.8's pass-network figures afterwards**). **RULED IN by D16** — the re-verification is part of this subtask, not follow-up.
-- [ ] 7.7 A21: DESIGN.md absorbs 9.20 / 4.68. A22: reconcile EXPERIENCE.md's full-width/full-screen rows to one wording.
-- [ ] 7.8 **D18(b)**: the two-stacked-parentheticals head composition (L2335).
-- [ ] 7.9 **D18(c)**: glossary marks on the five Tactical summaries and the leaderboards surface
+- [x] 7.1 A13: re-present `shapeByPhase` on `#pressing` using 2.16's `team.shape.*` vocabulary.
+- [x] 7.2 A14: re-open the involvement tick model against `momentumTickIndices` now that `stoppageMinute` exists.
+- [x] 7.3 A15: honest per-team key (`teamId`); move the `" / "` composition into the locale layer.
+- [x] 7.4 A18: rename `#lideres` → English slug; update every link.
+- [x] 7.5 A20: centre the `InvolvementChart` hatch at `HATCH_TILE_PX / 2`.
+- [x] 7.6 A29: mirror the goal furniture at the defending end (**re-verify 2.8's pass-network figures afterwards**). **RULED IN by D16** — the re-verification is part of this subtask, not follow-up.
+- [x] 7.7 A21: DESIGN.md absorbs 9.20 / 4.68. A22: reconcile EXPERIENCE.md's full-width/full-screen rows to one wording.
+- [x] 7.8 **D18(b)**: the two-stacked-parentheticals head composition (L2335).
+- [x] 7.9 **D18(c)**: glossary marks on the five Tactical summaries and the leaderboards surface
   (L962, L2347).
 
 ### Task 8 — R3: the pipeline batch
@@ -1123,6 +1123,304 @@ a second artifact to keep in bijection. Not worth it. Recorded, closed.
 The AD-4 amendment is filed as a recorded gap rather than a contract change: `/compare`'s payload set
 is `tournament.json` + up to two entity artifacts, which is bounded by the two per-entity caps that
 already exist. It needs no cap of its own.
+
+#### Task 5.7 / 5.8 — D15's three moves
+
+**5.7 SM-C2 on the Tournament Hub.** The 12 group standings and 9 results sections moved behind
+`ViewDataDisclosure`, each with its row count rendered OUTSIDE it. Nothing is deleted: every group,
+stage, row and column is one click away, in artifact order, with its sort intact, and the headings
+stay rendered — so the shape of the tournament (twelve groups, nine rounds, how many teams and
+matches in each) is still readable without opening anything.
+
+| measured at 412 px | before | after |
+|---|---|---|
+| DOM nodes | 6,025 | **2,780** |
+| `<table>` | 33 | **3** |
+| table cells | 2,442 | **1,050** |
+| settled region height | 14,990 px | **4,496 px** |
+| Lighthouse CLS | 0.044 | **0.000** |
+
+`ViewDataDisclosure` gained `openNonce` so a shared UX-DR18 deep link (`…/#standings-group-a`) opens
+its target instead of landing on a closed control — this story is not allowed to MINT a new instance
+of the defect L1553/L1886 re-defers while re-deferring the old one. Empty sections keep their table
+flat, so their named empty state is what the reader sees rather than a control promising data that
+is not there.
+
+**5.8 L1504.** `sectionContent(plan.id)` no longer runs in `TacticalLayer`'s own render: it moved
+into `<SectionContent>`, which renders UNDER the per-section error boundary. That closes both halves
+at once — a throw during prop construction is now contained where a section's own render errors
+already were, and the eleven sections stop constructing their full prop sets on every re-render of
+the layer whether open or not.
+
+**5.8 the chart viewport gate.** `next/dynamic` defers the DOWNLOAD, not the MOUNT. `#momentum` is
+in `ALWAYS_EXPANDED_SECTION_IDS`, so it mounted its chart in the first client render and pulled
+370 kB of recharts during arrival — for a figure whose top edge is at y=1421 under an 823 px
+viewport. `useInView` holds it until the figure comes near the viewport, and **fails OPEN** where
+`IntersectionObserver` is absent (jsdom, older browsers), which is what `use-in-view.test.tsx` pins
+first: a gate that failed closed would have shipped a permanently blank figure while every existing
+test stayed green.
+
+| Match Dashboard, measured | before | after |
+|---|---|---|
+| JS on the wire | 341,110 B | **254,522 B** |
+| JS decoded (what the engine parses) | 1,342,073 B | **975,129 B** |
+| DOM nodes at 412 px | 638 | **541** |
+| Lighthouse TBT | 368 ms | **165 ms** |
+
+**The Hub's LCP element, and why it was the real number.** Measured with a
+`largest-contentful-paint` PerformanceObserver under 4× CPU throttling: the `<h1>` painted at
+**876 ms** at 2,280 px², then the client-fetched `<h2 id="standings">` arrived at **2,244 ms** at
+3,280 px² — a thousand square pixels larger — and took the title, dragging LCP 1,368 ms later.
+Lantern then charges the whole JS graph to that node, which is how a route whose real content is up
+at 876 ms reported a 4.2 s LCP. The loading state now renders that same heading — real copy instead
+of a grey block, and the deep-link target `useHashScroll` already expects — so the largest
+contentful element is a static one. **Observed LCP 2,244 → 648 ms.**
+
+**A16 superseded, and said so rather than silently dropped.** D15 put A16's `columns` memoisation
+back in scope "since the ruling that made it conditional has landed on the side that wants the
+execution win". It was not applied, because 5.8 removed the thing it was optimising: with
+`SectionContent` deferring prop construction to open sections only, the eleven column arrays a
+collapsed match route used to build on every render are no longer built at all. A `useMemo` over an
+array that is no longer constructed is dead weight. A19 (the profile-read memo) shipped and is
+recorded in the Task 5 notes above.
+
+**REJECTED ON MEASUREMENT, recorded so it is not retried.** `<link rel="preload" as="fetch">` for
+each route's artifact was implemented, measured and reverted. Two independent defects, both caught
+in the browser rather than reasoned about:
+
+1. it DOUBLE-DOWNLOADED — the preload fetched the full bytes (`init=parser`) and the component's own
+   `fetch()` then fetched them again (`init=script`, `cache=false`), 167 KB twice on a match route;
+2. worse, the Hub's two preloads LEAKED ONTO EVERY OTHER ROUTE. Next prefetches `/` from the header
+   wordmark on every page, and React executes the preload directives inside a prefetched RSC
+   payload — so every match, player and team route pulled `tournament.json` (409 KB) and
+   `leaderboards.json` (963 KB) it does not use. The measured "each route fetches exactly one
+   artifact" property from Task 5.1 would have been destroyed by it.
+
+#### Task 6 — the accessibility floor
+
+**6.1 The reflow matrix: 320 / 390 / 195 CSS px × {dark, light} × {es, en} × 8 routes = 96 cells.**
+
+The first result was about the METHOD. The ledger's own predicate over-reports badly: at 320 px it
+flagged **654** elements on `/` while the DOCUMENT's `scrollWidth` was exactly 320 — every one of
+them a cell inside a table in an `overflow-x-auto` wrapper, which EXPERIENCE.md:119 explicitly
+permits. A reflow FAILURE is the document scrolling sideways. The predicate now separates the two
+and counts only offenders with no horizontally-scrollable ancestor.
+
+With that correction: **320 and 390 already passed on all 32 cells.** 195 failed on **all eight
+routes**, including `/about`, `/glossary` and `/404`, which contain nothing but chrome.
+
+| width | cells | document overflow before | after |
+|---|---|---|---|
+| 320 | 32 | 0 | **0** |
+| 390 | 32 | 0 | **0** |
+| 195 | 32 | 16 of 16 route×locale cells (doc 237–295 px) | **0 — every cell reports exactly 195** |
+
+**6.2 R2/D8 — the matrix named SIX owners, not the three R2 lists.**
+
+| owner | story | what it was |
+|---|---|---|
+| `SiteHeader` | 2.2 | min-content **237 px** — the universal floor, on every route |
+| Hero score row | 2.4 | bare `1fr` floored by a 48 px crest; could not narrow past ~230 |
+| `#key-stats` tiles | 2.5 | two FIXED 76 px value tracks, min-content **247 px** |
+| `StoryStatTiles` | 2.4 | two fixed columns of a Hero stat tile |
+| `#lideres` teasers | 2.13 | an IMPLICIT auto track: **278.5 px** inside a 163 px container — the worst cell |
+| `CompareRows` | 2.17 | ~78 px tracks against a 109 px `type-stat-value` |
+
+The header REFLOWS rather than shrinks: `flex-wrap` + `min-h-14` keeps every 44 px target
+(MIN_HIT_PX) and the full site name, and the row height is **unchanged at 320, 390, 412, 768, 1440
+and 1920** — verified. Tightening the gap and the gutter was measured as the alternative and buys
+only 32 px, reaching 195 solely by truncating the site name. `#key-stats` takes the `minmax()` track
+change R2 prefers: `type-stat-value` keeps its 26 px DESIGN size, and **no type-ramp departure is
+taken anywhere.**
+
+**The systemic half.** Tailwind's bare `grid` sets `display: grid` with NO template, so children
+land in an IMPLICIT auto track sized by their max-content and *not* clamped to the container. Two of
+the six owners were exactly this defect and the app had eleven more instances of the shape; all are
+now `grid-cols-1`, and `reflow-guards.test.ts` fails if a twelfth appears.
+
+> **Rejected on measurement, recorded so it is not retried.**
+> `repeat(auto-fit, minmax(min(100%, 11rem), 1fr))` is emitted into the stylesheet correctly and
+> still produced TWO 164 px tracks inside a 163 px container — making `/matches` WORSE (doc 278 →
+> 355). The explicit `grid-cols-1` plus a `min-[19rem]:` breakpoint is boring and it works.
+
+**6.3 D9.** `flex-wrap` + `whitespace-normal` + `max-w-full` on the Expert `<md` column-group
+ToggleGroup. A true 320 px failure in both locales (339 vs 305) and at 390 in EN (412 vs 375),
+distinct from R2's 195 px question. **320 and 390 now hold with EVERY disclosure open, both
+locales.**
+
+**6.4 `prefers-reduced-motion: reduce`, real media emulation, 16 cells.** The query matches on every
+one and the longest transition/animation duration anywhere is **0.00001 s** — globals.css's own
+0.01 ms sentinel. Zero elements above it.
+
+> The first probe reported **30,161** "animated" elements on the Hub, because it tested `> 0` and so
+> counted the very rule that disables motion. The threshold is the sentinel, not zero.
+
+**6.5 / 6.6 keyboard traversal, driven by real `Input.dispatchKeyEvent` Tab keys** — which this
+project's automation had never delivered before. It does not fail.
+
+| theme | / | /matches | /players | /teams | /compare | /glossary | /about | /404 |
+|---|---|---|---|---|---|---|---|---|
+| dark | 400 | 399 | 399 | 55 | 17 | 7 | 7 | 8 |
+| light | 400 | 399 | 399 | 55 | 17 | 7 | 7 | 8 |
+
+Tab stops reached (400 is the harness cap, not the route's total). **Zero tab stops without a
+visible focus indicator, on every route in both themes.**
+
+> ⚠️ THE FIRST FOCUS PROBE WAS WRONG AND ITS OUTPUT WAS DISCARDED. It called `element.focus()` and
+> read the computed outline, reporting EIGHT indicator-less controls per route. `:focus-visible`
+> does not match a PROGRAMMATIC focus on a button in Chrome — it was measuring its own method.
+
+**6.5b `focus-on-pitch`, both themes.** A shot marker (`<g role="button" tabindex="-1">`) reached by
+keyboard: `outline: solid 2px rgb(234, 251, 253)` = `#eafbfd` = `--focus-ring-on-pitch`, offset
+2 px, `:focus-visible` true, **identical in dark and light**.
+
+> Second harness fact: an SVG element's `className` is an `SVGAnimatedString`, not a string, so
+> `n.className.includes('focus-on-pitch')` silently matched nothing. Read `getAttribute('class')`.
+
+**6.7 every viz has its reachable data-table alternative — checked PER FIGURE**, not by a page-level
+count: **17 figures across the routes, 0 without a `<table>`** in the panel that contains them. A
+second pass over every chart-shaped `<svg>`, marked as a figure or not, agrees. The one flagged
+`<svg>` is `/compare`'s swap-sides ICON.
+
+**6.8 axe-core 4.12.1 over 8 routes × {dark, light} × {es, en} with every disclosure open — 32
+cells. BEFORE: 2 rules, 66 nodes. AFTER: 0 rules, 0 nodes.** Both findings were real:
+
+- `link-in-text-block` [serious], **64 nodes on 30 of the 32 cells** — the footer's `/about` and
+  `/glossary` links and the 404's home link sit inside running text and were distinguished from it
+  by hue alone until hover (WCAG 1.4.1). Now `underline underline-offset-2 hover:no-underline`.
+- `color-contrast` [serious], **2 nodes, LIGHT THEME ONLY** — `PitchPanel` painted its team-code
+  label with `--viz-team-a`, the dark olive `#4d7c0f` in the light theme, on the theme-invariant
+  pitch `#0b3d2e`: **2.44:1** against a 4.5:1 requirement at 11 px. `--viz-team-a-on-pitch` exists
+  for exactly this and globals.css:194 says so; `DefensiveActionsSection` has used it since 2.9
+  decision 8 and this one call site had missed the ruling.
+
+> **axe runs from axe-core injected into the CDP harness, not through `@axe-core/cli`, and nothing
+> is added to `app/package.json` (D6).** The CLI scans the ARRIVAL state only: it cannot set the
+> theme or the locale (both are `localStorage` keys read by a `<head>` bootstrap) and cannot open a
+> disclosure, so it would have tested five collapsed sections and missed all 26 tables, every sort
+> control and the whole Expert Layer — the surface AC 3 is actually about.
+
+**6.9 A17** — `markRowHeader` gives the four event logs a row header, choosing the first available of
+player → minute → team. Not a hard-coded flag: the player column is GATED by `anyPlayerName`, so a
+fixed one would leave exactly the matches with least context with no row header at all.
+
+**6.10 A26** — a locale switch really does re-order a text sort, and now says so. Text sorts only: a
+numeric column collates identically in both locales and announcing it would be a second false claim.
+
+**6.11 A8** — `/compare`'s `<md` sticky mini-header: `position: sticky` and **actually stuck at
+56 px** (the twenty-two-headers-that-shipped-green lesson), and `data-compare-showing` goes **0 → 1**
+when side A leaves the observer's adjusted root. At 390×844 it correctly does NOT rename — both
+figures are inside the root at once, which the observer's own docblock predicts — so the check was
+re-run at 390×500, where the page has room to scroll.
+
+**6.12 A23** — confirmed reachable: the corpus carries `Emiliano MARTINEZ` twice
+(`martinez-emiliano-arg`, gk / `martinez-emiliano-uru`, mf). Comparing them produced six
+byte-identical captions, two identical figure headings AND a sticky mini-header renaming itself
+between two identical strings. All now carry the side's `detail` line via `composeSideHeading`.
+
+**6.13 the `lang` decisions.** `<html lang>` tracks the toggle on all 8 routes in both locales. The
+glossary marks 40 terms per locale, each in the OTHER language — ES pages mark the English term
+`lang="en"`, EN pages mark the Spanish term `lang="es"`. Outside it there are three in-body marks in
+total, all glossary triggers in headings.
+
+> **RECORDED CONSEQUENCE OF D17:** at EN the document is `lang="en"` while `<title>`/OG stay
+> Spanish, so a screen reader announces a Spanish title with English phonemes. That follows from the
+> ruling, is not re-opened here, and is the one audible cost of ES-canonical metadata.
+
+**6.14 A3/L49** — the zero-external-request audit stops being a one-time manual grep.
+`assert-no-external-origins.mjs` runs in the build chain after `copy-data` and fails on any external
+SUBRESOURCE. Current export: **12,682 text assets, 0 external subresources.** Nine tests feed it the
+trees it must reject (an analytics script, a font CDN, a CSS `@import`, a background image, a runtime
+fetch).
+
+> The design decision that makes it usable: a naive "any absolute URL anywhere" scan reports **27
+> violations on a clean build**, every one a diagnostic string inside a vendor bundle
+> (`react.dev/errors`, `nextjs.org/docs`, core-js's licence). It matches FETCHING POSITIONS only and
+> merely counts the rest.
+
+**6.15 A27 — the Hub sticky-header premise, re-checked at real row counts.** With every disclosure
+open the route holds **66 tables**, the tallest **190 rows / 7,509 px**, `thead` position `static`.
+**NO CHANGE**, as expected: the premise the ledger asked about (Hub standings/results tables are
+short) still holds at 4–16 rows. The 190-row table is the leaderboards surface, a different owner.
+
+**6.16 L1246 / D18(a)** — the ~25 match-route tables had no announcement identifier at all, so one
+page-wide live region said "Ordenado por Jugador, ascendente." with no way to know which of seven
+goalkeeping tables had moved. **THE COPY RULING: a table's announcement identifier IS ITS
+`<caption>`** — the string that already names it in HTML, that a screen reader already reads on
+entering it, and whose site-wide uniqueness is already pinned by the caption inventory. Zero new
+copy; `composeSortAnnouncement` trims one trailing period.
+
+#### Task 7 — the remaining App-side ledger items
+
+**7.1 A13.** `#pressing` re-presents `shapeByPhase` as two tables (2 possession states × 6 rows: 3
+panels × 2 sides). CS-2 retired this section's metre surface and reshaped the data; the
+`viz.pressing.metre*` family went with it and nothing replaced the SURFACE, while `shapeByPhase` is
+populated on 104/104. The vocabulary is not minted here — Story 2.16's `team.shape.*` is reused
+whole and only the two captions are new. Tables and not charts, for 2.16's own D13 reason. Caption
+inventory 26 → 28, with the count pinned so the list must move with the component.
+
+**7.2 A14.** The interim ruling rested on "both mechanisms read `row.at.stoppageMinute`, WHICH THIS
+CONTRACT DOES NOT CARRY"; CS-2 made it carry exactly that. **2,506 of 21,764 real samples sit in
+stoppage and every one collides with another sample on the same minute**, so the dedupe was doing
+real work and which slot won was luck of ordering. RESOLVED BY LABELLING, NOT BY SKIPPING — a
+deliberate departure from what the ledger proposed: `momentumTickIndices` drops stoppage slots
+because its axis can only say "45", while this one has the stamp and can say "45+2". The dedupe key
+becomes the whole clock, nothing is dropped, and a stride landing in stoppage no longer thins the
+axis unpredictably.
+
+**7.3 A15.** `playerId` held `keeperIds(record)` — the keepers' ids hyphen-joined, i.e.
+`"rangel-raul-mex-ochoa-guillermo-mex"`, a string shaped like a player id referring to no player.
+The block is PER TEAM (CS-2 decision 18), so the field is now `teamId`. The `" / "` join moved to
+`viz.goalkeeping.nameJoin`, resolved at the call site (AD-7).
+
+**7.4 A18.** `#lideres` → `#leaders`, the last Spanish fragment id in the app (2.18 decision 11).
+URL-shaped, so taken now or never — nothing links to it yet because the site has not been published.
+Visible copy unchanged.
+
+**7.5 A20 — ALREADY CLOSED, verified rather than re-implemented.** `InvolvementChart`'s hatch already
+draws at `HATCH_TILE_PX / 2` and its own comment records the fix; `x1={0}` occurs nowhere in the tree.
+
+**7.6 A29 / D16.** The goal furniture is mirrored at the defending end. Most of it is reflected x
+offsets, but the story names two non-projective steps and both were real:
+
+- **the arc's angle range**, which was the first version's BUG. At the attacked end `acos` of a
+  negative offset gives ~120° and the sweep goes the long way through 180°; at the defending end the
+  offset is positive, `acos` gives the supplement ~60°, and the sweep goes the short way through 0°.
+  Reusing the attacked angle drew the arc straight THROUGH the penalty area. The test that samples
+  every point of the mirrored path caught it.
+- **the goal's px depth**, reversed by hand in both orientations (horizontal hangs LEFT, vertical
+  hangs DOWN).
+
+**D16's re-verification of 2.8's pass-network figures: the stated risk does not materialise, and
+that is measured rather than argued.** `passNetworkNodes` is null on 104/104, so R1's matrix-only
+branch means NO pass-network figure renders at real data at all — verified live on three matches: 0
+figures, 1 table. The only full-pitch panels that ship are **six shot maps**, exactly the six matches
+with a shot behind halfway (minimum shot x corpus-wide: 29.48).
+
+| match | pitch | rects | arcs | spots | halfway |
+|---|---|---|---|---|---|
+| `m014-spain-cabo-verde` | full | 7 | 3 | 3 | 1 |
+| `m037-uruguay-cabo-verde` | full | 7 | 3 | 3 | 1 |
+| `m038-spain-saudi-arabia` | full | 7 | 3 | 3 | 1 |
+| `m001-mexico-south-africa` | half | 4 | 1 | 1 | 0 |
+| `m082-belgium-senegal` | half | 4 | 1 | 1 | 0 |
+
+**7.7 A21 + A22.** DESIGN.md absorbs cyan on the overlay surface (**9.20:1 dark / 4.68:1 light**) and
+states how little margin the light figure leaves — 0.18 over the floor. EXPERIENCE.md's two rows said
+"full-width sheet" and "full-screen sheet" for one control; 2.14 shipped full-width (386 px at
+`top: 0`, content-driven height) and both rows now say so.
+
+**7.8 L2335 / D18(b).** `"Ordenar por Vel. máx. (km/h) (Velocidad máxima)"` →
+`"Ordenar por Vel. máx. (km/h) — Velocidad máxima"`. Both halves were ruled and neither was wrong;
+only the composition stacked. WCAG 2.5.3 holds in both branches — the visible text still leads.
+
+**7.9 L962 + L2347 / D18(c).** Five of the nine collapsible sections marked nothing, because their
+ruled summaries carried no policy term — a gap 2.18 filed rather than closed. Each summary now keeps
+its ruled sentence VERBATIM as the clause after a colon and gains its term in front, including
+`movement-to-receive`, whose sentence carries 2.18 decision 3's offers⊋movements relationship. The
+leaderboards surface gets its first mark: not on the metric's sortable column head, which cannot
+hold a focusable trigger, but on the board's own heading, on both altitudes, for the fourteen metric
+codes that name a policy term.
 
 ### Completion Notes List
 
