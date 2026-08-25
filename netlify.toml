@@ -9,3 +9,28 @@
 
 [build.environment]
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# IMMUTABLE CACHING FOR HASHED ASSETS — added by Story 2.19 Task 9, from a
+# MEASUREMENT taken against the live host rather than from a default.
+#
+# Netlify serves uploaded static files with `public, max-age=0, must-revalidate`
+# and relies on ETag revalidation. That is the right default for files whose
+# names do not change — but everything under `_next/static/` carries a CONTENT
+# HASH in its filename, so its bytes can never change under that URL. Left as
+# shipped, every repeat visitor pays a conditional round-trip per asset (21+ on
+# the Hub) to be told nothing moved.
+#
+# `immutable` is what the local measurement harness was already assuming, which
+# is exactly why the mismatch was worth catching: the bandwidth model in the
+# story's record was measured against a host that cached the way this block now
+# makes the real one cache.
+#
+# Scoped to `_next/static/*` ONLY. The documents and the `/data` artifacts keep
+# `must-revalidate`: their URLs are stable and their bytes DO change between
+# deploys, so caching them for a year would pin readers to a stale tournament.
+# ─────────────────────────────────────────────────────────────────────────────
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -60,3 +60,6 @@ data/index/*.json.previous.rollback
 # `tournament.json` writes before the staging siblings were introduced -- but the block above
 # claims every scratch path is ignored, so it should be true.
 data/index/*.tmp
+
+# Local Netlify folder
+.netlify
