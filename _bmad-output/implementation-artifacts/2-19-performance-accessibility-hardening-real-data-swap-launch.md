@@ -582,6 +582,30 @@ disposition for ledger L147, L2697, L3227 — close all three as ACCEPTED (not r
 WONTFIX-without-reason) in Task 10.1, recording that a static export has one canonical document
 language and the UI toggle does not change it.
 
+**D19 — AC 2's LIGHTHOUSE FLOOR: RULED by Juan (2026-08-25) — ACCEPT AND RECORD THE GAP.**
+The two gated routes finish at **88 (86–91)** and **86 (84–94)**, medians of 5, against a floor of
+90. NFR-1 is therefore **partially met, and is said to be** — the shortfall, its cause and its size
+are recorded here rather than rounded away, which is what 5.9 asked for when it said not to silently
+accept a miss. What the ruling accepts, and what it does not:
+
+- **AC 2's payload half passes with 4× margin** and is unaffected: 114.9 KB against a 500 KB cap on
+  the heaviest route.
+- Every other Lighthouse category is **at or above** its floor, and one moved to full marks during
+  this story: **accessibility 96 → 100 on all five routes**, best practices 96, SEO 100, CLS 0.000.
+- **TBT fell 368 → 102 ms and 674 → 134 ms**, and the performance scores moved 83 → 88 and 68 → 86.
+- The remaining gap is **structural, not slack**. The Hub's LCP element is `h2#standings`, inside
+  the AD-11 client-fetched region; the settled region is 4,496 px, so the `min-h-[120vh]`
+  reservation cannot be reduced to bring the static teasers above the fold without reintroducing the
+  CLS Task 5.4 removed. Closing it requires an AD-11 exception, which Juan declined in the final
+  story — the same shape of trade D15 took the other way, and taken the other way here deliberately.
+- **The measurement's spread is larger than the gap** and that is part of the record, not an excuse:
+  `benchmarkIndex` varies 1,074–2,510 on this machine and one unchanged page's observed first paint
+  varied 227 ms → 2,198 ms inside a single batch. Both routes' BEST runs (91 and 94) clear the
+  floor. The medians are what is reported.
+
+*Recorded for the successor:* the one lever not taken is pre-rendering the standings shell into the
+export. It is an AD-11 change, not a tuning change, and it is the only thing that moves this number.
+
 **D18 — Q4 RULED by Juan (2026-08-25): TAKE ALL THREE COPY ITEMS.** (a) the ~25 per-table
 announcement identifiers (L1246); (b) the two-stacked-parentheticals head composition (L2335);
 (c) glossary marks on the five Tactical summaries and the leaderboards surface (L962, L2347).
@@ -769,6 +793,11 @@ and render time. The two routes fail for *different* reasons and only one of the
   bundle itself, plus the eagerly-constructed section content that ledger **L1504 names and Partition
   C RE-DEFERS**. SM-C2's lever does not apply here at all. Closing this gap means bundle/code-split
   work or taking L1504 — both outside this story's declared scope.
+
+> **RULED 2026-08-25 by Juan: OPTION 1 — accept and record the gap (see D19).** The evidence below
+> is the state as of 2026-08-10; the figures moved substantially afterwards (83/68 → 88/86,
+> accessibility 96 → 100, TBT 368/674 → 102/134 ms) and the ruling was taken on the FINAL numbers,
+> not these. Left in place as the record of what the question was raised against.
 
 **Options, and the cheapest honest one first:**
 1. **Accept and record the gap** (0 work): AC 2's payload half passes with margin, a11y is 96, best

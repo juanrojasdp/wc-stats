@@ -4215,6 +4215,23 @@ Where that is the disposition, the trigger that would re-open it is stated too.
   probe reported 30,161 animated elements because it tested `> 0` and so counted the very rule that
   disables motion. **A measurement that has not been falsified once is not yet evidence.**
 
+### AC 2's Lighthouse floor — RULED, and left partially met on purpose
+
+**Story 2.19 D19, ruled by Juan 2026-08-25: ACCEPT AND RECORD THE GAP.** The two gated routes finish
+at **88 (86-91)** and **86 (84-94)**, medians of 5, against NFR-1's floor of 90. NFR-1 is therefore
+partially met and is SAID to be, here and in the story record, rather than rounded away.
+
+What is not in doubt: AC 2's payload half passes with 4x margin (114.9 KB against 500 KB on the
+heaviest route); accessibility reached **100 on all five routes** during this story; CLS is 0.000;
+and TBT fell **368 -> 102 ms** and **674 -> 134 ms**.
+
+**The one lever not taken, recorded for whoever picks this up:** pre-rendering the standings shell
+into the export so the Hub's LCP element is static rather than fetched. The Hub's LCP element is
+`h2#standings`, inside the AD-11 client-fetched region, and the settled region is 4,496 px so the
+`min-h-[120vh]` reservation cannot shrink without reintroducing the CLS Task 5.4 removed. That makes
+it an **AD-11 exception, not a tuning change** — which is why it was declined in the final story and
+why it is filed here rather than left implicit.
+
 ### Fingerprint superseded (Story 2.19 R3)
 
 `code_version ad4735a216e2` — quoted throughout the 1.19 entries above — is **superseded by
