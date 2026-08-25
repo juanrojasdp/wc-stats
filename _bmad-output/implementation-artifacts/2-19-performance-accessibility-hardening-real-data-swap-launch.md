@@ -4,7 +4,7 @@ baseline_commit: 7f28e44
 
 # Story 2.19: Performance & Accessibility Hardening, Real-Data Swap & Launch
 
-Status: in-progress
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -606,6 +606,23 @@ accept a miss. What the ruling accepts, and what it does not:
 *Recorded for the successor:* the one lever not taken is pre-rendering the standings shell into the
 export. It is an AD-11 change, not a tuning change, and it is the only thing that moves this number.
 
+> **⚠️ MEASURED AGAIN ON THE LIVE HOST AFTER THIS RULING, AND THE GATE PASSES.** D19 was ruled
+> against the LOCAL harness (88 / 86). Against production — Lighthouse 13.4.1, mobile, median of 5 —
+> the two gated routes read **90 (70–92)** and **92 (46–94)**, and an independent median-of-3 batch
+> read 94 and 90, so it reproduces. Every route is at or above 89 and `/compare` is 98.
+>
+> **The difference is not new work on the site.** A local server, even one that compresses correctly,
+> sends a real `content-length`, keeps connections alive and mirrors the host's cache-control, does
+> not model a CDN edge — TLS session reuse, HTTP/2 multiplexing and origin proximity are all absent.
+> LCP is where it shows: 3.7 s / 3.8 s locally against 2.2 s / 3.2 s on the host.
+>
+> **AC 2 is therefore MET as deployed.** D19's text is left exactly as ruled rather than rewritten,
+> because it was a correct ruling on the evidence it had; this note supersedes its CONCLUSION, not
+> its reasoning. What survives from it unchanged is the successor filing: pre-rendering the standings
+> shell is still the only structural lever on the Hub's LCP, and it is still an AD-11 exception.
+> Juan has the final call on whether NFR-1 now reads "met" or "met on the host, partially met on the
+> reference harness" — the numbers for both are recorded above.
+
 **D18 — Q4 RULED by Juan (2026-08-25): TAKE ALL THREE COPY ITEMS.** (a) the ~25 per-table
 announcement identifiers (L1246); (b) the two-stacked-parentheticals head composition (L2335);
 (c) glossary marks on the five Tactical summaries and the leaderboards surface (L962, L2347).
@@ -703,9 +720,9 @@ All three are cheap; (a) belongs with Task 6's a11y work, (b) and (c) with Task 
 - [x] 9.1 Green build chain end to end.
 - [x] 9.2 Confirm and **log** the Netlify account bandwidth model; record the budget math against the export size.
 - [x] 9.3 Verify $0/month; no functions, middleware, env, analytics.
-- [ ] 9.4 Connect and publish (**authorized — R4**). `gh auth switch -u juanrojasdp` before pushing.
-- [ ] 9.5 Verify the live site: all routes, both locales, both themes, real data served from the same origin.
-- [ ] 9.6 Record the live URL. Confirm repo + URL are publishable as the portfolio piece (SM-6).
+- [x] 9.4 Connect and publish (**authorized — R4**). `gh auth switch -u juanrojasdp` before pushing.
+- [x] 9.5 Verify the live site: all routes, both locales, both themes, real data served from the same origin.
+- [x] 9.6 Record the live URL. Confirm repo + URL are publishable as the portfolio piece (SM-6).
 
 ### Task 10 — AC 5: close the ledger, and close the project
 - [x] 10.1 Walk all 66 blocks. Give each a disposition (D11).
@@ -714,7 +731,7 @@ All three are cheap; (a) belongs with Task 6's a11y work, (b) and (c) with Task 
   them (D15) — its disposition is "implemented here".** L147 / L2697 / L3227 close as ACCEPTED
   per D17, not as re-deferrals.
 - [x] 10.4 Record the answers to whatever remains in *Open questions for Juan*.
-- [ ] 10.5 Update `sprint-status.yaml`; `2-19` → `review`. Note `epic-2-retrospective: optional`.
+- [x] 10.5 Update `sprint-status.yaml`; `2-19` → `review`. Note `epic-2-retrospective: optional`.
 - [x] 10.6 Commit your own slices as you go (D13). Commit directly to `main` — no branches, no PRs.
 
 ---
@@ -1771,9 +1788,114 @@ something other than what ships. Recorded that this cost is **not** new at the c
 resolves to `<repo>/data` independent of `DATA_ROOT`, so the gate always walked the real corpus — the
 test's name ("passes on the current fixture tree") was wrong before the flip, and is now corrected.
 
+#### Task 9.4 / 9.5 / 9.6 — the launch
+
+**🚀 LIVE: https://wc-stats-2026.netlify.app**
+
+| | |
+|---|---|
+| Netlify project | `wc-stats-2026` (id `54b98a3d-9cd1-47e5-b53d-03aeb42d6cc2`) |
+| account | `juancr-dev`, plan **Free** — this settles the AR-17 / ARCHITECTURE-SPINE.md:235 question by observation rather than assumption: it is the **credit-based** shape, not legacy Starter |
+| admin | https://app.netlify.com/projects/wc-stats-2026 |
+| repo | https://github.com/juanrojasdp/wc-stats — `main`, pushed |
+| functions / edge functions | **0** (`/.netlify/functions/` returns 404 on the host) |
+| published | 14,105 files, `state: ready` |
+
+**Credentials, and what R4 could and could not authorise.** R4 authorises the ACTION; it cannot
+authenticate the accounts, and both were blocked. `netlify status` reported *"Not logged in"* and
+`netlify login` is an interactive browser OAuth flow; `git push` returned **403** for both accounts
+`gh` held (`juancamilo-pharosgraph`, `juanrojas-bolton`) because the repo belongs to `juanrojasdp`,
+which was no longer in the keyring. Juan logged in to both; the push and the deploy then went
+through. Recorded because "authorised" and "able" are different things and the story's Task 9.4 note
+(`gh auth switch -u juanrojasdp`) assumed a keyring state that had changed.
+
+**Two defects the LIVE HOST revealed that the export could not.** This is exactly why 9.5 verifies
+the deployed site rather than `out/`.
+
+1. **The site published behind Netlify SSO — every route returned 401.** New projects on this
+   account inherit `sso_login: true` at context `all`, so the first deploy was readable only by team
+   members. A site nobody can read is not published. Disabled at SITE level
+   (`updateSite {"sso_login": false}`); `listSites` confirms it is the only project on the account,
+   so nothing else was touched.
+2. **Netlify served the hashed assets with `public, max-age=0, must-revalidate`, not `immutable`.**
+   That is the right default for files whose names do not change — but everything under
+   `_next/static/` carries a CONTENT HASH, so its bytes can never change under that URL. As shipped,
+   every repeat visitor paid a conditional round-trip per asset (21+ on the Hub) to be told nothing
+   had moved. It also meant the bandwidth model recorded under 9.2 was measured against a harness
+   that assumed `immutable` while the real host did not. A `[[headers]]` block scoped to
+   `/_next/static/*` fixes it; verified against the host after redeploy:
+
+   | URL | `Cache-Control` on the live host |
+   |---|---|
+   | `/_next/static/chunks/*.js` | `public,max-age=31536000,immutable` |
+   | `/` | `public,max-age=0,must-revalidate` |
+   | `/data/index/tournament.json` | `public,max-age=0,must-revalidate` |
+
+   The documents and the `/data` artifacts KEEP `must-revalidate` deliberately: their URLs are
+   stable and their bytes DO change between deploys, so a year of caching would pin readers to a
+   stale tournament.
+
+**9.5 — the live site, 8 routes × {dark, light} × {es, en} = 32 cells, in a real browser.**
+
+| assertion | result |
+|---|---|
+| `<html lang>` matches the reader's locale | **32/32** |
+| theme class matches the emulated preference | **32/32** |
+| `<h1>` localised (e.g. "El torneo" / "The tournament") | **32/32** |
+| external requests | **0** |
+| uncaught JS errors | **0** |
+| `/data` artifacts fetched, same origin | 1–3 per route, 0 elsewhere |
+
+And over HTTP directly: all 8 routes plus 5 artifacts return 200 with `content-encoding: br` from
+the CDN, and `/nope-404/` returns a real **404**.
+
+**AC 2 ON THE REAL HOST — THE GATE PASSES.** Re-measured against production rather than against the
+local harness. Lighthouse 13.4.1, mobile, **median of 5 runs**, `benchmarkIndex` printed because it
+is part of the reading:
+
+| route | perf (min–max) | a11y | BP | SEO | FCP | LCP | TBT | CLS | SI | benchmarkIndex |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **Match Dashboard** | **90** (70–92) | **100** | 96 | 100 | 1.1 s | 2.2 s | 358 ms | 0.000 | 1.8 s | 1791–2358 |
+| **Tournament Hub** | **92** (46–94) | **100** | 96 | 100 | 1.1 s | 3.2 s | 153 ms | 0.044 | 2.1 s | 1764–2415 |
+| `/compare` | 98 (81–100) | **100** | 96 | 100 | 0.9 s | 2.3 s | 105 ms | 0.000 | 1.6 s | 470–2198 |
+| Player Profile | 89 (53–97) | **100** | 96 | 100 | 1.0 s | 1.5 s | 415 ms | 0.000 | 2.2 s | 2279–2608 |
+| Team Profile | 90 (90–92) | **100** | 96 | 100 | 1.0 s | 2.7 s | 275 ms | 0.010 | 2.1 s | 2098–2693 |
+
+**AC 2's gate — mobile performance ≥ 90 on Match Dashboard and Tournament Hub — is MET on the host
+the site actually runs on.** An independent earlier median-of-3 read 94 and 90, so the result
+reproduces across two batches.
+
+**The same build measured 88 and 86 against the local server**, and the difference is not new work on
+the site. It is that a local server — even one that compresses correctly, sends a real
+`content-length`, keeps connections alive and mirrors the host's cache-control — still does not model
+a CDN edge: TLS session reuse, HTTP/2 multiplexing over one connection, and origin proximity are all
+absent. LCP is where it shows: 3.7 s / 3.8 s locally against **2.2 s / 3.2 s** on the host.
+
+**This is material to D19**, which Juan ruled against the local numbers before these existed. See the
+note appended to D19.
+
+*The min–max spread is wide (70–92, 46–94) and that is network variance measured over the public
+internet from a working desktop, not site variance — the medians and both batches agree, and the
+single 46 is one run whose observed first paint was 2,267 ms against a 783–1,048 ms norm.*
+
+**9.6 — publishable as the portfolio piece (SM-6).** The repo is public at
+`github.com/juanrojasdp/wc-stats` with `main` pushed and the live URL above serves it. What makes it
+presentable rather than merely deployed: 1,406 pre-rendered routes over the real 104-match corpus,
+zero external requests on every route, WCAG 2.1 AA with **axe reporting 0 violations across 32
+route × theme × locale cells**, a full ES/EN toggle, and `$0/month` with 0 functions.
+
+**One thing to record honestly about HOW it was published.** This was a CLI deploy of the
+already-built `app/out` (`netlify deploy --prod --dir app/out --no-build`), not a git-connected build.
+The AD-13 chain ran locally and green — `lint --max-warnings 0` → `typecheck` →
+`assert:schema-version` → `next build` → `copy-data` → `assert:no-external-origins` — and its output
+is exactly what was uploaded, so the published bytes are the chain's bytes. What is NOT yet true is
+that Netlify re-runs that chain on push: connecting the repo needs a GitHub↔Netlify OAuth grant in
+the UI. `netlify.toml` already carries the correct `base`/`command`/`publish` for it, so connecting
+the repo is a click, not a change. Filed for whoever wants CI deploys.
+
 ### File List
 
-82 files across the whole story (`git diff --name-status 7f28e44..HEAD`), grouped by what they
+84 files across the whole story (`git diff --name-status 7f28e44..HEAD`), grouped by what they
 are. **A** = added, **M** = modified. No file was deleted.
 
 #### App — new (8)
@@ -1861,6 +1983,11 @@ are. **A** = added, **M** = modified. No file was deleted.
 - `pipeline/precompute/swap.py`
 - `pipeline/tests/test_ingest_batch.py`
 
+#### Deploy configuration (2)
+
+- `.gitignore`
+- `netlify.toml`
+
 #### Artifacts and docs (6)
 
 - `_bmad-output/implementation-artifacts/1-19-full-batch-run-batch-report-104-104-acceptance.md`
@@ -1872,7 +1999,7 @@ are. **A** = added, **M** = modified. No file was deleted.
 
 > **`data/` is unchanged and that is the point.** The pipeline re-extract at the new
 > `code_version` reproduced all 1,411 emitted artifacts byte for byte, so no data file appears
-> in this list. `app/out/` is gitignored and does not appear either.
+> in this list. `app/out/` and `.netlify/` are gitignored and do not appear either.
 
 ---
 
@@ -1880,6 +2007,7 @@ are. **A** = added, **M** = modified. No file was deleted.
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | **LAUNCHED — https://wc-stats-2026.netlify.app** (Netlify project `wc-stats-2026`, account `juancr-dev`, plan Free, 0 functions, 14,105 files). 32/32 live route x theme x locale cells clean: 0 external requests, 0 JS errors, correct `<html lang>`. Two defects the live host revealed and the export could not: the site published behind Netlify SSO (401 on every route) and the hashed assets were served `must-revalidate` rather than `immutable`. Both fixed and re-verified against the host. **AC 2's gate PASSES on production: 90 and 92, median of 5** (88 / 86 against the local harness). |
 | 2026-08-25 | **Tasks 5.7-5.9, 6, 7, 8, 10 complete; 9.1-9.3 complete, 9.4-9.6 blocked on credentials.** SM-C2 on the Hub and L1504 taken (D15); the reflow matrix run and R2/D8 landed across SIX owners rather than three; axe driven to **0 violations across 32 cells** from 2 rules / 66 nodes; the four event logs given row headers; the ~25 unnamed tables given announcement identifiers; A13/A14/A15/A18/A29 implemented and A20 verified already-closed; R3's twelve pipeline edits applied with a **byte-identical** re-extract at a new `code_version`; and the ledger closed with a disposition for all 66 blocks. |
 | 2026-08-25 | **D19 ruled by Juan: AC 2's Lighthouse floor — accept and record the gap.** 88 (86-91) and 86 (84-94) against a floor of 90, from 83/68 at the start of the story. The largest single movement in Task 5.9 came from finding that the measurement server had been serving everything UNCOMPRESSED (a harness rewrite wrote literal backspace bytes into its content-negotiation regexes): the same build measured 76/65 against it and 90/85 against a compressing one. |
 | 2026-08-25 | Q2–Q5 ruled by Juan and folded in as D15–D18. Q5 → option 3: SM-C2 on the Hub **and** L1504 pulled back out of Partition C, so both gated routes go for Lighthouse ≥ 90 and bundle/code-split work is in scope. Q2 → take A29. Q3 → accept ES canonical. Q4 → take all three copy items. Tasks 5.7–5.9, 6.16, 7.8–7.9 added; 5.4/5.5 unblocked. |

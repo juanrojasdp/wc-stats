@@ -59,7 +59,7 @@
 #   retrofitted. Story 2-3 (contract sign-off) gates Epic 1 proceeding past the sample set.
 
 generated: 2026-07-22
-last_updated: 2026-08-09
+last_updated: 2026-08-25
 # 2026-08-09: story 2-17 CODE REVIEW complete, status review -> done. COMPARISON MODE, /compare.
 #             RESUMED AN INTERRUPTED REVIEW rather than re-running the layers: the findings record
 #             (3 decisions ruled 1a/2a/3a, 18 patches, 7 deferred, 2 dismissed) was already written
@@ -3332,7 +3332,7 @@ development_status:
   2-17-comparison-mode: done
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
-  2-19-performance-accessibility-hardening-real-data-swap-launch: in-progress
+  2-19-performance-accessibility-hardening-real-data-swap-launch: review
   epic-2-retrospective: optional
 
 # 2026-08-04: story 2-11a code review — 3 layers, 30 raw findings triaged to 4 decisions (all ruled
@@ -3657,3 +3657,14 @@ development_status:
 #             and events.defensiveActions is null on 104/104 in the EMITTED bundles. crosses,
 #             receiving and passNetworkNodes are null too. The heatmap stays deferred for the same
 #             reason: its 1.16 re-open trigger fired and the answer is that no input exists.
+# 2026-08-25: story 2-19 complete and moved to review — the FINAL story of the project.
+#   Shipped: the DATA_ROOT cutover, R1's pass-network re-scope, SM-C2 on the Hub and the
+#   leaderboards, L1504, the R2/D8 reflow fix across SIX owners (not the three R2 named),
+#   axe driven to 0 violations across 32 route x theme x locale cells, the four event logs'
+#   row headers, ~25 table announcement identifiers, A13/A14/A15/A18/A29, R3's twelve pipeline
+#   edits with a byte-identical re-extract at a new code_version, and the ledger closed with a
+#   disposition for all 66 blocks naming 2.19.
+#   LAUNCHED: https://wc-stats-2026.netlify.app (Netlify Free, 0 functions, $0/month).
+#   AC 2's Lighthouse gate PASSES on the live host (90 / 92, median of 5); it reads 88 / 86
+#   against the local reference harness, and both numbers are recorded rather than one chosen.
+#   epic-2-retrospective is OPTIONAL and is the only thing left in the plan.
