@@ -253,13 +253,17 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
 
   it("carries the ruled anchor and the ruled heading", () => {
     /*
-     * `#lideres` is the anchor THIS STORY RULES: no Hub anchor is specified in
+     * `#leaders` is the anchor THIS STORY RULES — renamed from `#lideres` by
+     * Story 2.19 Task 7.4 (ledger A18/L2236) so the app has no Spanish fragment
+     * id left, per 2.18 ruled decision 11. No Hub anchor is specified in
      * any planning artifact, EXPERIENCE.md's enumerated set is
      * Match-Dashboard-only, and UX-DR18 requires "stable deep-link anchors for
      * every section". If Story 2.12 lands a different id, adopt ITS and change
      * this line — two ids is the only bad outcome.
      */
-    expect(html()).toContain('id="lideres"');
+    expect(html()).toContain('id="leaders"');
+    // The Spanish id is GONE, not merely joined by an English one.
+    expect(html()).not.toContain('id="lideres"');
     expect(html()).toContain(es.leaderboards.title);
     expect(es.leaderboards.title).toBe("Líderes del torneo");
   });
@@ -274,7 +278,17 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
      * asserted at the real scale so the case cannot quietly shrink back to a
      * three-board check if the artifact is ever regenerated short.
      */
-    const page = html();
+    /*
+     * ASSERTED ON THE DOCUMENT'S TEXT, NOT ITS MARKUP (Story 2.19 Task 7.9).
+     * D18(c) marks each board's glossary term in its heading, so a metric label
+     * is no longer one contiguous run of characters in the HTML — "Tiros al
+     * arco" ships as `Tiros <button …>al arco</button>`. The property this case
+     * asserts is that every board is RENDERED, which is a claim about text; the
+     * markup between the words is not part of it. Tags are replaced by nothing
+     * rather than by a space, because the marking splits inside a phrase and the
+     * spaces sit outside the trigger.
+     */
+    const page = html().replace(/<[^>]*>/g, "");
     expect(LEADERBOARDS_SHIPPED.boards.length).toBeGreaterThanOrEqual(36);
     for (const board of LEADERBOARDS_SHIPPED.boards) {
       const label = t(leaderboardMetricKey(board.metricCode));
@@ -368,7 +382,7 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
      *
      * THE LANDMARK ASSERTION WAS SELF-CONTRADICTORY (2.13 code review). It read
      * `not.toContain('role="region"')` beside `toContain('aria-labelledby=
-     * "lideres-title"')` — but a <section> WITH an accessible name has the
+     * "leaders-title"')` — but a <section> WITH an accessible name has the
      * implicit ARIA role `region` and IS a landmark; `aria-labelledby` on a
      * section is precisely what triggers it. So the second assertion proved the
      * landmark exists while the first claimed it did not, and a grep for the
@@ -382,9 +396,9 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
      */
     const page = html();
     expect(page).not.toContain("type-display-score");
-    expect(page.match(/id="lideres"/g) ?? []).toHaveLength(1);
-    expect(page.match(/aria-labelledby="lideres-title"/g) ?? []).toHaveLength(1);
-    expect(page.match(/id="lideres-title"/g) ?? []).toHaveLength(1);
+    expect(page.match(/id="leaders"/g) ?? []).toHaveLength(1);
+    expect(page.match(/aria-labelledby="leaders-title"/g) ?? []).toHaveLength(1);
+    expect(page.match(/id="leaders-title"/g) ?? []).toHaveLength(1);
   });
 
   it("ships NO chart and NO recharts markup on the Hub (ruling 2)", () => {

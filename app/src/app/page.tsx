@@ -33,7 +33,7 @@ import { leaderboardTeasers } from "@/viz/leaderboard-model";
  * exactly what this file now does: 2.13's mount is untouched and its chosen
  * page position is honoured rather than re-litigated.
  *
- * Consequently there is NO separate `<div id="lideres">` slot: 2.13 already
+ * Consequently there is NO separate `<div id="leaders">` slot: 2.13 already
  * renders that anchor itself (`LEADERBOARDS_SECTION_ID`), and a second element
  * carrying the same id would be a duplicate-id defect. Task 1.4's slot is
  * discharged BY the real section.
@@ -120,7 +120,8 @@ export default function Home() {
         {/* Results and standings from tournament.json (fetched at runtime). */}
         <TournamentHubRegion />
         {/*
-         * STORY 2.13's SECTION, and its own `#lideres` anchor. Its position is
+         * STORY 2.13's SECTION, and its own `#leaders` anchor (renamed from
+         * `#lideres` by 2.19 Task 7.4, ledger A18). Its position is
          * 2.13's choice, stated in the draft of this file it wrote; this story
          * appends above it rather than restructuring around it.
          */}

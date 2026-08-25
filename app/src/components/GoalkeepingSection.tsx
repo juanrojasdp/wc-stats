@@ -8,6 +8,8 @@ import type { Goalkeeping } from "@/lib/contract/contract-types";
 import { formatInteger, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
+// The shipped clock composer, reused for the involvement axis (Task 7.2, A14).
+import { formatGoalMinute } from "@/lib/match-hero";
 import type { TableColumn } from "@/lib/table-sort";
 import { cn } from "@/lib/utils";
 import {
@@ -130,7 +132,12 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
    * itself on load, and there is exactly ONE error boundary for all eleven
    * Tactical sections.
    */
-  const grouping = goalkeepingByTeam(goalkeeping, home, away);
+  /*
+   * THE NAME SEPARATOR IS RESOLVED HERE AND THREADED DOWN (Story 2.19 Task 7.3,
+   * ledger A15). The model composed `" / "` itself until this story, which put
+   * user-visible copy below the locale layer that AD-7 reserves for it.
+   */
+  const grouping = goalkeepingByTeam(goalkeeping, home, away, t("viz.goalkeeping.nameJoin"));
 
   const denominatorPrefix = t("viz.goalkeeping.denominatorPrefix");
 
@@ -238,9 +245,23 @@ export function GoalkeepingSection({ goalkeeping, home, away }: GoalkeepingSecti
       `${t("viz.goalkeeping.figurePrefix")} ${keeper.playerName}${CLAUSE_SEPARATOR}` +
       `${teamName}${CLAUSE_SEPARATOR}${t("viz.goalkeeping.involvementAxisNote")}`;
 
+    /*
+     * THE FULL CLOCK, not the bare minute (Story 2.19 Task 7.2, ledger A14).
+     * 2,506 of 21,764 real samples sit in stoppage and every one shares its
+     * minute with a regulation slot, so a minute-only label put two different
+     * slots under one tick name. `formatGoalMinute` is the shipped composer for
+     * exactly this stamp and is reused rather than re-derived, so the axis and
+     * `involvementTicks`' dedupe key agree by construction.
+     *
+     * `formatInteger` is deliberately NOT used any more: it applied es-CO
+     * grouping, so a slot at minute 1.000 would have read "1.000′" — harmless
+     * at 0-145 but wrong in kind for a clock.
+     */
     function formatSlot(index: number): string {
       const point = points[index];
-      return point === undefined ? "" : formatInteger(point.minute, locale);
+      return point === undefined
+        ? ""
+        : formatGoalMinute({ minute: point.minute, stoppageMinute: point.stoppageMinute });
     }
     function formatCount(value: number): string {
       return formatInteger(value, locale);

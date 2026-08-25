@@ -1668,13 +1668,24 @@ describe("Story 2.11c's receiving log and log links", () => {
         `${phases}${SEPARATOR}${title("viz.phases.outOfPossession")}${SEPARATOR}${title(
           "viz.phases.tableCaption"
         )}`,
-        // PressingSection (3)
+        // PressingSection (4 since Story 2.19 Task 7.1)
         `${pressing}${SEPARATOR}${title("viz.pressing.pressRates")}${SEPARATOR}${title(
           "viz.pressing.tableCaption"
         )}`,
         `${pressing}${SEPARATOR}${title("viz.pressing.blocks")}${SEPARATOR}${title(
           "viz.pressing.tableCaption"
         )}`,
+        /*
+         * THE TWO SHAPE TABLES A13 RE-PRESENTS (Story 2.19 Task 7.1). CS-2
+         * retired this section's metre surface and reshaped the data into
+         * `shapeByPhase`, which is populated on 104/104 real bundles and had no
+         * surface at all; these are its captions. They are DISTINCT from
+         * `/teams/{slug}`'s pair for the same values because the component
+         * prefixes them with the section title, which is exactly the property
+         * this inventory exists to hold.
+         */
+        `${pressing}${SEPARATOR}${title("viz.pressing.shapeInCaption")}`,
+        `${pressing}${SEPARATOR}${title("viz.pressing.shapeOutCaption")}`,
         /*
          * THE METRE CAPTION IS GONE — it was counted here and rendered nowhere
          * (code review 2026-08-07, discharging Story 2.16 Task 10.4).
@@ -1865,15 +1876,23 @@ describe("Story 2.11c's receiving log and log links", () => {
 
     for (const locale of locales) {
       const shipped = composedCaptions(locale);
-      expect(shipped, locale).toHaveLength(26);
-      expect(new Set(shipped).size, `the 26 shipped captions in ${locale}`).toBe(26);
+      /*
+       * 26 -> 28 AT STORY 2.19 TASK 7.1: `PressingSection` re-presents
+       * `shapeByPhase` as two tables (ledger A13), the surface CS-2 retired and
+       * never replaced. The count is pinned rather than derived on purpose —
+       * a caption that is rendered but not listed here is invisible to the
+       * distinctness property below, and this pin is what forces the list to be
+       * updated with the component.
+       */
+      expect(shipped, locale).toHaveLength(28);
+      expect(new Set(shipped).size, `the 28 shipped captions in ${locale}`).toBe(28);
 
       const receiving = `${t("expert.logs.receivingHeading", locale)}${SEPARATOR}${t(
         "expert.logs.receivingOrder",
         locale
       )}`;
       expect(shipped, `the new caption in ${locale}`).not.toContain(receiving);
-      expect(new Set([...shipped, receiving]).size, locale).toBe(27);
+      expect(new Set([...shipped, receiving]).size, locale).toBe(29);
 
       /*
        * The Hub captions (Story 2.13): distinct from each other AND from all 28
@@ -1890,7 +1909,7 @@ describe("Story 2.11c's receiving log and log links", () => {
       const hub = hubLeaderboardCaptions(locale);
       expect(hub, `the Hub captions in ${locale}`).toHaveLength(LEADERBOARD_FIXTURE.boards.length);
       expect(new Set(hub).size, `the Hub captions in ${locale}`).toBe(hub.length);
-      expect(new Set([...shipped, receiving, ...hub]).size, locale).toBe(27 + hub.length);
+      expect(new Set([...shipped, receiving, ...hub]).size, locale).toBe(29 + hub.length);
 
       /*
        * STORY 2.15 ADDS FOUR: /players/{slug} renders three DataTables plus the
@@ -1905,7 +1924,7 @@ describe("Story 2.11c's receiving log and log links", () => {
       expect(profile, `the profile captions in ${locale}`).toHaveLength(4);
       expect(new Set(profile).size, `the profile captions in ${locale}`).toBe(4);
       expect(new Set([...shipped, receiving, ...hub, ...profile]).size, locale).toBe(
-        27 + hub.length + 4
+        29 + hub.length + 4
       );
 
       /*
@@ -1925,7 +1944,7 @@ describe("Story 2.11c's receiving log and log links", () => {
       expect(compare, `the compare captions in ${locale}`).toHaveLength(6);
       expect(new Set(compare).size, `the compare captions in ${locale}`).toBe(6);
       expect(new Set([...shipped, receiving, ...hub, ...profile, ...compare]).size, locale).toBe(
-        27 + hub.length + 4 + 6
+        29 + hub.length + 4 + 6
       );
 
       /*
@@ -1948,7 +1967,7 @@ describe("Story 2.11c's receiving log and log links", () => {
       expect(
         new Set([...shipped, receiving, ...hub, ...profile, ...compare, ...team]).size,
         locale
-      ).toBe(27 + hub.length + 4 + 6 + 8);
+      ).toBe(29 + hub.length + 4 + 6 + 8);
     }
   });
 
@@ -2434,13 +2453,22 @@ describe("the leaderboards namespaces (Story 2.13, AD-2 / AD-7)", () => {
     );
   });
 
-  it("still carries the full term when the head also carries a UNIT", () => {
+  it("does NOT stack two parentheticals when the head also carries a UNIT", () => {
     /*
-     * THE REAL HEAD, which the previous test never built. Ruling 6 puts the
-     * unit head-side, so `headText` is "Vel. máx. (km/h)" while `headTitle`
-     * stays the bare term. Both halves are ruled and their composition simply
-     * stacks — clumsy, disclosed and accepted; what matters is that the full
-     * term is still THERE, and that the visible text still leads.
+     * ═══ ledger L2335, ruled D18(b) and taken at Story 2.19 Task 7.8 ═══
+     *
+     * THE REAL HEAD. Ruling 6 puts the unit head-side, so `headText` is
+     * "Vel. máx. (km/h)" while `headTitle` stays the bare term. The composition
+     * used to give
+     *
+     *     "Ordenar por Vel. máx. (km/h) (Velocidad máxima)"
+     *
+     * — two brackets in a row, read aloud as two asides with nothing between
+     * them. Both halves are ruled and neither is wrong, which is why this was
+     * filed as COPY rather than as a defect. The em-dash separates them now.
+     *
+     * WCAG 2.5.3 is unaffected and is re-asserted below: the visible text still
+     * LEADS the accessible name.
      */
     const headText = `${es.enums.leaderboardMetricAbbr.topSpeed} (${es.enums.unit.kmh})`;
     const name = composeHeadAccessibleName(
@@ -2448,8 +2476,21 @@ describe("the leaderboards namespaces (Story 2.13, AD-2 / AD-7)", () => {
       headText,
       es.enums.leaderboardMetric.topSpeed
     );
+    expect(name).toBe("Ordenar por Vel. máx. (km/h) — Velocidad máxima");
     expect(name).toContain(headText);
     expect(name).toContain(es.enums.leaderboardMetric.topSpeed);
+    // ONE bracket pair, not two, and the term is no longer inside one.
+    expect(name.match(/\(/g) ?? []).toHaveLength(1);
+    expect(name).not.toContain(`(${es.enums.leaderboardMetric.topSpeed})`);
+
+    // The UNBRACKETED head is untouched: one parenthetical is the right shape.
+    expect(
+      composeHeadAccessibleName(
+        es.viz.table.sortAction,
+        es.enums.leaderboardMetricAbbr.topSpeed,
+        es.enums.leaderboardMetric.topSpeed
+      )
+    ).toBe("Ordenar por Vel. máx. (Velocidad máxima)");
   });
 
   it("SUPPRESSES a parenthetical the head already contains — the EN unit case", () => {

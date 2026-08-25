@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { DataTable } from "@/components/DataTable";
+import { useGlossaryMarking } from "@/components/glossary-marking";
 import { EmptyStatePanel } from "@/components/EmptyStatePanel";
 import { useSortAnnounce } from "@/components/SortAnnouncer";
 import { Button } from "@/components/ui/button";
@@ -293,6 +294,7 @@ const INITIALLY_OPEN_BOARDS = 3;
 function LeaderboardBoard({ board, initiallyOpen }: { board: Leaderboard; initiallyOpen: boolean }) {
   const t = useT();
   const { locale } = useLocale();
+  const { markMetric } = useGlossaryMarking();
   const announce = useSortAnnounce();
   const filterId = useId();
   const panelId = useId();
@@ -545,7 +547,8 @@ function LeaderboardBoard({ board, initiallyOpen }: { board: Leaderboard; initia
      * `truncate` inside a table cell WIDENS the column instead of truncating.
      */
     <article className="min-w-0">
-      <h4 className="type-title text-ink-primary">{heading}</h4>
+      {/* The board's term, marked on the heading only — see LeaderboardsSection. */}
+      <h4 className="type-title text-ink-primary">{markMetric(board.metricCode, heading)}</h4>
       <p className="type-caption mt-1 text-ink-secondary">
         {t(board.higherIsBetter ? "leaderboards.higherIsBetter.true" : "leaderboards.higherIsBetter.false")}
       </p>

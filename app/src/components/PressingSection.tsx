@@ -5,11 +5,13 @@ import dynamic from "next/dynamic";
 import { DataTable } from "@/components/DataTable";
 import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { TacticalIdentityBlock } from "@/lib/contract/contract-types";
-import { formatPercent } from "@/lib/format";
+import { formatDecimal, formatPercent } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import type { TableColumn } from "@/lib/table-sort";
 import { cn } from "@/lib/utils";
+// A13 (7.1) reuses 2.16's shape vocabulary rather than minting a second one.
+import { SHAPE_MEASURES, shapeMeasureKey } from "@/viz/team-profile-model";
 import {
   BLOCK_LEVELS,
   PRESS_PHASES,
@@ -19,7 +21,9 @@ import {
   percentTicks,
   pressRows,
   rowsPeak,
+  shapePanelRows,
   type PhaseRow,
+  type ShapePanelRow,
 } from "@/viz/phases-model";
 
 import type { ChartSeries } from "@/components/TacticalCharts";
@@ -115,6 +119,8 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
   // Eager, outside the disclosure (ruled decision 18).
   const press = pressRows(tacticalIdentity);
   const blocks = blockRows(tacticalIdentity);
+  // A13: the shape panels CS-2 reshaped and this section never re-presented.
+  const shape = shapePanelRows(tacticalIdentity, home, away);
 
   const axisValueLabel = t("viz.pressing.axisRate");
   const axisCategoryLabel = t("viz.pressing.axisPhase");
@@ -239,10 +245,91 @@ export function PressingSection({ tacticalIdentity, home, away }: PressingSectio
     );
   }
 
+  /* ------------------------ Shape by phase (A13, 7.1) ----------------------- */
+
+  /*
+   * THE SURFACE `#pressing` HAS OWED SINCE CS-2 — ledger A13 / L1979 / L3412.
+   *
+   * CS-2 retired this section's "metre" presentation and reshaped the data into
+   * `shapeByPhase`; the `viz.pressing.metre*` locale family went with it. The
+   * DATA did not: `shapeByPhase` is populated on 104 of 104 real bundles, so
+   * the section has been rendering strictly less than the report carries, and
+   * the ledger filed it twice.
+   *
+   * TABLES, NEVER CHARTS, and the reasoning is 2.16's ruled D13 verbatim: three
+   * measures cannot go on one plot here — the single-series bar chart takes one
+   * series and `DistributionChart` at most two, and `--viz-single` is ONE colour
+   * so three measures could not be told apart even if a chart accepted them.
+   *
+   * They sit INSIDE the existing `ViewDataDisclosure` beside the rate tables
+   * rather than flat on the section. `/teams/{slug}` renders its shape tables
+   * flat because a table is not a viz and needs no alternative to itself — but
+   * there the section IS the tables. Here the section is two charts, the
+   * disclosure is already the place this section keeps its numbers, and six
+   * more rows in the arrival DOM of a Lighthouse-gated route is the trade SM-C2
+   * rules on.
+   */
+  const metreLabel = t("enums.unit.m");
+  const shapeColumns: TableColumn<ShapePanelRow>[] = [
+    {
+      key: "panel",
+      // "Panel", not "Fase" — 2.16's R-D3: these rows are shape PANELS, and
+      // borrowing the phase term would put two meanings on one word on a screen
+      // that already has a phase table.
+      headText: t("team.column.categoryPanel"),
+      headTitle: null,
+      render: (row) => t(row.labelKey),
+      align: "text",
+      sort: { kind: "text", valueOf: (row) => t(row.labelKey) },
+    },
+    {
+      key: "team",
+      headText: t("viz.table.team"),
+      headTitle: null,
+      render: (row) => row.teamCode,
+      align: "text",
+      /*
+       * THE ROW HEADER IS THE TEAM, not the panel. Each panel label appears
+       * TWICE in these tables — once per side — so it does not identify a row;
+       * the pair (panel, team) does, and of the two the team is what a reader
+       * moving down the rows needs repeated.
+       */
+      rowHeader: true,
+      sort: { kind: "text", valueOf: (row) => row.teamCode },
+    },
+    ...SHAPE_MEASURES.map<TableColumn<ShapePanelRow>>((measure) => ({
+      key: measure,
+      // The unit rides the HEAD, never the cell (2.11b/2.13's rule): all three
+      // measures are metres and these tables are not transposed.
+      headText: `${t(shapeMeasureKey(measure))} (${metreLabel})`,
+      headTitle: t(shapeMeasureKey(measure)),
+      render: (row) => formatDecimal(row[measure], locale, 1),
+      align: "numeric",
+      sort: { kind: "number", valueOf: (row) => row[measure] },
+    })),
+  ];
+
+  const shapeInCaption = `${title}${CAPTION_SEPARATOR}${t("viz.pressing.shapeInCaption")}`;
+  const shapeOutCaption = `${title}${CAPTION_SEPARATOR}${t("viz.pressing.shapeOutCaption")}`;
+
   const dataTable = (
     <div className="flex flex-col gap-tile-gap">
       {rateTable(pressCaption, press)}
       {rateTable(blockCaption, blocks)}
+      <DataTable
+        caption={shapeInCaption}
+        tableName={shapeInCaption}
+        columns={shapeColumns}
+        rows={shape.inPossession}
+        surface="canvas"
+      />
+      <DataTable
+        caption={shapeOutCaption}
+        tableName={shapeOutCaption}
+        columns={shapeColumns}
+        rows={shape.outOfPossession}
+        surface="canvas"
+      />
     </div>
   );
 

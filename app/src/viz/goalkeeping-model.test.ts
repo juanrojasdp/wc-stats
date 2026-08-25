@@ -208,15 +208,22 @@ describe("the four summaries on fixture data (Tasks 5.3-5.5)", () => {
       for (const block of [grouping.home, grouping.away]) {
         const sources = records(bundle).filter((record) => record.teamId === block.teamId);
         expect(block.records, slug).toHaveLength(sources.length);
-        for (const source of sources) {
-          const matching = block.records.find(
-            (record) => record.playerId === source.goalkeepers[0].playerId
+        /*
+         * MATCHED BY POSITION, not by a synthesized player id (Story 2.19 Task
+         * 7.3, ledger A15). This used to look a block up by
+         * `record.playerId === source.goalkeepers[0].playerId`, which only
+         * worked because `playerId` was the keepers' ids concatenated and every
+         * fixture carries exactly one keeper — on the real two-keeper shape the
+         * lookup would have missed. The block is PER TEAM and `records` is built
+         * by mapping `sources` in order, so position IS the correspondence, and
+         * the identity assertion is now about the team.
+         */
+        block.records.forEach((record, index) => {
+          expect(record.teamId, slug).toBe(block.teamId);
+          expect(record.goalPrevention.savePercentage, slug).toBe(
+            sources[index].goalPrevention.savePercentage
           );
-          expect(matching, `${slug}: no block for ${source.goalkeepers[0].playerId}`).toBeDefined();
-          expect(matching!.goalPrevention.savePercentage, slug).toBe(
-            source.goalPrevention.savePercentage
-          );
-        }
+        });
       }
     }
   });
@@ -336,6 +343,7 @@ describe("involvementTicks and countTicks (Task 5.2, ruled decision 9)", () => {
       const points = Array.from({ length }, (_, index) => ({
         index,
         minute: Math.min(120, index),
+        stoppageMinute: null,
         involvements: 0,
       }));
       const ticks = involvementTicks(points);
@@ -353,6 +361,7 @@ describe("involvementTicks and countTicks (Task 5.2, ruled decision 9)", () => {
       const points = Array.from({ length }, (_, index) => ({
         index,
         minute: index,
+        stoppageMinute: null,
         involvements: 0,
       }));
       expect(involvementTicks(points).length, `length=${length}`).toBeLessThanOrEqual(7);
@@ -360,22 +369,50 @@ describe("involvementTicks and countTicks (Task 5.2, ruled decision 9)", () => {
   });
 
   /*
-   * DEDUPE BY MINUTE VALUE, FIRST OCCURRENCE WINS — the half of
-   * momentumTickIndices' model that survives without a stoppage field, and the
-   * half that stops a repeated axis label. The last index always survives so
-   * the axis keeps its right anchor.
+   * DEDUPE BY THE WHOLE CLOCK, FIRST OCCURRENCE WINS — Story 2.19 Task 7.2
+   * (ledger A14/L2045). Until then the key was the MINUTE alone, which is what
+   * the model could see before CS-2 gave the sample a full `MinuteStamp`; on
+   * real data 2,506 of 21,764 samples sit in stoppage and every one shares its
+   * minute with a regulation slot, so two different slots collapsed onto one
+   * tick name and which survived was luck of ordering. The last index always
+   * survives so the axis keeps its right anchor.
    */
-  it("never emits the same minute label twice, except at the final anchor", () => {
+  it("never emits the same clock label twice, except at the final anchor", () => {
     const points = Array.from({ length: 40 }, (_, index) => ({
       index,
-      // Every minute repeated four times — the stoppage-heavy corpus shape.
+      /*
+       * Every minute repeated four times, with THREE OF THE FOUR IN STOPPAGE —
+       * the corpus shape, updated at Story 2.19 Task 7.2 (ledger A14). The
+       * dedupe key is now the whole clock, so these are four DISTINCT labels
+       * and not one collision: the case below therefore asserts distinct
+       * CLOCKS, which is what the axis prints.
+       */
       minute: Math.floor(index / 4),
+      stoppageMinute: index % 4 === 0 ? null : index % 4,
       involvements: 0,
     }));
     const ticks = involvementTicks(points);
-    const minutes = ticks.slice(0, -1).map((index) => points[index].minute);
-    expect(new Set(minutes).size).toBe(minutes.length);
+    const clocks = ticks
+      .slice(0, -1)
+      .map((index) => `${points[index].minute}+${points[index].stoppageMinute ?? ""}`);
+    expect(new Set(clocks).size).toBe(clocks.length);
     expect(ticks[ticks.length - 1]).toBe(39);
+  });
+
+  /*
+   * THE CASE THE OLD KEY GOT WRONG, constructed as the corpus actually is: a
+   * short series where a regulation slot is immediately followed by its own
+   * stoppage slots. Keyed on the minute these were ONE tick; keyed on the clock
+   * they are three, and the axis can tell 45 from 45+1 from 45+2.
+   */
+  it("keeps a stoppage slot that shares a minute with a regulation slot", () => {
+    const points = [
+      { index: 0, minute: 44, stoppageMinute: null, involvements: 1 },
+      { index: 1, minute: 45, stoppageMinute: null, involvements: 2 },
+      { index: 2, minute: 45, stoppageMinute: 1, involvements: 3 },
+      { index: 3, minute: 45, stoppageMinute: 2, involvements: 4 },
+    ];
+    expect(involvementTicks(points)).toEqual([0, 1, 2, 3]);
   });
 
   it("countTicks always includes zero and ends at the axis max", () => {

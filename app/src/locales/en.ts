@@ -495,25 +495,28 @@ export const en: Dictionary = {
       },
       "pass-networks": {
         title: "Pass networks",
-        summary: "Who connected with whom, and where the ball circulated.",
+        // Prefixed with the term at Story 2.19 Task 7.9 (D18(c)) - see es.ts.
+        summary: "The pass network: who connected with whom, and where the ball circulated.",
       },
       "offers-to-receive": {
         title: "Offers to receive",
-        summary: "How often players asked for the ball, and how often it arrived.",
+        summary:
+          "Offers to receive: how often players asked for the ball, and how often it arrived.",
       },
       "movement-to-receive": {
         title: "Movement to receive",
         // Story 2.18 decision 3 — the offers⊋movements relationship ships in
         // the section, not only in the glossary. Verbatim; see es.ts.
-        summary: "How they offered to receive, and in which of those offers they also moved.",
+        summary:
+          "Movement to receive: how they offered to receive, and in which of those offers they also moved.",
       },
       "defensive-actions": {
         title: "Defensive actions",
-        summary: "Where each team regained the ball and forced turnovers.",
+        summary: "Defensive actions: where each team regained the ball and forced turnovers.",
       },
       phases: {
         title: "Phases of play",
-        summary: "How the match split between attack, transition and defence.",
+        summary: "Phases of play: how the match split between attack, transition and defence.",
       },
       pressing: {
         title: "Pressing & defensive blocks",
@@ -745,6 +748,10 @@ export const en: Dictionary = {
       figurePrefix: "Pressing and blocks:",
       pressRates: "Pressing intensity",
       blocks: "Defensive blocks",
+      // The re-presented shape surface (Story 2.19 Task 7.1, ledger A13) - see
+      // the ES note. Only the captions are new; the labels are 2.16's.
+      shapeInCaption: "Shape in possession, by panel and team, in report order.",
+      shapeOutCaption: "Shape out of possession, by panel and team, in report order.",
       note: "These are independent rates: they do not sum to 100 and are not parts of a whole.",
       axisRate: "Share of time",
       axisPhase: "Phase",
@@ -826,6 +833,8 @@ export const en: Dictionary = {
       feetTechniques: "Kick-from-feet techniques",
       handsTechniques: "Kick-from-hands techniques",
       throwTechniques: "Throw techniques",
+      // The two-keeper name separator - see the ES note (Story 2.19, A15).
+      nameJoin: " / ",
       summaryCaption: "Total involvements as printed by the report.",
       timelineCaption:
         "Slots as plotted by the report, in order. The source does not guarantee they sum to the total.",

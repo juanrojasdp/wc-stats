@@ -305,15 +305,35 @@ export const SECTION_HEADING_MARKS: Partial<Record<AlwaysExpandedSectionId, Sect
  * Summary marks — the nine collapsible sections, whose summary renders as a
  * block OUTSIDE the accordion trigger at every width (2.5 review decision D1).
  *
- * FIVE OF THE NINE CARRY NO MARK, and that is a finding rather than an
- * omission: the ruled 2.5 summaries of `pass-networks`, `offers-to-receive`,
- * `movement-to-receive`, `defensive-actions` and `phases` contain no term from
- * the policy table at all, while their TITLES do — and marking a title is
- * exactly what the partition above forbids for these nine. Rewriting frozen
- * ruled copy to manufacture a marking site is outside Story 2.18's authority;
- * the gap is filed in deferred-work.md. Ruled by Juan.
+ * ═══ ALL NINE NOW CARRY ONE ═══ Story 2.19 Task 7.9, ledger L962, ruled D18(c).
+ *
+ * Five of the nine used to carry NO mark: the ruled 2.5 summaries of
+ * `pass-networks`, `offers-to-receive`, `movement-to-receive`,
+ * `defensive-actions` and `phases` contained no term from the policy table at
+ * all, while their TITLES did — and marking a title is exactly what the
+ * partition above forbids for these nine. Story 2.18 filed the gap rather than
+ * closing it, because rewriting ruled copy was outside its authority; D18(c)
+ * grants that authority and this is the result.
+ *
+ * THE REWORDING IS ADDITIVE, NOT A REWRITE. Each of the five summaries keeps
+ * its ruled sentence VERBATIM as the clause after a colon and gains the term in
+ * front of it — including `movement-to-receive`, whose sentence carries Story
+ * 2.18 decision 3's offers⊋movements relationship and could not be edited.
+ *
+ * ONE MARK PER SECTION still holds by construction: the two maps are keyed by
+ * disjoint id unions, and each entry names exactly one term.
  */
 export const SECTION_SUMMARY_MARKS: Partial<Record<CollapsibleSectionId, SectionMark>> = {
+  // "La red de pases: quién conectó…" / "The pass network: who connected…"
+  "pass-networks": { id: "pass-network" },
+  // "Los ofrecimientos para recibir: …" / "Offers to receive: …"
+  "offers-to-receive": { id: "offers-to-receive" },
+  // "Los desmarques: …" / "Movement to receive: …"
+  "movement-to-receive": { id: "movement-to-receive" },
+  // "Las acciones defensivas: …" / "Defensive actions: …"
+  "defensive-actions": { id: "defensive-actions" },
+  // "Las fases del juego: …" / "Phases of play: …"
+  phases: { id: "phases-of-play" },
   // "…los tiros y los centros de cada equipo." / "…shots and crosses came from."
   "shot-maps": { id: "cross" },
   // "Altura de la línea defensiva e intensidad de la presión." — first in
@@ -330,6 +350,52 @@ export const SECTION_SUMMARY_MARKS: Partial<Record<CollapsibleSectionId, Section
    */
   goalkeeping: { id: "distribution" },
 };
+
+/*
+ * ══════ THE LEADERBOARDS SURFACE, ledger L2347 / D18(c), Task 7.9 ══════
+ *
+ * "The whole leaderboards surface carries no glossary mark." It could not carry
+ * one where the ledger first looked: a board's metric name is also a SORTABLE
+ * COLUMN HEAD, and `glossary.ts`'s partition above forbids nesting a focusable
+ * trigger inside a `<button aria-expanded>`. But the metric name is ALSO the
+ * board's `<h4>`/`<h3>` heading on both altitudes — the Hub teaser card and the
+ * full region — and those are plain headings with no control in them. That is
+ * where the mark goes.
+ *
+ * ONE MARK PER BOARD, and only where the term genuinely applies: eleven of the
+ * thirty-odd metric codes name a policy-table term, and the rest are ordinary
+ * football words ("Pases", "Posesión") that the glossary does not define. A
+ * metric absent from this map renders exactly as it did before.
+ *
+ * THE MATCH IS BEST-EFFORT BY DESIGN. `findTermSpan` folds case and tolerates a
+ * plural `-s`/`-es`, but Spanish plurals that drop an accent — "progresión" ->
+ * "progresiones", "recepción" -> "recepciones" — are outside that rule, so those
+ * two are deliberately NOT listed: `mark()` degrades to unmarked text on a miss,
+ * and a map entry that never matches is a claim this file should not make.
+ */
+export const LEADERBOARD_METRIC_MARKS: Partial<Record<string, SectionMark>> = {
+  // "Sprints" is the same token in both locales — an English loanword inside
+  // Spanish copy, so it carries lang="en" on decision 13's rule.
+  sprints: { id: "sprint", lang: "en" },
+  highSpeedRuns: { id: "high-speed-run" },
+  secondBalls: { id: "second-ball" },
+  takeOns: { id: "take-on" },
+  stepIns: { id: "step-in" },
+  forcedTurnovers: { id: "forced-turnover" },
+  completedLineBreaks: { id: "line-break" },
+  lineBreaksCompleted: { id: "line-break" },
+  defensiveLineBreaks: { id: "line-break" },
+  expectedGoals: { id: "xg" },
+  crosses: { id: "cross" },
+  crossesCompleted: { id: "cross" },
+  goals: { id: "goal" },
+  shotsOnTarget: { id: "on-target" },
+};
+
+/** The mark a leaderboard board's HEADING carries, or null. */
+export function metricMark(metricCode: string): SectionMark | null {
+  return LEADERBOARD_METRIC_MARKS[metricCode] ?? null;
+}
 
 /*
  * DERIVED from tactical-sections' own guard, never hand-copied (2.18 code

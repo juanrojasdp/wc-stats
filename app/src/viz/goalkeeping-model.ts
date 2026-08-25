@@ -108,8 +108,8 @@ function widen(record: TeamGoalkeeping): CorpusNullableGoalkeeperRecord {
  * names are carried as CONTEXT — AD-5 forbids splitting the team's figures between them,
  * which is exactly what the old per-keeper shape invited.
  */
-function keeperNamesOf(record: CorpusNullableGoalkeeperRecord): string {
-  return record.goalkeepers.map((keeper) => keeper.playerName).join(" / ");
+function keeperNamesOf(record: CorpusNullableGoalkeeperRecord, join: string): string {
+  return record.goalkeepers.map((keeper) => keeper.playerName).join(join);
 }
 
 function keeperIds(record: CorpusNullableGoalkeeperRecord): string {
@@ -395,6 +395,15 @@ export interface InvolvementPoint {
   index: number;
   /** A LABEL read off the sample. NEVER the key, never the domain. */
   minute: number;
+  /**
+   * The stoppage component of the same stamp, or `null` in regulation.
+   *
+   * ADDED BY STORY 2.19 TASK 7.2 (ledger A14/L2045). CS-2 gave the sample a full
+   * `MinuteStamp` and this model kept dropping half of it, which is what made
+   * 2,506 of 21,764 real slots share a tick label with a regulation minute.
+   * With it the axis can say "45+2" instead of a second "45".
+   */
+  stoppageMinute: number | null;
   involvements: number;
 }
 
@@ -434,7 +443,30 @@ export interface AerialSummary {
 /** One goalkeeper's four summaries. */
 export interface GoalkeeperBlock {
   key: string;
-  playerId: string;
+  /*
+   * THE TEAM'S ID, NOT A PLAYER'S — ledger A15/L2079, Story 2.19 Task 7.3.
+   *
+   * This field was `playerId`, filled with `keeperIds(record)`: the keepers'
+   * ids CONCATENATED WITH A HYPHEN. On a two-keeper team-inning that produced
+   * `"rangel-raul-mex-ochoa-guillermo-mex"` — a string shaped exactly like a
+   * player id, referring to no player, which any future code that looked up a
+   * profile by it would follow straight into a 404.
+   *
+   * CS-2 (contract decision 18) made this block PER TEAM: the source's four
+   * goalkeeping page families are titled by TEAM, no keeper name appears on any
+   * of them, and 7 of 208 corpus team-innings used two keepers while printing
+   * one team-level block each. So the honest identity is the one the block
+   * already carries — `side.teamId`. The keeper ids still appear inside `key`,
+   * where they are a REACT-KEY DISAMBIGUATOR and never claimed as an identity.
+   */
+  teamId: string;
+  /**
+   * The keepers who kept goal for this team, joined — ALREADY COMPOSED WITH THE
+   * LOCALE'S OWN SEPARATOR (A15, AD-7). The join used to be a `" / "` literal
+   * inside this pure model, which is user-visible copy minted below the locale
+   * layer; the separator is now `viz.goalkeeping.nameJoin`, resolved at the call
+   * site and threaded in.
+   */
   playerName: string;
   /** Printed VERBATIM as the headline (ruled decision 14). */
   totalInvolvements: number;
@@ -503,7 +535,15 @@ export interface GoalkeepingGrouping {
 export function goalkeepingByTeam(
   goalkeeping: Goalkeeping,
   home: LogSide,
-  away: LogSide
+  away: LogSide,
+  /**
+   * The separator between two keepers' names, RESOLVED BY THE CALLER
+   * (`viz.goalkeeping.nameJoin`). AD-7 keeps every formatting decision in the
+   * locale layer, and this model minted `" / "` inline until Story 2.19 Task
+   * 7.3 (ledger A15). Defaulted so the model stays callable from a test without
+   * a dictionary, and so no existing call changes meaning.
+   */
+  nameJoin = " / "
 ): GoalkeepingGrouping {
   const buckets: Record<"home" | "away", TeamGoalkeeping[]> = { home: [], away: [] };
   const records = goalkeeping ?? [];
@@ -512,14 +552,18 @@ export function goalkeepingByTeam(
     buckets[side.teamId === home.teamId ? "home" : "away"].push(record);
   }
   return {
-    home: teamBlock(buckets.home, home),
-    away: teamBlock(buckets.away, away),
+    home: teamBlock(buckets.home, home, nameJoin),
+    away: teamBlock(buckets.away, away, nameJoin),
     isEmptyArray: goalkeeping !== null && records.length === 0,
   };
 }
 
-function teamBlock(records: readonly TeamGoalkeeping[], side: LogSide): GoalkeepingTeamBlock {
-  const blocks = records.map((record, index) => keeperBlock(widen(record), side, index));
+function teamBlock(
+  records: readonly TeamGoalkeeping[],
+  side: LogSide,
+  nameJoin: string
+): GoalkeepingTeamBlock {
+  const blocks = records.map((record, index) => keeperBlock(widen(record), side, index, nameJoin));
   return {
     key: `goalkeeping-${side.teamId}`,
     teamId: side.teamId,
@@ -534,7 +578,8 @@ function teamBlock(records: readonly TeamGoalkeeping[], side: LogSide): Goalkeep
 function keeperBlock(
   record: CorpusNullableGoalkeeperRecord,
   side: LogSide,
-  index: number
+  index: number,
+  nameJoin: string
 ): GoalkeeperBlock {
   const distribution = distributionRows(record);
   const goalPrevention = goalPreventionRows(record);
@@ -558,8 +603,8 @@ function keeperBlock(
      * identity this surface keys on.
      */
     key: `keeper-${side.teamId}-${index}-${keeperIds(record)}`,
-    playerId: keeperIds(record),
-    playerName: keeperNamesOf(record),
+    teamId: side.teamId,
+    playerName: keeperNamesOf(record, nameJoin),
     totalInvolvements: record.totalInvolvements,
     involvement: involvementSeries(record),
     distribution,
@@ -623,6 +668,12 @@ export function involvementSeries(
   return timeline.map((sample, index) => ({
     index,
     minute: sample.at.minute,
+    /*
+     * CARRIED SINCE STORY 2.19 TASK 7.2 (ledger A14/L2045). CS-2 gave the
+     * sample `at: MinuteStamp`, and this model kept dropping the stoppage
+     * component — which is precisely what made the tick labels collide.
+     */
+    stoppageMinute: sample.at.stoppageMinute,
     involvements: sample.involvements,
   }));
 }
@@ -644,16 +695,29 @@ export function involvementSeries(
  * minted sentence): it plots the report's slots in order, and a stoppage slot
  * carries the preceding regulation minute.
  *
- * THE INTERIM'S CONDITION HAS EXPIRED. Change-set CS-2 made the sample carry
- * `at: MinuteStamp`, so `at.stoppageMinute` IS available and the full
- * `momentumTickIndices` model — skip stoppage slots outright — is now
- * implementable. Measured over the 104 emitted bundles: 2,506 of 21,764 samples
- * carry a non-null `stoppageMinute` and every one collides with another sample
- * on the same minute, so the dedupe is doing real work on real data and the
- * first-occurrence winner is a regulation slot only by luck of ordering.
- * Re-opening this is Story 2.19's, with the rest of the #goalkeeping cutover;
- * recorded here rather than changed, because a tick model is a shipped visual
- * ruling and CS-2's job was to keep `main` green.
+ * ═══ RE-OPENED AND RESOLVED — Story 2.19 Task 7.2, ledger A14 / L2045 ═══
+ *
+ * The interim's condition expired: CS-2 made the sample carry `at: MinuteStamp`,
+ * so `at.stoppageMinute` IS available. Measured over the 104 emitted bundles,
+ * **2,506 of 21,764 samples carry a non-null `stoppageMinute` and EVERY ONE
+ * collides with another sample on the same minute** — so the minute dedupe was
+ * doing real work on real data, and which slot won was luck of ordering.
+ *
+ * IT IS NOT RESOLVED BY ADOPTING `momentumTickIndices`' RULE, and that is a
+ * deliberate departure from what the ledger proposed. That model SKIPS stoppage
+ * slots outright because the momentum axis labels a tick by its MINUTE ALONE
+ * and has no way to say "45+2". This axis is not so constrained: the stamp is
+ * right there, so the honest fix is to LABEL the slot fully rather than to hide
+ * it. Two consequences, both strictly better:
+ *
+ *  · the dedupe key becomes the whole clock, so `45` and `45+2` are two labels
+ *    rather than one collision, and no candidate has to be dropped;
+ *  · a stride that lands on a stoppage slot keeps its tick instead of thinning
+ *    the axis unpredictably — with 95-145 slots per team-inning and 12% of them
+ *    in stoppage, skipping could silently drop several of the seven ticks.
+ *
+ * `formatSlot` in `GoalkeepingSection` renders the same full clock through
+ * `formatGoalMinute`, so the axis label and this dedupe agree by construction.
  */
 export function involvementTicks(points: readonly InvolvementPoint[]): number[] {
   if (points.length === 0) {
@@ -680,12 +744,12 @@ export function involvementTicks(points: readonly InvolvementPoint[]): number[] 
 const MAX_INVOLVEMENT_TICKS = 7;
 
 /**
- * Drop any candidate whose MINUTE LABEL has already been emitted, first
+ * Drop any candidate whose CLOCK LABEL has already been emitted, first
  * occurrence winning — except the last index, which always survives so the axis
  * keeps its right anchor.
  */
 function dedupeByMinute(points: readonly InvolvementPoint[], candidates: number[]): number[] {
-  const seen = new Set<number>();
+  const seen = new Set<string>();
   const ticks: number[] = [];
   const lastIndex = points.length - 1;
   for (const index of candidates) {
@@ -693,10 +757,18 @@ function dedupeByMinute(points: readonly InvolvementPoint[], candidates: number[
     if (point === undefined) {
       continue;
     }
-    if (seen.has(point.minute) && index !== lastIndex) {
+    /*
+     * THE WHOLE CLOCK, not the minute (Story 2.19 Task 7.2, ledger A14). Keyed
+     * on the minute alone, a stoppage slot collided with its own regulation
+     * minute — 2,506 of 21,764 real samples do — and the tick that survived was
+     * whichever the stride reached first. `45` and `45+2` are two labels, and
+     * `formatSlot` renders them as two.
+     */
+    const label = `${point.minute}+${point.stoppageMinute ?? ""}`;
+    if (seen.has(label) && index !== lastIndex) {
       continue;
     }
-    seen.add(point.minute);
+    seen.add(label);
     ticks.push(index);
   }
   return ticks;

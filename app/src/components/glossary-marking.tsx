@@ -8,6 +8,7 @@ import {
   glossaryTermEnKey,
   glossaryTermEsKey,
   headingMark,
+  metricMark,
   summaryMark,
   type SectionMark,
 } from "@/lib/glossary";
@@ -29,6 +30,15 @@ import type { SectionId } from "@/lib/tactical-sections";
 export function useGlossaryMarking(): {
   markHeading: (id: SectionId, titleText: string) => ReactNode;
   markSummary: (id: SectionId, summaryText: string | null) => ReactNode | null;
+  /**
+   * A leaderboard board's heading (Story 2.19 Task 7.9, ledger L2347).
+   *
+   * TAKES THE ALREADY-COMPOSED HEADING STRING and returns nodes. The caller must
+   * keep the STRING too — it is the table's `tableName`, the stem of its caption
+   * and the prefix of its sort announcement, and those three are what make the
+   * page's captions distinct. Only the rendered `<h4>`/`<h3>` takes the node.
+   */
+  markMetric: (metricCode: string, headingText: string) => ReactNode;
 } {
   const t = useT();
   const { locale } = useLocale();
@@ -63,6 +73,10 @@ export function useGlossaryMarking(): {
       }
       const entry = summaryMark(id);
       return entry === null ? summaryText : mark(summaryText, entry);
+    },
+    markMetric: (metricCode, headingText) => {
+      const entry = metricMark(metricCode);
+      return entry === null ? headingText : mark(headingText, entry);
     },
   };
 }

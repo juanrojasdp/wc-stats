@@ -8,6 +8,18 @@ import type {
   TeamTacticalIdentity,
 } from "@/lib/contract/contract-types";
 import type { DictionaryKey } from "@/lib/i18n";
+/*
+ * THE FROZEN SHAPE ENUMS ARE IMPORTED, NEVER RE-DECLARED (Story 2.19 Task 7.1).
+ * `/teams/{slug}` and `#pressing` render the SAME contract field, and two
+ * private copies of the panel order is exactly how one surface silently drifts
+ * out of order from the other.
+ */
+import {
+  IN_POSSESSION_SHAPE_PANELS,
+  OUT_OF_POSSESSION_SHAPE_PANELS,
+  inPossessionShapePanelKey,
+  outOfPossessionShapePanelKey,
+} from "@/viz/team-profile-model";
 
 /*
  * Domain C -> the #phases and #pressing surfaces (Story 2.10, Tasks 2 and 4).
@@ -205,6 +217,87 @@ export function phaseRows(identity: TacticalIdentityBlock): PhaseRowSets {
       home: identity.home.phasesOutOfPossession[OUT_OF_POSSESSION_PROPERTY[code]],
       away: identity.away.phasesOutOfPossession[OUT_OF_POSSESSION_PROPERTY[code]],
     })),
+  };
+}
+
+/* ------------------------- Shape by phase (#pressing) ---------------------- */
+
+/**
+ * One shape PANEL for one side: the three metre distances the report prints.
+ *
+ * ═══ WHY THIS EXISTS — ledger A13 / L1979 / L3412, Story 2.19 Task 7.1 ═══
+ *
+ * `#pressing` used to present a "metre" surface. Change-set CS-2 RETIRED that
+ * presentation and reshaped the underlying data into `shapeByPhase` — 2 states
+ * x 3 panels x 3 measures — and the whole `viz.pressing.metre*` locale family
+ * was deleted with it. The DATA never went away: `shapeByPhase` is populated on
+ * 104 of 104 real match bundles. So the section has been rendering a strictly
+ * smaller surface than the report carries, and the ledger filed the debt TWICE.
+ *
+ * THE VOCABULARY IS NOT MINTED HERE. Story 2.16 already coined `team.shape.*`
+ * for the identical values on `/teams/{slug}` (its R1 option A, taken by Juan)
+ * — the panel labels, the three measure names and the metre unit. This surface
+ * REUSES every one of them; 2.19 owns the match-route presentation only.
+ *
+ * ONE ROW PER PANEL PER SIDE, which is the match route's own idiom rather than
+ * the team route's. `/teams/{slug}` renders one team, so it puts the three
+ * measures in columns and the panels in rows. A match has two teams and every
+ * other table in this section carries both, so the side is a COLUMN here and
+ * the row count doubles to six. Nothing is summed or compared across the two —
+ * they are printed side by side, which is all AD-5 permits.
+ */
+export interface ShapePanelRow {
+  key: string;
+  code: string;
+  labelKey: DictionaryKey;
+  /** The side's own code, e.g. "MEX" — resolved by the caller. */
+  teamCode: string;
+  lineHeight: number;
+  teamLength: number;
+  teamWidth: number;
+}
+
+/** Both possession states, each an ordered array in the frozen panel order. */
+export interface ShapeRowSets {
+  inPossession: ShapePanelRow[];
+  outOfPossession: ShapePanelRow[];
+}
+
+/**
+ * `shapeByPhase` for both sides, as two tables (#pressing).
+ *
+ * The panel order and the label keys come from `team-profile-model`, which owns
+ * the frozen enums CS-2 minted; importing them is what stops this surface and
+ * `/teams/{slug}` drifting into two orders for one contract field.
+ */
+export function shapePanelRows(
+  identity: TacticalIdentityBlock,
+  home: { teamCode: string },
+  away: { teamCode: string }
+): ShapeRowSets {
+  const sides = [
+    { side: "home" as const, team: identity.home, code: home.teamCode },
+    { side: "away" as const, team: identity.away, code: away.teamCode },
+  ];
+  return {
+    inPossession: sides.flatMap(({ side, team, code }) =>
+      IN_POSSESSION_SHAPE_PANELS.map((panel) => ({
+        key: `shape-in-${side}-${panel}`,
+        code: panel,
+        labelKey: inPossessionShapePanelKey(panel),
+        teamCode: code,
+        ...team.shapeByPhase.inPossession[panel],
+      }))
+    ),
+    outOfPossession: sides.flatMap(({ side, team, code }) =>
+      OUT_OF_POSSESSION_SHAPE_PANELS.map((panel) => ({
+        key: `shape-out-${side}-${panel}`,
+        code: panel,
+        labelKey: outOfPossessionShapePanelKey(panel),
+        teamCode: code,
+        ...team.shapeByPhase.outOfPossession[panel],
+      }))
+    ),
   };
 }
 

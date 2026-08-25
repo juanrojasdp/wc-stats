@@ -115,7 +115,7 @@ export const SHARED_ROUND_STAGES: readonly SharedRoundStage[] = [
 /*
  * NO `LEADERBOARDS_SLOT_ID` HERE. Task 1.4 asked this story to leave a named
  * anchor for Story 2.13's section, but 2.13 reached `page.tsx` first and
- * renders that anchor itself (`LEADERBOARDS_SECTION_ID`, "lideres"), so the
+ * renders that anchor itself (`LEADERBOARDS_SECTION_ID`, "leaders"), so the
  * slot is discharged BY the real section — see `page.tsx`. A second const for
  * the same id shipped here with zero consumers and a docblock claiming 2.13
  * read it, which is the dead-key defect this story polices in the locale files,

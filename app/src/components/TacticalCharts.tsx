@@ -439,10 +439,10 @@ export function DistributionChart({
 
 export interface InvolvementChartProps {
   /** Index-keyed rows from the model. `index` IS the x domain. */
-  points: { index: number; minute: number; involvements: number }[];
-  /** Tick INDICES, thinned and minute-deduped by the model. */
+  points: { index: number; minute: number; stoppageMinute: number | null; involvements: number }[];
+  /** Tick INDICES, thinned and CLOCK-deduped by the model (2.19 Task 7.2). */
   tickIndices: number[];
-  /** Formats a tick index into its minute label. Locale lives in the section. */
+  /** Formats a tick index into its full clock label. Locale lives in the section. */
   formatSlot: (index: number) => string;
   /** Explicit count-axis ticks and maximum, from the model. */
   countTicks: number[];
@@ -459,12 +459,17 @@ export interface InvolvementChartProps {
 /**
  * One goalkeeper's involvement timeline (ruled decision 7).
  *
- * THE X AXIS IS THE SAMPLE INDEX, NEVER THE MINUTE. `GoalkeeperInvolvementSample`
- * is `{minute: Minute, involvements: Count}` — a bare 0-120 Minute with NO
- * stoppage field — while the corpus draws 95-145 slots per team-inning and puts
- * 2,506 of 21,764 of them in stoppage time. Minutes therefore REPEAT on real
- * data. The minute is a tick LABEL read off the sample, deduped by value with
- * first occurrence winning, and the axis says so in its own title.
+ * THE X AXIS IS THE SAMPLE INDEX, NEVER THE MINUTE. The corpus draws 95-145
+ * slots per team-inning and puts 2,506 of 21,764 of them in stoppage time, so
+ * minutes REPEAT on real data and cannot be a domain.
+ *
+ * WHAT THE LABEL IS HAS CHANGED (Story 2.19 Task 7.2, ledger A14). This
+ * docblock used to say the sample was "a bare 0-120 Minute with NO stoppage
+ * field", which was true when it was written and stopped being true at CS-2:
+ * `GoalkeeperInvolvementSample` now carries `at: MinuteStamp`. So the tick is
+ * labelled with the WHOLE CLOCK — "45+2", not a second "45" — and the model
+ * dedupes on that same clock rather than on the minute. Nothing is skipped and
+ * nothing collides.
  *
  * The fixtures hide all of this: 19 or 25 evenly-spaced, minute-unique samples.
  */

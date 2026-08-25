@@ -774,11 +774,21 @@ export const es = {
       },
       "pass-networks": {
         title: "Red de pases",
-        summary: "Quién conectó con quién y por dónde circuló el balón.",
+        /*
+         * PREFIXED WITH THE TERM at Story 2.19 Task 7.9 (ledger L962, ruled
+         * D18(c)). These five summaries carried no glossary term at all, so five
+         * of the nine collapsible sections marked nothing — a gap Story 2.18
+         * filed rather than closed, because rewriting ruled copy was outside its
+         * authority. D18(c) grants it. The ORIGINAL SENTENCE IS UNTOUCHED and
+         * becomes the clause after the colon; only the term is added in front,
+         * which is also where a reader meets the section.
+         */
+        summary: "La red de pases: quién conectó con quién y por dónde circuló el balón.",
       },
       "offers-to-receive": {
         title: "Ofrecimientos para recibir",
-        summary: "Cuántas veces se pidió el balón y cuántas llegó el pase.",
+        summary:
+          "Los ofrecimientos para recibir: cuántas veces se pidió el balón y cuántas llegó el pase.",
       },
       "movement-to-receive": {
         title: "Desmarques",
@@ -798,15 +808,16 @@ export const es = {
          * This also replaces the "sin balón" prose decision 4 deliberately left
          * alone: natural prose, not the vocabulary token.
          */
-        summary: "Cómo se ofrecieron para recibir, y en cuáles de esos ofrecimientos además se movieron.",
+        summary:
+          "Los desmarques: cómo se ofrecieron para recibir, y en cuáles de esos ofrecimientos además se movieron.",
       },
       "defensive-actions": {
         title: "Acciones defensivas",
-        summary: "Dónde recuperó cada equipo y dónde forzó las pérdidas.",
+        summary: "Las acciones defensivas: dónde recuperó cada equipo y dónde forzó las pérdidas.",
       },
       phases: {
         title: "Fases del juego",
-        summary: "Cómo se repartió el partido entre ataque, transición y defensa.",
+        summary: "Las fases del juego: cómo se repartió el partido entre ataque, transición y defensa.",
       },
       pressing: {
         title: "Presión y bloques defensivos",
@@ -1291,6 +1302,25 @@ export const es = {
       figurePrefix: "Presión y bloques:",
       pressRates: "Intensidad de la presión",
       blocks: "Bloques defensivos",
+      /*
+       * ═══ THE SURFACE CS-2 RETIRED AND STORY 2.19 RE-PRESENTS ═══
+       * Ledger A13 / L1979 / L3412, Task 7.1.
+       *
+       * The `viz.pressing.metre*` family was deleted with the old metre
+       * presentation; `shapeByPhase` replaced the DATA and nothing replaced the
+       * SURFACE. These two captions are the only new copy the re-presentation
+       * needs — the panel labels, the three measure names and the metre unit all
+       * come from `team.shape.*` and `enums.unit.m`, minted by Story 2.16 for
+       * the identical values on `/teams/{slug}`.
+       *
+       * Each states the table's ARTIFACT ORDER, because the default sort is
+       * `null` and UX-DR12 asks the caption to say so; each names its possession
+       * state, because the two tables are otherwise indistinguishable; and the
+       * `${title} — ` prefix the component adds keeps them distinct from the
+       * `/teams/{slug}` pair, which is what the caption inventory pins.
+       */
+      shapeInCaption: "Forma con balón, por panel y equipo, en el orden del informe.",
+      shapeOutCaption: "Forma sin balón, por panel y equipo, en el orden del informe.",
       note: "Son tasas independientes: no suman 100 y no son partes de un total.",
       axisRate: "Porcentaje del tiempo",
       axisPhase: "Fase",
@@ -1457,6 +1487,14 @@ export const es = {
        * gap rather than resolving it, because the ledger's rule is "do not
        * resolve it by making the numbers agree".
        */
+      /*
+       * The separator between two keepers' names on one team block (Story 2.19
+       * Task 7.3, ledger A15). It lived as a `" / "` literal inside
+       * `goalkeeping-model.ts`, which is user-visible copy minted below the
+       * locale layer — AD-7 puts every formatting decision here. Seven of 208
+       * corpus team-innings use two keepers.
+       */
+      nameJoin: " / ",
       summaryCaption: "Total de participaciones que publica el informe.",
       timelineCaption:
         "Intervalos que grafica el informe, en orden. La fuente no garantiza que sumen el total.",

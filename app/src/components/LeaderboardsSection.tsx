@@ -7,6 +7,7 @@ import {
   LeaderboardsRegion,
 } from "@/components/LeaderboardsRegion";
 import { TacticalErrorBoundary } from "@/components/TacticalErrorBoundary";
+import { useGlossaryMarking } from "@/components/glossary-marking";
 import { formatInteger } from "@/lib/format";
 import { playerHref, teamHref } from "@/lib/hub-model";
 import { useLocale, useT } from "@/lib/i18n-provider";
@@ -31,7 +32,8 @@ import {
  * artifacts. Story 2.12 owns `app/src/app/page.tsx` and reached the same
  * conclusion independently ("there is no /leaderboards route in the IA table").
  *
- * `#lideres` IS THE ANCHOR THIS STORY RULES. No Hub anchor is specified
+ * `#leaders` IS THE ANCHOR THIS STORY RULES (it was `#lideres` until Story
+ * 2.19 Task 7.4 — see the const below). No Hub anchor is specified
  * anywhere in the planning artifacts — EXPERIENCE.md's enumerated anchor set is
  * Match-Dashboard-only — while UX-DR18 requires "stable deep-link anchors for
  * every section". If 2.12 lands with a different id, ADOPT ITS: the id is a
@@ -50,8 +52,26 @@ import {
  * collapsible Tactical section.
  */
 
-export const LEADERBOARDS_SECTION_ID = "lideres";
-const HEADING_ID = "lideres-title";
+/*
+ * RENAMED "lideres" -> "leaders" BY STORY 2.19 (Task 7.4, ledger A18/L2236).
+ *
+ * Story 2.18's ruled decision 11 is that SLUGS AND FRAGMENT IDS ARE ENGLISH OR
+ * ROMANIZED, and this was the last Spanish one in the app — every other anchor
+ * on every route already reads `#standings`, `#results`, `#key-stats`,
+ * `#shot-maps`, `#pass-networks`, `#trends`, `#tactical-identity`. A single
+ * Spanish id in that set is not a localisation, it is an inconsistency, and it
+ * would have shipped as a permanent URL.
+ *
+ * It is a URL-SHAPED CHANGE and this is the last story, so it is taken now or
+ * never: no shared link to `#lideres` exists yet, because the site has not been
+ * published (Task 9 does that). Deferring it past launch would have meant
+ * breaking a live anchor or keeping the inconsistency forever.
+ *
+ * The VISIBLE copy is untouched — the heading still reads "Líderes del torneo"
+ * in Spanish and "Tournament leaders" in English. Only the id changes.
+ */
+export const LEADERBOARDS_SECTION_ID = "leaders";
+const HEADING_ID = "leaders-title";
 
 export function LeaderboardsSection({ teasers }: { teasers: readonly LeaderboardTeaser[] }) {
   const t = useT();
@@ -159,6 +179,7 @@ export function LeaderboardsSection({ teasers }: { teasers: readonly Leaderboard
 function BoardTeaser({ teaser }: { teaser: LeaderboardTeaser }) {
   const t = useT();
   const { locale } = useLocale();
+  const { markMetric } = useGlossaryMarking();
 
   const rows = teaser.shown;
   if (rows.length === 0) {
@@ -198,7 +219,17 @@ function BoardTeaser({ teaser }: { teaser: LeaderboardTeaser }) {
 
   return (
     <article className="rounded-md border border-hairline bg-surface-raised p-4">
-      <h4 className="type-stat-label text-ink-secondary">{heading}</h4>
+      {/*
+        THE BOARD'S TERM IS MARKED HERE (Story 2.19 Task 7.9, ledger L2347).
+        The heading STRING is still what the caption and the announcement are
+        built from; only the rendered node carries the glossary trigger, which
+        is why it could not be marked where the ledger first looked — a metric
+        name is also a sortable column head, and a focusable trigger cannot nest
+        inside a `<button aria-expanded>`.
+      */}
+      <h4 className="type-stat-label text-ink-secondary">
+        {markMetric(teaser.metricCode, heading)}
+      </h4>
       <p className="type-caption mt-1 text-ink-secondary">{countLabel}</p>
       <ol className="mt-2 grid grid-cols-1 gap-1">
         {rows.map((row) => (

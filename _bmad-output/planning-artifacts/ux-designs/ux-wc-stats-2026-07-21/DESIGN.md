@@ -239,6 +239,8 @@ Three rules govern everything:
 
 Both accents pass 4.5:1 against their theme's base surface for text-size usage (computed: lime 14.8 dark / 6.6 light; cyan 11.3 dark / 5.0 light). The dark-canonical lime and cyan are also ≥3:1 non-text against the pitch (9.56 / 7.26); the light variants are not — focus indicators on the pitch always use {colors.focus-ring-on-pitch} (rule and ratios: Data-visualization palette → Focus on the pitch).
 
+**Cyan on the overlay surface** — computed **9.20:1 dark** ({colors.accent-cyan} on {colors.surface-overlay}) and **4.68:1 light** ({colors.accent-cyan-light} on {colors.surface-overlay-light}). Both clear the 4.5:1 text floor, so a cyan link, a glossary-term underline or an active-sort head is legible inside a popover, tooltip or sheet in either theme — the surfaces the two rows above did not cover, since they measure against the BASE surface. Note how much thinner the light-theme margin is: 4.68 against a floor of 4.5 leaves 0.18, so any future darkening of {colors.surface-overlay-light} or lightening of {colors.accent-cyan-light} must be re-measured rather than assumed. *(Measured by Story 2.14 and absorbed here by Story 2.19, ledger A21/L2929. The method reproduced this document's own published base-surface figures first — 11.3 dark / 5.0 light — before the new pair was trusted.)*
+
 ### shadcn CSS-variable mapping
 
 Dark (`:root` / `.dark` is canonical) and light map as follows; unlisted variables keep shadcn defaults:

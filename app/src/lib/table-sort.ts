@@ -379,6 +379,13 @@ export function composeSortAnnouncement(input: {
  */
 const TITLE_OPEN = " (";
 const TITLE_CLOSE = ")";
+/**
+ * Separates the full term from a head that ALREADY carries a parenthetical —
+ * see `composeHeadAccessibleName` (ledger L2335, Story 2.19 D18(b)). The same
+ * em-dash the captions use, so the site has one "and now the longer form"
+ * punctuation rather than two.
+ */
+const TERM_SEPARATOR = " — ";
 
 /**
  * A column head's accessible name, carrying the FULL TERM behind an
@@ -413,7 +420,34 @@ export function composeHeadAccessibleName(
   if (headTitle === null || headText.includes(headTitle)) {
     return base;
   }
-  return `${base}${TITLE_OPEN}${headTitle}${TITLE_CLOSE}`;
+  /*
+   * ═══ TWO PARENTHETICALS DO NOT STACK ═══ ledger L2335 / D18(b), Task 7.8.
+   *
+   * Ruling 6 puts the UNIT head-side, so an abbreviated metric head is already
+   * "Vel. máx. (km/h)". Appending the full term in a second bracket produced
+   *
+   *     "Ordenar por Vel. máx. (km/h) (Velocidad máxima)"
+   *
+   * — two parentheticals in a row, read aloud as two asides with nothing
+   * separating them. Both halves are RULED and neither is wrong: UX-DR17 wants
+   * the full term behind every abbreviation, and ruling 6 wants the unit on the
+   * head. Only the COMPOSITION was clumsy, which is why the ledger filed it as
+   * a copy item rather than a defect.
+   *
+   * So: when the head ALREADY ends in a bracket, the full term is appended
+   * after an em-dash instead —
+   *
+   *     "Ordenar por Vel. máx. (km/h) — Velocidad máxima"
+   *
+   * WCAG 2.5.3 Label in Name is untouched in both branches: the visible text is
+   * still the LEADING substring of the accessible name, never substituted. The
+   * unbracketed case ("Pos." -> "(Posición)") is unchanged, because one
+   * parenthetical is the right shape and is what every other head ships.
+   */
+  const separator = headText.includes(TITLE_OPEN.trim()) ? TERM_SEPARATOR : null;
+  return separator === null
+    ? `${base}${TITLE_OPEN}${headTitle}${TITLE_CLOSE}`
+    : `${base}${separator}${headTitle}`;
 }
 
 /**
