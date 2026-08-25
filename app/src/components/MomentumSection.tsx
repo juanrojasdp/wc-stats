@@ -19,6 +19,7 @@ import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import { formatGoalMinute } from "@/lib/match-hero";
 import { clockSortValue, type TableColumn } from "@/lib/table-sort";
+import { useInView } from "@/lib/use-in-view";
 import { MD_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 import {
@@ -111,6 +112,25 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
   const t = useT();
   const { locale } = useLocale();
   const isMd = useMediaQuery(MD_MEDIA_QUERY);
+  /*
+   * THE VIEWPORT GATE (Story 2.19 Task 5.8, D15). `next/dynamic` above already
+   * puts recharts in its own chunk; it does NOT stop this section mounting the
+   * chart in the first client render, because `momentum` is in
+   * ALWAYS_EXPANDED_SECTION_IDS and gets none of UX-DR6's lazy-mount deferral.
+   * Measured on the served export at 412 px: the figure's top edge is at
+   * y=1421 under an 823 px viewport, and the 370 kB recharts chunk was
+   * nevertheless fetched and parsed during arrival.
+   *
+   * The gate is safe HERE specifically because `ChartFallback` is already
+   * pinned to the chart's exact height — the same reason the `loading`
+   * fallback below is sized rather than empty. Nothing moves when the real
+   * chart takes its place, and the #momentum deep link still lands correctly.
+   *
+   * The data-table alternative is NOT gated: it lives in the disclosure below
+   * and is the accessible equivalent UX-DR9/NFR-2 require, so it must not
+   * depend on having scrolled anywhere.
+   */
+  const [chartGateRef, chartInView] = useInView<HTMLDivElement>();
 
   /*
    * Ephemeral component state (AR-10) — not the URL, not Context, not
@@ -363,27 +383,33 @@ export function MomentumSection({ momentum, goals, home, away }: MomentumSection
        * would put a sentence that is not a section name into the page outline.
        */}
       <p className="type-stat-label text-ink-secondary">{subtitle}</p>
-      <MomentumChart
-        rows={rows}
-        peak={peak}
-        markers={markers}
-        home={home}
-        away={away}
-        tickIndices={tickIndices}
-        index={index}
-        onIndexChange={setRawIndex}
-        figureLabel={figureLabel}
-        tickLabels={tickLabels}
-        axisEntriesLabel={t("viz.momentum.axisEntries")}
-        axisMinuteLabel={t("viz.momentum.axisMinute")}
-        formatYTick={formatYTick}
-        cursorLabel={cursorLabel}
-        cursorValueText={cursorValueText}
-        chipClock={chipClock}
-        chipHome={chipHome}
-        chipAway={chipAway}
-        markerNames={markerNames}
-      />
+      <div ref={chartGateRef}>
+        {chartInView ? (
+          <MomentumChart
+            rows={rows}
+            peak={peak}
+            markers={markers}
+            home={home}
+            away={away}
+            tickIndices={tickIndices}
+            index={index}
+            onIndexChange={setRawIndex}
+            figureLabel={figureLabel}
+            tickLabels={tickLabels}
+            axisEntriesLabel={t("viz.momentum.axisEntries")}
+            axisMinuteLabel={t("viz.momentum.axisMinute")}
+            formatYTick={formatYTick}
+            cursorLabel={cursorLabel}
+            cursorValueText={cursorValueText}
+            chipClock={chipClock}
+            chipHome={chipHome}
+            chipAway={chipAway}
+            markerNames={markerNames}
+          />
+        ) : (
+          <ChartFallback />
+        )}
+      </div>
       <ViewDataDisclosure
         panelTitle={title}
         surface="canvas"

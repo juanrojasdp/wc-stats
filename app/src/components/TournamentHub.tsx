@@ -7,6 +7,7 @@ import { EmptyStatePanel } from "@/components/EmptyStatePanel";
 import { HubTable } from "@/components/HubTable";
 import { ResultChip } from "@/components/ResultChip";
 import { RowAnchor } from "@/components/RowAnchor";
+import { ViewDataDisclosure } from "@/components/ViewDataDisclosure";
 import type { Tournament } from "@/lib/contract/contract-types";
 import { formatDate, formatInteger, formatKickoff } from "@/lib/format";
 import {
@@ -109,6 +110,76 @@ const HASH_PREFIX = "#";
  */
 function useIsNarrow(): boolean {
   return !useMediaQuery(MD_MEDIA_QUERY);
+}
+
+/* ------------------------------------------- SM-C2 on this route (D15, 5.7) */
+
+/*
+ * EVERY SECTION TABLE ON THIS ROUTE SITS BEHIND `ViewDataDisclosure`, and the
+ * count of what is behind it sits OUTSIDE (Story 2.19 ruled decision D15).
+ *
+ * WHY, measured rather than assumed. At the real corpus this route rendered
+ * 6,025 DOM nodes, 33 tables and 2,442 cells at 412px with nothing collapsed,
+ * and Lighthouse mobile scored 68 against AC 2's floor of 90 — LCP gated on
+ * `h2#standings` with 1,802 ms of ELEMENT RENDER DELAY, i.e. the browser
+ * building those tables. At the fixture scale Story 2.12 was ruled against, the
+ * same surface was three group tables. SM-C2 is the clause for exactly this:
+ * "density moved behind disclosure, NEVER DELETED".
+ *
+ * NOTHING IS DELETED. Every group, every stage, every row and every column is
+ * still on this route, one click away, in artifact order, with its sort intact.
+ * The headings stay rendered and stay the anchor targets, so the shape of the
+ * tournament — twelve groups, nine rounds, how many teams and matches in each —
+ * is still readable at a glance without opening anything, which the wall of
+ * tables arguably made harder rather than easier.
+ *
+ * REUSED, NOT RE-MINTED. `ViewDataDisclosure` already owns the control, the
+ * lazy mount, the aria-controls-only-while-mounted fix and the disambiguated
+ * accessible name; R1's pass matrix took the identical trade earlier in this
+ * same story. `TacticalSection` was the other candidate and does not fit: it
+ * renders an <h2> section landmark keyed to the `SectionId` union and carries
+ * the focus-nonce contract, none of which is true of an <h3> inside an already
+ * -landmarked Hub surface.
+ */
+
+/**
+ * `n <noun>`, singular-aware — the count that renders OUTSIDE each disclosure so
+ * a reader knows what is behind it before opening. `PassNetworksSection`'s
+ * `countPhrase` idiom, which this story shipped three tasks ago.
+ */
+function useCountPhrase(): (count: number, one: DictionaryKey, many: DictionaryKey) => string {
+  const t = useT();
+  const { locale } = useLocale();
+  return (count, one, many) => `${formatInteger(count, locale)}${SPACE}${t(count === 1 ? one : many)}`;
+}
+
+/**
+ * A nonce that increments for the section the URL fragment currently names, and
+ * is `0` for every other section. Feeds `ViewDataDisclosure.openNonce`.
+ *
+ * UX-DR18's deep links point straight at these sections and `useHashScroll`
+ * below exists because the anchors do not exist in the exported HTML. Putting
+ * the tables behind a disclosure without this would mean a shared
+ * `…/#results-r32` scrolled to a heading over a closed control — the very defect
+ * ledger L1553/L1886 files against the match route. Subscribed to `hashchange`
+ * as well as read once at mount, so in-page anchor navigation opens its target
+ * too.
+ */
+function useAnchorNonce(): (anchorId: string) => number {
+  const [hit, setHit] = useState<{ id: string; nonce: number } | null>(null);
+  useEffect(() => {
+    function readHash() {
+      const id = window.location.hash.replace(HASH_PREFIX, "");
+      if (id === "") {
+        return;
+      }
+      setHit((previous) => ({ id, nonce: (previous?.nonce ?? 0) + 1 }));
+    }
+    readHash();
+    window.addEventListener("hashchange", readHash);
+    return () => window.removeEventListener("hashchange", readHash);
+  }, []);
+  return (anchorId) => (hit !== null && hit.id === anchorId ? hit.nonce : 0);
 }
 
 /* -------------------------------------------------------- standings columns */
@@ -477,6 +548,8 @@ function StandingsSurface({ tournament }: { tournament: Tournament }) {
   const isNarrow = useIsNarrow();
   const columns = useStandingsColumns();
   const sections = standingsSections(tournament);
+  const countPhrase = useCountPhrase();
+  const anchorNonce = useAnchorNonce();
 
   const visibleKeys = visibleColumnKeys(
     STANDINGS_COLUMN_KEYS,
@@ -544,31 +617,69 @@ function StandingsSurface({ tournament }: { tournament: Tournament }) {
              * and this is what keeps the scroll internal.
              */
             <div key={section.key} className="min-w-0">
-              <h3
-                id={section.anchorId}
-                className="mb-tile-gap type-title text-ink-primary"
-              >
+              <h3 id={section.anchorId} className="type-title text-ink-primary">
                 {groupLabel}
               </h3>
-              <HubTable
-                caption={t("hub.standings.caption")}
-                columns={columns}
-                visibleKeys={visibleKeys}
-                rows={section.rows}
-                // Twelve tables share one polite live region, so each is named
-                // with its own group — an unnamed table in a multi-table route
-                // produces an ambiguous announcement.
-                tableName={`${t("hub.standings.tableName")}${separator}${groupLabel}`}
-                emptyHeadline={t("hub.standings.empty.headline")}
-                emptyExplanation={t("hub.standings.empty.explanation")}
-                // The sort menu is the NARROW-LAYOUT sort control, so it tracks
-                // the breakpoint rather than the hidden-column count. See the
-                // ruling in HubTable.
-                showSortMenu={isNarrow}
-                // Sorting an off-screen column from the menu opens the
-                // disclosure, so the reader can see the column they sorted by.
-                onRevealColumns={() => setExpanded(true)}
-              />
+              {/*
+               * SM-C2's count, outside the disclosure (D15). A group with no
+               * rows keeps its table rendered FLAT so its named empty state is
+               * the thing the reader sees — hiding an empty panel behind a
+               * control labelled "Ver los datos" promises data that is not
+               * there.
+               */}
+              {section.rows.length === 0 ? (
+                <div className="mt-tile-gap">
+                  <HubTable
+                    caption={t("hub.standings.caption")}
+                    columns={columns}
+                    visibleKeys={visibleKeys}
+                    rows={section.rows}
+                    tableName={`${t("hub.standings.tableName")}${separator}${groupLabel}`}
+                    emptyHeadline={t("hub.standings.empty.headline")}
+                    emptyExplanation={t("hub.standings.empty.explanation")}
+                    showSortMenu={isNarrow}
+                    onRevealColumns={() => setExpanded(true)}
+                  />
+                </div>
+              ) : (
+                <>
+                  <p className="mt-1 type-caption tabular-nums text-ink-secondary">
+                    {countPhrase(
+                      section.rows.length,
+                      "hub.standings.teamsCountOne",
+                      "hub.standings.teamsCount"
+                    )}
+                  </p>
+                  <div className="mt-tile-gap">
+                    <ViewDataDisclosure
+                      panelTitle={groupLabel}
+                      surface="canvas"
+                      openNonce={anchorNonce(section.anchorId)}
+                    >
+                      <HubTable
+                        caption={t("hub.standings.caption")}
+                        columns={columns}
+                        visibleKeys={visibleKeys}
+                        rows={section.rows}
+                        // Twelve tables share one polite live region, so each is
+                        // named with its own group — an unnamed table in a
+                        // multi-table route produces an ambiguous announcement.
+                        tableName={`${t("hub.standings.tableName")}${separator}${groupLabel}`}
+                        emptyHeadline={t("hub.standings.empty.headline")}
+                        emptyExplanation={t("hub.standings.empty.explanation")}
+                        // The sort menu is the NARROW-LAYOUT sort control, so it
+                        // tracks the breakpoint rather than the hidden-column
+                        // count. See the ruling in HubTable.
+                        showSortMenu={isNarrow}
+                        // Sorting an off-screen column from the menu opens the
+                        // disclosure, so the reader can see the column they
+                        // sorted by.
+                        onRevealColumns={() => setExpanded(true)}
+                      />
+                    </ViewDataDisclosure>
+                  </div>
+                </>
+              )}
             </div>
           );
         })}
@@ -583,6 +694,8 @@ function ResultsSurface({ tournament }: { tournament: Tournament }) {
   const isNarrow = useIsNarrow();
   const columns = useResultColumns();
   const sections = resultsSections(tournament);
+  const countPhrase = useCountPhrase();
+  const anchorNonce = useAnchorNonce();
 
   const visibleKeys = visibleColumnKeys(
     RESULT_COLUMN_KEYS,
@@ -644,23 +757,55 @@ function ResultsSurface({ tournament }: { tournament: Tournament }) {
              * and this is what keeps the scroll internal.
              */
             <div key={section.key} className="min-w-0">
-              <h3
-                id={section.anchorId}
-                className="mb-tile-gap type-title text-ink-primary"
-              >
+              <h3 id={section.anchorId} className="type-title text-ink-primary">
                 {sectionTitle}
               </h3>
-              <HubTable
-                caption={t("hub.results.caption")}
-                columns={columns}
-                visibleKeys={visibleKeys}
-                rows={section.rows}
-                tableName={`${t("hub.results.tableName")}${separator}${sectionTitle}`}
-                emptyHeadline={t("hub.results.empty.headline")}
-                emptyExplanation={t("hub.results.empty.explanation")}
-                showSortMenu={isNarrow}
-                onRevealColumns={() => setExpanded(true)}
-              />
+              {/* See StandingsSurface for the SM-C2 reasoning and the
+                  empty-section carve-out. */}
+              {section.rows.length === 0 ? (
+                <div className="mt-tile-gap">
+                  <HubTable
+                    caption={t("hub.results.caption")}
+                    columns={columns}
+                    visibleKeys={visibleKeys}
+                    rows={section.rows}
+                    tableName={`${t("hub.results.tableName")}${separator}${sectionTitle}`}
+                    emptyHeadline={t("hub.results.empty.headline")}
+                    emptyExplanation={t("hub.results.empty.explanation")}
+                    showSortMenu={isNarrow}
+                    onRevealColumns={() => setExpanded(true)}
+                  />
+                </div>
+              ) : (
+                <>
+                  <p className="mt-1 type-caption tabular-nums text-ink-secondary">
+                    {countPhrase(
+                      section.rows.length,
+                      "hub.results.matchesCountOne",
+                      "hub.results.matchesCount"
+                    )}
+                  </p>
+                  <div className="mt-tile-gap">
+                    <ViewDataDisclosure
+                      panelTitle={sectionTitle}
+                      surface="canvas"
+                      openNonce={anchorNonce(section.anchorId)}
+                    >
+                      <HubTable
+                        caption={t("hub.results.caption")}
+                        columns={columns}
+                        visibleKeys={visibleKeys}
+                        rows={section.rows}
+                        tableName={`${t("hub.results.tableName")}${separator}${sectionTitle}`}
+                        emptyHeadline={t("hub.results.empty.headline")}
+                        emptyExplanation={t("hub.results.empty.explanation")}
+                        showSortMenu={isNarrow}
+                        onRevealColumns={() => setExpanded(true)}
+                      />
+                    </ViewDataDisclosure>
+                  </div>
+                </>
+              )}
             </div>
           );
         })}

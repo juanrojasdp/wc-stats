@@ -422,6 +422,9 @@ export const en: Dictionary = {
       caption: "Sorted by position.",
       tableName: "Standings table",
       rowLink: "View the team",
+      // The SM-C2 count outside each group's disclosure (Story 2.19 D15).
+      teamsCount: "teams",
+      teamsCountOne: "team",
       empty: {
         headline: "No standings for this group.",
         explanation: "The tournament index does not carry this group's table yet.",
@@ -458,6 +461,9 @@ export const en: Dictionary = {
       rowLink: "View the match",
       extraTimeShort: "AET",
       shootoutFull: "Decided on penalties",
+      // The SM-C2 count outside each stage's disclosure (Story 2.19 D15).
+      matchesCount: "matches",
+      matchesCountOne: "match",
       empty: {
         headline: "No results for this stage.",
         explanation: "The tournament index does not carry any match in this stage yet.",

@@ -28,6 +28,7 @@ export function ViewDataDisclosure({
   trailing,
   panelTitle,
   surface = "pitch",
+  openNonce = 0,
 }: {
   children: ReactNode;
   /**
@@ -63,10 +64,46 @@ export function ViewDataDisclosure({
    * (UX-DR21).
    */
   trailing?: ReactNode;
+  /**
+   * Increments when the CALLER wants this region opened; `0`/absent = never.
+   *
+   * Story 2.19's D15 puts the Tournament Hub's 21 section tables behind this
+   * control (SM-C2), and that route ships UX-DR18 deep links straight at those
+   * sections — `.../#standings-group-a`. A disclosure that a shared link cannot
+   * open is exactly the defect ledger L1553/L1886 files against the match route,
+   * and this story is not allowed to MINT a new instance of it while
+   * re-deferring the old one.
+   *
+   * A NONCE and not a `defaultOpen` boolean, on `TacticalSection.focusNonce`'s
+   * established idiom: the hash can only be read in an effect (reading
+   * `window.location` during render is a hydration mismatch), and a nonce lets
+   * a SECOND in-page navigation to the same anchor re-open a region the reader
+   * has since closed. A boolean prop could not, because its value would not
+   * change.
+   */
+  openNonce?: number;
 }) {
   const t = useT();
   const [open, setOpen] = useState(false);
   const regionId = useId();
+
+  /*
+   * ADJUSTED DURING RENDER, not in an effect — React's documented
+   * "adjusting state when a prop changes" pattern
+   * (react.dev/learn/you-might-not-need-an-effect). An effect would re-render
+   * the closed region first and the open one second, which is a visible flash
+   * on the Hub's twenty-one sections; it is also what
+   * `react-hooks/set-state-in-effect` exists to reject, and this file is
+   * compiled under `--max-warnings 0`.
+   */
+  const [seenNonce, setSeenNonce] = useState(0);
+  if (openNonce !== seenNonce) {
+    setSeenNonce(openNonce);
+    if (openNonce > 0) {
+      setOpen(true);
+    }
+  }
+
   const labelKey: DictionaryKey = open ? "viz.hideData" : "viz.viewData";
   // Built into an identifier: t() has no interpolation and aria-label is gated.
   const accessibleName = `${t(labelKey)}${LABEL_SEPARATOR}${panelTitle}`;

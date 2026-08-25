@@ -664,6 +664,15 @@ export const es = {
       // sr-only prefix on the stretched row anchor, so a screen reader's link
       // list reads "Ver el equipo México" and not a bare team name.
       rowLink: "Ver el equipo",
+      /*
+       * The SM-C2 count that renders outside each group's disclosure (Story
+       * 2.19 D15), so a reader knows what is behind the control before opening
+       * it. Singular-aware on `viz.passNetwork.connectionsCount`'s idiom: two
+       * keys, chosen at the call site, because `t()` has no interpolation and
+       * no plural rules.
+       */
+      teamsCount: "equipos",
+      teamsCountOne: "equipo",
       empty: {
         headline: "Sin posiciones para este grupo.",
         explanation: "El índice del torneo todavía no trae la tabla de este grupo.",
@@ -716,6 +725,10 @@ export const es = {
        */
       extraTimeShort: "t. extra",
       shootoutFull: "Definido en penales",
+      // The SM-C2 count outside each stage's disclosure — see
+      // `hub.standings.teamsCount`.
+      matchesCount: "partidos",
+      matchesCountOne: "partido",
       empty: {
         headline: "Sin resultados para esta fase.",
         explanation: "El índice del torneo todavía no trae partidos en esta fase.",

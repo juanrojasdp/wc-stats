@@ -117,6 +117,29 @@ interface FocusRequest {
  * Pure and module-level so it stays trivially testable and so the memo in the
  * component below has something stable to call.
  */
+/**
+ * The one indirection that makes a section's PROP CONSTRUCTION lazy and
+ * contained (ledger L1504, Story 2.19 D15).
+ *
+ * It looks like a no-op and is not. `build(id)` runs during THIS component's
+ * render, which happens (a) only when `TacticalSection` has actually mounted
+ * its children — i.e. only for open sections — and (b) underneath the
+ * per-section `TacticalErrorBoundary`, so a throw while building props is
+ * caught where the section's own render errors already were.
+ *
+ * A `ReactNode` child could not do either: JSX evaluates its children in the
+ * PARENT's render, above the boundary, for every section on every re-render.
+ */
+function SectionContent({
+  id,
+  build,
+}: {
+  id: SectionId;
+  build: (id: SectionId) => ReactNode;
+}) {
+  return <>{build(id)}</>;
+}
+
 function matchRoster(bundle: MatchBundle): { playerId: string; name: string }[] {
   return (["home", "away"] as const).flatMap((side) => {
     const lineup = bundle.metadata.lineups[side];
@@ -452,20 +475,32 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
              * TacticalSection". The whole-layer instance in MatchBundleRegion
              * stays as the outer floor; that call site is untouched.
              *
-             * TWO LIMITS THE READER MUST HAVE, both of which make this weaker
-             * than "one section dies":
+             * FIRST LIMIT, NOW CLOSED (Story 2.19 Task 5.8, ledger L1504,
+             * ruled back INTO scope by D15). `sectionContent(plan.id)` used to
+             * be called RIGHT HERE, in the layer's own render, so a throw
+             * during prop construction — or the `default:` exhaustiveness
+             * throw — happened ABOVE this boundary and only the outer instance
+             * caught it. It is now called inside `<SectionContent>` below,
+             * which renders UNDER the boundary, so prop construction is
+             * contained by the same boundary as the section's own render.
              *
-             * 1. `sectionContent(plan.id)` is evaluated EAGERLY, inside this
-             *    render. A throw during prop construction — or the `default:`
-             *    exhaustiveness throw — happens ABOVE this boundary and is
-             *    caught only by the outer instance. What this contains is a
-             *    throw inside a SECTION COMPONENT's own render.
-             * 2. There is no automatic reset: `state = { failed: false }` with
-             *    no reset path, and `plan.id` is constant, so `key={plan.id}`
-             *    could never force a remount. Keyed on `${id}-${open}` instead,
-             *    so collapsing and re-expanding a crashed section yields a
-             *    fresh instance. `key-stats` and `momentum` NEVER collapse, so
-             *    a crash in either is permanent for the page's life.
+             * The same move is the performance half of L1504, and it is what
+             * D15 actually names. `TacticalSection` lazy-mounts its children
+             * (UX-DR6), but the CHILDREN ELEMENT still had to be built by this
+             * render — so every one of the eleven sections constructed its
+             * full prop set on every re-render of this layer, collapsed or
+             * not, including the pass matrix's roster lookups and every
+             * `.toUpperCase()` in the switch. Handing the boundary a COMPONENT
+             * plus its id defers all of it to the sections that are actually
+             * open.
+             *
+             * SECOND LIMIT, STILL OPEN AND STILL RECORDED: there is no
+             * automatic reset — `state = { failed: false }` with no reset path
+             * — and `plan.id` is constant, so `key={plan.id}` could never force
+             * a remount. Keyed on `${id}-${open}` instead, so collapsing and
+             * re-expanding a crashed section yields a fresh instance.
+             * `key-stats` and `momentum` NEVER collapse, so a crash in either
+             * is still permanent for the page's life.
              */}
             <TacticalErrorBoundary
               key={`${plan.id}-${plan.open}`}
@@ -475,7 +510,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
               {plan.isEmpty ? (
                 <EmptyStatePanel headline={emptyCopy} explanation={emptyExplanation} />
               ) : (
-                sectionContent(plan.id)
+                <SectionContent id={plan.id} build={sectionContent} />
               )}
             </TacticalErrorBoundary>
           </TacticalSection>
