@@ -1773,11 +1773,114 @@ test's name ("passes on the current fixture tree") was wrong before the flip, an
 
 ### File List
 
+82 files across the whole story (`git diff --name-status 7f28e44..HEAD`), grouped by what they
+are. **A** = added, **M** = modified. No file was deleted.
+
+#### App — new (8)
+
+- `app/scripts/assert-no-external-origins.mjs`
+- `app/src/components/TournamentHub.test.tsx`
+- `app/src/lib/assert-no-external-origins.test.ts`
+- `app/src/lib/data-root-agreement.test.ts`
+- `app/src/lib/reflow-guards.test.ts`
+- `app/src/lib/use-in-view.test.tsx`
+- `app/src/lib/use-in-view.ts`
+
+#### App — modified (63)
+
+- `app/package.json`
+- `app/scripts/assert-schema-version.mjs`
+- `app/src/app/matches/static-output.test.ts`
+- `app/src/app/page.tsx`
+- `app/src/app/static-output.test.ts`
+- `app/src/components/AttributionFooter.tsx`
+- `app/src/components/CompareChartsSection.tsx`
+- `app/src/components/CompareRegion.tsx`
+- `app/src/components/CompareRows.tsx`
+- `app/src/components/DataTable.tsx`
+- `app/src/components/DefensiveActionsSection.tsx`
+- `app/src/components/ExpertLayer.tsx`
+- `app/src/components/GoalkeepingSection.tsx`
+- `app/src/components/KeyStatisticsSection.tsx`
+- `app/src/components/LeaderboardsRegion.tsx`
+- `app/src/components/LeaderboardsSection.tsx`
+- `app/src/components/LineupsDisclosure.tsx`
+- `app/src/components/MatchBundleRegion.tsx`
+- `app/src/components/MatchHero.tsx`
+- `app/src/components/MomentumSection.tsx`
+- `app/src/components/MovementToReceiveSection.tsx`
+- `app/src/components/NotFoundContent.tsx`
+- `app/src/components/OffersToReceiveSection.tsx`
+- `app/src/components/PassNetworksSection.tsx`
+- `app/src/components/PhasesSection.tsx`
+- `app/src/components/PitchPanel.tsx`
+- `app/src/components/PlayerProfileRegion.tsx`
+- `app/src/components/PressingSection.tsx`
+- `app/src/components/SetPlaysSection.tsx`
+- `app/src/components/ShotMapsSection.tsx`
+- `app/src/components/SiteHeader.tsx`
+- `app/src/components/StoryStatTiles.tsx`
+- `app/src/components/TacticalCharts.tsx`
+- `app/src/components/TacticalLayer.tsx`
+- `app/src/components/TeamProfileRegion.tsx`
+- `app/src/components/TournamentHub.tsx`
+- `app/src/components/TournamentHubRegion.tsx`
+- `app/src/components/TrendsSection.tsx`
+- `app/src/components/ViewDataDisclosure.tsx`
+- `app/src/components/glossary-marking.tsx`
+- `app/src/lib/assert-schema-version.test.ts`
+- `app/src/lib/build-data.ts`
+- `app/src/lib/data.ts`
+- `app/src/lib/glossary.ts`
+- `app/src/lib/hub-model.ts`
+- `app/src/lib/i18n.test.ts`
+- `app/src/lib/match-hero.test.ts`
+- `app/src/lib/table-sort.ts`
+- `app/src/lib/tactical-sections.test.ts`
+- `app/src/lib/tactical-sections.ts`
+- `app/src/lib/tournament-index.test.ts`
+- `app/src/locales/en.ts`
+- `app/src/locales/es.ts`
+- `app/src/viz/goalkeeping-model.test.ts`
+- `app/src/viz/goalkeeping-model.ts`
+- `app/src/viz/pass-network-model.test.ts`
+- `app/src/viz/pass-network-model.ts`
+- `app/src/viz/phases-model.ts`
+- `app/src/viz/pitch-geometry.test.ts`
+- `app/src/viz/pitch-geometry.ts`
+- `app/src/viz/player-profile-model.test.ts`
+
+#### Pipeline — modified (8, R3's batch)
+
+- `pipeline/extract/__init__.py`
+- `pipeline/ingest/batch.py`
+- `pipeline/orchestrate.py`
+- `pipeline/precompute/emit.py`
+- `pipeline/precompute/index.py`
+- `pipeline/precompute/profiles.py`
+- `pipeline/precompute/swap.py`
+- `pipeline/tests/test_ingest_batch.py`
+
+#### Artifacts and docs (6)
+
+- `_bmad-output/implementation-artifacts/1-19-full-batch-run-batch-report-104-104-acceptance.md`
+- `_bmad-output/implementation-artifacts/2-19-performance-accessibility-hardening-real-data-swap-launch.md`
+- `_bmad-output/implementation-artifacts/deferred-work.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/DESIGN.md`
+- `_bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/EXPERIENCE.md`
+
+> **`data/` is unchanged and that is the point.** The pipeline re-extract at the new
+> `code_version` reproduced all 1,411 emitted artifacts byte for byte, so no data file appears
+> in this list. `app/out/` is gitignored and does not appear either.
+
 ---
 
 ## Change Log
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | **Tasks 5.7-5.9, 6, 7, 8, 10 complete; 9.1-9.3 complete, 9.4-9.6 blocked on credentials.** SM-C2 on the Hub and L1504 taken (D15); the reflow matrix run and R2/D8 landed across SIX owners rather than three; axe driven to **0 violations across 32 cells** from 2 rules / 66 nodes; the four event logs given row headers; the ~25 unnamed tables given announcement identifiers; A13/A14/A15/A18/A29 implemented and A20 verified already-closed; R3's twelve pipeline edits applied with a **byte-identical** re-extract at a new `code_version`; and the ledger closed with a disposition for all 66 blocks. |
+| 2026-08-25 | **D19 ruled by Juan: AC 2's Lighthouse floor — accept and record the gap.** 88 (86-91) and 86 (84-94) against a floor of 90, from 83/68 at the start of the story. The largest single movement in Task 5.9 came from finding that the measurement server had been serving everything UNCOMPRESSED (a harness rewrite wrote literal backspace bytes into its content-negotiation regexes): the same build measured 76/65 against it and 90/85 against a compressing one. |
 | 2026-08-25 | Q2–Q5 ruled by Juan and folded in as D15–D18. Q5 → option 3: SM-C2 on the Hub **and** L1504 pulled back out of Partition C, so both gated routes go for Lighthouse ≥ 90 and bundle/code-split work is in scope. Q2 → take A29. Q3 → accept ES canonical. Q4 → take all three copy items. Tasks 5.7–5.9, 6.16, 7.8–7.9 added; 5.4/5.5 unblocked. |
 | 2026-08-09 | Story context created. Ledger swept: 66 blocks partitioned (32 implement / 6 rulings / 9 re-defer / 7 already-closed). Viewport blocker solved and proven. Real-data census, payload budgets, collation and name-escaping measured at creation. R1–R4 ruled by Juan. Status → ready-for-dev. |
