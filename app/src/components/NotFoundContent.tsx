@@ -16,7 +16,12 @@ export function NotFoundContent() {
     <div className="mx-auto max-w-6xl px-gutter-mobile py-layer-gap md:px-gutter-desktop">
       <h1 className="type-headline text-ink-primary">{t("notFound.message")}</h1>
       <p className="type-body mt-tile-gap">
-        <Link href="/" className="text-accent-cyan hover:underline">
+        {/* Underlined, not hue-only — see AttributionFooter (axe
+            link-in-text-block, WCAG 1.4.1). */}
+        <Link
+          href="/"
+          className="text-accent-cyan underline underline-offset-2 hover:no-underline"
+        >
           {t("notFound.homeLink")}
         </Link>
       </p>

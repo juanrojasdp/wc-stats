@@ -23,10 +23,27 @@ export function AttributionFooter() {
       <div className="mx-auto max-w-6xl px-gutter-mobile py-4 md:px-gutter-desktop">
         <p className="type-caption text-ink-secondary">
           {t("chrome.footer.attribution")}
-          <Link href="/about" className="ml-1 text-accent-cyan hover:underline">
+          {/*
+           * PERSISTENTLY UNDERLINED (Story 2.19 Task 6.8, axe
+           * `link-in-text-block`). These two links sit INSIDE a paragraph of
+           * body text and were distinguished from it by hue alone until hover —
+           * a WCAG 1.4.1 "Use of Color" failure, and axe's only serious finding
+           * on 30 of the 32 route x theme x locale cells (64 nodes).
+           *
+           * `underline underline-offset-2 hover:no-underline` is the shipped
+           * idiom for a link inside running text (LeaderboardsSection's team
+           * links), so the hover affordance is inverted rather than lost.
+           */}
+          <Link
+            href="/about"
+            className="ml-1 text-accent-cyan underline underline-offset-2 hover:no-underline"
+          >
             {t("chrome.footer.aboutLink")}
           </Link>
-          <Link href="/glossary" className="ml-3 text-accent-cyan hover:underline">
+          <Link
+            href="/glossary"
+            className="ml-3 text-accent-cyan underline underline-offset-2 hover:no-underline"
+          >
             {t("chrome.footer.glossaryLink")}
           </Link>
         </p>

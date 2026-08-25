@@ -542,7 +542,19 @@ function PitchFigure({
     });
   }
 
-  const accentVar = side.accent === "a" ? "--viz-team-a" : "--viz-team-b";
+  /*
+   * THE -on-pitch PAIR, not `--viz-team-a/-b` (Story 2.19 Task 6.8; the ruling
+   * itself is Story 2.9 decision 8, already shipped in
+   * `DefensiveActionsSection.tsx:58` — this call site simply missed it).
+   *
+   * MEASURED BY axe: the light theme's `--viz-team-a` is `#4d7c0f`, a dark
+   * olive, and this label sits on the theme-invariant pitch `#0b3d2e`. That is
+   * **2.44:1** against a 4.5:1 requirement at 11px — the only colour-contrast
+   * violation anywhere in the 32-cell sweep, and it appeared exclusively in the
+   * light theme, which is exactly the case globals.css:194 warns about: "on the
+   * pitch, use the -on-pitch pair".
+   */
+  const accentVar = side.accent === "a" ? "--viz-team-a-on-pitch" : "--viz-team-b-on-pitch";
 
   /*
    * Draw order: the cluster's front marker renders last so it sits on top.
