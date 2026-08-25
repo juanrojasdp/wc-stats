@@ -285,10 +285,23 @@ function LeaderboardTables({ boards }: { boards: readonly Leaderboard[] }) {
  * either the board roster or the row cap, both of which are Story 1-17's unruled
  * D3/D5; this story stays indifferent to them, as its Dev Notes require.
  *
- * Three, so the 3-board fixture renders exactly as before and the collapse is a
- * real-data behaviour rather than a change to what the export contains.
+ * ═══ 3 -> 0 AT STORY 2.19 (Task 5.9, SM-C2 under ruled decision D15) ═══
+ *
+ * Three was chosen "so the 3-board fixture renders exactly as before" — which
+ * is a FIXTURE fact, and correcting fixture-shaped decisions at real scale is
+ * this story's whole job. At the real emission those three are the LARGEST
+ * boards by row count and they were the last uncollapsed density on a route
+ * D15 requires to reach Lighthouse >= 90.
+ *
+ * NOTHING IS DELETED, which is the half of SM-C2 that matters. The hero
+ * altitude is untouched: `LeaderboardsSection` still pre-renders the top three
+ * rows of ALL 36 boards into the exported HTML, so a reader arriving at `/`
+ * still sees who leads every board without JavaScript and without opening
+ * anything. What moves behind a control is the FULL table — the 2,965 rows
+ * nobody reads on arrival — and each board's control is named with its own
+ * metric and scope.
  */
-const INITIALLY_OPEN_BOARDS = 3;
+const INITIALLY_OPEN_BOARDS = 0;
 
 /** One board: its heading, its name filter and its full sortable table. */
 function LeaderboardBoard({ board, initiallyOpen }: { board: Leaderboard; initiallyOpen: boolean }) {
