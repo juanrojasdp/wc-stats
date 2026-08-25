@@ -552,6 +552,41 @@ before believing a red gate.
 accents or em dashes.** PS 5.1 mangles them. Use the edit tools. Scripted Python edits must open in
 binary mode or a one-line change commits as a whole-file CRLF rewrite.
 
+**D15 — Q5 RULED by Juan (2026-08-25): OPTION 3. Take SM-C2 on the Tournament Hub AND pull
+L1504 back out of Partition C.** Both gated routes go for Lighthouse >= 90; AC 2 is met, not
+documented-as-partial. Consequences, all of them deliberate:
+- The Hub's 12 group standings and 9 results sections move **behind disclosure, never deleted**
+  (SM-C2). This is a visible change to Story 2.12's ruled arrival state and must be declared in the
+  Dev Agent Record with before/after screenshots at 390 px and 1920 px, both locales.
+- **L1504 returns to Partition A.** It is no longer re-deferred. The Match Dashboard's 1,141 ms of
+  script evaluation against a 461 KiB route (43 KiB unused JS) is the target: eagerly-constructed
+  section content plus the app bundle. Bundle/code-split work is IN SCOPE for this story.
+- **A16's `columns` memoisation (5.5) is now IN**, since the ruling that made it conditional has
+  landed on the side that wants the execution win.
+- Re-measure the way D4 requires: median of 3, mobile, 13.4.1, against the gzip/keep-alive
+  host-realistic server — never `python -m http.server`, never a single run.
+- Task 10.3 now names one fewer Partition C entry; Task 10.1's disposition for L1504 is
+  "implemented here", not "re-deferred".
+*Recorded dissent, for the record only:* the story's own recommendation was option 1 or 2, on the
+grounds that option 3 re-opens an architectural item in the final story. Juan ruled option 3 with
+that argument in front of him. Build it.
+
+**D16 — Q2 RULED by Juan (2026-08-25): TAKE A29.** The mirrored goal furniture at the defending
+end ships in Task 7.6. 2.9 decision 9 ruled it YES and this is the last story, so deferring means
+never. **Re-verify 2.8's shipped pass-network figures after the change** — it visibly alters them,
+and that re-verification is part of 7.6, not optional follow-up.
+
+**D17 — Q3 RULED by Juan (2026-08-25): ACCEPT ES CANONICAL.** `<title>` and OG tags stay Spanish
+after an EN toggle, across all 104 + 1,248 + 48 + Hub routes. Zero work. This is the ruled
+disposition for ledger L147, L2697, L3227 — close all three as ACCEPTED (not re-deferred, not
+WONTFIX-without-reason) in Task 10.1, recording that a static export has one canonical document
+language and the UI toggle does not change it.
+
+**D18 — Q4 RULED by Juan (2026-08-25): TAKE ALL THREE COPY ITEMS.** (a) the ~25 per-table
+announcement identifiers (L1246); (b) the two-stacked-parentheticals head composition (L2335);
+(c) glossary marks on the five Tactical summaries and the leaderboards surface (L962, L2347).
+All three are cheap; (a) belongs with Task 6's a11y work, (b) and (c) with Task 7.
+
 ---
 
 ## Tasks / Subtasks
@@ -590,9 +625,17 @@ binary mode or a one-line change commits as a whole-file CRLF rewrite.
 - [x] 5.1 Re-verify and record the payload table (already measured — reproduce it).
 - [x] 5.2 Lighthouse mobile on **Match Dashboard** and **Tournament Hub** against the served production export. ≥90. Record all five category scores and the Lighthouse version. — **measured; gate NOT met, see the record and Q5**
 - [x] 5.3 Lighthouse on `/compare` (A31); file the AD-4 route-payload amendment or record the documented gap.
-- [~] 5.4 If tuning is needed: **disclosure, never deletion** (SM-C2). Declare any change. — **CLS fix landed; the disclosure restructuring is Q5, open for Juan**
-- [~] 5.5 A16: memoise the `columns` construction; A19: memoise the profile reads. — **A19 done; A16 pending**
+- [~] 5.4 If tuning is needed: **disclosure, never deletion** (SM-C2). Declare any change. — **CLS fix landed; the Hub disclosure restructuring is now RULED IN by D15 — see 5.7**
+- [~] 5.5 A16: memoise the `columns` construction; A19: memoise the profile reads. — **A19 done; A16 is now IN per D15**
 - [x] 5.6 A30: rule the header-search payload question with the measured 39,137 B (see Open questions Q1).
+- [ ] 5.7 **D15 / SM-C2 on the Tournament Hub**: move the 12 group standings and the 9 results
+  sections behind disclosure (never deleted). Declare the change with before/after at 390 px and
+  1920 px, both locales, against Story 2.12's ruled arrival state. Re-measure per D4.
+- [ ] 5.8 **D15 / L1504 — back in scope.** Match Dashboard: 1,141 ms script evaluation, 461 KiB
+  route, 43 KiB unused JS. Attack the eagerly-constructed section content and the app bundle
+  (code-split). Target >= 90 on both gated routes. Record what moved and by how much.
+- [ ] 5.9 Final Lighthouse table for all five routes, median of 3, mobile, 13.4.1, host-realistic
+  server. AC 2 is met or the gap is re-ruled — do not silently accept a miss after D15.
 
 ### Task 6 — AC 3: the accessibility floor
 - [ ] 6.1 **Reflow matrix**: 320 / 390 / 195 CSS px × {dark, light} × {es, en} × 8 routes. Report the table and the offending selectors.
@@ -610,6 +653,7 @@ binary mode or a one-line change commits as a whole-file CRLF rewrite.
 - [ ] 6.13 Spanish screen-reader spot-check resolving the `lang="en"` span decisions.
 - [ ] 6.14 A3: origin-grep script wired into the build chain; zero external requests.
 - [ ] 6.15 A27: record the Hub sticky-header premise check at real row counts.
+- [ ] 6.16 **D18(a)**: the ~25 per-table announcement identifiers (L1246).
 
 ### Task 7 — The remaining App-side ledger items
 - [ ] 7.1 A13: re-present `shapeByPhase` on `#pressing` using 2.16's `team.shape.*` vocabulary.
@@ -617,8 +661,11 @@ binary mode or a one-line change commits as a whole-file CRLF rewrite.
 - [ ] 7.3 A15: honest per-team key (`teamId`); move the `" / "` composition into the locale layer.
 - [ ] 7.4 A18: rename `#lideres` → English slug; update every link.
 - [ ] 7.5 A20: centre the `InvolvementChart` hatch at `HATCH_TILE_PX / 2`.
-- [ ] 7.6 A29: mirror the goal furniture at the defending end (**re-verify 2.8's pass-network figures afterwards**). See Open questions Q2 before starting.
+- [ ] 7.6 A29: mirror the goal furniture at the defending end (**re-verify 2.8's pass-network figures afterwards**). **RULED IN by D16** — the re-verification is part of this subtask, not follow-up.
 - [ ] 7.7 A21: DESIGN.md absorbs 9.20 / 4.68. A22: reconcile EXPERIENCE.md's full-width/full-screen rows to one wording.
+- [ ] 7.8 **D18(b)**: the two-stacked-parentheticals head composition (L2335).
+- [ ] 7.9 **D18(c)**: glossary marks on the five Tactical summaries and the leaderboards surface
+  (L962, L2347).
 
 ### Task 8 — R3: the pipeline batch
 - [ ] 8.1 Apply all twelve edits (`./pipeline/venv/Scripts/python.exe`; chunk everything).
@@ -639,7 +686,9 @@ binary mode or a one-line change commits as a whole-file CRLF rewrite.
 ### Task 10 — AC 5: close the ledger, and close the project
 - [ ] 10.1 Walk all 66 blocks. Give each a disposition (D11).
 - [ ] 10.2 Append the Partition D corrections — **especially the defensive-actions density figure**, now carried forward three times against emitted data that does not support it.
-- [ ] 10.3 Name a successor and a reason for every Partition C entry.
+- [ ] 10.3 Name a successor and a reason for every Partition C entry. **L1504 is no longer among
+  them (D15) — its disposition is "implemented here".** L147 / L2697 / L3227 close as ACCEPTED
+  per D17, not as re-deferrals.
 - [ ] 10.4 Record the answers to whatever remains in *Open questions for Juan*.
 - [ ] 10.5 Update `sprint-status.yaml`; `2-19` → `review`. Note `epic-2-retrospective: optional`.
 - [ ] 10.6 Commit your own slices as you go (D13). Commit directly to `main` — no branches, no PRs.
@@ -688,16 +737,17 @@ on load. Is that right on a match route, or does the `entities` slice (29,758 B 
 corpus earn a contract change? Ledger L2890. *(Recommendation: accept — it is 8% of the route budget
 and only on engagement.)*
 
-**Q2 — A29, the mirrored goal furniture.** Ruled YES by 2.9 decision 9, implementation routed to
+**Q2 — RULED 2026-08-25: TAKE IT (see D16).** **A29, the mirrored goal furniture.** Ruled YES by 2.9 decision 9, implementation routed to
 "…or 2.19". It is the last story, so re-deferring means never. But it is viz work in a hardening
 story and it visibly changes 2.8's shipped pass-network figures. Take it, or close the ruling as
 WONTFIX with the reason recorded?
 
-**Q3 — `<title>`/OG stay Spanish after an EN toggle.** Filed three times, owner "Juan", never ruled;
+**Q3 — RULED 2026-08-25: ACCEPT ES CANONICAL (see D17).** **`<title>`/OG stay Spanish after an EN toggle.** Filed three times, owner "Juan", never ruled;
 2.12 took it de facto for `/`. **NFR-4 forces the question here**, at 104 + 1,248 + 48 + Hub routes.
 Options: accept ES canonical for a static export (zero work), or sync `document.title` client-side.
 Ledger L147, L2697, L3227.
 
+**Q5 — RULED 2026-08-25: OPTION 3 (see D15). Left below as the evidence the ruling was taken on.**
 **Q5 — AC 2's Lighthouse floor is not reachable on either gated route by the lever SM-C2 authorises.
 This is the one thing in the story that needs a ruling rather than more work.** *(raised 2026-08-10
 during implementation; Q1 is now RULED — see the Task 5 record.)*
@@ -732,7 +782,7 @@ and render time. The two routes fail for *different* reasons and only one of the
 **Recommendation: option 1 for the Hub's sake of shipping, or option 2 if the Hub's arrival state is
 worth changing.** Option 3 is not proportionate in the last story.
 
-**Q4 — Copy rulings, all cheap, all optional.** (a) ~25 per-table announcement identifiers (L1246);
+**Q4 — RULED 2026-08-25: TAKE ALL THREE (see D18).** **Copy rulings, all cheap, all optional.** (a) ~25 per-table announcement identifiers (L1246);
 (b) the two-stacked-parentheticals head composition (L2335); (c) glossary marks on the five Tactical
 summaries and the leaderboards surface (L962, L2347). Take any, all, or none — say which.
 
@@ -1199,4 +1249,5 @@ test's name ("passes on the current fixture tree") was wrong before the flip, an
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | Q2–Q5 ruled by Juan and folded in as D15–D18. Q5 → option 3: SM-C2 on the Hub **and** L1504 pulled back out of Partition C, so both gated routes go for Lighthouse ≥ 90 and bundle/code-split work is in scope. Q2 → take A29. Q3 → accept ES canonical. Q4 → take all three copy items. Tasks 5.7–5.9, 6.16, 7.8–7.9 added; 5.4/5.5 unblocked. |
 | 2026-08-09 | Story context created. Ledger swept: 66 blocks partitioned (32 implement / 6 rulings / 9 re-defer / 7 already-closed). Viewport blocker solved and proven. Real-data census, payload budgets, collation and name-escaping measured at creation. R1–R4 ruled by Juan. Status → ready-for-dev. |
