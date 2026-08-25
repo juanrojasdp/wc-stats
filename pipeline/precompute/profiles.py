@@ -69,7 +69,7 @@ from pipeline.precompute.errors import (
 )
 from pipeline.precompute.serialize import decimals_map, round_to_precision
 from pipeline.precompute.slug_registry import PINS, TEAM_CODES
-from pipeline.precompute.swap import swap_directory
+from pipeline.precompute.swap import clear, clear_quietly, staged_sibling, swap_directory
 from pipeline.validate.errors import SchemaValidationError
 from pipeline.validate.schema import schema_version, validate_artifact
 
@@ -1299,14 +1299,22 @@ def emit_profiles(data_dir: "str | Path" = DEFAULT_DATA_DIR,
     # baseline. The module docstring's "All 1,296 or none" is only true with both stagings
     # complete before either swap.
     kinds = ("team-profiles", "player-profiles")
-    staged_dirs = {kind: index_dir / f"{kind}.staged" for kind in kinds}
+    # ═══ THE SUFFIX COMES FROM `swap.py` (1.19 review patch P18, applied by 2.19 R3) ═══
+    #
+    # This read `index_dir / f"{kind}.staged"` — a SECOND hard-coded copy of the literal
+    # `STAGED_SUFFIX` names once — so changing that constant would silently desynchronise
+    # this path from the `.gitignore` pattern that keeps its leftovers out of a sweeping
+    # `git add`. The 1.19 note claimed the lift happened "rather than grow a second
+    # mechanism"; it had reached `_swap_directory` only.
+    staged_dirs = {kind: staged_sibling(index_dir / kind) for kind in kinds}
     swapped: "list[str]" = []
     backups: "dict[str, Path]" = {}
     try:
         for kind in kinds:
             staged = staged_dirs[kind]
-            if staged.exists():
-                shutil.rmtree(staged)
+            # `clear`, not `shutil.rmtree` (P15's reasoning): a killed run can leave the
+            # staging sibling as a FILE, on which `rmtree` raises `NotADirectoryError`.
+            clear(staged)
             staged.mkdir(parents=True, exist_ok=True)
             for k, identifier, text in built:
                 if k != kind:
@@ -1324,11 +1332,17 @@ def emit_profiles(data_dir: "str | Path" = DEFAULT_DATA_DIR,
     except BaseException:
         # Roll the completed swaps back, so a failure in the second one cannot leave the
         # first namespace installed against a corpus the other half never saw.
+        # EVERY STEP GUARDED (1.19 review patch P11): a failure mid-undo used to discard
+        # the original error — the reader would be told about the rollback instead of about
+        # the write that failed — and leave the tree half-swapped either way.
         for kind in reversed(swapped):
             backup = backups.get(kind)
             if backup is not None and backup.exists():
                 shutil.rmtree(index_dir / kind, ignore_errors=True)
-                backup.rename(index_dir / kind)
+                try:
+                    backup.rename(index_dir / kind)
+                except OSError:
+                    pass
         raise
     finally:
         # **Never leave a partial `.staged` or retired namespace inside the committed tree.**
@@ -1339,9 +1353,9 @@ def emit_profiles(data_dir: "str | Path" = DEFAULT_DATA_DIR,
         # a failure to remove a scratch directory must not turn a successful emission into a
         # failed one.
         for staged in staged_dirs.values():
-            shutil.rmtree(staged, ignore_errors=True)
+            clear_quietly(staged)
         for backup in backups.values():
-            shutil.rmtree(backup, ignore_errors=True)
+            clear_quietly(backup)
 
     written: "list[Path]" = []
     for kind in kinds:

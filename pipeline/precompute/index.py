@@ -52,7 +52,7 @@ from pipeline.precompute.errors import (
 )
 from pipeline.precompute.identity import check_committed_data
 from pipeline.precompute.slug_registry import PINS
-from pipeline.precompute.swap import clear, staged_sibling, swap_files
+from pipeline.precompute.swap import clear, clear_quietly, staged_sibling, swap_files
 from pipeline.precompute.serialize import (
     _declared_places,
     decimals_map,
@@ -1407,7 +1407,17 @@ def emit_index(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
     # **A FILE swap, not a directory swap, and the distinction is load-bearing.**
     # `data/index/` also holds `team-profiles/` and `player-profiles/` — 1,296 artifacts
     # this run never built. Swapping the directory wholesale would destroy them.
+    #
+    # THE STAGING SIBLINGS ARE CLEARED FIRST (1.19 review patch P16, applied by 2.19 R3).
+    # `emit_bundles` calls `clear(staged_dir)` before it writes; this path did not, so the
+    # rule `swap.py`'s own docstring states — "a leftover staged directory from a killed run
+    # must never be written into" — was enforced on one path only. `write_canonical` writes
+    # through a `<name>.<pid>.tmp` and renames, so a leftover would in practice be
+    # overwritten rather than merged; clearing first makes that a guarantee instead of a
+    # property of the writer, and matches the bundle path exactly.
     staged: "list[tuple[Path, Path]]" = []
+    for target in targets:
+        clear(staged_sibling(target))
     try:
         for target, text in zip(targets, (tournament_text, leaderboards_text)):
             # `json.loads(text)` round-trips deliberately: the bytes measured above and the
@@ -1416,8 +1426,11 @@ def emit_index(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
             staged.append((write_canonical(json.loads(text), staged_sibling(target)), target))
         written = swap_files(staged)
     except BaseException:
+        # QUIET (1.19 review patch P11): an unguarded `clear` here can throw and REPLACE the
+        # exception it is cleaning up after, so the reader is told about a staging file
+        # instead of about the write that failed.
         for staged_path, _target in staged:
-            clear(staged_path)
+            clear_quietly(staged_path)
         raise
 
     # Sweep stale artifacts this run did not produce, AFTER a successful write and never

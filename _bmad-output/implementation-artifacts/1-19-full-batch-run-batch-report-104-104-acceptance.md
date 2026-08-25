@@ -1353,6 +1353,90 @@ Paths are relative to the repo root.
   was not edited.
 - **Everything under `app/` and `contract/`.**
 
+---
+
+## ⚠️ SUPERSEDED FINGERPRINT — Story 2.19 R3, 2026-08-25
+
+**`code_version ad4735a216e2` is no longer current. The current fingerprint is
+`1d3a32f1ec55` (`1d3a32f1ec552b6198a8b4f54b6eb6b6d3d474400472e764ba614dd7bf625ae4`).**
+
+This block is appended rather than edited into the run records above, because those records are a
+faithful account of the run that actually happened on 2026-08-07 and rewriting them would falsify
+history. Everything above stands as the record of ITS run; what follows is the record of the run
+that replaces it as current.
+
+**Why the fingerprint moved.** Story 2.19's ruled decision R3 took all twelve deferred items from
+this story's code review as ONE batch — the ten costly patches P10–P19 plus Decision 3
+(`MANIFEST_VERSION` → 2, keeping the `.get`) and Decision 4 (drop the near-miss `+`). Decision 1
+ruled (b) at the time — free patches only — precisely so that a re-extract would be spent once, by
+the successor, on all of them together. That is what happened.
+
+**The re-render Decision 4 required.** This story's Dev Agent Record quotes the batch summary
+verbatim with the `+` form, and Decision 4 warned that the block "must be re-rendered in the same
+change or it stops matching the code". Here it is, from Story 2.19's authoritative run — identical
+to the block above except for the `code version` line, the `Reports by status` block (a cold run,
+because the fingerprint moved) and the four near-miss lines, which have lost the `+`:
+
+```
+Batch ingestion
+===============
+corpus          : pmsr-corpus
+reports found   : 104 (expected 104)
+code version    : 1d3a32f1ec55
+
+Reports by status
+  extracted          104
+  failed             0
+  skipped-unchanged  0
+
+Self-validation failures (record written; run fails)
+  PMSR-M19-ARG-V-ALG
+      [defensive-actions-marker-count] away forced-turnover: 39 markers, page prints 40
+  PMSR-M58-TUN-V-NED
+      [defensive-actions-marker-count] away forced-turnover: 33 markers, page prints 34
+
+Near-miss parses (bounded checks that PASSED with a non-zero delta; not failures)
+  goalkeeping-involvement-bound: 95/104 report(s) with a non-zero delta (max 5)
+  pass-network-row-bound: 104/104 report(s) with a non-zero delta (max 15)
+  pass-network-total-bound: 104/104 report(s) with a non-zero delta (max 35)
+  goalkeeping-distribution-printed: 20/104 report(s) with a non-zero delta (max 2)
+
+RUN RESULT: FAIL (0 failed report(s), 2 self-validation-failed report(s), 0 corpus gap(s), 0 orphan record(s))
+```
+
+The seven non-fatal warning lines are unchanged and are not repeated here.
+
+**The two adjudicated deviations are the same two reports, with the same two numbers.** The
+tripwire is clean: exactly two, no third.
+
+**AND THE NEAR-MISS COUNTS WERE ALREADY HONEST IN PRODUCTION — the P12 defect was in the TEST.**
+Worth stating plainly, because it is easy to read P12 as "the summary was lying". It was not:
+`_mirror_self_validation` filters zero deltas before they reach the manifest, so the shipped
+production figures (`95/104`, `20/104`) were correct both before and after the fix. What was wrong
+was the shipped aggregate TEST, which built entries carrying 17 and 84 zero deltas and asserted
+`104/104` for both — a false expectation that would have gone green over a renderer that had lost
+the filter. The renderer now applies the same predicate as the mirror, and the test asserts the
+true counts, derived rather than restated.
+
+### Byte identity, re-proven at the new fingerprint (Story 2.19 Task 8.4 / 8.5)
+
+The proof this story recorded is reproduced, and STRENGTHENED: it now spans a `code_version` change
+rather than holding within one.
+
+| assertion | result |
+|---|---|
+| the twelve edits reproduce the committed `/data` **byte for byte** | **1,411 of 1,411 artifacts identical**, SHA-256 compared file by file across the fingerprint change; `git status --short data/` empty |
+| a SECOND run is a no-op (this story's own Task 9 shape) | `extracted 0 / failed 0 / skipped-unchanged 104` |
+| all five phases run | `precompute.run`, `emit`, `profiles`, `index` all `PASS`; `ingest.batch` exits 1 on the two adjudicated reports, as designed |
+| `PIPELINE RESULT` | `FAIL (5 of 5 phase(s) run)`, exit 1 — the ruled-clean outcome, not a regression |
+| pipeline suite | **1,782 passed, 4 skipped, 0 failed** across all 49 test files, run in nine chunks |
+
+**That the artifacts are byte-identical is the point, and it is what makes the batch safe.** Ten of
+the twelve edits are exit-code honesty, cleanup guarding and docstring debt; the two that change
+rendered output (`MANIFEST_VERSION` and the `+`) touch the manifest and the summary, never an
+artifact. If any emitted byte had moved, that would have been a finding rather than a shrug — it
+did not.
+
 ## Change Log
 
 | Date | Change |
@@ -1367,3 +1451,4 @@ Paths are relative to the repo root.
 | 2026-08-07 | Tasks 8, 10–12: SM-1 acceptance record with both residuals documented individually and SM-C1 affirmed; ledger triage appended (three `format_summary` filings, both `emit_bundles` filings, both `data/index` filings, the phase-ordering entry, the batch-scale gap and the staleness note closed; two entries measured and left open; R4's correction and the suite-runtime re-deferral appended); `pipeline/README.md` updated; status → review. |
 | 2026-08-09 | Code review closed; status review → done. Four decisions ruled by Juan. Decision 1 ruled **(b)** — free patches only — so P1–P9 are applied and P10–P19 are filed to the ledger as ONE batch: every one of them touches `pipeline/**/*.py` outside `tests/`, which moves `code_version()` off the recorded `ad4735a216e2` and invalidates the byte-identity proof above until a fresh full run. Decisions 3 (`MANIFEST_VERSION` → 2, keep the `.get`) and 4 (drop the near-miss `+`) are ruled but deliberately **unapplied** for that reason, recorded so the successor applies them without re-deriving them; decision 4 carries the warning that §Dev Agent Record quotes the `+` form verbatim and must be re-rendered in the same change. Decision 2 leaves the consumability bound a test, not a runtime constant, which would be the allowlist mechanism the 1.12 ruling rejected. |
 | 2026-08-09 | Verification behind the flip: the four review-touched test files run **178 passed, 0 failed, 0 skipped** (18m42s) against the real tree. The zero skips is the load-bearing figure — both patches added here are tests behind skip guards, and the first exists precisely because *"a skip is exactly how a missing input comes to read as a pass."* The remaining 44 pipeline test files were not re-run; this story's slice does not touch them. Task 3.1's missing link-rate figure is now measured rather than assumed: **2,571 / 2,571 = 100.00%**, zero failing team-innings of 208. |
+| 2026-08-25 | **Story 2.19 R3 applied all twelve deferred items as one batch.** `code_version ad4735a216e2` -> `1d3a32f1ec55`; every figure above that quotes the old fingerprint is superseded by the block appended before this log, not edited. The emitted `/data` is byte-identical across the change (1,411 of 1,411), a second run skips all 104, and the pipeline suite is 1,782 passed / 4 skipped / 0 failed across all 49 files. |

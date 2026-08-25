@@ -61,7 +61,7 @@ from pipeline.precompute.errors import (
     UnmappedFieldError,
 )
 from pipeline.precompute.serialize import decimals_map, round_to_precision
-from pipeline.precompute.swap import clear, staged_sibling, swap_directory
+from pipeline.precompute.swap import clear, clear_quietly, staged_sibling, swap_directory
 from pipeline.validate.errors import SchemaValidationError
 from pipeline.validate.schema import (
     load_schemas,
@@ -1684,10 +1684,21 @@ def emit_bundles(spine_dir: "str | Path" = DEFAULT_SPINE_DIR,
     except BaseException:
         # Nothing was installed, so the committed namespace is untouched — which is what
         # makes the caller's exit 2 honest rather than merely re-labelled.
-        clear(staged_dir)
+        #
+        # QUIET (1.19 review patch P11, applied by 2.19 R3): an unguarded `clear` here can
+        # throw and REPLACE the exception it is cleaning up after, so the reader is told
+        # about a staging directory instead of about the bundle that failed to write.
+        clear_quietly(staged_dir)
         raise
+    # QUIET, AND THIS IS THE ONE THAT TOUCHED A SHIPPED GUARANTEE (1.19 review patch P10,
+    # found independently by all three review layers). The swap has landed: `data/matches/`
+    # has been completely and correctly replaced. An `OSError` removing the retired backup
+    # — a Windows lock, an AV handle, a read-only file — used to propagate into `main`'s
+    # `except (OSError, AssertionError): return 2` and print "emission could not run" over
+    # a tree that HAD been emitted. 1.18 shipped the rule in `profiles.py`: "a failure to
+    # remove a scratch directory must not turn a successful emission into a failed one."
     if backup is not None:
-        clear(backup)
+        clear_quietly(backup)
     return [out_dir / f"{match_id}.json" for match_id, _text in built]
 
 

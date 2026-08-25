@@ -48,6 +48,22 @@ def bounded_check(check_id: str, passed: bool, specifics: str, max_delta: "int |
     (`linking.py` and `defensive_actions.py` both add their own), and keying off the
     presence of `max_delta` is what lets `format_summary` aggregate near misses without
     hard-coding a registry of check ids it would then have to be kept in step with.
+
+    ═══ ONE BOUNDED CHECK DELIBERATELY DOES NOT USE THIS ═══ Story 1.19 review patch P18,
+    written here by Story 2.19 R3. `pass-network-top5-pct` calls plain `check_entry`, so it
+    never reaches the near-miss block, and the reason belongs where the reader of THIS
+    function is — the presence-keyed design above depends on that reader — rather than in
+    a commit message, which is where it had been living.
+
+    The rationale RECORDED at 1.19 was that a `top5-pct` line "would produce a `104/104`
+    line carrying no information". **That reason does not survive contact with the shipped
+    output** and is corrected here rather than repeated: two other bounded checks DO render
+    `104/104` and are useful, because their delta is a count of passes and its magnitude
+    means something. `top5-pct`'s delta is a difference between two percentages that the
+    source rounds independently, so it is non-zero on essentially every report by
+    construction, and its magnitude is a rounding artefact rather than a measure of how far
+    the parse sits from the print. Aggregating it would put a permanent, meaningless line at
+    the top of a block whose whole value is that a line in it is worth reading.
     """
     return {**check_entry(check_id, passed, specifics), "max_delta": max_delta}
 

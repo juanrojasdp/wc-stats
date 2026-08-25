@@ -62,6 +62,40 @@ def clear(path: "str | Path") -> None:
         path.unlink(missing_ok=True)
 
 
+def clear_quietly(path: "str | Path") -> None:
+    """`clear`, but a failure to remove is swallowed.
+
+    ═══ WHY THIS EXISTS — 1.19 review patches P10 and P11, applied by 2.19 R3 ═══
+
+    Cleanup runs in two places where an exception is the wrong outcome, and the pipeline
+    had a defect at BOTH:
+
+    · AFTER A SUCCESSFUL SWAP. The namespace has already been completely and correctly
+      replaced; an `OSError` removing a retired backup (a Windows lock, an AV handle, a
+      read-only file) propagated into `emit.main`'s `except (OSError, AssertionError):
+      return 2` and printed "emission could not run" over a tree that HAD been emitted.
+      That is exactly the failure mode Task 6.4 names, on the success path.
+
+    · INSIDE A FAILURE HANDLER. An unguarded removal before `raise` can throw and REPLACE
+      the exception it is cleaning up after — the real diagnostic (the `OSError` on bundle
+      57) is lost and the reader is told about a temp directory instead.
+
+    1.18 already shipped the answer and its reasoning: `profiles.py` clears scratch in a
+    `finally` with `ignore_errors=True` because "a failure to remove a scratch directory
+    must not turn a successful emission into a failed one". This is that rule, named once,
+    for every caller.
+
+    THE LEFTOVER IS NOT SILENT. Everything this module creates is covered by `.gitignore`'s
+    named block, so an undeleted staging or rollback sibling cannot be committed by a
+    sweeping `git add`; and the next run's `clear()` — which is NOT quiet — will fail loudly
+    if it still cannot remove it, at the point where removing it actually matters.
+    """
+    try:
+        clear(path)
+    except OSError:
+        pass
+
+
 def swap_directory(staged: Path, target: Path) -> "Path | None":
     """Replace `target` with `staged`, RETAINING the retired copy for the caller.
 
@@ -74,8 +108,12 @@ def swap_directory(staged: Path, target: Path) -> "Path | None":
     owns the cleanup once every swap has landed.
     """
     backup = rollback_sibling(target)
-    if backup.exists():
-        shutil.rmtree(backup)
+    # `clear`, not `shutil.rmtree` (1.19 review patch P15). A killed run can leave the
+    # backup in the OTHER shape — `rmtree` raises `NotADirectoryError` on a file and
+    # `unlink` raises on a directory — and the swap would die before it started. This
+    # module defines `clear` for exactly that ("whether it is a file, a directory or
+    # absent") and `emit_bundles` already uses it two frames up.
+    clear(backup)
     target.parent.mkdir(parents=True, exist_ok=True)
     retired = False
     if target.exists():
@@ -84,8 +122,16 @@ def swap_directory(staged: Path, target: Path) -> "Path | None":
     try:
         staged.rename(target)
     except BaseException:
+        # THE RESTORE IS GUARDED (1.19 review patch P11). This is the sharpest case in the
+        # module: if `backup.rename(target)` itself fails, `target` is ABSENT and the
+        # exception the caller sees is the rollback's, not the cause. Suppressing the
+        # rollback's own failure keeps the original diagnostic — the tree is equally
+        # half-swapped either way, and the reader needs to know WHY.
         if retired:
-            backup.rename(target)
+            try:
+                backup.rename(target)
+            except OSError:
+                pass
         raise
     return backup if retired else None
 
@@ -106,7 +152,8 @@ def swap_files(installs: "list[tuple[Path, Path]]") -> "list[Path]":
     try:
         for staged, target in installs:
             backup = rollback_sibling(target)
-            backup.unlink(missing_ok=True)
+            # `clear`, not `unlink` — see `swap_directory` (1.19 review patch P15).
+            clear(backup)
             target.parent.mkdir(parents=True, exist_ok=True)
             if target.exists():
                 target.replace(backup)
@@ -117,12 +164,24 @@ def swap_files(installs: "list[tuple[Path, Path]]") -> "list[Path]":
         # Undo in reverse: un-install what landed, then restore what was retired. An entry
         # that was retired but never installed is covered by the second loop alone, which
         # is why the two lists are kept separately rather than inferred from one another.
+        # EVERY STEP OF THE UNDO IS GUARDED (1.19 review patch P11). A failure mid-undo
+        # used to discard the original error AND leave the tree half-swapped — the state
+        # this function's docstring promises cannot occur. Guarding each step means the
+        # undo gets as far as it can and the CAUSE is what propagates.
         for staged, target in reversed(installed):
-            target.replace(staged)
+            try:
+                target.replace(staged)
+            except OSError:
+                pass
         for target, backup in reversed(retired):
-            backup.replace(target)
+            try:
+                backup.replace(target)
+            except OSError:
+                pass
         raise
 
+    # POST-SUCCESS CLEANUP IS QUIET (1.19 review patch P10). Every install has landed; a
+    # failure to remove a retired backup here must not be reported as a failed swap.
     for _target, backup in retired:
-        backup.unlink(missing_ok=True)
+        clear_quietly(backup)
     return [target for _staged, target in installs]

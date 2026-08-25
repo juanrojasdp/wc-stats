@@ -55,7 +55,19 @@ from pipeline.ingest.records import (
     write_record,
 )
 
-MANIFEST_VERSION = 1
+# 1 -> 2 at Story 2.19 R3, RULED by Juan 2026-08-07 at the 1.19 code review.
+#
+# Story 1.19 gave every entry a `near_misses` key and `_fail` resets it — a per-entry SHAPE
+# change — while this stayed at 1 and `format_summary` compensated with
+# `entry.get("near_misses") or []` under a comment naming the reason outright ("a manifest
+# written before Story 1.19 has no such key and must still render"). That IS the condition
+# this field exists to signal, and the contract two lines below says so: "the manifest's
+# shape never changes underneath an earlier run's numbers."
+#
+# THE DEFENSIVE `.get` STAYS, and the ruling says so explicitly. The version tells a READER
+# which shape to expect; it does not make a version-1 manifest on disk grow the key, and
+# `format_summary` is exactly the code that has to render one.
+MANIFEST_VERSION = 2
 DEFAULT_MANIFEST_PATH = Path("work") / "run-manifest.json"
 
 # The closed set of terminal statuses. Always all three in `counts_by_status`, so the
@@ -277,6 +289,22 @@ def run_batch(
 
     Raises only for failures of the harness itself — a missing input directory, an
     unwritable manifest. Everything a *report* can do wrong becomes a `failed` entry.
+
+    ═══ A KNOWN LOSSY CASE, RECORDED AND NOT FIXED ═══ Story 1.19 Task 4.3, written here
+    by Story 2.19 R3 (1.19 review patch P19: the task was ticked and its one deliverable —
+    this note — was never written).
+
+    `match_id_owner` maps each match id to the FIRST report that claimed it, and a later
+    claimant is failed against that owner. On a THREE-WAY collision — reports A, B and C
+    all claiming one match id — A owns it, B is failed naming A, and C is failed naming A
+    as well. Nothing in the manifest records that B and C also collided with EACH OTHER,
+    so one collision fact is erased.
+
+    It is not fixed because the remedy is worse than the loss: the manifest would have to
+    carry a collision GRAPH rather than an owner per id, and every consumer of
+    `failed_count` and of the per-entry reason would have to learn to read it. The reader
+    who needs the missing edge has all three report ids in front of them, each failed on
+    the same match id. Recorded so nobody reads the manifest as exhaustive.
     """
     input_dir = Path(input_dir)
     extracted_dir = Path(extracted_dir)
@@ -554,10 +582,27 @@ def format_summary(manifest: dict) -> str:
     # Aggregated, never per-report — 104 lines per bounded check is the defect the warnings
     # collapse above just removed, rebuilt in a new block. `.get` because a manifest written
     # before Story 1.19 has no such key and must still render.
+    #
+    # ═══ THE RENDERER RE-FILTERS (1.19 review patch P12, applied by 2.19 R3) ═══
+    #
+    # The zero filter used to live ONLY in `_mirror_self_validation`, so this renderer
+    # counted every entry it was handed. The production path was correct — the mirror
+    # filters, and `test_a_zero_delta_is_never_mirrored_as_a_near_miss` pins it — but
+    # nothing here enforced it, and the shipped aggregate test proved the point: it built
+    # entries with 17 and 84 zero deltas and asserted "104/104 report(s) with a non-zero
+    # delta" for both. That string is false for those reports, in a summary whose entire
+    # stated purpose is to be trustworthy without opening the logs.
+    #
+    # The mirror carries four `isinstance` guards INCLUDING the `bool`-is-an-`int` trap
+    # (`max_delta: true` would render as a near miss of 1); the renderer twelve lines later
+    # had none. Both now apply the same predicate, stated once.
     near_misses: dict[str, list[float]] = {}
     for entry in manifest["reports"]:
         for near_miss in entry.get("near_misses") or []:
-            near_misses.setdefault(near_miss["check"], []).append(near_miss["max_delta"])
+            delta = near_miss.get("max_delta")
+            if not isinstance(delta, (int, float)) or isinstance(delta, bool) or delta == 0:
+                continue
+            near_misses.setdefault(near_miss["check"], []).append(delta)
     if near_misses:
         total = len(manifest["reports"])
         lines += [
@@ -566,8 +611,17 @@ def format_summary(manifest: dict) -> str:
         ]
         for check_id, deltas in near_misses.items():
             lines.append(
+                # `:g`, NOT `:+g` — RULED by Juan 2026-08-07, applied by 2.19 R3. Every
+                # producer feeds an `abs()` (`domain_e.py:2054`, `:2088`) or a
+                # one-directional shortfall (`pass_network.py`, populated only on the
+                # `made < completed` branch), so a leading `+` asserted a direction the
+                # data does not carry: `pass-network-row-bound: … (max +15)` read as an
+                # overshoot when it meant the matrix printed FIFTEEN FEWER passes.
+                # `goalkeeping-distribution-printed` is sharper still — it `abs()`es a
+                # bound that tolerates overshoot AND flags undershoot, so one always-
+                # positive scalar conflated two opposite conditions.
                 f"  {check_id}: {len(deltas)}/{total} report(s) with a non-zero delta "
-                f"(max {max(deltas):+g})"
+                f"(max {max(deltas):g})"
             )
 
     if manifest["orphan_record_paths"]:

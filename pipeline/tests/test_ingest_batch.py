@@ -1426,7 +1426,20 @@ def test_a_bounded_check_that_passed_with_a_delta_reaches_the_summary(tmp_path, 
 def test_the_near_miss_block_is_aggregate_and_never_one_line_per_report():
     """R2's explicit bound: per-report lines would recreate exactly the noise D1 just
     removed, in a new block. 104 reports carrying two bounded near misses each render
-    TWO lines, and the largest delta across the corpus is the one reported."""
+    TWO lines, and the largest delta across the corpus is the one reported.
+
+    ═══ THIS TEST USED TO ENSHRINE A FALSE COUNT ═══ 1.19 review patch P12, fixed by
+    Story 2.19 R3. The entries below carry `i % 6` and `1 if i < 21 else 0`, i.e. 17 and
+    84 ZERO deltas — and the assertion demanded `104/104 report(s) with a non-zero delta`
+    for both. That string is false for those reports, in a summary whose entire stated
+    purpose is to be trustworthy without opening the logs. The zero filter lived only in
+    `_mirror_self_validation`, so the renderer counted everything it was handed; it now
+    applies the same predicate, and the expected counts below are the TRUE ones.
+
+    The leading `+` is gone with it (RULED by Juan 2026-08-07): every producer feeds an
+    `abs()` or a one-directional shortfall, so the sign asserted a direction the data does
+    not carry.
+    """
     from pipeline.ingest.batch import format_summary
 
     entries = [
@@ -1442,10 +1455,48 @@ def test_the_near_miss_block_is_aggregate_and_never_one_line_per_report():
 
     lines = _block(format_summary(_summary_manifest(entries)), NEAR_MISS_HEADING)
 
+    # DERIVED, not restated: whatever the generators produce, the count is how many
+    # entries carry a NON-ZERO delta. `i % 6` is zero for the 17 multiples of 6 in
+    # 1..104; the second is non-zero only for i < 21, i.e. 20 of 104.
+    involvement = sum(1 for i in range(1, 105) if i % 6 != 0)
+    distribution = sum(1 for i in range(1, 105) if (1 if i < 21 else 0) != 0)
+    assert (involvement, distribution) == (87, 20)
+
     assert lines == [
-        "  goalkeeping-involvement-bound: 104/104 report(s) with a non-zero delta (max +5)",
-        "  goalkeeping-distribution-printed: 104/104 report(s) with a non-zero delta (max +1)",
+        f"  goalkeeping-involvement-bound: {involvement}/104 report(s) with a non-zero "
+        "delta (max 5)",
+        f"  goalkeeping-distribution-printed: {distribution}/104 report(s) with a non-zero "
+        "delta (max 1)",
     ]
+
+
+def test_the_renderer_filters_zero_and_bool_deltas_even_if_the_mirror_did_not():
+    """The renderer's OWN filter, driven from a hand-built manifest (1.19 review patch
+    P12, Story 2.19 R3).
+
+    The production path cannot produce these entries — `_mirror_self_validation` filters
+    first — which is exactly why the renderer had no filter and nobody noticed. A manifest
+    is a FILE: it can be hand-edited, carried between versions, or written by an older
+    build. `bool` is an `int` in Python, so `max_delta: true` would otherwise render as a
+    near miss of 1.
+    """
+    from pipeline.ingest.batch import format_summary
+
+    entries = [
+        _summary_entry(
+            "PMSR-M001",
+            near_misses=[
+                {"check": "zero", "max_delta": 0},
+                {"check": "boolean", "max_delta": True},
+                {"check": "text", "max_delta": "3"},
+                {"check": "real", "max_delta": 4},
+            ],
+        )
+    ]
+
+    lines = _block(format_summary(_summary_manifest(entries)), NEAR_MISS_HEADING)
+
+    assert lines == ["  real: 1/1 report(s) with a non-zero delta (max 4)"]
 
 
 def test_an_exact_corpus_produces_no_near_miss_block_at_all():

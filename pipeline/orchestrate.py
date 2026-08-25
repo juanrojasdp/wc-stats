@@ -97,11 +97,19 @@ def _batch_finding_is_consumable(manifest_path: "str | Path") -> "tuple[bool, st
         failed, gaps = run["failed_count"], run["corpus_gaps"]
         orphans = manifest["orphan_record_paths"]
         self_validation = run["self_validation_fail_count"]
+        # `len(gaps)` AND `len(orphans)` BELONG INSIDE THIS `try` (1.19 review patch P14,
+        # applied by 2.19 R3). They used to sit in the f-string below, outside it — so a
+        # manifest carrying `"corpus_gaps": 5` passed every key lookup and then raised an
+        # UNCAUGHT `TypeError`, defeating the docstring's own promise that an off-shape
+        # manifest is not consumable. Reachability is low (both fields are written as lists
+        # by this same process) so this only bites a hand-edited or foreign manifest — which
+        # is precisely the case the guard exists for.
+        gap_count, orphan_count = len(gaps), len(orphans)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         return False, f"the run manifest at {path.as_posix()} could not be read: {exc}"
     if failed or gaps or orphans:
         return False, (
-            f"{failed} failed report(s), {len(gaps)} corpus gap(s), {len(orphans)} orphan "
+            f"{failed} failed report(s), {gap_count} corpus gap(s), {orphan_count} orphan "
             f"record(s) — the corpus is short, so every downstream --expect-* count would "
             f"be measuring a truncated run"
         )
@@ -213,6 +221,26 @@ def main(argv: "list[str] | None" = None) -> int:
             code = phase_main(_phase_argv(name, args))
         except SystemExit as exit_code:  # pragma: no cover - argparse rejection path
             code = exit_code.code if isinstance(exit_code.code, int) else HARNESS_FAILED
+        except Exception as exc:  # noqa: BLE001 - the exit-code contract is the whole point
+            # ═══ 1.19 review patch P13, applied by 2.19 R3 ═══
+            #
+            # The reasoning above applies IDENTICALLY to `ValueError`, `KeyError` and
+            # `shutil.Error`, and only `SystemExit` was caught — so any of those gave
+            # exactly the tracebackless death this handler exists to prevent: no phase
+            # table, no PIPELINE RESULT, and CPython exits **1**, "a real finding", when the
+            # truth is 2, "the harness could not run". Those two exit codes mean opposite
+            # things to everything downstream.
+            #
+            # `profiles.py`'s `main` already established the pattern and its comment states
+            # the rule: "an untyped exception is BY DEFINITION 'the harness could not run'".
+            # `_phase_argv`'s unknown-phase `ValueError` is raised inside this same `try`
+            # and is now covered by it too.
+            #
+            # The exception is PRINTED, not swallowed: the phase table is the output a
+            # reader needs, but so is what went wrong.
+            print("")
+            print(f"{name} raised {type(exc).__name__}: {exc}", file=sys.stderr)
+            code = HARNESS_FAILED
         results.append((name, code))
         worst = max(worst, code)
 
