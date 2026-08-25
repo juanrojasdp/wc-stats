@@ -4102,3 +4102,135 @@ but not actionable in this story.
   either changes six shipped captions plus the two figure headings.
   **Owner:** Story 2.19, at the real-data swap — that is the first point the collision becomes
   reachable, since the real corpus is where the duplicate names live.
+
+## Disposition of every entry naming Story 2.19 — Story 2.19, 2026-08-25
+
+**This section discharges AC 5 and ruled decision D11.** 66 blocks in this file name Story 2.19
+(74 raw mentions). Every one of them has a disposition below: implemented, ruled, re-deferred with a
+named successor and a stated reason, or already-closed with the correction appended.
+
+**It is APPENDED, never a rewrite (D12).** No paragraph above this line is edited. Where a
+measurement recorded above is now known to be wrong, the correction is stated here and names what it
+corrects, which is this repo's house rule since Story 2.9.
+
+**Nothing naming 2.19 is left silently open.** Story 2.19 is the last story in the project, so
+"re-deferred" here means routed to a named SUCCESSOR CHANGE-SET rather than to a story that exists.
+Where that is the disposition, the trigger that would re-open it is stated too.
+
+---
+
+### A — IMPLEMENTED by 2.19 (32 entries)
+
+| ledger | item | disposition |
+|---|---|---|
+| L133 | The two `DATA_ROOT` cutover points have no enforcement | **DONE.** Both constants flipped in one change; `data-root-agreement.test.ts` compares the trailing path segments and was proven RED in both directions by actually reverting each constant alone (2 failed / 6 passed each way). |
+| L137 | Substring HTML assertions assume escape-free text | **DONE.** Measured: exactly ONE name escapes corpus-wide — `Côte d'Ivoire` → `Côte d&#x27;Ivoire`, on four matches; zero player names. One `escapeForHtml` helper covers the single assertion site; the assertion STYLE is unchanged, per D3. |
+| L49 | Zero-external-request audit is a one-time manual grep | **DONE.** `app/scripts/assert-no-external-origins.mjs` runs in the build chain after `copy-data`. Current export: 12,682 text assets, **0 external subresources**. Nine tests feed it the trees it must reject. The design decision that makes it usable is recorded in the script: a naive "any absolute URL" scan reports 27 violations on a clean build, all of them diagnostic strings inside vendor bundles, so it matches FETCHING POSITIONS only and merely counts the rest. |
+| L2173 | 104-at-scale Hub verification | **DONE.** Route bijection exact on all three families (104 / 1,248 / 48, 0 missing, 0 extra); 1,407 documents scanned, 1,303 distinct internal hrefs, 16,802 occurrences, **0 dead links**; Lighthouse recorded in the story. |
+| L2967 | Accent-insensitivity never exercised in a BROWSER | **DONE.** 10/10 in a real browser on the real corpus, both directions: `Türkiye`/`Turkiye`, `Curaçao`/`Curacao`, `Côte d'Ivoire`/`Cote`, and the reader typing `Núñez`/`Nunez`, `Quiñones`/`Quinones` against a corpus whose player names arrive diacritic-stripped. |
+| L3299 | Seven of eight linked `/teams/` slugs 404 on fixtures | **CLOSED — it was a fixture artefact.** All 48 team routes resolve after the flip and every one carries at least one inbound link. |
+| L3451, L3768 | Reflow at 320/390 in both themes and locales, 200% zoom, real reduced motion | **DONE, and the ledger's own predicate was part of the finding.** 96 cells measured. At 320 and 390 the DOCUMENT never scrolled sideways even before the fix — the 654 "overflowing" elements the raw predicate reported on `/` were table cells inside `overflow-x-auto` wrappers, which EXPERIENCE.md:119 permits. At **195 px** (a 390 px device at 200% zoom) the document overflowed on ALL EIGHT ROUTES, including `/about`, `/glossary` and `/404`. After R2/D8: every one of the 16 route×locale cells reports a document scrollWidth of exactly 195. |
+| L3862 | `/compare`'s `<md` sticky mini-header `IntersectionObserver` is UNVERIFIED | **DONE.** `position: sticky` and **actually stuck at 56 px**; `data-compare-showing` goes 0 → 1 when side A leaves the observer's adjusted root. At 390×844 it correctly does not rename (both figures are inside the root at once, exactly as its own docblock predicts), so the check was re-run at 390×500. |
+| L3558 | `assert-schema-version.mjs` walks the working tree | **DONE.** A name-suffix skip rule (`*.staged`, `*.previous.rollback`) at any depth, with three tests: two skip cases and a control proving the same tampered bytes still fail in an ordinary directory. |
+| L3640 | Should a unit-test run re-walk the entire real corpus? | **RULED: YES, and the cost is not new.** ~8.5 s of a ~20 s suite over 1,411 artifacts. Kept because the gate is the only thing between a schema drift and a published site, `npm test` is where it can fail in seconds rather than after a 91 s build, and sampling would test something other than what ships. `DATA_DIR` resolves independently of `DATA_ROOT`, so the gate ALWAYS walked the real corpus — the test's name ("passes on the current fixture tree") was wrong before the flip and is corrected. |
+| L2545 | `m082-belgium-senegal`'s fourth route, `players`/`goalkeeping` null branches | **DONE, and the premise moved.** Both blocks are POPULATED on 104/104 at real data, so the null branches the entry wanted exercised are not reachable there; the route is covered by the exact bijection and the rendered census records what does render. |
+| L2066, L3431 | `i18n.test.ts`'s caption inventory is stale | **DONE, and one quarter of the entry was wrong.** The `viz.pressing.metre*` family was already retired and the counts already read 26/26/27 (Story 2.17's review). The 3→36 board count does NOT break the inventory — it reads the fixture by relative path and is deliberately fixture-pinned (D2). `viz.table.measure` WAS a live orphan and is retired. **`enums.unit.m` must NOT be retired**: it is live on five components and via `leaderboard-format.ts`. The inventory is now 28 (Task 7.1 adds two). |
+| L1979, L3412 | `#pressing`'s metre presentation is RETIRED and the surface is owed | **DONE.** `shapeByPhase` is re-presented as two tables, 2 possession states × 6 rows. Story 2.16's `team.shape.*` vocabulary is reused whole; only the two captions are new. |
+| L2045 | The involvement TICK model rests on an expired condition | **DONE, resolved differently from the proposal.** Measured: 2,506 of 21,764 real samples carry a non-null `stoppageMinute` and EVERY ONE collides on minute. Resolved by LABELLING the whole clock ("45+2") and deduping on it, not by adopting `momentumTickIndices`' skip rule — that model drops stoppage slots because its axis cannot say "45+2", and this one can. Nothing is dropped and a stride landing in stoppage no longer thins the axis unpredictably. |
+| L2079 | `goalkeeping-model.ts` synthesizes a fake `playerId` and mints `" / "` copy | **DONE.** The block is per TEAM (CS-2 decision 18), so the field is now `teamId`; the join moved to `viz.goalkeeping.nameJoin`, resolved at the call site (AD-7). |
+| L1213 | `sortRows` is unmemoised; the inactive path copies the array | **SUPERSEDED, and said so rather than silently dropped.** D15 put the `columns` memo back in scope. It was not applied because Task 5.8 removed the thing it optimised: with `SectionContent` deferring prop construction to OPEN sections only, the eleven column arrays a collapsed match route used to build on every render are no longer built at all. A `useMemo` over an array that is never constructed is dead weight. |
+| L1877 | No log table sets `rowHeader` | **DONE.** `markRowHeader` picks the first available of player → minute → team. Not a hard-coded flag: the player column is gated by `anyPlayerName`, so a fixed one would leave exactly the matches with least context with no row header at all. |
+| L2236 | `#lideres` is a Spanish anchor | **DONE.** `#lideres` → `#leaders`, the last Spanish fragment id in the app. Taken now because it is URL-shaped and nothing links to it yet — the site has not been published. |
+| L3732 | `readTeamProfile` is called twice per build | **DONE.** `build-data.ts` caches parsed artifacts by resolved absolute path. 2,496 parses of 1,248 files on `/players/[slug]` at real scale; build wall clock 89–91 s → **78 s**. |
+| L2325 | `InvolvementChart` ships the unfixed edge-drawn hatch | **ALREADY CLOSED — verified, not re-implemented.** The hatch already draws at `HATCH_TILE_PX / 2` and its own comment records the fix; `x1={0}` occurs nowhere in the tree. |
+| L2929 | DESIGN.md should absorb `accent-cyan` on `surface-overlay` | **DONE.** 9.20:1 dark / 4.68:1 light, absorbed with the note that the light figure leaves only 0.18 over the 4.5 floor. |
+| L2945 | EXPERIENCE.md contradicts itself: "full-width" vs "full-screen" sheet | **DONE.** Reconciled to full-width, which is what 2.14 shipped (386 px at `top: 0`, content-driven height). |
+| L4089 | Two entities with the same display name produce byte-identical `/compare` captions | **DONE.** Confirmed reachable — `Emiliano MARTINEZ` occurs twice (`…-arg` gk / `…-uru` mf). Six captions, two figure headings AND the sticky mini-header were byte-identical; all now carry the side's `detail` line via `composeSideHeading`. |
+| L2910 | axe was never run | **DONE.** 8 routes × {dark, light} × {es, en} with every disclosure open = 32 cells. **Before: 2 rules, 66 nodes. After: 0 and 0.** Both findings were real and both are fixed — see the corrections below. |
+| L1410 | `domain-g-zone-sum` broke on 79 of 96 FIXTURE rows | **CLOSED — a fixture defect, as suspected.** Over the emitted corpus: 3,289 per-match rows, worst drift **0.200 m** against a 0.35 m tolerance, **0 failures** — exactly reproducing the pipeline's own published figure through an independent implementation. |
+| L1538 | A locale switch re-orders any text-sorted table with no announcement | **DONE.** `DataTable` announces the re-collation on a locale change. Text sorts only: a numeric column collates identically in both locales, so announcing it would be a second false claim. |
+| L2185 | Hub tables ship no sticky header | **NO CHANGE, and the check is recorded.** With every disclosure open the route holds 66 tables; the tallest is 190 rows / 7,509 px and its `thead` is `static`. The premise the entry asked about — Hub standings/results tables are short — still holds at 4–16 rows. The 190-row table is the LEADERBOARDS surface, a different owner. |
+| L3367 | Two hand-written `/teams/` route literals remain | **DONE, and it was half-done already.** `LeaderboardsSection.tsx` already routed through `teamHref`; only `LeaderboardsRegion.tsx` was left — in the same table whose entity column twenty lines above already used the helper. `prefetch={false}` verified in the BROWSER (it is not serialised into the HTML at all, so grepping proves nothing): zero of the 1,248 player, 48 team or 104 match routes are speculatively fetched. |
+| L527, L545 | Mirror the goal furniture at the defending end | **DONE (D16).** Both non-projective steps were real, and the first version had a BUG at one of them: reusing the attacked end's crossing angle drew the mirrored arc straight THROUGH the penalty area. Caught by the test that samples every point of the path. |
+| L2890 | The header-search payload question | **RULED: ACCEPT, no contract change.** Re-measured at the cutover: 38,860 B gzip / 409,524 B raw, fetched lazily on first engagement, once per page load, never on load. 7.8% of the 500 KB route budget, paid only by a reader who opens the search; the `entities` slice would save 9 KB for a contract change and a second artifact to keep in bijection. |
+| L3849, L3841 | `/compare` has no Lighthouse target and no AD-4 route-payload set | **DONE.** `/compare` has a number: median 88 (88–90) mobile, payload 65.7 KB of the 500 KB cap. The AD-4 amendment is filed as a RECORDED GAP rather than a contract change: `/compare`'s payload set is `tournament.json` plus up to two entity artifacts, bounded by the two per-entity caps that already exist, so it needs no cap of its own. |
+| L624 | Five contract-required goalkeeping sub-blocks are null on 208/208 | **VERIFIED, no code owed.** All five gates close and `viz.goalkeeping.gateNote` renders on every sampled match. |
+
+### B — RULINGS taken (6 entries)
+
+| ledger | question | ruling |
+|---|---|---|
+| L147, L2697, L3227 | `<title>`/OG stay Spanish after an EN toggle | **RULED by Juan 2026-08-25 (D17): ACCEPT ES CANONICAL.** Closed as ACCEPTED on all 104 + 1,248 + 48 + Hub routes — not re-deferred, not WONTFIX-without-reason. A static export has one canonical document language and the UI toggle does not change it. **Recorded consequence:** `<html lang>` DOES track the toggle, so at EN the document is `lang="en"` while the title is Spanish, and a screen reader announces a Spanish title with English phonemes. That is the one audible cost and it follows from the ruling. |
+| L2890 | Is 39 KB gzip the right thing to pull on a match route? | **RULED: accept** — see Partition A above. |
+| L521 | UX-DR10's two diamonds have no surface; `forced-turnover` vs `possession-regain` are visually identical | **CLOSED AS MOOT.** `defensiveActions` is null on 104/104, so the section renders its empty state on every match and neither half is reachable from shipped data. The UX question is real but has no surface to be wrong on; it rides the successor change-set with the heatmap, under the same AD-14 blocker. |
+| L2335 | An abbreviated head that also carries a unit stacks two parentheticals | **RULED by Juan 2026-08-25 (D18b): TAKE IT.** `"Ordenar por Vel. máx. (km/h) (Velocidad máxima)"` → `"… (km/h) — Velocidad máxima"`. WCAG 2.5.3 holds in both branches. |
+| L1246 | ~25 per-table announcement identifiers | **RULED by Juan 2026-08-25 (D18a): TAKE IT.** The copy ruling: a table's announcement identifier IS ITS `<caption>` — already its accessible name, already unique site-wide by the caption inventory, and needing no new copy. |
+| L962, L2347 | Five Tactical summaries and the leaderboards surface carry no glossary mark | **RULED by Juan 2026-08-25 (D18c): TAKE IT.** Each of the five summaries keeps its ruled sentence VERBATIM as the clause after a colon and gains its term in front. The leaderboards mark goes on the board's heading — not on the metric's sortable column head, which cannot hold a focusable trigger. |
+
+### C — RE-DEFERRED, with a named successor and a stated reason (8 entries)
+
+> **The successor is "the first change-set that reopens `/contract`" unless stated otherwise.** No
+> further story exists in this project; naming a phase rather than a number is what D11 permits
+> ("the first Epic 3 story that…" is acceptable) and is more honest than a number nobody will read.
+
+| ledger | item | successor | reason |
+|---|---|---|---|
+| L525 | The heatmap | **The successor change-set that reopens `/contract`** | **The input still does not exist, and the re-open trigger has now FIRED with a negative answer.** The 2.9 filing said "revisit when Story 1.16 emits". 1.16 has emitted: `crosses`, `defensiveActions` and `receiving` are **null on 104/104** in the emitted bundles, and every candidate Domain D family is under an unresolved AD-14 blocker. A heatmap built now would bin nothing. |
+| L1553, L1886 | Deep-linking into a closed disclosure (match route) | **The first change-set that reworks match-route navigation** | ~12 files across every match-page section, and it inherits three filed hash-re-entry defects — of which "an unchanged hash never re-fires `hashchange`" is fatal to a link list. Blast radius is the whole match route for navigation that is already honest. **2.19 did NOT mint a new instance of it**: the Hub's new disclosures take `openNonce` and open from the hash. |
+| L1465 | Two data columns at 390 px in the Expert table | **A copy/UX pass** | Measured: 55.7 px of data columns, not one full column; the `<md` escape hatch buys 88 px. The lever (ruled abbreviations, EXPERIENCE.md:139) exists but this is copy, not reflow compliance — 320 and 390 both pass with every disclosure open. |
+| L1423 | Delete `PendingSectionPanel` | **Any change-set that touches `tactical-sections.ts`** | Dead code with no user impact. It was NOT taken "if free": R1 already edits three assertions in `tactical-sections.test.ts` and removing the panel would have widened that edit for no reader-visible gain. |
+| L4071 | `/compare` drops unpaired metric codes silently | **The successor change-set** | Both artifacts are total today — `keyStatistics` populated 104/104, profiles 1,248/48. Reaching it needs a truncated emission. |
+| L3388 | AC 1 says "form strings"; the contract ships no `form` field on a team profile | **CLOSED — informational.** 2.16's D3 ruled the Hero strip a projection of `matches[].result`. Recorded so nobody reads AC 1 as naming a missing field. |
+| L3715 | The 1.19 roll-up of "everything routed to 2.19" | **CLOSED — index entry, not work.** Every item it names is disposed of elsewhere in this table. |
+| L1629 (part) | The **195 px** half of the Expert ToggleGroup | **CLOSED — subsumed.** The 320 px half was D9 and shipped; at 195 px the group now wraps and its items carry `whitespace-normal max-w-full`, so the document no longer overflows there either. |
+
+> **L1504 IS NOT IN THIS TABLE.** D15 pulled it back out of Partition C and its disposition is
+> **implemented here** — see Partition A's row for the eagerly-constructed section content.
+
+### D — ALREADY CLOSED, with the corrections this story owes (7 entries)
+
+| ledger | item | correction |
+|---|---|---|
+| L7, L529, L861 | The whole-layer error boundary, filed FIVE times | **RESOLVED by 2.18** — not re-implemented. The residual (a throw during PROP CONSTRUCTION escaping the per-section boundary) **is now closed too**, by 2.19 Task 5.8: `sectionContent` is called inside `<SectionContent>`, below the boundary. What remains open is only the boundary's lack of a RESET PATH, which stays with the successor. |
+| L839, L1685 | A denominator-labelled goalkeeping breakdown can contradict its own rows | **MEASURED CLOSED by 1.16** — `sum(byInterventionType) == attemptsFaced` on 208/208, delta histogram exactly `{0: 208}`. No App fix was owed and none was written. |
+| L687, L1939 | `GoalkeeperInvolvementSample.minute` cannot represent the corpus clock | **DISCHARGED by CS-2**, and the residual it named (the TICKS) is now closed by Task 7.2 — see L2045 above. |
+| L1234 | Sort collation pinned to `es`; re-measure over the real name corpus | **MEASURED, DECISION 8 STANDS.** 784,612 pairs across players, teams and match labels: **0 disagreements**, identical sorted orders. Unobservable on shipped data because all 1,248 real player names arrive with diacritics already stripped and the only non-ASCII characters in the whole corpus are `ü`, `ô`, `ç` in three team names. No code changed. |
+| L3249 | Real-data sizing (2.15 Task 9.4) | **RE-MEASURED at the cutover.** 1,406 pages, `out/` **109.6 MB / 14,102 files** (the 79.3 MB figure predates the 48 team routes), one player HTML 23,619 B — the AD-11 projection holding at +291 B against 2.15's measurement. |
+| L537, L557, L570 | `#defensive-actions` collapses to ONE cluster at 320 px at 153-marker density | **⚠️ THE 153-MARKER FIGURE IS WRONG FOR SHIPPED DATA, AND THIS IS THE THIRD TIME IT HAS BEEN CARRIED FORWARD.** It was measured over *staged extraction records*. `events.defensiveActions` is **null on 104/104** in the EMITTED bundles, because four required fields are unfulfillable — so the section renders its whole-section empty state on every match and there are no markers to cluster. Verified in a browser on six matches across the tournament. Any future entry quoting 153 must quote this correction with it. |
+| L593 | Every `#defensive-actions` marker announces the same sentence at corpus density | **MOOT, same reason** — there are no markers. Already ruled "accept the degradation" at the 2.9 review; now unreachable as well. |
+
+### Corrections this story owes to entries that are NOT its own
+
+- **`PitchPanel` painted an on-canvas team accent ON THE PITCH.** Found by axe at Task 6.8, not by
+  any ledger entry: `--viz-team-a` is the dark olive `#4d7c0f` in the light theme and the pitch is
+  the theme-invariant `#0b3d2e`, giving **2.44:1** at 11 px against a 4.5:1 requirement. The
+  `-on-pitch` pair exists for exactly this, `globals.css:194` says so, and
+  `DefensiveActionsSection` has used it since 2.9 decision 8 — this one call site had missed the
+  ruling. Recorded because it is the second time a ruled palette rule has been missed at a new call
+  site.
+- **Three of this story's own verification probes were wrong before they were right**, and each is
+  recorded in the story's Dev Agent Record rather than quietly fixed: the overflow predicate
+  over-reported by 654 elements on one route, the focus probe reported eight indicator-less controls
+  per route because `:focus-visible` does not match a programmatic focus, and the reduced-motion
+  probe reported 30,161 animated elements because it tested `> 0` and so counted the very rule that
+  disables motion. **A measurement that has not been falsified once is not yet evidence.**
+
+### Fingerprint superseded (Story 2.19 R3)
+
+`code_version ad4735a216e2` — quoted throughout the 1.19 entries above — is **superseded by
+`1d3a32f1ec55`**. Story 2.19 took all twelve deferred pipeline items as one batch, which is exactly
+why 1.19's Decision 1 ruled (b): one re-extract, spent once, by the successor. The emitted `/data` is
+**byte-identical across the change** (1,411 of 1,411 artifacts), a second run skips all 104, and the
+pipeline suite is 1,782 passed / 4 skipped / 0 failed across all 49 files. Do not read the older
+fingerprint as current.
+
+### A correction this story owes to its own measurements
+
+Two of this story's Lighthouse measurement rounds were taken against a server that was **serving
+every asset uncompressed** — a rewrite of the measurement harness wrote literal backspace bytes into
+its content-negotiation regexes, so the server advertised gzip/brotli and negotiated neither. The
+same build measured **76 / 65** against it and **90 / 85** against a compressing one. Any figure in
+this file or in a story record that cites a Lighthouse performance score for Story 2.19 should be
+read against the harness state named beside it. This is the second time in this story that a number
+turned out to be about the method; the first was the reflow predicate that reported 654 overflowing
+elements on a route whose document did not overflow at all.
