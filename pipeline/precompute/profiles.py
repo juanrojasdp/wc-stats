@@ -69,7 +69,13 @@ from pipeline.precompute.errors import (
 )
 from pipeline.precompute.serialize import decimals_map, round_to_precision
 from pipeline.precompute.slug_registry import PINS, TEAM_CODES
-from pipeline.precompute.swap import clear, clear_quietly, staged_sibling, swap_directory
+from pipeline.precompute.swap import (
+    _warn_stranded,
+    clear,
+    clear_quietly,
+    staged_sibling,
+    swap_directory,
+)
 from pipeline.validate.errors import SchemaValidationError
 from pipeline.validate.schema import schema_version, validate_artifact
 
@@ -1299,7 +1305,13 @@ def emit_profiles(data_dir: "str | Path" = DEFAULT_DATA_DIR,
     # baseline. The module docstring's "All 1,296 or none" is only true with both stagings
     # complete before either swap.
     kinds = ("team-profiles", "player-profiles")
-    # ═══ THE SUFFIX COMES FROM `swap.py` (1.19 review patch P18, applied by 2.19 R3) ═══
+    # ═══ THE SUFFIX COMES FROM `swap.py` (2.19 R3, alongside patches P15/P16) ═══
+    #
+    # (Mislabelled "1.19 review patch P18" until the 2.19 code review. P18 is the
+    # `bounded_check` docstring correction in `pipeline/extract/__init__.py`; this
+    # lift is not one of the twelve numbered items at all, so it no longer claims a
+    # number. Two shipped comments carrying the same patch id described different
+    # patches, which is worse than carrying none.)
     #
     # This read `index_dir / f"{kind}.staged"` — a SECOND hard-coded copy of the literal
     # `STAGED_SUFFIX` names once — so changing that constant would silently desynchronise
@@ -1342,7 +1354,13 @@ def emit_profiles(data_dir: "str | Path" = DEFAULT_DATA_DIR,
                 try:
                     backup.rename(index_dir / kind)
                 except OSError:
-                    pass
+                    # SHARPER HERE THAN IN `swap.py` (2.19 code review): the `rmtree`
+                    # one line up has ALREADY run, so a failed rename leaves
+                    # `data/index/<kind>/` deleted outright with the only copy stranded
+                    # under `<kind>.previous.rollback`. Suppressing the undo's error
+                    # keeps the original cause, which is right — saying nothing about
+                    # the deleted namespace was not.
+                    _warn_stranded(index_dir / kind, backup)
         raise
     finally:
         # **Never leave a partial `.staged` or retired namespace inside the committed tree.**

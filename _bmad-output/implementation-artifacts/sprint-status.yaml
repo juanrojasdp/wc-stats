@@ -3332,9 +3332,33 @@ development_status:
   2-17-comparison-mode: done
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
-  2-19-performance-accessibility-hardening-real-data-swap-launch: review
+  2-19-performance-accessibility-hardening-real-data-swap-launch: in-progress
   epic-2-retrospective: optional
 
+# 2026-08-25: story 2-19 code review — 3 layers over the 6,414-line code diff (78 files), 32
+#             findings kept / 3 dismissed, triaged to 5 decisions (all ruled by Juan), 20 patches
+#             (all applied) and 7 deferrals filed. Verified after patching: lint 0, tsc 0, app suite
+#             50 files / 1295 tests / 0 skipped, 194 pipeline tests green across the four files
+#             touched, and the full AD-13 chain green end to end (1,406 routes, origin gate 12,683
+#             assets / 0 external subresources).
+#             THE FOUR HIGH FINDINGS WERE ALL IN CODE THIS STORY ADDED, all reproduced by running
+#             the code rather than reading it: the new zero-external-origin gate could not see
+#             IP-literal hosts (it passed a page loading a remote script and posting telemetry to
+#             raw IPs); `copy-data.mjs` shipped the `.staged` trees the schema gate had just been
+#             taught to skip, on a deploy path that is a local CLI upload; Task 5.7 put 12 pairs of
+#             byte-identical disclosure accessible names on `/` — the same defect class A23 fixed on
+#             /compare in this same story; and an unguarded `new URL()` in a reporting-only path
+#             could fail the build naming the wrong cause.
+#             STATUS -> in-progress, NOT done, for ONE reason that is not a code change: AC 4's
+#             Netlify OAuth connect. Task 9.4 was `netlify deploy --prod --no-build`, a CLI upload
+#             of locally-built bytes — so Netlify does not re-run the AD-13 chain on push and the
+#             new origin gate is a developer-machine gate only. Juan ruled at the review that the
+#             connect should be done; it needs a GitHub<->Netlify grant in the Netlify UI that no
+#             agent can perform. `netlify.toml` already carries the right base/command/publish.
+#             2-19 -> done once that grant is given and one push produces a green Netlify build.
+#             Rulings recorded as D20 (AC 2 = met on host, partially met on the reference harness),
+#             D21 (A16's supersession confirmed as Juan's, not the dev agent's), D22 (AC 1/AC 3
+#             evidence methods accepted as proxies and named in the ACs).
 # 2026-08-04: story 2-11a code review — 3 layers, 30 raw findings triaged to 4 decisions (all ruled
 #             by Juan), 8 patches (all applied), 9 deferrals filed, 5 dismissed. Status -> done.
 #             Verified after patching: tsc 0, eslint 0, suite 661 passed / 24 files.

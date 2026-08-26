@@ -4251,3 +4251,112 @@ this file or in a story record that cites a Lighthouse performance score for Sto
 read against the harness state named beside it. This is the second time in this story that a number
 turned out to be about the method; the first was the reflow predicate that reported 654 overflowing
 elements on a route whose document did not overflow at all.
+
+---
+
+## Deferred from: code review of story-2.19 (2026-08-25)
+
+Seven findings from the adversarial code review of `7f28e44..HEAD` that are real but are not this
+story's to fix — pre-existing patterns, deliberate rulings, or evidence gaps in the record rather
+than defects in the code. The patched findings are checked off in the story's Review Findings
+section; these are the ones left open. **No successor story exists** — 2.19 is the final story — so
+every entry here is owed to the successor change-set, and that is stated rather than implied.
+
+- **`build-data.ts`'s artifact cache is unbounded, shared and never invalidated** (`app/src/lib/build-data.ts:62`).
+  `readJson` now hands the *same* parsed object to every caller for the life of the worker process.
+  Three consequences, all latent today: 18 MB of `data/matches` plus 11 MB of player profiles is
+  retained rather than collected; any future consumer that sorts or mutates in place leaks across
+  routes, and the invariant that made in-place work safe was removed without an `Object.freeze` or a
+  documented ban; and in `next dev` the module outlives the request, so an edited artifact is never
+  re-read. Verified no current consumer mutates. **Successor: the first change-set that adds a
+  build-time reader, or any move to a long-lived dev process.**
+
+- **The locale-change sort announcement fires from every sorted table into one live region**
+  (`app/src/components/DataTable.tsx:442`). The effect has no dependency array, and `SortAnnouncer`
+  renders exactly one polite region with last-write-wins semantics — so a reader who has sorted more
+  than one table and then toggles ES/EN hears a single sentence naming an arbitrary one. Bounded in
+  practice because the effect returns early on `sortState === null`, which is every table the reader
+  has not actively sorted. **Successor: whoever next owns `DataTable`'s announcement layer.**
+
+- **The Hub's `min-h-[120vh]` reservation is justified by a measurement this story invalidated**
+  (`app/src/components/TournamentHubRegion.tsx:182`). The rationale at `:153-172` cites a settled
+  region of 14,990 px over 30 tables; Task 5.7 then moved every one of those tables behind a
+  disclosure, so the settled region is now headings, counts and collapsed controls. The comment's own
+  warning — "over-reserving shifts content UP just as badly as under-reserving shifts it down" — is
+  the failure mode the change makes newly plausible. Separately, the reservation exists only on the
+  `loading` branch, so the `error` and `invalid` exits collapse ~120vh to a ~120 px panel and shift
+  everything below upward. Not acted on because CLS measures **0.000** on the shipped path.
+  **Successor: whoever re-tunes the Hub's above-the-fold reservation.**
+
+- **`sideIdentity` still produces byte-identical `/compare` captions when both sides' `detail` is
+  null** (`app/src/components/CompareChartsSection.tsx:154`). A23's fix disambiguates by the side's
+  `detail` line, which is `string | null`; `composeSideHeading` returns the bare name for `null`, so
+  the six duplicate captions and two duplicate figure headings return in full on that branch. The
+  comment acknowledges the case ("nothing is claimed that is not known") but does not fall back to
+  the distinct `ref.id` or the A/B side label. No null-detail name collision exists in the 1,248-name
+  corpus, which is why this is a filing and not a patch. **Successor: whoever next touches the
+  compare caption composition.**
+
+- **The caption-uniqueness inventory covers 3 of 36 Hub boards** (`app/src/lib/i18n.test.ts:1910`).
+  `hubLeaderboardCaptions` derives from `LEADERBOARD_FIXTURE.boards.length`, and the totals at
+  `:1794/:1802/:1811/:1821` are `29 + hub.length` with `hub.length === 3`. The property asserted —
+  that no two shipped table captions collide — is a claim about the shipped site, exercised on a
+  twelfth of it. Left alone deliberately: **D2 rules that fixture-pinned unit tests stay
+  fixture-pinned**, and the real artifact was checked by hand at review time (`metricCode+scope` is
+  unique across all 36). Note `completedLineBreaks` and `lineBreaksCompleted` already share the ES
+  label "Rupturas de líneas completadas" and are separated only by `scope`. **Successor: whoever
+  revisits D2's fixture-pinning rule.**
+
+- **`min-[19rem]` media queries resolve against the browser's default font size, not the root
+  element** (`app/src/components/StoryStatTiles.tsx:136`, `app/src/components/CompareRows.tsx:184,261`).
+  `rem` in a media query is evaluated against the initial font size, so a reader whose browser default
+  is 24 px gets a 456 px breakpoint and sees the Hero stat tiles and every compare stat row stack into
+  one column on a 390 px phone at 100% zoom. That population — low-vision readers who raise the
+  default font — is exactly who WCAG 1.4.10 is for, and the record's claim that "the two-column
+  arrival state every shipped width has today is unchanged" does not hold for them. Not patched
+  because the degradation is toward single-column, which is the safe direction. **Successor: whoever
+  next audits the reflow breakpoints; the fix is `em` or a `px` literal in the query.**
+
+- **D15's before/after screenshot declaration for Task 5.7 was never produced** (story:1175-1193).
+  D15 requires the Hub restructuring be declared "with before/after screenshots at 390 px and 1920 px,
+  both locales" against Story 2.12's ruled arrival state. What the record carries is one DOM/table/CLS
+  metrics table at **412 px only** — no screenshots, no 1920 px column, no locale dimension. This is a
+  gap in the evidence, not in the code: the restructuring itself is present and correct. **Successor:
+  nobody, unless Juan wants the declaration completed retroactively.**
+
+### One defect Story 2.19 introduced, declared in a comment and filed nowhere
+
+- **A wrapped `SiteHeader` out-grows `scroll-padding-top`, so deep-linked headings land under it at
+  200% zoom** (`app/src/components/SiteHeader.tsx:89-93`, `app/src/app/globals.css:446`). R2/D8's
+  header fix added `flex-wrap` + `min-h-14` — the right trade, and it is what took the universal
+  237 px reflow floor down to 195. But at a wrapped width the sticky header is **~112 px** while
+  `scroll-padding-top: 4.5rem` still reserves **72**, so an anchored heading scrolls to roughly
+  40 px too high and sits behind the header.
+
+  The code says so itself — "KNOWN AND ACCEPTED … recorded rather than left to be re-found" — and
+  that sentence is the entire record: it was never filed here, so "re-found" is exactly what would
+  have happened. It is filed now (2.19 code review). Two properties make it worth an entry rather
+  than a shrug: it is a **regression this story introduced**, and it lands at **200% zoom**, the
+  precise condition AC 3 tests. It also touches UX-DR18's deep links, which are the whole reason
+  `scroll-padding-top` exists.
+
+  Not patched in review because the fix is a judgement call, not a correction: `scroll-padding-top`
+  would have to become responsive (a `7rem` at the wrapped breakpoint, or a `calc()` off a header
+  height custom property that nothing currently publishes), and picking between those is a design
+  decision about the header's contract, not a defect fix. **Successor: whoever next owns
+  `SiteHeader` or `globals.css`.**
+
+### Two blocks this project never dispositioned
+
+Filed by the code review, because AC 5 says no entry naming 2.19 is left silently open and these two
+are. Both name **Story 2.19** as owner and neither appears in the disposition section above, nor in
+the story's own Partition A-D tables — so the "66 blocks" partition was short by two from story
+creation, and nothing downstream noticed.
+
+- **L183** — the original 195 CSS px reflow filing: "decide there whether the product commits to
+  reflow below 320 CSS px". *Substantively this WAS answered* — R2/D8 ruled yes and Task 6.2 shipped
+  the three-surface fix — but the block itself carries no disposition line, so a reader walking the
+  ledger finds it open.
+- **L211** — "Task 10.2's 200%-zoom clause fails at 195 CSS px, but the subtask is checked `[x]`…
+  **Annotate the checkbox** rather than re-patch the condition." The instruction names Story 2.5's
+  Task 10.2 checkbox and is not carried out anywhere in the diff. This is the one with residual work.

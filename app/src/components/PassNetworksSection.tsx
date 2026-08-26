@@ -18,7 +18,7 @@ import type {
 import { formatDecimal, formatInteger } from "@/lib/format";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
-import type { TableColumn } from "@/lib/table-sort";
+import { markRowHeader, type TableColumn } from "@/lib/table-sort";
 import { MD_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 import type { PitchMarker } from "@/viz/marker-model";
@@ -200,6 +200,24 @@ export function PassNetworksSection({
   ];
 
   /*
+   * A ROW HEADER, on the same rule as the four event logs (2.19 code review).
+   *
+   * Task 6.9 gave `<th scope="row">` to the receiving, defensive-actions, shot
+   * and Expert logs under ledger A17 — and then this table, created by R1 in the
+   * same story, shipped with none. It is the LARGEST one: ~227 rows per match
+   * over 23,597 corpus rows, and it is the only surface that data has anywhere in
+   * the product. Without a row header a screen reader announces every volume
+   * against nothing, and a 227-row pass matrix is exactly where a reader most
+   * needs to be told whose pass a row is.
+   *
+   * `from` is the natural identity — a matrix row IS one passer's distribution.
+   * `markRowHeader` rather than a hard-coded flag, for A17's stated reason: it
+   * degrades to `to`, then to the first column, so the table always has exactly
+   * one row header even if `from` is dropped.
+   */
+  const edgeColumnsWithRowHeader = markRowHeader(edgeColumns, ["from", "to"]);
+
+  /*
    * THE MATRIX-ONLY BRANCH — Story 2.19 ruled decision R1, and the shape that
    * ships on every one of the 104 real matches.
    *
@@ -239,7 +257,7 @@ export function PassNetworksSection({
           <DataTable
             caption={edgeCaption}
             tableName={edgeCaption}
-            columns={edgeColumns}
+            columns={edgeColumnsWithRowHeader}
             rows={matrixRows}
             surface="canvas"
           />
@@ -564,7 +582,7 @@ export function PassNetworksSection({
       <DataTable
         caption={edgeCaption}
         tableName={edgeCaption}
-        columns={edgeColumns}
+        columns={edgeColumnsWithRowHeader}
         rows={edgeRows}
         surface="pitch"
       />

@@ -119,10 +119,31 @@ describe("TournamentHub — SM-C2 disclosure (D15)", () => {
       groups: [{ ...groups[0], standings: [] }],
     } as unknown as Tournament;
     const sections = standingsSections(emptied);
-    if (sections.length === 0 || sections[0].rows.length !== 0) {
-      // The fixture's shape does not admit the edit; nothing to assert.
-      return;
-    }
+    /*
+     * ASSERTED, NOT RETURNED PAST (2.19 code review).
+     *
+     * This used to be `if (sections.length === 0 || sections[0].rows.length !== 0)
+     * return;` under the comment "the fixture's shape does not admit the edit;
+     * nothing to assert." But "`standingsSections` stopped emitting a section for
+     * an emptied group" IS the regression this case exists to catch — so on the
+     * exact failure it is written for, it returned early and reported GREEN having
+     * verified nothing.
+     *
+     * A precondition that can silently swallow the defect is not a precondition,
+     * it is a hole. If the fixture shape genuinely changes, this fails loudly and
+     * whoever changed it updates the case deliberately.
+     */
+    expect(
+      sections,
+      "the emptied group produced no standings section — either the fixture changed " +
+        "shape, or `standingsSections` has stopped emitting empty sections, which is " +
+        "precisely the regression this case exists to catch"
+    ).toHaveLength(1);
+    expect(
+      sections[0].rows,
+      "the emptied group's section still carries rows — the fixture edit did not take"
+    ).toHaveLength(0);
+
     renderHub(<TournamentHub tournament={emptied} />);
     expect(screen.getAllByText(/Sin posiciones para este grupo/).length).toBeGreaterThan(0);
   });

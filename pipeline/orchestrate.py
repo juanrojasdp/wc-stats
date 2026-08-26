@@ -57,6 +57,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import traceback
 from pathlib import Path
 
 from pipeline.ingest import batch as ingest_batch
@@ -238,8 +239,17 @@ def main(argv: "list[str] | None" = None) -> int:
             #
             # The exception is PRINTED, not swallowed: the phase table is the output a
             # reader needs, but so is what went wrong.
+            #
+            # WITH ITS TRACEBACK (2.19 code review). Catching the untyped exception
+            # fixed the exit code, and cost the diagnostic CPython used to print for
+            # free: `f"{type(exc).__name__}: {exc}"` is a bare key name for a
+            # `KeyError` and often the empty string for an `AssertionError`, with no
+            # frame telling anyone WHERE. The phase table is the output a reader
+            # needs, but a reader debugging a crash needs the frames too, and there
+            # is no cost to printing both.
             print("")
             print(f"{name} raised {type(exc).__name__}: {exc}", file=sys.stderr)
+            traceback.print_exc()
             code = HARNESS_FAILED
         results.append((name, code))
         worst = max(worst, code)

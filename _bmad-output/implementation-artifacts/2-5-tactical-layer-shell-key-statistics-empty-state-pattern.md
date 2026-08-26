@@ -133,6 +133,19 @@ So that every tactical section has its place, its anchor, and an honest absence 
 - [x] **Task 10: Verify (AC: all)**
   - [x] 10.1 `npm run build` (lint `--max-warnings 0` → tsc → schema assert → next build → copy-data) then `npm test`, in that order — the static-output tests read `out/`.
   - [x] 10.2 Browser over a static server rooted at `out/` (`/data/*` 404s under `next dev`; do not add dev rewrites). At **390 px** on m001: Hero → 64 px gap → `#key-stats` expanded (6 compact rows + "Ver todas las estadísticas") → `#momentum` expanded (its shell + pending panel) → the nine collapsed shells. Confirm zero horizontal scrolling, and again at 200 % zoom. Record the fold evidence in the Debug Log — 2.4 closed with this exact check unevidenced (deferred decision D7).
+    > **ANNOTATION (added by the Story 2.19 code review, 2026-08-25 — ledger L211's own instruction).**
+    > This `[x]` was only ever true of its FIRST clause. The 390 px fold was measured and evidenced;
+    > the **200 % zoom clause failed** — at a 195 CSS px layout viewport `#key-stats` overflowed,
+    > because `grid-cols-[76px_1fr_76px]` (`KeyStatisticsSection.tsx:93`) gives a tile a 247 px
+    > min-content width. It was disclosed in this story's Debug Log at the time and filed for
+    > Story 2.19, so nothing was hidden — but a checked box whose second clause demonstrably fails
+    > reads as passing to anyone skimming, which is what L211 asked to have annotated rather than
+    > silently re-patched.
+    >
+    > **FIXED IN STORY 2.19**, Task 6.2 (R2/D8): the tracks became
+    > `grid-cols-[minmax(0,76px)_minmax(0,1fr)_minmax(0,76px)]` and all sixteen locale × route cells
+    > now report a document scrollWidth of exactly 195. The clause is true today; it was not true
+    > when this box was checked.
   - [x] 10.3 At **≥1024 px**: all 11 sections expanded, no summary lines, key stats in a two-column grid of 19 rows, `section-gap` rhythm visible.
   - [x] 10.4 Keyboard at `<lg`: Tab reaches every shell trigger; Enter/Space toggles; `aria-expanded` flips; focus lands inside the revealed region; the focus ring is visible on every trigger.
   - [x] 10.5 Deep links: load `/matches/m001-mexico-south-africa/#defensive-actions` at 390 px — after the bundle resolves the section auto-expands, scrolls into view clear of the sticky header, and takes focus. Then click an in-page `#pressing` link (or edit the hash) and confirm `hashchange` does the same.

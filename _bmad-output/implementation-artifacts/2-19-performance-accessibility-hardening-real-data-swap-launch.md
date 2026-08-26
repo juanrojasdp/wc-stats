@@ -4,7 +4,7 @@ baseline_commit: 7f28e44
 
 # Story 2.19: Performance & Accessibility Hardening, Real-Data Swap & Launch
 
-Status: review
+Status: in-progress
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -29,20 +29,60 @@ so that the product ships on the real dataset meeting every gate it promised (FR
 **When** the app builds against it
 **Then** all routes pre-render from the real route manifest, the schema-version assert passes, and spot-checked shot maps match the source PDFs on ≥10 matches.
 
+> **MET, by the method D22 records.** 1,406 routes pre-rendered (104 + 1,248 + 48 + 6), schema
+> assert green over 1,411 artifacts. The spot-check covered 12 matches and compared **outcome
+> composition, shot totals and scorelines** against the source PDFs — **not marker `x`/`y`
+> geometry**. Ruled acceptable by Juan at the code review; stated here so the AC is not read as a
+> geometry check that was never run.
+
 **AC 2 — Performance budgets (NFR-1, SM-C2).**
 **Given** the performance budgets
 **When** measured on the production build
 **Then** Lighthouse mobile ≥ 90 on Match Dashboard and Tournament Hub and every route's JSON payload respects the pipeline-measured 500 KB budgets — with density moved behind disclosure, never deleted, if tuning is needed.
+
+> **MET AS DEPLOYED; PARTIALLY MET ON THE REFERENCE HARNESS — ruled D20.** Host medians of 5:
+> **90** and **92**. Local reference harness on the same build: **88** and **86**. Payload passes
+> with 4× margin (114.9 KB against 500 KB on the heaviest route). Density was moved behind
+> disclosure and never deleted (SM-C2, Task 5.7). See D20 for both tables and the surviving
+> successor filing.
 
 **AC 3 — Accessibility floor (NFR-2, UX-DR16).**
 **Given** the accessibility floor
 **When** audited
 **Then** WCAG 2.1 AA checks pass: every viz has its reachable data-table alternative, focus is visible everywhere (`focus-ring-on-pitch` on pitch in both themes), keyboard-only traversal completes every flow (UJ-1..4), `prefers-reduced-motion` disables all animation, 200% zoom holds the single-column Hero, reflow holds to 320px, and a Spanish screen-reader spot-check resolves the `lang="en"` span decisions.
 
+> **MET, by the methods D22 records.** axe reports 0 violations across 32 route × theme × locale
+> cells; reflow holds at 320, 390 and 195 CSS px on all 8 routes in both themes and locales;
+> reduced-motion and focus visibility verified under real media emulation. **Two clauses were
+> satisfied by proxy** and D22 rules them accepted: keyboard traversal was verified as focus order
+> and indicator presence **per route to a 400-stop harness cap**, not as four end-to-end UJ
+> journeys; and the `lang="en"` span decisions were resolved by a **CDP DOM audit**, not a screen
+> reader.
+>
+> One defect this AC's own fix introduced is filed rather than fixed: a wrapped `SiteHeader`
+> out-grows `scroll-padding-top`, so a deep-linked heading lands ~40 px high at 200% zoom. See
+> `deferred-work.md`, "One defect Story 2.19 introduced".
+
 **AC 4 — Launch (SM-4, SM-6).**
 **Given** launch
 **When** the site deploys
 **Then** Netlify publishes `app/out` via the AD-13 chain at $0/month, the Netlify account bandwidth model is confirmed and logged, and the repo + live URL are publishable as the portfolio piece.
+
+> **PARTIALLY MET — one manual step outstanding, and it is Juan's to take.** The site is live, at
+> $0/month, with the bandwidth model logged and the repo public. What was published is the AD-13
+> chain's own output: the chain ran locally and green, and those exact bytes were uploaded.
+>
+> **What is NOT true is that Netlify RUNS the chain.** Task 9.4 was `netlify deploy --prod --dir
+> app/out --no-build` — a CLI upload, not a git-connected build — so nothing re-runs `lint →
+> typecheck → assert:schema-version → next build → copy-data → assert:no-external-origins` on push.
+> The zero-external-origin gate this story added is therefore a developer-machine gate only, which
+> is the opposite of what A3/L49 asked for when it routed the mechanical version here.
+>
+> **RULED by Juan at the code review (2026-08-25): do the OAuth connect.** It needs a
+> GitHub↔Netlify grant in the Netlify UI, which no agent can perform. `netlify.toml` already carries
+> the correct `base`/`command`/`publish`, so no code change is waiting on it. **AC 4 closes when
+> that grant is given and one push produces a green Netlify build.** Until then this AC is
+> partially met and says so.
 
 **AC 5 — The ledger closes (this story's own).**
 `deferred-work.md` carries ~38 entries naming 2.19 as owner. Every one is discharged, re-deferred with a named successor and a stated reason, or recorded as already-closed. No entry naming 2.19 is left silently open at the end of the project.
@@ -628,6 +668,58 @@ announcement identifiers (L1246); (b) the two-stacked-parentheticals head compos
 (c) glossary marks on the five Tactical summaries and the leaderboards surface (L962, L2347).
 All three are cheap; (a) belongs with Task 6's a11y work, (b) and (c) with Task 7.
 
+**D20 — AC 2 / NFR-1's FINAL DISPOSITION: RULED by Juan (2026-08-25) at the code review — "MET ON
+THE HOST, PARTIALLY MET ON THE REFERENCE HARNESS."** D19 ruled "partially met"; the note appended
+under it ruled "MET as deployed" and then handed the call back. Task 5.9 was checked with neither
+branch closed, and the code review is where that closes. Both numbers stand in the record and
+neither is rounded away:
+
+| measurement | Match Dashboard | Tournament Hub | floor |
+|---|---|---|---|
+| production host, median of 5 | **90** (70–92) | **92** (46–94) | 90 |
+| local reference harness, median of 5 | **88** (86–91) | **86** (84–94) | 90 |
+
+The site ships on the host, so **AC 2 is MET as deployed** — and the reference-harness shortfall is
+stated in the same breath, because the spread on both sides (a single run as low as 46) is wider
+than the gap being claimed. A bare "met" would overstate what was measured. Everything D19 recorded
+about the CAUSE survives unchanged: the Hub's LCP element is `h2#standings` inside the AD-11
+client-fetched region, and pre-rendering the standings shell is still the only structural lever —
+still an AD-11 exception, still filed for the successor.
+
+**D21 — A16 / L1213's SUPERSESSION: CONFIRMED by Juan (2026-08-25) at the code review.** D15 ruled
+the `columns` memoisation IN; Task 5.5 shipped "A16 superseded" instead, and the review confirmed no
+`useMemo` over any `columns` array exists anywhere in the story's 6,414-line diff. The dev agent's
+reasoning — that 5.8's code-splitting removed the execution cost the memo was meant to win back — is
+**accepted, and this is the counter-ruling that makes the reversal owned rather than assumed.** The
+point of recording it: a ruling reversed on an implementer's judgement with no counter-ruling is
+indistinguishable, six months later, from a ruling that was simply missed. L1213 is closed as
+SUPERSEDED with Juan's confirmation, not the dev agent's.
+
+**D22 — AC 1 AND AC 3's EVIDENCE METHODS: RULED by Juan (2026-08-25) at the code review — ACCEPT
+THE PROXIES AND NAME THEM.** Three AC clauses were satisfied by something other than the method the
+AC names. All three proxies are real evidence and are accepted; what changes is that the ACs now say
+what was actually done, rather than implying a method that was not run:
+
+- **AC 1 / Task 4.3 — SM-3 spot-check.** The AC says "spot-checked shot maps match the source PDFs".
+  What was compared on 12 matches: the printed Key table's five-way outcome breakdown, the shot total
+  against `keyStatistics.shots`, and the scoreline against the cover. **Marker `x`/`y` geometry — the
+  one thing the shot MAP shows that the Key table does not — was not compared on any match.** Read as:
+  *the shot maps' outcome composition and totals were verified against the source; their plotted
+  coordinates were not.*
+- **AC 3 — Spanish screen-reader spot-check.** What ran was a CDP DOM audit of `<html lang>` across 8
+  routes plus a count of in-body `lang` marks. No screen reader was used; the one substantive finding
+  (a Spanish `<title>` announced with English phonemes at EN) is inferred from D17, not heard. Read
+  as: *the `lang="en"` span decisions were resolved by DOM audit.*
+- **AC 3 — keyboard traversal of UJ-1..4.** What ran was a per-route tab-stop count whose own caveat
+  reads "400 is the harness cap, not the route's total" — so on `/`, `/matches` and `/players`
+  traversal did **not** complete, and no UJ journey is walked end to end anywhere in the record. Read
+  as: *focus order and indicator presence were verified per route to a 400-stop cap; the four user
+  journeys were not traversed end to end.*
+
+Accepted because the proxies test the mechanisms the ACs care about and this is the final story.
+Recorded because an AC that reads as satisfied by a method nobody ran is the kind of thing that gets
+cited later as proof the method ran.
+
 ---
 
 ## Tasks / Subtasks
@@ -734,11 +826,87 @@ All three are cheap; (a) belongs with Task 6's a11y work, (b) and (c) with Task 
 - [x] 10.5 Update `sprint-status.yaml`; `2-19` → `review`. Note `epic-2-retrospective: optional`.
 - [x] 10.6 Commit your own slices as you go (D13). Commit directly to `main` — no branches, no PRs.
 
+### Review Findings
+
+Code review of `7f28e44..HEAD` (2026-08-25). Three adversarial layers — Blind Hunter, Edge Case
+Hunter, Acceptance Auditor — over the 6,414-line code diff (78 files). 32 findings kept, 3
+dismissed as noise. Every location was read before rating; the four `assert-no-external-origins`
+findings were reproduced by running the shipped script against fixture trees.
+
+**All 5 decisions ruled by Juan and all 20 patches applied.** Rulings recorded as **D20** (AC 2's
+final disposition), **D21** (A16's supersession confirmed), **D22** (AC 1 / AC 3 evidence methods
+accepted and named), plus the AC 4 connect ruling in AC 4's own note and the `stepIns` removal at
+`glossary.ts`. Verification after the patches: `lint --max-warnings 0` green, `typecheck` green,
+**50 test files / 1295 tests / 0 skipped**, 194 pipeline tests green across the four files touched
+(`test_swap`, `test_orchestrate`, `test_ingest_batch`, `test_emit_profiles`), and the hardened
+origin gate re-run against the real `out/` — **12,683 assets, 0 external subresources, exit 0**.
+
+**ONE ITEM REMAINS OPEN AND IT IS NOT A CODE CHANGE:** AC 4's Netlify OAuth connect, which only
+Juan can perform. See AC 4's note.
+
+The four highest-severity findings were all in code this story added, and all four were reproduced
+by execution rather than argued from the diff:
+
+| # | Finding | How it was proven |
+|---|---|---|
+| 1 | The new origin gate was blind to IP-literal hosts | Ran the shipped script over a page with `<script src="https://93.184.216.34/track.js">` and `fetch("https://203.0.113.9/collect")` → "0 external subresources", exit 0 |
+| 2 | `copy-data.mjs` shipped the `.staged` trees the schema gate had just been taught to skip | Deploy path is a local CLI upload and `.gitignore` hides those paths, so a killed run's unvalidated bundles would publish with nothing left to notice |
+| 3 | Task 5.7 put 12 pairs of byte-identical disclosure accessible names on `/` | `groupLabel` and `sectionTitle` both resolve to "Grupo A"; same defect class A23 fixed on `/compare` in this story |
+| 4 | An unguarded `new URL()` in a reporting-only path could fail the build naming the wrong cause | A bundle string with an out-of-range port → exit 2, "could not walk … run `next build` first" |
+
+Fixing #1 surfaced a second, older defect underneath it: the `CSS url()` pattern's `i` flag made it
+match JavaScript's `new URL(`, so core-js's own URL feature-detection strings (`new
+URL("https://a@b")`) registered as external subresources the moment the host pattern was widened
+enough to see them. The old dotted-TLD requirement had been masking it. The two CSS-grammar
+positions are now scoped to `.css` and `.html`.
+
+- [x] [Review][Decision] AC 4 — Netlify is not git-connected, so the build gates never run on the deploy path — The record (story:1887-1894) states it honestly: this was `netlify deploy --prod --dir app/out --no-build`, a CLI upload of locally-built bytes. The chain ran green locally and the published bytes are the chain's bytes, so the *publish* half is real. But AC 4 says "Netlify publishes `app/out` via the AD-13 chain", and Task 9.4 is "Connect and publish" checked `[x]` with only publish done. Consequence: `assert:no-external-origins` — the gate this story added — is a developer-machine gate only; nothing re-runs it on push. Options: (a) do the OAuth connect (the record says it is a click, `netlify.toml` already carries `base`/`command`/`publish`); (b) accept CLI deploy as satisfying AC 4 and re-word the AC; (c) accept and file the connect for a successor.
+- [x] [Review][Decision] AC 2 — NFR-1's disposition is left contradictory and handed back to you — D19 (story:585-607) rules "NFR-1 is therefore **partially met**"; the note appended below it (story:609-624) rules "**AC 2 is therefore MET as deployed**" and then explicitly hands the call back: "Juan has the final call on whether NFR-1 now reads 'met' or 'met on the host, partially met on the reference harness'". Task 5.9 is `[x]` against "AC 2 is met or the gap is re-ruled — do not silently accept a miss after D15", but neither branch was closed. Both numbers are recorded: host medians 90/92 over runs spanning 70-92 and 46-94; local reference harness 88/86.
+- [x] [Review][Decision] D15 ruled A16's `columns` memoisation IN; it was not implemented — D15 (story:564-565): "**A16's `columns` memoisation (5.5) is now IN**". Task 5.5 is `[x]` with "A16 superseded" and the ledger row for L1213 reads "SUPERSEDED". Verified: no `useMemo` over any `columns` array exists in `DataTable.tsx` or anywhere in the diff. The supersession argument (5.8 removed the work being optimised) is plausible and may well be right — but it reverses a ruling of yours on the dev agent's own judgement, with no counter-ruling recorded. Either confirm the supersession or the memo is owed.
+- [x] [Review][Decision] AC 1 and AC 3 were evidenced by proxies, not by the methods the ACs name — Three instances, one call: (a) **SM-3 spot-check** (AC 1, Task 4.3) compared the printed Key table's outcome breakdown, shot totals and scorelines on 12 matches — not the marker `x`/`y` geometry, which is the only thing the shot *map* shows that the Key table does not; (b) **Spanish screen-reader spot-check** (AC 3, Task 6.13) is a CDP DOM audit of `lang` attributes, not a screen-reader session; (c) **keyboard traversal of UJ-1..4** (AC 3, Task 6.6) is a per-route tab-stop count whose own caveat says "400 is the harness cap, not the route's total" — so on `/`, `/matches` and `/players` traversal did not complete, and no UJ journey is walked end to end. Accept the proxies and say so in the ACs, or run the real methods.
+- [x] [Review][Decision] `stepIns` is listed in `LEADERBOARD_METRIC_MARKS` and can never match in Spanish — `glossary.ts:383`. The ES term is `irrupción`; the board heading is `Irrupciones`. `findTermSpan`'s loose pass builds `irrupción(?:e?s)?`, which does not match the accent-dropping plural. The map's own docblock four lines above states the rule and names this exact shape as grounds for exclusion: "a map entry that never matches is a claim this file should not make." 13 of 14 boards mark; one silently does not. Options: (a) remove the entry, consistent with the stated rule; (b) extend `findTermSpan` to fold accents — which would also admit `progresión`/`recepción`, the two the docblock deliberately excluded, and is a design change in the final story.
+
+- [x] [Review][Patch] Origin gate is blind to IP-literal and single-label hosts — the exact shape a telemetry regression takes [app/scripts/assert-no-external-origins.mjs:63]
+- [x] [Review][Patch] `copy-data.mjs` ships the `.staged`/`.previous.rollback` trees the schema gate was just taught to skip [app/scripts/copy-data.mjs:30]
+- [x] [Review][Patch] Task 5.7 puts 12 pairs of byte-identical disclosure accessible names on `/` (WCAG 2.4.6 / 4.1.2) [app/src/components/TournamentHub.tsx:655,790]
+- [x] [Review][Patch] Unguarded `new URL()` in the informational pass turns a green build into exit 2 naming the wrong cause [app/scripts/assert-no-external-origins.mjs:131]
+- [x] [Review][Patch] R1's pass-matrix table — the story's own new surface, ~227 rows per match — has no row header, which is the defect A17 files [app/src/components/PassNetworksSection.tsx:167]
+- [x] [Review][Patch] Origin gate passes vacuously on an empty or content-free `out/` [app/scripts/assert-no-external-origins.mjs:107]
+- [x] [Review][Patch] Origin gate does not scan `.svg`/`.xml`, so an external `<image href>` ships unchecked [app/scripts/assert-no-external-origins.mjs:48]
+- [x] [Review][Patch] A failed rollback can leave a namespace absent with no diagnostic naming it [pipeline/precompute/profiles.py:1341, pipeline/precompute/swap.py:130]
+- [x] [Review][Patch] The "systemic half of the fix" scan is a 9-file allowlist whose regex cannot see `className={cn("grid …")}` [app/src/lib/reflow-guards.test.ts:168]
+- [x] [Review][Patch] AC 5: ledger L183 and L211 name 2.19 as owner and carry no disposition [_bmad-output/implementation-artifacts/deferred-work.md:183,211]
+- [x] [Review][Patch] A test case returns early and asserts nothing when its own precondition fails [app/src/components/TournamentHub.test.tsx:123]
+- [x] [Review][Patch] The near-miss filter admits `NaN`/`Infinity`; one `NaN` poisons the `max()` it feeds [pipeline/ingest/batch.py:603]
+- [x] [Review][Patch] `openNonce` cannot reopen a closed disclosure on a repeat click of the same anchor — the capability its docblock claims [app/src/components/ViewDataDisclosure.tsx:100, app/src/components/TournamentHub.tsx:168]
+- [x] [Review][Patch] "renders EVERY board" got weaker at the cutover: tag-stripped `toContain` proves a string is somewhere on the page, not that a board rendered [app/src/app/static-output.test.ts:292]
+- [x] [Review][Patch] Task 6.16's ruling is not applied uniformly — two tables pass section titles as `tableName`, not their captions [app/src/components/ShotMapsSection.tsx:369,379]
+- [x] [Review][Patch] `metricMark` indexes a plain object literal with an unconstrained string, so `"constructor"` returns an inherited function [app/src/lib/glossary.ts:396]
+- [x] [Review][Patch] The new phase catch-all prints no traceback, so an unexpected crash is undebuggable from the log [pipeline/orchestrate.py:224]
+- [x] [Review][Patch] The 200%-zoom anchoring defect `SiteHeader` declares as "KNOWN AND ACCEPTED" has no ledger entry [app/src/components/SiteHeader.tsx]
+- [x] [Review][Patch] Six stale or self-contradicting comments, labels and counts in shipped code — `profiles.py`'s P18 label is P17's; `glossary.ts:365` says "eleven" over a 14-entry map; `table-sort.ts:447` uses `includes` where its docblock says "ends in"; `TournamentHub.tsx:844` still says the Hub's sections do not collapse; `matches/static-output.test.ts:268`'s name asserts the opposite of its body [multiple]
+- [x] [Review][Patch] Dev Agent Record counts do not match the tree — File List says 8 new / 63 modified over lists of 7 / 61; the completion summary says 1,251 tests where the suite reports 1,295; Testing Requirements still says 45 test files against 50 [story:1681,1901,1911,741]
+
+- [x] [Review][Defer] `build-data.ts`'s artifact cache is unbounded, hands the same object to every caller, and never invalidates in `next dev` [app/src/lib/build-data.ts:62] — deferred, pre-existing pattern; no current consumer mutates
+- [x] [Review][Defer] The locale-change sort announcement has no dependency array and N sorted tables collapse into one shared live region [app/src/components/DataTable.tsx:442] — deferred, only fires for tables the reader actively sorted
+- [x] [Review][Defer] The `min-h-[120vh]` reservation is justified by a 14,990 px measurement Task 5.7 invalidated, and the error branch collapses it [app/src/components/TournamentHubRegion.tsx:182] — deferred, CLS measured 0.000 on the shipped path
+- [x] [Review][Defer] `sideIdentity` degrades back to byte-identical captions when both sides' `detail` is null [app/src/components/CompareChartsSection.tsx:154] — deferred, acknowledged in the comment; no null-detail collision in the corpus
+- [x] [Review][Defer] The caption-uniqueness inventory covers 3 of 36 Hub boards [app/src/lib/i18n.test.ts:1910] — deferred, D2 deliberately pins fixture-derived tests
+- [x] [Review][Defer] `min-[19rem]` media queries resolve against the browser's default font size, not the root element [app/src/components/StoryStatTiles.tsx:136, app/src/components/CompareRows.tsx:184] — deferred, degrades toward single-column, which is the safe direction
+- [x] [Review][Defer] D15's before/after screenshot declaration for Task 5.7 was not produced — one metrics table at 412 px only, no 1920 px column, no locale dimension [story:1175] — deferred, evidence gap in the record, not in the code
+
+**Dismissed as noise (3):** the locale announcement firing for text columns whose collation is
+locale-invariant (ES/EN collators do differ on accented names, and the sentence states current
+state rather than claiming a change); a row header rendering the unknown glyph when a row's player
+name is null (the honest rendering; the alternative is no row header at all); the pass matrix
+rendering all-unknown names on an empty roster (requires empty `lineups`, populated 104/104).
+
 ---
 
 ## Testing Requirements
 
-- **App:** `cd app && npm test` (vitest, 45 test files). Baseline at 2.17 close was ~1,060+ tests
+- **App:** `cd app && npm test` (vitest, 50 test files at 2.19 close — this said 45, the pre-story
+  count, and was corrected by the code review). Baseline at 2.17 close was ~1,060+ tests
   green. The `assert-schema-version` tests carry an explicit `20_000` ms budget (raised by 2.14);
   they walk 1,411 real artifacts in ~1,659 ms.
 - **Gates:** `npm run build` = lint (`--max-warnings 0`) → typecheck → schema-assert → `next build`
@@ -1679,7 +1847,10 @@ solved: real 320/390/195 CSS px layout viewports, working media emulation, and a
 `IntersectionObserver`.
 
 **Task 2 — the DATA_ROOT cutover.** Both constants flipped in one change with the guard test beside
-them (D1), and the whole tree is green on real data: 1406 routes, 1251 tests, 0 skipped.
+them (D1), and the whole tree is green on real data: 1406 routes, 1251 tests, 0 skipped **at the
+time of this task**. (The suite kept growing through Tasks 3-7; the tree at story close reads
+**50 files / 1295 tests / 0 skipped**, and the code review's own patches held that number. The
+1,251 here is a Task 2 measurement, not the final figure — it read as the latter.)
 
 Four things the story did not predict, each recorded because each was a real defect rather than a
 mechanical rename:
@@ -1898,7 +2069,7 @@ the repo is a click, not a change. Filed for whoever wants CI deploys.
 84 files across the whole story (`git diff --name-status 7f28e44..HEAD`), grouped by what they
 are. **A** = added, **M** = modified. No file was deleted.
 
-#### App — new (8)
+#### App — new (7)
 
 - `app/scripts/assert-no-external-origins.mjs`
 - `app/src/components/TournamentHub.test.tsx`
@@ -1908,7 +2079,7 @@ are. **A** = added, **M** = modified. No file was deleted.
 - `app/src/lib/use-in-view.test.tsx`
 - `app/src/lib/use-in-view.ts`
 
-#### App — modified (63)
+#### App — modified (62)
 
 - `app/package.json`
 - `app/scripts/assert-schema-version.mjs`

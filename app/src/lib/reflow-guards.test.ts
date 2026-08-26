@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -33,6 +33,26 @@ const SRC = path.join(process.cwd(), "src");
 
 function source(relative: string): string {
   return readFileSync(path.join(SRC, relative), "utf8");
+}
+
+/**
+ * Every `.tsx` under `src/`, as `SRC`-relative POSIX paths.
+ *
+ * Added by the 2.19 code review so the implicit-track scan below is repo-wide
+ * rather than a nine-file allowlist. Node built-ins only, matching the rest of
+ * this file — the suite must not grow a dependency to walk a directory.
+ */
+function tsxFiles(dir: string = SRC): string[] {
+  const found: string[] = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      found.push(...tsxFiles(full));
+    } else if (entry.name.endsWith(".tsx") && !entry.name.endsWith(".test.tsx")) {
+      found.push(path.relative(SRC, full).split(path.sep).join("/"));
+    }
+  }
+  return found;
 }
 
 interface Guard {
@@ -152,24 +172,49 @@ describe("reflow guards (AC 3, WCAG 1.4.10) — R2/D8's one change, pinned", () 
      * Fixed-size boxes are exempt: `grid h-12 w-12 place-items-center` is a
      * crest, not a layout track.
      */
-    const files = [
-      "components/CompareRegion.tsx",
-      "components/LeaderboardsRegion.tsx",
-      "components/LeaderboardsSection.tsx",
-      "components/LineupsDisclosure.tsx",
-      "components/MatchBundleRegion.tsx",
-      "components/PlayerProfileRegion.tsx",
-      "components/TeamProfileRegion.tsx",
-      "components/TournamentHub.tsx",
-      "components/TournamentHubRegion.tsx",
-    ];
+    /*
+     * ═══ REPO-WIDE, AND IT REACHES INSIDE `cn(...)` (2.19 code review) ═══
+     *
+     * This case used to iterate a hard-coded nine-file list with the pattern
+     * `/className=\{?"([^"]*\bgrid\b[^"]*)"/`, and so could not do the thing its
+     * own message claims. Two blind spots, both already reachable:
+     *
+     *   1. `className={cn("grid …", x)}` never matched — the pattern wants a quote
+     *      immediately after the optional `{`, and `cn(` supplies `c`.
+     *      `CompareRows.tsx` is exactly that shape and is one of the six named
+     *      reflow owners, so the scan was blind to a file it exists to protect.
+     *   2. A tenth file was invisible by construction. "This scan is what stops a
+     *      twelfth being added" was false for every file not on the list, which is
+     *      most of them.
+     *
+     * So: every `.tsx` under `src/`, and class strings are harvested from any
+     * double-quoted literal inside the `className` value — which reaches both
+     * halves of `cn("a", cond && "b")`. Template-literal classNames still escape
+     * it; that limit is stated rather than papered over, and nothing uses one today.
+     */
+    const files = tsxFiles();
+    expect(
+      files.length,
+      "the repo-wide .tsx walk found nothing — the scan itself is broken"
+    ).toBeGreaterThan(40);
+
     const offenders: string[] = [];
     for (const file of files) {
-      for (const match of source(file).matchAll(/className=\{?"([^"]*\bgrid\b[^"]*)"/g)) {
-        const classes = match[1];
-        if (/\bgrid-cols-/.test(classes)) continue;
-        if (/\bh-\d+\b/.test(classes) && /\bw-\d+\b/.test(classes)) continue;
-        offenders.push(`${file}: ${classes}`);
+      for (const attribute of source(file).matchAll(/className=(?:"([^"]*)"|\{([^}]*)\})/g)) {
+        const literals =
+          attribute[1] !== undefined
+            ? [attribute[1]]
+            : [...(attribute[2] ?? "").matchAll(/"([^"]*)"/g)].map((match) => match[1]);
+        for (const classes of literals) {
+          if (!/\bgrid\b/.test(classes)) continue;
+          if (/\bgrid-cols-/.test(classes)) continue;
+          // Fixed-size boxes are exempt: `grid h-12 w-12 place-items-center` is a
+          // crest, not a layout track. Arbitrary sizes (`h-[228px]`) count as fixed.
+          const fixedHeight = /\bh-(?:\d+|\[[^\]]+\])/.test(classes);
+          const fixedWidth = /\bw-(?:\d+|\[[^\]]+\])/.test(classes);
+          if (fixedHeight && fixedWidth) continue;
+          offenders.push(`${file}: ${classes}`);
+        }
       }
     }
     expect(

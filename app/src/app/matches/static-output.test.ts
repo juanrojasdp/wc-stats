@@ -265,7 +265,11 @@ describe.skipIf(!anyBuilt)("m004 Hero markup — a REAL own goal (AC 2, AD-6)", 
     expect(away).not.toContain("BOBADILLA");
   });
 
-  it("keeps the scorer's own side clean of it — Paraguay's column is its own goal only", () => {
+  // Renamed by the 2.19 code review: the name read "Paraguay's column is its own
+  // goal only", which states the opposite of the assertion below. An own goal is
+  // credited to the side that BENEFITS, so the conceding side's column carries no
+  // own-goal marker at all.
+  it("keeps the conceding side's column free of the own-goal marker entirely", () => {
     const { away } = scorerColumns(html);
     expect(away).not.toContain(es.match.hero.ownGoal);
   });

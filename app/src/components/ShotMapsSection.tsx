@@ -363,10 +363,19 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
   const shotCaption = `${shotTitle}${CAPTION_SEPARATOR}${t("viz.table.caption")}`;
   const crossCaption = `${crossTitle}${CAPTION_SEPARATOR}${t("viz.table.caption")}`;
 
+  /*
+   * `tableName` IS THE CAPTION (2.19 code review, and Task 6.16's own ruling).
+   *
+   * 6.16 ruled that a table's announcement identifier is its `<caption>`, and
+   * justified that by the caption inventory in `i18n.test.ts` pinning caption
+   * uniqueness site-wide. These two tables passed their section TITLES instead —
+   * strings the inventory does not pin — so they were the two call sites the
+   * ruling's own guarantee did not actually reach.
+   */
   const shotTable = (
     <DataTable
       caption={shotCaption}
-      tableName={shotTitle}
+      tableName={shotCaption}
       columns={shotColumns}
       rows={shotRows}
       surface="pitch"
@@ -376,7 +385,7 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
   const crossTable = (
     <DataTable
       caption={crossCaption}
-      tableName={crossTitle}
+      tableName={crossCaption}
       columns={crossColumns}
       rows={crossRows}
       surface="pitch"

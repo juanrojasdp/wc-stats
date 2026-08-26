@@ -434,10 +434,17 @@ export function composeHeadAccessibleName(
    * head. Only the COMPOSITION was clumsy, which is why the ledger filed it as
    * a copy item rather than a defect.
    *
-   * So: when the head ALREADY ends in a bracket, the full term is appended
-   * after an em-dash instead —
+   * So: when the head ALREADY CARRIES a bracket, the full term is appended after
+   * an em-dash instead —
    *
    *     "Ordenar por Vel. máx. (km/h) — Velocidad máxima"
+   *
+   * "CARRIES", not "ends in" (2.19 code review). The predicate below is
+   * `headText.includes("(")`, and the docblock used to say "ends in a bracket" —
+   * a head with a MID-string parenthetical takes the em-dash branch too. That is
+   * the correct behaviour, since any parenthetical in the head is what would
+   * stack against the appended one, so the description was corrected to the code
+   * rather than the other way round.
    *
    * WCAG 2.5.3 Label in Name is untouched in both branches: the visible text is
    * still the LEADING substring of the accessible name, never substituted. The

@@ -164,6 +164,20 @@ function useCountPhrase(): (count: number, one: DictionaryKey, many: DictionaryK
  * ledger L1553/L1886 files against the match route. Subscribed to `hashchange`
  * as well as read once at mount, so in-page anchor navigation opens its target
  * too.
+ *
+ * ═══ AND TO `click`, WHICH IS WHAT MAKES THE NONCE EARN ITS NAME ═══
+ *
+ * `hashchange` fires only when the fragment CHANGES. `ViewDataDisclosure`'s
+ * `openNonce` docblock justifies being a counter rather than a boolean on the
+ * grounds that a boolean "could not" re-open on a second navigation to the same
+ * anchor — but with `hashchange` as the only source, neither could the counter
+ * (2.19 code review): a reader who follows `…/#standings-group-a`, closes the
+ * group, then clicks the same in-page link again got no event, no increment and
+ * a section that stayed shut.
+ *
+ * Same-fragment clicks are therefore caught directly. Capture phase, so it still
+ * runs if something downstream stops propagation, and it only ever re-reads a
+ * hash the browser is already on — it never navigates.
  */
 function useAnchorNonce(): (anchorId: string) => number {
   const [hit, setHit] = useState<{ id: string; nonce: number } | null>(null);
@@ -175,9 +189,27 @@ function useAnchorNonce(): (anchorId: string) => number {
       }
       setHit((previous) => ({ id, nonce: (previous?.nonce ?? 0) + 1 }));
     }
+    function onClick(event: MouseEvent) {
+      const anchor = (event.target as Element | null)?.closest?.("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) {
+        return;
+      }
+      // Same document, same fragment: the one case that fires no `hashchange`.
+      if (anchor.hash === "" || anchor.hash !== window.location.hash) {
+        return;
+      }
+      if (anchor.pathname !== window.location.pathname) {
+        return;
+      }
+      readHash();
+    }
     readHash();
     window.addEventListener("hashchange", readHash);
-    return () => window.removeEventListener("hashchange", readHash);
+    document.addEventListener("click", onClick, true);
+    return () => {
+      window.removeEventListener("hashchange", readHash);
+      document.removeEventListener("click", onClick, true);
+    };
   }, []);
   return (anchorId) => (hit !== null && hit.id === anchorId ? hit.nonce : 0);
 }
@@ -604,6 +636,23 @@ function StandingsSurface({ tournament }: { tournament: Tournament }) {
            * same way. "Grupo" reuses `match.hero.group`: one term, one key.
            */
           const groupLabel = `${groupWord}${SPACE}${section.group.toUpperCase()}`;
+          /*
+           * THE SURFACE-QUALIFIED NAME, and it is what the disclosure and the
+           * table BOTH carry (2.19 code review).
+           *
+           * `groupLabel` alone is "Grupo A" — and `ResultsSurface`'s own section
+           * title for the same group is the byte-identical "Grupo A". Task 5.7
+           * put a `ViewDataDisclosure` on both, so `/` shipped 24 disclosure
+           * buttons carrying 12 PAIRS of identical accessible names
+           * ("Ver los datos: Grupo A" twice, for every group), with nothing in
+           * either name saying which was standings and which was results.
+           *
+           * That is WCAG 2.4.6 / 4.1.2, and it is the same defect A23 fixed on
+           * /compare in this very story — reintroduced on the Hub by the
+           * restructuring. The tables were never ambiguous because `tableName`
+           * already qualified them; the CONTROL is what lacked it.
+           */
+          const surfaceQualifiedLabel = `${t("hub.standings.tableName")}${separator}${groupLabel}`;
           return (
             /*
              * `min-w-0` IS LOAD-BEARING, not tidiness. A grid item defaults to
@@ -652,7 +701,7 @@ function StandingsSurface({ tournament }: { tournament: Tournament }) {
                   </p>
                   <div className="mt-tile-gap">
                     <ViewDataDisclosure
-                      panelTitle={groupLabel}
+                      panelTitle={surfaceQualifiedLabel}
                       surface="canvas"
                       openNonce={anchorNonce(section.anchorId)}
                     >
@@ -744,6 +793,10 @@ function ResultsSurface({ tournament }: { tournament: Tournament }) {
       <div className="mt-tile-gap grid grid-cols-1 gap-section-gap">
         {sections.map((section) => {
           const sectionTitle = headingText(section.heading);
+          // See StandingsSurface: the disclosure's name must say WHICH surface,
+          // because a group's results section and its standings section share a
+          // heading exactly (2.19 code review).
+          const surfaceQualifiedTitle = `${t("hub.results.tableName")}${separator}${sectionTitle}`;
           return (
             /*
              * `min-w-0` IS LOAD-BEARING, not tidiness. A grid item defaults to
@@ -787,7 +840,7 @@ function ResultsSurface({ tournament }: { tournament: Tournament }) {
                   </p>
                   <div className="mt-tile-gap">
                     <ViewDataDisclosure
-                      panelTitle={sectionTitle}
+                      panelTitle={surfaceQualifiedTitle}
                       surface="canvas"
                       openNonce={anchorNonce(section.anchorId)}
                     >
@@ -843,9 +896,17 @@ export function TournamentHubHeading() {
  * The mount-time read is therefore load-bearing, not belt-and-braces, and the
  * `hashchange` subscription then serves in-page anchor navigation. Copied from
  * `ExpertLayer.tsx:239-250` and `TacticalLayer.tsx:121-134`, which solve exactly
- * this problem for exactly this fetch shape; the Hub's sections do not collapse,
- * so it needs the scroll half only. `scroll-padding-top: 4.5rem` on <html>
- * (globals.css) keeps the target clear of the sticky site header.
+ * this problem for exactly this fetch shape.
+ *
+ * THIS IS THE SCROLL HALF ONLY, and it used to say so because "the Hub's sections
+ * do not collapse". Task 5.7 made every populated section collapse behind a
+ * `ViewDataDisclosure`, so that sentence is no longer true (2.19 code review):
+ * the OPEN half now exists too, as `useAnchorNonce` above feeding
+ * `openNonce`. The two are deliberately separate hooks — one moves the viewport,
+ * the other opens the control — and a deep link needs both.
+ *
+ * `scroll-padding-top: 4.5rem` on <html> (globals.css) keeps the target clear of
+ * the sticky site header.
  */
 function useHashScroll(): void {
   useEffect(() => {

@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import math
 import sys
 from pathlib import Path
 
@@ -600,7 +601,22 @@ def format_summary(manifest: dict) -> str:
     for entry in manifest["reports"]:
         for near_miss in entry.get("near_misses") or []:
             delta = near_miss.get("max_delta")
-            if not isinstance(delta, (int, float)) or isinstance(delta, bool) or delta == 0:
+            # `math.isfinite` closes the last hole (2.19 code review). The three
+            # guards beside it cover non-numerics, the `bool`-is-an-`int` trap and
+            # exact zero — but `json.loads` accepts the bare literals `NaN`,
+            # `Infinity` and `-Infinity` by default, and `NaN` passes every one of
+            # them: it is a `float`, it is not a `bool`, and `nan == 0` is False.
+            # One `NaN` reaching the renderer below poisons the `max()` it feeds, so
+            # a summary whose stated purpose is to be trustworthy without opening the
+            # logs reports `(max nan)` for the whole check. The manifest is a
+            # hand-editable file, which is this filter's own justification for
+            # existing.
+            if (
+                not isinstance(delta, (int, float))
+                or isinstance(delta, bool)
+                or not math.isfinite(delta)
+                or delta == 0
+            ):
                 continue
             near_misses.setdefault(near_miss["check"], []).append(delta)
     if near_misses:

@@ -290,9 +290,33 @@ describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)
      */
     const page = html().replace(/<[^>]*>/g, "");
     expect(LEADERBOARDS_SHIPPED.boards.length).toBeGreaterThanOrEqual(36);
+
+    /*
+     * COUNTED, NOT JUST CONTAINED (2.19 code review).
+     *
+     * `toContain(label)` over the whole flattened document proves that a string
+     * appears SOMEWHERE, not that a board rendered. 36 boards map to 35 distinct
+     * ES labels — `completedLineBreaks` and `lineBreaksCompleted` both resolve to
+     * "Rupturas de líneas completadas" and are separated only by `scope` — so a
+     * board that stopped rendering entirely would still pass on its twin's label.
+     * The case is named "renders EVERY board"; a substring test cannot say that.
+     *
+     * Counting occurrences per label restores the claim: a label shared by N
+     * boards must appear at least N times. Still text-based, for the tag-stripping
+     * reason above.
+     */
+    const expectedByLabel = new Map<string, string[]>();
     for (const board of LEADERBOARDS_SHIPPED.boards) {
       const label = t(leaderboardMetricKey(board.metricCode));
-      expect(page, `missing heading for ${board.metricCode}`).toContain(label);
+      expectedByLabel.set(label, [...(expectedByLabel.get(label) ?? []), board.metricCode]);
+    }
+    for (const [label, metricCodes] of expectedByLabel) {
+      const occurrences = page.split(label).length - 1;
+      expect(
+        occurrences,
+        `"${label}" is the heading for ${metricCodes.length} board(s) ` +
+          `(${metricCodes.join(", ")}) but appears ${occurrences} time(s) in the page text`
+      ).toBeGreaterThanOrEqual(metricCodes.length);
     }
     expect(page).toContain(es.leaderboards.scope.team);
     expect(page).toContain(es.leaderboards.scope.player);

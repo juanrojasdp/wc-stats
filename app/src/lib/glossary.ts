@@ -362,10 +362,15 @@ export const SECTION_SUMMARY_MARKS: Partial<Record<CollapsibleSectionId, Section
  * full region — and those are plain headings with no control in them. That is
  * where the mark goes.
  *
- * ONE MARK PER BOARD, and only where the term genuinely applies: eleven of the
+ * ONE MARK PER BOARD, and only where the term genuinely applies: THIRTEEN of the
  * thirty-odd metric codes name a policy-table term, and the rest are ordinary
  * football words ("Pases", "Posesión") that the glossary does not define. A
  * metric absent from this map renders exactly as it did before.
+ *
+ * (The count read "eleven" against a fourteen-entry map, and the Dev Agent Record
+ * read "fourteen"; the 2.19 code review reconciled both to the map, then removed
+ * `stepIns` for the reason recorded at its former position. Thirteen is the
+ * number of entries below and the number of boards that mark.)
  *
  * THE MATCH IS BEST-EFFORT BY DESIGN. `findTermSpan` folds case and tolerates a
  * plural `-s`/`-es`, but Spanish plurals that drop an accent — "progresión" ->
@@ -380,7 +385,18 @@ export const LEADERBOARD_METRIC_MARKS: Partial<Record<string, SectionMark>> = {
   highSpeedRuns: { id: "high-speed-run" },
   secondBalls: { id: "second-ball" },
   takeOns: { id: "take-on" },
-  stepIns: { id: "step-in" },
+  /*
+   * `stepIns` IS DELIBERATELY ABSENT — removed by the 2.19 code review, ruled by
+   * Juan, on the rule this map's own docblock states four lines above.
+   *
+   * The ES term is `irrupción` and the board heading is `Irrupciones`. That is an
+   * accent-dropping plural, exactly like `progresión` -> `progresiones` and
+   * `recepción` -> `recepciones`, and `findTermSpan`'s loose pass builds
+   * `irrupción(?:e?s)?`, which cannot match it. The entry was listed anyway, so 13
+   * of 14 boards marked and one silently did not.
+   *
+   * "A map entry that never matches is a claim this file should not make."
+   */
   forcedTurnovers: { id: "forced-turnover" },
   completedLineBreaks: { id: "line-break" },
   lineBreaksCompleted: { id: "line-break" },
@@ -392,8 +408,22 @@ export const LEADERBOARD_METRIC_MARKS: Partial<Record<string, SectionMark>> = {
   shotsOnTarget: { id: "on-target" },
 };
 
-/** The mark a leaderboard board's HEADING carries, or null. */
+/**
+ * The mark a leaderboard board's HEADING carries, or null.
+ *
+ * `Object.hasOwn` guards the lookup (2.19 code review). Unlike
+ * `SECTION_HEADING_MARKS` and `SECTION_SUMMARY_MARKS`, which are keyed by closed
+ * unions, this map is `Partial<Record<string, …>>` indexed by an unconstrained
+ * `metricCode` — so `"constructor"`, `"toString"` or `"valueOf"` returned an
+ * INHERITED function that `?? null` does not catch, and `mark()` then read `.id`
+ * and `.lang` off it and produced a `glossaryTerm…undefined` key. No contract
+ * artifact carries such a code today; a one-line guard is cheaper than relying on
+ * that staying true.
+ */
 export function metricMark(metricCode: string): SectionMark | null {
+  if (!Object.hasOwn(LEADERBOARD_METRIC_MARKS, metricCode)) {
+    return null;
+  }
   return LEADERBOARD_METRIC_MARKS[metricCode] ?? null;
 }
 

@@ -30,7 +30,35 @@ hundreds of orphan artifacts as though they were real.
 from __future__ import annotations
 
 import shutil
+import sys
 from pathlib import Path
+
+
+def _warn_stranded(target: Path, backup: Path) -> None:
+    """Say that a rollback failed and NAME the two paths involved.
+
+    ═══ THE SUPPRESSION IS RIGHT; THE SILENCE WAS NOT (2.19 code review) ═══
+
+    Every `except OSError: pass` in this module is deliberate and stays: if an undo
+    fails, the ORIGINAL write error is the diagnostic the reader needs, and letting
+    the rollback's own error replace it was 1.19 review patch P11's whole point.
+
+    What was missing is that the caller was then told nothing about the state the
+    undo was abandoned in. The comments say "the tree is equally half-swapped either
+    way", and that is not true of the worst case: `target` has already been renamed
+    to `backup`, so a failed restore leaves the committed namespace **absent**, with
+    the only copy sitting under a `.previous.rollback` sibling that `.gitignore`
+    hides from `git status`. An operator reading the traceback sees a write error
+    and no hint that `data/matches/` is gone.
+
+    Printed to stderr rather than raised, so it cannot displace the cause.
+    """
+    print(
+        f"  !! ROLLBACK FAILED: {target} could not be restored and is now ABSENT.\n"
+        f"     The retired copy is at {backup} — move it back by hand before rerunning.\n"
+        f"     The exception below is the ORIGINAL cause, not this failure.",
+        file=sys.stderr,
+    )
 
 STAGED_SUFFIX = ".staged"
 ROLLBACK_SUFFIX = ".previous.rollback"
@@ -125,13 +153,14 @@ def swap_directory(staged: Path, target: Path) -> "Path | None":
         # THE RESTORE IS GUARDED (1.19 review patch P11). This is the sharpest case in the
         # module: if `backup.rename(target)` itself fails, `target` is ABSENT and the
         # exception the caller sees is the rollback's, not the cause. Suppressing the
-        # rollback's own failure keeps the original diagnostic — the tree is equally
-        # half-swapped either way, and the reader needs to know WHY.
+        # rollback's own failure keeps the original diagnostic — but it is now also
+        # ANNOUNCED (2.19 code review), because in this branch the tree is NOT equally
+        # half-swapped: `target` is absent and only `backup` holds it.
         if retired:
             try:
                 backup.rename(target)
             except OSError:
-                pass
+                _warn_stranded(target, backup)
         raise
     return backup if retired else None
 
@@ -177,7 +206,10 @@ def swap_files(installs: "list[tuple[Path, Path]]") -> "list[Path]":
             try:
                 backup.replace(target)
             except OSError:
-                pass
+                # Named, not silent (2.19 code review) — this is the branch that can
+                # leave `tournament.json` new beside `leaderboards.json` old, the exact
+                # disagreement this module's docstring promises cannot occur.
+                _warn_stranded(target, backup)
         raise
 
     # POST-SUCCESS CLEANUP IS QUIET (1.19 review patch P10). Every install has landed; a
