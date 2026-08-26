@@ -46,6 +46,16 @@ export interface DefensiveActionsSectionProps {
   defensiveActions: DefensiveActions;
   home: SideRef;
   away: SideRef;
+  /**
+   * `#defensive-actions-table`'s nonce (Story 3.8, D4).
+   *
+   * On the shipped corpus `events.defensiveActions` is null on 104/104 matches,
+   * so TacticalLayer renders the whole SECTION's empty state above this
+   * component and this prop is never read there. D6's section-level scroll lands
+   * the fragment on that empty state, which is why no extra anchor is needed on
+   * this route; the fixture is what exercises the panel.
+   */
+  tableNonce: number;
 }
 
 /*
@@ -64,6 +74,7 @@ export function DefensiveActionsSection({
   defensiveActions,
   home,
   away,
+  tableNonce,
 }: DefensiveActionsSectionProps) {
   const t = useT();
   const { locale } = useLocale();
@@ -299,6 +310,8 @@ export function DefensiveActionsSection({
    */
   return (
     <PitchPanel
+      anchorId="defensive-actions-table"
+      openNonce={tableNonce}
       title={title}
       sides={[side(home, "a", markers.home), side(away, "b", markers.away)]}
       legend={legend}

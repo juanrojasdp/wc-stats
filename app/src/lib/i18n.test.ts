@@ -28,6 +28,7 @@ import {
   matchdayRoundLabelKey,
 } from "@/lib/hub-model";
 import { t, type Locale } from "@/lib/i18n";
+import { PANEL_ANCHORS, resolveMatchFragment } from "@/lib/match-anchors";
 import {
   entityKindLabelKey,
   entityKindRowLinkKey,
@@ -1663,16 +1664,46 @@ describe("Story 2.11c's receiving log and log links", () => {
     }
   });
 
-  it("points every href at a real SectionId — the story's largest silent failure", () => {
+  it("points every href at a fragment that RESOLVES TO A PANEL — not merely to a section", () => {
     /*
-     * TASK 4.4a, and the cheapest test in the story. A typo like
-     * `#pass-network` yields a dead anchor that no type, no lint and no other
-     * test catches, because `sectionIdFromHash` is whole-string equality against
-     * the eleven SectionIds and returns `null` SILENTLY.
+     * TASK 4.4a's pin, STRENGTHENED BY STORY 3.8 (D8) rather than deleted.
+     *
+     * It was `SECTION_IDS`-membership, and it was the cheapest test in 2.11c's
+     * story: a typo like `#pass-network` yields a dead anchor that no type, no
+     * lint and no other test catches, because the old `sectionIdFromHash` was
+     * whole-string equality and returned `null` SILENTLY.
+     *
+     * WHAT IT NOW GUARDS, AND WHY THAT IS STRICTLY MORE. Membership could only
+     * ask "is this a real section?" — a question to which BOTH the shot-log and
+     * the cross-log hrefs answered yes while both read `#shot-maps`, which is
+     * ledger entry L1886 in one line: two links, one fragment, and the second
+     * one silently a no-op. Asserting that the fragment resolves AND names a
+     * PANEL is the assertion that would have caught it, because two links cannot
+     * name the same panel without one of the distinctness pins below going red.
+     *
+     * A1: never satisfy a gate by deleting an assertion. This one is replaced by
+     * a stronger one, and it was driven RED before it was believed.
      */
     for (const link of LOG_LINKS) {
       expect(link.href.startsWith("#"), link.id).toBe(true);
-      expect(SECTION_IDS as readonly string[], link.id).toContain(link.href.slice(1));
+      const resolved = resolveMatchFragment(link.href);
+      expect(resolved, link.id).not.toBeNull();
+      expect(SECTION_IDS as readonly string[], link.id).toContain(resolved?.section);
+      expect(resolved?.panel, `${link.id} must open a table, not just a section`).not.toBeNull();
+    }
+  });
+
+  it("gives each of the six links its OWN panel — the L1886 assertion", () => {
+    /*
+     * The half of the defect the resolution check above cannot see: six hrefs
+     * that all resolve to panels could still resolve to the SAME panel. Before
+     * Story 3.8 the shot log and the cross log both read `#shot-maps`, so
+     * clicking the second one after the first did nothing at all.
+     */
+    const panels = LOG_LINKS.map((link) => resolveMatchFragment(link.href)?.panel);
+    expect(new Set(panels).size, "six links, six distinct panels").toBe(LOG_LINKS.length);
+    for (const panel of panels) {
+      expect(PANEL_ANCHORS.map((anchor) => anchor.id) as readonly string[]).toContain(panel);
     }
   });
 

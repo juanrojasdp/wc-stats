@@ -1,5 +1,5 @@
+import type { MatchFragmentId } from "@/lib/match-anchors";
 import type { DictionaryKey } from "@/lib/i18n";
-import type { SectionId } from "@/lib/tactical-sections";
 
 /*
  * THE EXPERT LAYER'S FULL-EVENT-LOG LINK TABLE (Story 2.11c, AC 1 / UX-DR18).
@@ -13,18 +13,31 @@ import type { SectionId } from "@/lib/tactical-sections";
  * equivalent table, and NFR-2/UX-DR16 make that the accessibility floor. So
  * these slots are LINKS.
  *
- * RULING 2 — THEY ARE HONEST ANCHORS, AND NOTHING HERE OPENS A DISCLOSURE. A
- * plain anchor does not deliver a reader to a table: every match-page table sits
- * behind a `ViewDataDisclosure` whose `open` is a private `useState(false)` with
- * no prop, no ref and a `useId()` region that is not authorable and does not
- * exist in the DOM while closed; `PitchPanel` forwards only `panelTitle` and
- * `trailing`; `sectionIdFromHash` is whole-string equality against the eleven
- * SectionIds, so a finer fragment resolves to null SILENTLY; and `#shot-maps` is
- * ambiguous, holding two independent disclosures. Real plumbing is ~12 files
- * across every match-page section and inherits the ledgered "an unchanged hash
- * never re-fires hashchange" defect, which is fatal to a link list. So each link
- * STATES where the table is and that "Ver los datos" opens it, and the gap is
- * FILED.
+ * RULING 2 — SUPERSEDED BY STORY 3.8: THESE LINKS NOW OPEN THE TABLE.
+ *
+ * As written at 2.11c this ruling read "they are honest anchors, and nothing
+ * here opens a disclosure", and it listed four blockers: a `ViewDataDisclosure`
+ * whose `open` was a private `useState(false)`; a `PitchPanel` that forwarded
+ * only `panelTitle` and `trailing`; a `sectionIdFromHash` that was whole-string
+ * equality and returned null SILENTLY for a finer fragment; and `#shot-maps`
+ * being ambiguous between two independent disclosures. The list is retired here
+ * rather than left standing in the present tense, because a false description of
+ * the tree is worse than no description.
+ *
+ * What each blocker became: Story 2.19 shipped `ViewDataDisclosure.openNonce`
+ * AND the capture-phase click listener for the same-fragment case — the one this
+ * entry called "fatal to a link list" — while building the Tournament Hub's own
+ * deep links. Story 3.8 then ported that hook to `@/lib/use-anchor-nonce`, added
+ * `anchorId`/`openNonce` to `PitchPanel`, and replaced `sectionIdFromHash` with
+ * the `@/lib/match-anchors` grammar, which resolves BOTH `#<section>` and the
+ * finer `#<section>-<panel>` and reports an addressed-but-unresolvable fragment
+ * loudly in dev.
+ *
+ * So each href below now names a PANEL, not just a section: following one
+ * expands the section, scrolls to the panel and opens its "Ver los datos"
+ * region — and following the SAME one again after closing it re-opens it. The
+ * labels still state where the table is, which remains true and is what a reader
+ * scanning the list needs.
  *
  * SIX ENTRIES, NOT FIVE (ruling 6). AC 1 enumerates five logs; four of them are
  * linked here (the receiving log has no existing home and is rendered in the
@@ -53,15 +66,23 @@ export interface ExpertLogLink {
   /**
    * An in-page fragment.
    *
-   * TYPED AGAINST `SectionId`, NOT `string`, and that is the point: a typo like
-   * `#pass-network` yields a dead anchor that nothing catches at runtime, since
-   * `sectionIdFromHash` is whole-string equality and returns `null` SILENTLY.
-   * Typed this way it is a COMPILE error instead — the same argument
-   * `RECEIVING_EVENT_ORDER` is built on in `receiving-log-model.ts`.
-   * `i18n.test.ts` keeps the `SECTION_IDS` membership pin as a second line of
-   * defence, because the type cannot see a `SECTION_IDS` entry that is removed.
+   * TYPED AGAINST `MatchFragmentId`, NOT `string`, and that is the point: a typo
+   * like `#pass-network` yields a dead anchor that nothing catches at runtime,
+   * since an unresolvable fragment is silent in production by design (a URL is
+   * reader input, and a throw would turn a typo into a crash). Typed this way it
+   * is a COMPILE error instead — the same argument `RECEIVING_EVENT_ORDER` is
+   * built on in `receiving-log-model.ts`.
+   *
+   * WIDENED FROM `#${SectionId}` BY STORY 3.8, and the widening is the point:
+   * the union now also admits the six PANEL anchors, which is what lets the shot
+   * log and the cross log stop sharing `#shot-maps` (ledger L1886). It is still
+   * a closed union — never `string` — so the compile-time protection survives.
+   * `i18n.test.ts` keeps a runtime pin as a second line of defence, because the
+   * type cannot see a registry entry that is later removed; that pin now asserts
+   * the fragment RESOLVES and names a panel, which is strictly stronger than the
+   * `SECTION_IDS` membership check it replaces.
    */
-  href: `#${SectionId}`;
+  href: `#${MatchFragmentId}`;
   /** The section the table lives in, composed into the link's description. */
   titleKey: DictionaryKey;
 }
@@ -70,37 +91,37 @@ export const LOG_LINKS: readonly ExpertLogLink[] = [
   {
     id: "shot-log",
     labelKey: "expert.logs.shotLog",
-    href: "#shot-maps",
+    href: "#shot-maps-shots",
     titleKey: "viz.shotMap.title",
   },
   {
     id: "cross-log",
     labelKey: "expert.logs.crossLog",
-    href: "#shot-maps",
+    href: "#shot-maps-crosses",
     titleKey: "viz.crossMap.title",
   },
   {
     id: "pass-matrix",
     labelKey: "expert.logs.passMatrix",
-    href: "#pass-networks",
+    href: "#pass-networks-matrix",
     titleKey: "viz.passNetwork.title",
   },
   {
     id: "offers",
     labelKey: "expert.logs.offers",
-    href: "#offers-to-receive",
+    href: "#offers-to-receive-table",
     titleKey: "viz.offers.title",
   },
   {
     id: "movement",
     labelKey: "expert.logs.movement",
-    href: "#movement-to-receive",
+    href: "#movement-to-receive-table",
     titleKey: "viz.movement.title",
   },
   {
     id: "defensive",
     labelKey: "expert.logs.defensive",
-    href: "#defensive-actions",
+    href: "#defensive-actions-table",
     titleKey: "viz.defensiveActions.title",
   },
 ];

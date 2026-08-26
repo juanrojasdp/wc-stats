@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import { DefensiveActionsSection } from "@/components/DefensiveActionsSection";
 /*
@@ -34,8 +34,9 @@ import { useGlossaryMarking } from "@/components/glossary-marking";
 import type { MatchBundle } from "@/lib/contract/contract-types";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
+import { anchorNonce, useAnchorHit, type AnchorHit } from "@/lib/use-anchor-nonce";
+import { resolveMatchFragment } from "@/lib/match-anchors";
 import {
-  SECTION_IDS,
   buildSectionPlans,
   isCollapsibleId,
   sectionSummaryKey,
@@ -55,11 +56,16 @@ import { LG_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
  * that makes anchors work at all.
  */
 
-/** Which section a hash names, or null for anything else (#main-content, #expert). */
-function sectionIdFromHash(hash: string): SectionId | null {
-  const raw = hash.startsWith("#") ? hash.slice(1) : hash;
-  return SECTION_IDS.find((id) => id === raw) ?? null;
-}
+/*
+ * `sectionIdFromHash` LIVED HERE AND IS GONE (Story 3.8, D1).
+ *
+ * It was whole-string equality against the eleven SectionIds, which made
+ * `#shot-maps-log` — and every other finer fragment — resolve to null SILENTLY.
+ * `resolveMatchFragment` (`@/lib/match-anchors`) replaces it rather than
+ * extending it, because keeping both would leave the route with two grammars.
+ * Being a pure module, the replacement is also unit-testable without this
+ * component graph, which the local function never was.
+ */
 
 /*
  * Per-section DEDICATED empty-state copy (Story 2.6 ruled decision 12).
@@ -173,21 +179,56 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
    */
   const roster = useMemo(() => matchRoster(bundle), [bundle]);
 
-  useEffect(() => {
-    function openFromHash() {
-      const id = sectionIdFromHash(window.location.hash);
-      if (id === null) {
-        return;
-      }
+  /*
+   * ONE HOOK INSTANCE FOR THE WHOLE ROUTE (Story 3.8, D4), read here and passed
+   * down as explicit numbers. Not one hook per section: that would mint five
+   * `hashchange` + five capture-phase `click` listener pairs on a route that
+   * needs exactly one pair, and it would scatter the grammar across five files
+   * instead of keeping it in the one that owns the switch.
+   *
+   * It also subsumes the old `hashchange`-only subscription that used to live in
+   * the effect below. The hook already owns that listener AND the same-fragment
+   * click case the old subscription could not see (D6): a reader who collapsed
+   * `#defensive-actions` and re-clicked its Expert link got no event, no
+   * override and a section that stayed shut. Keeping both would also mean two
+   * focus-nonce bumps per navigation, so the old one is deleted, not layered.
+   */
+  const hit = useAnchorHit();
+  const [seenHit, setSeenHit] = useState<AnchorHit | null>(null);
+
+  /*
+   * ADJUSTED DURING RENDER, NOT IN AN EFFECT — and that is forced, not stylistic.
+   *
+   * The obvious shape is `useEffect(… , [hit])`, and it is what this code was
+   * first written as. `react-hooks/set-state-in-effect` rejects it under
+   * `--max-warnings 0`, exactly as `ViewDataDisclosure`'s own docblock warns; the
+   * OLD code here escaped the rule only because its setState calls sat inside a
+   * `hashchange` CALLBACK rather than in an effect body. So this follows the
+   * project's established idiom for the same problem — React's documented
+   * "adjusting state when a prop changes" — which `ViewDataDisclosure:99-105`
+   * already uses to consume this very nonce.
+   *
+   * COMPARED BY IDENTITY, and the hook minting a FRESH OBJECT on every read is
+   * what makes that work: a same-fragment re-click produces a new `hit` with the
+   * same `id`, so this fires again where an `id` comparison would not. That is
+   * the whole of ledger path (a) — a reader who collapses a section and re-clicks
+   * its Expert link — and it is why the old `hashchange`-only subscription is
+   * DELETED rather than kept alongside. Keeping both would also double every
+   * focus-nonce bump.
+   *
+   * The mount-time read inside the hook stays load-bearing for the reason this
+   * file's header gives: the subtree does not exist in the exported HTML, so the
+   * browser has already abandoned the fragment by the time the target mounts.
+   */
+  if (hit !== seenHit) {
+    setSeenHit(hit);
+    const resolved = hit === null ? null : resolveMatchFragment(`#${hit.id}`);
+    if (resolved !== null) {
+      const id = resolved.section;
       setOverrides((previous) => ({ ...previous, [id]: true }));
       setFocus((previous) => ({ id, nonce: (previous?.nonce ?? 0) + 1, scroll: true }));
     }
-    // Run once for the deep link that landed before this subtree existed, then
-    // stay subscribed for in-page anchor navigation.
-    openFromHash();
-    window.addEventListener("hashchange", openFromHash);
-    return () => window.removeEventListener("hashchange", openFromHash);
-  }, []);
+  }
 
   function toggle(id: SectionId, willOpen: boolean) {
     setOverrides((previous) => ({ ...previous, [id]: willOpen }));
@@ -216,6 +257,8 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "shot-maps":
         return (
           <ShotMapsSection
+            shotsNonce={anchorNonce(hit, "shot-maps-shots")}
+            crossesNonce={anchorNonce(hit, "shot-maps-crosses")}
             shots={bundle.events.shots}
             crosses={bundle.events.crosses}
             home={{
@@ -237,6 +280,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "pass-networks":
         return (
           <PassNetworksSection
+            matrixNonce={anchorNonce(hit, "pass-networks-matrix")}
             nodes={bundle.events.passNetworkNodes}
             edges={bundle.events.passNetworkEdges}
             home={{
@@ -289,6 +333,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "offers-to-receive":
         return (
           <OffersToReceiveSection
+            tableNonce={anchorNonce(hit, "offers-to-receive-table")}
             players={bundle.players}
             home={{
               teamId: bundle.metadata.homeTeam.teamId,
@@ -305,6 +350,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "movement-to-receive":
         return (
           <MovementToReceiveSection
+            tableNonce={anchorNonce(hit, "movement-to-receive-table")}
             players={bundle.players}
             home={{
               teamId: bundle.metadata.homeTeam.teamId,
@@ -321,6 +367,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "defensive-actions":
         return (
           <DefensiveActionsSection
+            tableNonce={anchorNonce(hit, "defensive-actions-table")}
             defensiveActions={bundle.events.defensiveActions}
             home={{
               teamId: bundle.metadata.homeTeam.teamId,

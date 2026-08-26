@@ -49,6 +49,8 @@ export interface OffersToReceiveSectionProps {
   players: Players;
   home: SideRef;
   away: SideRef;
+  /** `#offers-to-receive-table`'s nonce (Story 3.8, D4). */
+  tableNonce: number;
 }
 
 /*
@@ -100,7 +102,12 @@ function FigureValue({
   );
 }
 
-export function OffersToReceiveSection({ players, home, away }: OffersToReceiveSectionProps) {
+export function OffersToReceiveSection({
+  players,
+  home,
+  away,
+  tableNonce,
+}: OffersToReceiveSectionProps) {
   const t = useT();
   const { locale } = useLocale();
 
@@ -378,7 +385,7 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
    * `null` branch and is rendered by TacticalLayer above this component.
    */
   return (
-    <div className="flex flex-col gap-tile-gap">
+    <div className="flex flex-col gap-tile-gap" id="offers-to-receive-table">
       {/* A subtitle, not a heading: TacticalSection owns the <h2>. */}
       <p className="type-stat-label text-ink-secondary">{t("viz.offers.note")}</p>
       {(
@@ -399,6 +406,7 @@ export function OffersToReceiveSection({ players, home, away }: OffersToReceiveS
       <ViewDataDisclosure
         panelTitle={title}
         surface="canvas"
+        openNonce={tableNonce}
         trailing={<p className="type-caption text-ink-secondary">{t("viz.attribution")}</p>}
       >
         {dataTable}

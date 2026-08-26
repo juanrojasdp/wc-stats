@@ -982,8 +982,17 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
                      * onClick, no preventDefault, no focus() call. Fragment
                      * navigation is the browser's; globals.css's
                      * `scroll-padding-top: 4.5rem` already clears the sticky
-                     * header, and TacticalLayer's hashchange listener already
-                     * auto-expands the target section below lg.
+                     * header, and TacticalLayer auto-expands the target section
+                     * below lg.
+                     *
+                     * STILL A PLAIN <a> AFTER STORY 3.8, which is the point. The
+                     * hrefs now name PANELS (`#shot-maps-shots`) rather than only
+                     * sections, and following one also OPENS that panel's table —
+                     * but none of that is done here. `useAnchorHit` in
+                     * TacticalLayer listens for the navigation this anchor causes,
+                     * including the same-fragment re-click that fires no
+                     * `hashchange`. This file did not change for that, and it is
+                     * meant not to: the link stays a link.
                      */}
                     <a
                       id={linkId}

@@ -91,6 +91,16 @@ export interface PassNetworksSectionProps {
    * measured to resolve 47,194 of 47,194 endpoints corpus-wide.
    */
   roster: readonly { playerId: string; name: string }[];
+  /**
+   * `#pass-networks-matrix`' nonce (Story 3.8, D5). ONE anchor, TWO render sites.
+   *
+   * This component puts a `ViewDataDisclosure` in the matrix-only branch AND
+   * inside its `PitchPanel`, and which one a reader meets is decided by the
+   * DATA: `passNetworkNodes` is null on 104/104 real matches (matrix branch) and
+   * populated on the m001 fixture (panel branch). The tests exercise one and the
+   * browser the other, so wiring either alone looks green — see D10.3.
+   */
+  matrixNonce: number;
 }
 
 /*
@@ -113,6 +123,7 @@ export function PassNetworksSection({
   home,
   away,
   roster,
+  matrixNonce,
 }: PassNetworksSectionProps) {
   const t = useT();
   const { locale } = useLocale();
@@ -240,7 +251,7 @@ export function PassNetworksSection({
   if (nodes === null && edges !== null && edges.length > 0) {
     const matrixRows = passMatrixRows(edges, rosterMap, home, away);
     return (
-      <div className="flex flex-col gap-tile-gap">
+      <div className="flex flex-col gap-tile-gap" id="pass-networks-matrix">
         <p className="type-stat-label text-ink-secondary">{t("viz.passNetwork.matrixOnlyNote")}</p>
         <p className="type-caption tabular-nums text-ink-secondary">
           {countPhrase(
@@ -252,6 +263,7 @@ export function PassNetworksSection({
         <ViewDataDisclosure
           panelTitle={title}
           surface="canvas"
+          openNonce={matrixNonce}
           trailing={<p className="type-caption text-ink-secondary">{t("viz.attribution")}</p>}
         >
           <DataTable
@@ -591,6 +603,8 @@ export function PassNetworksSection({
 
   return (
     <PitchPanel
+      anchorId="pass-networks-matrix"
+      openNonce={matrixNonce}
       title={title}
       sides={[panelSide(0), panelSide(1)]}
       legend={legend}

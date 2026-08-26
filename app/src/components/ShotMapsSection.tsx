@@ -60,6 +60,14 @@ export interface ShotMapsSectionProps {
   away: SideRef;
   /** keyStatistics[side].expectedGoals, verbatim — a real artifact total. */
   teamXg: { home: number; away: number };
+  /**
+   * `#shot-maps-shots`' nonce (Story 3.8, D4). REQUIRED, not optional: the layer
+   * is the only caller, and a forgotten nonce is exactly the silent no-op this
+   * story exists to remove — a compile error is the cheapest place to catch it.
+   */
+  shotsNonce: number;
+  /** `#shot-maps-crosses`' nonce. The other half of L1886's disambiguation. */
+  crossesNonce: number;
 }
 
 /*
@@ -75,7 +83,15 @@ const ACCENT_VAR = { a: "--viz-team-a-on-pitch", b: "--viz-team-b-on-pitch" } as
 /** Separator glyphs are module consts, never bare JSX literals (i18n gate). */
 const CAPTION_SEPARATOR = " — ";
 
-export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMapsSectionProps) {
+export function ShotMapsSection({
+  shots,
+  crosses,
+  home,
+  away,
+  teamXg,
+  shotsNonce,
+  crossesNonce,
+}: ShotMapsSectionProps) {
   const t = useT();
   const { locale } = useLocale();
   const emptyHeadline = useEmptyHeadline();
@@ -408,13 +424,34 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
 
   return (
     <div>
+      {/*
+       * THE ANCHOR ID RIDES BOTH ARMS OF EACH TERNARY, AND ONLY ONE AT A TIME
+       * (Story 3.8, D10.2).
+       *
+       * On the SHIPPED CORPUS `events.crosses` is null on 104/104 matches, so
+       * the arm a real reader's `#shot-maps-crosses` reaches is the
+       * EmptyStatePanel, not the PitchPanel. A link that lands on a named
+       * absence — "Sin datos de Mapa de centros para este partido." — is honest;
+       * one that lands at the top of the section because its target does not
+       * exist is not. That absence is ruled FR-22 behaviour, not a defect: do
+       * not "fix" it by inventing a panel.
+       *
+       * The wrapper carries the id ONLY in the absent arm, because the PitchPanel
+       * in the other arm already emits it via `anchorId`. Emitting both would
+       * duplicate a DOM id — silently legal, and it breaks `getElementById` in
+       * the one way nothing in this suite catches.
+       */}
       {shotState === "absent" ? (
-        <EmptyStatePanel
-          headline={emptyHeadline(shotTitle)}
-          explanation={t("tactical.empty.explanation")}
-        />
+        <div id="shot-maps-shots">
+          <EmptyStatePanel
+            headline={emptyHeadline(shotTitle)}
+            explanation={t("tactical.empty.explanation")}
+          />
+        </div>
       ) : (
         <PitchPanel
+          anchorId="shot-maps-shots"
+          openNonce={shotsNonce}
           title={shotTitle}
           sides={[shotSide(home, "a", teamXg.home), shotSide(away, "b", teamXg.away)]}
           legend={shotLegend}
@@ -424,12 +461,16 @@ export function ShotMapsSection({ shots, crosses, home, away, teamXg }: ShotMaps
       )}
       <div className="mt-section-gap">
         {crossState === "absent" ? (
-          <EmptyStatePanel
-            headline={emptyHeadline(crossTitle)}
-            explanation={t("tactical.empty.explanation")}
-          />
+          <div id="shot-maps-crosses">
+            <EmptyStatePanel
+              headline={emptyHeadline(crossTitle)}
+              explanation={t("tactical.empty.explanation")}
+            />
+          </div>
         ) : (
           <PitchPanel
+            anchorId="shot-maps-crosses"
+            openNonce={crossesNonce}
             title={crossTitle}
             sides={[crossSide(home, "a"), crossSide(away, "b")]}
             legend={crossLegend}

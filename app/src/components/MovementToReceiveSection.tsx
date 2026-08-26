@@ -49,6 +49,8 @@ export interface MovementToReceiveSectionProps {
   players: Players;
   home: SideRef;
   away: SideRef;
+  /** `#movement-to-receive-table`'s nonce (Story 3.8, D4). */
+  tableNonce: number;
 }
 
 /*
@@ -78,7 +80,12 @@ const MIN_SEGMENT_PX = 6;
 /** Bar height: comfortably above a hairline, well below a tap target. */
 const BAR_HEIGHT_PX = 16;
 
-export function MovementToReceiveSection({ players, home, away }: MovementToReceiveSectionProps) {
+export function MovementToReceiveSection({
+  players,
+  home,
+  away,
+  tableNonce,
+}: MovementToReceiveSectionProps) {
   const t = useT();
   const { locale } = useLocale();
 
@@ -339,7 +346,7 @@ export function MovementToReceiveSection({ players, home, away }: MovementToRece
     (!split.away.isZero && !split.away.partitionMismatch);
 
   return (
-    <div className="flex flex-col gap-tile-gap">
+    <div className="flex flex-col gap-tile-gap" id="movement-to-receive-table">
       {anyBar ? (
         <p className="type-stat-label text-ink-secondary">{t("viz.movement.barNote")}</p>
       ) : null}
@@ -351,6 +358,7 @@ export function MovementToReceiveSection({ players, home, away }: MovementToRece
       <ViewDataDisclosure
         panelTitle={title}
         surface="canvas"
+        openNonce={tableNonce}
         trailing={<p className="type-caption text-ink-secondary">{t("viz.attribution")}</p>}
       >
         {dataTable}

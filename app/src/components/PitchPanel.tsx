@@ -129,6 +129,25 @@ export interface PitchPanelProps {
   selection?: PitchPanelSelection;
   /** Extra controls rendered in the legend row, e.g. Story 2.8's <md toggle. */
   controls?: ReactNode;
+  /**
+   * This panel's deep-link fragment id (Story 3.8, ruled D1/D7) — e.g.
+   * `"shot-maps-shots"`. Lands as the `<section>`'s `id`, so the fragment has a
+   * real DOM target and the browser's own scroll works.
+   *
+   * `id` ONLY, never `aria-labelledby`: a `<section>` with an accessible name
+   * becomes a `region` landmark, and adding six of those to the match route is
+   * an a11y change this story has no ruling for.
+   *
+   * Absent ⇒ no id, no nonce — byte-identical to the pre-3.8 panel, which
+   * is what every non-deep-linked caller (CompareChartsSection,
+   * TeamIdentitySection, TrendsSection, PhysicalSection and the rest) relies on.
+   */
+  anchorId?: string;
+  /**
+   * Increments when a deep link names this panel; forwarded verbatim to
+   * `ViewDataDisclosure.openNonce`, whose docblock defines `0`/absent as "never".
+   */
+  openNonce?: number;
 }
 
 /** Which popover is open, panel-wide: UX-DR15 bans a stack deeper than one. */
@@ -1074,6 +1093,8 @@ export function PitchPanel({
   underlay,
   selection,
   controls,
+  anchorId,
+  openNonce,
 }: PitchPanelProps) {
   const t = useT();
   /*
@@ -1143,7 +1164,7 @@ export function PitchPanel({
   const visibleOpen = open !== null && visible.includes(open.sideIndex) ? open : null;
 
   return (
-    <section>
+    <section id={anchorId}>
       <h3 className="type-title text-ink-primary">{title}</h3>
       {/*
        * {components.pitch-panel}: the deep-green pitch surface IS the panel
@@ -1283,6 +1304,7 @@ export function PitchPanel({
            */}
           <ViewDataDisclosure
             panelTitle={title}
+            openNonce={openNonce}
             trailing={
               <span className="type-caption text-ink-on-pitch-secondary">{t("viz.attribution")}</span>
             }

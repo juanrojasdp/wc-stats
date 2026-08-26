@@ -34,6 +34,7 @@ import type { DictionaryKey } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n-provider";
 import { decidedByCaption } from "@/lib/match-hero";
 import type { TableColumn } from "@/lib/table-sort";
+import { HASH_PREFIX, useAnchorNonce } from "@/lib/use-anchor-nonce";
 import { MD_MEDIA_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { MIN_HIT_PX } from "@/viz/marker-layout";
 
@@ -59,8 +60,6 @@ const SUFFIX_OPEN = " (";
 const SUFFIX_CLOSE = ")";
 const TITLE_OPEN = " (";
 const TITLE_CLOSE = ")";
-/** Strips the leading `#` off `window.location.hash`. */
-const HASH_PREFIX = "#";
 
 /*
  * THE STRETCHED ROW ANCHOR (ruled D9) NOW LIVES IN `@/components/RowAnchor`.
@@ -153,66 +152,6 @@ function useCountPhrase(): (count: number, one: DictionaryKey, many: DictionaryK
   return (count, one, many) => `${formatInteger(count, locale)}${SPACE}${t(count === 1 ? one : many)}`;
 }
 
-/**
- * A nonce that increments for the section the URL fragment currently names, and
- * is `0` for every other section. Feeds `ViewDataDisclosure.openNonce`.
- *
- * UX-DR18's deep links point straight at these sections and `useHashScroll`
- * below exists because the anchors do not exist in the exported HTML. Putting
- * the tables behind a disclosure without this would mean a shared
- * `…/#results-r32` scrolled to a heading over a closed control — the very defect
- * ledger L1553/L1886 files against the match route. Subscribed to `hashchange`
- * as well as read once at mount, so in-page anchor navigation opens its target
- * too.
- *
- * ═══ AND TO `click`, WHICH IS WHAT MAKES THE NONCE EARN ITS NAME ═══
- *
- * `hashchange` fires only when the fragment CHANGES. `ViewDataDisclosure`'s
- * `openNonce` docblock justifies being a counter rather than a boolean on the
- * grounds that a boolean "could not" re-open on a second navigation to the same
- * anchor — but with `hashchange` as the only source, neither could the counter
- * (2.19 code review): a reader who follows `…/#standings-group-a`, closes the
- * group, then clicks the same in-page link again got no event, no increment and
- * a section that stayed shut.
- *
- * Same-fragment clicks are therefore caught directly. Capture phase, so it still
- * runs if something downstream stops propagation, and it only ever re-reads a
- * hash the browser is already on — it never navigates.
- */
-function useAnchorNonce(): (anchorId: string) => number {
-  const [hit, setHit] = useState<{ id: string; nonce: number } | null>(null);
-  useEffect(() => {
-    function readHash() {
-      const id = window.location.hash.replace(HASH_PREFIX, "");
-      if (id === "") {
-        return;
-      }
-      setHit((previous) => ({ id, nonce: (previous?.nonce ?? 0) + 1 }));
-    }
-    function onClick(event: MouseEvent) {
-      const anchor = (event.target as Element | null)?.closest?.("a[href]");
-      if (!(anchor instanceof HTMLAnchorElement)) {
-        return;
-      }
-      // Same document, same fragment: the one case that fires no `hashchange`.
-      if (anchor.hash === "" || anchor.hash !== window.location.hash) {
-        return;
-      }
-      if (anchor.pathname !== window.location.pathname) {
-        return;
-      }
-      readHash();
-    }
-    readHash();
-    window.addEventListener("hashchange", readHash);
-    document.addEventListener("click", onClick, true);
-    return () => {
-      window.removeEventListener("hashchange", readHash);
-      document.removeEventListener("click", onClick, true);
-    };
-  }, []);
-  return (anchorId) => (hit !== null && hit.id === anchorId ? hit.nonce : 0);
-}
 
 /* -------------------------------------------------------- standings columns */
 
