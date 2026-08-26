@@ -3404,9 +3404,24 @@ development_status:
   # said "NOT yet committed to main" and was stale from 2026-08-26; corrected.
   # ITS FILE LOCK IS RELEASED — SiteHeader.tsx, AttributionFooter.tsx, es.ts,
   # en.ts, i18n.test.ts and static-output.test.ts are free for other stories
-  # (which is why 3-8 was able to take i18n.test.ts). Awaiting code review only;
-  # f07116b filed the Suggested Review Order for it.
-  3-6-authorship-signature: review
+  # (which is why 3-8 was able to take i18n.test.ts). f07116b filed the Suggested
+  # Review Order for it.
+  # CODE REVIEW DONE at c2d034d -> `done`. Three layers, 34 raw findings, 20 after
+  # dedup: 1 decision, 11 patches (all applied), 3 deferred, 5 dismissed. The
+  # caption itself was not touched — every defect was in the guards around it or
+  # in a number. Independently mutation-tested here: the WCAG 2.5.3 sibling ruling
+  # DOES fail when the <span> moves inside the anchor, so the change's headline
+  # claim holds; the reflow guard that also advertised that failure does NOT, and
+  # was rescoped rather than left overclaiming.
+  # TWO THINGS THE NEXT STORY INHERITS, both in deferred-work.md:
+  #   · The 56 px header contract has SEVEN consumers, not the three the ledger
+  #     said, AND THE SKIP LINK IS ONE — at a wrapped width "Saltar al contenido"
+  #     lands #main-content 46 px behind the bar. WCAG 2.4.11 unevaluated. Juan
+  #     re-confirmed the deferral on the wider scope; --header-h stays 3-10's.
+  #   · The "locale-dependent wrap threshold" (es <=341) is CONTRADICTED by
+  #     d3c103c measuring es at 337 in headless Chromium. Unreconciled. If 337/337
+  #     is right, --header-h does not need to be per-locale at all.
+  3-6-authorship-signature: done
   # DONE at fd5f130 + 87a9a39. This story emits a CONTRACT, NOT CODE ("Produced
   # by bmad-ux" — epics.md, Story 3.7), so it has no dev or review leg: the
   # bmad-ux session WAS the story. Delivered EXPERIENCE.md +452 / DESIGN.md +41,
