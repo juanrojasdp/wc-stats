@@ -79,6 +79,51 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-26
+# 2026-08-26: story 3-10 CODE REVIEW complete, status review -> done. THE NAVIGATION MENU.
+#             Three adversarial layers over d073575, run blind; 26 patches applied (4133195), 4
+#             deferred, 3 dismissed. FOUR HIGH, THREE OF THEM REGRESSIONS rather than gaps.
+#             `stickyInsetPx()` read an UNREGISTERED custom property, which yields its token
+#             stream: parseFloat("3.875rem") is 3.875, finite and positive, so the guard passed
+#             and the fallback was unreachable -- the observer ran at -6.875px where the literal
+#             it replaced was -104px. `trailingSlash: true` was unaccounted for, so
+#             `usePathname()` returned `/glossary/` against a declared `/glossary` and
+#             aria-current was dead on three of four destinations. The sheet never closed when a
+#             destination was activated (SiteHeader is in the root layout; the click is inside
+#             the dialog; Radix has no notion of a route). And the trigger packed flush against
+#             the wordmark on every phone, because the search slot -- the row's only growing
+#             child -- became display:none below xl and left justify-end nothing to distribute.
+#             WHAT UNITES THREE OF THE FOUR: each was invisible to Task 9, which measured
+#             heights, scrollWidth and tab order -- none of which sees an x-position, a modal
+#             outliving a navigation, or a unit error inside an observer.
+#             A REVIEW CLAIM WAS OVERSTATED AND THE BUILD CORRECTED IT: slash-less hrefs did NOT
+#             ship a 301: Next's <Link> normalises them, and all 1,406 documents already carried
+#             href="/glossary/". That half was consistency, not a defect. The aria-current half
+#             was instead CONFIRMED IN THE ARTIFACT (0 marks off home before, 1 correct mark per
+#             route after) rather than argued from Next's source.
+#             FIVE NEW GATES, EACH DRIVEN RED FIRST (A1). The slash gate is the one whose absence
+#             cost both halves of the table -- the component suites could never have caught it,
+#             because they MOCK usePathname and supplied the slash-less input the app cannot
+#             produce. A mock is a claim about what the real thing returns, and that one was false.
+#             ALSO: scroll-padding-top and /compare's scroll-mt are ADDITIVE, so deriving both
+#             from --header-h reserved the header twice (188px against 110px of real bars);
+#             --spacing-compare-mini-h was 48, the figure its own file warns twice not to trust,
+#             now 54; the --header-h breakpoint is rem so text-only zoom cannot reopen the -46px
+#             defect the token exists to close; nav links take ink-primary in both states per
+#             DESIGN.md. AC 7's ledger clause is DISCHARGED -- L1465 is recorded CLOSED, which
+#             story 3.10 ticked but never did. Its retrospective clause stays correctly UNRUN:
+#             A6 triggers at epic close and epic-3 is in-progress.
+#             RULED BY JUAN AT REVIEW: the sheet right-aligns under its trigger across the
+#             387-1279px band the mockup never drew (max-w over inset-x-0 is over-constrained, so
+#             it had been pinned hard LEFT), and the <xl trigger is wrapped in a labelled <nav>
+#             so the rotor finds a navigation landmark below xl.
+#             NOT MEASURED, AND SAID SO: ml-auto and ml-auto mr-0 are pinned as CLASSES -- jsdom
+#             computes no layout, so the resulting x-position still needs the browser pass, which
+#             is exactly what missed this the first time. 54 is better-sourced than 48 but is a
+#             number from a comment, not an instrument.
+#             1,504/1,504 tests, 0 skipped; tsc and eslint clean; 1,406 routes hold. Staged by
+#             pathspec: three sessions were live in this tree (3-2, 3-4) and none of their seven
+#             files are in either review commit -- which is the leak this very review flagged in
+#             the other direction.
 # 2026-08-09: story 2-17 CODE REVIEW complete, status review -> done. COMPARISON MODE, /compare.
 #             RESUMED AN INTERRUPTED REVIEW rather than re-running the layers: the findings record
 #             (3 decisions ruled 1a/2a/3a, 18 patches, 7 deferred, 2 dismissed) was already written
@@ -3578,7 +3623,7 @@ development_status:
   #   THREE LOCALE KEYS DELETED as dead: search.open, search.close, search.sheetTitle. The
   #     search's own trigger and sheet are gone, absorbed into the nav's.
   #   ⚠️ AC 7's PREMISE IS FALSE AND THE RETROSPECTIVE DID NOT RUN. AC 7 says "the epic closes
-  #     with this story"; it does not. 3-2, 3-3 and 3-9 are `backlog` and 3-4 is `in-progress` (corrected 2026-08-26 at code review). A6's
+  #     with this story"; it does not. at `d073575` 3-2/3-3/3-9 were `backlog` and 3-4 was `in-progress` (corrected 2026-08-26 at code review; the original said all four were `backlog`, which this story's own disclosed 3-4 hunk had just made false). Statuses move -- the load-bearing fact is that `epic-3` is not closed. A6's
   #     trigger is the EPIC close, not this story's, so epic-3-retrospective stays `required`
   #     and unrun. Recorded rather than quietly skipped -- that skip is exactly what Epic 1
   #     did and what A6 exists to prevent.
@@ -3586,7 +3631,7 @@ development_status:
   #     loading-state overflow in LeaderboardsRegion's `w-48` skeleton; 36 dangling
   #     aria-controls IDREFs on other components' disclosures; four files whose prose still
   #     cites the deleted `4.5rem`. See deferred-work.md's story-3.10 section.
-  3-10-navigation-menu: review
+  3-10-navigation-menu: done
   # NOT `optional` — retro action item A6. Epic 1's sat at `optional`, was
   # skipped, and the cost was paid inside Epic 2.
   epic-3-retrospective: required
