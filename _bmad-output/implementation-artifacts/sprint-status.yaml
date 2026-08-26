@@ -3399,12 +3399,23 @@ development_status:
   # regression repair, not a feature — the navigator pin in TournamentHub.test.tsx,
   # HeaderSearch.test.tsx and SiteSignature.test.tsx. Independent of 3-1..3-4.
   3-5-first-visit-locale-detection: ready-for-dev
-  # Implemented in the working tree at baseline d28e56f, NOT yet committed to
-  # main. Owns app/src/components/SiteHeader.tsx, AttributionFooter.tsx,
-  # src/locales/es.ts, en.ts, src/lib/i18n.test.ts and
-  # src/app/static-output.test.ts. Per retro A4 no other session stages these.
-  3-6-authorship-signature: in-progress
-  3-7-ux-contract-home-ia-navigation-menu: backlog
+  # SHIPPED at 92eec27 (`chrome.signature`, one key, two surfaces: under the
+  # wordmark in SiteHeader and as the footer sign-off). The earlier note here
+  # said "NOT yet committed to main" and was stale from 2026-08-26; corrected.
+  # ITS FILE LOCK IS RELEASED — SiteHeader.tsx, AttributionFooter.tsx, es.ts,
+  # en.ts, i18n.test.ts and static-output.test.ts are free for other stories
+  # (which is why 3-8 was able to take i18n.test.ts). Awaiting code review only;
+  # f07116b filed the Suggested Review Order for it.
+  3-6-authorship-signature: review
+  # DONE at fd5f130 + 87a9a39. This story emits a CONTRACT, NOT CODE ("Produced
+  # by bmad-ux" — epics.md, Story 3.7), so it has no dev or review leg: the
+  # bmad-ux session WAS the story. Delivered EXPERIENCE.md +452 / DESIGN.md +41,
+  # three mockups, three review artifacts, and UX-DR24 recorded at epics.md:143
+  # with three conflicting ACs reconciled. UX-DR24 gates 3-9 and 3-10 and takes
+  # the route count 1,406 -> 1,410 (`/` becomes Landing; Hub -> /tournament;
+  # boards -> /tops; /players and /teams minted). Entry read `backlog` until
+  # 2026-08-26; corrected.
+  3-7-ux-contract-home-ia-navigation-menu: done
   # Context created 2026-08-26. Sized as a PORT of Story 2.19's Hub mechanism, not
   # an invention: L1553's 2026-08-05 blocker list was found STALE against f07116b
   # (two of four blockers already resolved by 2.19, including the one it called
@@ -3895,3 +3906,22 @@ action_items:
 #   live region stays silent. Only an explicit toggle is a choice.
 #   Closes deferred-work.md L4423 (the bootstrap navigator.language entry). L4438's accepted
 #   consequence (Googlebot's mixed-language render) is READ AND ACCEPTED, not fixed — AC 6.
+
+# 2026-08-26: STATUS RECONCILIATION — two entries were corrected against the repo rather
+#   than against what the last session believed. Nothing else in this file was touched;
+#   3-1 and 3-8 were mid-flight in other sessions and their lines were left alone.
+#   3-6 `in-progress` -> `review`. It shipped in 92eec27 and its stale comment was still
+#   claiming an uncommitted working tree and holding a file lock on SiteHeader.tsx. That
+#   lock was load-bearing, not cosmetic: story 3-10's mandatory A3 file-ownership probe
+#   would have aborted on it, which is retro action item A3 working exactly as designed
+#   but on false information. Verified released: `git show --stat 92eec27` and
+#   `git grep -c "chrome.signature" HEAD -- app/src/components/SiteHeader.tsx` (= 2).
+#   3-7 `backlog` -> `done`. Delivered at fd5f130 + 87a9a39. The confusion is structural
+#   and worth recording: 3.7 is the only story in this epic whose deliverable is a
+#   document, so it produced no story file and no dev/review cycle, and a status driven
+#   off "is there a story file" reads that as untouched work. It is not.
+#   NOT changed, and why: 3-1 and 3-8 are correctly `in-progress` (both hold uncommitted
+#   files in the tree); 3-5 is correctly `ready-for-dev`; 3-9 and 3-10 stay `backlog`
+#   until their own sessions create them.
+#   Also observed, not fixed here: a stray 0-byte file named `17` sits untracked in the
+#   repo root — a shell redirect artifact. Do not let it be swept into a commit (A4).
