@@ -4,7 +4,7 @@ baseline_commit: 7f28e44
 
 # Story 2.19: Performance & Accessibility Hardening, Real-Data Swap & Launch
 
-Status: in-progress
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -68,21 +68,35 @@ so that the product ships on the real dataset meeting every gate it promised (FR
 **When** the site deploys
 **Then** Netlify publishes `app/out` via the AD-13 chain at $0/month, the Netlify account bandwidth model is confirmed and logged, and the repo + live URL are publishable as the portfolio piece.
 
-> **PARTIALLY MET — one manual step outstanding, and it is Juan's to take.** The site is live, at
-> $0/month, with the bandwidth model logged and the repo public. What was published is the AD-13
-> chain's own output: the chain ran locally and green, and those exact bytes were uploaded.
+> **MET — closed 2026-08-25 at the code review, after the repo was connected and Netlify built the
+> chain itself.** The site is live at $0/month, bandwidth model logged, repo public.
 >
-> **What is NOT true is that Netlify RUNS the chain.** Task 9.4 was `netlify deploy --prod --dir
-> app/out --no-build` — a CLI upload, not a git-connected build — so nothing re-runs `lint →
-> typecheck → assert:schema-version → next build → copy-data → assert:no-external-origins` on push.
-> The zero-external-origin gate this story added is therefore a developer-machine gate only, which
-> is the opposite of what A3/L49 asked for when it routed the mechanical version here.
+> **The gap this AC had, and how it closed.** Task 9.4 was `netlify deploy --prod --dir app/out
+> --no-build` — a CLI upload of locally-built bytes. The published bytes were the AD-13 chain's
+> bytes, so the site was never wrong; what was missing is that **Netlify did not RUN the chain**.
+> That made `assert:no-external-origins` — the gate A3/L49 routed here specifically to replace a
+> one-time manual grep — a developer-machine gate, which is the thing L49 filed against.
 >
-> **RULED by Juan at the code review (2026-08-25): do the OAuth connect.** It needs a
-> GitHub↔Netlify grant in the Netlify UI, which no agent can perform. `netlify.toml` already carries
-> the correct `base`/`command`/`publish`, so no code change is waiting on it. **AC 4 closes when
-> that grant is given and one push produces a green Netlify build.** Until then this AC is
-> partially met and says so.
+> Juan gave the GitHub↔Netlify OAuth grant and triggered a repo-driven build. It completed green,
+> running `lint --max-warnings 0 → typecheck → assert:schema-version → next build → copy-data →
+> assert:no-external-origins` on Netlify's runner. **`app/.nvmrc` (`24`) sits in the base directory
+> `netlify.toml` declares, so the runner matched the `engines: >=24` pin without a `NODE_VERSION`
+> override.**
+>
+> **Verified independently against the live host, not taken on report:**
+> - The live chunk set is **byte-identical** to a local build of `35a4ba7` — Next names chunks by
+>   content hash, so matching names are matching bytes. The review's patches are what is serving.
+> - `/_next/static/*` returns `public,max-age=31536000,immutable`; documents and `/data/*` return
+>   `public,max-age=0,must-revalidate`. Both halves of `netlify.toml`'s header block survived the
+>   move to a repo-driven build — the deliberate asymmetry, not a blanket policy.
+> - No SSO regression (the defect the first CLI deploy revealed): 8 routes across match, player,
+>   team, compare, glossary, about and `/` all resolve 200, and an unknown route 404s.
+>
+> **What is proven, stated precisely:** the chain RUNS on Netlify, and a build that fails the gate
+> now fails the deploy — nothing publishes. The remaining half, that it re-runs automatically **on
+> push**, follows from the same repo connection but was not itself demonstrated: this build was
+> UI-triggered, because the review commit had already been pushed before the repo was linked and
+> linking does not retro-build. The next push demonstrates it.
 
 **AC 5 — The ledger closes (this story's own).**
 `deferred-work.md` carries ~38 entries naming 2.19 as owner. Every one is discharged, re-deferred with a named successor and a stated reason, or recorded as already-closed. No entry naming 2.19 is left silently open at the end of the project.
@@ -841,8 +855,13 @@ accepted and named), plus the AC 4 connect ruling in AC 4's own note and the `st
 (`test_swap`, `test_orchestrate`, `test_ingest_batch`, `test_emit_profiles`), and the hardened
 origin gate re-run against the real `out/` — **12,683 assets, 0 external subresources, exit 0**.
 
-**ONE ITEM REMAINS OPEN AND IT IS NOT A CODE CHANGE:** AC 4's Netlify OAuth connect, which only
-Juan can perform. See AC 4's note.
+**AC 4's outstanding item is CLOSED.** The review left one thing open that was not a code change —
+the Netlify OAuth connect, which only Juan could perform. He gave the grant and triggered a
+repo-driven build; it went green, and the live host was then verified independently (chunk set
+byte-identical to a local build of `35a4ba7`, cache headers correct on both sides of the
+`_next/static` split, no SSO regression, 8 routes 200 and an unknown route 404). The build gates
+now run on Netlify, so a gate failure fails the deploy instead of shipping. See AC 4's note for
+what that does and does not prove.
 
 The four highest-severity findings were all in code this story added, and all four were reproduced
 by execution rather than argued from the diff:

@@ -3332,7 +3332,7 @@ development_status:
   2-17-comparison-mode: done
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
-  2-19-performance-accessibility-hardening-real-data-swap-launch: in-progress
+  2-19-performance-accessibility-hardening-real-data-swap-launch: done
   epic-2-retrospective: optional
 
 # 2026-08-25: story 2-19 code review — 3 layers over the 6,414-line code diff (78 files), 32
@@ -3349,13 +3349,23 @@ development_status:
 #             byte-identical disclosure accessible names on `/` — the same defect class A23 fixed on
 #             /compare in this same story; and an unguarded `new URL()` in a reporting-only path
 #             could fail the build naming the wrong cause.
-#             STATUS -> in-progress, NOT done, for ONE reason that is not a code change: AC 4's
-#             Netlify OAuth connect. Task 9.4 was `netlify deploy --prod --no-build`, a CLI upload
-#             of locally-built bytes — so Netlify does not re-run the AD-13 chain on push and the
-#             new origin gate is a developer-machine gate only. Juan ruled at the review that the
-#             connect should be done; it needs a GitHub<->Netlify grant in the Netlify UI that no
-#             agent can perform. `netlify.toml` already carries the right base/command/publish.
-#             2-19 -> done once that grant is given and one push produces a green Netlify build.
+#             The review first set in-progress, NOT done, for ONE reason that was not a code change:
+#             AC 4's Netlify OAuth connect. Task 9.4 had been `netlify deploy --prod --no-build`, a
+#             CLI upload of locally-built bytes — so Netlify never RAN the AD-13 chain, which left
+#             the new origin gate a developer-machine gate: the very thing L49 filed against.
+#             CLOSED THE SAME DAY. Juan gave the GitHub<->Netlify grant and triggered a repo-driven
+#             build; it went green through lint -> typecheck -> assert:schema-version -> next build
+#             -> copy-data -> assert:no-external-origins on Netlify's own runner. (`app/.nvmrc`
+#             pins 24 inside the base dir netlify.toml declares, so no NODE_VERSION override was
+#             needed.) VERIFIED AGAINST THE LIVE HOST rather than taken on report: the live chunk
+#             set is byte-identical to a local build of 35a4ba7 — Next content-hashes chunk names,
+#             so matching names are matching bytes — `/_next/static/*` is immutable while documents
+#             and `/data/*` stay must-revalidate, no SSO regression, 8 routes 200 and an unknown
+#             route 404. A gate failure now fails the DEPLOY instead of shipping.
+#             Proven precisely: the chain RUNS on Netlify. NOT yet demonstrated: that it re-runs
+#             automatically ON PUSH — this build was UI-triggered, because the review commit was
+#             pushed before the repo was linked and linking does not retro-build. The next push
+#             demonstrates it. STATUS -> done. 2-19 is the final story; Epic 2 is complete.
 #             Rulings recorded as D20 (AC 2 = met on host, partially met on the reference harness),
 #             D21 (A16's supersession confirmed as Juan's, not the dev agent's), D22 (AC 1/AC 3
 #             evidence methods accepted as proxies and named in the ACs).
