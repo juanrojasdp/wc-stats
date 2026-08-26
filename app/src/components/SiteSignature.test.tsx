@@ -82,6 +82,19 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+  /*
+   * CLEAR STORAGE BETWEEN CASES (code review 2026-08-26). `LocaleProvider`'s
+   * mount effect reads `STORAGE_KEYS.locale` and OVERRIDES `initialLocale`
+   * when anything is stored (i18n-provider.tsx). Nothing in this file writes a
+   * locale today, so every case below currently gets the locale it asked for —
+   * but jsdom's storage is per-FILE, not per-case, so the first case that ever
+   * clicks the ES|EN toggle would silently re-point every later `en` case at
+   * the `es` dictionary. It would fail loudly rather than pass vacuously (the
+   * assertions look up the dictionary they asked for), which is why this is
+   * hygiene and not a bug fix — but the coupling is real and one line removes
+   * it.
+   */
+  localStorage.clear();
 });
 
 describe("the authorship caption renders in BOTH locales", () => {
@@ -101,16 +114,29 @@ describe("the authorship caption renders in BOTH locales", () => {
       /*
        * THE 2.5.3 RULING, ASSERTED ON THE ACCESSIBLE NAME ITSELF rather than on
        * markup shape — this is what the exported-HTML adjacency regex can only
-       * approximate. The home link is the first focusable element on all 1,406
-       * routes; if the caption were inside it, every route would announce
-       * "WC Stats Por Juan Camilo Rojas, link", and an `aria-label` narrowing it
-       * back would fail WCAG 2.5.3 (Label in Name) because the accessible name
-       * must CONTAIN the visible text, not a subset of it.
+       * approximate. The home link is the first focusable element INSIDE THE
+       * BANNER on all 1,406 routes (the skip link precedes it and is outside
+       * the <header> — SiteHeader.tsx); if the caption were inside it, every
+       * route would announce "WC Stats Por Juan Camilo Rojas, link", and an
+       * `aria-label` narrowing it back would fail WCAG 2.5.3 (Label in Name)
+       * because the accessible name must CONTAIN the visible text, not a
+       * subset of it.
        */
       const home = within(header).getByRole("link", { name: dictionary.app.siteName });
       expect(home).toHaveAttribute("href", "/");
       expect(home).toHaveAccessibleName(dictionary.app.siteName);
-      expect(home.textContent).not.toContain("Juan Camilo Rojas");
+      /*
+       * READ FROM THE DICTIONARY, NOT A LITERAL (code review 2026-08-26). This
+       * was `not.toContain("Juan Camilo Rojas")`: rename the person in es.ts /
+       * en.ts and it would keep passing while asserting nothing — the precise
+       * vacuity class this change congratulates itself for catching in the
+       * `/\bunderline\b/` regex. Asserting the WHOLE caption is also what makes
+       * this case independent of `toHaveAccessibleName` above rather than a
+       * strictly weaker restatement of it: the accessible-name check would
+       * still pass if the caption joined the anchor as a visually-hidden node
+       * that the name computation skipped.
+       */
+      expect(home.textContent).not.toContain(dictionary.chrome.signature);
     });
 
     it(`renders it once in the footer, below the attribution — ${locale}`, () => {
@@ -137,6 +163,31 @@ describe("the authorship caption renders in BOTH locales", () => {
         glossary.compareDocumentPosition(signature) & Node.DOCUMENT_POSITION_FOLLOWING,
         "the signature must follow the footer links, not split them from their paragraph"
       ).toBeTruthy();
+
+      /*
+       * THE 1.4.1 GUARD, PORTED HERE (code review 2026-08-26). This file was
+       * created because build-gating is gap #1 — and then only the 2.5.3
+       * assertion was carried across. The link-in-text-block guard, the one
+       * whose predecessor was found VACUOUS (`/\bunderline\b/` matches
+       * `hover:no-underline`), stayed behind in `static-output.test.ts` inside
+       * `describe.skipIf(!anyBuilt)`. Measured at the review: 36 of that file's
+       * 49 cases skip in a fresh worktree with no `out/`. So on any clone or CI
+       * job that runs `npm test` without a prior `npm run build`, the guard
+       * protecting a shipped axe fix evaluated NOTHING while the suite stayed
+       * green — exactly the failure mode this file's header argues against.
+       *
+       * It also runs in `en` here, which the export can never reach (D17).
+       */
+      for (const link of [glossary, within(footer).getByRole("link", {
+        name: dictionary.chrome.footer.aboutLink,
+      })]) {
+        for (const token of ["underline", "underline-offset-2", "hover:no-underline"]) {
+          expect(
+            [...link.classList],
+            `"${link.textContent}" lost \`${token}\` — the ruled link-in-text-block treatment (WCAG 1.4.1, Story 2.19 Task 6.8)`
+          ).toContain(token);
+        }
+      }
     });
   }
 
@@ -147,21 +198,49 @@ describe("the authorship caption renders in BOTH locales", () => {
    * ACTUALLY OCCURS — marking a Spanish-origin name `lang="en"` on an ES page
    * would claim English phonemes for it, which is worse than the unmarked
    * default rather than better.
+   *
+   * SCOPED TO THE CAPTION, AND RUN IN BOTH LOCALES (code review 2026-08-26).
+   * This asserted `region.querySelectorAll("[lang]")` had length 0 across the
+   * whole banner and contentinfo, in `es` only. Two defects, both real:
+   *
+   *   1. It said nothing about THE NAME — it forbade every `lang` attribute
+   *      anywhere in the chrome, forever, which is not this story's to rule.
+   *      Decision 13 (glossary.ts: "an English loanword inside Spanish copy
+   *      ... carries lang='en'") applies to the header's own
+   *      `chrome.languageToggle.enFull` ("English"), and story 3-10 is
+   *      actively moving the search into a nav sheet inside this banner. A
+   *      future CORRECT change would have failed a case whose name promises it
+   *      is about the signature.
+   *   2. It ran `es` only — inside a describe named "BOTH locales", in a file
+   *      whose stated gap #2 is that the `en` render path was verified nowhere.
+   *
+   * Now: the caption's own element (and its ancestors up to the region) carry
+   * no `lang`, in each locale. That is the property WCAG 3.1.2 is about, and it
+   * leaves the rest of the chrome free.
    */
-  it("marks the name with no `lang` attribute in either chrome surface", () => {
-    pinLanguage("es");
-    stubNeverSettlingFetch();
-    render(
-      <Wrapper locale="es">
-        <div>
-          <SiteHeader />
-          <AttributionFooter />
-        </div>
-      </Wrapper>
-    );
-    for (const role of ["banner", "contentinfo"]) {
-      const region = screen.getByRole(role);
-      expect(region.querySelectorAll("[lang]"), `${role} must carry no lang marks`).toHaveLength(0);
-    }
-  });
+  for (const [locale, dictionary] of DICTIONARIES) {
+    it(`marks the name with no \`lang\` attribute in either chrome surface — ${locale}`, () => {
+      pinLanguage(locale);
+      stubNeverSettlingFetch();
+      render(
+        <Wrapper locale={locale}>
+          <div>
+            <SiteHeader />
+            <AttributionFooter />
+          </div>
+        </Wrapper>
+      );
+      for (const role of ["banner", "contentinfo"]) {
+        const region = screen.getByRole(role);
+        const caption = within(region).getByText(dictionary.chrome.signature);
+        for (let node: HTMLElement | null = caption; node !== null; node = node.parentElement) {
+          expect(
+            node.hasAttribute("lang"),
+            `${role}: \`lang\` on <${node.tagName.toLowerCase()}> marks the name (WCAG 3.1.2 exempts proper names)`
+          ).toBe(false);
+          if (node === region) break;
+        }
+      }
+    });
+  }
 });

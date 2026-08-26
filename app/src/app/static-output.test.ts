@@ -92,11 +92,26 @@ describe.skipIf(!anyBuilt)("the authorship caption ships in the header AND the f
    * turn the parentheses into a capture group — still matching, so a REAL
    * mismatch could pass — and a `[` would throw `Invalid regular expression`,
    * failing the guard while pointing at itself instead of at the copy change.
+   *
+   * HTML-ESCAPED FIRST, THEN REGEX-ESCAPED (code review 2026-08-26). The
+   * original hardened one half: these strings are matched against EXPORTED
+   * MARKUP, where React has already escaped `&`, `<` and `>`. Ruled copy
+   * gaining an ampersand — `"Acerca del sitio & FAQ"` — ships as `&amp;` on
+   * disk, so the raw dictionary value would stop matching and the guard would
+   * red on CORRECT output while blaming the caption. Same failure mode the
+   * regex escape exists to prevent, one layer down.
    */
-  const rx = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const entities = (value: string) =>
+    value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const rx = (value: string) => entities(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-  /** Occurrences of `needle` in `haystack` — the count these cases are named for. */
-  const countOf = (haystack: string, needle: string) => haystack.split(needle).length - 1;
+  /**
+   * Occurrences of `needle` in `haystack` — the count these cases are named for.
+   * `needle` is HTML-escaped for the same reason `rx` escapes it: the haystack
+   * is exported markup, not the dictionary.
+   */
+  const countOf = (haystack: string, needle: string) =>
+    haystack.split(entities(needle)).length - 1;
 
   for (const [label, file] of DOCUMENTS) {
     it(`renders it once under the wordmark and once in the footer — ${label}`, () => {
@@ -119,8 +134,10 @@ describe.skipIf(!anyBuilt)("the authorship caption ships in the header AND the f
        *
        * The adjacency regex IS the WCAG 2.5.3 ruling in assertion form: the
        * caption is the anchor's NEXT SIBLING, never its child. Moving the
-       * `<span>` inside the `<Link>` renames the first focusable element on all
-       * 1,406 routes, and that is the single most load-bearing decision here.
+       * `<span>` inside the `<Link>` renames the banner's first focusable
+       * element on all 1,406 routes — the skip link precedes it and sits
+       * OUTSIDE the <header> (SiteHeader.tsx) — and that is the single most
+       * load-bearing decision here.
        */
       expect(
         header,
@@ -145,15 +162,25 @@ describe.skipIf(!anyBuilt)("the authorship caption ships in the header AND the f
        * and `underline-offset-2` on their own. An edit dropping the persistent
        * `underline` while keeping the hover class — the exact 1.4.1 regression
        * this block exists to catch — passed green in all four documents.
+       *
+       * ALL THREE TOKENS, NOT JUST `underline` (code review 2026-08-26). The
+       * replacement asserted MEMBERSHIP of one token, while the spec's ruled
+       * constraint is that `underline underline-offset-2 hover:no-underline`
+       * survives EXACTLY. Dropping `underline-offset-2` (the 2 px offset that
+       * keeps the rule off the descenders) or `hover:no-underline` (the hover
+       * affordance) still passed. Each is asserted separately so the failure
+       * names which one went.
        */
       for (const linkLabel of [es.chrome.footer.aboutLink, es.chrome.footer.glossaryLink]) {
         const anchor = new RegExp(`<a[^>]*>${rx(linkLabel)}</a>`).exec(footer)?.[0];
         expect(anchor, `${label}: no footer anchor for "${linkLabel}"`).toBeDefined();
         const classes = (/class="([^"]*)"/.exec(anchor ?? "")?.[1] ?? "").split(/\s+/);
-        expect(
-          classes,
-          `${label}: "${linkLabel}" lost its PERSISTENT underline (WCAG 1.4.1, axe link-in-text-block)`
-        ).toContain("underline");
+        for (const token of ["underline", "underline-offset-2", "hover:no-underline"]) {
+          expect(
+            classes,
+            `${label}: "${linkLabel}" lost \`${token}\` — the ruled link-in-text-block treatment (WCAG 1.4.1, Story 2.19 Task 6.8)`
+          ).toContain(token);
+        }
       }
     });
   }

@@ -122,24 +122,50 @@ export function SiteHeader() {
          * it was a deliberate call: the signature stays visible at every width
          * rather than being hidden on small phones.
          *
-         * 🔴 THE HEIGHT IS A SHARED CONTRACT, AND IT NOW HAS THREE CONSUMERS
-         * THAT ENCODE 56 px. `globals.css`'s `scroll-padding-top: 4.5rem` says
-         * in its own comment "change h-14 and this must follow", and
-         * `CompareChartsSection` pins `sticky top-14`, `max-md:scroll-mt-28`
-         * and a `rootMargin` of -104px to a 56 px bar. See `deferred-work.md`
-         * — this is filed with measurements, not left to be re-found.
+         * 🔴 THE HEIGHT IS A SHARED CONTRACT, AND IT HAS AT LEAST SEVEN
+         * CONSUMERS THAT ENCODE 56 px. This comment said THREE until the
+         * 2026-08-26 code review counted them:
+         *
+         *   · `globals.css`'s `scroll-padding-top: 4.5rem`, whose own comment
+         *     says "change h-14 and this must follow".
+         *   · `CompareChartsSection`'s `sticky top-14`, `max-md:scroll-mt-28`
+         *     and `rootMargin: -104px`, all pinned to a 56 px bar.
+         *   · `ExpertLayer.tsx`, `HubTable.tsx`, `LeaderboardsSection.tsx` and
+         *     `TournamentHub.tsx`, which each reason IN PROSE from
+         *     "`scroll-padding-top: 4.5rem` already clears the sticky header"
+         *     to justify plain fragment navigation with no scroll handling.
+         *
+         * AND THE SKIP LINK IS ONE OF THEM. `globals.css` says the property
+         * "fixes the #main-content skip link", so at a wrapped width (118 px
+         * bar vs 72 px reserved) "Saltar al contenido" lands the main heading
+         * 46 px BEHIND this header, on every route. WCAG 2.4.11 (Focus Not
+         * Obscured) is not evaluated anywhere in this change, though
+         * `RowAnchor.tsx` and `ExpertLayer.tsx` both cite it as live.
+         *
+         * Still filed rather than fixed — the `--header-h` property is story
+         * 3-10's, which owns this file, `globals.css` and
+         * `CompareChartsSection` together. See `deferred-work.md`: measured,
+         * scoped, and not left to be re-found.
          */}
         <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center gap-tile-gap px-gutter-mobile md:px-gutter-desktop">
           {/*
            * THE IDENTITY BLOCK: wordmark over authorship caption.
            *
            * THE CAPTION IS A SIBLING OF THE LINK, NEVER ITS CHILD. Inside the
-           * anchor it would join the accessible name, so the FIRST focusable
-           * element on all 1,406 routes would announce "WC Stats Por Juan
-           * Camilo Rojas, link" — and narrowing that back with `aria-label`
-           * fails WCAG 2.5.3 (Label in Name), which requires the accessible
-           * name to CONTAIN the visible text, not a subset of it. The link's
-           * purpose is the home page; authorship is not a link purpose.
+           * anchor it would join the accessible name, so the first focusable
+           * element IN THIS BANNER on all 1,406 routes would announce "WC Stats
+           * Por Juan Camilo Rojas, link" — and narrowing that back with
+           * `aria-label` fails WCAG 2.5.3 (Label in Name), which requires the
+           * accessible name to CONTAIN the visible text, not a subset of it.
+           * The link's purpose is the home page; authorship is not a link
+           * purpose.
+           *
+           * ("in this banner", not "on the page": the skip link above is the
+           * page's first focusable element and sits outside the <header> — see
+           * its own comment. Corrected at the 2026-08-26 code review, where the
+           * stronger claim appeared in four places and contradicted a comment
+           * eight lines up. The 2.5.3 conclusion is unchanged either way: it
+           * turns on the anchor's accessible name, not on its ordinal.)
            *
            * The `<Link>` KEEPS `min-h-11`. It is a header touch target and the
            * row comment above commits to every one of them holding 44 px

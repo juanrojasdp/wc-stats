@@ -453,7 +453,17 @@
      is a `--header-h` custom property driven by the same breakpoint and consumed
      here AND by `CompareChartsSection`'s `top-14` / `scroll-mt-28` / -104px
      rootMargin, and that is a shared-contract change rather than a caption's.
-     Filed with measurements in deferred-work.md. */
+     Filed with measurements in deferred-work.md.
+
+     THE BLAST RADIUS IS WIDER THAN THAT PAIR (2026-08-26 code review). Four
+     more files reason IN PROSE from this exact value to justify plain fragment
+     navigation with no scroll handling of their own — ExpertLayer.tsx,
+     HubTable.tsx, LeaderboardsSection.tsx and TournamentHub.tsx each say some
+     form of "`scroll-padding-top: 4.5rem` already clears the sticky header",
+     which is now false below the wrap threshold. AND SO IS THE SKIP LINK, three
+     lines up in this very comment: at a wrapped width "Saltar al contenido"
+     lands #main-content 46 px behind the bar. Whoever takes `--header-h`
+     (story 3-10) re-verifies all seven, not two. */
   html {
     scroll-padding-top: 4.5rem;
   }

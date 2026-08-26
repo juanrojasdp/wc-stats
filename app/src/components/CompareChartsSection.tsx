@@ -184,8 +184,31 @@ type FigureRefs = RefObject<(HTMLElement | null)[]>;
  * before this story, and no measurement for this header is given anywhere in the
  * UX docs. Every number is ruled here.
  *
- * · `sticky top-14 z-30`. `SiteHeader` is `sticky top-0 z-40` at `h-14`, so this
- *   nests UNDER it in both offset and stacking rather than competing with it.
+ * · `sticky top-14 z-30`. `SiteHeader` is `sticky top-0 z-40`, so this nests
+ *   UNDER it in both offset and stacking rather than competing with it.
+ *
+ *   🔴 `top-14` (56 px) NO LONGER MATCHES THE HEADER, and this mini-header is
+ *   the worst-affected consumer. The authorship caption (spec-sign-the-project,
+ *   commit 92eec27) took the site header to 62 px one-row and to 118 px where
+ *   its row wraps — at or below ~337 px in both locales. (The caption spec says
+ *   es wraps at <=341 and en at <=337; commit d3c103c measured es in headless
+ *   Chromium and found 337 too. Unreconciled — see deferred-work.md. Neither
+ *   number changes anything below: both are well above 320.) Measured there: at
+ *   320 px this bar sits at top:56 and is ~54 px tall, so 56+54=110 < 118 and
+ *   it is ENTIRELY behind the site header — invisible on exactly the `<md`
+ *   widths it is the ruled D13 / UX-DR17 affordance FOR. At 390 px it loses
+ *   6 px, which eats its `py-2` rather than text. `max-md:scroll-mt-28` (112 px
+ *   = "56 header + 48 mini") and the `-104px` rootMargin below share that dead
+ *   provenance and are under-reserved by 6 px one-row, 60 px wrapped.
+ *
+ *   Filed, not fixed here, and the pointer is the point: see `deferred-work.md`
+ *   (spec-sign-the-project entry) for the measurements and the proposed
+ *   `--header-h` custom property, which story 3-10 owns along with this file.
+ *   Do not re-derive these offsets from 56, and re-measure this bar rather than
+ *   trusting the "~48 px" the scroll-mt figure was built on — the ledger
+ *   measured 54. Added by the 2026-08-26 code review, which found this file
+ *   carrying stale numbers and no breadcrumb while `globals.css` and
+ *   `SiteHeader.tsx` both carried warnings.
  * · VISIBILITY IS CSS (`md:hidden`), NOT JS. `hidden` is `display: none`, which
  *   removes the element from the ACCESSIBILITY TREE — so exactly one header is
  *   exposed at any width and there are never two competing names. That is the
@@ -236,11 +259,19 @@ function StickyMiniHeader({ names, activeIndex }: { names: readonly string[]; ac
  *
  * `max-md:scroll-mt-28` IS THE `scroll-padding-top` HALF OF D13. `globals.css`
  * already sets `scroll-padding-top: 4.5rem` (72 px) on the scroll container,
- * which clears the 56 px site header — but NOT that header PLUS this route's
- * ~48 px mini-header. 112 px does, and it is scoped to `<md` because that is the
- * only width the mini-header exists at. A LOCAL `scroll-mt` rather than a global
- * change: `scroll-padding-top` is one value for the whole document and five other
- * routes depend on the shipped one.
+ * which cleared the site header when that header was 56 px — but NOT that header
+ * PLUS this route's mini-header. 112 px did, and it is scoped to `<md` because
+ * that is the only width the mini-header exists at. A LOCAL `scroll-mt` rather
+ * than a global change: `scroll-padding-top` is one value for the whole document
+ * and five other routes depend on the shipped one.
+ *
+ * ⚠️ BOTH HALVES OF THAT ARITHMETIC ARE NOW STALE (2026-08-26 code review). The
+ * site header is 62 px one-row and 118 px wrapped since the authorship caption,
+ * and the "~48 px" mini-header above was measured at 54. So 112 needs to be 116
+ * at one row and 172 wrapped, and neither figure should be re-derived from the
+ * old constants. The fix is the `--header-h` property filed in
+ * `deferred-work.md` and owned by story 3-10; see the docblock at the top of
+ * this file for the full measurement.
  */
 function CompareFigure({
   side,

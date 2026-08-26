@@ -88,13 +88,14 @@ const GUARDS: Guard[] = [
     needle: "flex min-w-0 flex-col",
     because:
       "The identity block (spec-sign-the-project): the wordmark <Link> and the " +
-      "authorship caption stacked, with the caption as a SIBLING of the anchor. " +
-      "Flattening this back to a bare <Link> deletes the caption; moving the " +
-      "<span> INSIDE the anchor renames the first focusable element on all 1,406 " +
-      "routes and fails WCAG 2.5.3 (Label in Name) if narrowed with aria-label. " +
-      "`min-w-0` lets the block yield inside the flex row; it does NOT set the " +
-      "wrap threshold, which is max-content driven. The sibling relationship is " +
-      "asserted behaviourally in components/SiteSignature.test.tsx and on the " +
+      "authorship caption stacked in a shrink-to-fit column. `min-w-0` lets the " +
+      "block yield inside the flex row; it does NOT set the wrap threshold, " +
+      "which is max-content driven. SCOPE, corrected at the 2026-08-26 code " +
+      "review: this guard pins the COLUMN only. It does NOT detect the caption " +
+      "moving inside the anchor -- that class string survives the move, which " +
+      "was mutation-proved at the review -- so do not read it as the WCAG 2.5.3 " +
+      "guard. The sibling relationship is asserted behaviourally in " +
+      "components/SiteSignature.test.tsx (un-gated, both locales) and on the " +
       "exported markup in app/static-output.test.ts.",
   },
   {

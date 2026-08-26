@@ -263,12 +263,31 @@ describe("chrome.signature (the authorship caption)", () => {
     expect(es.chrome.signature, "the es caption").toBe(`Por ${NAME}`);
     expect(en.chrome.signature, "the en caption").toBe(`By ${NAME}`);
 
-    /*
-     * THE INVARIANT SPELLED OUT INDEPENDENTLY OF THE LITERALS ABOVE, so that
-     * rewording the connective in a later story does not silently retire the
-     * property this case exists for. `en: Dictionary` guards key SHAPE only —
-     * it would accept a helpfully localised name without a murmur.
-     */
+    expect(t("chrome.signature", "es")).toBe(es.chrome.signature);
+    expect(t("chrome.signature", "en")).toBe(en.chrome.signature);
+  });
+
+  /*
+   * A SEPARATE `it()`, AND THAT IS THE WHOLE POINT (code review 2026-08-26).
+   *
+   * This ran inside the case above, AFTER its two exact `toBe`s. In that
+   * position it was unreachable-in-failure: `expect` throws, so the loop only
+   * ever executed once both literals had already matched, at which point every
+   * assertion in it is guaranteed true. It could not fail, in any edit, ever —
+   * which is the EXACT standard the note above invokes to delete a sibling case
+   * ("strictly WEAKER ... could only ever fail in lockstep with it").
+   *
+   * Split out, it does the job it was written for: reword the connective in a
+   * later story and the case above fails on the literal, while THIS one keeps
+   * asserting the property that actually matters — the name is not localised —
+   * independently of what the connective happens to be today.
+   *
+   * `indexOf` is asserted BEFORE `slice` uses it: on a locale that dropped the
+   * name, `indexOf` returns -1 and `slice(-1)` would compare "s" to "s" and
+   * pass. The guard on the line above is what stops that, and it must stay
+   * above it.
+   */
+  it("keeps the name verbatim in both locales, whatever the connective becomes", () => {
     for (const [label, value] of [
       ["es", es.chrome.signature],
       ["en", en.chrome.signature],
@@ -278,9 +297,6 @@ describe("chrome.signature (the authorship caption)", () => {
       );
       expect(value.slice(value.indexOf(NAME)), `${label} altered the name`).toBe(NAME);
     }
-
-    expect(t("chrome.signature", "es")).toBe(es.chrome.signature);
-    expect(t("chrome.signature", "en")).toBe(en.chrome.signature);
   });
 });
 
