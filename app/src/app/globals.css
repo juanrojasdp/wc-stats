@@ -305,6 +305,65 @@
   --spacing-section-gap: 3rem;
   --spacing-layer-gap: 4rem;
 
+  /*
+   * ═══════ THE HEADER HEIGHT, AS A TOKEN (Story 3.10, UX-DR24 / D9) ═════════
+   *
+   * The sticky header's height is a SHARED CONTRACT with seven consumers, and
+   * until this story every one of them hardcoded 56 px against a bar that had
+   * been 62/118 px since the authorship caption landed. `scroll-padding-top`
+   * was wrong by 46 px at any wrapped width — anchored headings and the skip
+   * link's target both landed BEHIND the bar. This token ends that: it is
+   * consumed by `scroll-padding-top` and by every sticky offset that mirrors
+   * it, and nothing hardcodes the height again.
+   *
+   * 🔴 MEASURED FOR THIS COMPOSITION, NOT COPIED FORWARD. DESIGN.md shipped
+   * 62 / 118 / 124, which were story 3.6's numbers for a FOUR-element row
+   * (wordmark + search + ES|EN + theme). UX-DR24 replaces three of those with
+   * one 44 px trigger below `xl`, and the measurement moved accordingly —
+   * headless Chromium against the built export, 1 px sweep per locale:
+   *
+   *     locale   one row (62 px) from   wraps (118 px) at
+   *     es       215 px                 <= 214 px
+   *     en       211 px                 <= 210 px
+   *
+   *   Pre-nav those thresholds were 341 (es) / 337 (en). They fell ~126 px,
+   *   which is the width inversion UX-DR24 was chosen for: the `<xl` row is now
+   *   wordmark + one trigger, whose min-content is BELOW story 2.19's 237 px
+   *   figure. THE HEADER NO LONGER WRAPS AT 320 IN EITHER LOCALE — 62 px at 320
+   *   and at 390, both locales, both themes (96-cell matrix).
+   *
+   * ⚠️ THERE IS NO `header-h-zoom`, AND ITS ABSENCE IS THE MEASUREMENT TALKING.
+   * DESIGN.md's third value (124 px) named a 195 px layout viewport where an
+   * ALREADY-WRAPPED row gained a caption line. Measured now: 195 px reports
+   * 117.8 px — identical to every other wrapped width, because the row that
+   * wraps there is the same two-line wordmark+trigger row. "Wrapped" and "zoom"
+   * are no longer distinct states at any shipped width, so minting a third
+   * token would be a value nothing consumes differently — the dead-key shape
+   * this story deleted three locale keys to avoid. DESIGN.md is updated to
+   * match rather than left disagreeing with the stylesheet.
+   *
+   * ⚠️ NO LOCALE AXIS, and D9 is explicit about the test: add one only if the
+   * two locales land on different token VALUES, not merely different
+   * thresholds. They do not — both are 62/118. Only the switch-over width
+   * differs (215 vs 211), and the breakpoint below takes the LARGER of the two.
+   * That direction is deliberate: over-reserving puts extra whitespace above an
+   * anchored heading, while under-reserving hides it behind the bar, which is
+   * the defect this token exists to end. The 211-214 band is `en`-only, below
+   * the 320 px floor, and reachable only at zoom.
+   */
+  --spacing-header-h-oneline: 3.875rem; /* 62 px — measured, >= 215 px wide */
+  --spacing-header-h-wrapped: 7.375rem; /* 118 px — measured, <= 214 px wide */
+  --spacing-scroll-clearance: 1rem; /* breathing room under the bar */
+
+  /*
+   * `/compare`'s `<md` mini-header, which sticks UNDER the site header. Its own
+   * height was the other half of `CompareChartsSection`'s two hardcoded
+   * literals ("56 header + 48 mini"), so it is named here beside the header's
+   * rather than left as a digit inside a `scroll-mt-28`. Both that class and the
+   * IntersectionObserver's rootMargin derive from these two tokens now.
+   */
+  --spacing-compare-mini-h: 3rem; /* 48 px */
+
   --shadow-overlay: var(--elevation-overlay);
 }
 
@@ -436,36 +495,50 @@
     border-color: var(--border);
   }
 
-  /* Anchored headings must clear the sticky header — without this every
-     #section deep link and every scrollIntoView() lands under the bar. Also
-     fixes the #main-content skip link.
-     4.5rem = the header's own 3.5rem (h-14) + 1rem of breathing room, so a
-     heading does not sit flush against the bar. The header height is the
-     load-bearing half: change h-14 and this must follow.
-
-     ⚠️ THE HEADER IS NO LONGER 3.5rem AND THIS HAS NOT FOLLOWED YET
-     (spec-sign-the-project). Measured: 62 px one-row at every width from ~342
-     (es) / ~338 (en) up, and 118 px where the row wraps below that; 124 px at a
-     195 px layout viewport. So the breathing room is 10 px rather than 16 in the
-     common case, and a wrapped bar OVERLAPS an anchored heading by 46 px — it is
-     hidden, not merely tight. Deliberately left as one value rather than patched
-     to a bigger constant: `scroll-padding-top` is document-wide, the honest fix
-     is a `--header-h` custom property driven by the same breakpoint and consumed
-     here AND by `CompareChartsSection`'s `top-14` / `scroll-mt-28` / -104px
-     rootMargin, and that is a shared-contract change rather than a caption's.
-     Filed with measurements in deferred-work.md.
-
-     THE BLAST RADIUS IS WIDER THAN THAT PAIR (2026-08-26 code review). Four
-     more files reason IN PROSE from this exact value to justify plain fragment
-     navigation with no scroll handling of their own — ExpertLayer.tsx,
-     HubTable.tsx, LeaderboardsSection.tsx and TournamentHub.tsx each say some
-     form of "`scroll-padding-top: 4.5rem` already clears the sticky header",
-     which is now false below the wrap threshold. AND SO IS THE SKIP LINK, three
-     lines up in this very comment: at a wrapped width "Saltar al contenido"
-     lands #main-content 46 px behind the bar. Whoever takes `--header-h`
-     (story 3-10) re-verifies all seven, not two. */
+  /*
+   * ═══════ ANCHORED HEADINGS CLEAR THE STICKY BAR (Story 3.10, D9) ══════════
+   *
+   * Without this, every `#section` deep link, every `scrollIntoView()` and the
+   * `#main-content` skip link land UNDER the header.
+   *
+   * 🔴 IT IS DERIVED FROM `--header-h` NOW, NOT A CONSTANT, AND THAT CLOSES A
+   * DEFECT THIS FILE HAS DOCUMENTED AGAINST ITSELF SINCE spec-sign-the-project.
+   * The old value was `4.5rem` — 3.5rem for an `h-14` bar plus 1rem of
+   * breathing room. The bar stopped being 3.5rem when the authorship caption
+   * landed (62 px one row, 118 px wrapped), so at any wrapped width the bar
+   * OVERLAPPED an anchored heading by 46 px: hidden, not merely tight. The
+   * comment here said so, named `--header-h` as the honest fix, and deferred it
+   * to whoever owned the header, `CompareChartsSection` and this file together.
+   * Story 3.10 is that story, and this is that fix.
+   *
+   * SEVEN CONSUMERS, NOT TWO, AND THE SKIP LINK IS ONE OF THEM. The 2026-08-26
+   * review counted them: this property; `CompareChartsSection`'s three offsets;
+   * and `ExpertLayer.tsx`, `HubTable.tsx`, `LeaderboardsSection.tsx` and
+   * `TournamentHub.tsx`, which each reason IN PROSE from "scroll-padding-top:
+   * 4.5rem already clears the sticky header" to justify plain fragment
+   * navigation with no scroll handling. That sentence is TRUE AGAIN at every
+   * width, because the value now tracks the bar instead of guessing at it.
+   * (Those four carry only prose, not behaviour; two of them were held by
+   * another story while this landed, so their comments are corrected by ledger
+   * note rather than edited here.)
+   *
+   * WCAG 2.4.11 (Focus Not Obscured) is what the skip link half is about, and
+   * it is now measured rather than assumed — see the story's Dev Agent Record.
+   */
   html {
-    scroll-padding-top: 4.5rem;
+    /*
+     * Below the wrap threshold the bar is two rows. 215px is the LARGER of the
+     * two measured thresholds (es 215, en 211) — see the token block above for
+     * why over-reserving is the safe direction and under-reserving is the bug.
+     */
+    --header-h: var(--spacing-header-h-wrapped);
+    scroll-padding-top: calc(var(--header-h) + var(--spacing-scroll-clearance));
+  }
+
+  @media (min-width: 215px) {
+    html {
+      --header-h: var(--spacing-header-h-oneline);
+    }
   }
 
   body {

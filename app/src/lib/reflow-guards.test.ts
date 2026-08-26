@@ -69,19 +69,23 @@ const GUARDS: Guard[] = [
     file: "components/SiteHeader.tsx",
     needle: "flex min-h-14 max-w-6xl flex-wrap items-center",
     because:
-      "R2 owner 1 (Story 2.2). The header row's min-content is 237 CSS px, so it " +
+      "R2 owner 1 (Story 2.2). The header row's min-content was 237 CSS px, so it " +
       "alone made the document scroll sideways at 195 on every route — including " +
       "/about, /glossary and /404. `flex-wrap` + `min-h-14` reflows it to two rows " +
       "instead of shrinking a 44px touch target or truncating the site name. " +
-      "SMALL PHONES NOW WRAP TOO, since the authorship caption landed under the " +
-      "wordmark (spec-sign-the-project): it widens the identity block 76 -> 127 " +
-      "in es (122 in en) and flexbox breaks lines on max-content, so the " +
-      "threshold is LOCALE-DEPENDENT — es wraps at <=341, en at <=337, measured " +
-      "by a 1px sweep per locale. Matrix widths are 320/390/195 only (x " +
-      "dark+light x es+en x 8 routes = 96 cells): document overflow 0/96, so " +
-      "1.4.10 is unaffected — what moved is HEIGHT. 57 -> 62 one-row (spot-" +
-      "measured at 412, 768, 1440, 1920); 57 -> 118 wrapped at 320; 107 -> 124 " +
-      "at 195, where the row already wrapped and gains one caption line.",
+      "RE-MEASURED FOR THE NAV (Story 3.10, UX-DR24), because the row this case " +
+      "was written against no longer exists: it held wordmark + search + ES|EN + " +
+      "theme, and below `xl` it now holds wordmark + ONE 44px trigger. The " +
+      "authorship caption had pushed the wrap threshold to es <=341 / en <=337, " +
+      "so every phone wrapped; taking three elements out dropped it to es 215 / " +
+      "en 211 — BELOW the 320px floor, so NO PHONE WRAPS ANY MORE. Measured in " +
+      "headless Chromium against the built export (1px sweep per locale, " +
+      "200-420): header 62px one-row at 320, 390 and 1280 in both locales and " +
+      "both themes; 118px wrapped only at 195. Matrix 320/390/195 x dark+light x " +
+      "es+en x 8 routes = 96 cells, document overflow 0/96 settled. " +
+      "🔴 `flex-wrap` AND `min-h-14` BOTH STAY REGARDLESS. The wrap is what still " +
+      "saves 195px, where the row genuinely cannot fit one line, and R2/D8 is not " +
+      "negotiable at the zoom width just because the phone widths got easier.",
   },
   {
     file: "components/SiteHeader.tsx",
@@ -97,6 +101,23 @@ const GUARDS: Guard[] = [
       "guard. The sibling relationship is asserted behaviourally in " +
       "components/SiteSignature.test.tsx (un-gated, both locales) and on the " +
       "exported markup in app/static-output.test.ts.",
+  },
+  {
+    file: "components/SiteNav.tsx",
+    needle: "flex min-h-11 min-w-11 items-center justify-center rounded-md",
+    because:
+      "Story 3.10 (UX-DR24), and it is load-bearing in TWO directions at once. " +
+      "(1) SIZE: below `xl` this trigger is the ONLY control in the header row — " +
+      "it replaces the search, the ES|EN toggle and the theme toggle — so it is " +
+      "the single target UX-DR15's 44px (MIN_HIT_PX) has to hold, and the whole " +
+      "width argument for the nav depends on it staying exactly 44 and not " +
+      "growing. (2) DISPLAY: the mockup draws it `display:grid; " +
+      "place-items:center; width:44px; height:44px`, and translating that " +
+      "literally FAILS the repo-wide implicit-grid scan below — `min-h-11` and " +
+      "`min-w-11` are not the FIXED `h-`/`w-` pair its exemption requires, so " +
+      "`grid min-h-11 min-w-11 place-items-center` is an offender and the suite " +
+      "goes red. The shipped `HeaderSearch` trigger form is copied instead. " +
+      "Anyone reaching for `grid` here should read this case first.",
   },
   {
     file: "components/MatchHero.tsx",

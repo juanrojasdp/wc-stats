@@ -184,26 +184,28 @@ type FigureRefs = RefObject<(HTMLElement | null)[]>;
  * before this story, and no measurement for this header is given anywhere in the
  * UX docs. Every number is ruled here.
  *
- * · `sticky top-14 z-30`. `SiteHeader` is `sticky top-0 z-40`, so this nests
- *   UNDER it in both offset and stacking rather than competing with it.
+ * · `sticky top-[var(--header-h)] z-30`. `SiteHeader` is `sticky top-0 z-40`,
+ *   so this nests UNDER it in both offset and stacking rather than competing.
  *
- *   🔴 `top-14` (56 px) NO LONGER MATCHES THE HEADER, and this mini-header is
- *   the worst-affected consumer. The authorship caption (spec-sign-the-project,
- *   commit 92eec27) took the site header to 62 px one-row and to 118 px where
- *   its row wraps — at or below ~337 px in both locales. (The caption spec says
- *   es wraps at <=341 and en at <=337; commit d3c103c measured es in headless
- *   Chromium and found 337 too. Unreconciled — see deferred-work.md. Neither
- *   number changes anything below: both are well above 320.) Measured there: at
- *   320 px this bar sits at top:56 and is ~54 px tall, so 56+54=110 < 118 and
- *   it is ENTIRELY behind the site header — invisible on exactly the `<md`
- *   widths it is the ruled D13 / UX-DR17 affordance FOR. At 390 px it loses
- *   6 px, which eats its `py-2` rather than text. `max-md:scroll-mt-28` (112 px
- *   = "56 header + 48 mini") and the `-104px` rootMargin below share that dead
- *   provenance and are under-reserved by 6 px one-row, 60 px wrapped.
+ *   ✅ FIXED IN STORY 3.10 (D9) — IT WAS `top-14`, AND THAT LITERAL WAS THE
+ *   DEFECT. 56 px stopped matching the site header when the authorship caption
+ *   landed (62 px one row, 118 px wrapped), and this mini-header was the
+ *   worst-affected of the seven consumers: measured at 320 px it sat at top:56
+ *   and was ~54 px tall, so 56+54=110 < 118 and it was ENTIRELY BEHIND the site
+ *   header — invisible on exactly the `<md` widths it is the ruled D13 /
+ *   UX-DR17 affordance FOR.
  *
- *   Filed, not fixed here, and the pointer is the point: see `deferred-work.md`
- *   (spec-sign-the-project entry) for the measurements and the proposed
- *   `--header-h` custom property, which story 3-10 owns along with this file.
+ *   `--header-h` is declared on `html` and switched by breakpoint, so this
+ *   offset now tracks the bar and cannot drift from it again. Re-measured after
+ *   the nav landed (headless Chromium, built export): the header is ONE ROW at
+ *   62 px at BOTH 320 and 390 in both locales — UX-DR24 replaced three row
+ *   elements with one trigger and took the wrap threshold from ~341/337 down to
+ *   215/211 — so this bar clears it with room at every shipped width, and the
+ *   118 px case survives only below ~215 px, where the token follows it.
+ *
+ *   The old comment recorded an unreconciled 341-vs-337 disagreement between
+ *   the caption spec and commit d3c103c. It is MOOT rather than resolved: both
+ *   numbers described the pre-nav four-element row, which no longer exists.
  *   Do not re-derive these offsets from 56, and re-measure this bar rather than
  *   trusting the "~48 px" the scroll-mt figure was built on — the ledger
  *   measured 54. Added by the 2026-08-26 code review, which found this file
@@ -226,6 +228,31 @@ type FigureRefs = RefObject<(HTMLElement | null)[]>;
  * non-scrolling ancestor never offsets. `getComputedStyle(el).position` is
  * asserted in the browser pass, not in a test.
  */
+/**
+ * The two sticky bars' combined height, in CSS px, READ FROM THE STYLESHEET.
+ *
+ * 🔴 NOT A LITERAL (Story 3.10 D9). This was `-104px`, meaning "56 header + 48
+ * mini" — both halves hardcoded, and the first half wrong at every width where
+ * the header wraps. An IntersectionObserver inset that under-states the bars
+ * counts a figure as on-screen while it is hidden behind them, which is the one
+ * question the mini-header exists to answer.
+ *
+ * `--header-h` is declared on `html` and switched by breakpoint, so reading it
+ * from the computed style gets the value that is ACTUALLY in force at this
+ * width — the same number `scroll-padding-top` and this bar's `top` are using.
+ * Falls back to the wrapped height, which is the SAFE direction: over-stating
+ * the inset makes a figure stop counting slightly early, while under-stating it
+ * reports a figure the reader cannot see.
+ */
+function stickyInsetPx(): number {
+  const styles = getComputedStyle(document.documentElement);
+  const read = (name: string, fallback: number): number => {
+    const parsed = Number.parseFloat(styles.getPropertyValue(name));
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+  };
+  return read("--header-h", 118) + read("--spacing-compare-mini-h", 48);
+}
+
 function StickyMiniHeader({ names, activeIndex }: { names: readonly string[]; activeIndex: number }) {
   const t = useT();
   const current = names[activeIndex] ?? names[0] ?? "";
@@ -241,7 +268,16 @@ function StickyMiniHeader({ names, activeIndex }: { names: readonly string[]; ac
        * headers shipped green and silently did not stick.
        */
       data-compare-showing={activeIndex}
-      className="sticky top-14 z-30 mb-tile-gap bg-surface-base py-2 md:hidden"
+      /*
+       * `top-[var(--header-h)]`, NOT `top-14` (Story 3.10 D9). The literal
+       * 56 px stopped matching the site header when the authorship caption
+       * landed, and this bar was the worst-affected consumer: at 320 px it sat
+       * at top:56 and was ~54 px tall, so 56+54=110 < the 118 px bar and it was
+       * ENTIRELY behind the header — invisible on exactly the `<md` widths it is
+       * the ruled D13 / UX-DR17 affordance FOR. The token tracks the bar now, so
+       * this offset cannot drift from it again.
+       */
+      className="sticky top-[var(--header-h)] z-30 mb-tile-gap bg-surface-base py-2 md:hidden"
     >
       <p className="type-label-caps text-ink-secondary">{t("compare.miniHeader.showing")}</p>
       <p className="type-body text-ink-primary">{current}</p>
@@ -257,13 +293,16 @@ function StickyMiniHeader({ names, activeIndex }: { names: readonly string[]; ac
 /**
  * One side's figure: the chart, its data-table alternative, and nothing else.
  *
- * `max-md:scroll-mt-28` IS THE `scroll-padding-top` HALF OF D13. `globals.css`
- * already sets `scroll-padding-top: 4.5rem` (72 px) on the scroll container,
- * which cleared the site header when that header was 56 px — but NOT that header
- * PLUS this route's mini-header. 112 px did, and it is scoped to `<md` because
- * that is the only width the mini-header exists at. A LOCAL `scroll-mt` rather
- * than a global change: `scroll-padding-top` is one value for the whole document
- * and five other routes depend on the shipped one.
+ * THE `scroll-mt` IS THE `scroll-padding-top` HALF OF D13, AND IT IS DERIVED NOW.
+ * `globals.css` sets `scroll-padding-top: calc(var(--header-h) + clearance)`,
+ * which clears the site header at every width — but NOT that header PLUS this
+ * route's mini-header. So this adds the mini-header's own token on top, scoped
+ * to `<md` because that is the only width the mini-header exists at. A LOCAL
+ * `scroll-mt` rather than a global change: `scroll-padding-top` is one value for
+ * the whole document and five other routes depend on it.
+ *
+ * It was `scroll-mt-28` — 112 px, meaning "56 header + 48 mini", with the first
+ * half wrong at every width the header wrapped. Both halves are tokens now.
  *
  * ⚠️ BOTH HALVES OF THAT ARITHMETIC ARE NOW STALE (2026-08-26 code review). The
  * site header is 62 px one-row and 118 px wrapped since the authorship caption,
@@ -293,7 +332,17 @@ function CompareFigure({
   nodeRef: (node: HTMLElement | null) => void;
 }) {
   return (
-    <div ref={nodeRef} className="min-w-0 max-md:scroll-mt-28" data-compare-side={side}>
+    /*
+     * `scroll-mt` is the `scroll-padding-top` half of D13, and it must clear
+     * BOTH sticky bars: the site header (`--header-h`) and this mini-header on
+     * top of it. `28` was 112 px against a 56 px header — a literal that is
+     * wrong at every width the header wraps. Derived now, from the same token.
+     */
+    <div
+      ref={nodeRef}
+      className="min-w-0 max-md:scroll-mt-[calc(var(--header-h)+var(--spacing-compare-mini-h))]"
+      data-compare-side={side}
+    >
       {/* Unnamed <figure>: the chart inside is already role="img" with its own
           summary, and a named figure around a named img would give the reader
           two competing accessible names. */}
@@ -399,7 +448,7 @@ export function CompareChartsSection({
           setActiveIndex(best);
         }
       },
-      { rootMargin: "-104px 0px 0px 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+      { rootMargin: `-${stickyInsetPx()}px 0px 0px 0px`, threshold: [0, 0.25, 0.5, 0.75, 1] }
     );
     for (const node of nodes) {
       observer.observe(node);

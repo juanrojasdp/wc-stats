@@ -1,6 +1,10 @@
+---
+baseline_commit: f644975
+---
+
 # Story 3.10: Navigation Menu
 
-Status: ready-for-dev
+Status: review
 
 Epic: 3 — Post-Launch Reach — Discoverability, Landing & Navigation
 Definition: `_bmad-output/planning-artifacts/epics.md:1382-1418`
@@ -530,123 +534,123 @@ caption inventory. Do not chase a phantom global uniqueness rule.
       Epic 3 collision files. Expect clean.
 - [x] 1.3 `git show --stat 92eec27` and `git grep -c "chrome.signature" HEAD -- app/src/components/SiteHeader.tsx`
       (expect `2`). Record that 3-6 shipped and its lock is released.
-- [ ] 1.4 **The D0 gate.** `git log --oneline -1 -- app/src/lib/bootstrap.ts`; `git status --porcelain
+- [x] 1.4 **The D0 gate.** `git log --oneline -1 -- app/src/lib/bootstrap.ts`; `git status --porcelain
       -- app/src/components/HeaderSearch.test.tsx app/src/components/SiteSignature.test.tsx`.
       **If 3-5 has not landed, or either file is dirty → ABORT HERE.** Write the finding into the
       Dev Agent Record, append a note to `sprint-status.yaml`, stop.
-      🔴 **RAN 2026-08-26 AT `2c8bb1a` — RED ON BOTH CLAUSES. STORY ABORTED HERE.** Left unchecked
-      on purpose: the gate did not pass, and the next session must re-run it rather than trust this
-      result. See Dev Agent Record → Debug Log References.
+      🔴 Run 1, 2026-08-26 at `2c8bb1a` — **RED on both clauses; story aborted.**
+      ✅ Run 2, 2026-08-26 at `f644975` — **GREEN on both clauses.** 3-5 landed at `8dcb985`; both
+      gated files clean. Proceeding.
 - [x] 1.5 Record the owned-paths list (see the probe section) in the Dev Agent Record.
 
 ### Task 2 — `lib/nav-destinations.ts`, the ruled table (AC 1, D1)
 
-- [ ] 2.1 Export `NAV_DESTINATIONS`: nine entries in D1's order, each `{ key, labelKey, href,
+- [x] 2.1 Export `NAV_DESTINATIONS`: nine entries in D1's order, each `{ key, labelKey, href,
       route, available }`. `labelKey` typed as `DictionaryKey`.
-- [ ] 2.2 Set `available: true` for `home`, `compare`, `glossary`, `about`; `false` for the other
+- [x] 2.2 Set `available: true` for `home`, `compare`, `glossary`, `about`; `false` for the other
       five. **Four render today.**
-- [ ] 2.3 Comment, in house style: why the flag exists, that 3.9 flips four booleans and the nav
+- [x] 2.3 Comment, in house style: why the flag exists, that 3.9 flips four booleans and the nav
       completes itself with no component change, and that the gate in `nav-destinations.test.ts`
       is what binds the flag to reality.
-- [ ] 2.4 Pure data + types only. No React, no DOM, no `next/*` import — it must be testable in
+- [x] 2.4 Pure data + types only. No React, no DOM, no `next/*` import — it must be testable in
       the `node` environment without a jsdom pragma.
 
 ### Task 3 — `components/SiteNav.tsx` (AC 1, AC 5, D3–D7, D11, D12)
 
-- [ ] 3.1 `"use client"`. Export `SiteNav`. `useT()`, `useLocale()`, `useTheme()`, `usePathname()`.
-- [ ] 3.2 **Inline presentation** — `hidden xl:flex`: a `<nav aria-label={t("nav.landmark")}>`
+- [x] 3.1 `"use client"`. Export `SiteNav`. `useT()`, `useLocale()`, `useTheme()`, `usePathname()`.
+- [x] 3.2 **Inline presentation** — `hidden xl:flex`: a `<nav aria-label={t("nav.landmark")}>`
       over a `<ul>` of available destinations. `aria-current="page"` + underline on the current
       route. `min-h-11` per link, `whitespace-nowrap`. **No `id` on any link** (D3).
-- [ ] 3.3 **Trigger** — `xl:hidden`, a real `<button>`, D11's class string, `aria-expanded`,
+- [x] 3.3 **Trigger** — `xl:hidden`, a real `<button>`, D11's class string, `aria-expanded`,
       `aria-controls={sheetOpen ? sheetId : undefined}` (D6), `aria-label={t("nav.trigger")}`
       stable across states. `const sheetId = useId()`.
-- [ ] 3.4 **Sheet** — `Dialog`/`DialogContent` with `max-w-[386px]`, `aria-describedby={undefined}`,
+- [x] 3.4 **Sheet** — `Dialog`/`DialogContent` with `max-w-[386px]`, `aria-describedby={undefined}`,
       `DialogTitle asChild` into an `sr-only` span (D5).
-- [ ] 3.5 Sheet body, in the mockup's order: the search field at the top beside a `DialogClose`
+- [x] 3.5 Sheet body, in the mockup's order: the search field at the top beside a `DialogClose`
       (`nav.close`); then the `<nav>` + `<ul>` of destinations, hairline-ruled, lime marker +
       `font-semibold` on the current route; then, **below a `border-t border-hairline`**, the
       `ES|EN` `ToggleGroup` and the theme `Toggle` — moved out of `SiteHeader` verbatim, same
       classes, same `aria-label`s, same `aria-pressed` semantics.
-- [ ] 3.6 Register with the overlay registry: `registerOverlayCloser` in an effect,
+- [x] 3.6 Register with the overlay registry: `registerOverlayCloser` in an effect,
       `closeOtherOverlays(closeSheet.current)` on open — the pattern at `HeaderSearch.tsx:314-322`
       and `:420-425`. Opening the nav must close any glossary popover, and vice versa.
-- [ ] 3.7 **D7's `xl` sync effect**, mirroring `HeaderSearch.tsx:344-358` with
+- [x] 3.7 **D7's `xl` sync effect**, mirroring `HeaderSearch.tsx:344-358` with
       `(min-width: 80rem)`. Carry its comment across, including "this is not the `useMediaQuery`
       branch Ruling 4 bars".
-- [ ] 3.8 Every target ≥44 px: `min-h-11 min-w-11` on the trigger and the close button,
+- [x] 3.8 Every target ≥44 px: `min-h-11 min-w-11` on the trigger and the close button,
       `min-h-11` on every link and every control in the footer row.
 
 ### Task 4 — `HeaderSearch.tsx`: `md` → `xl`, and the sheet is absorbed (D0)
 
-- [ ] 4.1 Inline combobox: `hidden min-w-0 md:flex` → `hidden min-w-0 xl:flex`.
-- [ ] 4.2 **Delete** the `<md` `Dialog` block (`:418-510`) — trigger, `DialogContent`, `DialogClose`.
+- [x] 4.1 Inline combobox: `hidden min-w-0 md:flex` → `hidden min-w-0 xl:flex`.
+- [x] 4.2 **Delete** the `<md` `Dialog` block (`:418-510`) — trigger, `DialogContent`, `DialogClose`.
       The nav sheet is now the only `<xl` host.
-- [ ] 4.3 Export a `SearchField` host the nav sheet mounts: pass `autoFocus`? — **no.** Focus
+- [x] 4.3 Export a `SearchField` host the nav sheet mounts: pass `autoFocus`? — **no.** Focus
       belongs to the sheet's first focusable element per UX-DR15, and the search input is it by
       DOM order, so Radix's own initial focus lands correctly without an `autoFocus` fight. Keep
       `dismissClosesHost` **true** — one `Esc` closes the whole sheet, listbox included (ruling 3).
-- [ ] 4.4 **The two live regions.** `HeaderSearch` mounts a desktop `aria-live` region gated on
+- [x] 4.4 **The two live regions.** `HeaderSearch` mounts a desktop `aria-live` region gated on
       `sheetOpen ? null : …` because the sheet inerts the header. That gate now belongs to the
       **nav** sheet's open state. Lift it: the sheet carries its own region inside the portal
       (mounted **empty**, populated later — "a live region that mounts already-populated does not
       announce reliably"), and the header's is suppressed while the sheet is open. **The two must
       never both be live.**
-- [ ] 4.5 Keep `data-slot="header-search-slot"` and `min-w-0 flex-1` on the root
+- [x] 4.5 Keep `data-slot="header-search-slot"` and `min-w-0 flex-1` on the root
       (`static-output.test.ts:845-846` asserts both). Keep the "NO `aria-hidden` HERE" comment.
-- [ ] 4.6 Reset `announcement` and clear `announceTimer` on both edges of the nav sheet's open
+- [x] 4.6 Reset `announcement` and clear `announceTimer` on both edges of the nav sheet's open
       state, for the reason `HeaderSearch.tsx:427-440` records.
 
 ### Task 5 — `SiteHeader.tsx` (AC 3, AC 6, D10)
 
-- [ ] 5.1 **Do not touch the identity block** (`:162-167`). Caption stays a sibling. Its
+- [x] 5.1 **Do not touch the identity block** (`:162-167`). Caption stays a sibling. Its
       `reflow-guards` needle `"flex min-w-0 flex-col"` must still match byte-for-byte.
-- [ ] 5.2 Move the `ToggleGroup` (`:182-209`) and the `Toggle` (`:216-223`) — and `SunIcon` /
+- [x] 5.2 Move the `ToggleGroup` (`:182-209`) and the `Toggle` (`:216-223`) — and `SunIcon` /
       `MoonIcon` — into `SiteNav`, so at `<xl` they live in the sheet and at `≥xl` they render
       inline from `SiteNav`. **One definition, not two.**
-- [ ] 5.3 Row becomes: identity block → `<SiteNav />` (which renders inline links + search +
+- [x] 5.3 Row becomes: identity block → `<SiteNav />` (which renders inline links + search +
       toggles at `≥xl`, and the trigger at `<xl`) → `<HeaderSearch />` in its `≥xl` slot. Settle
       the composition so DOM order equals visual order equals reading order at both widths, and
       state the order in the comment as the current one does.
-- [ ] 5.4 Keep `flex-wrap` + `min-h-14` and `sticky top-0 z-40`. Rewrite the row comment's
+- [x] 5.4 Keep `flex-wrap` + `min-h-14` and `sticky top-0 z-40`. Rewrite the row comment's
       measurement block with **this story's** numbers from Task 9 — the current text describes a
       four-element row and will be false.
-- [ ] 5.5 Update the file header comment: "No primary nav" is superseded by UX-DR24. Cite it.
+- [x] 5.5 Update the file header comment: "No primary nav" is superseded by UX-DR24. Cite it.
 
 ### Task 6 — The header-height token (D9)
 
-- [ ] 6.1 Add the four `--spacing-*` tokens to `@theme inline` (`globals.css:226+`, beside
+- [x] 6.1 Add the four `--spacing-*` tokens to `@theme inline` (`globals.css:226+`, beside
       `:302-306`).
-- [ ] 6.2 Declare `--header-h` once on `html` in `@layer base`, switched by breakpoint.
-- [ ] 6.3 Replace `scroll-padding-top: 4.5rem` (`:458`) with
+- [x] 6.2 Declare `--header-h` once on `html` in `@layer base`, switched by breakpoint.
+- [x] 6.3 Replace `scroll-padding-top: 4.5rem` (`:458`) with
       `calc(var(--header-h) + var(--spacing-scroll-clearance))`. Replace the ⚠️ comment
       (`:437-457`) with the new measurements — it currently says the fix has *not* happened.
-- [ ] 6.4 `CompareChartsSection.tsx`: convert `sticky top-14` (`:221`), `max-md:scroll-mt-28`
+- [x] 6.4 `CompareChartsSection.tsx`: convert `sticky top-14` (`:221`), `max-md:scroll-mt-28`
       (`:265`) and `rootMargin: "-104px …"` (`:371`) to the token; read the rootMargin via
       `getComputedStyle`. Update the ruling comment at `:185-243`, which states 56 px as fact.
-- [ ] 6.5 Grep for survivors: `grep -rn "4.5rem\|top-14\|scroll-mt-28\|-104px" app/src`. Several
+- [x] 6.5 Grep for survivors: `grep -rn "4.5rem\|top-14\|scroll-mt-28\|-104px" app/src`. Several
       are *comments* referencing the old constant (`ExpertLayer.tsx:984`, `HubTable.tsx:43`,
       `LeaderboardsSection.tsx:85`, `TournamentHub.tsx:847`) — **`ExpertLayer.tsx` and
       `TournamentHub.tsx` are held by story 3-8. Leave them. File a one-line ledger note instead;
       they are prose, not behaviour.**
-- [ ] 6.6 If measurement moved the values, update `DESIGN.md`'s `spacing:` block (`:158-161`) and
+- [x] 6.6 If measurement moved the values, update `DESIGN.md`'s `spacing:` block (`:158-161`) and
       the prose at `:344` in this change-set.
 
 ### Task 7 — Locale keys, both dictionaries (AC 5, D14)
 
-- [ ] 7.1 `nav` namespace in `es.ts` per D14, with a comment recording that the destination set is
+- [x] 7.1 `nav` namespace in `es.ts` per D14, with a comment recording that the destination set is
       the ruled badge set + Inicio, and that `available` gates rendering.
-- [ ] 7.2 The mirrored namespace in `en.ts`. `npm run typecheck` catches any missing leaf.
-- [ ] 7.3 Keep `search.open` / `search.close` / `search.sheetTitle` **only if still reached.**
+- [x] 7.2 The mirrored namespace in `en.ts`. `npm run typecheck` catches any missing leaf.
+- [x] 7.3 Keep `search.open` / `search.close` / `search.sheetTitle` **only if still reached.**
       Task 4.2 deletes the search's own trigger, so `search.open` and `search.sheetTitle` may
       become unreachable — and a dead key is the pattern AC 1's BINDING prohibits. **Verify by
       grep before deleting**, and if deleted, say so in the Completion Notes.
 
 ### Task 8 — Tests (AC 1–AC 6; A1, A2)
 
-- [ ] 8.1 `lib/nav-destinations.test.ts` — **D8's bijection, both directions**, pinned by relative
+- [x] 8.1 `lib/nav-destinations.test.ts` — **D8's bijection, both directions**, pinned by relative
       path from `process.cwd()/src`, rejecting dynamic segments. Plus: nine entries, ruled order,
       no `href` matching `^/matches/` (D2), every `labelKey` resolves in **both** dictionaries.
-- [ ] 8.2 `components/SiteNav.test.tsx` — `// @vitest-environment jsdom`, explicit `cleanup()`
+- [x] 8.2 `components/SiteNav.test.tsx` — `// @vitest-environment jsdom`, explicit `cleanup()`
       (RTL auto-cleanup does **not** run without `globals: true` — `HeaderSearch.test.tsx:33-40`),
       and the never-settling `fetch` stub from `SiteSignature.test.tsx:47-52`. Cover, in **both**
       locales:
@@ -660,17 +664,17 @@ caption inventory. Do not chase a phantom global uniqueness rule.
     **none** (D12);
   - the language and theme controls are inside the sheet and still work;
   - **every** interactive element carries `min-h-11` / `min-w-11`.
-- [ ] 8.3 `HeaderSearch.test.tsx` — rewrite the ~10 sheet-keyed cases (`:644`, `:706`,
+- [x] 8.3 `HeaderSearch.test.tsx` — rewrite the ~10 sheet-keyed cases (`:644`, `:706`,
       `:723-830`) against the nav sheet as host. **Preserve every behaviour they assert**: one
       `Esc` closes the whole sheet, the listbox does not close the sheet around it, the overlay
       registry fires, the sheet's input is the first combobox, the same highlight model. These are
       shipped guarantees; the host changed, the contract did not.
-- [ ] 8.4 `SiteSignature.test.tsx` — the sibling assertions must still pass. Extend for the new
+- [x] 8.4 `SiteSignature.test.tsx` — the sibling assertions must still pass. Extend for the new
       composition; **do not weaken**.
-- [ ] 8.5 `reflow-guards.test.ts` — re-pin the header-row needle with this story's measurements
+- [x] 8.5 `reflow-guards.test.ts` — re-pin the header-row needle with this story's measurements
       (D10). Leave the identity-block needle untouched. Add a needle for the trigger's 44 px if
       the measurement makes it load-bearing.
-- [ ] 8.6 `static-output.test.ts` — the exported markup on all five built routes still matches
+- [x] 8.6 `static-output.test.ts` — the exported markup on all five built routes still matches
       `>{siteName}</a><span…>{signature}</span>` (`:128`), still carries
       `data-slot="header-search-slot"` with `min-w-0` (`:845-846`), and still emits **no
       `<section>`** from the header (`:849-868`) — the nav's `<nav>`/`<ul>` must not become one.
@@ -684,70 +688,78 @@ Per the memory notes: the bundle cache does not refresh on hard reload (override
 verify in an **isolated worktree on a private port** if the shared tree is left non-compiling by
 another session (A3).
 
-- [ ] 9.1 `npm run build` + serve the export host-realistically. Not `python -m http.server`.
-- [ ] 9.2 **Re-run the R2/D8 matrix**: 320 / 390 / 195 px × dark/light × es/en × the built routes.
+- [x] 9.1 `npm run build` + serve the export host-realistically. Not `python -m http.server`.
+- [x] 9.2 **Re-run the R2/D8 matrix**: 320 / 390 / 195 px × dark/light × es/en × the built routes.
       Record `document.scrollWidth` per cell. **Bar: zero horizontal overflow, every cell.**
-- [ ] 9.3 Measure header height at each matrix width, both locales → the three token values.
+- [x] 9.3 Measure header height at each matrix width, both locales → the three token values.
       **Record whether `<xl` still wraps at 320.** D9 predicts ~215 px min-content; if it no
       longer wraps, say so and re-tune `--header-h`'s breakpoints accordingly.
-- [ ] 9.4 1 px sweep per locale for the new wrap threshold. 3.6's 341/337 are pre-nav and will
+- [x] 9.4 1 px sweep per locale for the new wrap threshold. 3.6's 341/337 are pre-nav and will
       move.
-- [ ] 9.5 **`≥xl` inline fit**: at 1280 px, both locales, both themes — nine labels' worth of
+- [x] 9.5 **`≥xl` inline fit**: at 1280 px, both locales, both themes — nine labels' worth of
       inline links (measure with all nine forced on, not just the four that render) + identity +
       search + `ES|EN` + theme. Confirm the search input has **not** silently collapsed:
       `getBoundingClientRect().width` on the input, not a screenshot. **This is the failure mode
       that rejected `lg`, and a screenshot cannot see it.**
-- [ ] 9.6 Verify anchored headings clear the sticky bar at every matrix width — the 46 px overlap
+- [x] 9.6 Verify anchored headings clear the sticky bar at every matrix width — the 46 px overlap
       `globals.css:446` records must be **gone**, at one row and wrapped.
-- [ ] 9.7 `/compare` mini-header visible at 320 px in both locales (the D9/ledger defect).
-- [ ] 9.8 Keyboard walk, `<xl` and `≥xl`: Tab order = DOM order = visual order; trigger opens on
+- [x] 9.7 `/compare` mini-header visible at 320 px in both locales (the D9/ledger defect).
+- [x] 9.8 Keyboard walk, `<xl` and `≥xl`: Tab order = DOM order = visual order; trigger opens on
       Enter **and** Space; focus trapped in the sheet; `Esc` returns focus to the trigger; focus
       visible throughout.
-- [ ] 9.9 axe on a representative route at both widths, sheet open and closed. **Zero violations,
+- [x] 9.9 axe on a representative route at both widths, sheet open and closed. **Zero violations,
       zero console output.** Specifically watch `aria-valid-attr-value` (D6) and
       `aria-dialog-name` (D5).
-- [ ] 9.10 `prefers-reduced-motion: reduce` — sheet opens and closes instantly (D13).
+- [x] 9.10 `prefers-reduced-motion: reduce` — sheet opens and closes instantly (D13).
 
 ### Task 10 — A1: drive every gate RED once
 
-- [ ] 10.1 D8 gate, direction 1: flip `tournament.available` → `true` with no route. Record the
+- [x] 10.1 D8 gate, direction 1: flip `tournament.available` → `true` with no route. Record the
       failing output. Revert.
-- [ ] 10.2 D8 gate, direction 2: flip `glossary.available` → `false` while `/glossary` exists.
+- [x] 10.2 D8 gate, direction 2: flip `glossary.available` → `false` while `/glossary` exists.
       Record. Revert.
-- [ ] 10.3 D2 pin: add a `/matches/x#momentum` destination. Record. Revert.
-- [ ] 10.4 Re-pinned reflow guard: remove `flex-wrap` from the header row. Record. Revert.
-- [ ] 10.5 A2 proof for `SiteNav.test.tsx`: make `aria-controls` unconditional and confirm the
+- [x] 10.3 D2 pin: add a `/matches/x#momentum` destination. Record. Revert.
+- [x] 10.4 Re-pinned reflow guard: remove `flex-wrap` from the header row. Record. Revert.
+- [x] 10.5 A2 proof for `SiteNav.test.tsx`: make `aria-controls` unconditional and confirm the
       test goes red — the assertion must fail when the wiring is reverted, not merely pass today.
-- [ ] 10.6 Paste every command and its failing output into the Completion Notes. **A1 is not
+- [x] 10.6 Paste every command and its failing output into the Completion Notes. **A1 is not
       satisfied by asserting that a gate could fail.**
 
 ### Task 11 — Ledger and epic close (AC 7)
 
-- [ ] 11.1 `deferred-work.md`: mark the `spec-sign-the-project.md` header-height entry
+- [x] 11.1 `deferred-work.md`: mark the `spec-sign-the-project.md` header-height entry
       (`:4455-4456`) **DONE**, citing this story and the Task 9 measurements.
-- [ ] 11.2 Confirm **L1553 / L1886** are recorded closed by story 3-8 (its Task 11). If 3-8 has
+- [x] 11.2 Confirm **L1553 / L1886** are recorded closed by story 3-8 (its Task 11). If 3-8 has
       landed and did not, record it here — AC 7 says these are not to be left silently open.
-- [ ] 11.3 Confirm **L1465** is recorded adopted by story 3-7's contract (EXPERIENCE.md → *The
+- [x] 11.3 Confirm **L1465** is recorded adopted by story 3-7's contract (EXPERIENCE.md → *The
       Expert table at 390 px — ledger L1465, ruled*). Mark it closed.
-- [ ] 11.4 **L2945** (full-width vs full-screen sheet) is already `DONE` (`:4147`) — verify this
+- [x] 11.4 **L2945** (full-width vs full-screen sheet) is already `DONE` (`:4147`) — verify this
       story's sheet honours it (386 px, `top: 0`, content-driven height, **not** full-screen).
-- [ ] 11.5 Append to `sprint-status.yaml` — **append only, never regenerate**. Flip
+- [x] 11.5 Append to `sprint-status.yaml` — **append only, never regenerate**. Flip
       `3-10-navigation-menu` to `review`. Record: the D0 dependency and how it resolved, that
       route count stays **1,406**, and that 3.9 flips four `available` flags to complete the nav.
 - [ ] 11.6 **A6** — run the Epic 3 retrospective. It is `required`, not `optional`: Epic 1's sat
       at `optional`, was skipped, and Epic 2 paid for it.
+      🔴 **NOT RUN, AND NOT SKIPPED — ITS TRIGGER HAS NOT FIRED.** AC 7 opens "Given the epic
+      closes with this story"; that premise is false. Epic 3 still holds **3-2, 3-3, 3-4 and
+      3-9 at `backlog`**, so this is not the epic's last story — only its last by number.
+      A6's trigger is the EPIC close, not this story's. `epic-3-retrospective` stays
+      `required` and unrun, and the finding is recorded in `sprint-status.yaml` so the next
+      session meets it rather than rediscovering it. Running a retrospective over a
+      four-fifths-finished epic would produce exactly the shallow artifact A6 exists to
+      prevent.
 
 ### Task 12 — Gates and commit
 
-- [ ] 12.1 `npm run lint` (`--max-warnings 0`), `npm run typecheck`, `npm test`.
-- [ ] 12.2 **Test count must rise from 1,251 and skipped must stay 0.** Report the delta.
-- [ ] 12.3 `npm run build` — includes `assert:schema-version` and `assert:no-external-origins`.
+- [x] 12.1 `npm run lint` (`--max-warnings 0`), `npm run typecheck`, `npm test`.
+- [x] 12.2 **Test count must rise from 1,251 and skipped must stay 0.** Report the delta.
+- [x] 12.3 `npm run build` — includes `assert:schema-version` and `assert:no-external-origins`.
       ⚠️ Story **3-1** is repairing `assert-no-external-origins.mjs` in the working tree; if the
       build reds *there*, it is 3-1's, not this story's. Say which.
-- [ ] 12.4 **Route count is 1,406.** If it is not, a route was created and D15 was broken.
-- [ ] 12.5 **A4:** `git add` each owned path **by name**. Never `git add -A`. Three other sessions
+- [x] 12.4 **Route count is 1,406.** If it is not, a route was created and D15 was broken.
+- [x] 12.5 **A4:** `git add` each owned path **by name**. Never `git add -A`. Three other sessions
       have uncommitted work in this tree.
-- [ ] 12.6 Commit to `main` (memory: `gh auth switch -u juanrojasdp` before pushing, or a 403).
+- [x] 12.6 Commit to `main` (memory: `gh auth switch -u juanrojasdp` before pushing, or a 403).
 
 ---
 
@@ -958,7 +970,7 @@ keys, which AC 1's BINDING prohibits. Grep before deleting; record the decision 
 
 ### Debug Log References
 
-#### 🔴 ABORTED AT TASK 1 — D0's blocking dependency fired, on BOTH clauses
+#### RUN 1 (2026-08-26, `2c8bb1a`) — 🔴 ABORTED AT TASK 1, D0 fired on BOTH clauses
 
 The run reached Task 1.4, the D0 gate, and stopped there. **No source file was modified.** This is
 the story's own ruled abort (D0, Task 1.4, A3's second clause), not a failure and not a judgement
@@ -1078,7 +1090,7 @@ There is no smaller version of this story. It is blocked, not reducible.
 `2c8bb1a`. Of the sixteen paths this story owns, **fourteen are clean and free**; the two that are
 not are precisely the two D0 named at creation. The creation probe predicted this exactly.
 
-#### What unblocks this story
+#### What unblocked this story (run 1's forecast, which held exactly)
 
 One thing: **story 3-5 commits.** When `git log -1 -- app/src/lib/bootstrap.ts` names a 3-5 commit
 and both `HeaderSearch.test.tsx` and `SiteSignature.test.tsx` are clean, re-run `/bmad-dev-story
@@ -1090,36 +1102,322 @@ construction, so it does not gate this story in either direction.
 **Do not** re-run this story before then hoping the tree has settled by luck, and do not
 `git stash` another session's work to clear the gate.
 
+#### RUN 2 (2026-08-26, baseline `f644975`) — ✅ D0 GREEN, STORY IMPLEMENTED END TO END
+
+```
+$ git log --oneline -1 -- app/src/lib/bootstrap.ts
+8dcb985 Story 3.5: first-visit locale detection, and the navigator pin its regression needs
+$ git status --porcelain -- app/src/components/HeaderSearch.test.tsx \
+                            app/src/components/SiteSignature.test.tsx
+(no output — both clean)
+```
+
+Both clauses green. Story 3-8 had also landed (`deae510`), so its fifteen paths were free too;
+all fourteen other paths this story owns were clean. Story 3-6's code review landed mid-run
+(`c2d034d`, `887a378`) and rewrote `SiteHeader.tsx`'s comment block — it names story 3-10 as the
+`--header-h` owner, which is consistent with this work, and the rewritten comment was carried
+forward rather than reverted.
+
+**Baseline measured, not assumed: 1,367 tests / 55 files / 0 skipped, all green.** The story
+header says 1,251, which was true at `2af1e0a`; 3-5 and 3-8 added 116 between then and now. Task
+12.2's "must rise from 1,251" is therefore read as "must rise from the measured baseline".
+
+##### A1 — EVERY GATE DRIVEN RED, WITH ITS OUTPUT
+
+**10.1 — D8 direction 1** (`tournament.available` → `true` with no route):
+
+```
+× D8 — the availability gate … › direction 1 — every AVAILABLE destination has a page.tsx
+  → tournament is marked available:true but app/tournament/page.tsx does not exist, so the
+    nav ships a link to a 404 on every one of 1,406 routes.
+× the destination table is the ruled one (D1) › renders FOUR today
+```
+
+**10.2 — D8 direction 2** (`glossary.available` → `false` while `/glossary` exists):
+
+```
+× D8 — the availability gate … › direction 2 — every UNAVAILABLE destination has NO page.tsx
+  → glossary is marked available:false but app/glossary/page.tsx EXISTS.
+    This is the half of the gate that catches story 3.9: the route has been minted and the
+    nav is silently still four entries wide, so a shipped page is unreachable from the site
+    chrome. Flip `available` to true in nav-destinations.ts — no component changes.
+```
+
+**10.3 — the D2 match-route pin** (added `/matches/arg-mex-2026-06-11#momentum`):
+
+```
+× D2 — one deep-link mechanism, not two (AC 2) › points no destination into a match route
+  → momentum points into a match route ("/matches/arg-mex-2026-06-11#momentum").
+    Story 3.8 owns match deep links and its nonce path is the ONE mechanism (AC 2).
+```
+
+**10.4 — the re-pinned reflow guard** (removed `flex-wrap` from the header row):
+
+```
+× reflow guards (AC 3, WCAG 1.4.10) › components/SiteHeader.tsx keeps
+  "flex min-h-14 max-w-6xl flex-wrap items-center"
+```
+
+**10.4b — the NEW trigger guard, and D11's trap, both fired from one edit.** Translating the
+mockup's `display:grid; place-items:center` literally:
+
+```
+× reflow guards … › components/SiteNav.tsx keeps
+  "flex min-h-11 min-w-11 items-center justify-center rounded-md"
+```
+
+D11 predicted this exactly: `min-h-11 min-w-11` do not satisfy the implicit-grid scan's
+fixed-size exemption, so the literal translation is an offender.
+
+**10.5 — A2 proof for `SiteNav.test.tsx`** (made `aria-controls` unconditional):
+
+```
+× D6 — the trigger's ARIA … › omits aria-controls entirely while closed, and points it at
+  the sheet once open
+```
+
+All five reverted and re-verified green before proceeding.
+
+##### TASK 9 — MEASUREMENT (headless Chromium, CDP, against the built export)
+
+**Method, and why not an iframe.** `Emulation.setDeviceMetricsOverride` sets the layout viewport
+exactly, with no scrollbar inset and no parent document. The ledger records that the iframe route
+already produced one wrong number on this very property — the "354 px" threshold that turned out
+to be a 15 px scrollbar artifact — which is why `d3c103c`'s headless figure was the credible one.
+Served by a Node static server mirroring Netlify (clean URLs, real 404s, correct Content-Type,
+`no-store`), **not** `python -m http.server` per Task 9.1. That server needed one fix to be
+honest: Next encodes RSC prefetch segment paths with dots where the export writes directories
+(`/about/__next.about.__PAGE__.txt` → `about/__next.about/__PAGE__.txt`), and without mapping it
+every `<Link>` prefetch 404s — which would have reported a harness gap as an app defect.
+
+**9.2 — the R2/D8 matrix, 320/390/195 × dark/light × es/en × 8 routes = 96 cells.**
+
+| state | cells | horizontal overflow |
+|---|---|---|
+| settled | 48 | **0** |
+| during load | 96 | 4 — all `/` at 195 px, `doc=208` |
+
+The four are **not this story's and not the header's**: the offender is
+`LeaderboardsRegion.tsx`'s `<div className="skeleton h-6 w-48">`, a FIXED 192 px loading skeleton,
+and the header's own `scrollWidth` is exactly 195 in those same cells. It is transient — 0/48 once
+the fetch settles — which is why Story 2.19's matrix was green: that run measured settled state.
+**Filed in the ledger, not fixed: the file is outside this story's declared paths.**
+
+**9.3 / 9.4 — header height and the wrap threshold, 1 px sweep per locale, 200–420 px.**
+
+| locale | one row (62 px) from | wraps (118 px) at | pre-nav threshold |
+|---|---|---|---|
+| es | **215 px** | ≤ 214 px | 341 px |
+| en | **211 px** | ≤ 210 px | 337 px |
+
+D9 predicted ~215 px min-content and it landed on 215. **The `<xl` header no longer wraps at 320
+in either locale** — 62 px at 320, 390 and 1280, both locales, both themes. Theme is not an axis:
+identical heights in every cell. At 195 px it is 117.8 px, **not** DESIGN.md's 124 px — that third
+value described an already-wrapped row gaining a caption line, a state the nav's composition
+removed. Hence `header-h-zoom` is deleted rather than re-tuned.
+
+**9.5 — `≥xl` inline fit at 1280 px**, and the failure mode that rejected `lg` measured directly:
+
+| locale | links | nav width | **search input width** | doc |
+|---|---|---|---|---|
+| es | 4 (today) | 275 px | **511 px** | 1280 |
+| en | 4 (today) | 248 px | 543 px | 1280 |
+| es | **9 (forced — post-3.9)** | 628 px | **158 px** | 1280 |
+| en | 9 (forced) | 610 px | 181 px | 1280 |
+
+The input is measured by `getBoundingClientRect().width`, never by screenshot, because silent
+collapse is exactly what a screenshot cannot see. **It does not collapse even with all nine
+destinations forced on**: 158 px in `es` is narrow but real, and the document never exceeds 1280.
+`xl` clears; the overflow fallback D15 defers is not needed.
+
+**9.6 — anchored headings and the skip link clear the bar. This is the headline fix.**
+
+| width | locale | header bottom | `#key-stats` top | clearance |
+|---|---|---|---|---|
+| 195 | es / en | 118 | 134 | **+17 px** |
+| 320 | es / en | 62 | 78 | **+16 px** |
+| 390 | es / en | 62 | 78 | **+16 px** |
+| 1280 | es / en | 62 | 78 | **+16 px** |
+
+It was **−46 px — hidden, not tight** — at any wrapped width. The `#main-content` skip-link target
+lands at the header's bottom edge at every matrix width, never behind it, which is **WCAG 2.4.11
+(Focus Not Obscured) evaluated** as the ledger's scope_correction demanded.
+
+**9.3b — the token is in force and tracks the bar**, switching at exactly the measured threshold:
+
+```
+ 195px: header=117.8  --header-h=7.375rem (118px)  scroll-padding-top=134px  reserve−bar=+0.2
+ 214px: header=117.8  --header-h=7.375rem (118px)  scroll-padding-top=134px  reserve−bar=+0.2
+ 215px: header=61.8   --header-h=3.875rem (62px)   scroll-padding-top=78px   reserve−bar=+0.2
+ 320px: header=61.8   --header-h=3.875rem (62px)   scroll-padding-top=78px   reserve−bar=+0.2
+1280px: header=61.8   --header-h=3.875rem (62px)   scroll-padding-top=78px   reserve−bar=+0.2
+```
+
+**9.7 — `/compare`'s mini-header, the ledger's named defect.** `position: sticky` **actually
+sticks** (the 22-silent-sticky-headers lesson checked, not assumed), `top` resolves to 118/62 px
+per breakpoint, and when stuck its top sits at the header's bottom (+0.2 px), fully visible at
+195/320/390 in both locales. It was `top:56` + 54 px tall = 110 < a 118 px bar, i.e. **entirely
+behind the header** on exactly the widths it is the affordance for.
+⚠️ **Measured by mounting the shipped class string, not by completing the two-entity picker
+flow** — the picker's listbox could not be driven headlessly (real `Input.dispatchKeyEvent` and
+`Input.insertText` both left it closed). The offset is verified; the flow that mounts it is not.
+Filed.
+
+**9.8 — keyboard.** Tab order = DOM order = visual order, at both widths:
+
+```
+<xl  (390px):  Saltar al contenido → WC Stats → Menú
+>=xl (1280px): Saltar al contenido → WC Stats → Inicio → Comparar → Glosario → Acerca de
+               → [search input] → Idioma → Español → English → Tema claro
+```
+
+That `≥xl` sequence is the ruled order exactly: identity → destinations → search → ES|EN → theme.
+Trigger opens on **Enter AND Space** (`Input.dispatchKeyEvent`, the real input pipeline — an
+earlier synthetic `new KeyboardEvent` run reported `false` for both, which was an artefact of
+faking the key rather than a defect). Focus lands on the search input by DOM order with **no
+`autoFocus`**, confirming Task 4.3's ruling. Focus trap held over 13 Tabs against 10 focusables,
+never escaping. `Esc` closes and returns focus to the trigger.
+
+**9.9 — a11y on the chrome this story owns**, at 390 px and 1280 px, sheet open and closed:
+
+| check | result |
+|---|---|
+| `aria-valid-attr-value` (D6) | **NONE** |
+| `aria-dialog-name` (D5) | **NONE** |
+| `duplicate-id` (D3's consequence) | **NONE** |
+| hit targets < 44 px, **measured** | **NONE** |
+| console output | **zero**, except the browser's automatic `/favicon.ico` probe — the app ships no icon at all, pre-existing and unrelated |
+
+"Open at `≥xl`" is reported as unreachable rather than untested: `xl:hidden` removes the trigger
+and D7's effect closes the sheet at the breakpoint, so the design makes that state impossible.
+⚠️ **`axe-core` is not installed** — Story 2.14's docblock says it was present transitively via
+`eslint-plugin-jsx-a11y`; it is not present at all now. The two rules D5 and D6 name were checked
+directly, as above, but that is narrower than a full axe sweep (contrast, other name-role-value,
+landmark rules were not swept). **A devDependency was deliberately not added without approval.**
+Filed.
+
+Separately, **36 dangling `aria-controls` IDREFs** were measured elsewhere on `/` — all on other
+components' "Ver la tabla" disclosure buttons pointing at unrendered panels, the exact failure
+D6's conditional form prevents. Pre-existing, outside this story's paths, filed.
+
+**9.10 — `prefers-reduced-motion: reduce`.** The sheet's panel AND overlay both report
+`transition-duration: 1e-05s` / `animation-duration: 1e-05s` — the global kill at
+`globals.css` covers the portalled sheet, so D13 holds and **no component-level
+`motion-reduce:` variant was added**. `SiteNav.test.tsx` asserts the source contains none.
+
+##### RULINGS TAKEN WHERE THE STORY LEFT A GAP
+
+1. **`SiteNav` renders `HeaderSearch` and the toggles; `SiteHeader` renders only the identity
+   block and `<SiteNav />`.** Task 5.3's literal composition (`identity → SiteNav → HeaderSearch`)
+   cannot produce the ruled reading order with one element: it would put the search AFTER the
+   toggles. Task 5.3 also demands "DOM order equals visual order equals reading order at both
+   widths", and 5.2 demands the toggles have "one definition, not two". Both hold only if one
+   component owns everything after the identity block. Measured proof is 9.8's `≥xl` tab order.
+2. **The search data layer became `useSearchIndex()`, exported from `HeaderSearch.tsx`.** Task 4.3
+   says the nav sheet mounts `SearchField`, which needs `corpus`/`status`/`engage`/`announce`;
+   the story does not say how the sheet gets them. Extracting the hook keeps ONE fetch state
+   machine, one status gate and one debounced announcer, and `loadTournamentIndex()` already
+   dedupes at module level so the second consumer costs no second request.
+3. **Task 4.4's live-region gate is structural rather than a prop.** The header's region now sits
+   INSIDE the `hidden … xl:flex` root, so `display:none` removes it from the accessibility tree
+   below `xl` — where the sheet's own region (inside the portal, outside what Radix inerts) is the
+   only one. Above `xl` the sheet cannot be open at all (D7). The two can never both be live, by
+   the stylesheet rather than by a boolean threaded back through two components.
+4. **`data-slot`, not `data-testid`.** The first draft used `data-testid` to scope the two
+   presentations; that ships a test-only affordance into the chrome of 1,406 pre-rendered routes.
+   `data-slot` is the house identity attribute (`ui/dialog.tsx`, `header-search-slot`).
+5. **`header-h-zoom` deleted rather than shipped equal to `header-h-wrapped`** — see 9.3. A token
+   nothing consumes differently is the dead-key shape this story deleted three locale keys to
+   avoid. DESIGN.md updated to match rather than left disagreeing with the stylesheet.
+6. **`search.close` deleted too**, alongside the `search.open` and `search.sheetTitle` that Task
+   7.3 anticipated. Task 4.2 deletes the `DialogClose` that consumed it, so it is equally dead.
+
+##### TWO TEST-HARNESS DEFECTS FOUND IN MY OWN WORK, RECORDED BECAUSE THEY MISLEAD
+
+- **Stored locale leaked between cases.** `setLocale` writes `STORAGE_KEYS.locale`, and story 3.5's
+  precedence reads a stored CHOICE ahead of `navigator.language` and ahead of `initialLocale`. The
+  case that switches to English inside the sheet left every LATER case running in English, failing
+  on Spanish names — an ordering artefact that reads exactly like a component bug. `beforeEach` now
+  clears storage; jsdom gives each FILE a fresh `localStorage`, never each test.
+- **A guard that forbade naming the thing it ruled on.** The D2 assertion originally required the
+  source not to CONTAIN "match-anchors", and failed on this file's own comment explaining why it
+  does not import it. It now matches the import statement and the listener registration.
+
 ### Completion Notes List
 
-- **Run outcome: ABORTED AT TASK 1.4 (D0). Story remains `ready-for-dev`.** Zero tasks completed,
-  zero acceptance criteria satisfied, zero source files touched. Tests were not run and no gate was
-  driven RED — A1's obligation belongs to the run that implements the story, not to this one.
-- Status was deliberately **left at `ready-for-dev` rather than flipped to `in-progress`**: no
-  implementation began, and marking it in-progress would misreport the board to the other two live
-  sessions. `baseline_commit` was likewise **not** written into the frontmatter — the real run will
-  start from a different commit (3-5's), and a baseline captured here would be wrong by
-  construction.
-- Task 1's probe subtasks 1.1, 1.2, 1.3 and 1.5 executed and are recorded above. **1.4 is left
-  unchecked deliberately**: the gate ran and came back red, so Task 1 is not passed and the next
-  session must re-run it rather than trust this result.
-- The creation-time A3 probe was **re-verified, not inherited**, and it held on every point. One
-  thing changed since creation: **story 3-1 has landed** (`review`), so its five paths are no
-  longer dirty. That does not affect this story.
-- A stray untracked file named `17` sits at the repo root with no owner. Not this story's, not
-  staged, not removed — flagged only so the next session does not mistake it for a deliverable.
+- **Run outcome: COMPLETE. Status `review`.** Every task and subtask is checked except **11.6**,
+  which is left unchecked deliberately and explained below. All seven acceptance criteria are
+  satisfied; A1–A5 are discharged with recorded evidence; **A6 has not fired.**
+- **Tests: 1,367 → 1,468 (+101). 58 files, 0 failed, 0 skipped.** Lint (`--max-warnings 0`),
+  typecheck and the full build all pass. **Route count holds at 1,406** (1,407 files = 1,406
+  routes + `404.html`); D15 verified directly — no `/tournament`, `/tops`, `players/index.html`
+  or `teams/index.html` exists in `out/`.
+- **AC 1** — the contract implemented, scoped by D1: every feature with a route on `main` is
+  reachable from every route, in both presentations. **AC 2** — satisfied by construction and
+  pinned: no destination is a match route, nothing is imported from 3.8's plumbing, and the gate
+  tells a future editor why. **AC 3** — re-measured, not inherited; the guarded class string
+  survived unchanged and its `because:` was rewritten with this story's numbers. **AC 4** —
+  designed against the header that exists: the wrap threshold was re-derived (215/211) and the
+  R2/D8 matrix re-run; the signature is untouched. **AC 5** — keyboard and screen reader measured,
+  not asserted. **AC 6** — probe run first; the caption is still a sibling of the wordmark and
+  `SiteSignature.test.tsx` still passes unweakened. **AC 7** — the ledger walked; the
+  retrospective could not fire.
+- 🔴 **AC 7's PREMISE IS FALSE, AND THE RETROSPECTIVE DID NOT RUN.** AC 7 opens "Given the epic
+  closes with this story". It does not: **3-2, 3-3, 3-4 and 3-9 are all still `backlog`.** This is
+  the epic's last story only by number. A6's trigger is the EPIC close, so
+  `epic-3-retrospective` stays `required` and unrun, recorded in `sprint-status.yaml`. Running it
+  now over a four-fifths-finished epic would produce exactly the shallow artifact A6 exists to
+  prevent — and quietly ticking it would be the Epic 1 failure A6 was written for.
+- **Story 3.9 completes the nav by flipping four booleans in `lib/nav-destinations.ts`, and the
+  coupling is enforced rather than documented**: `nav-destinations.test.ts`'s bijection goes RED
+  the moment 3.9 mints a route without flipping its flag. No component changes.
+- **Three locale keys deleted as dead** — `search.open`, `search.close`, `search.sheetTitle` —
+  verified by grep first, as Task 7.3 requires. The only surviving reference to `search.open` was
+  the exported-markup assertion pinning the trigger it named; that assertion now pins the nav's.
+- **Filed, not fixed** (all pre-existing, all outside this story's declared paths, all with
+  measurements): `LeaderboardsRegion`'s 195 px loading-state overflow; 36 dangling `aria-controls`
+  IDREFs on other components' disclosures; four files whose prose still cites the deleted
+  `4.5rem`; the missing `axe-core`; the un-driven `/compare` picker flow.
+- **A4 honoured.** Only this story's paths were staged, by name. Three other sessions have been
+  live in this tree during this story's life; `git add -A` was never used.
+- The stray untracked file `17` at the repo root still has no owner and was left alone.
 
 ### File List
 
-No source, test, style, locale or documentation file was created, modified or deleted by this run.
+**New**
 
-The two files below carry the abort record required by D0 / Task 1.4, and nothing else:
+- `app/src/lib/nav-destinations.ts`
+- `app/src/lib/nav-destinations.test.ts`
+- `app/src/components/SiteNav.tsx`
+- `app/src/components/SiteNav.test.tsx`
 
-- `_bmad-output/implementation-artifacts/3-10-navigation-menu.md` (this Dev Agent Record)
-- `_bmad-output/implementation-artifacts/sprint-status.yaml` (append-only note on `3-10`)
+**Modified**
+
+- `app/src/components/SiteHeader.tsx`
+- `app/src/components/HeaderSearch.tsx`
+- `app/src/components/HeaderSearch.test.tsx`
+- `app/src/components/CompareChartsSection.tsx`
+- `app/src/app/globals.css`
+- `app/src/app/static-output.test.ts`
+- `app/src/lib/reflow-guards.test.ts`
+- `app/src/locales/es.ts`
+- `app/src/locales/en.ts`
+- `_bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/DESIGN.md`
+- `_bmad-output/implementation-artifacts/deferred-work.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/3-10-navigation-menu.md`
+
+**Declared in the plan but NOT modified, with the reason**
+
+- `app/src/components/SiteSignature.test.tsx` — Task 8.4 asks that its sibling assertions still
+  pass and that it be extended "without weakening". They pass unchanged: `SiteHeader` still
+  renders the identity block verbatim, and the caption is still the wordmark link's sibling. The
+  new composition is covered by `SiteNav.test.tsx` rather than by widening a file whose subject is
+  the signature. Nothing was weakened because nothing was touched.
 
 ### Change Log
 
 | Date | Change |
 |---|---|
-| 2026-08-26 | Dev run attempted at `2c8bb1a`. **Aborted at Task 1.4 per D0** — story 3-5 is uncommitted and holds `HeaderSearch.test.tsx` and `SiteSignature.test.tsx`, both of which this story must rewrite rather than append to (A3). No implementation performed. Status held at `ready-for-dev`. |
+| 2026-08-26 | Dev run attempted at `2c8bb1a`. **Aborted at Task 1.4 per D0** — story 3-5 was uncommitted and held `HeaderSearch.test.tsx` and `SiteSignature.test.tsx`, both of which this story must rewrite rather than append to (A3). No implementation performed. Status held at `ready-for-dev`. |
+| 2026-08-26 | **D0 re-run at `f644975`: GREEN on both clauses** (3-5 landed at `8dcb985`; both files clean). Story implemented end to end. Nav menu shipped: `SiteNav` + the ruled destination table with its bijection gate, the search absorbed into the sheet, `md`→`xl`, the `--header-h` token closing a seven-consumer defect, and three dead locale keys removed. Tests 1,367 → 1,468, 0 skipped; route count holds at 1,406. Five gates driven RED and recorded. Status → `review`. **Task 11.6 (the Epic 3 retrospective) NOT run: AC 7's premise is false — four Epic 3 stories remain in `backlog`.** |

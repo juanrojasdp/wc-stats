@@ -3,13 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import type { Stage, Tournament } from "@/lib/contract/contract-types";
 import { SCHEMA_VERSION } from "@/lib/contract/schema-version";
 import { formatInteger } from "@/lib/format";
@@ -57,19 +50,25 @@ import { closeOtherOverlays, registerOverlayCloser } from "@/lib/use-glossary-po
  * onto search markup. Green tests asserting the wrong DOM is the exact
  * lying-about-completion failure this story must not cause.
  *
- * ══════════════ THE `<md` COLLAPSE IS CSS, NOT A JS BRANCH (ruling 4) ═══════
+ * ══════════════ THE `<xl` COLLAPSE IS CSS, NOT A JS BRANCH (ruling 4) ═══════
+ *
+ * ⚠️ THE BREAKPOINT IS NOW `xl`, NOT `md` (Story 3.10, UX-DR24), and this file
+ * no longer owns the narrow presentation at all — `SiteNav` does. What survives
+ * unchanged is the RULING, which was never about which breakpoint: it is that
+ * the choice of presentation is made by the stylesheet and never by JavaScript.
  *
  * `useMediaQuery`'s `getServerSnapshot` returns `false`, justified by a
  * condition the header does not meet: "The Tactical Layer mounts only after the
  * client fetch resolves, so its first render is a client render." `SiteHeader`
- * is PRERENDERED into all five HTML files, so a JS breakpoint branch here emits
+ * is PRERENDERED into all 1,406 HTML files, so a JS breakpoint branch here emits
  * narrow markup on the server and hydrates wide on desktop — a mismatch on every
- * page. There is no `useMediaQuery` in this story.
+ * page. There is no `useMediaQuery` in this story either.
  *
  * Tailwind's `hidden` is `display:none`, which removes the element from the
  * ACCESSIBILITY TREE — so exactly one combobox is exposed at any width and there
- * are never duplicate roles. The sheet's listbox mounts only while open, with its
- * own `useId()` namespace.
+ * are never duplicate roles. Below `xl` that is the sheet's; at `≥xl` it is this
+ * file's inline one. The sheet's listbox mounts only while open, with its own
+ * `useId()` namespace.
  *
  * ══════════════ ESCAPE IS ONE PRESS, BECAUSE FOCUS NEVER OPENS (ruling 3) ════
  *
@@ -126,40 +125,7 @@ const COUNT_SEPARATOR = " ";
  */
 type Status = "loading" | "loaded" | "error" | "invalid";
 
-function SearchIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="size-5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.5-3.5" />
-    </svg>
-  );
-}
 
-function CloseIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="size-5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 6l12 12M18 6 6 18" />
-    </svg>
-  );
-}
 
 /**
  * The whole search surface: one corpus, one live region, two presentations.
@@ -169,9 +135,8 @@ function CloseIcon() {
  * on every open, and a corpus held inside it would re-fetch (or at least
  * re-build) each time.
  */
-export function HeaderSearch() {
+export function useSearchIndex() {
   const t = useT();
-  const { locale } = useLocale();
   const [status, setStatus] = useState<Status>("loading");
   const [tournament, setTournament] = useState<Tournament | null>(null);
   /**
@@ -194,7 +159,6 @@ export function HeaderSearch() {
    */
   const [attempt, setAttempt] = useState(0);
   const [announcement, setAnnouncement] = useState("");
-  const [sheetOpen, setSheetOpen] = useState(false);
   const announceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /*
@@ -306,104 +270,78 @@ export function HeaderSearch() {
     [tournament, labels]
   );
 
-  /*
-   * The sheet is an overlay, so it joins the page-wide registry too: opening it
-   * must close any glossary popover, and a popover opening must close it.
-   * `setSheetOpen(false)` is idempotent and safe when already closed, which is
-   * the registry's contract.
-   */
-  const closeSheet = useRef(() => {
-    setSheetOpen(false);
-  });
-
-  useEffect(() => {
-    const unregister = registerOverlayCloser(closeSheet.current);
-    return unregister;
-  }, []);
-
-  /*
-   * 🔴 CLOSE THE SHEET WHEN THE VIEWPORT REACHES md — THE CSS COLLAPSE CANNOT
-   * DO IT (code review 2026-08-07).
+  /**
+   * Clear the queued announcement AND the pending timer.
    *
-   * Ruling 4's `md:hidden` governs the TRIGGER, which is a child of this
-   * component. `DialogContent` is not: it PORTALS to `document.body`
-   * (`dialog.tsx` records why a modal must), so it sits outside every ancestor
-   * this component can style. Rotate a phone to landscape, or drag a desktop
-   * window wider, with the sheet open, and the result was a full-width modal
-   * overlay covering the desktop layout with its own trigger no longer rendered
-   * — unreachable except by Escape.
-   *
-   * THIS IS NOT THE `useMediaQuery` BRANCH RULING 4 BARS. That ruling is about
-   * choosing WHICH PRESENTATION TO RENDER, where a JS breakpoint emits narrow
-   * markup on the server and hydrates wide (`SiteHeader` is prerendered into all
-   * five HTML files). Nothing here renders anything: it is a one-way dismissal
-   * of an already-open overlay, it runs only in an effect, and its
-   * server-rendered output is identical either way.
+   * Called on BOTH edges of the nav sheet's open state (Story 3.10 Task 4.6),
+   * for the reason the deleted `<md` sheet recorded in place: a live region that
+   * mounts ALREADY-POPULATED does not announce reliably. So a count queued
+   * 400 ms ago must not travel into the panel the reader just opened, nor
+   * survive into the one they just left.
    */
-  useEffect(() => {
-    if (typeof window.matchMedia !== "function") {
-      return;
+  const resetAnnouncement = useCallback(() => {
+    if (announceTimer.current !== null) {
+      clearTimeout(announceTimer.current);
+      announceTimer.current = null;
     }
-    // 48rem is Tailwind's `md`. Kept as a literal because the collapse it
-    // mirrors is a literal `md:` variant in the class strings above.
-    const wide = window.matchMedia("(min-width: 48rem)");
-    const sync = () => {
-      if (wide.matches) {
-        setSheetOpen(false);
-      }
-    };
-    sync();
-    wide.addEventListener("change", sync);
-    return () => {
-      wide.removeEventListener("change", sync);
-    };
+    setAnnouncement("");
   }, []);
 
-  const sheetLabel = t("search.open");
-  const sheetTitle = t("search.sheetTitle");
-  const closeLabel = t("search.close");
+  return { corpus, status, engage, announce, announcement, resetAnnouncement };
+}
+
+/*
+ * ══════════ THE `\u2265xl` INLINE COMBOBOX (Story 3.10, UX-DR24) ═══════════════
+ *
+ * 🔴 THIS COMPONENT NO LONGER OWNS A SHEET, AND THE BREAKPOINT MOVED md → xl.
+ * UX-DR24 absorbs the header search INTO the nav sheet: below `xl` there is one
+ * trigger, in `SiteNav`, and it opens one panel holding the search, the
+ * destinations and the language/theme controls. A `<xl` header carrying BOTH a
+ * nav trigger and a search trigger is the fifth row element DESIGN.md's Don'ts
+ * column forbids, and it forfeits the whole reason UX-DR24 chose this shape —
+ * that the trigger REPLACES three controls rather than joining them.
+ *
+ * So what was `HeaderSearch`'s own `Dialog` (its trigger, content and close) is
+ * DELETED rather than moved, and `SiteNav` mounts `SearchField` directly. The
+ * data layer both presentations need is `useSearchIndex()` above — one fetch
+ * state machine, one status gate, one debounced announcer, defined once.
+ *
+ * ⚠️ `md:` → `xl:` WAS MEASURED, NOT PREFERRED (D15). At `lg` the inline row
+ * needs ~1,060–1,080 px against 976 px usable, and it fails INVISIBLY: this
+ * component ships `min-w-0 flex-1`, so the input silently collapses rather than
+ * the row overflowing. `xl` clears by ~150 px, which is the margin Spanish
+ * expansion needs. Do not reopen `lg`.
+ *
+ * 🔴 THE LIVE REGION IS INSIDE THE HIDDEN ROOT, AND THAT IS WHAT KEEPS THE TWO
+ * REGIONS FROM EVER BOTH BEING LIVE. It used to sit outside the breakpoint
+ * wrapper and be gated on this component's own `sheetOpen`, because below `md`
+ * the root was displayed and its region would have announced into a subtree
+ * Radix had marked inert. That gate is now structural instead: `hidden` is
+ * `display:none`, which removes this whole subtree — region included — from the
+ * accessibility tree below `xl`, and the sheet's own region (inside the portal,
+ * so outside what Radix inerts) is the only one there. Above `xl` the sheet
+ * cannot be open at all: `SiteNav` closes it at the breakpoint, for the reason
+ * recorded there. A prop threading the sheet's state back into this component
+ * would re-derive in JavaScript a guarantee the stylesheet already gives.
+ */
+export function HeaderSearch() {
+  const { locale } = useLocale();
+  const { corpus, status, engage, announce, announcement } = useSearchIndex();
 
   return (
     /*
      * `data-slot` and `min-w-0 flex-1` are KEPT from Story 2.2's reserved slot
-     * (Task 9.1). `min-w-0` is what lets the input shrink inside the header's
-     * flex row — without it the input's intrinsic width pushes the language and
-     * theme toggles off a 320 px viewport.
+     * (Task 9.1) and pinned on the exported markup by `static-output.test.ts`.
+     * `min-w-0` is what lets the input shrink inside the header's flex row.
+     *
+     * NO `aria-hidden` HERE. Story 2.2's review removed it specifically so that
+     * 2.14 could mount focusable content inside. Do not reintroduce it.
      */
-    <div data-slot="header-search-slot" className="min-w-0 flex-1">
-      {/*
-       * 🔴 THE LIVE REGION IS MOUNTED UNCONDITIONALLY, at the top, never inside
-       * the open branch — "a live region that mounts already-populated does not
-       * announce reliably" is stated verbatim in four files in this tree. It
-       * announces when its TEXT changes, which is what the debounce above
-       * controls.
-       *
-       * This is NOT `SortAnnouncer`. That is a TABLE-SCOPED provider mounted
-       * inside `MatchBundleRegion` (2.11a decision 9 rules it cannot live inside
-       * the table); the header sits outside that region entirely, on routes it
-       * does not cover. Same pattern, different region.
-       *
-       * 🔴 IT IS THE DESKTOP REGION ONLY, AND IT MUST BE (code review
-       * 2026-08-07). While the sheet is open this node is INSIDE an
-       * `aria-hidden` subtree and announces to nobody: the sheet is a modal
-       * Radix dialog that portals to `body`, and `dialog.tsx` says so itself —
-       * "the dialog is MODAL, so Radix marks the rest of the document inert".
-       * That inerting stamps `aria-hidden="true"` on every body sibling of the
-       * portal, `<header>` included. So the entire `<md` presentation — the one
-       * UX-DR4 exists for — announced its result counts, loading, error and
-       * invalid states into a hidden node. The sheet carries its own region
-       * inside the portal (below); this one is hidden while that one is live, so
-       * the two can never both speak.
-       */}
-      {sheetOpen ? null : (
-        <span aria-live="polite" className="sr-only">
-          {announcement}
-        </span>
-      )}
-
-      {/* Desktop: the inline combobox. `hidden` removes it from the a11y tree
-          below md, so only one combobox is ever exposed (ruling 4). */}
-      <div className="hidden min-w-0 md:flex">
+    <div data-slot="header-search-slot" className="hidden min-w-0 flex-1 xl:flex">
+      <span aria-live="polite" className="sr-only">
+        {announcement}
+      </span>
+      <div className="min-w-0 flex-1">
         <SearchField
           corpus={corpus}
           status={status}
@@ -412,102 +350,6 @@ export function HeaderSearch() {
           locale={locale}
           dismissClosesHost={false}
         />
-      </div>
-
-      {/* `<md`: an icon button opening a full-width sheet (UX-DR4). */}
-      <div className="flex justify-end md:hidden">
-        <Dialog
-          open={sheetOpen}
-          onOpenChange={(next) => {
-            if (next) {
-              // Depth 1, page-wide: close anything else open before opening.
-              closeOtherOverlays(closeSheet.current);
-              engage();
-            }
-            /*
-             * The announcement is reset on BOTH edges, and it is load-bearing
-             * rather than tidiness: the two presentations share one
-             * `announcement` string but mount two different live-region nodes,
-             * so a value carried across the swap would arrive already-populated
-             * in the incoming node and never be announced. Clearing the pending
-             * timer too, so a count queued 400 ms ago cannot land in the panel
-             * the reader just left.
-             */
-            if (announceTimer.current !== null) {
-              clearTimeout(announceTimer.current);
-              announceTimer.current = null;
-            }
-            setAnnouncement("");
-            setSheetOpen(next);
-          }}
-        >
-          <DialogTrigger
-            aria-label={sheetLabel}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-md text-ink-secondary"
-          >
-            <SearchIcon />
-          </DialogTrigger>
-          <DialogContent
-            /*
-             * EXPLICITLY UNDESCRIBED (code review 2026-08-07). Radix warns on
-             * every open when Content has neither a `Description` nor an
-             * explicit `aria-describedby={undefined}`, and Task 11.7's bar is
-             * zero console output. The sheet genuinely has no description to
-             * give — its Title names it and the input's own label carries the
-             * instruction — so the correct answer is to opt out, not to mint
-             * copy for a warning.
-             */
-            aria-describedby={undefined}
-          >
-            {/*
-             * Radix requires a Title or the panel is an unnamed role="dialog"
-             * (an axe `aria-dialog-name` failure, plus a Radix console error
-             * that would breach the zero-console bar). `asChild` keeps it out of
-             * the heading outline — `popover.tsx` records the same reason.
-             */}
-            <DialogTitle asChild>
-              <span className="sr-only">{sheetTitle}</span>
-            </DialogTitle>
-            {/*
-             * THE SHEET'S OWN LIVE REGION, inside the portal and therefore
-             * outside the subtree Radix inerts. It mounts EMPTY with the sheet
-             * and is populated only by a later announcement, which is the
-             * condition "a live region that mounts already-populated does not
-             * announce reliably" requires.
-             */}
-            <span aria-live="polite" className="sr-only">
-              {announcement}
-            </span>
-            <div className="flex items-start gap-2">
-              <div className="min-w-0 flex-1">
-                <SearchField
-                  corpus={corpus}
-                  status={status}
-                  onEngage={engage}
-                  onAnnounce={announce}
-                  locale={locale}
-                  autoFocus
-                  /*
-                   * ONE ESCAPE CLOSES EVERYTHING (ruling 3, clause 2). Inside
-                   * the sheet the listbox is NOT independently dismissible: the
-                   * field lets Escape through to Radix, which closes the whole
-                   * dialog and returns focus to the trigger. This is a
-                   * deliberate divergence from ARIA APG's two-stage combobox
-                   * Escape, taken because UX-DR15 and the Story 2.8 evidence
-                   * point the same way.
-                   */
-                  dismissClosesHost
-                />
-              </div>
-              <DialogClose
-                aria-label={closeLabel}
-                className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md text-ink-secondary"
-              >
-                <CloseIcon />
-              </DialogClose>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );

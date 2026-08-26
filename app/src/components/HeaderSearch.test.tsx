@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { HeaderSearch } from "@/components/HeaderSearch";
+import { SiteNav } from "@/components/SiteNav";
 import { LocaleProvider } from "@/lib/i18n-provider";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { resetTournamentIndexCache } from "@/lib/tournament-index";
@@ -100,6 +101,16 @@ function setupUser() {
 }
 
 /** jsdom is missing three APIs Radix Dialog calls unconditionally. */
+/*
+ * `SiteNav` calls `usePathname` (Story 3.10 D12 — the first use in this tree).
+ * The whole module is mocked because `next/navigation`'s client hooks need a
+ * Next router context no render test here provides. `/` keeps the home
+ * destination current, which none of these assertions read.
+ */
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/",
+}));
+
 function installDialogStubs(): void {
   vi.stubGlobal(
     "ResizeObserver",
@@ -140,6 +151,33 @@ function renderSearch() {
       <HeaderSearch />
     </Harness>
   );
+}
+
+/*
+ * ═══════ THE SHEET MOVED HOSTS (Story 3.10, UX-DR24) ════════════════════════
+ *
+ * `HeaderSearch` no longer owns a sheet. UX-DR24 absorbs the search INTO the nav
+ * sheet, so below `xl` the trigger is the NAV's and the panel is `SiteNav`'s —
+ * one trigger opening one sheet that holds the search, the destinations and the
+ * language/theme controls, rather than a header carrying two triggers.
+ *
+ * 🔴 THE CASES BELOW WERE REWRITTEN, NOT DELETED, AND THEY ASSERT THE SAME
+ * GUARANTEES. One Escape closes everything; the listbox does not close the sheet
+ * around it; the overlay registry fires on open; the sheet's input is the only
+ * exposed combobox; focus returns to the trigger. The HOST changed; the contract
+ * did not. Anything genuinely new about the nav lives in `SiteNav.test.tsx`.
+ */
+function renderNavHost() {
+  return render(
+    <Harness>
+      <SiteNav />
+    </Harness>
+  );
+}
+
+/** The `<xl` trigger — the NAV's now, not the search's. */
+function navTrigger(): HTMLElement {
+  return screen.getByRole("button", { name: es.nav.trigger });
 }
 
 /** The desktop combobox — the sheet's is not mounted until the sheet opens. */
@@ -676,8 +714,8 @@ describe("HeaderSearch — the page-wide overlay registry (Task 7.7, UX-DR15)", 
     const otherOverlayCloser = vi.fn();
     const unregister = registerOverlayCloser(otherOverlayCloser);
     try {
-      renderSearch();
-      await user.click(screen.getByRole("button", { name: es.search.open }));
+      renderNavHost();
+      await user.click(navTrigger());
       await screen.findByRole("dialog");
       expect(otherOverlayCloser).toHaveBeenCalled();
     } finally {
@@ -733,8 +771,8 @@ describe("HeaderSearch — the page-wide overlay registry (Task 7.7, UX-DR15)", 
      * would close the very dialog the reader is typing in.
      */
     const user = setupUser();
-    renderSearch();
-    await user.click(screen.getByRole("button", { name: es.search.open }));
+    renderNavHost();
+    await user.click(navTrigger());
     const dialog = await screen.findByRole("dialog");
     await user.type(within(dialog).getByRole("combobox"), "mex");
     await within(dialog).findByRole("listbox");
@@ -742,15 +780,16 @@ describe("HeaderSearch — the page-wide overlay registry (Task 7.7, UX-DR15)", 
   });
 });
 
-describe("HeaderSearch — the <md sheet (AC 6, Task 10.3)", () => {
-  it("opens from the icon button and carries the SAME combobox semantics", async () => {
+describe("HeaderSearch — the `<xl` sheet, now hosted by SiteNav (AC 6)", () => {
+  it("opens from the NAV trigger and carries the SAME combobox semantics", async () => {
     const user = setupUser();
-    renderSearch();
-    const trigger = screen.getByRole("button", { name: es.search.open });
+    renderNavHost();
+    const trigger = navTrigger();
 
     await user.click(trigger);
     const dialog = await screen.findByRole("dialog");
-    expect(dialog).toHaveAccessibleName(es.search.sheetTitle);
+    // The panel is the NAV's, so it is the nav that names it.
+    expect(dialog).toHaveAccessibleName(es.nav.sheetTitle);
 
     /*
      * EXACTLY ONE COMBOBOX IS EXPOSED, even here — and for a SECOND reason
@@ -771,10 +810,18 @@ describe("HeaderSearch — the <md sheet (AC 6, Task 10.3)", () => {
     expect(sheetInput).toHaveAccessibleName(es.search.label);
   });
 
-  it("autofocuses the sheet's input, so the reader can type immediately", async () => {
+  it("lands focus on the sheet's input, so the reader can type immediately", async () => {
+    /*
+     * ⚠️ NO `autoFocus` PROP ANY MORE, AND THE BEHAVIOUR IS UNCHANGED. UX-DR15
+     * puts initial focus on the sheet's first focusable element; the search
+     * input IS that element by DOM order (the Title and the live region are both
+     * sr-only spans, neither focusable), so Radix's own initial focus lands
+     * correctly without an `autoFocus` fight. The assertion is unchanged because
+     * the guarantee is unchanged — only the mechanism moved.
+     */
     const user = setupUser();
-    renderSearch();
-    await user.click(screen.getByRole("button", { name: es.search.open }));
+    renderNavHost();
+    await user.click(navTrigger());
     const dialog = await screen.findByRole("dialog");
     await waitFor(() => {
       expect(within(dialog).getByRole("combobox")).toHaveFocus();
@@ -783,8 +830,8 @@ describe("HeaderSearch — the <md sheet (AC 6, Task 10.3)", () => {
 
   it("searches inside the sheet with the same model and the same highlight", async () => {
     const user = setupUser();
-    renderSearch();
-    await user.click(screen.getByRole("button", { name: es.search.open }));
+    renderNavHost();
+    await user.click(navTrigger());
     const dialog = await screen.findByRole("dialog");
     const sheetInput = within(dialog).getByRole("combobox");
 
@@ -802,8 +849,8 @@ describe("HeaderSearch — the <md sheet (AC 6, Task 10.3)", () => {
      * than claiming press #1 for the listbox.
      */
     const user = setupUser();
-    renderSearch();
-    const trigger = screen.getByRole("button", { name: es.search.open });
+    renderNavHost();
+    const trigger = navTrigger();
     await user.click(trigger);
     const dialog = await screen.findByRole("dialog");
     await user.type(within(dialog).getByRole("combobox"), "mex");
@@ -816,16 +863,17 @@ describe("HeaderSearch — the <md sheet (AC 6, Task 10.3)", () => {
     });
   });
 
-  it("returns focus to the ICON BUTTON on close — a disclosed UX-doc departure", async () => {
+  it("returns focus to the NAV TRIGGER on close — a disclosed UX-doc departure", async () => {
     /*
      * EXPERIENCE.md says Esc "returns focus to the input". In the sheet the
      * input is UNMOUNTED by the close, so there is nothing to return to; Radix
      * returns focus to the trigger, which is the only correct destination. Filed
-     * in deferred-work.md rather than papered over.
+     * in deferred-work.md rather than papered over. Under UX-DR24 that trigger
+     * is the nav's — the same ruling, one host along.
      */
     const user = setupUser();
-    renderSearch();
-    const trigger = screen.getByRole("button", { name: es.search.open });
+    renderNavHost();
+    const trigger = navTrigger();
     await user.click(trigger);
     await screen.findByRole("dialog");
 
@@ -838,10 +886,11 @@ describe("HeaderSearch — the <md sheet (AC 6, Task 10.3)", () => {
 
   it("closes from its own close button too", async () => {
     const user = setupUser();
-    renderSearch();
-    await user.click(screen.getByRole("button", { name: es.search.open }));
+    renderNavHost();
+    await user.click(navTrigger());
     const dialog = await screen.findByRole("dialog");
-    await user.click(within(dialog).getByRole("button", { name: es.search.close }));
+    // The close control is the SHEET's, and the sheet is the nav's.
+    await user.click(within(dialog).getByRole("button", { name: es.nav.close }));
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });

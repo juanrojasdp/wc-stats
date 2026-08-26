@@ -8,6 +8,7 @@ import type { Leaderboards } from "@/lib/contract/contract-types";
 import { readTournament } from "@/lib/build-data";
 import { GLOSSARY_TERMS } from "@/lib/glossary";
 import { t } from "@/lib/i18n";
+import { NAV_DESTINATIONS } from "@/lib/nav-destinations";
 import { es } from "@/locales/es";
 import { leaderboardMetricKey } from "@/viz/leaderboard-model";
 
@@ -843,11 +844,63 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
     }
   });
 
-  it("ships the `<md` icon button on EVERY exported route", () => {
+  it("ships the `<xl` NAV trigger on EVERY exported route", () => {
+    /*
+     * ⚠️ THIS USED TO PIN THE SEARCH'S OWN ICON BUTTON (`es.search.open`).
+     * Story 3.10 / UX-DR24 deleted that trigger: below `xl` there is ONE
+     * trigger, the nav's, and the search lives inside the sheet it opens. A
+     * header carrying both would be the fifth row element DESIGN.md forbids.
+     * The GUARANTEE is unchanged — every exported route ships a working narrow
+     * entry point — so the case was re-pointed rather than deleted.
+     */
     for (const { route, html } of everyRouteHtml()) {
-      expect(html, `no search icon button on ${route}`).toContain(
-        `aria-label="${es.search.open}"`
+      expect(html, `no nav trigger on ${route}`).toContain(
+        `aria-label="${es.nav.trigger}"`
       );
+    }
+  });
+
+  it("ships the four AVAILABLE destinations, and none of the five that are not", () => {
+    /*
+     * 🔴 THE ONLY PLACE THE PRE-3.9 RULING IS VISIBLE IN SHIPPED HTML (D1).
+     * `/tournament`, `/tops`, `/players` and `/teams` do not exist yet, so
+     * linking them would put a 404 in the site chrome of all 1,406 routes.
+     * `nav-destinations.test.ts` binds the FLAG to the filesystem and
+     * `SiteNav.test.tsx` binds the RENDER to the flag; this binds the EXPORT to
+     * both, which is the artefact a reader actually receives.
+     *
+     * COUNTED, NOT MERELY FOUND — but the counts are asymmetric, and the reason
+     * is D4. The sheet PORTALS to `document.body` and mounts only while OPEN, so
+     * the exported HTML carries the INLINE presentation only: one anchor per
+     * available destination, not two. (An earlier draft asserted exactly two,
+     * reasoning from "both presentations ship in every route's markup" — true of
+     * the trigger and the inline links, false of the sheet's contents, which do
+     * not exist until a reader opens it.)
+     *
+     * So availability is asserted as "at least one anchor" rather than an exact
+     * count: `Glosario` legitimately appears TWICE on every route, because the
+     * attribution footer links the glossary too (`chrome.footer.glossaryLink`).
+     * The UNAVAILABLE half is exact — zero — and that is the half that matters,
+     * because it is the one that would ship a 404.
+     */
+    const { html } = everyRouteHtml()[0];
+    for (const destination of NAV_DESTINATIONS) {
+      const key = destination.key as keyof typeof es.nav.destinations;
+      const label = es.nav.destinations[key];
+      const count = html.split(`>${label}</a>`).length - 1;
+      if (destination.available) {
+        expect(
+          count,
+          `${label} is available but no anchor in the exported header carries it`
+        ).toBeGreaterThanOrEqual(1);
+      } else {
+        expect(
+          count,
+          `${label} shipped, but ${destination.route} does not exist — that is a ` +
+            "link to a 404 on every one of 1,406 routes. Story 3.9 mints the route " +
+            "and flips the flag; until then it must not render."
+        ).toBe(0);
+      }
     }
   });
 
@@ -856,12 +909,18 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
      * The collapse is CSS, not a JS breakpoint branch: `useMediaQuery`'s
      * getServerSnapshot returns false and `SiteHeader` is prerendered, so a JS
      * branch would emit narrow markup on the server and hydrate wide on desktop
-     * — a mismatch on every page. `hidden md:flex` and `md:hidden` are the
+     * — a mismatch on every page. `hidden xl:flex` and `xl:hidden` are the
      * mechanism; their presence here is the evidence it was used.
+     *
+     * ⚠️ THE BREAKPOINT IS `xl`, NOT `md` (Story 3.10 D15). Measured, not
+     * preferred: nine Spanish destinations beside identity + search + ES|EN +
+     * theme need ~1,060-1,080 px against 976 usable at `lg`, and `lg` fails
+     * INVISIBLY because the search ships `min-w-0 flex-1` and collapses silently
+     * rather than overflowing the row. `xl` clears by ~150 px.
      */
     const { html } = everyRouteHtml()[0];
-    expect(html).toMatch(/class="[^"]*\bhidden\b[^"]*\bmd:flex\b/);
-    expect(html).toMatch(/class="[^"]*\bmd:hidden\b/);
+    expect(html).toMatch(/class="[^"]*\bhidden\b[^"]*\bxl:flex\b/);
+    expect(html).toMatch(/class="[^"]*\bxl:hidden\b/);
   });
 
   it("keeps the reserved slot's own two classes on the mounted component", () => {

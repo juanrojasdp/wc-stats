@@ -149,16 +149,46 @@ spacing:
   tile-gap: 12px
   section-gap: 48px
   layer-gap: 64px
-  # --- Header height, ruled 2026-08-26 (story 3.7). ---
+  # --- Header height, ruled 2026-08-26 (story 3.7), RE-MEASURED (story 3.10). ---
   # ONE custom property, driven by the breakpoint, consumed by
-  # `scroll-padding-top` AND by every sticky offset that mirrors it. The
-  # hardcoded 4.5rem it replaces is already wrong: globals.css:446 records a
-  # wrapped bar OVERLAPPING an anchored heading by 46px -- "hidden, not merely
-  # tight". Values are the measured header, plus 1rem of breathing room.
+  # `scroll-padding-top` AND by every sticky offset that mirrors it. Shipped in
+  # story 3.10; the hardcoded 4.5rem it replaced was wrong by 46px at wrapped
+  # widths -- an anchored heading was HIDDEN behind the bar, not merely tight.
+  #
+  # THE VALUES BELOW ARE RE-MEASURED FOR THE NAV, NOT THE ONES 3.7 RULED. Those
+  # (62/118/124) described story 3.6's FOUR-element row: wordmark + search +
+  # ES|EN + theme. UX-DR24 replaces three of them with one 44px trigger below
+  # `xl`, so the composition changed and, as this file's own rule requires
+  # ("Any change to the header's composition changes this token"), the token
+  # followed. Measured in headless Chromium against the built export, 1px sweep
+  # per locale, 96-cell matrix for the widths:
+  #
+  #   locale   one row (62px) from   wraps (118px) at
+  #   es       215px                 <= 214px
+  #   en       211px                 <= 210px
+  #
+  # Pre-nav those thresholds were 341 (es) / 337 (en), so THE HEADER NO LONGER
+  # WRAPS ON ANY PHONE -- 62px at both 320 and 390 in both locales and themes.
+  #
+  # `header-h-zoom` IS REMOVED, and its removal is the measurement talking. It
+  # named a 195px layout viewport where an already-wrapped row gained a caption
+  # line, and measured 124px. It now measures 117.8px -- identical to every
+  # other wrapped width, because the row that wraps there is the same two-line
+  # wordmark+trigger row. "Wrapped" and "zoom" are no longer distinct states at
+  # any shipped width, so a third token would be a value nothing consumes
+  # differently. Reinstate it only if a future composition separates them again.
+  #
+  # NO LOCALE AXIS. The two locales agree on the VALUES and differ only in the
+  # switch-over width; the breakpoint takes the larger (215px), because
+  # over-reserving adds whitespace above an anchored heading while
+  # under-reserving hides it -- which is the defect this token exists to end.
   header-h-oneline: 62px
   header-h-wrapped: 118px
-  header-h-zoom: 124px
   scroll-clearance: 16px
+  # `/compare`'s `<md` mini-header, which sticks UNDER the site header. Named
+  # here because it was the other half of two hardcoded literals ("56 header +
+  # 48 mini") in CompareChartsSection.
+  compare-mini-h: 48px
 components:
   stat-tile:
     background: '{colors.surface-raised}'
@@ -341,7 +371,9 @@ Tailwind's 4-based spacing scale is inherited. Named tokens set the page rhythm:
 - {spacing.section-gap} (48px) between sections within a layer.
 - {spacing.layer-gap} (64px) between Hero → Tactical → Expert layers — the largest gap on any page, making the layer boundary legible as a visual "altitude change."
 
-**Header height is a token, not a constant (ruled 2026-08-26).** {spacing.header-h-oneline} one row, {spacing.header-h-wrapped} where the row wraps, {spacing.header-h-zoom} at a 195px layout viewport, plus {spacing.scroll-clearance} of breathing room. It is declared once as a custom property driven by the breakpoint and consumed by `scroll-padding-top` **and** by every sticky offset that mirrors it. The 4.5rem constant this replaces is already wrong by 46px at wrapped widths — `globals.css:446` records the overlap and names this as the honest fix. Any change to the header's composition changes this token; nothing may hardcode the height again.
+**Header height is a token, not a constant (ruled 2026-08-26, shipped and re-measured in story 3.10).** {spacing.header-h-oneline} one row, {spacing.header-h-wrapped} where the row wraps, plus {spacing.scroll-clearance} of breathing room. It is declared once as a custom property driven by the breakpoint and consumed by `scroll-padding-top` **and** by every sticky offset that mirrors it — seven consumers in all, including `/compare`'s mini-header ({spacing.compare-mini-h}) and the `#main-content` skip link. The 4.5rem constant it replaced was wrong by 46px at wrapped widths, hiding anchored headings behind the bar; measured after the fix, an anchored heading now clears the bar by 16px at every width in both locales.
+
+Two values, not three: `header-h-zoom` was removed because the nav's composition change collapsed it into `header-h-wrapped` (both measure 118px at 195px now). The thresholds moved too — the header wraps only below ~215px, so no phone wraps any more. **Any change to the header's composition changes this token, and this is the second time that rule has fired; nothing may hardcode the height again.**
 
 Content max-width: `max-w-6xl` (1152px) for dashboard surfaces; data tables and comparison views may use full width inside it. Mobile-first single column at 390px design width; the Hero Layer must never require horizontal scrolling at 390px. Wide artifacts (Expert tables) scroll horizontally *inside their own container*, never the page.
 

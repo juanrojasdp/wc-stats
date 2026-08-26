@@ -72,6 +72,59 @@ export const es = {
       glossaryLink: "Glosario",
     },
   },
+  /*
+   * ════════ THE NAVIGATION MENU (Story 3.10, UX-DR24) ═══════════════════════
+   *
+   * UX-DR24 re-rules UX-DR4's "no primary nav". Below `xl` one trigger opens a
+   * modal sheet holding the search, the destinations and the language/theme
+   * controls; at `≥xl` the destinations sit inline in the header row.
+   *
+   * THE DESTINATION SET IS THE RULED BADGE SET (EXPERIENCE.md → The Landing
+   * Page) PLUS `Inicio`, and the values below are that set verbatim. Spanish is
+   * the source of truth; `en` is the variant.
+   *
+   * ⚠️ FIVE OF THE NINE DO NOT RENDER YET. `nav-destinations.ts` carries an
+   * `available` flag per destination and only available ones are rendered —
+   * four today (Inicio, Comparar, Glosario, Acerca de). The keys are all minted
+   * here anyway, because story 3.9 mints the routes and flips the booleans, and
+   * a key minted in the same change as its route is a key nobody has to
+   * remember. They are NOT dead keys: `nav-destinations.test.ts` resolves every
+   * one of them in both dictionaries, so all nine are reached today.
+   */
+  nav: {
+    /*
+     * The trigger's accessible name, and it is STABLE across open and closed —
+     * `aria-expanded` carries the state, exactly as the theme toggle uses
+     * `aria-pressed` rather than swapping its name. Do not mint a "Cerrar menú".
+     */
+    trigger: "Menú",
+    /** The sheet's own close control; Radix also closes it on Esc. */
+    close: "Cerrar el menú",
+    /*
+     * The sheet's accessible title. Radix Dialog requires one, and on
+     * `search.sheetTitle`'s precedent it must NOT merely repeat the trigger — a
+     * reader who has already activated "Menú" learns nothing from a panel
+     * called "Menú".
+     */
+    sheetTitle: "Navegación del sitio",
+    /*
+     * The `<nav>` landmark's name, in both presentations. A landmark named
+     * "Menú" would collide with the trigger in a landmark list; "Principal"
+     * says which nav it is, which is what a landmark list is for.
+     */
+    landmark: "Principal",
+    destinations: {
+      home: "Inicio",
+      compare: "Comparar",
+      tournament: "Torneo",
+      matches: "Partidos",
+      tops: "Líderes",
+      players: "Jugadores",
+      teams: "Equipos",
+      glossary: "Glosario",
+      about: "Acerca de",
+    },
+  },
   about: {
     title: "Acerca del sitio",
     dataTitle: "Los datos",
@@ -2415,16 +2468,21 @@ export const es = {
      * match is found by two team names rather than by a name at all.
      */
     placeholder: "Escribe un nombre o un partido",
-    /** The `<md` icon button that opens the sheet (UX-DR4). */
-    open: "Buscar",
-    /** The sheet's own close control; Radix also closes it on Esc. */
-    close: "Cerrar la búsqueda",
     /*
-     * The sheet's accessible title. Radix Dialog requires one, and it must not
-     * simply repeat the trigger's name — a reader who has already activated
-     * "Buscar" learns nothing from a panel called "Buscar".
+     * ⚠️ `open`, `close` AND `sheetTitle` WERE DELETED HERE (Story 3.10).
+     *
+     * They named the search's OWN `<md` trigger, its own close control and its
+     * own sheet — all three deleted when UX-DR24 absorbed the search into the
+     * nav sheet. `nav.trigger`, `nav.close` and `nav.sheetTitle` now carry those
+     * roles, on the same rulings: the trigger's name is stable across open and
+     * closed, and the sheet's title does not merely repeat the trigger.
+     *
+     * REMOVED RATHER THAN LEFT, because a key no component can reach is a dead
+     * key, and AC 1's BINDING prohibits exactly that. Verified by grep before
+     * deleting: after Task 4.2 the only surviving reference to `search.open` in
+     * the tree was the exported-markup assertion that pinned the trigger it
+     * describes, and that assertion now pins the nav's.
      */
-    sheetTitle: "Buscar en el torneo",
     /** The listbox's accessible name, so the option list is not anonymous. */
     listLabel: "Resultados de la búsqueda",
     /*

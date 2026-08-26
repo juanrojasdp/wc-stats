@@ -33,6 +33,26 @@ export const en: Dictionary = {
       glossaryLink: "Glossary",
     },
   },
+  // The nav menu (Story 3.10, UX-DR24). `trigger` is stable across open and
+  // closed; `sheetTitle` must not repeat it. See es.ts for the full ruling and
+  // for why all nine destinations are minted while only four render today.
+  nav: {
+    trigger: "Menu",
+    close: "Close the menu",
+    sheetTitle: "Site navigation",
+    landmark: "Main",
+    destinations: {
+      home: "Home",
+      compare: "Compare",
+      tournament: "Tournament",
+      matches: "Matches",
+      tops: "Leaders",
+      players: "Players",
+      teams: "Teams",
+      glossary: "Glossary",
+      about: "About",
+    },
+  },
   about: {
     title: "About this site",
     dataTitle: "The data",
@@ -1288,9 +1308,8 @@ export const en: Dictionary = {
     // Sr-only, not visible — the h-14 header bar has no room for a label line.
     label: "Search players, teams and matches",
     placeholder: "Type a name or a match",
-    open: "Search",
-    close: "Close search",
-    sheetTitle: "Search the tournament",
+    // `open`, `close` and `sheetTitle` were deleted in Story 3.10 — the search's
+    // own trigger and sheet are gone, absorbed into the nav's. See es.ts.
     listLabel: "Search results",
     /*
      * The player form only; the team and match prefixes are reused from hub.*.

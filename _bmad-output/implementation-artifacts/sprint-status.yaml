@@ -3425,7 +3425,7 @@ development_status:
   # open and get re-owned, not fixed here. Task 8.5.
   # AC8 (Google Search Console submission, starts the 90-day D20-b clock, re-open no
   # earlier than 2026-11-24) is MANUAL AND JUAN'S. The dev agent surfaces it and stops.
-  3-4-sitemap-robots: ready-for-dev
+  3-4-sitemap-robots: in-progress
   # Context created 2026-08-26. Owns bootstrap.ts, bootstrap.test.ts,
   # i18n-provider.tsx, i18n-provider.test.tsx (NEW) and — as a measured
   # regression repair, not a feature — the navigator pin in TournamentHub.test.tsx,
@@ -3515,7 +3515,35 @@ development_status:
   # 3-8 is also live but is ZERO-OVERLAP by D2 and does not gate this story either way.
   # Re-verified at 2c8bb1a: 3-1 has since LANDED (its 5 paths are clean now); 3-6's release and
   # 3-7's `done` both still hold. Full record: 3-10-navigation-menu.md -> Dev Agent Record.
-  3-10-navigation-menu: ready-for-dev
+  #
+  # D0 CLEARED AND THE STORY IMPLEMENTED, 2026-08-26, baseline f644975. The gate was re-run
+  # and came back GREEN on both clauses: 3-5 landed at 8dcb985, and HeaderSearch.test.tsx and
+  # SiteSignature.test.tsx were both clean. Story ran start to finish from Task 2.
+  #   ROUTE COUNT HOLDS AT 1,406 (1,407 files = 1,406 routes + 404.html). D15 verified: no
+  #     /tournament, /tops, /players/index or /teams/index was created.
+  #   TESTS 1,367 -> 1,468 (+101), 0 failed, 0 skipped, 58 files.
+  #   3.9 COMPLETES THE NAV BY FLIPPING FOUR BOOLEANS in lib/nav-destinations.ts -- and the
+  #     bijection gate in nav-destinations.test.ts goes RED the moment 3.9 mints a route
+  #     without flipping its flag, so the coupling is enforced, not documented. No component
+  #     change is needed: four of nine destinations render today (Inicio, Comparar, Glosario,
+  #     Acerca de), nine after 3.9.
+  #   THE `--header-h` TOKEN SHIPPED and closes deferred-work.md's spec-sign-the-project entry.
+  #     Measured: an anchored heading clears the bar by 16px where it was -46px (HIDDEN).
+  #     DESIGN.md's token block was re-measured, not copied: `header-h-zoom` is REMOVED (the
+  #     nav's composition collapsed it into `header-h-wrapped`), and the wrap threshold fell
+  #     from 341/337 to 215/211 -- so the header no longer wraps on any phone.
+  #   THREE LOCALE KEYS DELETED as dead: search.open, search.close, search.sheetTitle. The
+  #     search's own trigger and sheet are gone, absorbed into the nav's.
+  #   ⚠️ AC 7's PREMISE IS FALSE AND THE RETROSPECTIVE DID NOT RUN. AC 7 says "the epic closes
+  #     with this story"; it does not. 3-2, 3-3, 3-4 and 3-9 are all still `backlog`. A6's
+  #     trigger is the EPIC close, not this story's, so epic-3-retrospective stays `required`
+  #     and unrun. Recorded rather than quietly skipped -- that skip is exactly what Epic 1
+  #     did and what A6 exists to prevent.
+  #   FILED, NOT FIXED (all outside this story's declared paths, all pre-existing): a 195px
+  #     loading-state overflow in LeaderboardsRegion's `w-48` skeleton; 36 dangling
+  #     aria-controls IDREFs on other components' disclosures; four files whose prose still
+  #     cites the deleted `4.5rem`. See deferred-work.md's story-3.10 section.
+  3-10-navigation-menu: review
   # NOT `optional` — retro action item A6. Epic 1's sat at `optional`, was
   # skipped, and the cost was paid inside Epic 2.
   epic-3-retrospective: required
