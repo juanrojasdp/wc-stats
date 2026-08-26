@@ -4360,3 +4360,93 @@ creation, and nothing downstream noticed.
 - **L211** — "Task 10.2's 200%-zoom clause fails at 195 CSS px, but the subtask is checked `[x]`…
   **Annotate the checkbox** rather than re-patch the condition." The instruction names Story 2.5's
   Task 10.2 checkbox and is not carried out anywhere in the diff. This is the one with residual work.
+
+## Filed by the SEO / locale ruling — sprint-change-proposal-2026-08-26
+
+- **D20 RULED (Juan, 2026-08-26): ES CANONICAL FOR `<title>`/OG STANDS. D17 is upheld, not reopened.**
+  Locale-varying share previews are not implementable on a static export: crawlers have no user, no
+  geolocation, no session and no JavaScript, and one URL yields exactly one document. **Per-locale
+  URLs (`/en/` + `/es/` with `hreflang`) are DEFERRED AGAINST EVIDENCE, not WONTFIX** — the standard
+  answer, refused on measurement rather than on effort. The measured prize is ~1–2 words per preview:
+  `app.siteName` is "WC Stats" in both dictionaries, and team names, player names, scores, records
+  and venues are proper nouns and numerals, so on 1,400 of 1,406 routes the title is ALREADY
+  locale-neutral and the whole translatable delta is a closed set of ~8 stage and ~4 position enum
+  labels. The price is ~1,406 additional routes, every internal link, the route manifest, the
+  route-bijection tests, and the `t()`-at-`DEFAULT_LOCALE` server model all 40 shipped stories are
+  built on. **Re-open trigger:** Google Search Console shows either (a) material impression volume on
+  English-language queries or (b) language-targeting confusion on the ES-canonical routes — no
+  earlier than **2026-11-24** (90 days of collected data). **The `sitemap.xml` shipped in Epic 3 is
+  the instrument that makes this trigger measurable; without it the deferral would be indefinite by
+  construction.** L147, L2697 and L3227 stay CLOSED-ACCEPTED per D17 and are not re-filed.
+
+- **D20-b RULED: the AR-11 `og:image` ban is RETIRED as an over-read.** AR-11 (`epics.md:92`,
+  `ARCHITECTURE-SPINE.md:110`) scopes "zero external requests" to fonts and third-party origins; a
+  **same-origin** `og:image` is not a request the page makes at all. Confirmed mechanically rather
+  than textually: `app/scripts/assert-no-external-origins.mjs` enumerates `FETCHING_POSITIONS`
+  explicitly and `<meta content>` is deliberately absent, because the gate "matches FETCHING
+  POSITIONS only: the attributes and call sites that actually cause a request". Verified on a fixture
+  — `og:image` and `twitter:card` pass clean. AR-11 and AD-11 amended 2026-08-26. **The two pinning
+  assertions must be REPLACED, never merely deleted** (`app/src/app/players/static-output.test.ts:125-126`,
+  `app/src/app/teams/static-output.test.ts:139-140`): the new assertion is that `og:image` is present
+  AND same-origin. Deleting them would leave the same-origin property unasserted, and the build gate
+  cannot catch an off-origin `og:image` — correctly, since `<meta content>` is not a fetching
+  position. **That test is the only thing holding the line.** Four source comments corrected
+  (`matches/[slug]/page.tsx:49`, `page.tsx:74`, `players/[slug]/page.tsx:53-55`,
+  `teams/[slug]/page.tsx:64-66`). *(The Epic 2 retrospective said three tests; the count is two.)*
+
+- **BLOCKER FOUND, and it contradicts the retrospective: `assert-no-external-origins.mjs` FAILS the
+  build on the site's OWN absolute URLs.** Retro §6.3 lists `metadataBase`, absolute canonical URLs,
+  `sitemap.xml`, `robots.txt`, the Twitter card and `og:image` as "available without any ruling".
+  They are not. The gate treats `<link href>` as a fetching position and matches it against
+  `FETCH_HOST`, which has **no concept of the site's own origin** — `ALLOWED` holds exactly `w3.org`
+  and `schema.org`. Reproduced 2026-08-26 by running the shipped script against a fixture:
+  `<link rel="canonical" href="https://mundial-stats.juancr.dev/...">` and
+  `<link rel="alternate" hreflang=…>` both reported as EXTERNAL SUBRESOURCES, **exit 1** — while
+  `og:image` passed. The gate has it backwards: it red-builds on a navigation hint that fetches
+  nothing, and waves through the one tag that genuinely causes a third party to fetch an asset.
+  **Consequence:** the first commit adding canonical URLs fails the Netlify chain on all ~1,406 pages
+  with an error naming AR-11 and NFR-9. **Owner: Epic 3 story 3-1, sequenced FIRST as a hard
+  prerequisite.** Two conditions on the fix: a NEGATIVE test (an off-origin `<link rel="stylesheet">`
+  and an off-origin `og:image` must still fail — a gate that stopped failing has proved nothing, the
+  argument this file's own header makes twice), and `SITE_ORIGIN` defined in exactly ONE place shared
+  with `metadataBase`, because two copies drift silently in the direction that matters.
+
+- **A SILENT i18n GATE HOLE, to be closed BEFORE the story that would fall into it.**
+  `app/eslint.config.mjs:160`'s metadata selector gates
+  `Property[key.name=/^(title|description|default|template|absolute)$/]`. **`alt` and `siteName` are
+  not in it.** An `og:image` card carries `alt` text and `openGraph.siteName` is a metadata string, so
+  both would ship as bare Spanish literals **with the build green** — the "tests that passed for the
+  wrong reason" class the Epic 2 retrospective logged four instances of (§3.3). Add both keys to the
+  metadata-object selector. Note `alt` already appears in the JSX-attribute regexes; this is a
+  different AST path. **Owner: Epic 3 story 3-1.**
+
+- **`bootstrap.ts` has no `navigator.language`, and every first-time visitor on Earth is served
+  Spanish.** `resolveLocale(stored)` (`app/src/lib/bootstrap.ts:36-41`) is persisted-value-or-`es`,
+  in the pure function and in the checked-in pre-paint ES5 literal alike. This is the actual defect
+  behind the share-preview ask: the preview is one line of text, the landing page is the whole
+  product, and unlike the crawler the recipient's browser HAS `navigator.language`. **Owner: Epic 3
+  story 3-5** (independent of 3-1, and the highest user value in the epic). Four constraints, each a
+  defect if missed: (1) BOTH the pure function and the script literal, with `bootstrap.test.ts`'s
+  cross-check matrix gaining a `navigator.language` dimension; (2) `i18n-provider.tsx`'s mount effect
+  must change too — it currently does `if (stored === null) return;`, so detection in the script but
+  not the provider would re-render Spanish strings under an `<html lang="en">` the script had already
+  set; (3) a DETECTED locale is NEVER persisted — only an explicit toggle writes `wcstats.locale`, or
+  a guess becomes indistinguishable from a choice and outlives a change of browser language; (4) only
+  the primary subtag is read, and anything not `en` falls to canonical `es` — a French reader gets the
+  canonical, not a guess.
+
+- **ACCEPTED CONSEQUENCE of D20 + first-visit detection, recorded rather than discovered later.**
+  Googlebot renders JavaScript with `navigator.language` typically `en-US`, so it will see the
+  pre-paint script flip `<html lang>` to `en` and swap the body strings while `<title>`/OG — emitted
+  by `generateMetadata` at build and never touched by the script — stay Spanish. That is a
+  **mixed-language rendered document**, the exact failure mode Story 2.19 Task 9.3 set out to
+  disprove, reappearing at index time. **Accepted:** it is already the shipped behaviour whenever a
+  reader toggles to EN (detection only makes it automatic); Google's initial non-rendered fetch sees
+  `lang="es"` plus the new explicit `<link rel="canonical">`; and if it does cause harm, that harm
+  **IS** re-open trigger (b) above. The failure mode and the instrument that would detect it are the
+  same mechanism.
+
+- **NOT FIRED by this ruling: L525 (the heatmap) and L4071 (`/compare` drops unpaired metric codes).**
+  Both name a reopened `/contract` or per-locale URLs as their trigger, and the retrospective (§6.1)
+  listed them as conditional on the SEO ruling taking option 2. **D20 takes neither.** Both stay
+  deferred, unchanged, with their triggers intact.
