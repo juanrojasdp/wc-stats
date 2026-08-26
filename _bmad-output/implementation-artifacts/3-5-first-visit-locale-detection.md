@@ -4,17 +4,43 @@ baseline_commit: 9f76f40
 
 # Story 3.5: First-Visit Locale Detection
 
-Status: in-progress
+Status: done
 
-> Was `review`. The code review of 2026-08-26 applied 11 patches, three of them to PRODUCTION files
-> (`bootstrap.ts`, `i18n-provider.tsx`, `layout.tsx`), and the full chain has NOT been re-run since.
-> Story 3.10 landed `HeaderSearch.tsx`, `SiteHeader.tsx`, both dictionaries and new
-> `SiteNav`/`nav-destinations` files into the shared tree mid-review, and `HeaderSearch.test.tsx` is
-> failing 8 tests on ITS changes — reproduced with all five of this review's files reverted to HEAD,
-> so the failure is not this review's. The four suites this review owns (`bootstrap.test.ts`,
-> `i18n-provider.test.tsx`, `TournamentHub.test.tsx`, `SiteSignature.test.tsx`) are **60 passed, 0
-> failed**; `tsc --noEmit` and `eslint --max-warnings 0` are clean on every touched file.
-> **Flip to `done` once 3.10 settles and `npm test` + `npm run build` run green end to end.**
+> `review` -> `in-progress` -> **`done`** (2026-08-26). The code review applied 11 patches, three of
+> them to PRODUCTION files, so the story was held at `in-progress` until the full chain was re-run.
+> It could not be re-run in the shared tree — story 3.10 had `HeaderSearch.tsx`, `SiteHeader.tsx`,
+> both dictionaries and new `SiteNav`/`nav-destinations` files in flight there, and its dictionary
+> rename left `HeaderSearch.test.tsx` failing 8 tests and `tsc` erroring on `search.open`. Both were
+> confirmed to be 3.10's by reverting all five of this review's files to HEAD and reproducing them
+> identically.
+>
+> **Verified instead in an isolated worktree at the committed HEAD `2ce2233`** — this story's code
+> with none of 3.10's in-flight work (Story 2.11a's precedent, and the method the story's own
+> blast-radius measurement used). Full chain, all green:
+>
+> | gate | result |
+> |---|---|
+> | `npm run build` | GREEN end to end — lint, typecheck, schema assert, `next build`, `copy-data`, origin gate |
+> | origin gate | `12,683 text assets, 0 external subresources` — identical to the implementation run |
+> | `npm test` | **55 files / 1,382 passed / 0 failed / 0 skipped** |
+>
+> **0 skipped** is the number Task 10.3 asks for, and it required the build first: in a fresh
+> worktree `app/out` does not exist, so the `describe.skipIf(!anyBuilt)` export blocks skip 97 tests.
+> The first worktree run measured 53 files / 1,285 passed / **97 skipped**; after `npm run build` the
+> same suite measured 55 / 1,382 / **0 skipped**. Both states are recorded because the story's Task
+> 1.5 note says to state which one you measured in.
+>
+> Delta against the implementation run's 55 files / 1,367 tests: **+15**, fully accounted for —
+> **+13 from this review** (`bootstrap.test.ts` 17 -> 21, `i18n-provider.test.tsx` 19 -> 28) and **+2
+> from story 3.6's own code review**, which committed to `main` in between (`SiteSignature.test.tsx`
+> 5 -> 6, `static-output.test.ts` +1).
+>
+> **Windows note for the next session:** the worktree needed a SHORT path (`C:\wt35`) — a worktree
+> under the deep scratch path fails `git worktree add` with *Filename too long* — and junctioning
+> `app/node_modules` is NOT enough: Turbopack fails the build with *Symlink [project]/node_modules is
+> invalid, it points out of the filesystem root*. `npx vitest run` tolerates the junction; `npm run
+> build` does not. A real `robocopy /E /MT:16` of `node_modules` (0.49 GB, ~27 s) is what makes the
+> build work, and is far cheaper than `npm ci`, which dies on Windows `ENOTEMPTY`.
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

@@ -3398,7 +3398,7 @@ development_status:
   # i18n-provider.tsx, i18n-provider.test.tsx (NEW) and — as a measured
   # regression repair, not a feature — the navigator pin in TournamentHub.test.tsx,
   # HeaderSearch.test.tsx and SiteSignature.test.tsx. Independent of 3-1..3-4.
-  3-5-first-visit-locale-detection: in-progress
+  3-5-first-visit-locale-detection: done
   # SHIPPED at 92eec27 (`chrome.signature`, one key, two surfaces: under the
   # wordmark in SiteHeader and as the footer sign-off). The earlier note here
   # said "NOT yet committed to main" and was stale from 2026-08-26; corrected.
@@ -4155,3 +4155,33 @@ action_items:
 #             only widens the population, and AD-12 makes it an architecture call); locale-es/
 #             locale-en having ZERO consumers anywhere in the product; and SiteSignature's per-`it`
 #             pin idiom, where any new `it` silently inherits jsdom's ambient en-US.
+
+# 2026-08-26: Story 3.5 -> DONE, verified in a worktree because the shared tree was not this story's
+#
+#             The 3.5 code review's 11 patches touched three PRODUCTION files, so `done` needed a
+#             full-chain re-run. The shared tree could not give one: story 3.10 had HeaderSearch.tsx,
+#             SiteHeader.tsx, both dictionaries and new SiteNav/nav-destinations in flight, and its
+#             dictionary rename left HeaderSearch.test.tsx failing 8 tests and tsc erroring on
+#             `search.open`. Confirmed 3.10's, not 3.5's, by reverting all five of the review's files
+#             to HEAD and reproducing both failures identically.
+#
+#             VERIFIED AT COMMITTED HEAD 2ce2233 IN AN ISOLATED WORKTREE. npm run build GREEN end to
+#             end; origin gate 12,683 text assets / 0 external subresources, identical to the
+#             implementation run. npm test 55 files / 1,382 passed / 0 failed / 0 SKIPPED. Delta
+#             against the implementation run's 1,367: +15 = +13 this review (bootstrap 17->21,
+#             i18n-provider 19->28) and +2 from story 3.6's own code review, which landed in between.
+#
+#             THE 0-SKIPPED NUMBER REQUIRES BUILDING FIRST. A fresh worktree has no app/out, so the
+#             describe.skipIf(!anyBuilt) export blocks skip 97 tests: the first run measured 53 files
+#             / 1,285 / 97 skipped, and only after npm run build did the same suite give 55 / 1,382 /
+#             0 skipped. State which state you measured in, as Task 1.5 says.
+#
+#             WINDOWS WORKTREE RECIPE, CORRECTED AND NOW PROVEN. Two things the previous attempt got
+#             stuck on: (1) the worktree needs a SHORT path -- C:\wt35 works, a worktree under the
+#             deep scratch path fails `git worktree add` with "Filename too long". (2) Junctioning
+#             app/node_modules is NOT sufficient. `npx vitest run` tolerates the junction and runs the
+#             whole suite fine, but Turbopack fails the BUILD with "Symlink [project]/node_modules is
+#             invalid, it points out of the filesystem root". The fix is a REAL copy:
+#             robocopy <shared>/app/node_modules <wt>/app/node_modules /E /MT:16 -- 0.49 GB, ~27 s,
+#             and far cheaper than npm ci, which dies on Windows ENOTEMPTY. Note robocopy exit code 1
+#             means "files copied" and is SUCCESS; only >= 8 is an error.
