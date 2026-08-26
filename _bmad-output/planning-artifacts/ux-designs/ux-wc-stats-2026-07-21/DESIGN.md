@@ -2,7 +2,7 @@
 name: wc-stats
 description: Visual identity for the WC2026 analytics site — "broadcast dark" analytics system on shadcn/ui + Tailwind; dark is canonical, light is the derived variant.
 status: final
-updated: 2026-07-21
+updated: 2026-08-26
 colors:
   # Convention: unsuffixed tokens are the DARK (canonical) theme; `-light` suffix
   # is the derived light variant. All shadcn tokens not listed here inherit
@@ -149,6 +149,16 @@ spacing:
   tile-gap: 12px
   section-gap: 48px
   layer-gap: 64px
+  # --- Header height, ruled 2026-08-26 (story 3.7). ---
+  # ONE custom property, driven by the breakpoint, consumed by
+  # `scroll-padding-top` AND by every sticky offset that mirrors it. The
+  # hardcoded 4.5rem it replaces is already wrong: globals.css:446 records a
+  # wrapped bar OVERLAPPING an anchored heading by 46px -- "hidden, not merely
+  # tight". Values are the measured header, plus 1rem of breathing room.
+  header-h-oneline: 62px
+  header-h-wrapped: 118px
+  header-h-zoom: 124px
+  scroll-clearance: 16px
 components:
   stat-tile:
     background: '{colors.surface-raised}'
@@ -207,6 +217,24 @@ components:
     result-typography: '{typography.body}'
     match-highlight: '{colors.accent-cyan}'
     radius: '{rounded.sm}'
+  nav-menu:
+    sheet-background: '{colors.surface-overlay}'
+    divider: '{colors.border-hairline}'
+    link-typography: '{typography.body}'
+    link-color: '{colors.ink-primary}'
+    current-marker-color: '{colors.accent-lime}'
+    current-marker-color-light: '{colors.accent-lime-light}'
+    radius: '{rounded.md}'
+  feature-badge:
+    background: '{colors.surface-raised}'
+    border: '{colors.border-hairline}'
+    label-typography: '{typography.title}'
+    support-typography: '{typography.body}'
+    support-color: '{colors.ink-secondary}'
+    emphasis-border: '{colors.accent-lime}'
+    emphasis-border-light: '{colors.accent-lime-light}'
+    radius: '{rounded.md}'
+    gap: '{spacing.tile-gap}'
 ---
 
 ## Brand & Style
@@ -313,6 +341,8 @@ Tailwind's 4-based spacing scale is inherited. Named tokens set the page rhythm:
 - {spacing.section-gap} (48px) between sections within a layer.
 - {spacing.layer-gap} (64px) between Hero → Tactical → Expert layers — the largest gap on any page, making the layer boundary legible as a visual "altitude change."
 
+**Header height is a token, not a constant (ruled 2026-08-26).** {spacing.header-h-oneline} one row, {spacing.header-h-wrapped} where the row wraps, {spacing.header-h-zoom} at a 195px layout viewport, plus {spacing.scroll-clearance} of breathing room. It is declared once as a custom property driven by the breakpoint and consumed by `scroll-padding-top` **and** by every sticky offset that mirrors it. The 4.5rem constant this replaces is already wrong by 46px at wrapped widths — `globals.css:446` records the overlap and names this as the honest fix. Any change to the header's composition changes this token; nothing may hardcode the height again.
+
 Content max-width: `max-w-6xl` (1152px) for dashboard surfaces; data tables and comparison views may use full width inside it. Mobile-first single column at 390px design width; the Hero Layer must never require horizontal scrolling at 390px. Wide artifacts (Expert tables) scroll horizontally *inside their own container*, never the page.
 
 ## Elevation & Depth
@@ -330,7 +360,7 @@ The overall shape voice is crisp-but-not-sharp: a data tool with broadcast polis
 
 ## Components
 
-Visual specs only; behavior lives in EXPERIENCE.md → Component Patterns. Most components below are illustrated in situ by [mockups/key-match-dashboard-mobile.html](mockups/key-match-dashboard-mobile.html) (dark theme, 390px) and [mockups/key-match-dashboard-desktop.html](mockups/key-match-dashboard-desktop.html) (dark theme, expanded Tactical Layer with pitch panels); mocks illustrate, spines win on conflict.
+Visual specs only; behavior lives in EXPERIENCE.md → Component Patterns. Most components below are illustrated in situ by [mockups/key-match-dashboard-mobile.html](mockups/key-match-dashboard-mobile.html) (dark theme, 390px) and [mockups/key-match-dashboard-desktop.html](mockups/key-match-dashboard-desktop.html) (dark theme, expanded Tactical Layer with pitch panels). The 2026-08-26 additions — feature badge, navigation menu and the re-ruled site header — are illustrated by [mockups/key-landing-mobile.html](mockups/key-landing-mobile.html) (390px landing) and [mockups/key-navigation.html](mockups/key-navigation.html) (sheet at 320px, reflow at 195px, inline nav at `≥xl`). Mocks illustrate, spines win on conflict.
 
 - **Stat tile** — {components.stat-tile}. Value in {typography.stat-value} tabular, label above in {typography.stat-label} uppercase {colors.ink-secondary}. In head-to-head context the leading side's value takes the team accent **plus a non-color leader cue: a small ▲ glyph before the leading value** (color alone never encodes who leads — 1.4.1); trailing side stays {colors.ink-primary}. No icons inside tiles beyond the leader glyph.
 - **Stage-context chip** — {typography.label-caps} pill ({rounded.full}) on {colors.surface-overlay} with {colors.ink-secondary} text; sits beside the scoreline in the Hero ("Octavos de final").
@@ -343,7 +373,9 @@ Visual specs only; behavior lives in EXPERIENCE.md → Component Patterns. Most 
 - **Glossary tooltip** — {components.glossary-tooltip}. Trigger: dotted underline in {colors.accent-cyan} on the term. Panel: {colors.surface-overlay}, {rounded.sm}, term in {typography.title}, definition in {typography.body}, link to the glossary entry in {colors.accent-cyan}.
 - **Momentum Timeline** — a pitch-adjacent viz, not a pitch panel: rendered on {colors.surface-raised} (recharts), team areas, ink-primary midline gutter, and goal markers per the momentum spec in Colors → Data-visualization palette, axis labels in {typography.caption} tabular. Carries the same in-panel attribution caption as pitch panels.
 - **Result chip** — {components.result-chip}. {rounded.full} filled pill; fill per outcome ({colors.result-win} / {colors.result-draw} / {colors.result-loss}, `-light` variants in light theme); letter in {typography.label-caps}, colored {colors.result-chip-ink} on dark fills and {colors.result-chip-ink-light} on light fills (computed ratios in Colors → Result chips). Always letter + fill, never color-only.
-- **Site header** — {components.site-header}. Slim bar on {colors.surface-base} with a hairline bottom rule: wordmark/home link in {typography.title}, header search, language toggle, theme toggle — in that order. No accent-colored chrome; no primary nav beyond the wordmark ( `/compare` and `/glossary` are reached contextually per EXPERIENCE.md IA) [ASSUMPTION: minimal-header composition].
+- **Site header** — {components.site-header}. Slim bar on {colors.surface-base} with a hairline bottom rule. **RE-RULED 2026-08-26 (UX-DR24).** The former clause — *"no primary nav beyond the wordmark"* — is superseded; it was a considered decision, not an oversight, and the reasoning that replaces it (including the 237 → 354 px width arithmetic) lives in EXPERIENCE.md → Navigation. Composition at `≥xl`: wordmark/home link in {typography.title} with the authorship caption in {typography.caption} {colors.ink-secondary} beneath it, then inline nav links in {typography.body}, header search, language toggle, theme toggle. At `<xl`: wordmark + caption, then a single menu trigger. **The chrome stays quiet either way** — nav links are {colors.ink-primary}, never accent-filled, and the active route's marker is the only accent in the bar.
+- **Navigation menu** — {components.nav-menu}. Trigger is an unfilled icon button matching the theme toggle's weight — quiet chrome, never an accent-filled "active tool". Sheet on {colors.surface-overlay}, {rounded.md}, full-**width** 386 px at `top: 0` with content-driven height. **Geometry is not modality:** the sheet is *visually* partial and *behaviourally* modal — it follows the shipped Story 2.14 sheet, which is a modal Radix dialog that inerts the document (`HeaderSearch.tsx:388`). A scrim is therefore required over the inerted page; links in {typography.body} {colors.ink-primary} separated by hairline rules, grouped destinations above the {colors.border-hairline} rule that separates them from the language and theme controls. The current route carries a {components.nav-menu.current-marker-color} leading marker **plus its own weight change** — never the marker's color alone (1.4.1). Inline links at `≥xl` use the same type and color, with the current route underlined rather than marked.
+- **Feature badge** — {components.feature-badge}. Landing page only. Card on {colors.surface-raised}, {rounded.md}, hairline border: label in {typography.title} {colors.ink-primary}, one supporting line in {typography.body} {colors.ink-secondary}. **Emphasised variant** (`/compare`): full width, first position, and a 2px {colors.accent-lime} top border — larger, higher, and bordered, so the emphasis survives both a grayscale render and a screen reader that sees none of it. No icons, no illustration, no gradient: the badge grid is chrome, and chrome stays quiet.
 - **Header search** — {components.header-search}. shadcn Command-style input; results panel on {colors.surface-overlay} ({rounded.sm}), result rows in {typography.body} with the matched substring highlighted in {colors.accent-cyan} and the entity type in {typography.label-caps} {colors.ink-secondary}. [ASSUMPTION: search is a scope addition beyond PRD FRs — behavioral spec in EXPERIENCE.md → Component Patterns.]
 - **Theme toggle & comparison entity picker** — shadcn components (Toggle, Command) used as-is with the mapped CSS variables; no visual delta beyond tokens.
 - **Attribution footer** — one {typography.caption} line in {colors.ink-secondary} on {colors.surface-base}, hairline top rule, link to the about page in {colors.accent-cyan}. Present on every route.
@@ -361,3 +393,6 @@ Visual specs only; behavior lives in EXPERIENCE.md → Component Patterns. Most 
 | Keep the pitch deep green in both themes | Invert or lighten the pitch surface in light mode |
 | Tabular numerals in every aligned numeric context | Proportional figures in tables, tiles, or leaderboards |
 | Quiet chrome: charcoal, hairlines, muted labels | Gradients, glows, or accent-colored chrome competing with data |
+| Emphasise a landing badge with size, position and a border | Emphasise it with fill or hue alone — the emphasis has to survive grayscale and a screen reader |
+| Keep the landing page free of tables — everything dense has its own route | Reintroduce standings, results or boards onto `/` "just as a teaser" |
+| Let the `<xl` header shrink: one trigger absorbing the chrome is the ruled composition | Add a fifth element to the header row — the row already wraps below 354px |

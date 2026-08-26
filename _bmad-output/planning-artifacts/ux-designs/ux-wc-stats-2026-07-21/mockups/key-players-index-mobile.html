@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wc-stats — /players (390 px) · tema oscuro · ES</title>
+<style>
+/* ============================================================
+   MOCK: /players — índice de jugadores · móvil 390 px · oscuro · ES
+   Ruled by story 3.7, 2026-08-26.
+
+   WHY THIS MOCK EXISTS
+   ------------------------------------
+   /players is the ONE genuinely new dense surface in this contract:
+   1,248 rows with no shipped precedent for how they group. Rendering it
+   forces the browse-grammar ruling now instead of leaving it to whoever
+   implements story 3.9.
+
+   THE DATA THAT CONSTRAINS IT (measured, data/index/tournament.json)
+   ------------------------------------
+   entities.players[] carries exactly four things per player:
+     name        "Brenden AARONSON"
+     playerId    "aaronson-brenden-usa"
+     position    "gk" | "df" | "mf" | "fw"
+     team        { id, name }
+   Nothing else. No shirt number, no minutes, no club. Any grouping this
+   surface uses must come out of those four fields — which is why the
+   options were team, position, or A-Z and nothing more ambitious.
+
+   POSITION ABBREVIATIONS ARE ARQ/DEF/MED/DEL, NOT POR/DEF/MED/DEL.
+   es.ts:1549 ships enums.position.gk = "Arquero" (the LatAm register this
+   spine ruled), so POR would abbreviate "portero" — a word with no full
+   term to expand to. Each cell carries its own <abbr title>, because
+   expanding only the COLUMN HEAD leaves Spanish TTS reading DEL and DEF as
+   the function words "del" and "def". En: GK/DF/MF/FW.
+
+   RULED: BY TEAM.
+     · 48 disclosures, ~26 players each — the same arithmetic as the Hub's
+       12 standings groups, so the SM-C2 idiom transfers unchanged.
+     · It is how football readers think: a squad is a real thing, an
+       alphabetical slice of 1,248 strangers is not.
+     · The team name gives every row context the row itself lacks.
+     · Position (4 buckets of ~312) and A-Z (26 buckets, alphabetical by
+       FIRST name in this corpus — "Brenden AARONSON" sorts under B unless
+       re-keyed) both group without informing.
+
+   Spine sections governing this screen
+   ------------------------------------
+   EXPERIENCE.md
+   - Information Architecture: /players in the re-ruled route table
+   - Responsive & Platform: "/players index (1,248)" row
+   - The Player Index: the browse grammar ruled below
+   - Component Patterns: Data table (sortable), Empty-state panel
+   DESIGN.md
+   - Components: data-table, layer-shell; Colors: canvas & ink
+   - Typography: headline / title / body / label-caps / caption
+   ============================================================ */
+:root{
+  --surface-base:#0E1114; --surface-raised:#171B1F; --surface-overlay:#1F252B;
+  --ink-primary:#F2F5F7; --ink-secondary:#A7B0B8; --ink-muted:#6B757F;
+  --hairline:#2A3138;
+  --lime:#C3F53C; --lime-ink:#131A02; --cyan:#3DDBE8;
+  --font-display:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{color-scheme:dark}
+body{background:#07090B;font-family:var(--font-ui);color:var(--ink-primary);padding:28px 16px 64px}
+.frame{width:390px;margin:0 auto;background:var(--surface-base);border:1px solid var(--hairline);
+  border-radius:14px;overflow:hidden}
+.framelabel{width:390px;margin:0 auto 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-secondary)}
+
+header{background:var(--surface-base);border-bottom:1px solid var(--hairline)}
+.hrow{display:flex;flex-wrap:wrap;align-items:center;gap:12px;min-height:56px;padding:0 16px}
+.ident{display:flex;flex-direction:column;justify-content:center;min-width:0}
+.wordmark{font-size:17px;font-weight:600;line-height:1.35;min-height:44px;display:flex;
+  align-items:center;color:var(--ink-primary);text-decoration:none}
+.sig{font-size:12px;line-height:1.35;color:var(--ink-secondary)}
+.spacer{flex:1 1 auto;min-width:0}
+.tgt{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--hairline);
+  border-radius:8px;background:transparent;color:var(--ink-secondary);flex:none}
+.tgt svg{width:20px;height:20px}
+
+main{padding:24px 16px 32px}
+h1{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1.2}
+.sub{font-size:15px;line-height:1.55;color:var(--ink-secondary);margin-top:6px}
+
+/* filter — the shipped leaderboards filter idiom, reused not re-minted */
+.filter{margin-top:18px}
+.filter label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-secondary);margin-bottom:6px}
+.filter .box{height:44px;border:1px solid var(--hairline);border-radius:8px;background:var(--surface-raised);
+  display:flex;align-items:center;padding:0 12px;color:var(--ink-muted);font-size:15px}
+
+/* per-team disclosure — SM-C2 idiom: count OUTSIDE, table behind */
+.team{margin-top:20px;border-top:1px solid var(--hairline);padding-top:14px}
+.teamhead{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.teamhead h2{font-family:var(--font-display);font-size:17px;font-weight:700;line-height:1.2}
+.count{font-size:12px;color:var(--ink-secondary)}
+.disc{margin-top:10px;min-height:44px;display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--hairline);border-radius:8px;padding:0 14px;background:transparent;
+  color:var(--ink-primary);font-size:15px;cursor:pointer}
+.disc .chev{width:14px;height:14px}
+
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--hairline);font-size:15px}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-secondary);
+  background:var(--surface-raised)}
+td a{color:var(--ink-primary);text-decoration:none}
+td.pos{width:52px;color:var(--ink-secondary);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+
+.note{width:390px;margin:14px auto 0;font-size:12px;line-height:1.6;color:var(--ink-secondary);
+  border-left:2px solid var(--hairline);padding-left:10px}
+.note b{color:var(--ink-primary)}
+.rule{width:390px;margin:22px auto;height:1px;background:var(--hairline)}
+</style>
+</head>
+<body>
+
+<div class="framelabel">/players · 390 px · oscuro · ES</div>
+<div class="frame">
+  <header>
+    <div class="hrow">
+      <div class="ident">
+        <a class="wordmark" href="/">WC Stats</a>
+        <span class="sig">Por Juan Camilo Rojas</span>
+      </div>
+      <div class="spacer"></div>
+      <button class="tgt" aria-expanded="false" aria-label="Menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <h1>Jugadores</h1>
+    <p class="sub">Los <b>1.248</b> jugadores del torneo, por selección.</p>
+
+    <div class="filter">
+      <label for="pf">Filtrar por nombre</label>
+      <div class="box" id="pf">Escribe un nombre</div>
+    </div>
+
+    <!-- ONE TEAM, OPEN — what an opened disclosure looks like -->
+    <section class="team">
+      <div class="teamhead"><h2>Algeria</h2><span class="count">26 jugadores</span></div>
+      <button class="disc" aria-expanded="true" aria-label="Ocultar los jugadores de Algeria">
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg>
+        Ocultar los jugadores
+      </button>
+      <table aria-label="Jugadores de Algeria">
+        <thead><tr><th scope="col">Pos.</th><th scope="col">Jugador</th></tr></thead>
+        <tbody>
+          <tr><td class="pos"><abbr title="Arquero">ARQ</abbr></td><td><a href="/players/mbolhi-rais-alg">Raïs M'BOLHI</a></td></tr>
+          <tr><td class="pos"><abbr title="Defensa">DEF</abbr></td><td><a href="/players/abada-achref-alg">Achref ABADA</a></td></tr>
+          <tr><td class="pos"><abbr title="Defensa">DEF</abbr></td><td><a href="/players/mandi-aissa-alg">Aïssa MANDI</a></td></tr>
+          <tr><td class="pos"><abbr title="Mediocampista">MED</abbr></td><td><a href="/players/bennacer-ismael-alg">Ismaël BENNACER</a></td></tr>
+          <tr><td class="pos"><abbr title="Delantero">DEL</abbr></td><td><a href="/players/mahrez-riyad-alg">Riyad MAHREZ</a></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- THE REST, CLOSED — count outside, nothing deleted -->
+    <section class="team">
+      <div class="teamhead"><h2>Argentina</h2><span class="count">26 jugadores</span></div>
+      <button class="disc" aria-expanded="false">
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        Ver los jugadores
+      </button>
+    </section>
+    <section class="team">
+      <div class="teamhead"><h2>Australia</h2><span class="count">26 jugadores</span></div>
+      <button class="disc" aria-expanded="false">
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        Ver los jugadores
+      </button>
+    </section>
+    <section class="team">
+      <div class="teamhead"><h2>Belgium</h2><span class="count">26 jugadores</span></div>
+      <button class="disc" aria-expanded="false">
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        Ver los jugadores
+      </button>
+    </section>
+    <section class="team" style="opacity:.45">
+      <div class="teamhead"><h2>Brazil</h2><span class="count">26 jugadores</span></div>
+    </section>
+    <div class="sub" style="margin-top:14px;color:var(--ink-muted);font-size:12px">
+      … 44 selecciones más, en el mismo orden del artefacto
+    </div>
+  </main>
+</div>
+
+<div class="note">
+  <b>Antes de abrir nada</b>, un lector ve: el título, el conteo total, el filtro, y las 48
+  selecciones con su conteo. La forma del torneo se lee de un vistazo — el mismo argumento que
+  2.19 registró para las 21 secciones del Hub.<br>
+  <b>Conteo fuera, tabla detrás</b> (SM-C2, D15). Nada se borra: los 1.248 siguen en la ruta, a un
+  clic, en orden de artefacto.<br>
+  <b>Dos columnas, no más.</b> El índice solo trae nombre, posición y equipo; el equipo es el
+  encabezado del grupo, así que la fila es posición + nombre. A 390 px eso deja el nombre completo
+  sin truncar — «Ismaël BENNACER» es de los más largos del corpus.<br>
+  <b>El filtro es el idiom ya enviado</b> (<code>leaderboards.filter*</code>), reutilizado y no
+  re-acuñado. Filtra sobre el conjunto completo, no solo sobre lo abierto.<br>
+  <b>La búsqueda del encabezado sigue siendo el camino rápido.</b> Esta ruta es el camino de
+  <i>navegar</i>; buscar ya funcionaba y no se toca.
+</div>
+
+<div class="rule"></div>
+
+<div class="framelabel">Por qué no las otras dos agrupaciones</div>
+<div class="note">
+  <b>Por posición</b> — 4 grupos de ~312. Agrupa sin informar: «312 mediocampistas» no es una
+  pregunta que nadie tenga.<br>
+  <b>A–Z</b> — 26 grupos, pero en este corpus los nombres llegan como «Brenden AARONSON», así que un
+  orden alfabético ingenuo ordena por NOMBRE DE PILA. Habría que re-clavar la clave de orden al
+  apellido, que el índice no separa. Es trabajo de datos disfrazado de decisión de IA.<br>
+  <b>Por equipo</b> — 48 grupos de ~26, cada uno una plantilla real, cada fila con contexto.
+</div>
+
+</body>
+</html>

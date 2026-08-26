@@ -2,11 +2,15 @@
 name: wc-stats
 description: Experience specification for the WC2026 analytics site
 status: final
-updated: 2026-07-21
+updated: 2026-08-26
 sources:
   - _bmad-output/planning-artifacts/prds/prd-wc-stats-2026-07-21/prd.md
   - _bmad-output/planning-artifacts/prds/prd-wc-stats-2026-07-21/addendum.md
   - project-brief-wc2026-analytics.md
+  # Added 2026-08-26 for the Epic 3 pass (story 3.7 — home IA & navigation):
+  - _bmad-output/planning-artifacts/epics.md
+  - _bmad-output/implementation-artifacts/epic-2-retro-2026-08-26.md
+  - _bmad-output/implementation-artifacts/deferred-work.md
 ---
 
 # wc-stats — Experience Spine
@@ -25,25 +29,331 @@ Browser support: current evergreen browsers only (latest two majors of Chrome, E
 
 ## Information Architecture
 
+> **RE-RULED 2026-08-26 (Epic 3, story 3.7 — recorded as UX-DR24).** `/` is no longer the
+> Tournament Hub. It is a **Landing** surface, and the Hub's three bodies of content move to
+> routes of their own. Two profile **index** routes are minted so that every landing badge lands
+> on a page rather than on a fragment. Route count **1,406 → 1,410** (verified against the
+> export: 1,400 entity routes + `/`, `/about`, `/compare`, `/glossary`, `/404`, `/_not-found`).
+> This deliberately overrides story 3.9's "the route count stays 1,406" — see *Route-count
+> consequences* below. The prior single-route Hub reading is superseded, not amended.
+
 | Route | Surface | Reached from | Purpose |
 |---|---|---|---|
-| `/` | Tournament Hub | Entry, header logo | Results & standings by stage/group (FR-25), leaderboards (FR-26), entry to everything |
-| `/matches/{match-slug}` | Match Dashboard | Hub results, profiles' per-match values, shared links, header search | One page per match: Hero → Tactical → Expert Layer (FR-21/22/23) |
-| `/players/{player-slug}` | Player Profile | Leaderboards, lineups, header search | Aggregates, per-match series, physical profile, trends (FR-27) |
-| `/teams/{team-slug}` | Team Profile | Standings, match header, header search | Tournament-wide tactical identity + per-match breakdowns (FR-28) |
-| `/compare` | Comparison Mode | Hub, Player/Team Profile "Comparar" actions | Two players, two teams, or two matches side by side (FR-29) |
-| `/glossary` | Glossary | Footer, every glossary tooltip's "see more" | Full tactical-term glossary, both languages |
-| `/about` | About & data attribution | Footer attribution line | Data source statement, methodology, project credits, and the free/open independent passion-project framing (OQ-3) |
+| `/` | **Landing** | Entry, wordmark, nav "Inicio" | What this site is, in one short statement, then the **feature badge grid** — the entry point to every other surface (FR-39) |
+| `/tournament` | **Tournament Hub** | Landing badges (Torneo, Partidos), nav, standings/results deep links | Results and standings by stage and group (FR-25), behind the SM-C2 disclosure grammar Story 2.19 established |
+| `/tops` | **Leaderboards** | Landing badge (Líderes), nav | All 36 boards — 20 team, 16 player — teaser altitude plus full sortable tables (FR-26) |
+| `/players` | **Player index** | Landing badge (Jugadores), nav | Browse all 1,248 players; the only surface that enumerates them (search finds, this one *shows*) |
+| `/teams` | **Team index** | Landing badge (Equipos), nav | Browse all 48 teams |
+| `/matches/{match-slug}` | Match Dashboard | `/tournament` result rows, profiles' per-match values, shared links, header search | One page per match: Hero → Tactical → Expert Layer (FR-21/22/23) |
+| `/players/{player-slug}` | Player Profile | `/players`, `/tops` player boards, lineups, header search | Aggregates, per-match series, physical profile, trends (FR-27) |
+| `/teams/{team-slug}` | Team Profile | `/teams`, `/tournament` standings rows, match header, header search | Tournament-wide tactical identity + per-match breakdowns (FR-28) |
+| `/compare` | Comparison Mode | **Landing badge (emphasised)**, nav, Player/Team Profile "Comparar" actions | Two players, two teams, or two matches side by side (FR-29) |
+| `/glossary` | Glossary | Landing badge, nav, footer, every glossary tooltip's "see more" | Full tactical-term glossary, both languages |
+| `/about` | About & data attribution | Landing badge, nav, footer attribution line | Data source statement, methodology, project credits, and the free/open independent passion-project framing (OQ-3) |
 | `/404` | Not found | Any unknown URL | Static 404 (see State Patterns) |
+
+**Route-count consequences, owned rather than discovered.** Four new routes ripple into three
+sibling Epic 3 stories, and each ripple is small only because it is named here:
+
+- **Story 3.9's "route count stays 1,406" is superseded by this contract** — the figure becomes
+  **1,410**. The clause's intent (no accidental route explosion, no per-locale duplication) is
+  intact: four deliberate routes, ruled here, is not the thing that clause guards against.
+- **Story 3.4's sitemap** enumerates four more entries. Its bijection assertion against the route
+  manifest covers the addition in both directions with no change to the assertion itself — which
+  is the point of having written it that way.
+- **Story 3.2's canonical/`og:url`** emission gains four sites. All four are static routes with no
+  dynamic segment, so none needs `generateStaticParams`.
+- **`/tops` and `/players` are new dense surfaces.** Both carry a performance floor — see
+  *Performance guard* below. `/teams` (48 rows) and `/` are not dense.
+
+**Performance guard — the floor follows the content, not the route (NFR-11).** The recorded 68 was
+measured over 6,025 DOM nodes, 33 tables and 2,442 cells. Those move to `/tournament`, so **68 is
+`/tournament`'s inherited floor**, not `/`'s. `/`, `/tops` and `/players` are surfaces with no
+history: each records its own first D4 median as its own floor. Measurement is per D4 in every
+case — median of 3 runs, mobile preset, host-realistic server (gzip + keep-alive); never a single
+run, never `python -m http.server`. Pre- and post- medians are both recorded. **SM-5 stays CLOSED
+(D19): nothing in this contract designs toward 90.** Reading the guard the other way — holding `/`
+to ≥68 after it has shed nearly all its weight — would leave the surface that actually carries the
+risk unguarded, and would be exactly the "a gate that has never been red is not a gate" failure the
+Epic 2 retrospective logged (A1/NFR-12).
+
+**What `/tournament` inherits unchanged.** The move is an address change, not a redesign: the 9
+results sections and 12 standings sections keep their `ViewDataDisclosure` treatment, their
+outside-the-disclosure counts, their artifact order, their `rank`-as-a-column rendering, their
+sort behaviour, and their anchors. **SM-C2 binds exactly as before: density moves behind
+disclosure, never deleted.** Story 2.13's leaderboards mount moves to `/tops` with its
+`#leaders` anchor — re-sited, never duplicated, since two elements carrying that id would be a
+duplicate-id defect.
 
 - **Slugs** are language-neutral English/romanized, stable, human-readable — e.g. `/matches/m73-mexico-argentina`, `/players/ramirez-julian-mex`, `/teams/mexico` [ASSUMPTION: slug format; sources require only stable human-readable share-friendly URLs. Player slugs carry team code to disambiguate duplicate names — OQ-4 surface].
 - **Language is not in the URL.** One pre-rendered HTML per route (Spanish-default content for SEO/link previews); the persisted locale swaps strings client-side per the Locale bootstrap mechanism (i18n & Terminology) (FR-31). [ASSUMPTION: single-tree i18n rather than `/en/` route duplication, to hold the route count and payload budget; revisit only via logged decision.] Consequences owned (logged): English content is invisible to search engines (no `/en/` URLs); link previews and share cards are always Spanish, even for links shared by EN users; **no `hreflang` is emitted** — a lone self-referencing hreflang would be worse than none.
 - **Header search** [ASSUMPTION: scope addition beyond PRD FRs — logged deliberately]: a lightweight client-side typeahead over the Tournament Index (players, teams, matches) in the site header on every route. No search route, no server, no payload beyond the already-shipped Tournament Index. Behavioral spec: Component Patterns → Header search. This is the "search" entry path named in the route table above.
 - **Link-preview meta:** every match, player, and team route pre-renders a meaningful `<title>` and OG description — match: teams + score + stage; player: name + team; team: name + tournament record (§5 shareability) [ASSUMPTION: exact meta patterns proposed].
 - **Comparison URLs are shareable** [ASSUMPTION]: `/compare?type=players|teams|matches&a={slug}&b={slug}`. The `/compare` route is one pre-rendered shell; params are read client-side and the two entity bundles are fetched on demand. Profile "Comparar" actions deep-link with `a` pre-filled.
-- **Mandatory cross-links:** every Hub result row → its Match Dashboard, all 104 matches reachable (FR-25); every per-match value on a Player Profile → that Match Dashboard (FR-27), anchored to the relevant section; Comparison Mode reachable from Hub and both profile types (FR-29); match header team names → Team Profiles; lineup player names → Player Profiles.
-- **Deep-link anchors:** every Match Dashboard section has a stable anchor (`#key-stats`, `#momentum`, `#shot-maps`, `#pass-networks`, `#offers-to-receive`, `#movement-to-receive`, `#defensive-actions`, `#phases`, `#pressing`, `#set-plays`, `#goalkeeping`, `#expert`). Navigating to an anchor auto-expands its section if collapsed.
+- **Mandatory cross-links:** every `/tournament` result row → its Match Dashboard, all 104 matches reachable (FR-25); every `/tournament` standings row → its Team Profile; every `/tops` board row → its Player or Team Profile; every `/players` and `/teams` index row → its profile; every per-match value on a Player Profile → that Match Dashboard (FR-27), anchored to the relevant section; Comparison Mode reachable from the Landing badge grid, the nav, and both profile types (FR-29); match header team names → Team Profiles; lineup player names → Player Profiles.
+- **Deep-link anchors:** every Match Dashboard section has a stable anchor (`#key-stats`, `#momentum`, `#shot-maps`, `#pass-networks`, `#offers-to-receive`, `#movement-to-receive`, `#defensive-actions`, `#phases`, `#pressing`, `#set-plays`, `#goalkeeping`, `#expert`), and `/tournament` and `/tops` carry theirs. Navigating to an anchor auto-expands its section **and its disclosure** if either is closed — the full grammar and its resolution rules are in **Deep-Link Fragment Grammar** below.
 - Attribution placement: persistent footer line on every route + `/about` + the in-panel caption on every pitch panel (see i18n & Terminology for wording).
+
+## The Landing Page
+
+> Visual reference: [mockups/key-landing-mobile.html](mockups/key-landing-mobile.html) (390 px, dark, ES — zone order, the emphasised *Comparar* badge, the `<xl` header). Illustrative only — spines win on conflict.
+
+Normative. `/` answers two questions in order — **what is this** and **where do I go** — and answers
+nothing else. It carries no standings, no results, no boards, no tables. It is the one surface in
+the product with no data density to disclose, and that is deliberate: everything dense now has an
+address of its own.
+
+**Zone order at 390 px, top to bottom:**
+
+| Zone | Contains | Rules |
+|---|---|---|
+| 1 — Identity | `<h1>` (tournament name + site name) and one short paragraph: what this site is, where the data comes from, that it is free and independent | Prose, not tiles. Two to four sentences. This is the OQ-3 framing at hero altitude — it does **not** replace the `/about` route or the attribution footer, both of which stay |
+| 2 — **Comparar**, emphasised | A single full-width badge for `/compare` | The one destination that gets its own row and visual weight (`{components.feature-badge}` emphasised variant). Emphasis is size, position and surface — **never color alone** (1.4.1), and the badge carries no "featured"-type meaning that a screen reader would miss |
+| 3 — Feature badge grid | The remaining seven badges | One column at `<sm`, two at `≥sm`, four at `≥lg`. Reading order is the ruled badge order below, and DOM order equals visual order at every width |
+| 4 — Attribution footer | The shipped footer, unchanged | Present as on every route |
+
+**The ruled badge set.** Eight destinations, this order:
+
+| # | es | en | Destination | Coverage |
+|---|---|---|---|---|
+| 1 | Comparar | Compare | `/compare` | — (emphasised, zone 2) |
+| 2 | Torneo | Tournament | `/tournament` | Complete — results *and* standings |
+| 3 | Partidos | Matches | `/tournament#results` | Complete — all 104 |
+| 4 | Líderes | Leaders | `/tops` | All 36 boards — the route slug stays `/tops`; slugs are language-neutral English |
+| 5 | Jugadores | Players | `/players` | Complete — all 1,248 |
+| 6 | Equipos | Teams | `/teams` | Complete — all 48 |
+| 7 | Glosario | Glossary | `/glossary` | — |
+| 8 | Acerca de | About | `/about` | — |
+
+- **Every badge lands on a page or on a fragment with complete coverage of what it names.** This is
+  the rule that drove minting `/players` and `/teams`: a *Jugadores* badge pointing at `/tops` would
+  reach roughly 15% of the 1,248 players — and *which* 15% would depend on the metric — while the
+  header search beside it reaches all of them. A badge that under-delivers against the control next
+  to it teaches the reader the wrong thing about the site.
+- **`/teams` is knowingly redundant** with `/tournament#standings`, which already lists all 48 with
+  profile links. It is minted for badge symmetry, so no badge in the grid resolves to a fragment
+  while its neighbour resolves to a page. Recorded as a cost, not disguised as a benefit.
+- **The grid is not a flat set, and that is ruled rather than accidental.** *Torneo* addresses the
+  page; *Partidos* addresses the results half of that same page. **Badge 3 is contained by badge
+  2.** The alternative considered and rejected was a flat set — *Partidos* + *Posiciones*, no
+  *Torneo*. This shape was chosen because "Torneo" alone is the vaguest label in the grid and a
+  first arrival cannot tell it holds the 104 matches, while *Partidos* is the single most likely
+  thing that arrival is looking for. **The cost, recorded because it is real:** a reader who taps
+  *Torneo* finds *Partidos* inside it, which teaches that the grid is a set of entry points rather
+  than a partition. That is acceptable for eight badges on a landing page; it would not be for a
+  navigation tree. Standings has no badge of its own and is reached through *Torneo*.
+- **Badges are links, not buttons** — real `<a href>`, working middle-click, working "open in new
+  tab", visible in the browser's link list. No badge is a JavaScript-only affordance.
+- Badge accessible names are the visible label; no `aria-label` narrows or extends them (2.5.3).
+  Both locale strings are Locale-file keys (FR-30) — no bare literals, including in the emphasised
+  variant.
+
+**What a first arrival sees before opening anything.** All four zones, complete. There is nothing
+on `/` behind a disclosure, because there is nothing on `/` dense enough to need one. The
+disclosure grammar SM-C2 protects lives on `/tournament` and `/tops`, unchanged.
+
+## The Player and Team Indexes
+
+> Visual reference: [mockups/key-players-index-mobile.html](mockups/key-players-index-mobile.html) (390 px, dark, ES). Illustrative only — spines win on conflict.
+
+Normative. Both are **browse** surfaces. Header search is the *find* path and is unchanged; these
+routes answer "show me what exists", which search cannot.
+
+**What the data allows.** `entities.players[]` in the Tournament Index carries exactly four fields
+per player — `name`, `playerId`, `position` (`gk`/`df`/`mf`/`fw`), `team {id, name}`. No shirt
+number, no club, no minutes. Every grouping decision below is bounded by those four fields, and no
+index surface may imply data the artifact does not carry.
+
+**`/players` — grouped by team.** 48 disclosures, ~26 players each, teams in artifact order,
+counts rendered **outside** each disclosure. This is the Hub's shipped SM-C2 idiom (D15) applied
+unchanged: nothing is deleted, everything is one click away, and the shape of the tournament stays
+readable before anything is opened.
+
+- Rows are **position + name**; the team is the group heading, so repeating it per row would be
+  noise. Two columns is what 390 px comfortably holds with no name truncated.
+- Position renders as a ruled abbreviation: **es `ARQ` / `DEF` / `MED` / `DEL`**, **en `GK` / `DF`
+  / `MF` / `FW`** (the contract's own enum codes). **Not `POR`** — that abbreviates *portero*, the
+  word this spine deliberately rejected; `es.ts:1549` ships `enums.position.gk: "Arquero"`, so
+  `POR` would have no full term to expand to.
+- **The expansion attaches to the cell value, not only to the column head.** A column head reading
+  "Pos." expanded to "Posición" tells a screen-reader user nothing about the row: each cell carries
+  its own full term (`ARQ` → "Arquero"), via `<abbr title>` or an equivalent accessible name.
+  Otherwise Spanish TTS reads `DEL` and `DEF` as the function words *del* and *def*, and the
+  abbreviation becomes noise rather than shorthand.
+- **Each of the 48 tables carries its own accessible name** naming its team, and each of the 48
+  disclosure triggers likewise ("Ver los jugadores de Argentina"). Forty-eight controls sharing one
+  name is a screen-reader control list with no information in it.
+- Within a team, order is **position order (gk → df → mf → fw), then name** — the football
+  convention, and the only ordering the four available fields support meaningfully.
+- A **name filter** sits above the groups. It reuses the shipped `leaderboards.filter*` **pattern**
+  — control shape, live count, zero-result copy — but **mints its own `players.filter*` keys rather
+  than reusing those strings**. Story 2.14 already declined the reverse reuse on the grounds that
+  `leaderboards.filterLabel` is board-scoped; borrowing board vocabulary onto a squad index would
+  repeat that objection in the other direction. It filters the whole set, not only what is open, and
+  reports its result count **through a polite live region** — a count that changes silently as you
+  type is not a result. Accent- and case-insensitive via `Intl.Collator('es', {sensitivity:'base'})`.
+  Its zero-result state is in State Patterns.
+- Every row links to that Player Profile.
+
+**Grouping alternatives, rejected with reasons** — recorded so the choice is not re-litigated:
+*by position* is 4 buckets of ~312, which groups without informing; *A–Z* is 26 buckets, but names
+arrive as "Brenden AARONSON", so a naive alphabetical sort orders by given name and fixing it needs
+a surname key the index does not carry — data work wearing an IA costume.
+
+**`/teams` — a flat list of 48.** No disclosure: 48 rows is not dense. Name, group, and record
+(played–won–drawn–lost), every row linking to its Team Profile. **This surface is knowingly
+redundant** with `/tournament#standings`, which carries the same 48 with more competitive context;
+it exists so the landing badge grid has no member resolving to a fragment while its neighbours
+resolve to pages. Recorded as a cost, not dressed up as a benefit.
+
+**Both carry their own performance floor** — see IA → Performance guard. `/players` is the one new
+dense surface in this contract; `/teams` is not dense and is expected to be unremarkable.
+
+## Navigation
+
+> Visual reference: [mockups/key-navigation.html](mockups/key-navigation.html) — three frames: sheet open at 320 px, header reflow at 195 px, inline nav at `≥xl` with the width arithmetic that rejected `lg`. Illustrative only — spines win on conflict.
+
+Normative. **This section re-rules UX-DR4's "no primary nav" clause and is recorded as UX-DR24.**
+
+The clause was a considered decision, not an oversight: the header is a slim sticky bar and nav
+competes with search for the same row at 320 px, where Story 2.19's R2/D8 reflow guard pins the
+row's class string. It is overturned because FR-40 requires reaching the app's features from any
+route, and because the shape ruled below **buys header width back rather than spending it**.
+
+**One destination set, two presentations.** The nav's destinations are the eight badges above plus
+**Inicio / Home** (`/`) — nine in total. The set is identical in both presentations; only the
+rendering changes.
+
+| | `<xl` | `≥xl` |
+|---|---|---|
+| Header row | Wordmark + authorship caption + **one menu trigger** | Wordmark + authorship caption + inline nav links + search + `ES\|EN` + theme |
+| Search | Inside the sheet | Inline, as shipped |
+| Language, theme | Inside the sheet | Inline, as shipped |
+| Nav | Inside the sheet | Inline links |
+
+**The width arithmetic, which is the whole reason this shape was chosen.** Story 2.19 measured the
+header's min-content at **237 CSS px**; story 3.6's authorship caption widened the identity block
+76 → 127 px, moving the wrap threshold to **354 px** — the header already wraps to two rows on
+every phone, going 57 → 118 px at 320 px. A fifth element added to that row would push the
+threshold to roughly 406 px and make the known `scroll-padding-top` shortfall (sticky 118 px
+against 72 px) apply across a wider band.
+
+Absorbing the chrome inverts that. Below `xl` the row becomes **wordmark + one 44 px trigger**,
+whose min-content is *below* the 237 px figure that R2/D8 was written against. **The 320 px row
+gets easier, not harder.**
+
+**The price, stated plainly, because UX-DR4's re-ruling is required to state it:** on phones,
+language and theme move from one tap to two. That is the cost. It is paid to hold the 320 px floor
+and story 3.6's signature simultaneously — hiding, truncating or wrapping the name is out of bounds,
+and the reflow guard is not negotiable. Search is unaffected in kind: it was already a trigger below
+`md`; it now shares a trigger rather than owning one.
+
+- **`≥xl` (1280 px), and the two narrower candidates were measured and rejected.** Nine inline
+  destinations in Spanish measure ~1,060–1,080 px alongside the identity block, search, `ES|EN` and
+  theme. Usable measure is the viewport minus two {spacing.gutter-desktop} gutters: **976 px at
+  `lg`** and **1,232 px at `xl`**. `md` (720 px usable) is not close. **`lg` fails**, and it fails
+  in the worst available way: the header search ships as `min-w-0 flex-1`, so the row does not
+  overflow visibly — **the search input silently collapses**. A defect that never appears in a
+  screenshot is the class this project has already paid for. `xl` clears by ~150 px, which is the
+  margin Spanish text expansion needs.
+- **The consequence, accepted:** a 1024–1279 px laptop gets the trigger, not inline links. Inline
+  nav is a wide-desktop enhancement, not the desktop default.
+- **Sheet geometry is full-width, 386 px at `top: 0`, content-driven height — not full-screen.**
+  That was corrected once already (2.19 Task 7.7, ledger A22/L2945) and the geometry stands.
+- **Geometry is not modality, and conflating the two is how this gets built wrong.** The shipped
+  Story 2.14 sheet is a **modal Radix dialog that inerts the document** (`HeaderSearch.tsx:388`,
+  whose own comment records that the inerting stamps `aria-hidden` on every body sibling including
+  `<header>`). The nav sheet follows it: **modal, document inerted, focus trapped inside while
+  open, a scrim over the inerted page, `Esc` closes and returns focus to the trigger.** Partial
+  geometry does not make a sheet non-modal — a sheet that leaves the page behind it operable while
+  looking dismissible is a 2.1.2 / 2.4.3 defect, and a sheet that inerts without a scrim looks
+  broken.
+- **Keyboard model** (UX-DR15): trigger is a real `<button>` with `aria-expanded` and a
+  **conditional `aria-controls`** — `aria-controls={sheetRendered ? sheetId : undefined}`. The sheet
+  is portalled and absent from the DOM while closed, so an unconditional attribute is a dangling
+  IDREF and an axe `aria-valid-attr-value` failure on the site header of every route. This is the
+  shipped house form, used at four of seven `aria-controls` sites in `HeaderSearch.tsx` (`:1000`)
+  for exactly this reason. `Enter`/`Space` opens; focus moves to the sheet's first focusable
+  element; focus is trapped inside the sheet while open (it is modal — above); `Esc` closes and
+  **returns focus to the trigger**; every target ≥44×44 px (`MIN_HIT_PX`). Reading order equals DOM
+  order equals visual order. Inline links at `≥xl` are plain tab stops in reading order — no
+  roving tabindex, no menu semantics.
+- **Not a `role="menu"`.** These are links to pages, not commands in a menu widget. `role="menu"`
+  would impose arrow-key-only navigation and break the reading-order tab model UX-DR15 rules. The
+  sheet is a labelled region containing a `<nav>` landmark and a list of links.
+- **Current route** is marked with `aria-current="page"` in both presentations, and marked
+  visually by something other than color alone.
+- **`prefers-reduced-motion`** disables the sheet transition entirely — it opens and closes
+  instantly. Motion here is decorative-only, so nothing is lost (UX-DR16).
+- Every accessible name — trigger, sheet, `<nav>` landmark, each link — is a Locale-file key in
+  both dictionaries (FR-30, UX-DR16). The trigger's name is stable across open and closed states;
+  `aria-expanded` carries the state, as the shipped theme toggle already does.
+- **The nav is not the only path to anything.** Header search, the landing badges, the footer links
+  and every in-page cross-link keep working exactly as specified. The nav adds a persistent path;
+  it replaces none.
+
+## Deep-Link Fragment Grammar
+
+Normative. **Adopts ledger L1553 / L1886**, whose named successor — *"the first change-set that
+reworks match-route navigation"* — is this work (Epic 2 retrospective §6.1; built by story 3.8).
+
+**The ledger's blocker list is stale in the project's favour, and the correction belongs here.**
+Story 2.19 built this mechanism for the Hub rather than minting a second instance of the defect:
+`ViewDataDisclosure.openNonce` ships, and `useAnchorNonce` + `useHashScroll` are a working
+reference implementation over 21 sections. Two of the three filed hash-re-entry defects are
+already resolved there — **including the one the ledger called *fatal***, "an unchanged hash never
+re-fires `hashchange`", which the Hub answers with a capture-phase `click` listener. What remains
+is a **port**, plus the one thing that was never ruled: the grammar itself.
+
+**The contract:**
+
+- **Fragments come in two kinds, and only one of them opens anything.**
+  - A **surface fragment** names a heading that sits *over* a list of disclosures — `#results`
+    (`RESULTS_SURFACE_ID`, the `<h2>` above nine round sections) and `#standings` (the `<h2>` above
+    twelve groups). It **scrolls and opens nothing.** Opening what it names would expand all nine
+    rounds or all twelve groups at once, rebuilding exactly the DOM weight Story 2.19 moved behind
+    disclosure to recover the recorded 68 — SM-C2 protects the disclosure, and the counts rendered
+    outside each closed control are the surface's whole value.
+  - A **leaf fragment** names one section or one panel — `#results-r32`, `#standings-group-a`,
+    `#momentum`, `#shot-maps-shot-log`. It **opens what it names**, resolving through every closed
+    layer between the page and the target: section shell first, then the disclosure inside it. A
+    shared link that lands a reader on a heading above a closed control has not delivered them to
+    the data, and that is the defect being closed.
+  - **The two are distinguished by the fragment table, not by inference.** Every anchor is declared
+    surface or leaf; an implementer never guesses from the id's shape.
+- **Every disclosure is addressable, and no fragment is ambiguous.** `#shot-maps` today holds two
+  independent disclosures — the shot log and the cross log both point at it — so below `lg` the
+  second link after the first is a silent no-op. Each disclosure gets its own resolvable fragment;
+  the two no longer collide.
+- **Fragment shape is `section` or `section-panel`** — the section anchor as ruled in IA, optionally
+  suffixed with a panel key. `#shot-maps` addresses the section; `#shot-maps-shot-log` and
+  `#shot-maps-cross-log` address its two disclosures. The suffix is a stable authored key, never a
+  generated id: a `useId()` value is neither authorable nor present in the DOM while the region is
+  closed, which is why the mechanism needs an authored id at all.
+- **An unresolvable fragment fails visibly in development and degrades gracefully in production.**
+  Whole-string equality against the section list returns `null` *silently* today, which is why
+  `#shot-maps-log` sat broken unnoticed. Development must say so; production falls back to the
+  nearest resolvable ancestor — the section — rather than doing nothing.
+- **Re-entry works.** Following a link, closing what it opened, and clicking the same link again
+  re-opens it. This is behavioural, not incidental: it is the case that produced no `hashchange`,
+  no increment and a section that stayed shut.
+- **One mechanism, not two.** Nav entries that point into a match-route section use this same path.
+  A second mechanism for nav deep links would be a new instance of the defect being closed.
+- **Keyboard and screen-reader parity:** on resolution, focus moves to the revealed section
+  heading, `aria-expanded` reflects the opened state, and the transition respects
+  `prefers-reduced-motion` (UX-DR16). Auto-expansion is not announced separately — the focus move
+  is the announcement.
+- **The focused heading must actually be visible, which today it is not.** A wrapped header
+  overlaps an anchored heading by **46 px** — `globals.css:446` calls it "hidden, not merely
+  tight". This grammar moves focus to that heading on *every* resolution, including from nav deep
+  links, so the delta turns a dormant defect into a 2.4.7 exposure on a path it invents. **Ruled:
+  the header height becomes a token** ({spacing.header-h-oneline} / `-wrapped` / `-zoom` plus
+  {spacing.scroll-clearance}, DESIGN.md → Layout & Spacing), declared once and consumed by
+  `scroll-padding-top` and by every sticky offset that mirrors it. Nothing hardcodes the height
+  again.
+- **When a leaf fragment resolves two layers** — a panel inside a section — the section opens
+  first, then the panel, and focus lands on the **panel's** heading, not the section's. Focus goes
+  to the deepest thing the fragment named.
 
 ## Voice and Tone
 
@@ -67,7 +377,9 @@ Behavioral. Visual specs live in `DESIGN.md.Components`. shadcn primitives (Butt
 
 | Component | Use | Behavioral rules |
 |---|---|---|
-| Site header | Every route | Slim top bar, sticky on scroll [ASSUMPTION: sticky]: wordmark → `/`, header search, language toggle, theme toggle. On `<md` the search input collapses to an icon button that opens a full-width sheet. Visual spec `{components.site-header}`. |
+| Site header | Every route | Slim top bar, sticky on scroll [ASSUMPTION: sticky]. **Re-ruled 2026-08-26 (UX-DR24) — the "no primary nav" composition is superseded; see Navigation.** `≥xl`: wordmark + authorship caption → `/`, inline nav links, header search, language toggle, theme toggle. `<xl`: wordmark + authorship caption, then **one menu trigger** which absorbs nav, search, language and theme into the sheet. The row keeps `flex-wrap` + `min-h-14` (R2/D8) and every target keeps 44 px through the wrap. Visual spec `{components.site-header}`. |
+| Navigation menu | Site header, every route | Nine destinations (the eight landing badges + Inicio), one set, two presentations — full behavioral spec in **Navigation**. Links, not menu items: no `role="menu"`, no arrow-key-only model. Trigger is a `<button>` with `aria-expanded` + `aria-controls`; `Esc` closes and returns focus to it; `aria-current="page"` marks the active route, never by color alone. Sheet geometry is the shipped full-**width** 386 px sheet at `top: 0`, not full-screen. Visual spec `{components.nav-menu}`. |
+| Feature badge | Landing page only | A link presented as a card: label + one short supporting line. Whole card is the link target — one tab stop, one accessible name, that name being the visible label (2.5.3). The **emphasised** variant (`/compare`) differs by size, position and surface, never by color alone, and carries no meaning a screen reader would miss. No badge is JavaScript-only; all are real `<a href>`. Visual spec `{components.feature-badge}`. |
 | Header search | Site header, every route | Typeahead over the Tournament Index — players, teams, matches; client-side only, no network beyond the already-loaded index [ASSUMPTION: scope addition beyond PRD FRs — resolves the IA "reached from search" paths]. shadcn Command combobox semantics: `role="combobox"` + listbox, arrow keys move the active option, Enter navigates to the entity's route, Esc closes and returns focus to the input. Matching is accent- and case-insensitive (`Intl.Collator('es', {sensitivity:'base'})`). Empty result state: "Sin resultados para «{query}»." / EN variant, with a link to `/`. On `<md`: full-width sheet, same semantics. |
 
 > **Correction, Story 2.19 Task 7.7 (ledger A22/L2945).** These two rows said
@@ -101,6 +413,10 @@ Behavioral. Visual specs live in `DESIGN.md.Components`. shadcn primitives (Butt
 | Missing momentum series | Match Dashboard `#momentum` | Dedicated case of the above (OQ-5): "La línea de momentum no está disponible para este partido." The section header remains so the anchor and layout hold. |
 | Empty comparison | `/compare` (no/partial params) | Picker-first state: "Elige dos {jugadores/equipos/partidos} para comparar." One entity selected → its column renders, other shows picker prompt. |
 | Invalid comparison params | `/compare` (unknown slug/type) | "No encontramos {slug}. Elige de la lista." Valid side is preserved; invalid param dropped from URL. |
+| Landing `/` | `/` | **No loading state and no empty state.** `/` reads no bundle: the lede, the badges and the footer are all pre-rendered static content. If a badge's destination is unreachable that is the destination's error state, never the landing page's |
+| Cold route load — `/tournament`, `/tops`, `/players`, `/teams` | The four new routes | Identical to the shipped Hub pattern they inherit: pre-rendered shell, Skeletons shaped like the target, `aria-busy` on loading regions, a polite "Datos cargados." on arrival. Section headings and their counts render with the shell so the surface's shape is readable before any data lands |
+| Bundle fetch failure — new routes | `/tournament`, `/tops`, `/players`, `/teams` | The shipped inline retry panel. The nav, the header and the badges stay usable, so a reader can always leave a broken surface |
+| Empty filter result | `/players` | "Ningún nombre coincide con el filtro. Borra letras para ver más jugadores." / EN variant — the shipped `leaderboards.filterNoResults*` copy pattern, not a new one. The 48 group headings and their counts **stay rendered**: the filter narrows what is inside them, it never collapses the page's structure |
 | Unknown route | `/404` | Static 404: "Esta página no existe. ¿Buscabas un partido?" + link to `/` and the match list. [ASSUMPTION: static Netlify 404 page; no redirects.] |
 | Bundle fetch failure | Any | Inline panel in content area: "No pudimos cargar los datos. Revisa tu conexión e intenta de nuevo." with retry button. Shell and nav stay usable. |
 | Focus | All | shadcn `--ring` focus-visible everywhere, including table headers. On the theme-invariant pitch, focus indicators use `{colors.focus-ring-on-pitch}` in **both** themes — the light theme's `--ring` cyan computes below 3:1 on the pitch (DESIGN → Data-visualization palette). Never `outline: none` without replacement. |
@@ -126,6 +442,9 @@ WCAG 2.1 AA behavioral floor. Visual contrast obligations live in `DESIGN.md`.
 - `prefers-reduced-motion`: no expand/collapse animation (instant), no momentum-line draw-in, no scroll-smoothing. Motion is decorative-only everywhere, so nothing is lost.
 - `<html lang>` tracks the active locale. Proper names (players, teams, venues) remain unmarked [ASSUMPTION: proper names are locale-neutral]. Retained-English jargon in Spanish copy ("xG", "sprint", "momentum"): acceptance includes a spot-check with a Spanish screen-reader voice; wrap terms in `lang="en"` spans only where pronunciation is unintelligible (3.1.2).
 - 200% zoom: Hero Layer remains single-column with no horizontal page scroll. Reflow (1.4.10) holds down to **320 CSS px** for all content except data tables, which keep their internal-scroll exception.
+- **A focused heading is never hidden behind the sticky header (2.4.7, ruled 2026-08-26).** Header height is a token, not a constant — {spacing.header-h-oneline} / `-wrapped` / `-zoom` plus {spacing.scroll-clearance} (DESIGN.md → Layout & Spacing) — declared once and consumed by `scroll-padding-top` and by every sticky offset that mirrors it. The 4.5rem constant it replaces is wrong by 46 px at wrapped widths, and the Deep-Link Fragment Grammar moves focus onto exactly those headings. This closes the skip link's case too.
+- **The navigation sheet is modal**: while open the document is inert, focus is trapped inside it, a scrim covers the inerted page, and `Esc` closes it and returns focus to the trigger. Its `aria-controls` is conditional on the sheet being in the DOM. Full behavioural spec in Navigation.
+- **Emphasis is never carried by color or by size alone.** The landing page's emphasised badge is larger, first, and bordered; a screen reader receives no "featured" semantics and loses nothing, because the emphasis is editorial ordering rather than information.
 
 ## Responsive & Platform
 
@@ -142,12 +461,93 @@ Breakpoints: Tailwind defaults — design baseline 390px, `md` 768px, `lg` 1024p
 | Expert per-player tables | Full table, all column groups, internal horizontal scroll if needed | Column-group tabs (En posesión / Sin posesión / Físico), sticky player column, internal horizontal scroll within the table container. Every Domain G field remains reachable (FR-23) |
 | Comparison side-by-side | True two-column layout | Stacked per section: paired stat rows (A and B values on one row); vizzes stack A above B with a sticky mini-header naming whose viz is on screen |
 | Hub standings/leaderboards | Full tables | Fewer default-visible columns + "Más columnas" disclosure; sort still on all columns via sort menu |
+| Site header composition | `≥xl`: wordmark + caption, inline nav links, search, `ES\|EN`, theme | `<xl`: wordmark + caption + one menu trigger; nav, search, language and theme all in the sheet. Min-content falls **below** the 237 px R2/D8 figure — the wrap threshold improves rather than regressing |
+| Landing badge grid | Four columns at `≥lg` | One column at `<sm`, two at `≥sm`. Emphasised *Comparar* badge is full-width at every width. DOM order equals visual order throughout |
+| `/players` index (1,248) | Full browse surface | Density behind the same SM-C2 disclosure grammar as `/tournament` — grouped, counts outside each disclosure, nothing deleted. Header search remains the fast path; this surface is the *browse* path |
+| `/tops` (36 boards) | Teaser altitude + full tables | Teasers first, per-board tables behind disclosures — the shipped Story 2.13 grammar, re-sited unchanged |
 
 Desktop optimization is allowed for Tactical/Expert and Comparison, but every capability must remain usable at 390px — degradation changes layout, never removes data.
 
 **Spanish text expansion at 390px:** Spanish labels run ~20–30% longer than English, and the tightest surfaces are 11px ALL-CAPS labels in 12px-gap tiles. Stat-tile labels may wrap to two lines; table column heads use ruled abbreviations from the i18n table (e.g. "VEL. MÁX." for "Velocidad máxima") with the full term in the header's tooltip and `aria-label`. Ellipsis truncation is never the first resort.
 
+### The Expert table at 390 px — ledger L1465, ruled
+
+Adopts **L1465**, whose named successor was *"a copy/UX pass"* (Epic 2 retrospective §6.1). Two
+rulings, and the first of them answers the ledger's own question in the negative.
+
+**1. Two data columns at 390 px is not the target, and is not reachable at this type scale.** The
+ledger asked *"if two columns is a real requirement…"*. It is not. The measurement: scrollport
+345 px, three-column sticky run 289 px, leaving **55.7 px of data — not one full column**. The
+`<md` escape hatch returns 88 px: run 200 px, **145 px of data, one full column visible on open**.
+A second column needs another ~145 px, which would require the identity run to fall to roughly
+55 px. Abbreviating both identity heads buys perhaps 35 px of that. **The ruled target is one full
+data column plus the widest sliver abbreviation can buy** — the honest outcome, rather than a
+requirement the type scale cannot meet. This is a copy and comfort ruling; it is *not* reflow
+compliance, which 320 and 390 both already pass with every disclosure open.
+
+**2. The ruled abbreviations**, per the mechanism this document already makes normative above:
+
+| Key | es full | es head | en full | en head |
+|---|---|---|---|---|
+| `viz.table.shirt` | Dorsal | **DOR.** | Shirt | **SHIRT** (unabbreviated — already short) |
+| `viz.table.player` | Jugador | **JUG.** | Player | **PLAYER** (unabbreviated — already short) |
+
+**An abbreviation truncates its own term; it never substitutes another word.** `DOR.` is *Dorsal*
+shortened, so the full term behind it is true. The rejected candidates make the point: `N.º` is
+conventional Spanish for a shirt number but abbreviates *número*, a word this column's full term
+does not contain, so UX-DR17's "full term in the tooltip" would be a lie; and English `NO.` for
+*Shirt* substitutes a different word entirely while the tooltip still reads "Shirt" — and `en.ts`
+already ships "No." for a match number, so it would collide. **English abbreviates nothing here:**
+the expansion problem is Spanish, and shortening already-short English heads buys nothing while
+adding two strings that can drift.
+
+The full term goes in `headTitle` and the accessible name in both locales; the abbreviation is
+display-only. Abbreviate **only** in the Expert per-player tables at `<md` — these two keys serve
+other tables at comfortable widths, and abbreviating everywhere would trade a real problem for a
+cosmetic loss elsewhere.
+
+**3. The row-set filter is ratified, and its filing corrected.** Below `md` the escape hatch does
+not merely drop the `team` column — `ExpertLayer` filters the **row set** to the selected side,
+34 rows → 17. Task 5.1 says the opposite ("rows are always all players, both teams") and Task 5.4
+pre-authorised only the dropped column, so this was a second departure taken but never filed. **It
+is correct and it stays.** Once the team column is gone, the alternative is repeating one team code
+down all 17 rows, and the `PitchPanel` precedent the hatch cites filters too. The `ToggleGroup`
+that selects the side is what makes the other 17 reachable, so nothing is deleted — SM-C2 holds.
+What was wrong was the filing, not the call, and the contradiction with Task 5.1 is resolved here
+in favour of the shipped behaviour.
+
 ## Key Flows
+
+### UJ-0 — "Tomás arrives at the front door with no idea what this is"
+
+Tomás, 34, saw a link in a group chat with no context beyond a friend's "mirá esto". He taps the
+wordmark out of curiosity rather than following the link, and lands on `/` on a 390 px phone.
+Nobody has told him what this site is, and he will give it about ten seconds.
+
+1. `/` paints immediately — it is a static shell with no tables to build. The `<h1>` names the
+   tournament, and one short paragraph tells him what this is: every match of the tournament,
+   read from the official reports, free and independent.
+2. Below it, one badge is larger than the rest: **Comparar**. It is the thing this site does that
+   the places he already reads do not.
+3. Beneath that, seven more badges. He does not have to guess what is behind a hamburger, and he
+   does not have to scroll through twelve group tables to find out the site has player profiles.
+4. He taps **Partidos** and arrives on `/tournament` at `#results` — a surface fragment, so
+   nothing expands. He sees nine rounds, each with its count outside a closed control ("16
+   partidos"), and taps the one he wants. *That* fragment is a leaf, and it opens.
+5. **Climax:** within about ten seconds of a link he was given no context for, Tomás knows what
+   the site is, has seen the whole of what it offers, and is one tap deep into real data
+   (FR-39, FR-40).
+
+Failure paths: JavaScript slow or blocked → the badges are real `<a href>` links and still work,
+because none of them is a JavaScript-only affordance. Browser set to English → **first paint is
+Spanish**, because every route is a pre-rendered Spanish document; the pre-paint script sets
+`<html lang="en">` and the locale class, and the string swap runs in one pass after hydration
+(i18n & Terminology → Locale bootstrap). Tomás sees a brief Spanish frame on cold load. That is
+the logged single-tree i18n trade-off, not a defect, and it is why the landing lede is short. His
+choice is not persisted, because he never made one (story 3.5).
+
+Acceptance: at 390 px, both locales, zones 1–3 render with zero horizontal scrolling and no
+disclosure to open — there is nothing on `/` behind one.
 
 ### UJ-1 — "Mariana catches up on last night's match from her phone"
 
@@ -367,6 +767,28 @@ Two of the five rows below mint nothing and exist to RECORD that nothing was min
 | comparison — captions and column heads | *(reuse)* | — | **NOT NEW ROWS — recorded to note that NOTHING was minted here.** The route renders six `DataTable` captions and every order statement is a shipped key reused verbatim: `player.caption.physical` for the speed bands, `viz.phases.tableCaption` for the phase rates, `player.caption.aggregates` for the match key stats. One caption stem is therefore **byte-identical to `/players/{slug}`'s**, which is correct — same bands, same title, same order — and the route disambiguates by prefixing every caption and table name with the side's own ENTITY NAME (artifact data, untranslated per FR-30). The ten team comparison row labels likewise reuse `hub.standings.columnTitle.*`, the full terms behind the standings table's abbreviated heads. Minting near-synonyms to satisfy a distinctness check would be the drift this table exists to prevent |
 | comparison — glossary marking | *(deferred)* | — | **NO TERM ON `/compare` IS GLOSSARY-MARKED, AND THAT IS A RULING RATHER THAN AN OVERSIGHT (UX-DR20).** Marking is governed term-by-term by this table, and no row of it names this route. The mirrored-row labels are also BUILT rather than named at the call site — `leaderboardMetricKey`, `hub.standings.columnTitle.*`, `enums.metric.*` — so marking them would mean minting a key→`GlossaryTermId` map that exists nowhere in the codebase, plus ruling roughly nineteen new policy rows this story does not own. 2.5 decision 8 makes the cost of guessing explicit: "a dotted underline with no popover behind it is a broken promise." Filed for a successor |
 
+Rows appended by **Story 3.7** (2026-08-26 — the landing page, the navigation menu, and the two
+index routes), under the same procedure: appended, never renumbered. Four new key namespaces are
+minted — `landing.*`, `nav.*`, `players.*`, `teams.*` — because none of the four surfaces they
+serve existed before. Every string below is a Locale-file key in **both** dictionaries; none may
+ship as a literal (FR-30, and the ESLint metadata gate).
+
+| Term (en) | Decision | Proposed es string | Rationale |
+|---|---|---|---|
+| landing — page heading and lede | translate | *(tournament name)* + a 2–4 sentence lede | `landing.title` / `landing.lede`. Prose, tuteo, no exclamation marks; names the data source and the free/independent framing (OQ-3) without restating `/about` |
+| landing / nav — Comparar | *(reuse)* | Comparar | **NOTHING MINTED.** `compare.*` already ships this word as the canonical action string; a badge is a second call site, not a second term |
+| landing / nav — Torneo | translate | Torneo | `nav.tournament`. The page badge; `/tournament`'s own `<h1>` is the tournament name, so no second-name collision arises |
+| landing / nav — Partidos | *(reuse)* | Partidos | **NOTHING MINTED.** `compare.type.matches` already ships the plural; the badge is a third call site |
+| landing / nav — **Líderes** | *(reuse)* | Líderes | **NOTHING MINTED, AND THIS ROW EXISTS TO RECORD A REJECTED MINT.** The badge label was drafted as "Tops" and **overturned**: `es.ts:2253` ships `leaderboards.title: "Líderes del torneo"` as the `<h1>` of the very page the badge opens, so "Tops" would have been a second Spanish name for one surface — the exact objection `es.ts:1049` raises against minting "Tipo de movimiento" beside the shipped *desmarque*. The Spanish-first tie-breaker applies: usable Spanish exists and already ships. **The route slug stays `/tops`** — slugs are language-neutral English by IA ruling and are not a UI string. En: "Leaders" |
+| landing / nav — Jugadores, Equipos | *(reuse)* | Jugadores / Equipos | **NOTHING MINTED.** `compare.type.players` / `compare.type.teams` ship both plurals |
+| landing / nav — Glosario, Acerca de | *(reuse)* | Glosario / Acerca de | **NOTHING MINTED.** Both ship as the footer's link labels |
+| nav — Inicio | translate | Inicio | `nav.home`. **Not "Home"**, and not the wordmark: the wordmark is a proper noun (the site name), the nav entry is a destination word |
+| nav — trigger, sheet and landmark names | translate | Menú / Cerrar | `nav.trigger` / `nav.close` / `nav.landmark`. Accessible names, so locale keys under UX-DR16. The trigger's name is **stable across open and closed** — `aria-expanded` carries the state, following the shipped theme toggle's precedent |
+| landing — badge supporting lines | translate | *(one line per badge)* | `landing.badge.*.support`. Eight strings. Numbers carry the drama, per Voice and Tone: "Los 104 del torneo", not "¡Todos los partidos!" |
+| players index — position abbreviations | translate | **ARQ / DEF / MED / DEL** | `players.position.short.*`, expanding to the shipped `enums.position.*` (Arquero / Defensa / Mediocampista / Delantero). **`POR` was rejected**: it abbreviates *portero*, and this spine's LatAm register ruled *arquero*, so `POR` would have no true full term. En short forms: **GK / DF / MF / FW** — the contract's own enum codes, which is why they need no separate ruling |
+| players index — filter | translate | Filtrar por nombre / Escribe un nombre | `players.filter*`. **Minted rather than reused** from `leaderboards.filter*`: Story 2.14 declined the reverse reuse because that copy is board-scoped, and borrowing board vocabulary onto a squad index repeats the objection in the other direction |
+| players / teams index — headings and counts | translate | Jugadores / Equipos + "n jugadores" | `players.title` / `teams.title` and the `countPhrase` idiom the Hub already ships, singular-aware |
+
 ## Requirements traceability
 
 | Requirement | Where specified |
@@ -385,3 +807,11 @@ Two of the five rows below mint nothing and exist to RECORD that nothing was min
 | FR-32 Per-term policy | i18n & Terminology table |
 | FR-33 Static export | Foundation, IA |
 | FR-34 Per-route bundles, client-side dynamism | Foundation, State Patterns (cold load), Component Patterns (sorting/comparison) |
+| FR-39 Home page refactor | The Landing Page, IA (route table, route-count consequences, performance guard), Responsive (badge grid), UJ-0 |
+| FR-40 Navigation menu + deep-linking | Navigation (UX-DR24), Deep-Link Fragment Grammar, Component Patterns (navigation menu), Responsive (header composition), UJ-0 |
+| NFR-11 Performance guard | IA → Performance guard (floor follows content: `/tournament` = 68 inherited; `/`, `/tops`, `/players` record their own D4 medians) |
+| UX-DR24 Nav ruling (supersedes UX-DR4's "no primary nav") | Navigation — the re-ruling, the 237 → 354 px width arithmetic, and the price it pays |
+| Ledger L1553 / L1886 | Deep-Link Fragment Grammar |
+| Ledger L1465 | Responsive → The Expert table at 390 px |
+| Header height token (2.4.7) | Accessibility Floor, Deep-Link Fragment Grammar, DESIGN.md → Layout & Spacing |
+| New locale namespaces (`landing.*`, `nav.*`, `players.*`, `teams.*`) | i18n & Terminology → Story 3.7 rows |

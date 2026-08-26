@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wc-stats — Navegación: hoja a 320 px, reflujo a 195 px, enlaces en línea a ≥lg</title>
+<style>
+/* ============================================================
+   MOCK: Navigation (UX-DR24) — three frames, one file
+     A · sheet open at 320 px  · dark · ES
+     B · header reflow at 195 px (390 px device at 200% zoom) · dark · ES
+     C · inline nav at >=xl (1280 px) · dark · ES
+   Ruled by story 3.7, 2026-08-26.
+
+   Spine sections governing this screen
+   ------------------------------------
+   EXPERIENCE.md
+   - Navigation: one destination set, two presentations; the width
+     arithmetic (237 min-content -> 354 wrap threshold); the stated price;
+     >=lg inline threshold + ruled fallback; sheet geometry; keyboard model;
+     "not a role=menu"; aria-current; prefers-reduced-motion
+   - Component Patterns: Site header (re-ruled), Navigation menu
+   - Responsive & Platform: Site header composition row
+   DESIGN.md
+   - Components: nav-menu, site-header (re-ruled)
+   - Do's and Don'ts: "Let the <lg header shrink"; "no fifth element"
+
+   WHAT THIS MOCK IS EVIDENCE FOR
+   - Frame A: nine destinations + search + ES|EN + theme all fit one
+     content-driven sheet at 320 px in Spanish, with 44 px targets.
+   - Frame B: at 195 px the header still wraps to the SAME two rows story
+     3.6 measured. Adding the trigger did not add a third row, because the
+     trigger REPLACED three controls rather than joining them.
+   - Frame C: what the >=xl row actually has to hold. lg was MEASURED AND
+     REJECTED: usable measure at 1024 is 976px (viewport minus two 24px
+     gutters) against ~1,060-1,080px of content, and because the header
+     search ships as `min-w-0 flex-1` the failure is a SILENTLY COLLAPSING
+     INPUT rather than a visible overflow. xl clears by ~150px.
+   ============================================================ */
+:root{
+  --surface-base:#0E1114; --surface-raised:#171B1F; --surface-overlay:#1F252B;
+  --ink-primary:#F2F5F7; --ink-secondary:#A7B0B8; --ink-muted:#6B757F;
+  --hairline:#2A3138;
+  --lime:#C3F53C; --lime-ink:#131A02; --cyan:#3DDBE8;
+  --font-display:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{color-scheme:dark}
+body{background:#07090B;font-family:var(--font-ui);color:var(--ink-primary);padding:28px 16px 64px}
+
+.framelabel{margin:0 auto 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-secondary)}
+.frame{margin:0 auto;background:var(--surface-base);border:1px solid var(--hairline);
+  border-radius:14px;overflow:hidden;position:relative}
+.note{margin:14px auto 0;font-size:12px;line-height:1.6;color:var(--ink-secondary);
+  border-left:2px solid var(--hairline);padding-left:10px}
+.note b{color:var(--ink-primary)}
+.rule{margin:34px auto;height:1px;background:var(--hairline);max-width:1280px}
+
+/* shared header bits */
+.hrow{display:flex;flex-wrap:wrap;align-items:center;gap:12px;min-height:56px;padding:0 16px;
+  border-bottom:1px solid var(--hairline);background:var(--surface-base)}
+.ident{display:flex;flex-direction:column;justify-content:center;min-width:0}
+.wordmark{font-size:17px;font-weight:600;line-height:1.35;color:var(--ink-primary);
+  min-height:44px;display:flex;align-items:center;text-decoration:none}
+.sig{font-size:12px;line-height:1.35;color:var(--ink-secondary)}
+.spacer{flex:1 1 auto;min-width:0}
+.tgt{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--hairline);
+  border-radius:8px;background:transparent;color:var(--ink-secondary);cursor:pointer;flex:none}
+.tgt svg{width:20px;height:20px}
+.tgt[aria-expanded="true"]{color:var(--ink-primary);border-color:var(--ink-secondary)}
+
+/* ---------- FRAME A · sheet at 320 ---------- */
+.w320{width:320px}
+.body-dim{padding:20px 16px;color:var(--ink-muted);font-size:12px}
+/* Sheet: full-WIDTH (386 capped to viewport), top:0, content-driven height.
+   NOT full-screen — the page stays visible beneath it. */
+.sheet{position:absolute;top:0;left:0;width:100%;max-width:386px;background:var(--surface-overlay);
+  border-bottom:1px solid var(--hairline);border-radius:0 0 10px 10px;padding:8px 0 12px}
+.sheet-top{display:flex;align-items:center;gap:8px;padding:4px 12px 10px}
+.searchbox{flex:1 1 auto;min-width:0;height:44px;border:1px solid var(--hairline);border-radius:8px;
+  background:var(--surface-base);display:flex;align-items:center;padding:0 12px;
+  color:var(--ink-secondary);font-size:15px}
+nav ul{list-style:none}
+nav a{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;font-size:15px;
+  line-height:1.55;color:var(--ink-primary);text-decoration:none;border-top:1px solid var(--hairline)}
+nav a .mark{width:3px;height:18px;border-radius:2px;background:transparent;flex:none}
+/* current route: lime marker AND a weight change — never the color alone. */
+nav a[aria-current="page"]{font-weight:600}
+nav a[aria-current="page"] .mark{background:var(--lime)}
+.sheet-foot{display:flex;align-items:center;gap:10px;padding:12px 16px 2px;margin-top:6px;
+  border-top:1px solid var(--hairline)}
+.seg{display:flex;border:1px solid var(--hairline);border-radius:999px;padding:2px}
+.seg span{min-width:44px;min-height:40px;display:grid;place-items:center;border-radius:999px;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-secondary)}
+.seg span.on{background:var(--lime);color:var(--lime-ink)}
+
+/* ---------- FRAME B · 195 ---------- */
+.w195{width:195px}
+
+/* ---------- FRAME C · >=lg ---------- */
+.w1024{width:1280px;max-width:100%}
+.inlinenav{display:flex;align-items:center;gap:14px;flex:0 1 auto;min-width:0}
+.inlinenav a{font-size:15px;line-height:1.55;color:var(--ink-primary);text-decoration:none;
+  white-space:nowrap;min-height:44px;display:flex;align-items:center}
+.inlinenav a[aria-current="page"]{font-weight:600;text-decoration:underline;text-underline-offset:5px}
+.searchinline{flex:1 1 190px;min-width:0;max-width:260px;height:40px;border:1px solid var(--hairline);border-radius:8px;
+  background:var(--surface-raised);display:flex;align-items:center;padding:0 12px;
+  color:var(--ink-secondary);font-size:15px;flex:none}
+.measure{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--ink-secondary)}
+.measure b{color:var(--ink-primary)}
+table.m{border-collapse:collapse;margin-top:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+table.m td,table.m th{border:1px solid var(--hairline);padding:3px 8px;text-align:left;color:var(--ink-secondary)}
+table.m th{color:var(--ink-primary)}
+</style>
+</head>
+<body>
+
+<!-- ================= FRAME A ================= -->
+<div class="framelabel w320" style="width:320px">A · Hoja abierta · 320 px · oscuro · ES</div>
+<div class="frame w320">
+  <div class="hrow">
+    <div class="ident">
+      <a class="wordmark" href="/">WC Stats</a>
+      <span class="sig">Por Juan Camilo Rojas</span>
+    </div>
+    <div class="spacer"></div>
+    <button class="tgt" aria-expanded="true" aria-controls="navsheet" aria-label="Menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="body-dim">La página sigue visible debajo. La hoja no es de pantalla completa.</div>
+
+  <div class="sheet" id="navsheet" role="region" aria-label="Menú">
+    <div class="sheet-top">
+      <div class="searchbox">Buscar jugador, equipo o partido</div>
+      <button class="tgt" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <nav aria-label="Principal">
+      <ul>
+        <li><a href="/" aria-current="page"><span class="mark"></span>Inicio</a></li>
+        <li><a href="/compare"><span class="mark"></span>Comparar</a></li>
+        <li><a href="/tournament"><span class="mark"></span>Torneo</a></li>
+        <li><a href="/tournament#results"><span class="mark"></span>Partidos</a></li>
+        <li><a href="/tops"><span class="mark"></span>Líderes</a></li>
+        <li><a href="/players"><span class="mark"></span>Jugadores</a></li>
+        <li><a href="/teams"><span class="mark"></span>Equipos</a></li>
+        <li><a href="/glossary"><span class="mark"></span>Glosario</a></li>
+        <li><a href="/about"><span class="mark"></span>Acerca de</a></li>
+      </ul>
+    </nav>
+    <div class="sheet-foot">
+      <div class="seg"><span class="on">ES</span><span>EN</span></div>
+      <div class="spacer"></div>
+      <button class="tgt" aria-label="Cambiar tema" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="note" style="max-width:520px">
+  <b>Geometría de la hoja</b>: ancho completo con tope de 386 px, <code>top: 0</code>, alto guiado por
+  el contenido. <b>No</b> de pantalla completa — esa distinción ya se corrigió una vez (2.19 tarea 7.7,
+  ledger A22/L2945): una hoja de pantalla completa necesitaría una trampa de foco sobre todo el
+  viewport y ocultaría la página detrás.<br>
+  <b>No es <code>role="menu"</code></b>: son enlaces a páginas, no comandos. Un <code>role="menu"</code>
+  impondría navegación solo con flechas y rompería el modelo de tabulación en orden de lectura de
+  UX-DR15.<br>
+  <b>Ruta actual</b>: marca lima <i>y</i> cambio de peso. Nunca solo el color.<br>
+  <b>Los controles de idioma y tema van al pie de la hoja</b>, bajo un filete, separados de los
+  destinos. Ese es el precio declarado del re-ruling: en teléfono pasan de un toque a dos.
+</div>
+
+<div class="rule"></div>
+
+<!-- ================= FRAME B ================= -->
+<div class="framelabel" style="width:195px">B · Reflujo · 195 px (390 px al 200%) · ES</div>
+<div class="frame w195">
+  <div class="hrow">
+    <div class="ident">
+      <a class="wordmark" href="/">WC Stats</a>
+      <span class="sig">Por Juan Camilo Rojas</span>
+    </div>
+    <div class="spacer"></div>
+    <button class="tgt" aria-expanded="false" aria-controls="navsheet2" aria-label="Menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+  <div class="body-dim">Sin desbordamiento del documento.</div>
+</div>
+
+<div class="note" style="max-width:520px">
+  <b>Esto es lo que hay que volver a medir, no lo que hay que suponer.</b> La matriz R2/D8
+  (320 / 390 / 195 px × oscuro/claro × es/en × todas las rutas) se vuelve a correr cuando la
+  navegación aterrice, sobre la misma base en que 3.6 la volvió a correr — nunca razonando desde la
+  línea base anterior a la firma.<br>
+  <b>La afirmación que este marco pone a prueba</b>: el disparador <i>reemplaza</i> tres controles en
+  lugar de sumarse a ellos, así que la fila no gana una tercera línea. Si al medirla la gana, la
+  regla de respaldo está escrita en EXPERIENCE.md → Navigation.<br>
+  <b>Defecto conocido que sigue abierto</b>: a anchos envueltos el encabezado pegajoso supera
+  <code>scroll-padding-top: 4.5rem</code> (72 px), así que un encabezado anclado queda alto. Esta
+  composición lo <i>reduce</i> respecto de añadir un quinto elemento, pero no lo cierra.
+</div>
+
+<div class="rule"></div>
+
+<!-- ================= FRAME C ================= -->
+<div class="framelabel" style="max-width:1280px">C · Enlaces en línea · ≥xl (1280 px) · oscuro · ES</div>
+<div class="frame w1024">
+  <div class="hrow">
+    <div class="ident">
+      <a class="wordmark" href="/">WC Stats</a>
+      <span class="sig">Por Juan Camilo Rojas</span>
+    </div>
+    <div class="inlinenav">
+      <a href="/" aria-current="page">Inicio</a>
+      <a href="/compare">Comparar</a>
+      <a href="/tournament">Torneo</a>
+      <a href="/tournament#results">Partidos</a>
+      <a href="/tops">Líderes</a>
+      <a href="/players">Jugadores</a>
+      <a href="/teams">Equipos</a>
+      <a href="/glossary">Glosario</a>
+      <a href="/about">Acerca de</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="searchinline">Buscar…</div>
+    <div class="seg"><span class="on">ES</span><span>EN</span></div>
+    <button class="tgt" aria-label="Cambiar tema" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"/></svg>
+    </button>
+  </div>
+  <div class="body-dim">Sin disparador a este ancho. La navegación está a la vista.</div>
+</div>
+
+<div class="note" style="max-width:1280px">
+  <b>Este es el marco que pone a prueba la SUPOSICIÓN, y es el que puede fallar.</b> El umbral en
+  línea está fijado en <code>lg</code> (1024 px) a partir de una estimación a la escala tipográfica
+  enviada: nueve destinos en español ≈ 1.010 px junto con la identidad, la búsqueda, ES|EN y el tema.
+  El margen es estrecho a propósito y por eso existe este marco.
+  <table class="m">
+    <tr><th>Elemento</th><th>≈ ancho</th></tr>
+    <tr><td>identidad (marca + firma)</td><td>127</td></tr>
+    <tr><td>9 enlaces ES + 8 espacios</td><td>~552</td></tr>
+    <tr><td>búsqueda en línea</td><td>190</td></tr>
+    <tr><td>ES|EN</td><td>~96</td></tr>
+    <tr><td>tema</td><td>44</td></tr>
+    <tr><th>total con espacios y canaletas</th><th>~1.010</th></tr>
+  </table>
+  <br>
+  <b>Regla de respaldo, ya escrita</b>: si al medirla no entra, <i>Glosario</i> y <i>Acerca de</i>
+  bajan primero a un disparador de desbordamiento — los dos están también en el pie, así que ninguno
+  queda inalcanzable.<br>
+  <b>Inglés no es el caso difícil.</b> Las etiquetas en español corren ~20-30 % más largas; si entra
+  en español, entra en inglés.
+</div>
+
+</body>
+</html>
