@@ -70,26 +70,53 @@ const APP_DIR = path.join(process.cwd(), "src", "app");
 export const dynamic = "force-static";
 
 /*
- * Segment kinds whose URL is NOT the directory name appended verbatim:
- * route groups `(x)` contribute no path segment, parallel slots `@x` render
- * into another route, and `_x` is private and never routable. None exists in
- * this tree today. Rather than guess a mapping for one that appears later,
- * this THROWS — a build that stops with a message naming the directory is the
- * correct outcome when the alternative is silently publishing a `<loc>` that
- * 404s, which is the failure this whole story exists to prevent.
+ * Segment kinds whose URL is NOT the directory name appended verbatim: route
+ * groups `(x)` contribute no path segment, and parallel slots `@x` render into
+ * another route. Neither exists in this tree today. Rather than guess a mapping
+ * for one that appears later, this THROWS — a build that stops with a message
+ * naming the directory is the correct outcome when the alternative is silently
+ * publishing a `<loc>` that 404s, which is the failure this whole story exists
+ * to prevent.
+ *
+ * `_private` FOLDERS ARE NOT IN THIS SET, AND MUST NOT BE (code review
+ * 2026-08-26). It shipped throwing on them too, which reads symmetrical and is
+ * not. Next's private-folder convention opts a directory AND ALL ITS CHILDREN
+ * out of routing entirely, so such a folder has no URL to map and can never
+ * produce a `<loc>` — there is no 404 to trade against, which is the entire
+ * justification for the throw above. Throwing on it instead broke `next build`
+ * during "Collecting page data" for `src/app/_components/`, a supported
+ * colocation pattern. The walk skips them, which is what "never routable"
+ * means.
  */
 function assertPlainSegment(name: string): void {
-  if (name.startsWith("(") || name.startsWith("@") || name.startsWith("_")) {
+  if (name.startsWith("(") || name.startsWith("@")) {
     throw new Error(
-      `sitemap: src/app/${name} is a route group, parallel slot or private folder, ` +
-        `whose URL is not its directory name. Teach this walk how to map it before adding it.`
+      `sitemap: src/app/${name} is a route group or parallel slot, whose URL is not its ` +
+        `directory name. Teach this walk how to map it before adding it.`
     );
   }
 }
 
+/*
+ * Every extension Next accepts as a page under the default `pageExtensions`
+ * (unset in `next.config.ts`). It shipped as `name === "page.tsx"` (code review
+ * 2026-08-26): a route added as `page.ts` or `page.jsx` was silently absent
+ * from the sitemap, which is the precise failure mode this module's whole
+ * architecture exists to make impossible — and it was silent, while a merely
+ * ambiguous DIRECTORY NAME stops the build outright above.
+ */
+const PAGE_FILE = /^page\.(tsx|ts|jsx|js|mdx)$/;
+
 /**
- * Every non-dynamic route path, discovered by walking `src/app` for
- * directories that hold a `page.tsx`.
+ * Every non-dynamic route path NOT NESTED BENEATH A DYNAMIC ONE, discovered by
+ * walking `src/app` for directories that hold a page file.
+ *
+ * That qualifier is load-bearing and was missing from this docblock until the
+ * 2026-08-26 code review: bracketed segments are skipped BEFORE recursing, so a
+ * route like `teams/[slug]/squad/page.tsx` would not be found. None exists
+ * today, and the fix is not a one-liner — such a route has to be expanded once
+ * per manifest entity, a mapping this story did not rule — so it is filed in
+ * `deferred-work.md` rather than guessed at here.
  *
  * Bracketed segments are skipped: the three dynamic routes are covered by the
  * manifest map above and enumerating them from the tree would double them.
@@ -101,11 +128,12 @@ function discoverStaticRoutes(): string[] {
 
   function walk(directory: string, routePath: string): void {
     const entries = readdirSync(directory, { withFileTypes: true });
-    if (entries.some((entry) => entry.isFile() && entry.name === "page.tsx")) {
+    if (entries.some((entry) => entry.isFile() && PAGE_FILE.test(entry.name))) {
       routes.push(routePath);
     }
     for (const entry of entries) {
-      if (!entry.isDirectory() || entry.name.startsWith("[")) {
+      // `_private` is skipped, not thrown on — see `assertPlainSegment`.
+      if (!entry.isDirectory() || entry.name.startsWith("[") || entry.name.startsWith("_")) {
         continue;
       }
       assertPlainSegment(entry.name);
@@ -121,10 +149,19 @@ function discoverStaticRoutes(): string[] {
    * missing ones, which is exactly the shape nobody notices. Fail loud.
    */
   if (routes.length === 0) {
-    throw new Error(`sitemap: no page.tsx found under ${APP_DIR}; the route walk resolved nowhere.`);
+    throw new Error(`sitemap: no page file found under ${APP_DIR}; the route walk resolved nowhere.`);
   }
 
-  return routes;
+  /*
+   * SORTED, because `readdirSync` order is not a guarantee (code review
+   * 2026-08-26). The docblock above cites Story 2.19's byte-identical build as
+   * a reason to omit `lastModified`, then shipped these four entries in
+   * filesystem enumeration order — NTFS locally and ext4 on Netlify need not
+   * agree, so `out/sitemap.xml` could differ byte-for-byte between a local
+   * build and the deploy for reasons unrelated to content. Every test that
+   * could have caught it sorts first.
+   */
+  return routes.sort();
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -47,11 +47,41 @@ const anyBuilt = existsSync(OUT_DIR);
 const entries = sitemap();
 const urls = entries.map((entry) => entry.url);
 
-/** Ids under one route prefix, as the sitemap lists them. Sorted. */
+/** The three route prefixes whose members come from the manifest. */
+const ENTITY_PREFIXES = ["matches", "players", "teams"];
+
+/**
+ * Is this `<loc>` one of the manifest-derived entity URLs?
+ *
+ * BOTH HALVES MATTER, and a first-segment test alone is the bug (code review
+ * 2026-08-26). Story 3.9 mints `/players/` and `/teams/` INDEX routes, whose
+ * first segment is an entity prefix but which are static routes from the tree
+ * walk, not manifest entries. Classifying on the prefix alone would count them
+ * as entities and put the entity total one above the manifest on the day 3.9
+ * lands — breaking, from the other side, the same "no edit here" promise the
+ * empty-id defect broke.
+ */
+function isEntityUrl(url: string): boolean {
+  const [prefix, id] = url.slice(`${SITE_ORIGIN}/`.length).split("/");
+  return ENTITY_PREFIXES.includes(prefix) && id !== undefined && id !== "";
+}
+
+/**
+ * Ids under one route prefix, as the sitemap lists them. Sorted.
+ *
+ * `url !== head` IS LOAD-BEARING, and its absence was a real defect (code
+ * review 2026-08-26). Story 3.9 mints `/players/` and `/teams/` INDEX routes —
+ * two of the four routes `sitemap.ts` promises to pick up with no edit here.
+ * `"…/players/".startsWith("…/players/")` is true, so the index route matched
+ * its own prefix, sliced to `""`, and injected an empty id into this set. The
+ * bijection then failed on a CORRECT sitemap, reporting `ABSENT from the
+ * manifest: ` with an empty offender name — from the function below written to
+ * name offenders. The guard broke exactly the promise the module keeps.
+ */
 function sitemapIds(prefix: string): string[] {
   const head = `${SITE_ORIGIN}/${prefix}/`;
   return urls
-    .filter((url) => url.startsWith(head))
+    .filter((url) => url.startsWith(head) && url !== head)
     .map((url) => url.slice(head.length).replace(/\/$/, ""))
     .sort();
 }
@@ -104,18 +134,84 @@ describe("every manifest entity has exactly one <loc>, and every entity <loc> ha
   });
 
   /*
-   * The counts, asserted SEPARATELY from the id sets. The set assertions above
-   * would catch a drop too, but this one states the story's D7 arithmetic in
-   * the failure message: 104 + 1,248 + 48 entities + the tree-walked static
-   * routes. It is written against the manifest's own lengths, never against a
-   * literal — the corpus grows and this must follow it without an edit.
+   * THE ONE THING BETWEEN THIS SITEMAP AND A MALFORMED XML DOCUMENT (code
+   * review 2026-08-26).
+   *
+   * Next does NOT escape `<loc>`: `resolve-route-data.js` appends
+   * `<loc>${item.url}</loc>` raw, and `sitemap.ts` interpolates manifest ids
+   * raw in turn. ONE id carrying `&`, `<` or `"` makes `out/sitemap.xml`
+   * ill-formed, and a crawler rejects the WHOLE DOCUMENT — all 1,404 URLs, not
+   * just the offender.
+   *
+   * Every other layer is blind to it: Layer 3's `<loc>([^<]+)</loc>` capture
+   * takes the raw string happily, it matches the module's own entry, and
+   * `existsSync` finds the directory the exporter wrote under the same raw
+   * name. So the guard built to catch a `<loc>` that 404s cannot see a `<loc>`
+   * that poisons the file.
+   *
+   * The pattern is the contract's own (`contract/common.schema.json`), which
+   * until now the app never ran — it is enforced pipeline-side only. All 1,400
+   * current ids pass, so this is latent; the corpus is Spanish proper nouns and
+   * one accented or ampersanded id is all it takes.
+   */
+  it("lists only ids that are safe to interpolate into XML unescaped", () => {
+    const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+    const offenders = [
+      ...entities.matches.map((match) => match.matchId),
+      ...entities.players.map((player) => player.playerId),
+      ...entities.teams.map((team) => team.teamId),
+    ].filter((id) => !SLUG.test(id));
+    expect(
+      offenders,
+      `id is not a bare slug and Next does not escape <loc>: ${offenders.slice(0, 10).join(", ")}`
+    ).toEqual([]);
+  });
+
+  /*
+   * The counts, asserted SEPARATELY from the id sets, and REPAIRED on
+   * 2026-08-26 — this case shipped unable to fail.
+   *
+   * It read:
+   *     const staticCount = urls.length - entityCount;
+   *     expect(urls.length).toBe(entityCount + staticCount);
+   * which reduces to `x === y + (x - y)`: true for every input that has ever
+   * existed or ever could. The only live assertion was `staticCount > 0`, which
+   * Layer 2's floor already covers, while the docblock claimed it "states the
+   * story's D7 arithmetic … written against the manifest's own lengths." It was
+   * written against its own subtraction, and the test name's "and nothing else"
+   * was checked by nothing.
+   *
+   * THE STORY'S OWN RED EVIDENCE PROVES IT WAS INERT. At 6.1 (a player sliced
+   * out of the sitemap) and 6.2 (a phantom player appended) the notes record
+   * `Tests 2 failed | 18 passed (20)` — this case was green through BOTH
+   * directions of the exact defect it names. That is the Epic 2 retrospective's
+   * highest-priority systemic finding, reached again.
+   *
+   * WHAT IT NOW ASSERTS, AND WHAT IT DELIBERATELY DOES NOT. The entity side is
+   * counted against the MANIFEST'S own lengths — genuinely independent of the
+   * sitemap, and red in both directions (a dropped entity and a phantom both
+   * move this number). The static side is NOT independently counted here, and
+   * re-walking `src/app` to check it would rebuild the exact self-against-self
+   * shape the header rejects: the module's output graded by the module's own
+   * function. Layer 3 grades the static routes against the EMITTED EXPORT,
+   * which is the only ground truth that is not this walk. Saying so is better
+   * than an assertion that looks independent and is not — which is how this
+   * case came to ship inert in the first place.
    */
   it("lists every entity plus the static routes, and nothing else", () => {
     const entityCount =
       entities.matches.length + entities.players.length + entities.teams.length;
-    const staticCount = urls.length - entityCount;
-    expect(staticCount, "the tree walk contributed no static routes").toBeGreaterThan(0);
-    expect(urls.length).toBe(entityCount + staticCount);
+
+    const listedEntityUrls = urls.filter(isEntityUrl);
+    const listedStaticUrls = urls.filter((url) => !isEntityUrl(url));
+
+    expect(
+      listedEntityUrls.length,
+      `entity <loc> count disagrees with the manifest: ${listedEntityUrls.length} listed, ` +
+        `${entityCount} in entities.matches/.players/.teams`
+    ).toBe(entityCount);
+
+    expect(listedStaticUrls.length, "the tree walk contributed no static routes").toBeGreaterThan(0);
   });
 });
 
@@ -162,27 +258,39 @@ describe("every <loc> is absolute, self-origin and trailing-slashed (AC3, AC4)",
     ).toEqual([]);
   });
 
+  /*
+   * THE BOUNDARY `/` IS THE WHOLE ASSERTION (code review 2026-08-26). This
+   * shipped matching the prefix `${SITE_ORIGIN}/compare` with no delimiter, so
+   * a future sibling route — `/comparisons/`, `/compare-teams/` — would be
+   * reported as a "parameterized /compare variant" and AC4 would go red on
+   * correct output. Same missing-boundary class that
+   * `assert-no-external-origins.mjs` devotes a paragraph to
+   * (`<origin>.evil.com` against a plain prefix), in a file that cites that
+   * gate as its precedent.
+   */
   it("lists /compare bare and in no other variant (AC4)", () => {
-    expect(urls).toContain(`${SITE_ORIGIN}/compare/`);
-    const variants = urls.filter(
-      (url) => url.startsWith(`${SITE_ORIGIN}/compare`) && url !== `${SITE_ORIGIN}/compare/`
-    );
+    const bare = `${SITE_ORIGIN}/compare/`;
+    expect(urls).toContain(bare);
+    const variants = urls.filter((url) => url.startsWith(bare) && url !== bare);
     expect(variants, `parameterized /compare variant: ${variants.join(", ")}`).toEqual([]);
   });
 
   it("discovers the static routes from the tree, including the ones 3.9 has not shipped", () => {
-    const entityPrefixes = ["matches", "players", "teams"];
-    const staticUrls = urls.filter((url) => {
-      const segment = url.slice(`${SITE_ORIGIN}/`.length).split("/")[0];
-      return !entityPrefixes.includes(segment);
-    });
-    // Asserted as a floor, not a literal four: story 3.9 adds four more and
-    // this file must not need an edit when it does.
-    expect(
-      staticUrls.length,
-      `the src/app walk found ${staticUrls.length} static routes: ${staticUrls.join(", ")}`
-    ).toBeGreaterThanOrEqual(4);
-    expect(staticUrls).toContain(`${SITE_ORIGIN}/`);
+    const staticUrls = urls.filter((url) => !isEntityUrl(url));
+    /*
+     * A FLOOR DERIVED FROM THE TREE, not the literal four this shipped with.
+     * `:110` states the rule the literal broke — "never against a literal; the
+     * corpus grows and this must follow it without an edit" — and a floor of
+     * `4` is exactly the edit story 3.9 would have to remember to make. The
+     * four routes named below are the ones that exist today and must never
+     * silently vanish; 3.9's arrive as additions and need no change here.
+     */
+    for (const route of ["/", "/about/", "/compare/", "/glossary/"]) {
+      expect(
+        staticUrls,
+        `the src/app walk lost ${route}; it found: ${staticUrls.join(", ")}`
+      ).toContain(`${SITE_ORIGIN}${route}`);
+    }
   });
 });
 
@@ -203,10 +311,20 @@ function emittedRoutePaths(): string[] {
       if (!entry.isDirectory()) {
         continue;
       }
-      // `_next` is the chunk store and `data` is the copied artifact tree;
-      // neither is a route. `404` and `_not-found` are routes, and are
-      // correctly absent from a sitemap.
-      if (["_next", "data", "404", "_not-found"].includes(entry.name)) {
+      /*
+       * `_next` is the chunk store and `data` is the copied artifact tree;
+       * neither is a route. `404` and `_not-found` are routes, and are
+       * correctly absent from a sitemap.
+       *
+       * AT THE ROOT ONLY (code review 2026-08-26). This shipped matching the
+       * four names at EVERY depth, while each justification above is about
+       * their meaning at the export root — none holds below it. A future
+       * `/tops/data/` route, or an entity slug of `404` (the contract's slug
+       * pattern admits both), would be invisible to this walk and therefore
+       * exempt from the "every emitted page is listed" direction, silently
+       * narrowing the half of AC5's bijection that catches an unlisted page.
+       */
+      if (routePath === "/" && ["_next", "data", "404", "_not-found"].includes(entry.name)) {
         continue;
       }
       walk(path.join(directory, entry.name), `${routePath}${entry.name}/`);
@@ -240,8 +358,18 @@ describe.skipIf(!anyBuilt)("every <loc> resolves to a real page, and every page 
       )
     : [];
 
+  /*
+   * The floor is `urls.length`, DERIVED, not the literal `1400` this shipped
+   * with (code review 2026-08-26). `:110` states the rule: "written against the
+   * manifest's own lengths, never against a literal — the corpus grows and this
+   * must follow it without an edit." A literal floor also never tightens, so a
+   * 1,401-entry export against a 1,404-entity manifest passed it; and
+   * `build-data.ts` documents that `DATA_ROOT` resolved to `../data/fixtures`
+   * before the 2.19 cutover, a corpus far below 1,400 — running the suite in
+   * that mode failed on the literal rather than on substance.
+   */
   it("serialises every entry the module returned", () => {
-    expect(emittedLocs.length, "no <loc> parsed out of out/sitemap.xml").toBeGreaterThan(1400);
+    expect(emittedLocs.length, "no <loc> parsed out of out/sitemap.xml").toBe(urls.length);
     expect(emittedLocs.slice().sort()).toEqual(urls.slice().sort());
   });
 
@@ -263,7 +391,16 @@ describe.skipIf(!anyBuilt)("every <loc> resolves to a real page, and every page 
       unlisted,
       `emitted by the build but missing from the sitemap: ${unlisted.slice(0, 10).join(", ")}`
     ).toEqual([]);
-    expect(emitted.length, "the export walk found no routes at all").toBeGreaterThan(1400);
+    /*
+     * Derived, not the literal `1400` this shipped with — see the note above.
+     * A floor rather than an equality: the `unlisted` assertion immediately
+     * above is the real bijection in this direction, and it already fails on
+     * any emitted route the sitemap omits. This exists so that "the walk found
+     * nothing at all" cannot report green, which is the 6.6 skip-guard case.
+     */
+    expect(emitted.length, "the export walk found no routes at all").toBeGreaterThanOrEqual(
+      urls.length
+    );
   });
 });
 
@@ -286,24 +423,111 @@ describe.skipIf(!anyBuilt)("robots.txt points at the sitemap and blocks nothing 
     expect(lines[0].replace(/^Sitemap:\s*/, "")).toBe(`${SITE_ORIGIN}/sitemap.xml`);
   });
 
+  /*
+   * ANCHORED, AND THE ANCHOR IS THE ASSERTION (code review 2026-08-26).
+   *
+   * This shipped as `expect(text).toMatch(/Allow:\s*\//i)` — unanchored and
+   * case-insensitive, so the string `"Disallow: /"` CONTAINS `"allow: /"` and
+   * satisfies it. Verified: `/Allow:\s*\//i.test("User-Agent: *\nDisallow: /")`
+   * is `true`. The one assertion written to prove AC7's "allow everything"
+   * passed on a robots.txt that blocks the entire site from every crawler.
+   *
+   * It was masked by the no-`Disallow` case below, which means the two were
+   * never the independent checks the layer's shape implies — remove or weaken
+   * that one and this would have been the only thing standing between a
+   * site-wide block and a green suite.
+   */
   it("allows every user agent", () => {
-    expect(text).toMatch(/User-Agent:\s*\*/i);
-    expect(text).toMatch(/Allow:\s*\//i);
+    expect(text).toMatch(/^User-Agent:\s*\*$/im);
+    expect(text).toMatch(/^Allow:\s*\/$/im);
   });
 
   /*
-   * D6: blocking /data/ would stop Googlebot's renderer fetching the artifacts
-   * every route needs, stripping the rendered pages of their content. The
-   * absence is a RULING, so something has to fail on its return.
+   * D6, NARROWED TO `/data/` ON 2026-08-26 (was: no `Disallow` at all).
+   *
+   * Blocking `/data/` would stop Googlebot's renderer fetching the artifacts
+   * every route needs, stripping ~1,400 rendered pages of their content. That
+   * is the ruling, it is about `/data/`, and something has to fail on its
+   * return. What it is NOT is a ban on every `Disallow` line: the export also
+   * ships 11,235 crawlable `.txt` RSC payloads that no rendering argument
+   * covers, and the absolute form made addressing them a test-breaking change.
+   * See `robots.ts`'s docblock.
    */
-  it("carries no Disallow at all, least of all /data/ (D6)", () => {
-    const disallows = text.split(/\r?\n/).filter((line) => /^Disallow:/i.test(line));
-    expect(disallows, `robots.txt blocks something: ${disallows.join(" | ")}`).toEqual([]);
+  it("blocks nothing under /data/, whatever else it may block (D6)", () => {
+    const blocked = text
+      .split(/\r?\n/)
+      .filter((line) => /^Disallow:/i.test(line))
+      .map((line) => line.replace(/^Disallow:\s*/i, ""))
+      .filter((pattern) => pattern !== "" && "/data/".startsWith(pattern.replace(/\*$/, "")));
+    expect(
+      blocked,
+      `robots.txt blocks the artifacts every route fetches: ${blocked.join(" | ")}`
+    ).toEqual([]);
   });
 
   it("returns the same rules from the module as the export carries", () => {
     const rules = robots().rules;
-    expect(Array.isArray(rules)).toBe(false);
+    expect(Array.isArray(rules), "rules became an array; the export parse below assumes one").toBe(
+      false
+    );
+    const single = rules as { userAgent?: string | string[]; allow?: string | string[] };
+    // The module's own values, then the SAME values read back out of the
+    // emitted file — which is what this test's name has always claimed and
+    // what it did not do until 2026-08-26: it read `robots()` twice and never
+    // touched `text`.
+    expect(single.userAgent).toBe("*");
+    expect(single.allow).toBe("/");
+    expect(text).toMatch(new RegExp(`^User-Agent:\\s*\\*$`, "im"));
+    expect(text).toMatch(new RegExp(`^Allow:\\s*${single.allow}$`, "im"));
+    expect(robots().sitemap).toBe(`${SITE_ORIGIN}/sitemap.xml`);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Layer 4a — robots.ts with NO BUILD. Added by the 2026-08-26 code review.
+// ---------------------------------------------------------------------------
+
+/*
+ * AC7 DEMANDS A PIN, AND UNTIL NOW THE PIN ONLY FIRED AFTER A REBUILD.
+ *
+ * Every assertion in Layer 4 grades `out/robots.txt` behind
+ * `describe.skipIf(!anyBuilt)`. Nothing in this repo makes a build precede the
+ * suite: `package.json` `"test"` is a bare `vitest run`, `"build"` runs no
+ * tests, there is no `.github/`, and `netlify.toml` runs `npm run build` alone
+ * at deploy. So adding `disallow: "/data/"` to `robots.ts` and running
+ * `npm test` left the on-disk export untouched and the suite green — the
+ * story's own 6.5 red required a manual rebuild to fire.
+ *
+ * AC7's words are "A test pins the absence, because 'we left it out' is not a
+ * property until something fails on its return." A pin conditional on a
+ * freshness nothing enforces is not that. This block grades the MODULE, the
+ * way Layers 1 and 2 grade the sitemap with no build.
+ */
+describe("robots.ts states the D6 ruling with no build (AC7, D6)", () => {
+  const rules = robots().rules as {
+    userAgent?: string | string[];
+    allow?: string | string[];
+    disallow?: string | string[];
+  };
+
+  it("allows every user agent at the root", () => {
+    expect(Array.isArray(robots().rules)).toBe(false);
+    expect(rules.userAgent).toBe("*");
+    expect(rules.allow).toBe("/");
+  });
+
+  it("declares no rule that blocks /data/ (D6)", () => {
+    const patterns = rules.disallow === undefined ? [] : [rules.disallow].flat();
+    const blocking = patterns.filter((pattern) =>
+      "/data/".startsWith(String(pattern).replace(/\*$/, ""))
+    );
+    expect(
+      blocking,
+      `robots.ts blocks the artifacts every route fetches: ${blocking.join(" | ")}`
+    ).toEqual([]);
+  });
+
+  it("points at this story's sitemap, on the site's own origin", () => {
     expect(robots().sitemap).toBe(`${SITE_ORIGIN}/sitemap.xml`);
   });
 });

@@ -6,6 +6,12 @@ baseline_commit: 8750d85f74584c6fe899527db8463fbd9196993b
 
 Status: review
 
+**Code review 2026-08-26: PASSED with 14 patches applied.** All review findings are resolved and the
+chain is green (lint 0, typecheck 0, build exit 0, 60 files / 1,508 tests / 0 skipped). **The ONLY
+thing between this story and `done` is AC8** — the Search Console submission, which is Juan's and
+which no code review can close. Held at `review` deliberately rather than marked done with an unmet
+AC. Five findings are deferred with named owners in `deferred-work.md`.
+
 **Baseline commit sized against:** `8f1c4fc` (`Story 3.5 -> done: full chain verified in a worktree…`).
 Story 3.1's code is committed at `432dc29` + `117311c`; **3.1 itself is at `review`, not `done`, and a
 code-review session is patching `app/scripts/assert-no-external-origins.mjs` and
@@ -767,9 +773,150 @@ Exactly as expected, and nothing else (A4):
 stray 0-byte repo-root file `17` was left unstaged. No new dependency, no contract change, no
 `schemaVersion` change.
 
+### Review Findings (Code Review 2026-08-26)
+
+Three adversarial layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor), all three run to
+completion and cross-verified against the live repo, the emitted `out/` tree, the origin gate and the
+manifest. **2 decision-needed, 12 patch, 5 defer, 3 dismissed.**
+
+Acceptance Auditor confirmed on re-execution: AC1, AC2, AC3, AC4 and AC6 hold as claimed — 1,404
+`<loc>`, both assets flat files, zero origin literals under `app/` outside `site-origin.ts:32`, no
+`.filter`/`.slice`/length literal in `sitemap.ts`, `netlify.toml`/`next.config.ts` untouched, and the
+origin gate reproduces `12686` scanned verbatim. **AC5 and AC7 are the two that do not hold**, and
+the failures below sit in the guard rather than in the shipped sitemap.
+
+**The headline: the story's own red evidence proves one of its gates inert.** At 6.1 (a player
+sliced out) and 6.2 (a phantom player appended) the notes record `Tests 2 failed | 18 passed (20)`.
+The count gate named in Task 5.1 was green through **both** directions of the exact defect it exists
+to catch, because it is an algebraic identity. This is another instance of the systemic finding the
+Epic 2 retrospective ranked highest, and A1 did not catch it because A1 was driven against the
+id-set gates, not this one.
+
+#### Decision needed
+
+- [x] [Review][Decision→Patch] **`http://www.sitemaps.org` is now permanent MENTIONED noise on every clean build, and the gate was deliberately not edited** — `out/sitemap.xml:2` carries `xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"`. `assert-no-external-origins.mjs:177-180`'s `NAMESPACE_ALLOWED` holds only `w3.org` and `schema.org`, and its own docblock defines that list as "every entry is a NON-REQUEST … XML NAMESPACE identifiers … never fetched" — which describes the sitemaps.org URI exactly. AC6 was satisfied causally (6 → 7 MENTIONED proven to be this story's sitemap and nothing else), and AC1 forbade editing the gate, so the dev was right not to act unilaterally. But that gate warns three separate times that "A wrong signal on a green build is how a gate gets switched off." **Options: (a)** add a third `NAMESPACE_ALLOWED` entry for `sitemaps.org` — one line, exactly precedented; **(b)** accept the permanent MENTIONED line and record why, so the next reader does not investigate it; **(c)** defer to whoever next owns the gate.
+- [x] [Review][Decision→Patch] **"THERE IS DELIBERATELY NO `Disallow`. DO NOT ADD ONE" is pinned by a test, and it forecloses a case D6 never argued** — `robots.ts:19-34`, `sitemap.test.ts:299-302`. D6's reasoning is correct **for `/data/`**: Googlebot's renderer fetches those artifacts, so blocking them strips ~1,400 rendered pages of their content. That argument was then generalised to all `Disallow` and locked with an assertion. The export ships **11,235 `.txt` RSC flight payloads outside `out/data` and `out/_next`** (`out/about/index.txt`, `out/about/__next.about.txt`, …) — crawlable, `text/plain`, carrying every page's text, absent from the sitemap, and covered by `Allow: /`. No rendering argument applies to them: they are duplicate-content surface, not content the renderer needs. **Options: (a)** keep the absolute ruling and record that RSC payloads were considered and accepted; **(b)** narrow the ruling and its test to "no `Disallow` that blocks `/data/`", freeing a future story to block `/*.txt$` or `/_next/`; **(c)** file as a deferred SEO question for post-launch measurement.
+
+#### Patch
+
+- [x] [Review][Patch] **HIGH — Story 3.9's `/players` and `/teams` index routes break the Layer 1 bijection, contradicting AC2's central promise** [app/src/app/sitemap.test.ts:52] — all three layers, verified by execution. AC2 rules the sitemap "must pick them up when they appear without an edit here", and `sitemap.ts` is genuinely correct: the walk emits `${SITE_ORIGIN}/players/`. The **guard** is not. `sitemapIds()` builds `head = ${SITE_ORIGIN}/players/`, and the static URL is exactly `head`, so `startsWith` is true, `slice(head.length)` yields `""`, and an empty id enters the sorted set. `expectBijection` then fails with `ABSENT from the manifest: ` — an empty offender name, from the function written at `:59-76` to "NAME THE OFFENDERS". Both `covers the players exactly` and `covers the teams exactly` go red on a correct sitemap. `entityPrefixes` at `:174` carries the same prefix-collision assumption and would misclassify `/players/` as an entity URL. Two of 3.9's four routes collide, and they are exactly the two `sitemap.ts:33-38` names. Fix: require a non-empty id (`url !== head`) in `sitemapIds`, and classify static-vs-entity on a full segment match rather than a prefix.
+- [x] [Review][Patch] **HIGH — the count gate is an algebraic tautology and is provably inert** [app/src/app/sitemap.test.ts:113-119] — all three layers. `staticCount` is defined as `urls.length - entityCount`, so `expect(urls.length).toBe(entityCount + staticCount)` reduces to `x === y + (x - y)`, true for every input. The only live assertion is `staticCount > 0`, which Layer 2's floor at `:184` already covers. The docblock at `:106-112` claims it "states the story's D7 arithmetic" and is "written against the manifest's own lengths"; it is written against its own subtraction. The test name promises "and nothing else" and nothing checks it. Proven inert by the story's own 6.1/6.2 output (`18 passed` through both directions). Fix: count the URLs whose first segment is `matches`/`players`/`teams`, assert that equals `entityCount` exactly, and assert the remainder equals `discoverStaticRoutes().length`.
+- [x] [Review][Patch] **HIGH — AC7's "allows every user agent" assertion is satisfied by a robots.txt that blocks the whole site** [app/src/app/sitemap.test.ts:290] — Blind Hunter, verified by execution. `/Allow:\s*\//i` is unanchored, and `"Disallow: /"` contains the substring `"allow: /"`. `/Allow:\s*\//i.test("User-Agent: *\nDisallow: /")` returns `true`. The single assertion written to prove "allow everything" passes on the exact opposite file. It is currently rescued only by the separate no-`Disallow` case at `:299-302`, so the two are not the independent checks the layer's structure implies. Fix: anchor both patterns — `/^Allow:\s*\/$/im` and `/^User-Agent:\s*\*$/im` (verified: the anchored form rejects `Disallow: /` and passes on the real `out/robots.txt`).
+- [x] [Review][Patch] **HIGH — `robots.ts` has zero build-independent coverage, so AC7's pin only fires after a rebuild** [app/src/app/sitemap.test.ts:274-302] — Auditor + Edge Case Hunter + Blind Hunter. Every robots assertion sits inside `describe.skipIf(!anyBuilt)` and grades `out/robots.txt`. `package.json` `"test": "vitest run"` does not build, `"build"` does not test, there is no `.github/` directory, and `netlify.toml` runs `npm run build` alone. So adding `disallow: "/data/"` to `robots.ts:41` and running `npm test` leaves the on-disk export unchanged and the suite green — the dev's own 6.5 red required a manual rebuild to fire. AC7 demands "A test pins the absence, because 'we left it out' is not a property until something fails on its return", and `robots.ts:32-34` states that property unconditionally; the guard is conditional on a freshness nothing enforces. Fix: add an ungated module-level block asserting `robots()` returns `userAgent: "*"`, `allow: "/"`, and no `disallow` key — matching the way Layers 1 and 2 grade the sitemap with no build.
+- [x] [Review][Patch] **`it("returns the same rules from the module as the export carries")` never reads the export** [app/src/app/sitemap.test.ts:304-308] — all three layers. The body calls `robots()` twice and asserts `Array.isArray(rules) === false` plus the module's own `sitemap` field. `text` — the only variable holding what the export carries — is never referenced, and neither `userAgent` nor `allow` is asserted. The name is a claim the body does not make, and it is gated behind `skipIf(!anyBuilt)` despite touching no build artifact. Fold into the previous patch: compare the module's rules to the parsed export, and move it out of the skip gate.
+- [x] [Review][Patch] **`assertPlainSegment` hard-fails the build on `_private` folders, a Next convention that cannot produce a route** [app/src/app/sitemap.ts:82] — all three layers; flagged for review by the dev at spec:602-607, correctly. Grouping `_` with `(` and `@` is the over-reach. Route groups and parallel slots genuinely need a mapping decision and the throw is right for them. A `_`-prefixed folder is Next's documented "opt this folder and all children out of routing" marker — it has **no URL**, so the docblock's justification ("whose URL is not its directory name … teach this walk how to map it") is simply false of it, and there is no `<loc>`-404 risk to trade against. As written, colocating `src/app/_components/` breaks `next build` during "Collecting page data". Fix: `continue` on `_`, keep the throw for `(` and `@`.
+- [x] [Review][Patch] **Entity ids are interpolated into `<loc>` raw, and all four layers stay green on a malformed sitemap** [app/src/app/sitemap.ts:135-137] — Edge Case Hunter + Blind Hunter. Verified in the installed Next: `build/webpack/loaders/metadata/resolve-route-data.js:100` is a template append of `<loc>${item.url}</loc>` with no escaping anywhere in `resolveSitemap`. `readTournament()` performs no id validation. One `&`-bearing id makes `out/sitemap.xml` malformed XML, so crawlers reject **all 1,404 URLs**, not just the offender — and nothing fails: Layer 3's `<loc>([^<]+)</loc>` capture takes the raw string, it equals the module's entry, and `existsSync` finds the directory written under the same raw name. **Latent, not live** — all 1,400 ids verified against `^[a-z0-9]+(-[a-z0-9]+)*$` with zero failures — but the corpus is Spanish proper nouns and the contract's slug pattern is enforced only pipeline-side, never in the app. Fix: assert every id matches the contract slug pattern in Layer 1, so a bad id fails loudly instead of shipping a broken sitemap.
+- [x] [Review][Patch] **Three hard literals in a file whose stated doctrine is that literals are the bug** [app/src/app/sitemap.test.ts:184, :244, :266] — Edge Case Hunter + Blind Hunter. `toBeGreaterThanOrEqual(4)` and `toBeGreaterThan(1400)` twice, against a live 1,404. `:110-112` states the rule being broken: "written against the manifest's own lengths, never against a literal — the corpus grows and this must follow it without an edit." Not hypothetical: `build-data.ts:22-26` documents that `DATA_ROOT` resolved to `../data/fixtures` before the 2.19 cutover, and the fixture corpus is far below 1,400 — running the suite in that mode fails two assertions on a literal rather than on substance. The floors also never tighten, so a 1,401-entry sitemap against a 1,404-entity manifest passes at this altitude. Fix: derive all three from `readTournament()` and `discoverStaticRoutes()`, both already imported.
+- [x] [Review][Patch] **The walk only recognises `page.tsx`; `page.ts`/`.jsx`/`.js`/`.mdx` routes are dropped silently** [app/src/app/sitemap.ts:104] — all three layers. `pageExtensions` is unset in `next.config.ts`, so all four extensions are valid page files. The asymmetry is the defect: an ambiguous directory name stops the build at `:82`, while a route that merely used a different extension produces a quietly incomplete sitemap — the exact failure this module's architecture exists to make impossible. Only the build-gated Layer 3 can catch it. Fix: match `/^page\.(tsx|ts|jsx|js|mdx)$/`.
+- [x] [Review][Patch] **Layer 3's exclusion list matches at every depth, not at the export root** [app/src/app/sitemap.test.ts:209] — all three layers. The `["_next","data","404","_not-found"]` check sits inside the recursive `walk` with no depth test, and each name is justified in the comment by its **root-level** meaning ("`_next` is the chunk store", "`data` is the copied artifact tree") — none of which holds below the root. A future `/tops/data/` route, or an entity slug of `404` (the contract's slug pattern admits both), becomes invisible to `emittedRoutePaths()`, silently narrowing the reverse direction AC5 rests on. Latent: zero current ids collide (verified). Fix: apply the exclusions only when `routePath === "/"`.
+- [x] [Review][Patch] **The `/compare` variant check has no path boundary** [app/src/app/sitemap.test.ts:168] — Edge Case Hunter + Blind Hunter. The prefix `${SITE_ORIGIN}/compare` omits the trailing `/` that `sitemapIds` at `:52` is careful to include, so a future `/comparisons/` or `/compare-teams/` is reported as a "parameterized /compare variant" and AC4 goes red on correct output. This is the same missing-boundary class that `assert-no-external-origins.mjs` devotes a dedicated paragraph to — in a file that cites that gate as its precedent. Fix: match `${SITE_ORIGIN}/compare/` and exclude the bare entry.
+- [x] [Review][Patch] **`<loc>` order depends on `readdirSync`, in a file that invokes byte-reproducibility as load-bearing** [app/src/app/sitemap.ts:133-138] — Blind Hunter. The docblock at `:40-47` cites Story 2.19's byte-identical property as a reason to omit `lastModified`, then emits the four static entries in filesystem enumeration order with no `.sort()`. NTFS locally and ext4 on Netlify do not guarantee the same order, so `out/sitemap.xml` can differ byte-for-byte between a local build and the deploy for reasons unrelated to content. Every test that could catch it sorts first. Fix: `.sort()` the discovered static routes.
+
+#### Deferred
+
+- [x] [Review][Defer] **A static route nested beneath a dynamic segment is silently omitted** [app/src/app/sitemap.ts:108] — deferred, needs a design ruling. The walk skips bracketed directories before recursing, so `src/app/teams/[slug]/squad/page.tsx` would never be discovered. The docblock at `:91-92` claims the function returns "Every non-dynamic route path"; it returns every non-dynamic route path not nested beneath a dynamic one. Not patched here because the correct behaviour is a genuine design question — such a route must be expanded per entity, which is a new mapping this story did not rule. No such route exists today.
+- [x] [Review][Defer] **Nine assertions across Layers 3 and 4 run only when a human happened to build first, and a stale `out/` is undetectable** [app/src/app/sitemap.test.ts:45] — deferred, pre-existing and shared with `static-output.test.ts`. `anyBuilt` is a bare `existsSync(OUT_DIR)`: no build-id check, no mtime comparison against `src/`. `:36` warns "`npm run build` MUST precede `npm test` or the export layers silently skip", but nothing in the repo enforces it — `npm test` is standalone, `npm run build` runs no tests, there is no CI, and Netlify never tests. The story records hitting this class of failure ("after Task 3 the module was correct but `out/` still held the two-entry probe") and the response was still a bare `existsSync`. The skip-guard reasoning at `:38-42` is one level too low.
+- [x] [Review][Defer] **A1 was not run against seven shipped gates, and one of them was hiding the `Allow` bug** [app/src/app/sitemap.test.ts] — deferred, verification debt. Task 6 drove five gates red plus the unplanned skip-guard case, and the notes' "Six gates driven RED" is accurate as a count. Never driven red: AC3's self-origin test (`:127-133`), AC4's `/compare` test (`:165-171`), D3's decoration test (`:157-163`), the duplicate-`<loc>` test (`:151-155`), the query/fragment test (`:143-149`), and both AC7 shape tests (`:283-292`). The last of those is the point: driving `allows every user agent` red would have surfaced the unanchored-regex defect immediately, because the natural red case is `Disallow: /`.
+- [x] [Review][Defer] **Layer 4 is taken down by a manifest failure it does not depend on** [app/src/app/sitemap.test.ts:47] — deferred, robustness. `const entries = sitemap();` runs at module scope, so a `readTournament()` throw kills collection for the entire file including the robots layer, which touches no manifest. `teams/static-output.test.ts:36-50` — quoted approvingly by this file's own header — records exactly this lesson from a prior code review, and the fix applied there was applied here to the export reads (`:237-241`, `:276`) but not to the module call.
+- [x] [Review][Defer] **Task 6.6 is ticked against a different demonstration than the one it specifies** [spec:240] — deferred, record accuracy. Subtask 6.6 reads "Confirm the whole file is green again and that the pre-existing suite is untouched"; the notes' "6.6" (spec:653) is the unplanned `out/sitemap.xml`-deleted skip-guard red — a genuinely valuable extra, but not that subtask. Its substance appears only indirectly in Task 8.1's chain figures.
+
+#### Patches applied — 2026-08-26, all 14, with red proofs
+
+Both decisions were ruled by Juan at the review and became patches: **allow-list `sitemaps.org`**
+and **narrow D6 to `/data/`**. Files touched: `sitemap.ts`, `robots.ts`, `sitemap.test.ts`,
+`scripts/assert-no-external-origins.mjs`, and — as fallout, see below — `assert-no-external-origins.test.ts`.
+
+**A1, applied to the repairs themselves.** The deferred entry above records that A1 was never run
+against seven shipped assertions, and that the `Allow` defect is precisely what running it would have
+caught. So every repaired gate here was driven RED before being accepted. Verbatim:
+
+**R1 — the count gate, which shipped unable to fail.** `entities.players.slice(1)` in `sitemap.ts`,
+the same edit as the story's own 6.1:
+```
+× covers the players exactly
+× lists every entity plus the static routes, and nothing else
+× serialises every entry the module returned
+Tests  3 failed | 21 passed (24)
+```
+**Three failures where the story recorded two.** The middle line is the repaired gate; at 6.1 and 6.2
+it was among the `18 passed`.
+
+**R2 — the `Allow` anchor.** `out/robots.txt` overwritten with `User-Agent: *` / `Disallow: /`:
+```
+× allows every user agent
+  → expected 'User-Agent: *\nDisallow: /\n\nSitemap…' to match /^Allow:\s*\/$/
+× blocks nothing under /data/, whatever else it may block (D6)
+  → robots.txt blocks the artifacts every route fetches: /: expected [ '/' ] to deeply equal []
+× returns the same rules from the module as the export carries
+  → expected 'User-Agent: *\nDisallow: /\n\nSitemap…' to match /^Allow:\s*\/$/
+Tests  3 failed | 21 passed (24)
+```
+The shipped `/Allow:\s*\//i` **passed** on this exact file. The third failure is the module-vs-export
+test firing for the first time — it now reads `text`, which it never did.
+
+**R3 — the build-independent AC7 pin, the one that matters most.** `disallow: "/data/"` added to
+`robots.ts` and `npm test` run **with no rebuild**, `out/robots.txt` still clean on disk:
+```
+× robots.ts states the D6 ruling with no build (AC7, D6) > declares no rule that blocks /data/ (D6)
+  → robots.ts blocks the artifacts every route fetches: /data/: expected [ '/data/' ] to deeply equal []
+Tests  1 failed | 23 passed (24)
+```
+Before this patch that state was **20/20 green**: every robots assertion sat behind
+`skipIf(!anyBuilt)` and graded a stale export. The story's own 6.5 needed a manual rebuild to fire.
+
+**R4 — story 3.9, simulated rather than reasoned about.** `src/app/players/page.tsx` and
+`src/app/teams/page.tsx` created, so the walk emits `/players/` and `/teams/` index routes.
+
+*Against the committed code at `5754522`:*
+```
+× covers the players exactly
+  → players — ABSENT from the manifest: : expected [ '', 'aaronson-brenden-usa', …(1247) ] to deeply equal [ 'aaronson-brenden-usa', …(1247) ]
+× covers the teams exactly
+  → teams — ABSENT from the manifest: : expected [ '', 'algeria', 'argentina', …(46) ] to deeply equal [ 'algeria', 'argentina', …(46) ]
+Tests  3 failed | 17 passed (20)
+```
+An empty offender name, on a **correct** sitemap — the guard breaking the promise the module keeps.
+
+*Against the patched code, same two files present:* both bijections and the count gate **pass**. The
+only failures are Layer 3 correctly reporting that `out/` predates the two new routes
+(`expected 1404 to be 1406`) — the export layer doing exactly its job. On the day 3.9 lands and
+rebuilds, this file needs no edit, which is what AC2 always claimed.
+
+**Fallout, found by the full suite and fixed rather than suppressed.** Allow-listing `sitemaps.org`
+turned `assert-no-external-origins.test.ts:321` red: that case used `www.sitemaps.org` — the
+fixture's own `xmlns` — as its example of "a genuinely external mention IS still reported". Once
+allow-listed it could no longer play that part. The discriminating half is worth keeping, so the
+fixture gained a foreign `<loc>` on `https://elsewhere.example/` and the assertion now rides on that.
+The test's intent is unchanged; only its example moved.
+
+**AC6 re-accounted after the gate edit.** The origin gate now reports **6** MENTIONED, not 7, and
+`http://www.sitemaps.org` is gone from the line:
+```
+assert-no-external-origins: 6 external origin(s) MENTIONED in text …: https://bit.ly, https://github.com,
+https://nextjs.org, https://react.dev, https://redux-toolkit.js.org, https://redux.js.org
+assert-no-external-origins: 12687 text asset(s) in out/, 0 external subresources.
+```
+That 6 → 7 → 6 round trip is the causal proof the allow-list entry does what it claims and nothing
+more. `scanned` is 12,687 against the story's recorded 12,686; the extra asset arrived with another
+session's work between the story's build and this one and is not this story's.
+
+**Chain, re-run whole after the last edit:** lint 0, typecheck 0, `npm run build` exit 0,
+**60 files / 1,508 tests / 0 skipped**. The story recorded 59/1,488; the deltas are +4 from this
+review (the slug guard and Layer 4a's three) and +16 from a concurrent session's new test file.
+
+**Not patched, by design:** the five deferred entries, which are filed in `deferred-work.md` with
+owners. Two of them — the nested-dynamic-route gap and the build-before-test gap — are the honest
+limits of what this review changed, and `sitemap.ts`'s docblock now states the first one rather than
+claiming coverage it does not have.
+
+#### Dismissed (verified non-issues, for the record)
+
+**"`out/` is stale right now — it predates Story 3.2's `metadataBase`, and Layers 3/4 report green against it."** False as a claim about this story. Story 3.2 is `ready-for-dev` and unimplemented at `HEAD`: `git show HEAD:app/src/app/layout.tsx` contains zero `metadataBase` occurrences, so the absent canonical is expected, not staleness. The `out/` tree is consistent with the committed code (1,404 `<loc>`, both assets correct on disk). The freshness gap Blind Hunter actually detected is a concurrent session's uncommitted `layout.tsx`, which is not this story's. The generic half of the finding — that the guard cannot detect staleness — survives as a Defer above. **"The `Disallow` ruling and the `<loc>`-resolves check pass vacuously on a missing file."** Technically true in isolation and already handled: the companion `existsSync` assertions in both layers fail loudly, and the story's own 6.6 demonstration recorded three loud failures and zero skips for exactly this state. **Auditor line citations given in diff coordinates** (`robots.ts:93`, `sitemap.test.ts:385-394`) exceed the real 44- and 309-line files; every finding above was re-anchored to real source lines before triage.
+
 ## Change Log
 
 | Date | Note |
 |---|---|
+| 2026-08-26 | **Code reviewed — 3 adversarial layers, 14 patches applied, 5 deferred, 3 dismissed.** Three shipped gates could not fail on the input they existed to reject: the entity-count case was the algebraic identity `x === y + (x - y)`, **proven inert by this story's own 6.1/6.2 output** (green through both directions of the defect it names); the AC7 allow-check was unanchored and is **satisfied by `Disallow: /`**, so it passed on a robots.txt blocking the whole site; and every `robots.ts` assertion sat behind `skipIf(!anyBuilt)`, so AC7's pin fired only after a manual rebuild that nothing in the repo enforces (`npm test` never builds, Netlify never tests). A fourth: story 3.9's `/players/` and `/teams/` index routes collide with the entity prefixes and broke the Layer 1 bijection on a **correct** sitemap — breaking AC2's "no edit here" promise from the guard side, with an empty offender name. All four repaired and **driven RED first** (R1–R4, verbatim), the discipline the A1 gap had missed. Juan ruled two decisions: `sitemaps.org` allow-listed in the origin gate (MENTIONED 7 → 6, causally proven), and D6 narrowed from "no `Disallow` ever" to "none that blocks `/data/`", freeing the 11,235 crawlable RSC `.txt` payloads for a future story on its own evidence. Fallout in `assert-no-external-origins.test.ts` fixed rather than suppressed. **AC8 still open; status held at `review` rather than marked done with an unmet AC.** |
 | 2026-08-26 | **Implemented.** 1,404 `<loc>` entries (D7's arithmetic, measured). D1 verified on disk — both metadata routes emit as flat files under `trailingSlash: true`. **D5 falsified**: `force-static` IS required, because the route module's constructor bails during "Collecting page data", one phase before the export-path exemption D5 cited; both files record why. Six gates driven RED including both AC5 directions and the skip-guard case, all verbatim. Origin-gate `scanned` delta accounted causally (12,684 → 12,686) by re-running with the two assets removed, which also proves `www.sitemaps.org` enters only via the sitemap. Chain green: lint 0, typecheck 0, **59 files / 1,488 tests / 0 skipped** (+20, all this story's), build exit 0. Ledger entry found moot as written and disposed; its other gaps re-owned. **AC8 left OPEN — Juan's manual Search Console submission.** |
 | 2026-08-26 | Story contexted from `epics.md:1193` against baseline `8f1c4fc`. A3 probe run: all three owned paths clean; `assert-no-external-origins.mjs` dirty under the live 3.1 review and ruled non-blocking with proof (D2). Next's flat-file emission for app route handlers under `trailingSlash: true` traced to source (D1). Entry count corrected 1,406 → **1,404** against the measured manifest and the 1,406-file export (D7). The ledger entry naming this story as owner found **moot as written** — it assumes a `public/robots.txt` the epic does not rule (Task 8.5). |

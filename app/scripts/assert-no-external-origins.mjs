@@ -174,9 +174,25 @@ const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
  *   is deliberate — the rel exclusion is origin- and scheme-independent by
  *   design — but do not read this bullet as covering it, because it does not.
  */
+/*
+ * `sitemaps.org` JOINED THIS LIST ON 2026-08-26, from the story 3.4 code
+ * review. `out/sitemap.xml` opens with
+ * `xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"` — the sitemap protocol
+ * namespace, emitted by Next, never fetched by anything, and structurally the
+ * same NON-REQUEST as the two entries above it.
+ *
+ * Story 3.4 shipped without this and accounted for the result honestly: it
+ * measured the MENTIONED line going 6 -> 7 and proved the new entry was its own
+ * sitemap and nothing else. That was the right call under its AC1, which barred
+ * it from editing this gate. But the result was a permanent external origin on
+ * the MENTIONED line of every clean build, and this file warns three separate
+ * times that a wrong signal on a green build is how a gate gets switched off.
+ * Ruled by Juan at that review: allow-list it.
+ */
 const NAMESPACE_ALLOWED = [
   /^https?:\/\/(www\.)?w3\.org\//i,
   /^https?:\/\/(www\.)?schema\.org\//i,
+  /^https?:\/\/(www\.)?sitemaps\.org\//i,
 ];
 
 /*

@@ -305,20 +305,32 @@ describe("assert-no-external-origins gate (AR-11, NFR-9)", () => {
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
           `<url><loc>${SITE_ORIGIN}/</loc></url>` +
           `<url><loc>${SITE_ORIGIN}/players/quinones/</loc></url>` +
+          "<url><loc>https://elsewhere.example/players/quinones/</loc></url>" +
           "</urlset>",
       });
       const result = run(dir);
       expect(result.status).toBe(0);
       /*
        * UNANCHORED ON PURPOSE. `mentions` is sorted lexicographically, so
-       * the site's origin is not reliably the first entry on the line —
-       * `http://www.sitemaps.org` sorts BEFORE it (`:` < `s`). An assertion
-       * anchored on the line's prefix silently cannot fire, which is exactly
-       * how a test looks green while proving nothing (A2).
+       * the site's origin is not reliably the first entry on the line. An
+       * assertion anchored on the line's prefix silently cannot fire, which
+       * is exactly how a test looks green while proving nothing (A2).
        */
       expect(result.output).not.toContain(SITE_ORIGIN);
-      // …while a genuinely external mention IS still reported: not over-widened.
-      expect(result.output).toContain("www.sitemaps.org");
+      /*
+       * …while a genuinely external mention IS still reported: not
+       * over-widened. THE FOREIGN `<loc>` ABOVE IS WHY IT IS HERE (story 3.4
+       * code review, 2026-08-26). This half used to ride on the fixture's own
+       * `xmlns`, `http://www.sitemaps.org` — which that review then ADDED to
+       * `NAMESPACE_ALLOWED`, because a namespace identifier is a non-request
+       * exactly like the `w3.org` and `schema.org` entries beside it. Once
+       * allow-listed it could no longer serve as the example of something that
+       * still gets reported, and this assertion went red. The discriminating
+       * half is worth keeping, so it now rides on an origin that is genuinely
+       * external and always will be, rather than on the document's own schema
+       * URI.
+       */
+      expect(result.output).toContain("elsewhere.example");
     },
     SPAWN_TIMEOUT_MS
   );

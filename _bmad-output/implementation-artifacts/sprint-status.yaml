@@ -4462,3 +4462,47 @@ action_items:
 #             AC8 IS OPEN AND STAYS OPEN. No Search Console submission was attempted -- it is Juan's.
 #             Submitting <origin>/sitemap.xml starts the 90-day D20-b clock; re-open no earlier than
 #             2026-11-24. The date gets recorded only once Juan confirms. 7 of 8 ACs met.
+
+# 2026-08-26: story 3-4 CODE REVIEWED. Status HELD at `review` -- deliberately, not by omission.
+#             3 adversarial layers, 14 patches applied, 5 deferred with owners, 3 dismissed.
+#             THE ONLY THING BLOCKING `done` IS AC8, which is Juan's Search Console submission and
+#             which no code review can close. Marking done would have claimed an unmet AC.
+#             THREE SHIPPED GATES COULD NOT FAIL ON THE INPUT THEY EXISTED TO REJECT:
+#               (1) the entity-count case was the identity `x === y + (x - y)`. PROVEN INERT BY THIS
+#                   STORY'S OWN EVIDENCE: at 6.1 (player sliced out) and 6.2 (phantom appended) the
+#                   notes record `2 failed | 18 passed` -- it was green through BOTH directions of the
+#                   defect it names. Epic 2's retrospective ranked this systemic finding highest.
+#               (2) AC7's allow-check was unanchored: `Disallow: /` CONTAINS `allow: /`, so the one
+#                   assertion proving "allow everything" passed on a robots.txt blocking the site.
+#               (3) every robots.ts assertion sat behind skipIf(!anyBuilt), so AC7's pin fired only
+#                   after a rebuild NOTHING ENFORCES -- npm test is a bare vitest run, npm run build
+#                   runs no tests, there is no CI, and netlify.toml runs build alone at deploy.
+#             A FOURTH, forward-looking: story 3.9's /players/ and /teams/ INDEX routes collide with
+#             the entity prefixes. sitemap.ts was correct; the GUARD broke AC2's "picks them up with
+#             no edit here" promise, failing on a CORRECT sitemap with an empty offender name.
+#             Simulated, not reasoned about: with both page.tsx files present the committed code goes
+#             red and the patched code goes green. 3-9 INHERITS NO WORK HERE.
+#             A1 APPLIED TO THE REPAIRS THEMSELVES -- all four driven RED before acceptance (R1-R4,
+#             verbatim in the story). This is the gap that let (2) ship: A1 was run against the gates
+#             the ACs named, not against every assertion in the new file. Deferred, with that reason.
+#             JUAN RULED TWO DECISIONS. (a) sitemaps.org allow-listed in NAMESPACE_ALLOWED -- it is an
+#             XML namespace, the same NON-REQUEST as the w3.org/schema.org entries beside it. GATE WAS
+#             EDITED, unlike during the story, and AC6 re-accounted causally: MENTIONED 7 -> 6 with
+#             www.sitemaps.org gone. (b) D6 narrowed from "no Disallow ever" to "none that blocks
+#             /data/". The rendering argument only ever covered /data/; the export also ships 11,235
+#             crawlable .txt RSC payloads that no such argument reaches, and the absolute form made
+#             addressing them a test-breaking change. A future story may now act on its own evidence.
+#             FALLOUT FIXED, NOT SUPPRESSED: assert-no-external-origins.test.ts:321 used
+#             www.sitemaps.org as its example of a still-reported external mention; once allow-listed
+#             it could not play that part. The fixture gained a foreign <loc> on elsewhere.example and
+#             keeps its discriminating half.
+#             CHAIN: lint 0, typecheck 0, build exit 0, 60 files / 1,508 tests / 0 skipped.
+#             Delta 59/1,488 -> 60/1,508 is +4 from this review (the slug guard and Layer 4a's three)
+#             and +16 from a CONCURRENT SESSION's new test file -- not this story's, same reason
+#             `scanned` reads 12,687 against the story's recorded 12,686. Re-measure, do not inherit.
+#             DEFERRED (5, all in deferred-work.md with owners): static route nested under a dynamic
+#             segment is silently omitted (needs a per-entity expansion ruling; owner 3-9 or first
+#             such route); export layers skip silently with no build and a stale out/ is undetectable
+#             (pre-existing, shared with static-output.test.ts); A1 unrun against 7 shipped
+#             assertions; Layer 4 taken down by a manifest failure it does not read; Task 6.6 ticked
+#             against a different demonstration than it specifies.
