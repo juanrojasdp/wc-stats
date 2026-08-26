@@ -3423,7 +3423,31 @@ development_status:
   # TournamentHub, the five section components, expert-logs.ts and i18n.test.ts.
   3-8-match-route-deep-link-plumbing: in-progress
   3-9-home-page-refactor: backlog
-  3-10-navigation-menu: backlog
+  # Context created 2026-08-26. Implements UX-DR24's nav; does NOT re-rule it. Owns
+  # SiteNav.tsx + SiteNav.test.tsx + nav-destinations.ts/.test.ts (NEW), SiteHeader.tsx,
+  # HeaderSearch.tsx, globals.css (the header-height token), CompareChartsSection.tsx,
+  # es.ts, en.ts, reflow-guards.test.ts, static-output.test.ts.
+  # ROUTE COUNT STAYS 1,406. UX-DR24's /tournament, /tops, /players, /teams are story
+  # 3-9's. RULED at creation rather than discovered at dev time: the destination table
+  # declares all nine entries with an `available` flag, only available ones render (FOUR
+  # today: Inicio, Comparar, Glosario, Acerca de), and a bijection gate binds the flag to
+  # the route tree in BOTH directions. 3-9 flips four booleans and the nav completes
+  # itself with no component change. No links to 404s ship.
+  # BLOCKED ON 3-5 (D0), and this is the story's own A3 abort condition, not a nicety:
+  # UX-DR24 absorbs the header search into the nav sheet, which forces edits to
+  # HeaderSearch.test.tsx and SiteSignature.test.tsx -- BOTH declared in 3-5's file list
+  # (its Task 7.2 repairs 18 failures in HeaderSearch.test.tsx). Task 1 checks whether
+  # 3-5 has landed and ABORTS if it has not.
+  # A3 probe run at creation against 2af1e0a: SiteHeader.tsx and page.tsx both CLEAN;
+  # every other path this story owns clean. 3-6's lock is confirmed released (the
+  # reconciliation above holds -- do not re-litigate it). The probe also found a THIRD
+  # live session the task brief did not name: 3-5 (bootstrap.ts, bootstrap.test.ts dirty).
+  # LEDGER: closes deferred-work.md's spec-sign-the-project header-height entry (:4455) --
+  # the token is that entry's own named fix, deferred there for a verification pass this
+  # story runs. Confirms L1553/L1886 (3-8) and L1465 (3-7) recorded closed; L2945 honoured.
+  # DESIGN.md's token values (62/118/124) are PRE-NAV -- 3.6's four-element header. They
+  # are re-measured here, not copied; the <xl row may stop wrapping at 320 entirely.
+  3-10-navigation-menu: ready-for-dev
   # NOT `optional` — retro action item A6. Epic 1's sat at `optional`, was
   # skipped, and the cost was paid inside Epic 2.
   epic-3-retrospective: required
@@ -3971,3 +3995,31 @@ action_items:
 #   families stay one shape, and the behaviour is recorded in the config's own comment.
 #   Ownership held throughout: five owned paths, staged by explicit path, never `git add -A`. The
 #   ~20 app/ files the concurrent session dirtied are NOT staged, nor is the stray 0-byte `17`.
+
+# 2026-08-26: STORY 3-10 CONTEXTED (navigation menu). `backlog` -> `ready-for-dev`.
+#   File: _bmad-output/implementation-artifacts/3-10-navigation-menu.md
+#   Sized as an IMPLEMENTATION of a ruled contract, not a design: UX-DR24 settles the
+#   breakpoint, the modality, the keyboard model and the accessible-name source, so the
+#   story's job was to find where the contract meets code that already exists. It mostly
+#   does: ui/dialog.tsx ALREADY ships the ruled sheet geometry (386px-capped full width,
+#   top:0, content-driven height) plus trap/Esc/focus-return/inert/scrim, and Story 2.14's
+#   HeaderSearch is a complete reference for the conditional aria-controls, the overlay
+#   registry, the two-live-regions problem and the portal-vs-breakpoint close-sync. The
+#   primitive needs NO change; the width cap is a call-site class.
+#   FOUR TRAPS FOUND AT CREATION rather than at dev time, each recorded as a ruled
+#   decision in the story file:
+#   (1) The D0 blocker above -- the search absorption reaches two test files 3-5 holds.
+#   (2) The mockup draws the trigger as `grid place-items-center`, which would FAIL
+#       reflow-guards.test.ts's repo-wide implicit-grid scan: min-h-11/min-w-11 do not
+#       satisfy its fixed-size exemption. The shipped `flex` trigger form is used instead.
+#   (3) The mockup's frame-C note still names `lg` as the inline threshold AFTER the spine
+#       measured and rejected it (976px usable vs ~1,060-1,080 needed, failing invisibly
+#       because the search ships min-w-0 flex-1). Spine wins; `xl`. Called out because the
+#       mockup is otherwise the clearest artifact in the set.
+#   (4) AC 2 (nav deep links use 3-8's nonce path) is VACUOUS and that is correct: no nav
+#       destination is a match route, and #results is a SURFACE fragment that opens nothing
+#       by design. Asserted with a test rather than left to be assumed.
+#   Also: usePathname and the `xl:` variant are both NEW to this tree -- no existing
+#   convention to match or break. And the ledger's proposed locale-keyed header token is
+#   NOT what UX-DR24 ruled; the three ruled values ship, the locale axis is evidence-gated.
+#   Story 3-10 is the epic's last, so it carries A6: the Epic 3 retrospective is REQUIRED.
