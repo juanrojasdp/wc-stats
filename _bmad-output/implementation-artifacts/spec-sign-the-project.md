@@ -103,3 +103,57 @@ context: []
 
 **Manual checks (if no CLI):**
 - Serve `app/out/` and load the export in an iframe at 320 px and 390 px width (the browser window itself cannot be resized in this environment). For each of ES/EN × dark/light: header shows the caption under the wordmark, footer shows it as its own line, `document.scrollWidth` does not exceed the viewport width, and the footer's two links remain underlined without hover.
+
+## Suggested Review Order
+
+**The ruling: what gets translated, and what does not**
+
+- Entry point. The name is data, not copy; only the connective is localised.
+  [`es.ts:48`](../../app/src/locales/es.ts#L48)
+
+- The mirror. `Dictionary` guards shape, never value — hence the test below.
+  [`en.ts:17`](../../app/src/locales/en.ts#L17)
+
+- The property made falsifiable: name byte-identical, connective free to differ.
+  [`i18n.test.ts:259`](../../app/src/lib/i18n.test.ts#L259)
+
+**The header, and the one real trade-off**
+
+- Why the caption is a sibling of the anchor — WCAG 2.5.3 on 1,406 routes.
+  [`SiteHeader.tsx:134`](../../app/src/components/SiteHeader.tsx#L134)
+
+- The markup that ruling produces; `justify-center` dropped as inert.
+  [`SiteHeader.tsx:162`](../../app/src/components/SiteHeader.tsx#L162)
+
+- The wrap you ruled in, with every number's provenance and per-locale thresholds.
+  [`SiteHeader.tsx:89`](../../app/src/components/SiteHeader.tsx#L89)
+
+**The footer, and the constraint it must not break**
+
+- A second `<p>`, so nothing splits the ruled copy from its underlined links.
+  [`AttributionFooter.tsx:67`](../../app/src/components/AttributionFooter.tsx#L67)
+
+**The shared contract this change exposed but did not fix**
+
+- `scroll-padding-top` still encodes 56 px; measured consequence stated, filed.
+  [`globals.css:446`](../../app/src/app/globals.css#L446)
+
+- The ledger entry: `/compare` offsets, the numbers, and the `--header-h` fix.
+  [`deferred-work.md:4453`](./deferred-work.md#L4453)
+
+- A ruled "must not grow" premise that is now dead; re-ruled, not silently left.
+  [`HeaderSearch.tsx:976`](../../app/src/components/HeaderSearch.tsx#L976)
+
+**Guards (read last — but note the first two caught real defects)**
+
+- Behavioural 2.5.3 guard; runs with no build, and covers the `en` path.
+  [`SiteSignature.test.tsx:74`](../../app/src/components/SiteSignature.test.tsx#L74)
+
+- Replaces a VACUOUS check: `/\bunderline\b/` matched `hover:no-underline`.
+  [`static-output.test.ts:143`](../../app/src/app/static-output.test.ts#L143)
+
+- Adjacency, so "under the wordmark" is asserted rather than approximated.
+  [`static-output.test.ts:127`](../../app/src/app/static-output.test.ts#L127)
+
+- Sibling order and locale invariance pinned at source level.
+  [`reflow-guards.test.ts:88`](../../app/src/lib/reflow-guards.test.ts#L88)
