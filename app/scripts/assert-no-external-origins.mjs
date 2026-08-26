@@ -69,16 +69,86 @@ const SCANNED_EXTENSIONS = new Set([
 const SKIPPED_DIRECTORIES = new Set(["data"]);
 
 /*
+ * ═══ THE SITE'S OWN ORIGIN, READ FROM THE ONE PLACE IT IS DEFINED ═══
+ *
+ * Story 3.1. `metadataBase` exists to emit ABSOLUTE self-referencing URLs —
+ * `<link rel="canonical">` and `hreflang` alternates on ~1,406 routes, plus
+ * the sitemap's `<loc>` entries. This gate had no concept of the origin the
+ * export is published at, so it failed the build on every one of them while
+ * passing `og:image`, the one tag that genuinely makes a third party fetch an
+ * asset. Backwards in both directions, and reproduced at exit 1 before the fix.
+ *
+ * Read by REGEX rather than imported: this file may depend on nothing outside
+ * `node:*` (Netlify installs `app/` alone), and `src/lib/site-origin.ts` is a
+ * TypeScript module. `assert-schema-version.mjs:26-37` does exactly this for
+ * SCHEMA_VERSION — the shipped, in-directory, dependency-free precedent for
+ * "one definition, two readers", including the loud throw when it misses.
+ */
+const SITE_ORIGIN_FILE = path.join(APP_DIR, "src", "lib", "site-origin.ts");
+
+async function readSiteOrigin() {
+  const source = await readFile(SITE_ORIGIN_FILE, "utf8");
+  const match = /^export const SITE_ORIGIN = ["'`]([^"'`]+)["'`];$/m.exec(source);
+  if (match === null) {
+    throw new Error(
+      `could not find \`export const SITE_ORIGIN = "<origin>";\` in ${SITE_ORIGIN_FILE}`
+    );
+  }
+  return match[1];
+}
+
+/*
+ * NO FALLBACK, EVER. A default here would mean a reformatted or renamed
+ * constant silently reverts the gate to its pre-3.1 behaviour and red-builds
+ * every page — or, worse, allow-lists a stale origin. Exit 2, not 1, on this
+ * file's own recorded rule (`:254-265` below): nothing was found to be wrong
+ * with the export, the check could not be performed.
+ *
+ * Top-level `await` is already in use in this module (`for await`); ESM allows it.
+ */
+let SITE_ORIGIN;
+try {
+  SITE_ORIGIN = await readSiteOrigin();
+  if (new URL(SITE_ORIGIN).origin !== SITE_ORIGIN) {
+    throw new Error(`SITE_ORIGIN must be a bare origin (no trailing slash, no path): ${SITE_ORIGIN}`);
+  }
+} catch (error) {
+  console.error(`assert-no-external-origins: ${error instanceof Error ? error.message : error}`);
+  process.exit(2);
+}
+
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/*
  * The allow-list, and every entry is a NON-REQUEST: `www.w3.org/2000/svg` and
  * friends are XML NAMESPACE identifiers, present in every inline <svg> and never
- * fetched.
+ * fetched. THE SITE'S OWN ORIGIN IS NOT AN EXTERNAL ORIGIN, in any position —
+ * including `<link rel="preload">`, and including the informational MENTIONED
+ * line, which would otherwise report this site's own host as external over its
+ * own sitemap. A wrong signal on a green build is how a gate gets switched off.
  *
  * THERE IS NO ENTRY FOR A FONT CDN, AN ANALYTICS HOST OR AN IMAGE SERVICE, and
  * there must never be one: `next/font` self-hosts into `_next/static/media`,
  * `images: { unoptimized: true }` is set in next.config, and NFR-9 bans
  * telemetry outright.
+ *
+ * THREE DETAILS OF THE SITE_ORIGIN ENTRY, each with its own red proof:
+ *
+ * - THE DOTS ARE ESCAPED, and that is not cosmetic. Unescaped, `.` is "any
+ *   character" and the entry allow-lists a host spelled with any separator in
+ *   the dot positions.
+ * - THE ORIGIN BOUNDARY `(?:[/?#]|$)` IS THE SECURITY-RELEVANT HALF. A plain
+ *   prefix match allow-lists `<origin>.evil.com/track.js`. `[/?#]` rather than
+ *   `(/|$)` so a bare-origin query or fragment form is not falsely reported.
+ * - SCHEME-EXACT BY DESIGN. An `http://` self-URL is NOT allow-listed. A
+ *   canonical emitted over `http` is a real defect and must surface. Do not
+ *   "fix" this later by loosening the scheme.
  */
-const ALLOWED = [/^https?:\/\/(www\.)?w3\.org\//i, /^https?:\/\/(www\.)?schema\.org\//i];
+const ALLOWED = [
+  /^https?:\/\/(www\.)?w3\.org\//i,
+  /^https?:\/\/(www\.)?schema\.org\//i,
+  new RegExp(`^${escapeRegExp(SITE_ORIGIN)}(?:[/?#]|$)`, "i"),
+];
 
 /*
  * ═══ TWO HOST PATTERNS, AND THE DIFFERENCE IS THE WHOLE 2.19-REVIEW FIX ═══
@@ -107,8 +177,68 @@ const ALLOWED = [/^https?:\/\/(www\.)?w3\.org\//i, /^https?:\/\/(www\.)?schema\.
 const HOST = String.raw`(?:https?:)?\/\/[a-z0-9.-]+\.[a-z]{2,}[^\s"'\`)<>\\]*`;
 const FETCH_HOST = String.raw`(?:https?:)?\/\/(?:\[[0-9a-f:.]+\]|[a-z0-9._~%-]+)(?::\d+)?[^\s"'\`)<>\\]*`;
 
+/*
+ * ═══ `rel="canonical"` AND `rel="alternate"` ARE NAVIGATION HINTS ═══
+ *
+ * Story 3.1, and it is the same rule as `<a href>` one comment below: a
+ * canonical or an hreflang alternate is a statement ABOUT a document, not a
+ * subresource the page loads. No user agent fetches either while rendering.
+ * That holds REGARDLESS OF ORIGIN — which is what makes this mechanism
+ * independent of the SITE_ORIGIN allowance rather than redundant with it.
+ *
+ * DENY BY DEFAULT, and the default is the point. Only these two are excluded;
+ * `stylesheet`, `preload`, `prefetch`, `icon`, `manifest`, `preconnect`,
+ * `dns-prefetch` and `modulepreload` stay gated, and so does anything HTML
+ * gains in future. A new `rel` must be excluded DELIBERATELY; it must not
+ * arrive allow-listed. Three consequences, each pinned by a test:
+ *
+ *   - a <link> with NO `rel` at all is a fetching position;
+ *   - a <link> with an UNKNOWN `rel` is a fetching position;
+ *   - `rel="alternate stylesheet"` is a FETCHING position. This is a real
+ *     HTML idiom, and an "is `alternate` present?" substring test would blow
+ *     a hole straight through AR-11. Hence: every token must be non-fetching.
+ *
+ * The exclusion is PER-TAG, not per-host: a canonical to some origin says
+ * nothing about a stylesheet loaded from the same one.
+ */
+const NON_FETCHING_RELS = new Set(["canonical", "alternate"]);
+
+/*
+ * Attribute readers for the whole-<link>-tag match. Both accept the UNQUOTED
+ * form. If `rel` were only read when quoted, an unquoted `rel=canonical` would
+ * fall through to deny-by-default and RED-BUILD ON A CORRECT CANONICAL — a
+ * build-breaking false positive, the failure mode this story exists to remove.
+ */
+const LINK_HREF = new RegExp(String.raw`\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))`, "i");
+const LINK_REL = new RegExp(String.raw`\brel\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))`, "i");
+const FETCH_HOST_ONLY = new RegExp(`^${FETCH_HOST}$`, "i");
+
+const attributeValue = (match) => (match === null ? undefined : (match[1] ?? match[2] ?? match[3]));
+
 /**
- * Positions that CAUSE A REQUEST. Each pattern captures the URL in group 1.
+ * The URL a `<link>` tag actually fetches, or `null` if it fetches nothing.
+ *
+ * Returns `null` for a relative or non-host-bearing `href` (the overwhelming
+ * majority in this export — those are same-document by construction), and for
+ * a tag whose `rel` is present and entirely non-fetching.
+ */
+function linkHref(match) {
+  const tag = match[0];
+  const href = attributeValue(LINK_HREF.exec(tag));
+  if (href === undefined || !FETCH_HOST_ONLY.test(href)) return null;
+
+  const rel = attributeValue(LINK_REL.exec(tag)) ?? "";
+  const tokens = rel.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  if (tokens.length > 0 && tokens.every((token) => NON_FETCHING_RELS.has(token))) return null;
+
+  return href;
+}
+
+/**
+ * Positions that CAUSE A REQUEST. Each pattern captures the URL in group 1,
+ * unless the entry carries a fourth element — an `extract(match)` callback
+ * returning the URL or `null`, for a position whose fetching-ness depends on
+ * more of the tag than the URL alone (`<link rel>`). One code path either way.
  *
  * `<a href>` is deliberately NOT here: a link is a navigation the reader
  * chooses, not a fetch the page performs. It is reported below instead, so an
@@ -118,7 +248,9 @@ const FETCHING_POSITIONS = [
   ["src attribute", new RegExp(String.raw`\bsrc\s*=\s*["'](${FETCH_HOST})`, "gi")],
   ["srcset attribute", new RegExp(String.raw`\bsrcset\s*=\s*["'](${FETCH_HOST})`, "gi")],
   ["poster attribute", new RegExp(String.raw`\bposter\s*=\s*["'](${FETCH_HOST})`, "gi")],
-  ["<link href>", new RegExp(String.raw`<link\b[^>]*\bhref\s*=\s*["'](${FETCH_HOST})`, "gi")],
+  // Whole tag, then `linkHref` decides: the `rel` is not readable from a
+  // pattern anchored on `href` alone. See NON_FETCHING_RELS above.
+  ["<link href>", new RegExp(String.raw`<link\b[^>]*>`, "gi"), undefined, linkHref],
   // <image href> / <use href>, and their xlink: forms — the standalone-.svg
   // fetching positions the extension list above now reaches.
   [
@@ -226,12 +358,14 @@ try {
 
     const extension = path.extname(file).toLowerCase();
 
-    for (const [position, pattern, onlyExtensions] of FETCHING_POSITIONS) {
+    for (const [position, pattern, onlyExtensions, extract] of FETCHING_POSITIONS) {
       // A position with no extension set applies everywhere; see "CSS url()".
       if (onlyExtensions !== undefined && !onlyExtensions.has(extension)) continue;
       for (const match of text.matchAll(pattern)) {
-        if (allowed(match[1])) continue;
-        const key = `${position}  ${match[1]}`;
+        // No extractor means group 1 is the URL — every position but <link>.
+        const url = extract === undefined ? match[1] : extract(match);
+        if (url === null || allowed(url)) continue;
+        const key = `${position}  ${url}`;
         const files = fetching.get(key) ?? new Set();
         files.add(relative);
         fetching.set(key, files);

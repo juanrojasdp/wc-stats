@@ -3390,7 +3390,7 @@ development_status:
   # (bmad-quick-dev route, retro §8.4), i.e. outside the create-story trigger
   # that normally flips this field. Recording the true state.
   epic-3: in-progress
-  3-1-build-gate-lint-gate-correction: in-progress
+  3-1-build-gate-lint-gate-correction: review
   3-2-metadatabase-canonical-urls: backlog
   3-3-og-image-twitter-card: backlog
   3-4-sitemap-robots: backlog
@@ -3925,3 +3925,49 @@ action_items:
 #   until their own sessions create them.
 #   Also observed, not fixed here: a stray 0-byte file named `17` sits untracked in the
 #   repo root — a shell redirect artifact. Do not let it be swept into a commit (A4).
+# 2026-08-26: story 3-1 in-progress -> review. Epic 3's SEO track is UNBLOCKED: 3-2, 3-3 and 3-4
+#   can now emit absolute self-referencing URLs without red-building Netlify on ~1,406 pages.
+#   TWO INDEPENDENT MECHANISMS, and the story's insistence that they are not redundant proved
+#   exactly right. `SITE_ORIGIN` now has ONE definition (app/src/lib/site-origin.ts), read by the
+#   dependency-free .mjs gate via regex on assert-schema-version.mjs's precedent, and allow-listed
+#   ESCAPED, BOUNDARY-ANCHORED and SCHEME-EXACT; separately, `rel=canonical`/`rel=alternate` are
+#   navigation hints under a DENY-BY-DEFAULT rel policy, so an unknown or absent rel stays gated
+#   and `rel="alternate stylesheet"` still fails. On a self-origin canonical the two OVERLAP, so
+#   that case discriminates nothing — the suite isolates each mechanism deliberately (an OFF-origin
+#   rel=alternate for one, a self-origin rel=preload and an .xml sitemap for the other).
+#   EIGHT RED DEMONSTRATIONS, not the seven required. Task 3.3 claims a red proof for BOTH halves
+#   of the allowance line and only the boundary had one, so the escaping got 8.4b. Two of them are
+#   worth reading: without the boundary the gate reports "0 external subresources" and EXITS 0 on
+#   `https://mundial-stats.juancr.dev.evil.com/track.js`; and under the 8.3 revert the self-origin
+#   canonical case stayed GREEN, confirming in situ the coincidence-green trap the story predicted.
+#   The six positive cases were also run against the UNMODIFIED script first: 6 failed / 15 passed,
+#   with all 9 pre-existing cases untouched and passing (A2 discharged directly, not by argument).
+#   ONE WEAK ASSERTION WAS CAUGHT AND FIXED rather than kept: the sitemap case initially PASSED
+#   pre-fix, because `mentions` sorts lexicographically and `http://www.sitemaps.org` sorts before
+#   the site's origin, so an assertion anchored on the MENTIONED line's prefix could never fire.
+#   D20-b HELD: <meta content> stays out of FETCHING_POSITIONS, and a test now pins that an
+#   off-origin og:image is REPORTED and never appears in the EXTERNAL SUBRESOURCE(S) block — the
+#   assertion that stops a future "hardening" from breaking 3-3 before it starts.
+#   THE STATED TEST BASELINE OF 1,251 IS STALE; the measured figure at f07116b is 1,306, obtained
+#   by stashing this story's five files and re-running the suite against a pristine checkout under
+#   an identical `out/`. With 3-1 it is 1,320 / 0 skipped / 52 files — delta exactly +14, which is
+#   what this story adds (2 drift + 12 gate). EPIC 3 SHOULD CARRY 1,320, NOT 1,251.
+#   VERIFIED IN AN ISOLATED SPARSE WORKTREE at f07116b, because the concurrent session was writing
+#   story 3.8 across ~20 files of app/src while Task 7 ran and any shared-tree figure would have
+#   measured both sessions at once. Chain green end to end: lint clean under --max-warnings 0,
+#   typecheck clean, 1,320 tests / 0 skipped, BUILD_EXIT=0, 1,406/1,406 routes, gate scanned 12,683
+#   text assets (non-zero, so not the vacuous `scanned === 0` pass) with the site's own origin
+#   absent from the MENTIONED line. The five owned files were confirmed byte-identical between the
+#   worktree and the main tree, so what was verified is what is committed.
+#   TWO ENVIRONMENT LESSONS: BMad's long story filenames overflow Windows MAX_PATH under the
+#   scratchpad prefix (`git worktree add` dies mid-checkout with "Filename too long") — use a short
+#   path plus `git sparse-checkout set app contract data`; and a node_modules JUNCTION does not
+#   work for `next build`, Turbopack panics with "Symlink [project]/node_modules is invalid, it
+#   points out of the filesystem root". `npm ci --prefer-offline` in the worktree is the way.
+#   FOR CODE REVIEW: the eslint `key.value` arm reports at the KEY, so `{ "siteName": t("...") }`
+#   errors even though its value is a CallExpression — i.e. the quoted spelling is not writable in
+#   a metadata object. NOT introduced here: the shipped 2.18 object-prop family behaves identically
+#   on `{ "value": t("x") }`, verified with a probe. The prescribed selector was kept so the two
+#   families stay one shape, and the behaviour is recorded in the config's own comment.
+#   Ownership held throughout: five owned paths, staged by explicit path, never `git add -A`. The
+#   ~20 app/ files the concurrent session dirtied are NOT staged, nor is the stray 0-byte `17`.

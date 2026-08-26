@@ -153,11 +153,53 @@ export default defineConfig([
           message: "User-facing strings must come from the locale layer (t()).",
         },
         {
-          // Covers `export const metadata = {...}` AND generateMetadata()
-          // (Next's other first-class metadata path), including nested
-          // title objects ({ default, template, absolute }).
+          /*
+           * Covers `export const metadata = {...}` AND generateMetadata()
+           * (Next's other first-class metadata path), including nested
+           * title objects ({ default, template, absolute }).
+           *
+           * `alt` AND `siteName` ADDED BY STORY 3.1, ahead of the story that
+           * would fall into the hole rather than after it. Story 3.3 authors
+           * an `og:image` `alt` and an `openGraph.siteName`; under the old key
+           * regex both would have shipped as bare Spanish literals WITH THE
+           * BUILD GREEN, which is the one failure mode AD-12 exists to stop.
+           *
+           * `alt` already appears in the JSX-attribute regexes at the top of
+           * this rule. That is NOT a duplicate: this is a different AST path —
+           * a Property of a metadata object, not a JSXAttribute. Neither
+           * selector reaches the other's shape.
+           *
+           * THE `key.value` ARM IS THE FOURTH INSTANCE OF THE SAME LESSON this
+           * file already records three times (`:53-84`, `:90-103`, `:129-144`).
+           * The selector keyed on `key.name` only, so `{ "alt": "Texto" }` — a
+           * Property whose key is a Literal, with no `key.name` at all — passed
+           * silently. Identical to the hole the 2.18 review closed for the
+           * object-prop family; the metadata selector never got the same
+           * treatment, and 3.3 authors nested object literals where the quoted
+           * spelling is entirely plausible. A computed key stays unreachable by
+           * any static selector, as recorded there.
+           *
+           * MEASURED CONSEQUENCE OF THAT ARM, recorded so it is not read as a
+           * bug later: a quoted key is itself a Literal child of the Property,
+           * so `{ "siteName": t("app.siteName") }` reports at the KEY even
+           * though its value is a CallExpression. The effect is that the
+           * quoted spelling is simply not writable in a metadata object — the
+           * identifier spelling, which all four shipped sites already use, is.
+           * The 2.18 object-prop family above behaves identically on
+           * `{ "value": t("x") }`; this arm is deliberately the same shape
+           * rather than a second, subtly different one.
+           *
+           * THE DESCENDANT COMBINATOR IS DELIBERATE. A `siteName:` inside a
+           * helper-call argument object within generateMetadata — which is
+           * exactly the shape all four shipped sites use — is gated too. That
+           * is correct: it is a user-facing string either way. The four
+           * shipped `siteName:` properties hold `t("app.siteName")`, a
+           * CallExpression, which the value matcher does not include; and no
+           * `alt:` exists in any metadata object today. So nothing existing
+           * breaks — verified with `npm run lint`, not assumed.
+           */
           selector:
-            ':matches(VariableDeclarator[id.name="metadata"], FunctionDeclaration[id.name="generateMetadata"], VariableDeclarator[id.name="generateMetadata"]) Property[key.name=/^(title|description|default|template|absolute)$/] > :matches(Literal, TemplateLiteral, BinaryExpression, LogicalExpression, ConditionalExpression)',
+            ':matches(VariableDeclarator[id.name="metadata"], FunctionDeclaration[id.name="generateMetadata"], VariableDeclarator[id.name="generateMetadata"]) Property:matches([key.name=/^(title|description|default|template|absolute|alt|siteName)$/], [key.value=/^(title|description|default|template|absolute|alt|siteName)$/]) > :matches(Literal, TemplateLiteral, BinaryExpression, LogicalExpression, ConditionalExpression)',
           message: "Metadata strings must come from the locale layer.",
         },
       ],
