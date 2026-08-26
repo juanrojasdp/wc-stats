@@ -4757,3 +4757,30 @@ Appended, never regenerated: every line above this heading is unchanged.
   status: OPEN — interactive path not driven headlessly.
   summary: `/compare`'s mini-header geometry was measured by mounting the shipped class string, not by completing the two-entity picker flow.
   evidence: The mini-header mounts only once two entities are compared, and the picker's listbox could not be driven from CDP (real `Input.dispatchKeyEvent` and `Input.insertText` both left the listbox closed; the corpus never yielded options headlessly). The GEOMETRY question — does the bar clear the site header at 320 px — was answered directly instead: the shipped class string was mounted into the live `/compare` document and measured while stuck, giving `position: sticky`, `top` resolving to 118/62 px per breakpoint, and the probe's top sitting at the header's bottom (+0.2 px) at 195/320/390 in both locales. What remains unverified is the flow that MOUNTS it, not the offset it uses. **Owner: whoever next has a working headless path into the compare pickers.**
+
+
+## Deferred from: code review of 3-10-navigation-menu (2026-08-26)
+
+Appended, never regenerated: every line above this heading is unchanged. Four entries, all
+verified against `git show d073575:<path>` rather than the working tree, which held three other
+sessions' changes while this review ran.
+
+- source_spec: `3-10-navigation-menu.md` (code review)
+  status: OPEN — planning-artifact disagreement, outside this story's declared paths.
+  summary: `epics.md:143` still names the `header-h-zoom` token that story 3.10 deleted, so two planning artifacts now disagree about what UX-DR24 rules.
+  evidence: UX-DR24 as written rules FOUR tokens — "Adds a **header-height token** (`header-h-oneline/-wrapped/-zoom` + `scroll-clearance`)". `globals.css` and `DESIGN.md` at `d073575` ship THREE of those plus a new, unruled `--spacing-compare-mini-h`. The deletion's measurement is genuine and well-argued (195 px now reports 117.8 px, identical to every other wrapped width, so the token named a state that no longer exists), and D9 does authorise re-measuring token VALUES — but this changed the token SET, which D9 does not cover. Story 3.10 owned `DESIGN.md` "only if measurement moves them" and did not own `epics.md`, so the correction could not be made there. **Owner: whoever next edits `epics.md`'s UX-DR24 row.** One-line fix: drop `-zoom` from the token list and add `compare-mini-h`, citing story 3.10's measurement.
+
+- source_spec: `3-10-navigation-menu.md` (code review)
+  status: OPEN — robustness gap in a shipped gate, not a defect today.
+  summary: The `nav-destinations.test.ts` availability bijection has a route-group blind spot in direction 2.
+  evidence: Direction 2 resolves a declared `route` to `src/app{route}/page.tsx` literally. If story 3.9 mints `/tournament` inside a route group (`src/app/(marketing)/tournament/page.tsx`) or as `page.jsx`, the gate does NOT go red, the four booleans are never flipped, and the nav stays four entries wide beside a shipped, unlinked route — the precise failure direction 2 exists to catch. Direction 1 (every `true` has a `page.tsx`) is unaffected, and the dynamic-segment rejection is correct and well-tested. Low likelihood while the app uses no route groups; the cost of being wrong is the whole point of the gate. **Owner: story 3.9, or whoever introduces the first route group.** Fix: glob for `page.{tsx,jsx}` under any parenthesised segment path rather than resolving one literal path.
+
+- source_spec: `3-10-navigation-menu.md` (code review)
+  status: OPEN — pre-existing, inherited from story 2.14, correctly not fixed by 3.10.
+  summary: The nav sheet ships square bottom corners against DESIGN.md's ruled `{rounded.md}`.
+  evidence: `DESIGN.md` -> Components -> nav-menu rules "Sheet on {colors.surface-overlay}, **{rounded.md}**, full-width 386 px at `top: 0`", and `mockups/key-navigation.html` draws a 10 px bottom radius. `ui/dialog.tsx:103` carries `border-b border-hairline` and no radius. Story 3.10 was RIGHT not to fix it — D4 rules "`ui/dialog.tsx` needs no change" and the house rule bars editing a shared primitive for one consumer — but the deviation is now UX-DR24's as well as 2.14's and was recorded nowhere until this review. **Owner: whoever next has a reason to touch `ui/dialog.tsx` for more than one consumer, or a UX ruling that the square edge is accepted.**
+
+- source_spec: `3-10-navigation-menu.md` (code review)
+  status: OPEN — record accuracy; the underlying overflow is already filed above by story 3.10 itself.
+  summary: Task 9.2 is ticked `[x]` against a bar it did not clear ("zero horizontal overflow, every cell"; 4 of 96 cells overflowed).
+  evidence: The Dev Agent Record honestly reports 4 cells overflowing at 195 px on `/` (`document.scrollWidth` = 208 against a 195 px viewport) and correctly attributes them to `LeaderboardsRegion.tsx:191,193` — `w-48` is a fixed 192 px, plus 16 px of gutter. Filing rather than fixing is correct under A4 (the file is outside story 3.10's declared paths), and story 3.10 filed it. What was not done is the tick: the subtask reads complete against a bar it states and did not meet, and WCAG 1.4.10 is a property of the page as presented, including while it loads. This does NOT touch AC 3, whose bar is 320 px and is clean in both locales and themes. **Fix is bookkeeping, not code:** unticking 9.2 with a pointer to the ledger entry, so the next reader of the story does not infer a green matrix.
