@@ -187,7 +187,7 @@ export function HeaderSearch() {
    *
    * The Reuse Map called for `TournamentHubRegion`'s `attempt` counter and it
    * was not carried over. This is it. The Hub pairs its counter with a retry
-   * BUTTON; the header has no room for one in an h-14 bar and no copy for it, so
+   * BUTTON; the header has no room for one in its bar and no copy for it, so
    * the retry rides the engagement the reader already performs — focusing the
    * input or opening the sheet. That is exactly the trigger the loader's comment
    * names.
@@ -969,9 +969,18 @@ export function SearchField({
        * A REAL <label htmlFor>, sr-only rather than visible — a declared
        * departure from `LeaderboardsRegion`'s visible filter label, which this
        * control otherwise copies wholesale (input shape, classes, trim rule,
-       * announce debounce). The header bar is a fixed h-14 and Task 8.4 requires
-       * it not to grow; a label line above the input does not fit. The
-       * association is identical, only the visual presentation differs.
+       * announce debounce). A label line above the input does not fit in the
+       * header bar, so the association is identical and only the visual
+       * presentation differs.
+       *
+       * ⚠️ THE ORIGINAL REASON HAS BEEN RE-RULED, and the conclusion survives on
+       * a narrower one. This read "the header bar is a fixed h-14 and Task 8.4
+       * requires it not to grow". It is no longer fixed: the authorship caption
+       * (spec-sign-the-project) took the row to 62 px, and to two rows below
+       * ~340 px, with the owner's approval. What did NOT change is that there
+       * is no room for a visible label line — the row is already wrapping on
+       * small phones, and a label would deepen exactly that. Do not cite "must
+       * not grow" as a live constraint; cite the reflow budget instead.
        */}
       <label htmlFor={inputId} className="sr-only">
         {label}
@@ -1121,7 +1130,8 @@ function SearchPanel({
      * rather than leaving to be rediscovered. `EmptyStatePanel` is a `min-h-32`
      * dashed block with `px-6 py-8` and a two-part headline/explanation
      * structure, sized for a SECTION that is missing from a page. This is a
-     * dropdown row inside a `max-h-[60vh]` panel anchored under a 56 px bar;
+     * dropdown row inside a `max-h-[60vh]` panel anchored under the header bar
+     * (62 px since spec-sign-the-project, 118 when the row wraps);
      * mounting a 128 px-tall dashed placeholder there would push the "/" link
      * off a short viewport and read as a page-level failure rather than "that
      * query matched nothing".

@@ -61,6 +61,104 @@ describe.skipIf(!anyBuilt)("exported 404.html (AC 4)", () => {
   });
 });
 
+/*
+ * ═══════════ THE AUTHORSHIP CAPTION IN THE EXPORTED CHROME ═══════════
+ *
+ * SLICED, NOT COUNTED. A bare `toContain` proves the string is somewhere in the
+ * document, and this file has been fooled twice by the RSC flight payload —
+ * once on a serialized prop, once on a name that also occurs in markup — so
+ * "it appears twice" would be satisfied by one render plus one payload copy.
+ * What the spec claims is TWO RENDER SITES, so each is asserted inside its own
+ * element slice.
+ *
+ * The export is Spanish (`<html lang="es">`, D17 makes ES canonical), so the
+ * caption on disk is the `es` leaf. The `en` value is the client toggle's job
+ * and is pinned in `i18n.test.ts`, not here.
+ */
+describe.skipIf(!anyBuilt)("the authorship caption ships in the header AND the footer", () => {
+  const DOCUMENTS: [string, string][] = [
+    ["index.html", INDEX_HTML],
+    ["404.html", NOT_FOUND_HTML],
+    ["about/index.html", ABOUT_HTML],
+    ["glossary/index.html", GLOSSARY_HTML],
+  ];
+
+  /**
+   * Escape a dictionary value before it is interpolated into a `RegExp`.
+   *
+   * ADDED AT THE REVIEW, and it is not hypothetical hardening: every string
+   * below is RULED COPY that a future story may reword. `"Acerca del sitio"`
+   * becoming `"¿Qué es esto?"` is fine, but `"Acerca del sitio (FAQ)"` would
+   * turn the parentheses into a capture group — still matching, so a REAL
+   * mismatch could pass — and a `[` would throw `Invalid regular expression`,
+   * failing the guard while pointing at itself instead of at the copy change.
+   */
+  const rx = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  /** Occurrences of `needle` in `haystack` — the count these cases are named for. */
+  const countOf = (haystack: string, needle: string) => haystack.split(needle).length - 1;
+
+  for (const [label, file] of DOCUMENTS) {
+    it(`renders it once under the wordmark and once in the footer — ${label}`, () => {
+      /*
+       * EXISTENCE FIRST (review). `anyBuilt` only tests index.html and 404.html,
+       * so a PARTIAL export — the shape this file's own header comment says
+       * "must fail loudly, not skip" — reached `readFileSync` and threw a raw
+       * ENOENT naming a path, instead of this assertion naming the route.
+       */
+      expect(existsSync(file), `${label} missing from out/ — partial export`).toBe(true);
+      const html = readFileSync(file, "utf8");
+
+      const header = /<header[\s>][\s\S]*?<\/header>/.exec(html)?.[0] ?? "";
+      expect(header, `${label} has no <header> element at all`).not.toBe("");
+
+      /*
+       * ADJACENT, AND COUNTED — both added at the review, because slicing alone
+       * proves only "somewhere in this element, at least once", which is not
+       * what this case is named for.
+       *
+       * The adjacency regex IS the WCAG 2.5.3 ruling in assertion form: the
+       * caption is the anchor's NEXT SIBLING, never its child. Moving the
+       * `<span>` inside the `<Link>` renames the first focusable element on all
+       * 1,406 routes, and that is the single most load-bearing decision here.
+       */
+      expect(
+        header,
+        `${label}: the caption must sit immediately AFTER the closing </a>, as a sibling — never inside the home link (WCAG 2.5.3)`
+      ).toMatch(new RegExp(`>${rx(es.app.siteName)}</a><span[^>]*>${rx(es.chrome.signature)}</span>`));
+      expect(countOf(header, es.chrome.signature), `${label}: exactly one header render`).toBe(1);
+
+      const footer = /<footer[\s>][\s\S]*?<\/footer>/.exec(html)?.[0] ?? "";
+      expect(footer, `${label} has no <footer> element at all`).not.toBe("");
+      expect(countOf(footer, es.chrome.signature), `${label}: exactly one footer render`).toBe(1);
+
+      /*
+       * NOT A REGRESSION IN THE SAME EDIT (Story 2.19 Task 6.8). The two footer
+       * links sit inside running text and were a WCAG 1.4.1 failure — axe's
+       * only serious finding on 30 of 32 route x theme x locale cells — until
+       * they were PERSISTENTLY underlined. Adding a line beneath them is
+       * exactly the kind of change that quietly reflows a className, so the
+       * underline is asserted here rather than assumed.
+       *
+       * 🔴 TOKEN EQUALITY, NOT `/\bunderline\b/` (review). That pattern was
+       * VACUOUS: `\b` fires on the hyphen, so it matched `hover:no-underline`
+       * and `underline-offset-2` on their own. An edit dropping the persistent
+       * `underline` while keeping the hover class — the exact 1.4.1 regression
+       * this block exists to catch — passed green in all four documents.
+       */
+      for (const linkLabel of [es.chrome.footer.aboutLink, es.chrome.footer.glossaryLink]) {
+        const anchor = new RegExp(`<a[^>]*>${rx(linkLabel)}</a>`).exec(footer)?.[0];
+        expect(anchor, `${label}: no footer anchor for "${linkLabel}"`).toBeDefined();
+        const classes = (/class="([^"]*)"/.exec(anchor ?? "")?.[1] ?? "").split(/\s+/);
+        expect(
+          classes,
+          `${label}: "${linkLabel}" lost its PERSISTENT underline (WCAG 1.4.1, axe link-in-text-block)`
+        ).toContain("underline");
+      }
+    });
+  }
+});
+
 describe.skipIf(!anyBuilt)("exported index.html canonical markup (AC 2)", () => {
   it("is Spanish with no hardcoded theme class (dark is canonical via :root)", () => {
     const html = readFileSync(INDEX_HTML, "utf8");

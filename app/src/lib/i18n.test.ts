@@ -214,6 +214,76 @@ describe("t() production fallback policy", () => {
 });
 
 /*
+ * ══════════════ THE AUTHORSHIP CAPTION — `chrome.signature` ══════════════
+ *
+ * THE PROPERTY IS "THE NAME IS NOT TRANSLATED", and it is pinned here because
+ * nothing else in the tree can hold it. `en: Dictionary` guards key SHAPE only
+ * — it would accept "Por Juan Camilo Rojas" in the `en` leaf, or a helpfully
+ * localised "By John Charles Reds", without a murmur. A translation pass, a
+ * find-and-replace, or an LLM tidying the dictionary are all exactly the edits
+ * that break this and all exactly the edits a shape check waves through.
+ *
+ * SO THE ASSERTION IS ON THE NAME AS A SUBSTRING, not on the whole sentence:
+ * the connective IS translated (`Por` / `By`), because an English "By" sitting
+ * in Spanish chrome is the untranslated-string defect facing the other way.
+ * The two halves are asserted separately so a failure names which one moved.
+ */
+describe("chrome.signature (the authorship caption)", () => {
+  const NAME = "Juan Camilo Rojas";
+
+  /*
+   * ONE CASE, NOT THREE (review). The first draft carried two more:
+   *
+   *   · a "byte-identically" case that was strictly WEAKER than the exact
+   *     `toBe` below and could only ever fail in lockstep with it, and whose
+   *     stated rationale ("a NBSP would pass `toContain` on each side") was
+   *     false — a NBSP fails the `toContain` guard on the line above it. It
+   *     also used `slice(indexOf(NAME))`, which silently degrades to
+   *     `slice(-1)` when the name is ABSENT: split into its own `it()`, a
+   *     dictionary that had rewritten the name in one locale would compare
+   *     "s" to "s" and pass.
+   *   · a "not a table <caption>" case whose body only asserted that the
+   *     caption does not contain "Ordenado"/"Sorted" — unfalsifiable given the
+   *     exact equality here, and therefore a comment wearing an assertion's
+   *     clothes. Its reasoning is preserved as the note below, which is what it
+   *     always was.
+   *
+   * THE NOTE, BECAUSE THE NAMES COLLIDE: this string is styled `type-caption`,
+   * and this file's caption inventory pins 28/4/6/8 composed
+   * `<table><caption>` strings. Those are rendered table captions;
+   * `chrome.signature` renders no table, so it does NOT belong in that
+   * inventory and those counts do not move. Adding it would re-create the
+   * `metreTableCaption` off-by-one the inventory itself documents — a caption
+   * counted here and rendered nowhere.
+   */
+  it("translates the connective and NOTHING else — the name is not localised", () => {
+    // Exact bytes, both locales: strictly stronger than any substring check,
+    // and the failure message names which half moved.
+    expect(es.chrome.signature, "the es caption").toBe(`Por ${NAME}`);
+    expect(en.chrome.signature, "the en caption").toBe(`By ${NAME}`);
+
+    /*
+     * THE INVARIANT SPELLED OUT INDEPENDENTLY OF THE LITERALS ABOVE, so that
+     * rewording the connective in a later story does not silently retire the
+     * property this case exists for. `en: Dictionary` guards key SHAPE only —
+     * it would accept a helpfully localised name without a murmur.
+     */
+    for (const [label, value] of [
+      ["es", es.chrome.signature],
+      ["en", en.chrome.signature],
+    ] as const) {
+      expect(value.indexOf(NAME), `${label} no longer contains the name verbatim`).toBeGreaterThan(
+        -1
+      );
+      expect(value.slice(value.indexOf(NAME)), `${label} altered the name`).toBe(NAME);
+    }
+
+    expect(t("chrome.signature", "es")).toBe(es.chrome.signature);
+    expect(t("chrome.signature", "en")).toBe(en.chrome.signature);
+  });
+});
+
+/*
  * Story 2.5 Task 9.2: the enums.metric namespace is keyed by TeamKeyStatistics
  * field name (MetricCode is string-identical to the field it ranks), so a
  * field added to the contract must not silently render an unlabelled row.

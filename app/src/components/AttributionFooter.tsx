@@ -47,6 +47,24 @@ export function AttributionFooter() {
             {t("chrome.footer.glossaryLink")}
           </Link>
         </p>
+        {/*
+         * THE SIGN-OFF, a SECOND paragraph rather than a clause appended to the
+         * first. Two reasons, both load-bearing:
+         *
+         *   1. `chrome.footer.attribution` is RULED COPY (EXPERIENCE.md → OQ-3)
+         *      and `static-output.test.ts` splits it on ". " to prove the
+         *      independence disclaimer still stands alone on /about. Growing
+         *      that string would move a gate that exists to catch exactly that.
+         *   2. The /about and /glossary links must stay at the END of the
+         *      running text they sit in — their persistent underline (Story
+         *      2.19 Task 6.8, axe `link-in-text-block`) is untouched above, and
+         *      nothing may come between them and their paragraph.
+         *
+         * Same `type-caption text-ink-secondary` as the line above: this is a
+         * quiet sign-off, not a second voice. The name carries no `lang` mark —
+         * see the `chrome.signature` note in es.ts.
+         */}
+        <p className="mt-1 type-caption text-ink-secondary">{t("chrome.signature")}</p>
       </div>
     </footer>
   );

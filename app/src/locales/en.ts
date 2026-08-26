@@ -13,6 +13,8 @@ export const en: Dictionary = {
   },
   chrome: {
     skipLink: "Skip to content",
+    // Connective translated, name NOT — see the es.ts note for the `lang` ruling.
+    signature: "By Juan Camilo Rojas",
     languageToggle: {
       label: "Language",
       es: "ES",

@@ -84,18 +84,87 @@ export function SiteHeader() {
          * two rows only at widths where one row cannot fit.
          *
          * `min-h-14` rather than `h-14` so the height is unchanged at every
-         * width that does not wrap — verified at 320, 390 and 1920.
+         * width that does not wrap.
          *
-         * KNOWN AND ACCEPTED: at a wrapped width the sticky header is ~112 px
-         * while `scroll-padding-top: 4.5rem` (globals.css) still reserves 72,
-         * so an anchored heading lands slightly high at 200% zoom. That is a
-         * smaller defect than a document that scrolls sideways, and it is
-         * recorded rather than left to be re-found.
+         * ⚠️ THE ROW NOW WRAPS ON SMALL PHONES TOO, NOT ONLY AT 195
+         * (spec-sign-the-project). The authorship caption below widens the
+         * identity block from 76 to 127 CSS px in `es` (122 in `en`) — flexbox
+         * breaks lines on each item's MAX-CONTENT, so that extra width is spent
+         * before any shrinking happens, and neither `min-w-0` nor letting the
+         * caption wrap can buy it back.
+         *
+         * PROVENANCE OF EVERY NUMBER BELOW, because an earlier draft of this
+         * comment attributed all of them to the 96-cell matrix and only three
+         * widths are in it:
+         *
+         *   · 320, 390 and 195 are MATRIX widths (320/390/195 × dark/light ×
+         *     es/en × 8 routes = 96 cells). Document overflow: 0 of 96.
+         *   · The thresholds are a separate 1 px sweep, per locale.
+         *   · 412 / 768 / 1440 / 1920 are separate spot measurements.
+         *
+         *   width          header before -> after     document scrollWidth
+         *   195            107 -> 124 (already wrapped)  195, no overflow
+         *   320            57  -> 118 (WRAPS)            320, no overflow
+         *   412/768/1440/1920  57 -> 62 (one row)        no overflow
+         *
+         * THE THRESHOLD IS LOCALE-DEPENDENT and the two differ, because `Por`
+         * is wider than `By`:
+         *
+         *   es  wraps at ≤ 341 px, one row from 342
+         *   en  wraps at ≤ 337 px, one row from 338
+         *
+         * Do not collapse these to one number — the 96-cell run caught `/404`
+         * in `en` sitting one row while `es` sat two at the same width, which
+         * is exactly this gap.
+         *
+         * DOCUMENT OVERFLOW IS 0/96 AT EVERY MATRIX WIDTH, so WCAG 1.4.10 — the
+         * thing R2/D8 actually fixed — is untouched. What changed is HEIGHT, and
+         * it was a deliberate call: the signature stays visible at every width
+         * rather than being hidden on small phones.
+         *
+         * 🔴 THE HEIGHT IS A SHARED CONTRACT, AND IT NOW HAS THREE CONSUMERS
+         * THAT ENCODE 56 px. `globals.css`'s `scroll-padding-top: 4.5rem` says
+         * in its own comment "change h-14 and this must follow", and
+         * `CompareChartsSection` pins `sticky top-14`, `max-md:scroll-mt-28`
+         * and a `rootMargin` of -104px to a 56 px bar. See `deferred-work.md`
+         * — this is filed with measurements, not left to be re-found.
          */}
         <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center gap-tile-gap px-gutter-mobile md:px-gutter-desktop">
-          <Link href="/" className="flex min-h-11 items-center type-title text-ink-primary">
-            {t("app.siteName")}
-          </Link>
+          {/*
+           * THE IDENTITY BLOCK: wordmark over authorship caption.
+           *
+           * THE CAPTION IS A SIBLING OF THE LINK, NEVER ITS CHILD. Inside the
+           * anchor it would join the accessible name, so the FIRST focusable
+           * element on all 1,406 routes would announce "WC Stats Por Juan
+           * Camilo Rojas, link" — and narrowing that back with `aria-label`
+           * fails WCAG 2.5.3 (Label in Name), which requires the accessible
+           * name to CONTAIN the visible text, not a subset of it. The link's
+           * purpose is the home page; authorship is not a link purpose.
+           *
+           * The `<Link>` KEEPS `min-h-11`. It is a header touch target and the
+           * row comment above commits to every one of them holding 44 px
+           * (MIN_HIT_PX, UX-DR15) through the wrap. Measured: the link's hit
+           * box is 44 px tall at every width, and the caption sits flush under
+           * the title (gap 0) at 12 px in ink-secondary. Its WIDTH tracks the
+           * caption and is locale-dependent — 127 px in `es`, 122 in `en`.
+           *
+           * NO `lang` MARK on the name (WCAG 3.1.2 proper-name exemption; see
+           * the `chrome.signature` note in es.ts for the full ruling).
+           *
+           * NO `justify-center` (review): this is a shrink-to-fit column whose
+           * height is its content, so there is never free main-axis space to
+           * distribute and the class was inert. `min-w-0` stays and is honest
+           * about what it does — it does NOT prevent the wrap and never could,
+           * because flex line breaking uses the hypothetical main size
+           * (max-content), which `min-w-0` does not reduce. It governs how the
+           * block yields once a line is already chosen.
+           */}
+          <div className="flex min-w-0 flex-col">
+            <Link href="/" className="flex min-h-11 items-center type-title text-ink-primary">
+              {t("app.siteName")}
+            </Link>
+            <span className="type-caption text-ink-secondary">{t("chrome.signature")}</span>
+          </div>
           {/*
            * Header search (Story 2.14). It KEEPS this slot's `data-slot` and
            * `min-w-0 flex-1` on its own root — `min-w-0` is what lets the input

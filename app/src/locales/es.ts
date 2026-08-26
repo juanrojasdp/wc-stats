@@ -26,6 +26,26 @@ export const es = {
   },
   chrome: {
     skipLink: "Saltar al contenido",
+    /*
+     * THE AUTHORSHIP CAPTION, rendered in exactly two places: under the
+     * wordmark in `SiteHeader` and as the footer's sign-off line. One key, two
+     * call sites — the string is the same sentence in both, so minting a
+     * `header.*` and a `footer.*` twin would be two keys that must never
+     * disagree.
+     *
+     * ONLY THE CONNECTIVE IS TRANSLATED. "Juan Camilo Rojas" is byte-identical
+     * to the `en` leaf and `i18n.test.ts` pins that: a personal name is not a
+     * string this dictionary gets to localise, and the invariance is asserted
+     * rather than left to whoever edits next.
+     *
+     * NO `lang` MARK on the name at either call site. WCAG 3.1.2 exempts proper
+     * names outright, and Story 2.19 Task 6.13 settled the shape of this
+     * decision here: a mark asserts a language change that must actually occur
+     * (`PhysicalSection` omits it on `sprint` for the same reason). Marking the
+     * name `lang="en"` on an ES page would claim English phonemes for a
+     * Spanish-origin name — worse than the unmarked default, not better.
+     */
+    signature: "Por Juan Camilo Rojas",
     languageToggle: {
       label: "Idioma",
       es: "ES",

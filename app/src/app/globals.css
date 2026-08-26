@@ -441,7 +441,19 @@
      fixes the #main-content skip link.
      4.5rem = the header's own 3.5rem (h-14) + 1rem of breathing room, so a
      heading does not sit flush against the bar. The header height is the
-     load-bearing half: change h-14 and this must follow. */
+     load-bearing half: change h-14 and this must follow.
+
+     ⚠️ THE HEADER IS NO LONGER 3.5rem AND THIS HAS NOT FOLLOWED YET
+     (spec-sign-the-project). Measured: 62 px one-row at every width from ~342
+     (es) / ~338 (en) up, and 118 px where the row wraps below that; 124 px at a
+     195 px layout viewport. So the breathing room is 10 px rather than 16 in the
+     common case, and a wrapped bar OVERLAPS an anchored heading by 46 px — it is
+     hidden, not merely tight. Deliberately left as one value rather than patched
+     to a bigger constant: `scroll-padding-top` is document-wide, the honest fix
+     is a `--header-h` custom property driven by the same breakpoint and consumed
+     here AND by `CompareChartsSection`'s `top-14` / `scroll-mt-28` / -104px
+     rootMargin, and that is a shared-contract change rather than a caption's.
+     Filed with measurements in deferred-work.md. */
   html {
     scroll-padding-top: 4.5rem;
   }

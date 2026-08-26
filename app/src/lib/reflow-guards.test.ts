@@ -72,8 +72,30 @@ const GUARDS: Guard[] = [
       "R2 owner 1 (Story 2.2). The header row's min-content is 237 CSS px, so it " +
       "alone made the document scroll sideways at 195 on every route — including " +
       "/about, /glossary and /404. `flex-wrap` + `min-h-14` reflows it to two rows " +
-      "instead of shrinking a 44px touch target or truncating the site name; the " +
-      "row height is unchanged at 320, 390, 412, 768, 1440 and 1920.",
+      "instead of shrinking a 44px touch target or truncating the site name. " +
+      "SMALL PHONES NOW WRAP TOO, since the authorship caption landed under the " +
+      "wordmark (spec-sign-the-project): it widens the identity block 76 -> 127 " +
+      "in es (122 in en) and flexbox breaks lines on max-content, so the " +
+      "threshold is LOCALE-DEPENDENT — es wraps at <=341, en at <=337, measured " +
+      "by a 1px sweep per locale. Matrix widths are 320/390/195 only (x " +
+      "dark+light x es+en x 8 routes = 96 cells): document overflow 0/96, so " +
+      "1.4.10 is unaffected — what moved is HEIGHT. 57 -> 62 one-row (spot-" +
+      "measured at 412, 768, 1440, 1920); 57 -> 118 wrapped at 320; 107 -> 124 " +
+      "at 195, where the row already wrapped and gains one caption line.",
+  },
+  {
+    file: "components/SiteHeader.tsx",
+    needle: "flex min-w-0 flex-col",
+    because:
+      "The identity block (spec-sign-the-project): the wordmark <Link> and the " +
+      "authorship caption stacked, with the caption as a SIBLING of the anchor. " +
+      "Flattening this back to a bare <Link> deletes the caption; moving the " +
+      "<span> INSIDE the anchor renames the first focusable element on all 1,406 " +
+      "routes and fails WCAG 2.5.3 (Label in Name) if narrowed with aria-label. " +
+      "`min-w-0` lets the block yield inside the flex row; it does NOT set the " +
+      "wrap threshold, which is max-content driven. The sibling relationship is " +
+      "asserted behaviourally in components/SiteSignature.test.tsx and on the " +
+      "exported markup in app/static-output.test.ts.",
   },
   {
     file: "components/MatchHero.tsx",
