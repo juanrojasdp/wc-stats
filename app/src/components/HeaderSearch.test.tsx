@@ -192,16 +192,31 @@ async function search(user: ReturnType<typeof userEvent.setup>, query: string) {
   return input;
 }
 
+/**
+ * Story 3.5 — `LocaleProvider` now detects the locale from
+ * `navigator.language` when nothing is persisted, and jsdom's default is
+ * "en-US". This file's assertions read SPANISH strings, so it states the
+ * Spanish browser it assumes; the one English test re-pins in its own body.
+ */
+function pinLanguage(tag: string): void {
+  vi.spyOn(window.navigator, "language", "get").mockReturnValue(tag);
+}
+
 beforeEach(() => {
   installDialogStubs();
   stubIndexFetch();
   resetTournamentIndexCache();
+  pinLanguage("es-CO");
 });
 
 afterEach(() => {
   // See harness fact 1 — without this the DOM leaks into the next test.
   cleanup();
+  // `unstubAllGlobals` and `restoreAllMocks` restore DIFFERENT things: the
+  // first undoes `vi.stubGlobal`, the second undoes the `navigator.language`
+  // spy above. Both are needed.
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
   resetTournamentIndexCache();
 });
 
@@ -553,6 +568,13 @@ describe("HeaderSearch — results (AC 1, AC 3, AC 8)", () => {
     expect(combobox()).toHaveAccessibleName(es.search.label);
     cleanup();
 
+    /*
+     * Story 3.5 — the second mount is the ENGLISH half of this test, so the
+     * browser it mounts under is re-pinned to say so. `initialLocale` alone is
+     * no longer enough: with nothing persisted the provider's mount effect
+     * detects, and the file-wide "es-CO" pin would put Spanish back.
+     */
+    pinLanguage("en-GB");
     render(
       <ThemeProvider>
         <LocaleProvider initialLocale="en">

@@ -30,16 +30,22 @@ export function LocaleProvider({
   const [announcement, setAnnouncement] = useState("");
 
   useEffect(() => {
-    // Restoring a persisted preference is not a user action: no announcement,
-    // no re-persist. This is the AD-12 single post-hydration swap: state
-    // cannot be initialized from storage during render (SSG hydration
-    // mismatch), so the one setState-in-effect is deliberate. Nothing stored
-    // means nothing to restore — initialLocale stands.
+    // Precedence: a stored CHOICE, then the browser's own preference read
+    // from navigator.language, then initialLocale. This is the AD-12 single
+    // post-hydration swap: state cannot be initialized from storage during
+    // render (SSG hydration mismatch), so the one setState-in-effect is
+    // deliberate.
+    //
+    // Neither branch is a user action, so neither announces — and a DETECTED
+    // locale is additionally never persisted (FR-37, Story 3.5). Persisting a
+    // guess would make it indistinguishable from a choice and would silently
+    // outlive a change of browser language. Only `setLocale` below writes.
+    //
+    // There is deliberately NO early return: the effect must reach the
+    // detection call for a first-time visitor, which is precisely the case an
+    // empty `localStorage` used to skip.
     const stored = readStorage(STORAGE_KEYS.locale);
-    if (stored === null) {
-      return;
-    }
-    const next = resolveLocale(stored);
+    const next = resolveLocale(stored, window.navigator.language);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocaleState(next);
     // Normally a no-op re-assertion of the pre-paint script's verdict; it

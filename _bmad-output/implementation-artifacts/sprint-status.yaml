@@ -3398,7 +3398,7 @@ development_status:
   # i18n-provider.tsx, i18n-provider.test.tsx (NEW) and — as a measured
   # regression repair, not a feature — the navigator pin in TournamentHub.test.tsx,
   # HeaderSearch.test.tsx and SiteSignature.test.tsx. Independent of 3-1..3-4.
-  3-5-first-visit-locale-detection: ready-for-dev
+  3-5-first-visit-locale-detection: review
   # SHIPPED at 92eec27 (`chrome.signature`, one key, two surfaces: under the
   # wordmark in SiteHeader and as the footer sign-off). The earlier note here
   # said "NOT yet committed to main" and was stale from 2026-08-26; corrected.
@@ -4044,3 +4044,43 @@ action_items:
 #   convention to match or break. And the ledger's proposed locale-keyed header token is
 #   NOT what UX-DR24 ruled; the three ruled values ship, the locale axis is evidence-gated.
 #   Story 3-10 is the epic's last, so it carries A6: the Epic 3 retrospective is REQUIRED.
+
+# 2026-08-26: story 3-5 ready-for-dev -> review. FIRST-VISIT LOCALE DETECTION SHIPPED. The
+#   defect it closes: `resolveLocale(stored)` was persisted-value-or-`es` in BOTH the pure
+#   function and the checked-in pre-paint ES5 literal, so every first-time visitor on Earth was
+#   served Spanish. Now `resolveLocale(stored, preferred)` reads `navigator.language`'s PRIMARY
+#   SUBTAG when nothing valid is persisted, in both implementations, and `i18n-provider.tsx`'s
+#   mount effect no longer returns early on empty storage. Verified in a real browser across 7
+#   Chrome launches (fresh `--user-data-dir` each, `--lang=<tag>`, export served on port 8137):
+#   `--lang=en-US` gives English on `/`, a match route, `/about` and a player route.
+#   THREE FACTS A LATER SESSION NEEDS:
+#   (1) THE 25-TEST BLAST RADIUS IS REAL AND ITS REMEDY IS PINNING, NOT WEAKENING. Detection
+#       turned 23 green component tests red across TournamentHub/HeaderSearch/SiteSignature
+#       (plus 2 in bootstrap.test.ts, rewritten anyway). Those files mount `LocaleProvider` with
+#       empty localStorage, and jsdom's default `navigator.language` is "en-US" — so their locale
+#       had been decided by an ambient default rather than by the test. Each now states the
+#       browser it assumes. Detection was NOT weakened: no `initialLocale`-wins branch, no
+#       opt-out prop, no skipped effect. All three suites: 44 passed, 0 failed.
+#   (2) `wcstats.locale` IS DELIBERATELY NEVER WRITTEN BY DETECTION. Only an explicit toggle
+#       persists, and detection never announces either. A guess must stay distinguishable from a
+#       choice, or it silently outlives a change of browser language. This is proved only by
+#       tests that LOOK (storage null + live region empty), with a paired toggle control so the
+#       silence assertions cannot pass against a provider whose live region never works.
+#   (3) ANY NEW JSDOM RENDER TEST THAT MOUNTS `LocaleProvider` MUST NOW PIN
+#       `navigator.language` — including when it assumes Spanish. Story 3-8's
+#       `MatchDeepLink.test.tsx` is the first one that needs it and does NOT have it: it was
+#       created untracked and in-flight DURING 3-5's run, takes 3 failures from this change, and
+#       under A3 was neither edited nor staged by 3-5. Filed in the deferred-work ledger with
+#       3-8 named as successor. 3-5's Task 7.5 grep expected six `LocaleProvider` renderers;
+#       there are now seven.
+#   ALSO DEFERRED: `static-output.test.ts:171`'s exported-script marker list does not include
+#   "navigator", so a detection-less export would pass the only export-layer guard silently.
+#   That file is story 3-6's; filed rather than taken (3-5's staging list is closed at 8 paths).
+#   WINDOWS/TOOLING NOTE FOR THE NEXT VERIFICATION PASS: junctioning `app/node_modules` into a
+#   git worktree NO LONGER WORKS — Turbopack fails with "Symlink [project]/node_modules is
+#   invalid, it points out of the filesystem root", and `npm ci` into a worktree died repeatedly
+#   on Windows ENOTEMPTY. A worktree under the deep scratch path also failed `git worktree add`
+#   with "Filename too long"; use a short root such as C:/wt35.
+#   Numbers: 55 files / 1,367 tests / 0 skipped (baseline 53 / 1,334 / 0). +33 tests = +7
+#   bootstrap.test.ts, +19 new i18n-provider.test.tsx, +7 from 3-8's MatchDeepLink.test.tsx.
+#   lint, typecheck and the full build chain all green.

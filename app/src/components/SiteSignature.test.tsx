@@ -51,6 +51,20 @@ function stubNeverSettlingFetch(): void {
   );
 }
 
+/**
+ * Story 3.5 — `LocaleProvider` now detects the locale from
+ * `navigator.language` when nothing is persisted, and jsdom's default is
+ * "en-US". These cases are generated from `DICTIONARIES`, so the pin has to be
+ * per-locale rather than file-wide: each `it` states the browser it assumes,
+ * including the Spanish ones that used to agree with the ambient default only
+ * by accident.
+ */
+function pinLanguage(locale: "es" | "en"): void {
+  vi.spyOn(window.navigator, "language", "get").mockReturnValue(
+    locale === "en" ? "en-GB" : "es-CO"
+  );
+}
+
 function Wrapper({ children, locale }: { children: ReactNode; locale: "es" | "en" }) {
   return (
     <ThemeProvider>
@@ -67,11 +81,13 @@ const DICTIONARIES = [
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe("the authorship caption renders in BOTH locales", () => {
   for (const [locale, dictionary] of DICTIONARIES) {
     it(`puts it under the wordmark as a SIBLING of the home link — ${locale}`, () => {
+      pinLanguage(locale);
       stubNeverSettlingFetch();
       render(
         <Wrapper locale={locale}>
@@ -98,6 +114,7 @@ describe("the authorship caption renders in BOTH locales", () => {
     });
 
     it(`renders it once in the footer, below the attribution — ${locale}`, () => {
+      pinLanguage(locale);
       render(
         <Wrapper locale={locale}>
           <AttributionFooter />
@@ -132,6 +149,7 @@ describe("the authorship caption renders in BOTH locales", () => {
    * default rather than better.
    */
   it("marks the name with no `lang` attribute in either chrome surface", () => {
+    pinLanguage("es");
     stubNeverSettlingFetch();
     render(
       <Wrapper locale="es">

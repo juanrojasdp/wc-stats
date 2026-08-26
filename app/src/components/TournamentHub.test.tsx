@@ -3,7 +3,7 @@
 import "@testing-library/jest-dom/vitest";
 import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { TournamentHub } from "@/components/TournamentHub";
 import type { Tournament } from "@/lib/contract/contract-types";
@@ -52,8 +52,20 @@ function disclosureCount(): number {
   );
 }
 
+/*
+ * Story 3.5 — `LocaleProvider` now detects the locale from
+ * `navigator.language` when nothing is persisted, and jsdom's default is
+ * "en-US". Every assertion in this file reads a SPANISH string, so the file
+ * must state the Spanish browser it assumes rather than inherit an ambient
+ * default that used to be ignored.
+ */
+beforeEach(() => {
+  vi.spyOn(window.navigator, "language", "get").mockReturnValue("es-CO");
+});
+
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
   window.location.hash = "";
 });
 

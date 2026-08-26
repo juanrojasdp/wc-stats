@@ -4,7 +4,7 @@ baseline_commit: 9f76f40
 
 # Story 3.5: First-Visit Locale Detection
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -669,11 +669,257 @@ stack is already installed), no config change, no locale key, no contract touch,
 
 ### Agent Model Used
 
+`claude-opus-5[1m]` (Claude Code, bmad-dev-story).
+
 ### Debug Log References
+
+**Task 1.1 — `git status --porcelain` at start (verbatim):**
+
+```
+ M app/eslint.config.mjs
+ M app/scripts/assert-no-external-origins.mjs
+ M app/src/components/DefensiveActionsSection.tsx
+ M app/src/components/ExpertLayer.tsx
+ M app/src/components/MovementToReceiveSection.tsx
+ M app/src/components/OffersToReceiveSection.tsx
+ M app/src/components/PassNetworksSection.tsx
+ M app/src/components/PitchPanel.tsx
+ M app/src/components/ShotMapsSection.tsx
+ M app/src/components/TacticalLayer.tsx
+ M app/src/components/TournamentHub.tsx
+ M app/src/lib/assert-no-external-origins.test.ts
+ M app/src/lib/expert-logs.ts
+ M app/src/lib/i18n.test.ts
+?? 17
+?? _bmad-output/implementation-artifacts/3-1-build-gate-lint-gate-correction.md
+?? app/src/lib/match-anchors.test.ts
+?? app/src/lib/match-anchors.ts
+?? app/src/lib/site-origin.test.ts
+?? app/src/lib/site-origin.ts
+?? app/src/lib/use-anchor-nonce.ts
+```
+
+**Task 1.2 — all seven owned paths CLEAN.** `bootstrap.ts`, `bootstrap.test.ts`,
+`i18n-provider.tsx`, `SiteSignature.test.tsx`, `TournamentHub.test.tsx`,
+`HeaderSearch.test.tsx` all clean; `i18n-provider.test.tsx` did not exist. Note
+`TournamentHub.tsx` (the component) is dirty under story 3-8, but `TournamentHub.test.tsx`
+is not — the Task 1.4 re-verification resolved in this story's favour, so the Task 7.1 slice
+was taken rather than aborted.
+
+**Task 1.3 — the two known Epic 3 collision files.** `app/src/app/page.tsx` and
+`app/src/components/SiteHeader.tsx` were both clean, and this story touches neither. Recorded
+as a checked fact, not an assumption.
+
+**Task 1.5 — baseline.** `53 files / 1,334 passed / 0 failed / 0 skipped` (`app/out` present,
+so no `describe.skipIf(!anyBuilt)` blocks skipped). Higher than the 1,306 measured at story
+creation because story 3-1's then-untracked `site-origin.test.ts` and 3-8's
+`match-anchors.test.ts` had entered the tree.
+
+**Task 2.3 — D2's gate firing.** `npm run typecheck` after the pure function alone:
+
+```
+src/lib/bootstrap.test.ts(78,12): error TS2554: Expected 2 arguments, but got 1.
+src/lib/bootstrap.test.ts(79,12): error TS2554: Expected 2 arguments, but got 1.
+src/lib/bootstrap.test.ts(83,12): error TS2554: Expected 2 arguments, but got 1.
+src/lib/bootstrap.test.ts(84,12): error TS2554: Expected 2 arguments, but got 1.
+src/lib/bootstrap.test.ts(85,12): error TS2554: Expected 2 arguments, but got 1.
+src/lib/bootstrap.test.ts(144,34): error TS2554: Expected 2 arguments, but got 1.
+src/lib/i18n-provider.tsx(42,18): error TS2554: Expected 2 arguments, but got 1.
+```
+
+Exactly one PRODUCTION error, at `i18n-provider.tsx:42`, as D2 predicted. The other six are
+`bootstrap.test.ts`'s own one-argument calls, which Task 4.2/4.3 rewrote.
+
+**Task 8 — the three RED runs (D11).**
+
+*R1, the drift red — the most important one.* ES5 literal reverted to persisted-or-`es`, pure
+function left updated. `npx vitest run src/lib/bootstrap.test.ts` -> **3 failed | 14 passed**,
+and the matrix named the combination:
+
+```
+FAIL  src/lib/bootstrap.test.ts > inline bootstrap script > agrees with the exported pure functions across the input matrix
+AssertionError: theme=undefined locale=undefined language=en-US: expected 'es' to be 'en'
+```
+
+The `world` label added at Task 4.3 is what makes the failure self-describing rather than a
+bare `expected 'es' to be 'en'` with 240 candidate combinations behind it.
+
+*R2, the detection red.* Detection reverted in BOTH implementations -> **4 failed | 13 passed**:
+`reads ONLY the primary subtag, case-insensitively`, `falls through to detection when the
+stored value is not a valid locale`, `first-time visitor whose browser asks for English:
+English before paint`, `storage and matchMedia throwing still detects the locale, theme dark`.
+The **matrix stayed GREEN** under R2 — correct, and worth stating: it is a *drift* test, not a
+feature test. R1 and R2 catch different failures and neither subsumes the other.
+
+*R3, the provider red.* `if (stored === null) { return; }` restored ->
+`npx vitest run src/lib/i18n-provider.test.tsx` -> **9 failed | 10 passed**, first-visit English
+cases failing `expected 'es' to be 'en'` and the DOM case failing `expected '' to be 'es'`.
+
+*Task 8.4* — all three reverts restored from byte-for-byte backups and `git diff` reviewed line
+by line. Diffstat confirmed no whole-file CRLF rewrite: `bootstrap.ts 47/9`,
+`i18n-provider.tsx 15/9`, `bootstrap.test.ts 159/29`, `SiteSignature.test.tsx 18/0`.
+
+**Task 9 — AC 5 in a real browser (D12).** Seven launches, each a fresh `--user-data-dir`
+(so `localStorage` starts empty), `app/out` served on private port 8137, CDP over the page
+target's `webSocketDebuggerUrl`. `Emulation.setLocaleOverride` was NOT used; `--lang=<tag>`
+was, and every run asserts `navigator.language` itself.
+
+| # | launch | nav.language | `<html lang>` | class | body | `wcstats.locale` | `<title>` |
+|---|---|---|---|---|---|---|---|
+| 1 | `--lang=en-US` `/` | `en-US` | `en` | `locale-en` | **EN** | `null` | Spanish |
+| 2 | `--lang=fr-FR` `/` | `fr-FR` | `es` | `locale-es` | ES | `null` | Spanish |
+| 3 | `--lang=es-CO` `/` | **`es-419`** | `es` | `locale-es` | ES | `null` | Spanish |
+| 4 | `--lang=en-US` `/`, `wcstats.locale="es"` seeded, reloaded | `en-US` | `es` | `locale-es` | ES | `"es"` | Spanish |
+| 5 | `--lang=en-US` `/matches/m001-mexico-south-africa/` | `en-US` | `en` | `locale-en` | **EN** | `null` | `… · Fase de grupos · …` |
+| 6 | `--lang=en-US` `/about/` | `en-US` | `en` | `locale-en` | **EN** | `null` | `WC Stats — Analítica del Mundial 2026` |
+| 7 | `--lang=en-US` `/players/aaronson-brenden-usa/` | `en-US` | `en` | `locale-en` | **EN** | `null` | locale-neutral |
+
+Two things the run measured that were NOT assumed:
+
+- **Case 3: Chrome normalised `--lang=es-CO` to `navigator.language === "es-419"`.** The tag
+  asked for is not the tag delivered. It resolves `es` either way (same primary subtag), but
+  this is exactly why D12 insisted the run assert `navigator.language` itself rather than trust
+  the flag — a harness that only reported the flag would have reported a locale the browser
+  never had.
+- **A first draft of the harness gated on the provider's `[aria-live="polite"]` region and was
+  WRONG.** That region is server-rendered, so the gate passed instantly and case 5 (the heavy
+  match route) was probed BEFORE React re-rendered — reading a stale Spanish body under an
+  already-English `<html lang>`, i.e. reporting AC 3's exact failure mode as if it were real.
+  Replaced with a neutral DOM-quiescence gate (body text length + `<html>` className stable for
+  700 ms). Neutral matters: a gate that waited "until it says English" could not have
+  distinguished a pass from a hang.
+
+**Task 10.3 — a flake I introduced, found and fixed.** The first full-suite run after Task 7
+failed `i18n-provider.test.tsx > DOES persist and DOES announce …` with `Test timed out in
+5000ms`. Not a logic fault — `userEvent.setup()` waits on real timers between events, which is
+fine alone and exceeds the timeout under a loaded 55-file run. The repo already had the answer:
+`HeaderSearch.test.tsx:98` uses `userEvent.setup({ delay: null })`. Adopted, and the test has
+been green in every run since. Recorded because "passes alone, times out in the suite" is a
+class of red that is easy to wave through as ambient flakiness.
+
+**Known flake, NOT this story's:** `assert-schema-version.test.ts > passes on the current data
+tree` timed out once in a full run (the file documents this at `:36-53`). Re-run alone: **6
+passed**. It also failed once during story creation, and once here.
 
 ### Completion Notes List
 
+**What shipped.** `resolveLocale(stored, preferred)` now reads `navigator.language`'s primary
+subtag when nothing valid is persisted, in the pure function and in the checked-in pre-paint
+ES5 literal, and `i18n-provider.tsx`'s mount effect consults the same function instead of
+returning early on empty storage. A first-time visitor whose browser asks for English now gets
+English before first paint and again after hydration; everyone else still gets the canonical
+`es`. Nothing about detection is persisted or announced.
+
+**AC-by-AC.**
+
+- **AC 1 — primary subtag only.** `en`, `en-GB`, `en-US`, `EN-US`, `en-us`, `en-Latn-US` -> `en`;
+  `es*`, `fr*`, `de-DE`, `pt-BR`, `zh-CN`, `""`, `null`, `"garbage"`, `"-"` -> `es`. Also pinned
+  `enm` and `eng-GB` -> `es`, which is the case a `startsWith("en")` implementation would get
+  wrong. Precedence proved in both directions and through invalid stored values.
+- **AC 2 — both call sites, one edit.** The literal was updated in the same change and the
+  cross-check matrix gained its `navigator` dimension **inside** the existing loop:
+  4 themes x 4 stored locales x 5 language tags x 3 preference worlds = **240 combinations**,
+  with the count asserted so a mis-typed axis that collapsed to one value cannot pass silently.
+  The stub expresses three worlds — a tag, an empty tag, and **no `navigator` key at all** —
+  plus a fourth where `window.navigator` throws on access. D1 upheld: the literal reads
+  `window.navigator`, never bare `navigator`, and the no-navigator world is the case that would
+  have exposed a violation.
+- **AC 3 — the provider falls through.** Early return deleted; `resolveLocale(stored,
+  window.navigator.language)`. Proved by the new jsdom render test from both sides: the strings
+  AND `<html lang>` + the locale class, so "Spanish strings under `lang="en"`" cannot pass. D6
+  upheld — the DOM re-assertion stays unconditional and there is no `next === locale` early
+  return; a test asserts the re-assertion happens for a detected *Spanish* visitor too.
+- **AC 4 — a guess is not a choice.** No `writeStorage` and no `setAnnouncement` were added to
+  the effect; verified by reading and by grep — each still appears exactly once outside its
+  declaration, both inside `setLocale`. Because AC 4 is satisfied by the absence of code, it is
+  proved only by tests that look: every detection case asserts `wcstats.locale === null` and
+  asserts the polite live region is present *and* empty, queried structurally. The paired
+  control (a real toggle click) asserts the same region DOES fill and storage DOES get written —
+  without it, both silence assertions would have passed against a provider whose live region
+  never worked at all. Confirmed again in the browser: `wcstats.locale` was `null` after every
+  detection run.
+- **AC 5 — a real browser.** Seven launches, table above. English on `/`, a match route,
+  `/about` and a player route; `wcstats.locale` unset throughout; a stored choice beating a
+  detected guess.
+- **AC 6 — read and ACCEPTED, nothing implemented.** Confirmed rather than filed: in case 6
+  the body is English while `<title>` is `WC Stats — Analítica del Mundial 2026`, and in case 5
+  the title still carries `Fase de grupos`. That mixed-language rendered document is the
+  accepted consequence recorded in D20 §3.3 — it is already the shipped behaviour under a manual
+  toggle, the non-rendered fetch and the canonical both declare `es`, and if it causes harm that
+  harm IS D20-b re-open trigger (b). No metadata was touched.
+
+**Task 7 — the measured regression, repaired not weakened.** Detection turned 23 green
+component tests red across three files (the story predicted 25 across four; the other two were
+`bootstrap.test.ts`'s, already rewritten by Task 4). Cause: those files mount `LocaleProvider`
+with empty `localStorage` and jsdom's default `navigator.language` is `"en-US"`, so their locale
+was being decided by an ambient default instead of by the test — the A2 coincidence-green class
+arriving from the other direction. Each file now states the browser it assumes
+(`TournamentHub` and `HeaderSearch` file-wide; `SiteSignature` per-locale, because its cases are
+generated from a `DICTIONARIES` loop), and `HeaderSearch`'s one English test re-pins in its own
+body. Result: **44 passed, 0 failed** — the exact figure the trial worktree reached. Detection
+was not weakened to suit the tests: no `initialLocale`-wins branch, no opt-out prop, no skipped
+effect.
+
+**Task 7.5 — the renderer list is NO LONGER CLOSED at six.** `grep -rln "LocaleProvider"
+app/src` now returns **seven** files: the six named at story creation plus
+`app/src/components/MatchDeepLink.test.tsx`, which story 3-8 created *during* this story's run.
+It mounts a bare `<LocaleProvider>` and asserts Spanish strings, so it takes 3 failures from
+this change. **It is untracked and in-flight under story 3-8, so under A3 it was NOT edited and
+NOT staged.** Filed as deferred work with 3-8 named as successor, and called out in the journal
+entry — this is precisely the successor case Task 12.3 anticipated.
+
+**Verification detour worth recording.** The shared tree was left non-compiling by another
+session (`TacticalLayer.tsx` tripped `react-hooks/set-state-in-effect`, blocking link 1 of the
+build chain). Verification moved to an isolated worktree per the story's coordination note,
+where the whole-repo `eslint . --max-warnings 0` and `tsc --noEmit` both passed against
+HEAD + this slice — better evidence than a shared-tree run would have given. Two Windows
+gotchas cost time and are worth the next session's attention: a worktree under the deep scratch
+path failed `git worktree add` with *Filename too long*, and **junctioning `app/node_modules`
+into a worktree no longer works** — Turbopack rejects it with *Symlink [project]/node_modules is
+invalid, it points out of the filesystem root*, and `npm ci` into that worktree repeatedly died
+on Windows `ENOTEMPTY`. The other session fixed its lint error before the end, so the final
+`npm run build` ran unmodified in the shared tree and was green end to end.
+
+**Task 10.5 — NOT taken, and filed.** `static-output.test.ts:171` asserts the exported inline
+script contains `["wcstats.locale", "prefers-color-scheme", "locale-"]`; adding `"navigator"`
+would make a detection-less export fail. The file is clean, but it is on story 3-6's owned-paths
+list AND adding it would put a ninth path into a Task 11.1 staging list that is explicitly
+closed. Skipped on those two grounds and filed as deferred work with 3-6 / the Epic 3
+retrospective named as successor. It is also Juan's open question #2 — flagged, not silently
+decided. (The guard's value is real: it is the only export-layer check that would catch
+detection being dropped from the shipped script.)
+
 ### File List
+
+| path | change |
+|---|---|
+| `app/src/lib/bootstrap.ts` | modified — `resolveLocale(stored, preferred)`, `language()` reader in the ES5 literal, both header comments corrected |
+| `app/src/lib/bootstrap.test.ts` | modified — navigator dimension in the harness and the 240-combination matrix; `resolveLocale` describe rewritten and widened; first-visit English and navigator-throws cases added |
+| `app/src/lib/i18n-provider.tsx` | modified — early return removed, detection wired in, effect comment rewritten |
+| `app/src/lib/i18n-provider.test.tsx` | **added** — jsdom render test for AC 3, AC 4 and AC 5 (19 tests) |
+| `app/src/components/TournamentHub.test.tsx` | modified — file-wide `navigator.language` pin (regression repair) |
+| `app/src/components/HeaderSearch.test.tsx` | modified — file-wide pin + per-test re-pin for the English case (regression repair) |
+| `app/src/components/SiteSignature.test.tsx` | modified — per-locale pin helper called in all five cases (regression repair) |
+| `_bmad-output/implementation-artifacts/3-5-first-visit-locale-detection.md` | modified — this record |
+| `_bmad-output/implementation-artifacts/sprint-status.yaml` | modified — status flip + journal entry |
+| `_bmad-output/implementation-artifacts/deferred-work.md` | modified — two entries appended (3-8's `MatchDeepLink.test.tsx` pin; 3-6's exported-script marker). **WRITTEN BUT DELIBERATELY NOT STAGED** — see below. |
+
+**Why `deferred-work.md` is modified but not committed by this story.** Between this story's Task 1
+probe (where it was clean) and Task 12's write, story 3-8 appended its own uncommitted
+`## Closed by Story 3.8` block to the same file. Staging it would have committed another session's
+in-flight work, which A3 forbids and which is the exact failure the "concurrent session may commit
+your work" hazard describes, in reverse. The append preserved 3-8's block byte-for-byte (verified);
+the two new entries simply ride on whichever commit 3-8 makes. **Nothing is lost if they do not:**
+both deferred items are also written in full into the `sprint-status.yaml` journal entry, which this
+story does commit. Task 11.1's staging list is therefore honoured exactly as written — 8 paths, no
+ninth.
+
+**Final numbers.** `npm run lint` clean at `--max-warnings 0`. `npm run typecheck` clean.
+`npm test` -> **55 files / 1,367 tests / 0 skipped**, against a baseline of 53 / 1,334 / 0.
+Delta **+2 files, +33 tests**, fully accounted for: +7 in `bootstrap.test.ts` (10 -> 17), +19 in
+the new `i18n-provider.test.tsx`, and +7 from story 3-8's `MatchDeepLink.test.tsx`, which is
+not this story's. **0 newly skipped.** `npm run build` green end to end; the origin gate
+reported `12,683 text assets, 0 external subresources`.
 
 ---
 
@@ -681,6 +927,7 @@ stack is already installed), no config change, no locale key, no contract touch,
 
 | date | change |
 |---|---|
+| 2026-08-26 | Implemented. Detection added to both call sites and to the provider; new `i18n-provider.test.tsx` (19 tests); the measured 23-test regression across three render suites repaired with explicit `navigator.language` pins; all three A1 guards driven red; AC 5 verified across 7 real-browser launches. Status `ready-for-dev` -> `review`. |
 | 2026-08-26 | Story contexted from `epics.md:1222`. Blast radius (25 tests / 4 files) and its remedy measured in an isolated worktree; jsdom, Node and CDP behaviours probed and recorded as D1, D3, D8, D9, D12. |
 
 ---

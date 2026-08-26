@@ -6,14 +6,18 @@ import { STORAGE_KEYS } from "@/lib/storage";
  * canonical via :root; ONE inline script — rendered as the first element in
  * <body>, ahead of any content paint (layout.tsx documents why it is not a
  * <head> child) — corrects <html lang>, the locale class and the theme class
- * from persisted preferences before first paint. The script is a checked-in
+ * before first paint. Each of the two resolves the same way: a persisted
+ * preference if there is one, otherwise what the browser itself asks for
+ * (navigator.language for the locale, prefers-color-scheme for the theme),
+ * otherwise the canonical es/dark. The script is a checked-in
  * ES5 literal, deliberately NOT built from Function.prototype.toString():
  * build transforms (coverage instrumentation, refresh wrappers, downlevel
  * helpers) may rewrite the pure functions' bodies, and anything they inject
  * would ship into the pre-paint script sight-unseen. Drift between the
  * literal and the exported pure functions is caught by bootstrap.test.ts,
- * which evaluates the script against stubbed document/localStorage/matchMedia
- * and cross-checks the full input matrix against the functions.
+ * which evaluates the script against a stubbed document/localStorage/
+ * matchMedia/navigator and cross-checks the full input matrix against the
+ * functions.
  */
 
 export type Theme = "dark" | "light";
@@ -33,10 +37,26 @@ export function resolveTheme(stored: string | null, prefersDark: boolean | null)
   return "dark";
 }
 
-/** Persisted valid locale → it; anything else → canonical es. */
-export function resolveLocale(stored: string | null): Locale {
+/**
+ * Persisted override → navigator.language's primary subtag → canonical es
+ * (FR-37). Only the PRIMARY subtag is read: `en`, `en-GB` and `en-US` all
+ * resolve to `en`. This is a two-locale product, so a reader whose browser
+ * asks for neither Spanish nor English gets the canonical, not a guess —
+ * `fr-FR` resolves to `es`, deliberately.
+ *
+ * `preferred` is guarded truthily, not against `null`: it crosses an untyped
+ * boundary (the ES5 literal reads whatever `navigator` hands it), and folding
+ * `null`, `undefined` and `""` into one path is the property the bootstrap
+ * cross-check matrix exists to protect. A detected locale is a guess, never a
+ * choice — nothing here persists it; only the toggle writes storage (AD-10).
+ */
+export function resolveLocale(stored: string | null, preferred: string | null): Locale {
   if (stored === "es" || stored === "en") {
     return stored;
+  }
+  const primary = preferred ? preferred.toLowerCase().split("-")[0] : null;
+  if (primary === "en") {
+    return "en";
   }
   return "es";
 }
@@ -50,8 +70,15 @@ export function localeClass(locale: Locale): string {
 
 /*
  * Storage reads are try/catch (private mode / disabled storage reads as
- * absent) and classList add/remove preserves the next/font variable classes
- * already on <html>.
+ * absent), the navigator read is try/catch for the same reason (an absent or
+ * throwing `navigator` reads as "no preference"), and classList add/remove
+ * preserves the next/font variable classes already on <html>.
+ *
+ * `language()` reads `window.navigator`, never a bare `navigator`: the test
+ * evaluates this literal as `new Function("window", "document", …)` under
+ * vitest's node environment, where Node 24 exposes a REAL global `navigator`
+ * carrying the host machine's locale. A bare read would reach past the stub
+ * and make the matrix green for the wrong reason on any given machine.
  */
 export const bootstrapScript = `(function () {
   var resolveTheme = function (stored, prefersDark) {
@@ -63,9 +90,13 @@ export const bootstrapScript = `(function () {
     }
     return "dark";
   };
-  var resolveLocale = function (stored) {
+  var resolveLocale = function (stored, preferred) {
     if (stored === "es" || stored === "en") {
       return stored;
+    }
+    var primary = preferred ? preferred.toLowerCase().split("-")[0] : null;
+    if (primary === "en") {
+      return "en";
     }
     return "es";
   };
@@ -76,13 +107,20 @@ export const bootstrapScript = `(function () {
       return null;
     }
   };
+  var language = function () {
+    try {
+      return window.navigator.language || null;
+    } catch (error) {
+      return null;
+    }
+  };
   var prefersDark = null;
   try {
     prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   } catch (error) {
     prefersDark = null;
   }
-  var locale = resolveLocale(read(${JSON.stringify(STORAGE_KEYS.locale)}));
+  var locale = resolveLocale(read(${JSON.stringify(STORAGE_KEYS.locale)}), language());
   var theme = resolveTheme(read(${JSON.stringify(STORAGE_KEYS.theme)}), prefersDark);
   var root = document.documentElement;
   root.lang = locale;
