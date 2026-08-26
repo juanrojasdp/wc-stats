@@ -3394,7 +3394,11 @@ development_status:
   3-2-metadatabase-canonical-urls: backlog
   3-3-og-image-twitter-card: backlog
   3-4-sitemap-robots: backlog
-  3-5-first-visit-locale-detection: backlog
+  # Context created 2026-08-26. Owns bootstrap.ts, bootstrap.test.ts,
+  # i18n-provider.tsx, i18n-provider.test.tsx (NEW) and — as a measured
+  # regression repair, not a feature — the navigator pin in TournamentHub.test.tsx,
+  # HeaderSearch.test.tsx and SiteSignature.test.tsx. Independent of 3-1..3-4.
+  3-5-first-visit-locale-detection: ready-for-dev
   # Implemented in the working tree at baseline d28e56f, NOT yet committed to
   # main. Owns app/src/components/SiteHeader.tsx, AttributionFooter.tsx,
   # src/locales/es.ts, en.ts, src/lib/i18n.test.ts and
@@ -3406,7 +3410,7 @@ development_status:
   # (two of four blockers already resolved by 2.19, including the one it called
   # fatal). Owns match-anchors.ts, use-anchor-nonce.ts, TacticalLayer, PitchPanel,
   # TournamentHub, the five section components, expert-logs.ts and i18n.test.ts.
-  3-8-match-route-deep-link-plumbing: ready-for-dev
+  3-8-match-route-deep-link-plumbing: in-progress
   3-9-home-page-refactor: backlog
   3-10-navigation-menu: backlog
   # NOT `optional` — retro action item A6. Epic 1's sat at `optional`, was
@@ -3861,3 +3865,33 @@ action_items:
 #   Two deferred-work entries owned by this story (both filed by the SEO ruling, deferred-work.md
 #   L4364+): the assert-no-external-origins blocker and the eslint alt/siteName hole. They close when
 #   3-1 closes; no other ledger entry fires.
+# 2026-08-26: story 3-5 CONTEXTED, backlog -> ready-for-dev. Independent of 3-1..3-4; the highest
+#   user value in the epic — today every first-time visitor on Earth is served Spanish.
+#   File: _bmad-output/implementation-artifacts/3-5-first-visit-locale-detection.md
+#   OWNS seven paths and no others: src/lib/bootstrap.ts, bootstrap.test.ts, i18n-provider.tsx,
+#   i18n-provider.test.tsx (NEW), and the three render suites named below. Touches NEITHER Epic 3
+#   collision file (page.tsx, SiteHeader.tsx). A3 probe run at creation: all seven clean at 9f76f40.
+#   THE FINDING THAT SIZES THIS STORY, and neither the epic nor the ledger carries it: a minimal
+#   correct implementation turns 25 GREEN TESTS RED across 4 files. MEASURED, not predicted — the
+#   change was applied in an isolated worktree at f07116b and the full suite run: bootstrap.test.ts
+#   2, SiteSignature.test.tsx 2, TournamentHub.test.tsx 3, HeaderSearch.test.tsx 18. Cause: those
+#   three render suites mount <LocaleProvider> with an EMPTY localStorage, and jsdom's default
+#   navigator.language is "en-US" — so the moment detection lands, their locale is decided by an
+#   ambient default instead of by the test. That is the A2 coincidence-green class arriving from the
+#   other direction. REMEDY PROVEN in the same worktree, 25 -> 0: pin navigator.language per file.
+#   STANDING CONSEQUENCE FOR EVERY LATER STORY: any new jsdom render test that mounts LocaleProvider
+#   must pin navigator.language explicitly. Story 3-8's planned MatchDeepLink.test.tsx is next.
+#   TRAP RECORDED so it is not re-derived: the ES5 bootstrap literal must read `window.navigator`,
+#   never bare `navigator` — vitest runs environment "node" and Node 24 exposes a REAL global
+#   navigator (measured: v24.15.0, language "es-CO" on this machine), so a bare read would reach
+#   past the test's stub to the host machine and the whole matrix would be green for the wrong
+#   reason. And CDP's `Emulation.setLocaleOverride` returns ok while doing NOTHING to
+#   navigator.language (measured: es-419 before and after); the launch flag `--lang=en-US` and
+#   `Network.setUserAgentOverride({acceptLanguage})` both work and are what AC 5's browser run uses.
+#   BASELINE re-measured twice at f07116b: 1,306 passed / 51 files / 0 skipped, corroborating the
+#   correction 3-8 filed. Known flake seen once: assert-schema-version "passes on the current data
+#   tree" is a spawn timeout under contention, documented in that file at :36-53 — re-run it alone.
+#   A detected locale is NEVER persisted and NEVER announced: wcstats.locale stays unset, the polite
+#   live region stays silent. Only an explicit toggle is a choice.
+#   Closes deferred-work.md L4423 (the bootstrap navigator.language entry). L4438's accepted
+#   consequence (Googlebot's mixed-language render) is READ AND ACCEPTED, not fixed — AC 6.
