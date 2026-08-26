@@ -100,17 +100,20 @@ function setupUser() {
   return userEvent.setup({ delay: null });
 }
 
-/** jsdom is missing three APIs Radix Dialog calls unconditionally. */
 /*
  * `SiteNav` calls `usePathname` (Story 3.10 D12 — the first use in this tree).
  * The whole module is mocked because `next/navigation`'s client hooks need a
  * Next router context no render test here provides. `/` keeps the home
- * destination current, which none of these assertions read.
+ * destination current, which none of these assertions read — and it is the one
+ * pathname that needs no trailing slash, since `/` already ends in one. Every
+ * other value this repo mocks for `usePathname` MUST carry it: `trailingSlash:
+ * true` means the live hook never returns a bare `/compare`.
  */
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
 }));
 
+/** jsdom is missing three APIs Radix Dialog calls unconditionally. */
 function installDialogStubs(): void {
   vi.stubGlobal(
     "ResizeObserver",

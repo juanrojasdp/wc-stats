@@ -188,7 +188,7 @@ spacing:
   # `/compare`'s `<md` mini-header, which sticks UNDER the site header. Named
   # here because it was the other half of two hardcoded literals ("56 header +
   # 48 mini") in CompareChartsSection.
-  compare-mini-h: 48px
+  compare-mini-h: 54px
 components:
   stat-tile:
     background: '{colors.surface-raised}'

@@ -128,7 +128,23 @@ type Status = "loading" | "loaded" | "error" | "invalid";
 
 
 /**
- * The whole search surface: one corpus, one live region, two presentations.
+ * The whole search surface: one corpus PER MOUNT, one live region, two
+ * presentations.
+ *
+ * ⚠️ "ONE CORPUS" WAS TRUE UNTIL STORY 3.10 (2026-08-26 code review). `SiteNav`
+ * calls this hook a SECOND time for the sheet's own search, so two instances are
+ * mounted on every route. `loadTournamentIndex()` dedupes the REQUEST at module
+ * level — which is what `SiteNav`'s comment claims and is true — but it does not
+ * dedupe the `useMemo` below that materialises the corpus from the 409 kB
+ * payload. Open the sheet on a tablet, widen past `xl`, focus the inline input,
+ * and the corpus is built and retained twice.
+ *
+ * ACCEPTED, NOT OVERLOOKED: the two presentations are mutually exclusive by
+ * `display:none` and by D7's `xl` auto-close, so in ordinary use only one
+ * instance ever engages and the second `tournament` stays `null` — the memo
+ * never runs. Hoisting the corpus to a module-level cache would fix the crossing
+ * case at the cost of a second cache to invalidate alongside
+ * `resetTournamentIndexCache()`. If a third consumer ever appears, hoist it.
  *
  * The corpus and the announcement live HERE rather than in `SearchField` so the
  * two presentations cannot disagree about either — the sheet mounts and unmounts

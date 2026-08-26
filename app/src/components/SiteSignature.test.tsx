@@ -38,8 +38,9 @@ import { es } from "@/locales/es";
  */
 
 /*
- * `SiteHeader` mounts `HeaderSearch`, which fetches the tournament index on
- * mount. A fetch that never settles keeps the search in its loading state
+ * `SiteHeader` mounts `SiteNav`, which mounts `HeaderSearch` AND a second
+ * search-index consumer for the sheet (Story 3.10) — both fetch the tournament
+ * index on mount. A fetch that never settles keeps the search in its loading state
  * forever, which is exactly what these assertions want: the caption is not
  * downstream of search data, and letting a real payload resolve would add a
  * timing dependency to a test about a static string.
@@ -243,4 +244,88 @@ describe("the authorship caption renders in BOTH locales", () => {
       }
     });
   }
+});
+
+/*
+ * ══════ THE COMPOSITION CHANGED UNDER THIS FILE — Task 8.4, discharged ══════
+ *
+ * (2026-08-26 code review.) Task 8.4 asked for two things: that the sibling
+ * assertions still pass, and that the file be EXTENDED for the new composition.
+ * Story 3.10's File List reasoned "nothing was weakened because nothing was
+ * touched" — true of the first half, and not an answer to the second. The
+ * subject changed underneath the file:
+ *
+ *   · `SiteHeader` no longer mounts `HeaderSearch` directly. It mounts
+ *     `SiteNav`, which mounts `HeaderSearch` AND a second search index consumer
+ *     of its own. The harness comment above still described the old shape.
+ *
+ *   · `SiteNav` calls `usePathname()`, and this file mounts it with NO
+ *     `next/navigation` mock — so the hook resolves through a real
+ *     `PathnameContext` that has no provider here and returns `null`. That is
+ *     fed straight into `currentDestinationKey(pathname: string)`, a non-string
+ *     against a typed parameter. It does not throw only because `.find()`
+ *     misses. That is luck, not design, and it is worth pinning as the ambient
+ *     condition these caption assertions actually run under.
+ *
+ * These cases exist so that a future change to either — a `usePathname()` that
+ * starts throwing outside a router, or a nav that renders the caption's
+ * neighbours differently — fails HERE, next to the WCAG 2.5.3 ruling it could
+ * break, rather than somewhere downstream.
+ */
+describe("the header's new composition, as this file actually mounts it", () => {
+  it("survives usePathname() returning null outside a router context", () => {
+    pinLanguage("es");
+    stubNeverSettlingFetch();
+
+    // The assertion is that this renders at all: no provider, no mock, no throw.
+    expect(() =>
+      render(
+        <Wrapper locale="es">
+          <SiteHeader />
+        </Wrapper>
+      )
+    ).not.toThrow();
+
+    // And with no pathname there is no current route, in either presentation.
+    for (const link of screen.getAllByRole("link")) {
+      expect(link).not.toHaveAttribute("aria-current");
+    }
+  });
+
+  it("still puts the caption beside the wordmark, with the nav mounted (AC 6)", () => {
+    pinLanguage("es");
+    stubNeverSettlingFetch();
+    render(
+      <Wrapper locale="es">
+        <SiteHeader />
+      </Wrapper>
+    );
+
+    const caption = screen.getByText(es.chrome.signature);
+    const wordmark = screen.getByRole("link", { name: es.app.siteName });
+
+    /*
+     * THE RULING, RESTATED AGAINST THE NEW NEIGHBOURS: the caption is a SIBLING
+     * of the wordmark link, never its descendant. Inside the anchor it would
+     * join the accessible name and fail WCAG 2.5.3. `SiteNav` now renders links
+     * into this same header, so "the caption is not inside A link" is no longer
+     * the same claim as "the caption is not inside THE wordmark link".
+     */
+    expect(wordmark).not.toContainElement(caption);
+    expect(caption.closest("a")).toBeNull();
+    expect(caption.parentElement).toBe(wordmark.parentElement);
+  });
+
+  it("mounts the nav's trigger inside the banner, not beside it", () => {
+    pinLanguage("es");
+    stubNeverSettlingFetch();
+    render(
+      <Wrapper locale="es">
+        <SiteHeader />
+      </Wrapper>
+    );
+
+    const trigger = screen.getByRole("button", { name: es.nav.trigger });
+    expect(trigger.closest("header")).not.toBeNull();
+  });
 });

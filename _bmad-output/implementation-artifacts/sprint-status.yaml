@@ -3578,7 +3578,7 @@ development_status:
   #   THREE LOCALE KEYS DELETED as dead: search.open, search.close, search.sheetTitle. The
   #     search's own trigger and sheet are gone, absorbed into the nav's.
   #   ⚠️ AC 7's PREMISE IS FALSE AND THE RETROSPECTIVE DID NOT RUN. AC 7 says "the epic closes
-  #     with this story"; it does not. 3-2, 3-3, 3-4 and 3-9 are all still `backlog`. A6's
+  #     with this story"; it does not. 3-2, 3-3 and 3-9 are `backlog` and 3-4 is `in-progress` (corrected 2026-08-26 at code review). A6's
   #     trigger is the EPIC close, not this story's, so epic-3-retrospective stays `required`
   #     and unrun. Recorded rather than quietly skipped -- that skip is exactly what Epic 1
   #     did and what A6 exists to prevent.

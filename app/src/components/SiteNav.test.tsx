@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -114,6 +114,16 @@ function pinLanguage(locale: "es" | "en"): void {
  * so there is no house mocking convention to match. The whole module is mocked
  * because `next/navigation`'s client hooks need a Next router context that no
  * render test here provides.
+ *
+ * 🔴 EVERY VALUE ASSIGNED TO THIS MUST CARRY A TRAILING SLASH (2026-08-26
+ * code review), AND THAT IS THE WHOLE LESSON OF THE BUG IT MISSED. A mock is a
+ * claim about what the real thing produces. This one claimed `usePathname()`
+ * returns `/compare` — it does not, and cannot: `next.config.ts` sets
+ * `trailingSlash: true` and Next 16 derives the value from `location.href`
+ * without normalising. So the suite asserted `aria-current` against an input the
+ * app is incapable of producing, went green, and shipped a nav where the current
+ * page was marked on exactly one route out of four. Slash-less literals here are
+ * not a shortcut; they are a false premise.
  */
 let pathname = "/";
 vi.mock("next/navigation", () => ({
@@ -355,7 +365,7 @@ describe("D1 — only available destinations render, in the ruled order", () => 
 
 describe("D12 — the current route, marked exactly once and never inferred", () => {
   it("marks the destination whose route the reader is on", () => {
-    pathname = "/glossary";
+    pathname = "/glossary/";
     renderNav();
 
     const marked = within(inlineNav())
@@ -368,7 +378,7 @@ describe("D12 — the current route, marked exactly once and never inferred", ()
 
   it("marks it in the sheet too, so the two presentations agree", async () => {
     const user = userEvent.setup({ delay: null });
-    pathname = "/compare";
+    pathname = "/compare/";
     renderNav();
 
     await user.click(trigger());
@@ -388,7 +398,7 @@ describe("D12 — the current route, marked exactly once and never inferred", ()
      * screen reader the reader is on the players index when they are on one
      * player's profile is a false statement about where they are.
      */
-    pathname = "/players/ramirez-julian-mex";
+    pathname = "/players/ramirez-julian-mex/";
     renderNav();
 
     const marked = within(inlineNav())
@@ -408,7 +418,7 @@ describe("D12 — the current route, marked exactly once and never inferred", ()
     unmount();
     cleanup();
 
-    pathname = "/matches/arg-mex-2026-06-11";
+    pathname = "/matches/arg-mex-2026-06-11/";
     renderNav();
     expect(
       within(inlineNav())
@@ -418,14 +428,23 @@ describe("D12 — the current route, marked exactly once and never inferred", ()
   });
 
   it("does not mark the current route by colour alone (1.4.1)", () => {
-    pathname = "/glossary";
+    pathname = "/glossary/";
     renderNav();
 
     const marked = within(inlineNav())
       .getAllByRole("link")
       .find((link) => link.getAttribute("aria-current") === "page");
-    // Inline: underlined. The sheet uses a lime marker PLUS font-semibold.
-    expect(marked?.className).toMatch(/\bunderline\b/);
+    /*
+     * Inline: underlined. The sheet uses a lime marker PLUS font-semibold.
+     *
+     * 🔴 CLASS MEMBERSHIP, NOT `/\bunderline\b/` (2026-08-26 code review). A
+     * hyphen is a non-word character, so that regex matched
+     * `underline-offset-[5px]` on its own — deleting the actual `underline`
+     * class while keeping the offset left this 1.4.1 assertion GREEN, which is
+     * precisely the state it exists to forbid. Split on whitespace and look for
+     * the class itself.
+     */
+    expect(marked?.className.split(/\s+/)).toContain("underline");
   });
 });
 
@@ -564,5 +583,83 @@ describe("D11 / D13 — the source-level rulings the render cannot show", () => 
     expect(source).not.toMatch(/from\s+"@\/lib\/match-anchors"/);
     expect(source).not.toMatch(/from\s+"@\/lib\/use-anchor-nonce"/);
     expect(source).not.toMatch(/addEventListener\(\s*"hashchange"/);
+  });
+});
+
+describe("code review 2026-08-26 — the three defects Task 9 could not see", () => {
+  /*
+   * 🔴 A DESTINATION CLOSES THE SHEET.
+   *
+   * `SiteHeader` is mounted in the ROOT LAYOUT, so a client navigation does not
+   * unmount `SiteNav`; the `<Link>` click is INSIDE the dialog, so Radix's
+   * outside-pointer-down dismissal never fires; and Radix has no notion of a
+   * route. Shipped, that meant tapping *Glosario* changed the route BEHIND a
+   * still-open modal that Radix keeps inert and body-scroll-locked — the reader
+   * saw the menu, not the page they chose, on every viewport below `xl`.
+   *
+   * Driven by the pathname rather than by the click, because Back/Forward must
+   * close it too. Re-rendering with a new `pathname` is what a real navigation
+   * does to this component: the layout persists and the hook returns a new value.
+   */
+  it("closes the sheet when the route changes under it", async () => {
+    const user = userEvent.setup({ delay: null });
+    const view = renderNav();
+
+    await user.click(trigger());
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+
+    pathname = "/glossary/";
+    view.rerender(
+      <Harness locale="es">
+        <SiteNav />
+      </Harness>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+
+  /*
+   * 🔴 THERE IS A NAVIGATION LANDMARK BELOW `xl`, WITH THE SHEET CLOSED.
+   *
+   * The inline `<nav>` is `hidden xl:flex` — `display:none` at every width this
+   * branch renders at — and the sheet's `<nav>` exists only while the sheet is
+   * OPEN. So a screen-reader reader rotoring by landmark on a phone found a
+   * `banner` and a `main` and NO `navigation`, on all 1,406 routes. Ruled at
+   * review: below `xl` the trigger IS the navigation, so it lives inside one.
+   *
+   * jsdom applies no stylesheet, so `hidden` cannot be observed here — this
+   * asserts the STRUCTURE (the trigger has a `<nav>` ancestor carrying the
+   * landmark's name), which is the half that was missing.
+   */
+  it("wraps the `<xl` trigger in a named navigation landmark", () => {
+    renderNav();
+
+    const landmark = trigger().closest("nav");
+    expect(landmark).not.toBeNull();
+    expect(landmark).toHaveAttribute("aria-label", es.nav.landmark);
+    expect(landmark).not.toBe(inlineNav());
+  });
+
+  /*
+   * 🔴 THE TRIGGER'S WRAPPER TAKES THE FREE SPACE ITSELF.
+   *
+   * The header row is a plain `flex flex-wrap items-center` with no
+   * `justify-between`, and its only growing child was the search slot — which
+   * this story made `hidden … xl:flex`, so below `xl` it is `display:none`, is
+   * not laid out, and distributes nothing. That left the wrapper's `justify-end`
+   * with no free main-axis space to act on: it was inert, and the trigger packed
+   * flush against the wordmark with the rest of the bar empty, on every phone.
+   *
+   * `ml-auto` does not depend on a sibling, which is the property that makes it
+   * the fix. Pinned as a class because jsdom computes no layout — the browser
+   * pass in the Dev Agent Record is what measures the resulting x-position.
+   */
+  it("gives the trigger's wrapper `ml-auto`, which does not depend on a sibling", () => {
+    renderNav();
+
+    const landmark = trigger().closest("nav");
+    expect(landmark?.className.split(/\s+/)).toContain("ml-auto");
   });
 });

@@ -28,14 +28,47 @@ import type { DictionaryKey } from "@/lib/i18n";
  * nine entries render, in both presentations, WITH NO CHANGE TO ANY COMPONENT.
  * 3.9 edits this file and nothing else in the nav.
  *
+ * ⚠️ BUT NOT WITH NO CHANGE TO THE HEADER TOKEN (2026-08-26 code review).
+ * `DESIGN.md` rules that ANY change to the header's composition changes
+ * `--header-h`, and flipping these four flags adds five inline links to the
+ * `≥xl` row. Story 3.10's own 9.5 table already shows the search input squeezed
+ * from 511 px to 158 px in `es` at 1280 px, so the row is at its limit before
+ * the five arrive. The bijection gate binds the flag to the filesystem; NOTHING
+ * binds it to a re-measurement of the token. Story 3.9 must re-run the R2/D8
+ * matrix and re-derive `--spacing-header-h-*` after flipping these, or the row
+ * wraps to 118 px while the token still reports 62 and every anchor and the
+ * skip link go back behind the bar.
+ *
  * ═══════ WHY `route` IS DECLARED RATHER THAN DERIVED ════════════════════════
  *
- * `matches` points at `/tournament#results` — a SURFACE fragment on the
+ * `matches` points at `/tournament/#results` — a SURFACE fragment on the
  * Tournament Hub, not a match route. Availability is a property of the route, so
  * two destinations can share one, and stripping the fragment at each call site
  * would be the same derivation written three times. It is also what
  * `aria-current="page"` compares against (D12): comparing `href` would leave
  * *Partidos* permanently unmarked, since no pathname ever equals a fragment.
+ *
+ * 🔴 EVERY PATH HERE ENDS IN A SLASH, AND BOTH HALVES BREAK WITHOUT IT
+ * (2026-08-26 code review). `next.config.ts` sets `trailingSlash: true`, which
+ * this repo already treats as ruled: `compare-url.ts` ships
+ * `COMPARE_PATH = "/compare/"` under the comment "the slash is mandatory", and
+ * `PlayerHero.tsx` records that "a slash-less `/compare?…` is a REDIRECT rather
+ * than a link". Both halves of this table were shipped slash-less and both were
+ * wrong:
+ *
+ *   `href`  — a slash-less href is a 301 hop on the static export, on every nav
+ *             click. For `matches` it is worse: the ruled fragment form is
+ *             `/tournament/#results` (`PlayerMatchesSection.tsx`: "THE TRAILING
+ *             SLASH BEFORE `#` IS MANDATORY"), so the fragment rode a redirect.
+ *
+ *   `route` — Next 16 derives `usePathname()` from `location.href` with NO
+ *             trailing-slash normalisation, so the live value is `/compare/`.
+ *             Compared with `===` against a slash-less `/compare` it never
+ *             matched, and `aria-current="page"`, the inline underline and the
+ *             sheet's lime marker were silently absent on every destination
+ *             except `/`. The tests missed it because they mocked `usePathname`
+ *             with slash-less literals — asserting against an input the app
+ *             cannot produce. The gate now pins the slash on both fields.
  *
  * ═══════ NO MATCH ROUTES HERE, AND THAT IS AC 2 HOLDING (D2) ════════════════
  *
@@ -51,9 +84,31 @@ import type { DictionaryKey } from "@/lib/i18n";
  * client-import seam that governs `src/components/**`.
  */
 
+/**
+ * The nine identities, as a union rather than `string` (2026-08-26 code review).
+ *
+ * Three call sites cast `destination.key` to `keyof typeof es.nav.destinations`
+ * to look a label up. Against a bare `string` that cast was UNCHECKED, so a typo
+ * or a mis-paired row compiled clean and the static-output guard then looked up
+ * a leaf that did not exist, counted zero, and PASSED — defeating the gate whose
+ * whole job is catching exactly that. The union makes those casts checked; the
+ * `labelKey`-matches-`key` assertion in `nav-destinations.test.ts` closes the
+ * other half, which no type can express across an array literal.
+ */
+export type NavDestinationKey =
+  | "home"
+  | "compare"
+  | "tournament"
+  | "matches"
+  | "tops"
+  | "players"
+  | "teams"
+  | "glossary"
+  | "about";
+
 export interface NavDestination {
   /** Stable identity, used by tests and by React keys. Never rendered. */
-  key: string;
+  key: NavDestinationKey;
   /** The accessible name's source. Typed, so a missing leaf is a compile error. */
   labelKey: DictionaryKey;
   /** Where the link goes, fragment included. */
@@ -80,29 +135,29 @@ export const NAV_DESTINATIONS: readonly NavDestination[] = [
   {
     key: "compare",
     labelKey: "nav.destinations.compare",
-    href: "/compare",
-    route: "/compare",
+    href: "/compare/",
+    route: "/compare/",
     available: true,
   },
   {
     key: "tournament",
     labelKey: "nav.destinations.tournament",
-    href: "/tournament",
-    route: "/tournament",
+    href: "/tournament/",
+    route: "/tournament/",
     available: false,
   },
   {
     key: "matches",
     labelKey: "nav.destinations.matches",
-    href: "/tournament#results",
-    route: "/tournament",
+    href: "/tournament/#results",
+    route: "/tournament/",
     available: false,
   },
   {
     key: "tops",
     labelKey: "nav.destinations.tops",
-    href: "/tops",
-    route: "/tops",
+    href: "/tops/",
+    route: "/tops/",
     available: false,
   },
   {
@@ -115,30 +170,30 @@ export const NAV_DESTINATIONS: readonly NavDestination[] = [
      */
     key: "players",
     labelKey: "nav.destinations.players",
-    href: "/players",
-    route: "/players",
+    href: "/players/",
+    route: "/players/",
     available: false,
   },
   {
     /** Same index-vs-profile shape as `players` above. */
     key: "teams",
     labelKey: "nav.destinations.teams",
-    href: "/teams",
-    route: "/teams",
+    href: "/teams/",
+    route: "/teams/",
     available: false,
   },
   {
     key: "glossary",
     labelKey: "nav.destinations.glossary",
-    href: "/glossary",
-    route: "/glossary",
+    href: "/glossary/",
+    route: "/glossary/",
     available: true,
   },
   {
     key: "about",
     labelKey: "nav.destinations.about",
-    href: "/about",
-    route: "/about",
+    href: "/about/",
+    route: "/about/",
     available: true,
   },
 ];
@@ -156,9 +211,9 @@ export function availableDestinations(): readonly NavDestination[] {
  * either — a profile is not its index, and marking it would tell a screen
  * reader the reader is somewhere they are not.
  */
-export function currentDestinationKey(pathname: string): string | null {
-  const match = NAV_DESTINATIONS.find(
-    (destination) => destination.available && destination.route === pathname
+export function currentDestinationKey(pathname: string): NavDestinationKey | null {
+  const match = availableDestinations().find(
+    (destination) => destination.route === pathname
   );
   return match?.key ?? null;
 }

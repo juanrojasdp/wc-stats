@@ -883,23 +883,43 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
      * The UNAVAILABLE half is exact — zero — and that is the half that matters,
      * because it is the one that would ship a 404.
      */
-    const { html } = everyRouteHtml()[0];
-    for (const destination of NAV_DESTINATIONS) {
-      const key = destination.key as keyof typeof es.nav.destinations;
-      const label = es.nav.destinations[key];
-      const count = html.split(`>${label}</a>`).length - 1;
-      if (destination.available) {
-        expect(
-          count,
-          `${label} is available but no anchor in the exported header carries it`
-        ).toBeGreaterThanOrEqual(1);
-      } else {
-        expect(
-          count,
-          `${label} shipped, but ${destination.route} does not exist — that is a ` +
-            "link to a 404 on every one of 1,406 routes. Story 3.9 mints the route " +
-            "and flips the flag; until then it must not render."
-        ).toBe(0);
+    /*
+     * 🔴 EVERY ROUTE, AND MATCHED BY href — BOTH HALVES WERE WRONG (2026-08-26
+     * code review).
+     *
+     * It read `everyRouteHtml()[0]` — ONE route — while its own failure message
+     * claimed "every one of 1,406 routes". A per-route divergence in the nav
+     * passed. The sibling case above already iterates all of them.
+     *
+     * And it matched on bare anchor TEXT (`>Equipos</a>`), which the dictionary
+     * reuses across five other namespaces. That is green today only because
+     * those strings currently render inside buttons and tabs; the first
+     * component to wrap one in a `<Link>` would red this case with a message
+     * blaming `nav-destinations.ts`. The collision was already conceded for
+     * `Glosario` (the attribution footer links it) and worked around on only one
+     * half. Keying on the destination's own `href` removes the ambiguity
+     * entirely — a footer link to `/glossary/` is still a link to the glossary,
+     * but the UNAVAILABLE half is what matters here, and no other component
+     * links a route that does not exist.
+     */
+    for (const { route, html } of everyRouteHtml()) {
+      for (const destination of NAV_DESTINATIONS) {
+        const label = es.nav.destinations[destination.key];
+        const count = html.split(`href="${destination.href}"`).length - 1;
+        if (destination.available) {
+          expect(
+            count,
+            `${label} is available but no anchor in ${route}'s exported header links ` +
+              `${destination.href}`
+          ).toBeGreaterThanOrEqual(1);
+        } else {
+          expect(
+            count,
+            `${label} shipped on ${route}, but ${destination.route} does not exist — ` +
+              "that is a link to a 404 in the chrome of every route. Story 3.9 mints " +
+              "the route and flips the flag; until then it must not render."
+          ).toBe(0);
+        }
       }
     }
   });

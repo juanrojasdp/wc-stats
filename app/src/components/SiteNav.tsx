@@ -15,7 +15,7 @@ import {
 import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useLocale, useT } from "@/lib/i18n-provider";
-import { NAV_DESTINATIONS, currentDestinationKey } from "@/lib/nav-destinations";
+import { availableDestinations, currentDestinationKey } from "@/lib/nav-destinations";
 import { useTheme } from "@/lib/theme-provider";
 import { closeOtherOverlays, registerOverlayCloser } from "@/lib/use-glossary-popover";
 
@@ -249,7 +249,7 @@ function DestinationList({ variant }: { variant: "inline" | "sheet" }) {
 
   return (
     <ul className={isSheet ? "flex flex-col" : "flex items-center gap-tile-gap"}>
-      {NAV_DESTINATIONS.filter((destination) => destination.available).map((destination) => {
+      {availableDestinations().map((destination) => {
         const isCurrent = destination.key === currentKey;
         return (
           <li key={destination.key} className={isSheet ? "border-b border-hairline" : undefined}>
@@ -260,18 +260,31 @@ function DestinationList({ variant }: { variant: "inline" | "sheet" }) {
                * route's DOM, so an id would be duplicated on 1,406 pages.
                */
               aria-current={isCurrent ? "page" : undefined}
+              /*
+               * 🔴 ONE COLOUR FOR BOTH STATES (2026-08-26 code review).
+               * DESIGN.md rules `link-color: {colors.ink-primary}` for this
+               * component, says it again in prose for both presentations
+               * ("nav links are {colors.ink-primary}", "Inline links at `≥xl`
+               * use the same type and color"), and the mockup agrees. Shipping
+               * non-current links in `ink-secondary` added a SECOND, unruled
+               * colour axis on top of the ruled cues below. Current-vs-not is
+               * carried by the underline, the lime marker and the weight — not
+               * by dimming everything else.
+               */
               className={
                 isSheet
                   ? [
-                      "flex min-h-11 items-center gap-2 type-body",
-                      isCurrent ? "font-semibold text-ink-primary" : "text-ink-secondary",
-                    ].join(" ")
+                      "flex min-h-11 items-center gap-2 type-body text-ink-primary",
+                      isCurrent ? "font-semibold" : undefined,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")
                   : [
-                      "flex min-h-11 items-center whitespace-nowrap type-body",
-                      isCurrent
-                        ? "text-ink-primary underline underline-offset-[5px]"
-                        : "text-ink-secondary",
-                    ].join(" ")
+                      "flex min-h-11 items-center whitespace-nowrap type-body text-ink-primary",
+                      isCurrent ? "underline underline-offset-[5px]" : undefined,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")
               }
             >
               {/*
@@ -303,29 +316,84 @@ export function SiteNav() {
   const { locale } = useLocale();
   const [sheetOpen, setSheetOpen] = useState(false);
   const sheetId = useId();
+  const pathname = usePathname();
 
   /*
    * The sheet's OWN search state, separate from the inline combobox's. Two
    * presentations, two live regions, two announcement strings — and
    * `loadTournamentIndex()` dedupes the fetch at module level, so the second
-   * hook costs no second request.
+   * hook costs no second REQUEST. (It does not dedupe the corpus BUILD; see the
+   * docblock on `useSearchIndex` for what that costs and why it is accepted.)
    */
   const { corpus, status, engage, announce, announcement, resetAnnouncement } = useSearchIndex();
 
   /*
-   * The sheet is an overlay, so it joins the page-wide single-open registry
-   * (UX-DR15 forbids a stack deeper than one): opening the nav must close any
-   * glossary popover, and a popover opening must close the nav.
-   * `setSheetOpen(false)` is idempotent when already closed, which is the
-   * registry's contract.
+   * Live mirrors, so the effects below can read current values without taking
+   * them as dependencies — the `xl` listener and the overlay-registry closer
+   * are both registered once and must not be torn down and rebuilt on every
+   * state change.
+   *
+   * Written in an effect, not during render: `react-hooks/refs` forbids the
+   * latter, and it is right to — a ref written during render is not reverted if
+   * React discards the render.
+   */
+  const sheetOpenRef = useRef(sheetOpen);
+  const resetAnnouncementRef = useRef(resetAnnouncement);
+  useEffect(() => {
+    sheetOpenRef.current = sheetOpen;
+    resetAnnouncementRef.current = resetAnnouncement;
+  });
+
+  /** The inline row, so the `≥xl` auto-close has somewhere to put focus. */
+  const inlineNavRef = useRef<HTMLElement | null>(null);
+
+  /*
+   * 🔴 THE ONE CLOSE PATH — EVERY DISMISSAL GOES THROUGH IT (2026-08-26 code
+   * review). This used to be a bare `setSheetOpen(false)`, and two of the three
+   * close paths (this registry closer and the `xl` sync below) therefore skipped
+   * the `resetAnnouncement()` that `handleOpenChange` performs — while the
+   * comment there asserted the reset happens on BOTH edges. Type in the sheet's
+   * search, then cross to `≥xl` or open a glossary popover inside the 400 ms
+   * settle window, and the pending timer fired against a torn-down region. The
+   * reset lives here now, so the invariant holds however the sheet closes.
    */
   const closeSheet = useRef(() => {
+    resetAnnouncementRef.current();
     setSheetOpen(false);
   });
 
   useEffect(() => {
     return registerOverlayCloser(closeSheet.current);
   }, []);
+
+  /*
+   * 🔴 A DESTINATION CLOSES THE SHEET, AND NOTHING ELSE WILL DO IT
+   * (2026-08-26 code review). `SiteHeader` lives in the ROOT LAYOUT, so a client
+   * navigation does not unmount this component; the `<Link>` click happens
+   * INSIDE the dialog, so Radix's outside-pointer-down dismissal never fires;
+   * and Radix has no notion of a route. Every other close path is Escape, the
+   * close button, the `xl` sync or the overlay registry — none of which a tap on
+   * *Glosario* reaches. Shipped, that meant the route changed BEHIND a still-open
+   * modal that Radix keeps inert and body-scroll-locked: the reader saw the menu
+   * they had just used, not the page they had just chosen, on every viewport
+   * below `xl`. Tapping the CURRENT destination was worse — it navigates
+   * nowhere, so the sheet simply stayed up with no feedback at all.
+   *
+   * Keyed on `pathname` rather than on the click, so it also covers Back/Forward
+   * and any future programmatic navigation. The ref guard keeps it from firing
+   * on mount, where there is nothing to close and `resetAnnouncement` would run
+   * for no reason.
+   */
+  const lastPathname = useRef(pathname);
+  useEffect(() => {
+    if (lastPathname.current === pathname) {
+      return;
+    }
+    lastPathname.current = pathname;
+    if (sheetOpenRef.current) {
+      closeSheet.current();
+    }
+  }, [pathname]);
 
   /*
    * 🔴 CLOSE THE SHEET AT `xl` — THE CSS COLLAPSE CANNOT DO IT (D7).
@@ -351,9 +419,39 @@ export function SiteNav() {
     // mirrors is a literal `xl:` variant in the class strings below.
     const wide = window.matchMedia("(min-width: 80rem)");
     const sync = () => {
-      if (wide.matches) {
-        setSheetOpen(false);
+      if (!wide.matches) {
+        return;
       }
+      const wasOpen = sheetOpenRef.current;
+      closeSheet.current();
+      if (!wasOpen) {
+        return;
+      }
+      /*
+       * 🔴 TAKE FOCUS DELIBERATELY, BECAUSE RADIX CANNOT (2026-08-26 code
+       * review). Radix's `onCloseAutoFocus` calls `.focus()` on the trigger —
+       * but at this exact instant the trigger's ancestor matches `xl:hidden`,
+       * i.e. `display:none`, so the call is a NO-OP and focus resets to
+       * `<body>`. A keyboard reader who opened the sheet at 1000 px and then
+       * rotated a tablet or dragged past 1280 px lost their place entirely: the
+       * next Tab restarted from the top of the document (WCAG 2.4.3). Task
+       * 9.8's keyboard walk covered Escape, which returns focus correctly, and
+       * never the resize-close.
+       *
+       * Two frames, because the first is Radix's own restore attempt — we only
+       * act if it landed nowhere, so the ordinary Escape path is untouched. The
+       * first inline destination is the right target: at `≥xl` it is what the
+       * trigger just became.
+       */
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const active = document.activeElement;
+          if (active && active !== document.body) {
+            return;
+          }
+          inlineNavRef.current?.querySelector<HTMLElement>("a")?.focus();
+        });
+      });
     };
     sync();
     wide.addEventListener("change", sync);
@@ -392,6 +490,7 @@ export function SiteNav() {
        * block.
        */}
       <nav
+        ref={inlineNavRef}
         data-slot="site-nav-inline"
         aria-label={t("nav.landmark")}
         className="hidden xl:flex"
@@ -403,8 +502,35 @@ export function SiteNav() {
         <LocaleAndThemeControls />
       </div>
 
-      {/* `<xl`: one trigger, one sheet, three controls behind it. */}
-      <div className="flex justify-end xl:hidden">
+      {/*
+       * `<xl`: one trigger, one sheet, three controls behind it.
+       *
+       * 🔴 A `<nav>`, NOT A BARE `<div>` (2026-08-26 code review, ruled by Juan).
+       * The inline landmark above is `display:none` at every width this branch
+       * renders at, and the sheet's landmark exists only while the sheet is
+       * OPEN — so a screen-reader reader rotoring by landmark on a phone found a
+       * `banner` and a `main` and NO `navigation`, on all 1,406 routes. Below
+       * `xl` this trigger IS the navigation, so it belongs inside the landmark
+       * that says so. Costs nothing visually; the two `<nav>`s can never both be
+       * exposed, since this one is `xl:hidden` and the other is `hidden xl:flex`.
+       *
+       * 🔴 `ml-auto` IS LOAD-BEARING (2026-08-26 code review). The header row is
+       * a plain `flex flex-wrap items-center` with no `justify-between`, and its
+       * only growing child WAS the search slot — which this story made
+       * `hidden … xl:flex`, i.e. `display:none` below `xl`, so its `flex-1` is
+       * not laid out and distributes nothing. The identity block does not grow
+       * either. That left `justify-end` here with no free main-axis space to
+       * work on: it was inert, and the trigger packed flush against the wordmark
+       * with the rest of the bar empty, on every phone and tablet. `ml-auto`
+       * consumes the free space directly and does not depend on a sibling.
+       * D10 predicted this exact class change and it was declined; the mockup
+       * has it as `.spacer{flex:1 1 auto}` in frames A and B.
+       */}
+      <nav
+        data-slot="site-nav-trigger-landmark"
+        aria-label={t("nav.landmark")}
+        className="ml-auto flex justify-end xl:hidden"
+      >
         <Dialog open={sheetOpen} onOpenChange={handleOpenChange}>
           <DialogTrigger
             data-slot="site-nav-trigger"
@@ -447,9 +573,21 @@ export function SiteNav() {
              * rather than in the primitive: `ui/dialog.tsx` is shared and its
              * geometry — full-width, `top-0`, content-driven height — is already
              * what UX-DR24 asks for. Do not edit a primitive for one consumer.
+             *
+             * 🔴 `ml-auto mr-0` IS NOT DECORATION (2026-08-26 code review, ruled
+             * by Juan). The primitive ships `fixed inset-x-0 top-0 … w-full`, so
+             * adding a `max-width` OVER-CONSTRAINS `left:0; right:0; width` —
+             * and CSS resolves that by ignoring `right` in LTR. The sheet
+             * therefore rendered as a 386 px column hard against the LEFT edge
+             * at every width from 387 px to 1279 px, while the trigger sat at
+             * the other end of the row. Below 387 px it was correct only because
+             * the cap never engaged. The mockup drew phone frames only and the
+             * Task 9 matrix samples 195/320/390/1280, so the entire band the
+             * `md`→`xl` move created was never opened. Ruled at review: the
+             * sheet opens from the edge its trigger lives on.
              */
             aria-describedby={undefined}
-            className="max-w-[386px]"
+            className="ml-auto mr-0 max-w-[386px]"
           >
             {/*
              * Radix requires a Title or the panel is an unnamed `role="dialog"`
@@ -516,7 +654,7 @@ export function SiteNav() {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </nav>
     </>
   );
 }

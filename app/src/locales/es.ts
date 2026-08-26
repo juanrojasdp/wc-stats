@@ -102,7 +102,7 @@ export const es = {
     close: "Cerrar el menú",
     /*
      * The sheet's accessible title. Radix Dialog requires one, and on
-     * `search.sheetTitle`'s precedent it must NOT merely repeat the trigger — a
+     * the house rule for sheet titles it must NOT merely repeat the trigger — a
      * reader who has already activated "Menú" learns nothing from a panel
      * called "Menú".
      */

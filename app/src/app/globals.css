@@ -361,8 +361,17 @@
    * literals ("56 header + 48 mini"), so it is named here beside the header's
    * rather than left as a digit inside a `scroll-mt-28`. Both that class and the
    * IntersectionObserver's rootMargin derive from these two tokens now.
+   *
+   * 🔴 54 px, NOT THE 48 THE OLD ARITHMETIC ASSUMED (2026-08-26 code review).
+   * The story that minted this token derived the HEADER half correctly and then
+   * promoted the mini half's wrong figure verbatim — while the file it serves
+   * said so in two surviving comments: "re-measure this bar rather than trusting
+   * the `~48 px` the scroll-mt figure was built on — the ledger measured 54",
+   * and "so 112 needs to be 116". Task 9.7 measured this bar's `top`, never its
+   * height, so nothing caught it. At 48 the `scroll-mt` under-reserved by 6 px
+   * and an anchored figure landed just under the bar.
    */
-  --spacing-compare-mini-h: 3rem; /* 48 px */
+  --spacing-compare-mini-h: 3.375rem; /* 54 px — measured (ledger), not assumed */
 
   --shadow-overlay: var(--elevation-overlay);
 }
@@ -535,7 +544,21 @@
     scroll-padding-top: calc(var(--header-h) + var(--spacing-scroll-clearance));
   }
 
-  @media (min-width: 215px) {
+  /*
+   * 🔴 `rem`, NOT `px`, AND THAT IS A TEXT-ZOOM FIX (2026-08-26 code review).
+   * 215px was measured at a 16 px root font, but the header wraps on CONTENT and
+   * every piece of that content is `rem`-sized. A reader on a 24 px browser
+   * default (WCAG 1.4.4 text resize — an assistive-technology setting, so the
+   * layout viewport does NOT shrink the way page zoom shrinks it) wraps the bar
+   * at roughly 320 px of viewport, while a `px` query still reported one row and
+   * reserved 62 px against a 118 px bar. That is the identical −46 px "anchored
+   * heading hidden behind the header" defect this whole token exists to close,
+   * reopened for exactly the readers who need it closed. `rem` in a media query
+   * resolves against the browser default rather than the root element, so the
+   * threshold now scales with the text it was measured against. 13.4375rem is
+   * 215px at 16px.
+   */
+  @media (min-width: 13.4375rem) {
     html {
       --header-h: var(--spacing-header-h-oneline);
     }

@@ -206,11 +206,15 @@ type FigureRefs = RefObject<(HTMLElement | null)[]>;
  *   The old comment recorded an unreconciled 341-vs-337 disagreement between
  *   the caption spec and commit d3c103c. It is MOOT rather than resolved: both
  *   numbers described the pre-nav four-element row, which no longer exists.
- *   Do not re-derive these offsets from 56, and re-measure this bar rather than
- *   trusting the "~48 px" the scroll-mt figure was built on — the ledger
- *   measured 54. Added by the 2026-08-26 code review, which found this file
- *   carrying stale numbers and no breadcrumb while `globals.css` and
- *   `SiteHeader.tsx` both carried warnings.
+ *   Do not re-derive these offsets from 56.
+ *
+ *   THE "~48 px" WARNING IS NOW DISCHARGED, and the answer was 54. Story 3.10
+ *   minted `--spacing-compare-mini-h` at 48 — the very figure the line above
+ *   told it not to trust — and the 2026-08-26 code review corrected the token to
+ *   3.375rem. Both halves of the old "56 header + 48 mini" arithmetic are
+ *   therefore tokens AND measured, which they were not when either half of this
+ *   paragraph was first written. Anything below claiming both halves are stale
+ *   predates that correction.
  * · VISIBILITY IS CSS (`md:hidden`), NOT JS. `hidden` is `display: none`, which
  *   removes the element from the ACCESSIBILITY TREE — so exactly one header is
  *   exposed at any width and there are never two competing names. That is the
@@ -243,14 +247,49 @@ type FigureRefs = RefObject<(HTMLElement | null)[]>;
  * Falls back to the wrapped height, which is the SAFE direction: over-stating
  * the inset makes a figure stop counting slightly early, while under-stating it
  * reports a figure the reader cannot see.
+ *
+ * ═══════════ 🔴 THE UNIT IS `rem`, AND THAT WAS A SHIPPED REGRESSION ════════
+ *
+ * (2026-08-26 code review.) These custom properties are UNREGISTERED — there is
+ * no `@property` for them anywhere in `globals.css` — so a custom property does
+ * NOT compute to a used length. `getPropertyValue("--header-h")` hands back the
+ * substituted token stream, the literal string `"3.875rem"` (or `"7.375rem"`
+ * wrapped), not `"62px"`. `Number.parseFloat` then strips the unit and returns
+ * `3.875`, which is finite and greater than zero — so THE GUARD PASSES AND THE
+ * FALLBACK IS UNREACHABLE. The observer ran with `rootMargin: "-6.875px …"`
+ * where the literal it replaced was `-104px` and the right answer is ~116.
+ *
+ * That is strictly worse than the hardcoded value this function was written to
+ * remove: a figure sitting entirely behind BOTH bars counted as intersecting, so
+ * the mini-header named the wrong side — the one question it exists to answer,
+ * failing in exactly the direction the paragraph above calls unsafe.
+ *
+ * The story's own evidence had already caught it and nobody read it that way:
+ * the Task 9.3b measurement log prints `--header-h=7.375rem (118px)`. The
+ * harness converted the unit. The shipped function did not.
+ *
+ * So convert explicitly. `rem` is resolved against the ROOT font size, which is
+ * also what makes this correct under text-only zoom, where the reader's browser
+ * default is not 16.
  */
 function stickyInsetPx(): number {
-  const styles = getComputedStyle(document.documentElement);
-  const read = (name: string, fallback: number): number => {
-    const parsed = Number.parseFloat(styles.getPropertyValue(name));
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+  const rootStyles = getComputedStyle(document.documentElement);
+  const rootFontPx = Number.parseFloat(rootStyles.fontSize);
+  const basePx = Number.isFinite(rootFontPx) && rootFontPx > 0 ? rootFontPx : 16;
+
+  const read = (name: string, fallbackPx: number): number => {
+    const raw = rootStyles.getPropertyValue(name).trim();
+    const parsed = Number.parseFloat(raw);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      return fallbackPx;
+    }
+    // An unregistered custom property yields its token stream, so the unit is
+    // whatever the stylesheet wrote — `rem` for both of these today. Anything
+    // unit-less or already in px is taken at face value.
+    return raw.endsWith("rem") ? parsed * basePx : parsed;
   };
-  return read("--header-h", 118) + read("--spacing-compare-mini-h", 48);
+
+  return read("--header-h", 118) + read("--spacing-compare-mini-h", 54);
 }
 
 function StickyMiniHeader({ names, activeIndex }: { names: readonly string[]; activeIndex: number }) {
@@ -301,16 +340,18 @@ function StickyMiniHeader({ names, activeIndex }: { names: readonly string[]; ac
  * `scroll-mt` rather than a global change: `scroll-padding-top` is one value for
  * the whole document and five other routes depend on it.
  *
- * It was `scroll-mt-28` — 112 px, meaning "56 header + 48 mini", with the first
- * half wrong at every width the header wrapped. Both halves are tokens now.
+ * It was `scroll-mt-28` — 112 px, meaning "56 header + 48 mini", with BOTH
+ * halves wrong: the header has been 62/118 px since the authorship caption, and
+ * the mini-header measures 54, not 48.
  *
- * ⚠️ BOTH HALVES OF THAT ARITHMETIC ARE NOW STALE (2026-08-26 code review). The
- * site header is 62 px one-row and 118 px wrapped since the authorship caption,
- * and the "~48 px" mini-header above was measured at 54. So 112 needs to be 116
- * at one row and 172 wrapped, and neither figure should be re-derived from the
- * old constants. The fix is the `--header-h` property filed in
- * `deferred-work.md` and owned by story 3-10; see the docblock at the top of
- * this file for the full measurement.
+ * 🔴 AND THE FIX IS NOT "ADD THE TWO TOKENS" — THE PROPERTIES ARE ADDITIVE
+ * (2026-08-26 code review). Story 3.10 replaced the literal with
+ * `calc(var(--header-h) + var(--spacing-compare-mini-h))`, which double-counts:
+ * a fragment jump rests the target at `scroll-padding-top + scroll-margin-top`,
+ * so the site header was reserved once by `globals.css` and again here — 188 px
+ * against 110 px of real bars. This element adds ONLY what
+ * `scroll-padding-top` cannot know about, which is the mini-header. Both tokens
+ * are now measured; neither is re-derived from the old constants.
  */
 function CompareFigure({
   side,
@@ -337,10 +378,22 @@ function CompareFigure({
      * BOTH sticky bars: the site header (`--header-h`) and this mini-header on
      * top of it. `28` was 112 px against a 56 px header — a literal that is
      * wrong at every width the header wraps. Derived now, from the same token.
+     *
+     * 🔴 THE MINI-HEADER ONLY — THE TWO PROPERTIES ARE ADDITIVE (2026-08-26
+     * code review). `scroll-padding-top` on `html` ALREADY reserves
+     * `--header-h + --spacing-scroll-clearance`, and a fragment jump rests the
+     * target at `scroll-padding-top + scroll-margin-top` from the scrollport
+     * top. Counting `--header-h` here too reserved the site header TWICE:
+     * 188 px against 110 px of real bars, dropping an anchored figure ~78 px
+     * below the mini-header it was supposed to sit under. The old `72 + 112`
+     * had the same shape, so this is a long-standing arithmetic error rather
+     * than a new one — but the comment above was rewritten to claim the sum is
+     * now correct, and it was not. This element only ever needs to clear what
+     * `scroll-padding-top` does not know about: the mini-header.
      */
     <div
       ref={nodeRef}
-      className="min-w-0 max-md:scroll-mt-[calc(var(--header-h)+var(--spacing-compare-mini-h))]"
+      className="min-w-0 max-md:scroll-mt-[var(--spacing-compare-mini-h)]"
       data-compare-side={side}
     >
       {/* Unnamed <figure>: the chart inside is already role="img" with its own
@@ -395,8 +448,32 @@ export function CompareChartsSection({
   const [activeIndex, setActiveIndex] = useState(0);
   const figureRefs = useRef<(HTMLElement | null)[]>([]);
 
+  /*
+   * The observer inset, re-read whenever the viewport changes size.
+   *
+   * `--header-h` switches at its own breakpoint, independent of `md`, so the
+   * inset cannot be captured once at mount. Kept as state rather than read
+   * inline so that a change to it rebuilds the observer through the deps below.
+   * `0` until the first client measurement, which is also the SSR value —
+   * `stickyInsetPx()` touches `document`, so it must not run during render.
+   */
+  const [insetPx, setInsetPx] = useState(0);
   useEffect(() => {
-    if (!isNarrow || typeof IntersectionObserver !== "function") {
+    if (!isNarrow) {
+      return;
+    }
+    const measure = () => {
+      setInsetPx(stickyInsetPx());
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+    };
+  }, [isNarrow]);
+
+  useEffect(() => {
+    if (!isNarrow || insetPx <= 0 || typeof IntersectionObserver !== "function") {
       return;
     }
     const nodes = figureRefs.current.filter((node): node is HTMLElement => node !== null);
@@ -416,12 +493,22 @@ export function CompareChartsSection({
      * `Set` below remembers every figure's current state across callbacks, so the
      * decision is always made over BOTH.
      *
-     * `rootMargin`'s top inset is the two sticky headers together (56 + 48 px),
-     * so a figure scrolled BEHIND them stops counting as on screen — which is the
-     * whole question the mini-header answers. Given that, "topmost of what
-     * remains" is the figure the reader's eye is on, and it is deterministic:
-     * `intersectionRatio` ties whenever both figures are fully visible at once,
-     * which at 390 px they are at the bottom of the page.
+     * `rootMargin`'s top inset is the two sticky headers together, read from the
+     * stylesheet by `stickyInsetPx()`, so a figure scrolled BEHIND them stops
+     * counting as on screen — which is the whole question the mini-header
+     * answers. Given that, "topmost of what remains" is the figure the reader's
+     * eye is on, and it is deterministic: `intersectionRatio` ties whenever both
+     * figures are fully visible at once, which at 390 px they are at the bottom
+     * of the page.
+     *
+     * 🔴 AND IT IS RE-READ ON RESIZE (2026-08-26 code review). `rootMargin` is
+     * fixed at construction, but `--header-h` is not: it flips 118 ⇄ 62 at the
+     * wrap threshold. With deps of `[isNarrow, pair]` — `isNarrow` tracks `md`,
+     * not the header breakpoint — an observer built at 195 px kept a 172 px
+     * inset after the reader zoomed out past the threshold, disagreeing with the
+     * `top` and `scroll-padding-top` that had already moved. `insetPx` is in the
+     * deps below, so crossing the threshold rebuilds the observer rather than
+     * leaving it stale.
      */
     const visible = new Set<HTMLElement>();
     const observer = new IntersectionObserver(
@@ -448,7 +535,7 @@ export function CompareChartsSection({
           setActiveIndex(best);
         }
       },
-      { rootMargin: `-${stickyInsetPx()}px 0px 0px 0px`, threshold: [0, 0.25, 0.5, 0.75, 1] }
+      { rootMargin: `-${insetPx}px 0px 0px 0px`, threshold: [0, 0.25, 0.5, 0.75, 1] }
     );
     for (const node of nodes) {
       observer.observe(node);
@@ -456,7 +543,7 @@ export function CompareChartsSection({
     return () => {
       observer.disconnect();
     };
-  }, [isNarrow, pair]);
+  }, [isNarrow, insetPx, pair]);
 
   let figures: ReactNode;
   if (pair.type === "players") {
