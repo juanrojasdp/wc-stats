@@ -4454,3 +4454,112 @@ creation, and nothing downstream noticed.
 - source_spec: `spec-sign-the-project.md`
   summary: The site header is no longer 56 px, and three places still encode that it is — `globals.css`'s `scroll-padding-top: 4.5rem` and `CompareChartsSection`'s `sticky top-14`, `max-md:scroll-mt-28` and `-104px` rootMargin — so `/compare`'s ruled mini-header is invisible on small phones and anchored headings land behind a wrapped bar.
   evidence: MEASURED, not inferred (browser, served export, iframe at true layout widths). The authorship caption took the header from 57 px to 62 px one-row, and to 118 px where the row wraps (es at <=341 px, en at <=337 px; captions are 127 vs 122 px wide). `CompareChartsSection`'s mini-header is `top:56px`, 54 px tall, `z-30` under the header's `z-40` -- so at 320 px, 56+54=110 < 118 and it is ENTIRELY behind the site header, on the `<md` widths it is the ruled D13/UX-DR17 affordance for. At 390 px it loses 6 px, which eats its `py-2` padding rather than text. `scroll-mt-28` (112 px) was derived as "56 header + 48 mini" and now needs 116 at one row and 172 wrapped; the `-104px` rootMargin has the same provenance. Separately `globals.css` states the contract in its own comment -- "4.5rem = the header's own 3.5rem (h-14) + 1rem of breathing room ... change h-14 and this must follow" -- and at a wrapped 118 px bar an anchored heading lands 46 px BEHIND it, hidden rather than tight, on every route with an anchor. WCAG 1.4.10 is unaffected: document overflow measured 0 of 96 cells (320/390/195 x dark/light x es/en x 8 routes). PROPOSED FIX: one `--header-h` custom property, set per breakpoint AND per locale (the existing `html.locale-es` / `html.locale-en` classes carry the locale, and the two thresholds differ by 4 px), consumed by `scroll-padding-top` and by `/compare`'s three offsets, with the rootMargin read from `getComputedStyle` rather than hardcoded. Deliberately NOT taken in the caption's change: it is a shared-contract edit that re-tunes anchor landing on all 8 routes and needs its own verification pass.
+
+## Deferred from: code review of spec-sign-the-project (2026-08-26)
+
+- source_spec: `spec-sign-the-project.md`
+  summary: Flipping the ES|EN toggle at a layout width of 338-341 px changes the sticky header's height from 62 px to 118 px (or back) at runtime, shifting scroll position and every anchor landing without a navigation.
+  evidence: Follows arithmetically from the two thresholds the spec measured by a 1 px sweep per locale -- `es` wraps at <=341 px, `en` at <=337 px. In the 4 px band between them one locale wraps and the other does not, and the locale toggle is client-side (`LocaleProvider.setLocale`), so the bar reflows live. Not separately measured in the browser; derived from the spec's own numbers. Subsumed by the `--header-h` fix proposed in the entry above, which must be set per locale for exactly this reason.
+
+- source_spec: `spec-sign-the-project.md`
+  summary: Nothing enforces the spec's "Never ... any third surface" boundary for `chrome.signature`. A future addition to `<title>`, OG metadata or the `/about` body would pass every gate this change introduced.
+  evidence: `static-output.test.ts` counts occurrences only WITHIN the `<header>` and `<footer>` slices it extracts, and `SiteSignature.test.tsx` renders only those two components. Neither asserts absence anywhere else in the document. The boundary is stated in the spec's Boundaries -> Never (spec:36) and guarded nowhere. Cheap fix if wanted: one document-level count assertion pinning total occurrences to exactly 2.
+
+- source_spec: `spec-sign-the-project.md`
+  summary: `CompareChartsSection.tsx:239` calls its sticky mini-header "~48 px" while the ledger entry above measured it at 54 px, and `scroll-mt-28` / the -104px rootMargin were both derived from the 48 figure.
+  evidence: Pre-existing inconsistency, surfaced by this review rather than introduced by the caption. It matters because the `--header-h` fix will re-derive those two offsets, and re-deriving them from the wrong mini-header height would leave them wrong by 6 px in the new arrangement. Re-measure the mini-header as part of that work rather than trusting either number.
+
+## Closed by Story 3.8 — match-route deep-link plumbing (2026-08-26)
+
+**APPENDED, not a rewrite (D12).** No paragraph above this line is edited, including L1553's and
+L1886's own entries — they stay as written so the record of what was believed on 2026-08-05 survives
+next to what turned out to be true.
+
+- **L1553 is CLOSED — and TWO of its four blockers had already been resolved before this story
+  started, including the one it called *fatal to a link list*.** The entry (2026-08-05) ruled the six
+  Expert log links "honest anchors" because opening a disclosure from a fragment was ~12 files of
+  invention. Re-measured against the tree at `f07116b`: (1) `ViewDataDisclosure`'s `open` was no
+  longer a private `useState` with no prop — **Story 2.19 shipped `openNonce`**
+  (`ViewDataDisclosure.tsx:31`), adjusted during render; (2) *"an unchanged hash never re-fires
+  `hashchange`… fatal to a link list"* — **Story 2.19 also shipped the fix**, a capture-phase
+  `document` `click` listener beside `hashchange` (`TournamentHub.tsx:182-215`), working over 21 Hub
+  sections. Only the other two were still true: `PitchPanel` forwarded exactly two props, and
+  `sectionIdFromHash` was whole-string equality. **The blocker list was therefore STALE**, and 2.19
+  had recorded at the time that it was *"not allowed to MINT a new instance"* of this defect while
+  re-deferring the old one — that restraint is precisely what made this story small. What shipped was
+  a **port of a working Hub mechanism**, not the invention the entry projected: the hook moved whole
+  to `app/src/lib/use-anchor-nonce.ts` and `TournamentHub.tsx`'s diff is one import line.
+
+- **L1886 is CLOSED.** `#shot-maps` no longer holds two links. `shot-maps-shots` and
+  `shot-maps-crosses` are distinct resolvable fragments in the frozen registry
+  (`app/src/lib/match-anchors.ts`), each pinned by its own test case — one in
+  `match-anchors.test.ts` asserting they resolve to *different* panels on the *same* section, and one
+  in `MatchDeepLink.test.tsx` asserting each opens its own table while the sibling stays shut. The
+  `i18n.test.ts` href pin was **strengthened rather than deleted**: it asserted `SECTION_IDS`
+  membership, which both colliding hrefs PASSED; it now asserts the fragment resolves *and* names a
+  panel, and a second case asserts all six panels are distinct. That is the assertion that would have
+  caught L1886, and it was driven RED before it was believed.
+
+- **THE RESIDUAL, STATED PLAINLY — the closure of (a) does NOT close (b) or (c).** Of the three
+  hash-re-entry paths filed at `deferred-work.md:215`:
+  - **(a) IS CLOSED HERE.** `TacticalLayer`'s `hashchange`-only subscription is deleted, not layered,
+    and section expansion is now driven from the same `useAnchorHit` reading that drives panel
+    opening — so a reader who collapses a section and re-clicks its Expert link gets it back.
+  - **(b) is NOT closed.** A post-retry remount still re-consumes the still-present hash with no
+    record that it was already honoured. It is arguably *slightly* more reachable now, since a
+    re-consumed hash now opens a table as well as scrolling.
+  - **(c) is NOT closed.** Navigating backward out of a section still bumps the focus nonce, so Back
+    still pulls the reader into the section they were leaving.
+  Both want the one consumed-hash / popstate-direction policy their original entry names, and neither
+  has an owner. **Successor trigger: the next story that touches match-route history or focus
+  restoration.** Do not read "the deep links work now" as covering them.
+
+- **`sectionIdFromHash`'s silent null is now dev-loud.** An addressed-but-unresolvable fragment
+  (`#shot-maps-log` — a real section, a panel that does not exist) reports once via `console.error` in
+  dev/test and stays silent in production. `console.error` and **not** `throw`, deliberately: `i18n.ts`
+  throws because an unresolvable KEY is only reachable from a code defect, whereas a URL fragment is
+  READER INPUT, and a hand-typed `#shot-map` must not take the page down inside
+  `TacticalErrorBoundary`. `#main-content` and `#expert` name no section and stay silent at every
+  environment — `ExpertLayer.tsx` records that their null is by design, and a blanket warn would fire
+  on both on every match page load.
+
+- **OBSERVED AND NOT FIXED: the `--header-h` interaction (this story's D9).** The entry immediately
+  above this section — story 3.6's caption taking the header from 57 px to 62 px, and to 118 px where
+  the row wraps at ≤341 px es / ≤337 px en, against an unchanged `scroll-padding-top: 4.5rem` (72 px)
+  — applies to every fragment this story adds, and the finer panel anchors make anchored landing more
+  frequent, not less. **Deliberately not taken here**: that entry names its own fix (one `--header-h`
+  custom property consumed by `scroll-padding-top` and `/compare`'s three offsets) and its own reason
+  for deferral (a shared-contract edit re-tuning anchor landing on all 8 routes). The two entries are
+  to be read together, and this story's browser verification was done at ≥390 px for that reason.
+  **RE-MEASURED 2026-08-26 in headless Chromium against the built export, and the entry's es threshold
+  is a few px off:** in es the bar is still ONE ROW at 341 px (62 px) and wraps at **≤337 px**
+  (118 px) — the entry says ≤341 px es / ≤337 px en. Where it does wrap the predicted overlap is
+  exact: at 337 px the anchored `<h3>` lands at 72 px, i.e. **46 px behind** the 118 px bar, with
+  `scroll-padding-top` a constant 72 px and document overflow false at every width tested
+  (320/337/341/360/390). Correcting the threshold does not change the fix or its owner.
+
+- **NOT A DEFECT, RECORDED SO IT IS NOT "FIXED" LATER: two of the six links land on a NAMED ABSENCE
+  on the shipped corpus.** Measured 2026-08-26 across `data/matches/` (the 104 bundles
+  `build-data.ts:28` reads) versus `data/fixtures/matches/m001`: `events.crosses` and
+  `events.defensiveActions` are **null on 104/104 real matches** and populated on the fixture, and
+  `passNetworkNodes` is null on 104/104 and populated on the fixture. So `#shot-maps-crosses` lands on
+  *"Sin datos de Mapa de centros para este partido."* and `#defensive-actions-table` lands on that
+  section's whole-section empty state. **That is ruled FR-22 behaviour.** The anchor was made to land
+  ON the absence (the empty panel carries the id in that branch) rather than at the top of the
+  section: a link that lands on a named absence is honest, one that lands nowhere is not.
+  **Consequence for anyone changing `PassNetworksSection`:** its matrix-only branch is what a real
+  reader meets and its `PitchPanel` branch is what the fixture-backed tests meet. Both carry the same
+  `pass-networks-matrix` nonce. Wiring one and not the other passes every test and ships broken, or
+  the inverse.
+
+- **NOT UPDATED: Story 2.19's Partition C disposition row for `L1553, L1886`.** That table is 2.19's
+  appended artifact and stays as written; this section names it and records that its successor trigger
+  fired.
+
+- source_spec: `3-5-first-visit-locale-detection.md`
+  summary: `app/src/components/MatchDeepLink.test.tsx` mounts a bare `<LocaleProvider>` and asserts Spanish strings, so story 3.5's first-visit detection turns 3 of its 7 tests red. It needs the same explicit `navigator.language` pin the three other render suites now carry.
+  evidence: MEASURED, not predicted. `npx vitest run src/components/MatchDeepLink.test.tsx` against the shipped detection gives `3 failed | 4 passed`, failing on Spanish accessible-name queries such as `/ocultar los datos/i`. Cause: the file renders `<LocaleProvider>` at `:77` with empty `localStorage` and no `navigator.language` pin, and jsdom's default is `"en-US"` — so with detection live its locale is decided by an ambient default instead of by the test (the A2 coincidence-green class, arriving from the other direction). Story 3.5's Task 7.5 grep expected SIX `LocaleProvider` renderers; this is a SEVENTH, created by story 3-8 DURING 3.5's run. NOT REPAIRED BY 3.5 and NOT staged by it: the file was untracked and in-flight under story 3-8, and A3 forbids editing another session's live work. FIX (one line, same shape as the three files 3.5 repaired): add `vi.spyOn(window.navigator, "language", "get").mockReturnValue("es-CO")` in a `beforeEach`, and `vi.restoreAllMocks()` in the existing `afterEach`. See `TournamentHub.test.tsx` for the exact pattern. **Owner: Epic 3 story 3-8** (it owns the file), or the Epic 3 retrospective if 3-8 closes without it. STANDING RULE this establishes: any NEW jsdom render test that mounts `LocaleProvider` must now state the `navigator.language` it assumes, including when it assumes Spanish.
+
+- source_spec: `3-5-first-visit-locale-detection.md`
+  summary: `app/src/app/static-output.test.ts:171` checks the exported inline bootstrap script for the markers `["wcstats.locale", "prefers-color-scheme", "locale-"]` and does NOT check for `"navigator"` — so an export that shipped WITHOUT first-visit locale detection would pass the export-layer guard silently.
+  evidence: Story 3.5 shipped `navigator.language` detection into the checked-in ES5 literal, and the built export carries `window.navigator.language` (verified: 2 occurrences in `out/index.html`). Adding `"navigator"` to that marker list would make a detection-less export fail — it is the ONLY export-layer check that would catch detection being dropped from the shipped script, since every other guard on this behaviour is a unit or jsdom test that reads the source rather than the artifact. NOT TAKEN BY 3.5 on two grounds, both recorded rather than assumed: (1) the file is on story 3-6's owned-paths list, and (2) adding it would have put a ninth path into 3.5's Task 11.1 staging list, which is explicitly closed. The file was CLEAN at 3.5's probe, so this is a one-line change whenever its owner takes it. Note the guard sits behind `describe.skipIf(!anyBuilt)`, so it only bites after a prior `npm run build`. **Owner: Epic 3 story 3-6, or the Epic 3 retrospective.** Raised as 3.5's open question #2 for Juan; deferred, not silently dropped.

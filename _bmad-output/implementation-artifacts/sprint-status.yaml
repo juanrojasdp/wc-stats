@@ -3421,7 +3421,7 @@ development_status:
   # (two of four blockers already resolved by 2.19, including the one it called
   # fatal). Owns match-anchors.ts, use-anchor-nonce.ts, TacticalLayer, PitchPanel,
   # TournamentHub, the five section components, expert-logs.ts and i18n.test.ts.
-  3-8-match-route-deep-link-plumbing: in-progress
+  3-8-match-route-deep-link-plumbing: review
   3-9-home-page-refactor: backlog
   # Context created 2026-08-26. Implements UX-DR24's nav; does NOT re-rule it. Owns
   # SiteNav.tsx + SiteNav.test.tsx + nav-destinations.ts/.test.ts (NEW), SiteHeader.tsx,

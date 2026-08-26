@@ -4,7 +4,7 @@ baseline_commit: f07116b
 
 # Story 3.8: Match-Route Deep-Link Plumbing
 
-Status: ready-for-dev
+Status: review
 
 <!-- Created 2026-08-26. THIS IS A PORT, NOT AN INVENTION. Story 2.19 built this exact
      mechanism for the Tournament Hub and it ships at f07116b. Every ruling below is
@@ -315,20 +315,20 @@ Three consequences, each of which will otherwise cost an hour:
 
 ### Task 1 — A3 ownership probe (blocking)
 
-- [ ] 1.1 `git status --short` and `git log --oneline -1`. Record the HEAD sha and the dirty set.
-- [ ] 1.2 Check the two known Epic 3 collision files named by A3: `app/src/app/page.tsx` and
+- [x] 1.1 `git status --short` and `git log --oneline -1`. Record the HEAD sha and the dirty set.
+- [x] 1.2 Check the two known Epic 3 collision files named by A3: `app/src/app/page.tsx` and
       `app/src/components/SiteHeader.tsx`. **Neither is in this story's touch list** — if either is
       dirty, that is another session's work and you leave it alone.
-- [ ] 1.3 Confirm none of **your** paths (Task 2's file list) is held by another session. At
+- [x] 1.3 Confirm none of **your** paths (Task 2's file list) is held by another session. At
       create-story the tree was clean of all of them; three concurrent sessions own
       `_bmad-output/planning-artifacts/ux-designs/**` (bmad-ux),
       `app/scripts/assert-no-external-origins.mjs` + `app/eslint.config.mjs` (3-1), and
       `app/src/lib/bootstrap.ts` / `bootstrap.test.ts` / `i18n-provider.tsx` (3-5) — **no overlap**.
-- [ ] 1.4 **`app/src/lib/i18n.test.ts` is the one shared-file risk** (D8 modifies it). It is not
+- [x] 1.4 **`app/src/lib/i18n.test.ts` is the one shared-file risk** (D8 modifies it). It is not
       claimed by any of the three, but 3-6 touched it before committing. Re-read it immediately
       before editing. If another session holds it, **abort at this task and say so** (2.18's
       precedent) rather than proceeding.
-- [ ] 1.5 Baseline the suite: `cd app && npm test`. **Expect 1,306 tests / 51 files / 0 skipped, all
+- [x] 1.5 Baseline the suite: `cd app && npm test`. **Expect 1,306 tests / 51 files / 0 skipped, all
       green.** (Not 1,251 — that figure predates story 3.6's `SiteSignature.test.tsx`. Re-measured
       2026-08-26.) If `src/lib/assert-schema-version.test.ts` times out at 20 s, it is a known
       contention flake under concurrent sessions — it runs in 2.1 s in isolation
@@ -336,13 +336,13 @@ Three consequences, each of which will otherwise cost an hour:
 
 ### Task 2 — `lib/match-anchors.ts`, the pure grammar (AC 3, AC 4)
 
-- [ ] 2.1 Create `app/src/lib/match-anchors.ts` per **D1**. Frozen `as const` registry; derive
+- [x] 2.1 Create `app/src/lib/match-anchors.ts` per **D1**. Frozen `as const` registry; derive
       `PanelAnchorId` from it so a typo is a compile error.
-- [ ] 2.2 `resolveMatchFragment(hash)`: strip a leading `#`; empty → `null`; exact `SectionId` →
+- [x] 2.2 `resolveMatchFragment(hash)`: strip a leading `#`; empty → `null`; exact `SectionId` →
       `{section, panel: null}`; exact `PanelAnchorId` → `{section: <its section>, panel}`.
-- [ ] 2.3 The dev report per **D2**: report-once `Set`, `process.env.NODE_ENV !== "production"`,
+- [x] 2.3 The dev report per **D2**: report-once `Set`, `process.env.NODE_ENV !== "production"`,
       `console.error`, and **only** for `"<SectionId>-"`-prefixed non-resolvers.
-- [ ] 2.4 `app/src/lib/match-anchors.test.ts`. Pin, at minimum:
+- [x] 2.4 `app/src/lib/match-anchors.test.ts`. Pin, at minimum:
       - every `SectionId` resolves to itself with `panel === null`;
       - every `PANEL_ANCHORS` entry resolves, and its `section` is a real `SectionId`;
       - `shot-maps-shots` and `shot-maps-crosses` resolve to **distinct** panels on the **same**
@@ -356,23 +356,23 @@ Three consequences, each of which will otherwise cost an hour:
 
 ### Task 3 — `lib/use-anchor-nonce.ts`, the ported hook (AC 1)
 
-- [ ] 3.1 Create the module per **D3**, copying `TournamentHub.tsx:182-215` verbatim into
+- [x] 3.1 Create the module per **D3**, copying `TournamentHub.tsx:182-215` verbatim into
       `useAnchorHit` and keeping every guard. Carry the docblock across — it is the design rationale
       and it must not be left behind in a file that no longer holds the code.
-- [ ] 3.2 Rewrite `TournamentHub.tsx` to import it: delete the local `useAnchorNonce` and
+- [x] 3.2 Rewrite `TournamentHub.tsx` to import it: delete the local `useAnchorNonce` and
       `HASH_PREFIX`, add the import. **Both call sites and both `openNonce` props stay byte-identical.**
-- [ ] 3.3 `npm test -- src/components/TournamentHub.test.tsx` — the Hub's four disclosure tests must
+- [x] 3.3 `npm test -- src/components/TournamentHub.test.tsx` — the Hub's four disclosure tests must
       still pass **unchanged**. This is the regression floor for the extraction; if they go red, the
       move was not a move.
 
 ### Task 4 — `PitchPanel` threads the nonce (AC 2)
 
-- [ ] 4.1 Add `anchorId?: string` and `openNonce?: number` to `PitchPanelProps` (`:112-132`) with the
+- [x] 4.1 Add `anchorId?: string` and `openNonce?: number` to `PitchPanelProps` (`:112-132`) with the
       docblocks D7 specifies. Destructure both in the signature (`:1068-1077`).
-- [ ] 4.2 `id={anchorId}` on the `<section>` at `:1146`. **No `aria-labelledby`.**
-- [ ] 4.3 `openNonce={openNonce}` on the `ViewDataDisclosure` at `:1284`. Nothing else in that call
+- [x] 4.2 `id={anchorId}` on the `<section>` at `:1146`. **No `aria-labelledby`.**
+- [x] 4.3 `openNonce={openNonce}` on the `ViewDataDisclosure` at `:1284`. Nothing else in that call
       changes — `panelTitle` and `trailing` stay exactly as they are.
-- [ ] 4.4 Confirm the absent case is byte-identical: with neither prop passed, `id` is `undefined`
+- [x] 4.4 Confirm the absent case is byte-identical: with neither prop passed, `id` is `undefined`
       and `openNonce` defaults to `0` at `ViewDataDisclosure.tsx:31`, which the docblock there
       defines as "never". `CompareChartsSection`, `TeamIdentitySection`, `TrendsSection`,
       `PhysicalSection` and the rest are unaffected and are **not** touched.
@@ -382,7 +382,7 @@ Three consequences, each of which will otherwise cost an hour:
 Each takes one (or two) numeric nonce props and passes `anchorId` + `openNonce` down. Nothing else
 in these files changes.
 
-- [ ] 5.1 `ShotMapsSection.tsx` — `shotsNonce` / `crossesNonce` onto the two `PitchPanel`s
+- [x] 5.1 `ShotMapsSection.tsx` — `shotsNonce` / `crossesNonce` onto the two `PitchPanel`s
       (`:417`, `:432`), with `anchorId="shot-maps-shots"` / `"shot-maps-crosses"`. **This is AC 4.**
       **Also give each branch's `EmptyStatePanel` the same id** per **D10.2** — on the real corpus
       the cross branch IS the empty panel (`:426-430`), and the fragment must land on the named
@@ -391,35 +391,35 @@ in these files changes.
       the `PitchPanel` in the other arm already carries it via `anchorId`, and emitting both would
       duplicate a DOM id, which is silently legal and breaks `getElementById` in a way nothing
       catches (the hazard `i18n.test.ts:1643-1656` was written for).
-- [ ] 5.2 `PassNetworksSection.tsx` — `matrixNonce` into **both** disclosure sites per **D5**: the
+- [x] 5.2 `PassNetworksSection.tsx` — `matrixNonce` into **both** disclosure sites per **D5**: the
       matrix-only `ViewDataDisclosure` (`:252`) and the `PitchPanel` (`:593`). **Per D10.3 these two
       branches split fixture from corpus** — the tests exercise one and the browser the other, so a
       half-wiring looks green. Wire both in the same edit and say so in the file list note.
-- [ ] 5.3 `OffersToReceiveSection.tsx` — `tableNonce` onto the `ViewDataDisclosure` (`:399`);
+- [x] 5.3 `OffersToReceiveSection.tsx` — `tableNonce` onto the `ViewDataDisclosure` (`:399`);
       `id` onto its wrapping element.
-- [ ] 5.4 `MovementToReceiveSection.tsx` — same shape (`:351`).
-- [ ] 5.5 `DefensiveActionsSection.tsx` — `tableNonce` + `anchorId` onto the `PitchPanel` (`:301`).
+- [x] 5.4 `MovementToReceiveSection.tsx` — same shape (`:351`).
+- [x] 5.5 `DefensiveActionsSection.tsx` — `tableNonce` + `anchorId` onto the `PitchPanel` (`:301`).
 
 ### Task 6 — `TacticalLayer` (AC 1, AC 3)
 
-- [ ] 6.1 Delete `sectionIdFromHash` (`:59-62`); import `resolveMatchFragment`.
-- [ ] 6.2 `const hit = useAnchorHit();` and replace the `openFromHash` effect (`:176-189`) with the
+- [x] 6.1 Delete `sectionIdFromHash` (`:59-62`); import `resolveMatchFragment`.
+- [x] 6.2 `const hit = useAnchorHit();` and replace the `openFromHash` effect (`:176-189`) with the
       `hit`-driven effect from **D6**. Delete the old `hashchange` subscription — do not keep both.
-- [ ] 6.3 Add the six nonce props to `sectionContent`'s five relevant cases per **D4**. The other six
+- [x] 6.3 Add the six nonce props to `sectionContent`'s five relevant cases per **D4**. The other six
       cases and the `default:` exhaustiveness throw are untouched.
-- [ ] 6.4 Confirm the mount-time read still happens. `TacticalLayer` is client-only under AR-11 and
+- [x] 6.4 Confirm the mount-time read still happens. `TacticalLayer` is client-only under AR-11 and
       mounts inside `MatchBundleRegion`'s loaded branch — the browser has already abandoned the
       fragment by then, so the hook's initial `readHash()` is **load-bearing, not belt-and-braces**
       (`:52-56`, and the same sentence in `TournamentHub.tsx:887-901`).
 
 ### Task 7 — `LOG_LINKS` and its gate (AC 4, AC 5)
 
-- [ ] 7.1 `expert-logs.ts` — widen `href` to `` `#${MatchFragmentId}` `` and re-point all six entries
+- [x] 7.1 `expert-logs.ts` — widen `href` to `` `#${MatchFragmentId}` `` and re-point all six entries
       to their panel anchor per **D1**'s table. Update ruling 2's docblock (`:16-27`): it currently
       states four blockers as present tense, two of which 2.19 resolved and all four of which this
       story closes. Rewrite it to describe what the links now do.
-- [ ] 7.2 `lib/i18n.test.ts` — modify the href pin per **D8**. Keep it in place; strengthen it.
-- [ ] 7.3 `ExpertLayer.tsx` — verify no change is needed. The anchors are built from `link.href`
+- [x] 7.2 `lib/i18n.test.ts` — modify the href pin per **D8**. Keep it in place; strengthen it.
+- [x] 7.3 `ExpertLayer.tsx` — verify no change is needed. The anchors are built from `link.href`
       (`:990`) and the `aria-labelledby` hint from `link.titleKey`, so re-pointing the hrefs flows
       through untouched. **Confirm and record, do not assume.**
 
@@ -430,7 +430,7 @@ harness shape from `TournamentHub.test.tsx:1-45` — `// @vitest-environment jsd
 `@testing-library` imports, `Element.prototype.scrollIntoView = function () {}` with its honest
 comment, `afterEach` cleanup **plus `window.location.hash = ""`**.
 
-- [ ] 8.1 **Attempt the full-`TacticalLayer` render first**, over `data/fixtures/matches/m001-…json`
+- [x] 8.1 **Attempt the full-`TacticalLayer` render first**, over `data/fixtures/matches/m001-…json`
       cast to `MatchBundle`, inside `<LocaleProvider>`. Record which DOM stubs jsdom needs.
       Likely ones, pre-identified: `scrollIntoView` (certain — `TacticalSection.tsx:101`);
       `ResizeObserver` (`use-element-width.ts:53` already guards `typeof … === "undefined"`, so it
@@ -438,20 +438,20 @@ comment, `afterEach` cleanup **plus `window.location.hash = ""`**.
       jsdom supplies it and `use-media-query.ts:49-53` try/catches anyway, so `isLg` is `false` —
       **which is the case you want**: the nine collapsible sections start collapsed, so
       closed → open is a real transition rather than a no-op.
-- [ ] 8.2 **If the momentum chart proves un-renderable in jsdom, do not fight it.** Each section is
+- [x] 8.2 **If the momentum chart proves un-renderable in jsdom, do not fight it.** Each section is
       already wrapped in its own `TacticalErrorBoundary` (`TacticalLayer.tsx:495-498`), so a throw
       there renders that section's empty state and leaves `#shot-maps` unaffected. Record it in
       Debug Log References. Only if the *whole layer* is un-renderable, fall back to rendering the
       section components directly with an explicit nonce prop — and say in the file's docblock that
       the fallback tests the section half and that Task 8.6 covers the layer half.
-- [ ] 8.3 **Test — deep link opens the named panel.** `window.location.hash = "#shot-maps-crosses"`,
+- [x] 8.3 **Test — deep link opens the named panel.** `window.location.hash = "#shot-maps-crosses"`,
       render inside `act`, then assert a `<table>` exists inside `document.getElementById(
       "shot-maps-crosses")`. **Assert the transition, not the anchor** (A2): the same test must also
       assert that `#shot-maps-shots`'s region holds **no** table — one fragment, one panel.
-- [ ] 8.4 **Test — AC 4, the collision is gone.** `#shot-maps-shots` opens the shot table and leaves
+- [x] 8.4 **Test — AC 4, the collision is gone.** `#shot-maps-shots` opens the shot table and leaves
       the cross table closed; `#shot-maps-crosses` does the inverse. This is the assertion L1886 exists
       for and it must be its own case.
-- [ ] 8.5 **Test — AC 1, the same-fragment second click.** Target `#defensive-actions-table`: the
+- [x] 8.5 **Test — AC 1, the same-fragment second click.** Target `#defensive-actions-table`: the
       `m001` **fixture** carries 63 defensive actions so the section renders and the panel opens
       (per **D10** the real corpus does not — the fixture is the right harness for this case, and
       the test must be pinned by relative fixture path, A2). With the hash already set:
@@ -460,9 +460,9 @@ comment, `afterEach` cleanup **plus `window.location.hash = ""`**.
       in the same document → **open again**. The anchor must carry the same `pathname` as
       `window.location` or the hook's guard rejects it. **`hashchange` will not fire** — that is the
       whole point of the case, and it is what proves the capture-phase listener is wired.
-- [ ] 8.6 **Test — the section still expands.** `#shot-maps` (section-level) expands the section and
+- [x] 8.6 **Test — the section still expands.** `#shot-maps` (section-level) expands the section and
       opens **no** disclosure (D1). Pins the shipped behaviour against regression.
-- [ ] 8.7 **A2's second half — prove the tests can fail.** Revert the nonce wiring (comment out
+- [x] 8.7 **A2's second half — prove the tests can fail.** Revert the nonce wiring (comment out
       `openNonce={openNonce}` in `PitchPanel.tsx:1284`), run the suite, capture the failure output,
       restore. **Record the command and the output in Completion Notes.** A test that has never been
       red is not a test.
@@ -471,19 +471,19 @@ comment, `afterEach` cleanup **plus `window.location.hash = ""`**.
 
 For each, record the command and its failing output in Completion Notes, then restore.
 
-- [ ] 9.1 `match-anchors.test.ts` — break the registry (point `shot-maps-crosses` at `shot-maps-shots`)
+- [x] 9.1 `match-anchors.test.ts` — break the registry (point `shot-maps-crosses` at `shot-maps-shots`)
       → the distinct-panels case goes red.
-- [ ] 9.2 The modified `i18n.test.ts` href pin — set one `LOG_LINKS.href` back to `"#shot-maps"` and
+- [x] 9.2 The modified `i18n.test.ts` href pin — set one `LOG_LINKS.href` back to `"#shot-maps"` and
       confirm the pin now rejects it (it would have **passed** under the old `SECTION_IDS` check;
       say so in the note — that is the point of the change).
-- [ ] 9.3 The dev-report branch — remove the `NODE_ENV` guard and confirm the production case fails.
-- [ ] 9.4 Task 8.7's revert already discharges the deep-link suite. Cross-reference it.
+- [x] 9.3 The dev-report branch — remove the `NODE_ENV` guard and confirm the production case fails.
+- [x] 9.4 Task 8.7's revert already discharges the deep-link suite. Cross-reference it.
 
 ### Task 10 — Browser verification (AC 1, AC 3)
 
 jsdom does not prove AC 1. **Do this in a real browser.**
 
-- [ ] 10.1 Build and serve the static export: `cd app && npm run build`, then
+- [x] 10.1 Build and serve the static export: `cd app && npm run build`, then
       `python -m http.server 8765 --directory app/out`. **`next dev` cannot serve `/data/fixtures`** —
       only `copy-data.mjs` populates it into `out/` (2.6 Task 11.2, 2.7 Task 12.2). `trailingSlash:
       true`, so the deep link is `/matches/{slug}/#shot-maps-crosses`.
@@ -491,7 +491,7 @@ jsdom does not prove AC 1. **Do this in a real browser.**
         session, build and verify in an **isolated git worktree on a private port** (2.11a's precedent).
       - Bundle data is cached hard; a plain reload will not refresh it. Override `fetch` with
         `cache: "no-store"` if you see stale data.
-- [ ] 10.2 **AC 1, the exact sequence, at ~390 px:** open `/matches/m001-…/#expert`, click
+- [x] 10.2 **AC 1, the exact sequence, at ~390 px:** open `/matches/m001-…/#expert`, click
       **"Registro de tiros"** → the shot panel's table opens. Close it with "Ocultar los datos".
       Click the **same link again** → it re-opens. Confirm in DevTools that **no `hashchange` fired**
       on the second click. Record all three observations.
@@ -499,30 +499,30 @@ jsdom does not prove AC 1. **Do this in a real browser.**
       real bundles, so "Registro de centros" lands on an `EmptyStatePanel` with no control to
       re-open. Repeat the sequence on **"Tabla de ofrecimientos"** as a second, differently-shaped
       confirmation (a non-`PitchPanel` disclosure).
-- [ ] 10.3 **AC 4 in the browser:** click "Registro de tiros" then "Registro de centros" in sequence.
+- [x] 10.3 **AC 4 in the browser:** click "Registro de tiros" then "Registro de centros" in sequence.
       On real data the two now land on **different targets** — the open shot table and the named
       cross absence — where before both resolved to `#shot-maps` and the second click did nothing.
       Record both landings. **The full closed→open-on-each-panel proof of AC 4 is Task 8.4's
       fixture-backed test**, because the corpus cannot render two shot-maps panels; say so in the
       completion notes rather than claiming the browser proved it.
-- [ ] 10.4 **AC 3:** with the console open, hand-edit the URL to `#shot-maps-log`. In a `next dev`
+- [x] 10.4 **AC 3:** with the console open, hand-edit the URL to `#shot-maps-log`. In a `next dev`
       run (or a dev build) it must print the error; in the production export it must be silent and
       harmless. Both halves.
-- [ ] 10.5 **Record the header-landing condition (D9).** At ≥390 px the heading should land clear of
+- [x] 10.5 **Record the header-landing condition (D9).** At ≥390 px the heading should land clear of
       the 62 px header. At ≤341 px (es) the header wraps to 118 px and the heading lands behind it —
       **that is the deferred `--header-h` entry, not this story's regression.** Observe it, state it,
       leave it.
 
 ### Task 11 — Close L1553 and L1886 (AC 6)
 
-- [ ] 11.1 **Append** a new `##` section to `deferred-work.md` — after the final entry, never inside
+- [x] 11.1 **Append** a new `##` section to `deferred-work.md` — after the final entry, never inside
       one. Title it for this story and date it. **No paragraph above it is edited (D12).**
       **Re-read the file's tail immediately before writing**: three sessions are running and other
       Epic 3 stories append to this same ledger. If someone appended while you worked, your section
       goes after theirs. Never overwrite; never `git checkout` the file.
       **Do not edit this file with a PowerShell `Get-Content`/`Set-Content` round-trip** — it mangles
       accents and em dashes under PS 5.1. Use the edit tools.
-- [ ] 11.2 The note must state, explicitly:
+- [x] 11.2 The note must state, explicitly:
       - **L1553 is CLOSED.** Of its four blockers, **two were already resolved by Story 2.19** —
         `ViewDataDisclosure.openNonce` (`:31`) and, **critically, the capture-phase click listener
         for the same-fragment case, which L1553 called *fatal to a link list*** — and 2.19 recorded
@@ -537,19 +537,19 @@ jsdom does not prove AC 1. **Do this in a real browser.**
         the section they were leaving) are **NOT** closed. State that plainly and name their
         successor, rather than letting the closure of (a) imply all three.
       - The `--header-h` interaction (D9) as an observed, unfixed condition.
-- [ ] 11.3 Update the 2.19 disposition table row for `L1553, L1886` at `deferred-work.md:4179`? **NO.**
+- [x] 11.3 Update the 2.19 disposition table row for `L1553, L1886` at `deferred-work.md:4179`? **NO.**
       That table is 2.19's appended artifact. Leave it. Your new section names it and says the
       successor trigger fired.
 
 ### Task 12 — Gates and commit
 
-- [ ] 12.1 `cd app && npm run lint && npm run typecheck` — both clean. `--max-warnings 0`.
-- [ ] 12.2 `npm test` — **1,306 baseline + your new cases, 0 failures, 0 skipped.** Report the new total.
-- [ ] 12.3 `npm run build` — full chain, including `assert:no-external-origins`. **1,406 routes,
+- [x] 12.1 `cd app && npm run lint && npm run typecheck` — both clean. `--max-warnings 0`.
+- [x] 12.2 `npm test` — **1,306 baseline + your new cases, 0 failures, 0 skipped.** Report the new total.
+- [x] 12.3 `npm run build` — full chain, including `assert:no-external-origins`. **1,406 routes,
       unchanged.** (Note: story 3-1 is concurrently editing `assert-no-external-origins.mjs` and
       `eslint.config.mjs`. If the build fails inside *their* script, that is their in-flight work —
       confirm against a clean checkout before treating it as yours.)
-- [ ] 12.4 **A4 — stage by path, never `git add -A`.** Your paths, and only these:
+- [x] 12.4 **A4 — stage by path, never `git add -A`.** Your paths, and only these:
       ```
       app/src/lib/match-anchors.ts
       app/src/lib/match-anchors.test.ts
@@ -750,8 +750,224 @@ route-count claim in the completion notes must come from Task 12.3's actual buil
 
 ### Agent Model Used
 
+claude-opus-5[1m] (Claude Opus 5, 1M context) — BMad `dev-story` workflow, 2026-08-26.
+
 ### Debug Log References
+
+**A3 ownership probe (Task 1).** HEAD at start was `87a9a39`, not the frontmatter's `f07116b`.
+`git diff f07116b..HEAD` touched **nothing under `app/`** (only `_bmad-output/**`), so every line
+reference in this story still held and nothing had to be re-derived. The dirty set was entirely story
+3-1's (`assert-no-external-origins.mjs`, `assert-no-external-origins.test.ts`, `site-origin.ts`,
+`site-origin.test.ts`, `__lint-probe.ts`) plus a stray empty file named `17` (0 bytes, not mine, left
+alone). `page.tsx`, `SiteHeader.tsx` and `i18n.test.ts` were all clean — 1.4's abort condition did not
+fire.
+
+**Baseline (Task 1.5) measured 1,320 tests / 52 files, NOT the story's predicted 1,306 / 51.** The
+delta is story 3-1's *uncommitted* work sitting in the tree: `site-origin.test.ts` was a 52nd file and
+`assert-no-external-origins.test.ts` had gained cases. `assert-schema-version.test.ts` passed at
+15.8 s; the predicted contention timeout did not occur.
+
+**jsdom renders the WHOLE Tactical Layer (Task 8.1) — the 8.2 fallback was not needed.** Stubs
+required: `scrollIntoView` (as predicted) and a no-op `ResizeObserver` (predicted as *likely*).
+recharts logs `width(0) and height(0)` warnings to stderr but does not throw, so no section is lost to
+its `TacticalErrorBoundary`.
+
+**TWO HARNESS TRAPS FOUND AND FIXED, both of which had produced tests that passed for the wrong
+reason:**
+
+1. **`LocaleProvider` resolves `en` in jsdom, not `es`.** It reads localStorage, then
+   `navigator.language` (jsdom reports `en-US`), then `initialLocale` — so the disclosure control
+   renders "Hide data", not "Ocultar los datos". Worse, that resolution lands in an *effect*, which
+   makes a copy-matching selector TIMING-dependent: the first full-file run passed and later runs
+   failed. Diagnosed by printing the rendered control in a throwaway suite
+   (`EXPANDABLE COUNT: 1 -> Hide data true`). Every selector now uses `button[aria-expanded]`, which
+   is locale-invariant and is also the semantically correct handle; the helper asserts exactly one per
+   panel, so a future second collapsible inside a panel becomes loud rather than silently mis-picked.
+2. **jsdom FIRES `hashchange` for a same-fragment anchor click, where a real browser fires none.**
+   Measured: a counting listener saw 2. This matters more than it looks — it means the jsdom AC-1 case
+   can be carried by the `hashchange` path and would stay green with the capture-phase listener
+   deleted. A dedicated case therefore CANCELS the navigation (a bubble-phase `preventDefault` on
+   `document`, which runs after the hook's capture-phase listener), asserts zero `hashchange` fired,
+   and asserts the panel re-opened anyway — isolating the capture listener as the only possible cause.
+   The comment that had claimed "hashchange DOES NOT FIRE here" was corrected, not left standing.
+
+**A flaky failure that turned out to be a TIMEOUT, not a defect.** The AC-4 case does two full-layer
+renders and vitest's 5 s default failed it intermittently on a loaded machine.
+`vi.setConfig({ testTimeout: 30_000 })` with a comment explaining why the coverage was kept and the
+budget raised instead; four consecutive full-file runs green afterwards.
+
+**The lint gate rejected D6's literal code sketch.** `react-hooks/set-state-in-effect` fires on
+`setOverrides`/`setFocus` called synchronously in a `useEffect` body — the exact rule
+`ViewDataDisclosure`'s own docblock warns about. The old code escaped it only because its setState
+calls sat inside a `hashchange` CALLBACK. Resolved with this project's established idiom for the same
+constraint (adjust-during-render, which `ViewDataDisclosure.tsx:99-105` already uses to consume this
+very nonce). See the declared deviation below.
+
+**Two dead bindings created and removed.** Deleting `sectionIdFromHash` orphaned `SECTION_IDS`, and
+the adjust-during-render move orphaned `useEffect`, both in `TacticalLayer.tsx`. Neither is caught by
+anything in the build chain — that file's own header docblock says exactly this, and records that
+Story 2.9 shipped one and took a review finding for it — so both were removed by hand.
+
+**CONCURRENT-SESSION INCIDENT: this story's 15 code files were committed by another session, then
+un-committed.** While Task 12.1/12.2 were running, the 3-10 session's sweeping `git add` captured all
+15 of them inside `f6fee86` ("Story 3.10: aborted at Task 1.4"), mixed with its own story file and
+`sprint-status.yaml`. That session then reset the commit away (non-`--hard`, so nothing was lost).
+Verified intact on disk, then committed under this story as **`deae510`**, staged by explicit pathspec
+(A4). HEAD had also moved twice underneath this work in the meantime: story **3-1 landed**
+(`432dc29`, `117311c`) and 3-10 was contexted (`2c8bb1a`).
 
 ### Completion Notes List
 
+**AC 1 — the same-fragment second click re-opens.** The Hub's hook is extracted whole to
+`app/src/lib/use-anchor-nonce.ts`, capture-phase click listener and every guard intact, and
+`TacticalLayer` calls it exactly once for the route. Two jsdom cases cover it, one of which cancels
+the navigation to prove the capture listener is what re-opens the panel.
+
+**AC 2 — the nonce is threaded through `PitchPanel`.** `PitchPanelProps` goes 8 → 10 (`anchorId`,
+`openNonce`). Absent means no `id` and `openNonce` defaulting to `0`, which `ViewDataDisclosure`
+defines as "never", so `CompareChartsSection`, `TeamIdentitySection`, `TrendsSection`,
+`PhysicalSection` and every other caller are untouched and were not edited. The three
+non-`PitchPanel` disclosures (offers, movement, and the pass-network matrix branch) got `id` +
+`openNonce` on their existing wrapping element.
+
+**AC 3 — the grammar is widened and fails visibly in dev.** `app/src/lib/match-anchors.ts` REPLACES
+`sectionIdFromHash` rather than extending it, so the route has one grammar and not two. An
+addressed-but-unresolvable fragment reports once via `console.error` in dev/test and is silent in
+production; `#main-content` and `#expert` are silent at every environment.
+
+**AC 4 — `#shot-maps` is disambiguated.** `shot-maps-shots` and `shot-maps-crosses`, each pinned by
+its own dedicated case in both suites.
+
+**AC 5 (A2) — the tests prove the transition, and they were driven RED.** Every case asserts a
+`<table>` appearing inside the addressed region *and* that the sibling region still has none.
+
+**AC 6 — L1553 and L1886 closed in `deferred-work.md`**, appended as an 81-line section with **0
+deletions** (`git diff --numstat` reported `81  0`), recording that Story 2.19 had already resolved
+two of L1553's four blockers — including the one the entry called *fatal to a link list* — and stating
+explicitly that closing hash-re-entry path (a) does NOT close (b) or (c).
+
+**A1 — every new/modified gate driven RED once, then restored:**
+
+| gate | how it was broken | observed failure |
+|---|---|---|
+| `match-anchors.test.ts` (9.1) | pointed `shot-maps-crosses` at `shot-maps-shots` | 3 red: `expected null not to be null`; `expected 5 to be 6`; `expected undefined to be 'shot-maps'` |
+| the production guard (9.3) | removed the `NODE_ENV` early return | 1 red: `expected "error" to not be called at all, but actually been called 1 times` |
+| the `i18n.test.ts` href pin (9.2) | set `shot-log.href` back to `"#shot-maps"` | 2 red: `shot-log must open a table, not just a section: expected null not to be null`; `expected [ 'shot-maps-shots', …(5) ] to include null` — **and `npm run typecheck` still PASSED.** That is the point of the change: `#shot-maps` is a legal `MatchFragmentId`, so the type cannot catch this and the runtime pin is the necessary second line of defence. The OLD `SECTION_IDS`-membership check would have passed it outright — it is the assertion L1886 needed and did not have. |
+| the nonce wiring (8.7, cross-referenced by 9.4) | commented out `openNonce={openNonce}` in `PitchPanel.tsx` | 4 of 7 red in `MatchDeepLink.test.tsx`: `the addressed panel opened: expected 0 to be greater than 0`; `shots opened: expected 0 to be greater than 0`; `the deep link opened it: expected 0 to be greater than 0`; `closed before the re-click: expected [ <table …(1)>…(3)</table> ] to have a length of +0 but got 1` |
+
+**DEVIATION FROM D6, DECLARED.** D6's code sketch is a `useEffect(…, [hit])`. That shape does not pass
+`npm run lint` (`react-hooks/set-state-in-effect` under `--max-warnings 0`). D6's *ruling* — drive
+section expansion from the hook's `hit` rather than from a second `hashchange` subscription, and
+delete the old subscription rather than keeping both — is implemented exactly; only the mechanism
+differs, and it is the idiom this project already uses for precisely this constraint. `hit` is
+compared by identity, so the fresh-object-per-read property D6 depends on still does the work.
+
+**DEVIATION FROM TASK 2.4, DECLARED.** Task 2.4 asks for `console.error` "called once — then called
+*once more* for a second identical miss (the report-once `Set`)", which is self-contradictory. D2 is
+the ruling and states the Set exists so a stale fragment "reports **once**". Implemented as D2 states.
+The suite asserts both halves: a repeated identical miss stays at one call, while a *different* miss
+gets its own — the assertion that distinguishes a keyed Set from a one-shot latch.
+
+**IMPLEMENTATION CHOICE: the nonce props are REQUIRED, not optional.** Each of the five section
+components has exactly one caller (`TacticalLayer`), so a forgotten nonce is a compile error rather
+than the silent no-op this story exists to remove.
+
+**VARIANCE FROM TASK 12.4's PATH LIST: `app/src/components/ExpertLayer.tsx` was edited.** Task 7.3
+ruled correctly that no *logic* change is needed — the anchors are built from `link.href` verbatim, so
+re-pointing the hrefs flows through untouched — and no logic was changed. But the file carried a
+comment stating the links only "auto-expand the target section" via "TacticalLayer's hashchange
+listener", both of which this story makes false. Leaving a false present-tense description of code I
+had just changed is the same defect Task 7.1 retires in `expert-logs.ts`, so the comment was
+corrected. Comment-only; confirmed by `git diff`.
+
+**FILED, NOT FIXED: the Expert link hint copy is now arguably understated.** Each link's
+`aria-labelledby` hint composes `{section title} — Ver los datos`, written when the links merely
+STATED where the table was. They now open it. The hint is still true, and D9 bans new locale keys, so
+it is raised for review rather than changed unilaterally.
+
+**BROWSER VERIFICATION (Task 10) — DONE IN A REAL BROWSER, VIA A DIFFERENT ROUTE THAN PLANNED.** The
+Claude-in-Chrome extension was not connected (`list_connected_browsers` returned `[]`), so rather than
+leave AC 1's only real proof undone, the export was driven with **headless Chromium via Playwright**,
+installed in the scratchpad — **no dependency was added to the repo** (D9). Served from an **isolated
+git worktree at `deae510` on private port 8791**, so no concurrent session's uncommitted work was in
+the build. The corpus is the REAL 104-bundle tree, so D10's absences are live. **12 of 12 checks
+passed:**
+
+| check | observed |
+|---|---|
+| 10.2 "Registro de tiros" 1st click | `#shot-maps-shots` `aria-expanded=true`, 1 table |
+| 10.2 reader closes it | `aria-expanded=false`, 0 tables |
+| 10.2 **SAME link clicked again** | `aria-expanded=true`, 1 table — **re-opened** |
+| 10.2 **hashchange on that 2nd click** | count **1 → 1: NONE FIRED.** This is AC 1's real proof and the thing jsdom cannot give — jsdom fires one here, a real browser does not. |
+| 10.2 "Tabla de ofrecimientos" (a non-`PitchPanel` disclosure) | same four results; 2 tables; hashchange **2 → 2** |
+| 10.3 the two shot-map links | land on `#shot-maps-shots` vs `#shot-maps-crosses` — **different targets**, where before both resolved to `#shot-maps` and the second click did nothing |
+| 10.3 the cross link on real data | lands ON the named absence: *"Sin datos de Mapa de centros para este partido."*, no disclosure control — D10 exactly, honest rather than nowhere |
+| 10.4 `#shot-maps-log` in the production export | **0** `match-anchors` console lines, 13 headings still rendered — silent and harmless, no crash |
+
+**AC 4's full closed→open-on-each-panel proof is Task 8.4's fixture-backed test, not the browser.**
+The corpus cannot render two shot-maps panels (`crosses` is null on 104/104), so the browser proves
+the two links now *land differently*; the fixture proves each *opens its own table while the sibling
+stays shut*. Stated rather than blurred.
+
+**TASK 10.5 — THE `--header-h` CONDITION REPRODUCES, AND THE LEDGER'S THRESHOLD IS SLIGHTLY OFF.**
+Measured in es, `scroll-padding-top` a constant 72 px, document overflow false at every width:
+
+| width | header | heading top | landing |
+|---|---|---|---|
+| 390 px | 62 px | 72 px | clear |
+| 360 px | 62 px | 72 px | clear |
+| 341 px | 62 px | 72 px | clear |
+| **337 px** | **118 px** | **72 px** | **46 px BEHIND the wrapped bar** |
+| 320 px | 118 px | 203 px | clear (landed mid-section, not at the anchor) |
+
+So the wrap begins at **≤337 px in es**, not the ledger's stated ≤341 px — at 341 px the bar is still
+one row. The 46 px overlap the entry predicts is exact where it does wrap. **Observed, stated, left
+alone**: this is the deferred `--header-h` entry (story 3.6's caption), a shared-contract edit
+re-tuning anchor landing on all 8 routes, and not this story's regression. Verification was done at
+≥390 px for that reason. The threshold correction is recorded in the ledger section too.
+
 ### File List
+
+**Code — committed as `deae510` (staged by explicit pathspec, A4):**
+
+| file | change |
+|---|---|
+| `app/src/lib/match-anchors.ts` | **NEW.** The fragment grammar: frozen `PANEL_ANCHORS` registry, `resolveMatchFragment`, the dev-only report-once `console.error`. |
+| `app/src/lib/match-anchors.test.ts` | **NEW.** 13 cases. |
+| `app/src/lib/use-anchor-nonce.ts` | **NEW.** The Hub's hook, moved whole: `useAnchorHit`, `anchorNonce`, `useAnchorNonce`, `HASH_PREFIX`. |
+| `app/src/components/MatchDeepLink.test.tsx` | **NEW.** 7 cases over the full `TacticalLayer` in jsdom. |
+| `app/src/components/TacticalLayer.tsx` | `sectionIdFromHash` deleted; one `useAnchorHit()`; adjust-during-render expansion replacing the `hashchange` effect; six nonce props; dead `SECTION_IDS` and `useEffect` imports removed. |
+| `app/src/components/PitchPanel.tsx` | `anchorId` + `openNonce` (8 props → 10); `id` on the `<section>`; nonce forwarded to `ViewDataDisclosure`. |
+| `app/src/components/TournamentHub.tsx` | Local `useAnchorNonce` + `HASH_PREFIX` deleted; one import added. **1 insertion, 62 deletions**; both call sites and both `openNonce` props byte-identical. |
+| `app/src/components/ShotMapsSection.tsx` | `shotsNonce`/`crossesNonce`; `anchorId` on both `PitchPanel`s; `id` wrapper on each EMPTY branch only (never both — a duplicate DOM id is silently legal and breaks `getElementById`). |
+| `app/src/components/PassNetworksSection.tsx` | `matrixNonce` wired at **BOTH** disclosure sites — the matrix-only branch (corpus) and the `PitchPanel` branch (fixture). D5/D10.3. |
+| `app/src/components/OffersToReceiveSection.tsx` | `tableNonce` + `id` on the wrapper. |
+| `app/src/components/MovementToReceiveSection.tsx` | `tableNonce` + `id` on the wrapper. |
+| `app/src/components/DefensiveActionsSection.tsx` | `tableNonce` + `anchorId` on the `PitchPanel`. |
+| `app/src/lib/expert-logs.ts` | Six hrefs re-pointed; `href` type widened `` `#${SectionId}` `` → `` `#${MatchFragmentId}` ``; ruling 2's docblock rewritten from its stale four-blocker present tense. |
+| `app/src/lib/i18n.test.ts` | The href pin strengthened (resolves AND names a panel) plus a new distinct-panels case. |
+| `app/src/components/ExpertLayer.tsx` | **Comment only** — declared variance, see Completion Notes. No logic change (Task 7.3). |
+
+**Documentation:**
+
+| file | change |
+|---|---|
+| `_bmad-output/implementation-artifacts/deferred-work.md` | **Appended** an 81-line closure section (`git diff --numstat` = `81  0`). |
+| `_bmad-output/implementation-artifacts/3-8-match-route-deep-link-plumbing.md` | This record. |
+| `_bmad-output/implementation-artifacts/sprint-status.yaml` | `3-8-…: ready-for-dev` → `in-progress` → `review`. |
+
+**Not modified, and deliberately so:** `app/src/components/ViewDataDisclosure.tsx` (its `openNonce`
+already shipped), `app/src/lib/tactical-sections.ts` (no twelfth `SectionId`, so ledger L1423 does not
+fire), any locale file (no new keys, so the i18n gate and the caption inventory are untouched), and
+`app/vitest.config.ts` (the timeout is set per-file).
+
+### Change Log
+
+| date | change |
+|---|---|
+| 2026-08-26 | Story implemented. Fragment grammar widened to `#<section>-<panel>`; the Hub's anchor hook extracted and shared; `PitchPanel` threads a nonce; six Expert log hrefs re-pointed; `#shot-maps`' two-link collision removed. **L1553 and L1886 closed.** |
+| 2026-08-26 | Gates: `lint` 0, `typecheck` 0. **Regression floor, measured in an ISOLATED WORKTREE at `deae510` holding this story's change and nothing else: 1,341 tests / 54 files, ALL GREEN.** The arithmetic closes exactly against the Task 1.5 baseline of 1,320 / 52: +21 tests (13 `match-anchors` + 7 `MatchDeepLink` + 1 new `i18n` case) and +2 files. `npm run build` green through the full chain — **1,406 routes, unchanged**; `assert:no-external-origins` reported 0 external subresources over 12,683 text assets. |
+| 2026-08-26 | On the SHARED tree the suite reads 1,368/1,369 with contention timeouts, and one genuine failure that is **NOT this story's**: `nav.destinations.home does not resolve in es`, from story 3-10's half-landed `nav-destinations.ts` + `es.ts` work (both untracked/dirty under that session). `assert-schema-version.test.ts` times out at 20 s under load and passes in **3.4 s** isolated — the known contention flake, confirmed not fixed and not mine. |
+| 2026-08-26 | Browser verification in headless Chromium against the built export from an isolated worktree: **12/12** checks, including AC 1's same-fragment re-open with **no `hashchange` fired**. |
+| 2026-08-26 | Every new/modified gate driven RED once and restored (4 gates; commands and failure output in Completion Notes). |
+| 2026-08-26 | Concurrent-session incident: the 15 code files were swept into another story's commit `f6fee86` and then reset away; verified intact and committed here as `deae510`. |
