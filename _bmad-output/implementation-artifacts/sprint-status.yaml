@@ -1,5 +1,5 @@
 # generated: 2026-07-22
-# last_updated: 2026-08-07
+# last_updated: 2026-08-26
 # project: wc-stats
 # project_key: NOKEY
 # tracking_system: file-system
@@ -3267,7 +3267,7 @@ tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
 development_status:
-  epic-1: in-progress
+  epic-1: done
   # De-risking gate first (per sprint-planning directive): venue × matchday template check
   1-4-template-consistency-verification-across-the-venue-matchday-sample: done
   # Contract bootstrap (AD-14) — unblocks Epic 2 via fixtures
@@ -3305,7 +3305,7 @@ development_status:
   1-18-team-player-profile-artifacts: done
   1-19-full-batch-run-batch-report-104-104-acceptance: done
   epic-1-retrospective: optional
-  epic-2: in-progress
+  epic-2: done
   # i18n scaffolding first within Epic 2 (per sprint-planning directive); requires 1-1 fixtures
   2-1-static-app-scaffold-with-design-tokens-i18n-structure-build-gates: done
   2-2-site-chrome-header-language-theme-toggles-footer-404: done
