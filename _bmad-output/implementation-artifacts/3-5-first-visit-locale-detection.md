@@ -309,8 +309,8 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
 
 ### Task 1 — A3 file-ownership probe (BLOCKING; all AC)
 
-- [ ] 1.1 `git status --porcelain`. Record the output verbatim in the Debug Log.
-- [ ] 1.2 Confirm **every one of these seven paths is clean**:
+- [x] 1.1 `git status --porcelain`. Record the output verbatim in the Debug Log.
+- [x] 1.2 Confirm **every one of these seven paths is clean**:
       ```
       app/src/lib/bootstrap.ts
       app/src/lib/bootstrap.test.ts
@@ -322,10 +322,10 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
       ```
       **If any is dirty, ABORT at this task and say so** (A3, Story 2.18's precedent). Do not
       proceed and "merge later".
-- [ ] 1.3 Check the two known Epic 3 collision files, `app/src/app/page.tsx` and
+- [x] 1.3 Check the two known Epic 3 collision files, `app/src/app/page.tsx` and
       `app/src/components/SiteHeader.tsx`. **This story touches neither** — record that as a fact,
       not as an assumption.
-- [ ] 1.4 Record what you must NOT stage. At story creation the live sessions were:
+- [x] 1.4 Record what you must NOT stage. At story creation the live sessions were:
       | session | holds |
       |---|---|
       | `bmad-ux` | `_bmad-output/planning-artifacts/ux-designs/**` (modified + untracked) |
@@ -337,7 +337,7 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
       `in-progress` during this story's creation and edits `TournamentHub.tsx` next door.** Re-verify
       at 1.2, and if 3-8 has taken the test file, abort the Task 7.1 slice rather than the whole
       story: Tasks 2–6 and 8–9 own nothing 3-8 touches. Say so explicitly and file the repair.
-- [ ] 1.5 Baseline the suite: `cd app && npm test`. **Measure it; do not trust a number.**
+- [x] 1.5 Baseline the suite: `cd app && npm test`. **Measure it; do not trust a number.**
       At creation, `f07116b` measured **1,306 passed / 51 files / 0 skipped** (twice). Story 3-1's
       two untracked files are now in the tree and will add their own tests to whatever you measure.
       - **Known flake, not a regression:** `assert-schema-version.test.ts > passes on the current
@@ -351,7 +351,7 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
 
 ### Task 2 — the pure function (AC 1; D2, D3, D4)
 
-- [ ] 2.1 Rewrite `resolveLocale` in `app/src/lib/bootstrap.ts:36-42`:
+- [x] 2.1 Rewrite `resolveLocale` in `app/src/lib/bootstrap.ts:36-42`:
       ```ts
       export function resolveLocale(stored: string | null, preferred: string | null): Locale {
         if (stored === "es" || stored === "en") {
@@ -364,16 +364,16 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
         return "es";
       }
       ```
-- [ ] 2.2 Replace the one-line JSDoc with one that states the precedence and the two-locale
+- [x] 2.2 Replace the one-line JSDoc with one that states the precedence and the two-locale
       rationale — persisted override → `navigator.language` primary subtag → canonical `es`; a
       non-Spanish non-English reader gets the canonical, not a guess (D20, FR-37).
-- [ ] 2.3 `npm run typecheck`. **Expect exactly one error, at `i18n-provider.tsx:42`.** Paste it into
+- [x] 2.3 `npm run typecheck`. **Expect exactly one error, at `i18n-provider.tsx:42`.** Paste it into
       the Debug Log — it is D2's gate firing, and it is the evidence that AC 3 cannot be skipped.
       Do not fix it yet.
 
 ### Task 3 — the ES5 literal, in the SAME edit (AC 2; D1, D3, D4, D5)
 
-- [ ] 3.1 Add a `language()` reader to the literal, mirroring `read()`'s try/catch shape and reading
+- [x] 3.1 Add a `language()` reader to the literal, mirroring `read()`'s try/catch shape and reading
       **`window.navigator`** (D1):
       ```js
       var language = function () {
@@ -384,26 +384,26 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
         }
       };
       ```
-- [ ] 3.2 Update the literal's `resolveLocale` to take `(stored, preferred)` with the **same**
+- [x] 3.2 Update the literal's `resolveLocale` to take `(stored, preferred)` with the **same**
       truthy guard and the same `toLowerCase().split("-")[0]` — character-for-character the same
       algorithm as Task 2.1.
-- [ ] 3.3 Update the call at `:85` to `resolveLocale(read(…), language())`.
-- [ ] 3.4 Re-read the file's header comment (`:4-17`). It describes the *mechanism* (why the literal
+- [x] 3.3 Update the call at `:85` to `resolveLocale(read(…), language())`.
+- [x] 3.4 Re-read the file's header comment (`:4-17`). It describes the *mechanism* (why the literal
       is checked in, what the cross-check test does) and stays true — but confirm that sentence by
       sentence rather than assuming it. Fix anything that has become false.
-- [ ] 3.5 The `<html>` write at `:88-90` is unchanged: `root.lang = locale` already carries whatever
+- [x] 3.5 The `<html>` write at `:88-90` is unchanged: `root.lang = locale` already carries whatever
       `resolveLocale` returned.
 
 ### Task 4 — `bootstrap.test.ts`: the matrix gains a dimension (AC 1, AC 2; A1, A2)
 
-- [ ] 4.1 Extend `BootstrapWorld` with a language dimension and wire it into `windowStub`
+- [x] 4.1 Extend `BootstrapWorld` with a language dimension and wire it into `windowStub`
       (`:38-53`). It must express **three** distinct worlds, not two:
       | world | stub |
       |---|---|
       | a browser reporting a tag | `navigator: { language: "en-US" }` |
       | a browser reporting nothing usable | `navigator: { language: "" }` |
       | **no navigator at all** | omit the key — proves `language()`'s try/catch, and is the only case that would crash if D1 were violated |
-- [ ] 4.2 Rewrite the `describe("resolveLocale (persisted → es)")` block (`:76-87`) to cover the
+- [x] 4.2 Rewrite the `describe("resolveLocale (persisted → es)")` block (`:76-87`) to cover the
       function directly, two arguments everywhere:
       - `en`, `en-GB`, `en-US`, `EN-US`, `en-us` → `"en"`
       - `es`, `es-CO`, `es-419`, `fr`, `fr-FR`, `de-DE`, `pt-BR`, `""`, `null`, `"garbage"` → `"es"`
@@ -411,45 +411,45 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
         `resolveLocale("en", "es-CO") === "en"`
       - **invalid stored falls through to detection**: `resolveLocale("fr", "en-GB") === "en"`
       - rename the describe — "persisted → es" is no longer what it does.
-- [ ] 4.3 Add the dimension to the cross-check matrix (`:125-152`) **inside the existing loop**, not
+- [x] 4.3 Add the dimension to the cross-check matrix (`:125-152`) **inside the existing loop**, not
       beside it. Suggested axis: `[undefined /* no navigator */, "en-US", "es-CO", "fr-FR", ""]`,
       giving 4 × 4 × 3 × 5 = 240 combinations. Compute the expectation with the same
       `resolveLocale(locale ?? null, …)` call the assertion compares against — that is what makes
       this a *drift* test rather than a second implementation.
-- [ ] 4.4 Fix `"first-time visitor: Spanish, theme from prefers-color-scheme"` (`:101-110`). It
+- [x] 4.4 Fix `"first-time visitor: Spanish, theme from prefers-color-scheme"` (`:101-110`). It
       currently asserts `es` with no navigator stub at all; under the new script that is still `es`
       (no navigator → null → canonical), so **keep it and pin the assumption explicitly**, then add
       its sibling: same empty storage, `navigator.language = "en-US"` → `lang === "en"` and
       `locale-en` on `<html>`.
-- [ ] 4.5 `"storage and matchMedia throwing still yields the es/dark canonical"` (`:112-117`) — add a
+- [x] 4.5 `"storage and matchMedia throwing still yields the es/dark canonical"` (`:112-117`) — add a
       case where **`window.navigator` itself throws** on access, proving `language()`'s catch.
-- [ ] 4.6 `npx vitest run src/lib/bootstrap.test.ts` — green.
+- [x] 4.6 `npx vitest run src/lib/bootstrap.test.ts` — green.
 
 ### Task 5 — the provider (AC 3, AC 4; D6, D7)
 
-- [ ] 5.1 In `app/src/lib/i18n-provider.tsx:38-42`, delete the early return and pass the tag:
+- [x] 5.1 In `app/src/lib/i18n-provider.tsx:38-42`, delete the early return and pass the tag:
       ```ts
       const stored = readStorage(STORAGE_KEYS.locale);
       const next = resolveLocale(stored, window.navigator.language);
       ```
-- [ ] 5.2 Rewrite the effect's comment (`:33-37`). Its last sentence — *"Nothing stored means nothing
+- [x] 5.2 Rewrite the effect's comment (`:33-37`). Its last sentence — *"Nothing stored means nothing
       to restore — initialLocale stands"* — becomes **false** with this change and must not be left
       to mislead the next reader. State the new rule: stored choice → detected guess → `initialLocale`,
       and that a detected locale is deliberately neither persisted nor announced.
-- [ ] 5.3 Confirm by reading, and record it: the effect contains **no** `writeStorage` and **no**
+- [x] 5.3 Confirm by reading, and record it: the effect contains **no** `writeStorage` and **no**
       `setAnnouncement`. `writeStorage` and `setAnnouncement` each still appear exactly once in the
       file, both inside `setLocale`.
-- [ ] 5.4 Do **not** add a `next === locale` early return (D6).
-- [ ] 5.5 `npm run typecheck` — the Task 2.3 error is now gone, and there is no other.
+- [x] 5.4 Do **not** add a `next === locale` early return (D6).
+- [x] 5.5 `npm run typecheck` — the Task 2.3 error is now gone, and there is no other.
 
 ### Task 6 — `i18n-provider.test.tsx`, the new file (AC 3, AC 4, AC 5; A1, A2, D8, D9, D10)
 
-- [ ] 6.1 Create `app/src/lib/i18n-provider.test.tsx` with the D10 harness: the pragma, explicit
+- [x] 6.1 Create `app/src/lib/i18n-provider.test.tsx` with the D10 harness: the pragma, explicit
       `cleanup()`, `vi.restoreAllMocks()`, `window.localStorage.clear()`, and a reset of
       `document.documentElement.lang` + its locale classes in `afterEach`.
-- [ ] 6.2 A tiny probe consumer — `const { locale } = useLocale()` rendered as
+- [x] 6.2 A tiny probe consumer — `const { locale } = useLocale()` rendered as
       `<span data-testid="locale">{locale}</span>`. **No bare JSX text** (D10 fact 3).
-- [ ] 6.3 Cases. **Every one pins `navigator.language` explicitly, including the English ones**
+- [x] 6.3 Cases. **Every one pins `navigator.language` explicitly, including the English ones**
       (D9) — the point is that the file states its own inputs, not that jsdom happens to agree:
       | stored | `navigator.language` | expect locale | expect `wcstats.locale` |
       |---|---|---|---|
@@ -461,34 +461,34 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
       | `"es"` | `en-US` | `es` | `"es"` (unchanged — a choice beats a guess) |
       | `"en"` | `es-CO` | `en` | `"en"` (unchanged) |
       | `"fr"` (garbage) | `en-GB` | `en` | `"fr"` (**unchanged** — detection does not repair storage) |
-- [ ] 6.4 For the first-visit English case also assert the DOM the script would have set:
+- [x] 6.4 For the first-visit English case also assert the DOM the script would have set:
       `document.documentElement.lang === "en"` and `classList.contains(localeClass("en"))`, with
       `localeClass("es")` absent. This is AC 3's actual failure mode — Spanish strings under
       `lang="en"` — asserted from both sides.
-- [ ] 6.5 **AC 4, the silence.** In every detection case assert the polite live region is empty. Query
+- [x] 6.5 **AC 4, the silence.** In every detection case assert the polite live region is empty. Query
       it structurally (`container.querySelector('[aria-live="polite"]')`) and assert
       `textContent === ""`. A test that does not look cannot prove silence.
-- [ ] 6.6 **The control that keeps 6.5 honest** (A2): a probe with a `data-testid`'d button calling
+- [x] 6.6 **The control that keeps 6.5 honest** (A2): a probe with a `data-testid`'d button calling
       `setLocale("en")`; after a click, the live region **is** non-empty and
       `localStorage.getItem(STORAGE_KEYS.locale) === "en"`. Without this pair, 6.5 would also pass
       against a provider whose live region never works at all.
-- [ ] 6.7 `npx vitest run src/lib/i18n-provider.test.tsx` — green.
+- [x] 6.7 `npx vitest run src/lib/i18n-provider.test.tsx` — green.
 
 ### Task 7 — repair the three render suites detection breaks (regression; A2)
 
 Measured blast radius and proven remedy — see READ THIS FIRST. Each file gets a one-line rationale
 comment naming this story, so the next reader knows why an ambient default became explicit.
 
-- [ ] 7.1 `app/src/components/TournamentHub.test.tsx` (3 failures). Add `beforeEach` + `vi` to the
+- [x] 7.1 `app/src/components/TournamentHub.test.tsx` (3 failures). Add `beforeEach` + `vi` to the
       vitest import, pin `vi.spyOn(window.navigator, "language", "get").mockReturnValue("es-CO")` in
       a new `beforeEach`, and add `vi.restoreAllMocks()` to the existing `afterEach` (`:55-58`).
       Whole file is Spanish; one pin covers it.
-- [ ] 7.2 `app/src/components/HeaderSearch.test.tsx` (18 failures). Same pin inside the existing
+- [x] 7.2 `app/src/components/HeaderSearch.test.tsx` (18 failures). Same pin inside the existing
       `beforeEach` (`:195-199`); add `vi.restoreAllMocks()` to the existing `afterEach` (`:201-206`),
       **keeping `vi.unstubAllGlobals()`** — they restore different things. Then the one English test,
       *"follows a mid-session locale toggle"* (the `<LocaleProvider initialLocale="en">` render at
       `:558`), re-pins to `"en-GB"` in its own body, before `render`.
-- [ ] 7.3 `app/src/components/SiteSignature.test.tsx` (2 failures). Its cases are generated from a
+- [x] 7.3 `app/src/components/SiteSignature.test.tsx` (2 failures). Its cases are generated from a
       `DICTIONARIES` loop (`:62-73`), so the pin must be per-locale. Add a small helper beside the
       `Wrapper` and call it as the first line of each `it` (all five, including the fixed-`es` one at
       `:134`):
@@ -499,9 +499,9 @@ comment naming this story, so the next reader knows why an ambient default becam
       }
       ```
       plus `vi.restoreAllMocks()` in the existing `afterEach` (`:67-70`).
-- [ ] 7.4 `npx vitest run src/components/TournamentHub.test.tsx src/components/HeaderSearch.test.tsx src/components/SiteSignature.test.tsx` — **44 passed, 0 failed.** That exact result was reached in
+- [x] 7.4 `npx vitest run src/components/TournamentHub.test.tsx src/components/HeaderSearch.test.tsx src/components/SiteSignature.test.tsx` — **44 passed, 0 failed.** That exact result was reached in
       the trial worktree; if you see anything else, you have a different problem, not a flaky one.
-- [ ] 7.5 Grep for any *other* renderer of `LocaleProvider` before believing the list is closed:
+- [x] 7.5 Grep for any *other* renderer of `LocaleProvider` before believing the list is closed:
       `grep -rln "LocaleProvider" app/src`. At creation it returned exactly six files — `layout.tsx`,
       `i18n-provider.tsx`, `theme-provider.tsx` and the three test files above.
 
@@ -510,23 +510,23 @@ comment naming this story, so the next reader knows why an ambient default becam
 For each: break it, run the named command, **paste the failing output into the completion notes**,
 restore, re-run green. A gate that has never been red is not a gate.
 
-- [ ] 8.1 **R1 — the drift red (most important).** Revert only the ES5 literal to the persisted-or-`es`
+- [x] 8.1 **R1 — the drift red (most important).** Revert only the ES5 literal to the persisted-or-`es`
       form, leaving the pure function updated. `npx vitest run src/lib/bootstrap.test.ts` must fail in
       the **matrix** test. Record which combination it names.
-- [ ] 8.2 **R2 — the detection red.** Revert detection in both. The Task 4.2/4.4 cases must fail.
-- [ ] 8.3 **R3 — the provider red.** Restore `if (stored === null) { return; }`.
+- [x] 8.2 **R2 — the detection red.** Revert detection in both. The Task 4.2/4.4 cases must fail.
+- [x] 8.3 **R3 — the provider red.** Restore `if (stored === null) { return; }`.
       `npx vitest run src/lib/i18n-provider.test.tsx` must fail on the first-visit English case.
-- [ ] 8.4 Confirm every file is back to its intended state (`git diff` reviewed line by line) before
+- [x] 8.4 Confirm every file is back to its intended state (`git diff` reviewed line by line) before
       moving on. A forgotten revert here ships the bug with a green suite.
 
 ### Task 9 — AC 5 in a real browser (D12)
 
-- [ ] 9.1 `cd app && npm run build`. The full chain: lint → typecheck → schema assert → `next build`
+- [x] 9.1 `cd app && npm run build`. The full chain: lint → typecheck → schema assert → `next build`
       → `copy-data` → origin gate. **Expect green.** This story adds no absolute URL, so story 3-1's
       gate blocker is not in your path. If `assert-no-external-origins` fails, check whether story
       3-1's in-flight edits are in your tree before treating it as yours.
-- [ ] 9.2 Serve `app/out` on a private port (`python -m http.server 8137`).
-- [ ] 9.3 Stand up the CDP harness in a scratch directory (never `app/scripts/`). Four launches,
+- [x] 9.2 Serve `app/out` on a private port (`python -m http.server 8137`).
+- [x] 9.3 Stand up the CDP harness in a scratch directory (never `app/scripts/`). Four launches,
       **a fresh `--user-data-dir` each time** so `localStorage` starts empty:
       | # | launch | expect |
       |---|---|---|
@@ -536,20 +536,20 @@ restore, re-run green. A gate that has never been red is not a gate.
       | 4 | `--lang=en-US`, then set `wcstats.locale = "es"` and reload | `lang === "es"` — a stored choice beats a detected guess |
       Assert `navigator.language` itself in each run and report it in the table: a run that did not
       get the locale it thinks it got is measuring nothing (D12's `setLocaleOverride` trap).
-- [ ] 9.4 Run case 1 on **more than the home route** — at least one of `/matches/{slug}`,
+- [x] 9.4 Run case 1 on **more than the home route** — at least one of `/matches/{slug}`,
       `/players/{slug}`, `/about`. AC 5 says "any route".
-- [ ] 9.5 Confirm the accepted consequence rather than filing it (AC 6): in case 1, `<title>` and the
+- [x] 9.5 Confirm the accepted consequence rather than filing it (AC 6): in case 1, `<title>` and the
       OG tags are **still Spanish** while the body is English. Record it as expected under D20 §3.3.
-- [ ] 9.6 Report a table, not a claim. Kill Chrome and the server when done.
+- [x] 9.6 Report a table, not a claim. Kill Chrome and the server when done.
 
 ### Task 10 — the full chain and the numbers
 
-- [ ] 10.1 `npm run lint` — clean at `--max-warnings 0`, including the new `.tsx` (D10 fact 3).
-- [ ] 10.2 `npm run typecheck` — clean.
-- [ ] 10.3 `npm test` — record files / tests / skipped against the Task 1.5 baseline. **0 newly
+- [x] 10.1 `npm run lint` — clean at `--max-warnings 0`, including the new `.tsx` (D10 fact 3).
+- [x] 10.2 `npm run typecheck` — clean.
+- [x] 10.3 `npm test` — record files / tests / skipped against the Task 1.5 baseline. **0 newly
       skipped.** State the delta and where it came from.
-- [ ] 10.4 `npm run build` — green end to end (already run at 9.1; re-run if anything changed since).
-- [ ] 10.5 **Optional, and only if Task 1's probe found it clean:** `src/app/static-output.test.ts:171`
+- [x] 10.4 `npm run build` — green end to end (already run at 9.1; re-run if anything changed since).
+- [x] 10.5 **Optional, and only if Task 1's probe found it clean:** `src/app/static-output.test.ts:171`
       asserts the exported inline script contains `["wcstats.locale", "prefers-color-scheme",
       "locale-"]`. Adding `"navigator"` would make a detection-less export fail. **That file is on
       story 3-6's owned-paths list** and the guard sits behind `describe.skipIf(!anyBuilt)`. If you
@@ -558,7 +558,7 @@ restore, re-run green. A gate that has never been red is not a gate.
 
 ### Task 11 — commit (A4)
 
-- [ ] 11.1 Stage **only** these paths. Never `git add -A`, never a directory add:
+- [x] 11.1 Stage **only** these paths. Never `git add -A`, never a directory add:
       ```
       app/src/lib/bootstrap.ts
       app/src/lib/bootstrap.test.ts
@@ -570,24 +570,24 @@ restore, re-run green. A gate that has never been red is not a gate.
       _bmad-output/implementation-artifacts/3-5-first-visit-locale-detection.md
       _bmad-output/implementation-artifacts/sprint-status.yaml
       ```
-- [ ] 11.2 **Do not stage** `_bmad-output/planning-artifacts/ux-designs/**` (bmad-ux),
+- [x] 11.2 **Do not stage** `_bmad-output/planning-artifacts/ux-designs/**` (bmad-ux),
       `app/src/lib/site-origin.*`, `app/scripts/**`, `app/eslint.config.mjs` (3-1), or any component
       other than the three test files above (3-8, 3-6).
-- [ ] 11.3 `git status --porcelain` after staging; confirm the staged set matches 11.1 exactly.
-- [ ] 11.4 Commit directly to `main` (solo repo, no branch, no PR). The message must say **that three
+- [x] 11.3 `git status --porcelain` after staging; confirm the staged set matches 11.1 exactly.
+- [x] 11.4 Commit directly to `main` (solo repo, no branch, no PR). The message must say **that three
       component test suites gained an explicit `navigator.language` pin, and why** — otherwise the
       next session to run `npm test` mid-rebase sees 25 unexplained failures and looks in the wrong
       place. If the push 403s, `gh auth switch -u juanrojasdp`.
-- [ ] 11.5 Commit the slice early rather than accumulating it.
+- [x] 11.5 Commit the slice early rather than accumulating it.
 
 ### Task 12 — records
 
-- [ ] 12.1 Fill in Dev Agent Record: Debug Log (the Task 1 probe, the 2.3 typecheck error, the three
+- [x] 12.1 Fill in Dev Agent Record: Debug Log (the Task 1 probe, the 2.3 typecheck error, the three
       REDs, the browser table), Completion Notes, File List, Change Log.
-- [ ] 12.2 `sprint-status.yaml`: `3-5-first-visit-locale-detection: ready-for-dev` → the status you
+- [x] 12.2 `sprint-status.yaml`: `3-5-first-visit-locale-detection: ready-for-dev` → the status you
       reach. **Append only** — the file carries the project journal, the STATUS DEFINITIONS block and
       the Epic 2 action items. Never regenerate it.
-- [ ] 12.3 Append a journal entry at the tail, matching the existing `# YYYY-MM-DD:` shape. It must
+- [x] 12.3 Append a journal entry at the tail, matching the existing `# YYYY-MM-DD:` shape. It must
       carry the three facts a later session needs: the 25-test blast radius and its remedy; that
       `wcstats.locale` is deliberately never written by detection; and that **any new jsdom render
       test that mounts `LocaleProvider` must now pin `navigator.language`** — story 3-8's planned
