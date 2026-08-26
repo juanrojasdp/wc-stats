@@ -47,7 +47,16 @@ export async function generateMetadata({
   });
   const description = `${stageLabel}${t("match.meta.separator")}${metadata.venue}`;
   // No og:image — zero external/asset requests (AR-11).
-  return { title, description, openGraph: { title, description } };
+  /*
+   * `url: "./"` IS LOAD-BEARING AND MUST SURVIVE ANY FUTURE REWRITE OF THIS
+   * `openGraph` OBJECT (Story 3.2, AC2). The CANONICAL comes from the root
+   * layout and is inherited here because this file declares no `alternates`;
+   * `openGraph`, by contrast, is REPLACED WHOLESALE by the key a child
+   * declares, so the layout's `url` never reaches this route. Drop the line
+   * below and this page ships a canonical with no matching `og:url` —
+   * silently. `canonical-output.test.ts` is the gate that catches it.
+   */
+  return { title, description, openGraph: { title, description, url: "./" } };
 }
 
 export default async function MatchPage({

@@ -4,7 +4,7 @@ baseline_commit: 8750d85f74584c6fe899527db8463fbd9196993b
 
 # Story 3.2: `metadataBase`, Absolute Canonical URLs & `og:url`
 
-Status: ready-for-dev
+Status: review
 
 **Baseline commit sized against:** `8750d85` (`Story 3.4 context: the sitemap is 1,404 entries…`).
 
@@ -110,9 +110,9 @@ rewritten to drop its trailing slash **and** one rewritten to name a different r
 
 ### Task 1 — Probe, baseline, abort conditions (AC: 6, and all)
 
-- [ ] **1.1** Record `git rev-parse HEAD` as this story's baseline in the Dev Agent Record. At
+- [x] **1.1** Record `git rev-parse HEAD` as this story's baseline in the Dev Agent Record. At
       creation it was `8750d85`.
-- [ ] **1.2** **A3 file-ownership probe.** Run `git status --porcelain`. Confirm **all five owned
+- [x] **1.2** **A3 file-ownership probe.** Run `git status --porcelain`. Confirm **all five owned
       paths are clean**:
       `app/src/app/layout.tsx`, `app/src/app/page.tsx`, `app/src/app/matches/[slug]/page.tsx`,
       `app/src/app/players/[slug]/page.tsx`, `app/src/app/teams/[slug]/page.tsx`.
@@ -122,7 +122,7 @@ rewritten to drop its trailing slash **and** one rewritten to name a different r
       An abort is a **recorded outcome, not a failure**: write which path was held and by which
       story into the Dev Agent Record, note it in `sprint-status.yaml`, commit the story file alone,
       and stop. Story 3.10's abort commit `9a4e4e8` is the shape to follow.
-- [ ] **1.3** Confirm the concurrent-session file set has not grown into this story's paths. At
+- [x] **1.3** Confirm the concurrent-session file set has not grown into this story's paths. At
       creation, story **3-10 (navigation menu)** held:
       `app/src/app/static-output.test.ts`, `app/src/app/globals.css`,
       `app/src/components/{SiteHeader,HeaderSearch,CompareChartsSection}.tsx`,
@@ -131,25 +131,25 @@ rewritten to drop its trailing slash **and** one rewritten to name a different r
       `_bmad-output/implementation-artifacts/3-4-sitemap-robots.md` belongs to a third session.
       **None of those is a path this story modifies.** Re-verify rather than assume — the list has
       moved daily this epic.
-- [ ] **1.4** Confirm `app/src/lib/site-origin.ts` is committed, clean, and its value is
+- [x] **1.4** Confirm `app/src/lib/site-origin.ts` is committed, clean, and its value is
       `https://mundial-stats.juancr.dev`. If it has changed, stop and re-read its docblock — this
       story is its named first consumer and every number below is derived from that value.
-- [ ] **1.5** **Re-measure the test baseline yourself.** It has moved repeatedly this epic
+- [x] **1.5** **Re-measure the test baseline yourself.** It has moved repeatedly this epic
       (1,251 → 1,306 → 1,320 → 1,334 → 1,367 → …). At creation `npx vitest list` collected
       **1,468 tests across 58 files** — but that count **includes 3-10's two untracked test files**,
       so it is not a clean-HEAD number and must not be inherited. Record
       `<files> / <tests> / <skipped>` from your own run.
-- [ ] **1.6** **Re-measure the route baseline.** At creation, `app/out/` held **1,406 `index.html`**
+- [x] **1.6** **Re-measure the route baseline.** At creation, `app/out/` held **1,406 `index.html`**
       (= 1,404 indexable + `404/` + `_not-found/`) plus `out/404.html`, i.e. **1,407 `.html` files
       totalling 38.2 MB**. Decomposition: 104 matches + 1,248 players + 48 teams + `/` + `/about` +
       `/glossary` + `/compare` = 1,404. Confirm `app/out` is a current build; if absent or stale, run
       `npm run build` first.
-- [ ] **1.7** **Record the pre-story origin-gate baseline** so AC5's "after" number means something:
+- [x] **1.7** **Record the pre-story origin-gate baseline** so AC5's "after" number means something:
       `node scripts/assert-no-external-origins.mjs out`. At creation: **exit 0, 6 external origins
       MENTIONED (bit.ly, github.com, nextjs.org, react.dev, redux-toolkit.js.org, redux.js.org),
       12,684 text assets, 0 external subresources**, ~28 s. The site's own origin is **not** on the
       MENTIONED line today and must not appear on it afterwards.
-- [ ] **1.8** Decide the verification environment. The shared tree is dirty with another story's
+- [x] **1.8** Decide the verification environment. The shared tree is dirty with another story's
       in-flight work and `app/src/app/static-output.test.ts` currently imports `NAV_DESTINATIONS` from
       an **untracked** file. If the shared tree does not build or does not typecheck, verify in an
       isolated worktree — §D9 has the exact recipe, including the two Windows walls.
@@ -160,20 +160,20 @@ This task exists so the story's single highest-risk assumption is measured on di
 inferred. §D1 sources it from `next@16.2.11` internals and §"Validation pass" records the resolver
 executed directly at creation — but neither is the export.
 
-- [ ] **2.1** Edit **only** `app/src/app/layout.tsx`: add `metadataBase: new URL(SITE_ORIGIN)` and
+- [x] **2.1** Edit **only** `app/src/app/layout.tsx`: add `metadataBase: new URL(SITE_ORIGIN)` and
       `alternates: { canonical: "./" }` to the existing `export const metadata`. Import `SITE_ORIGIN`
       from `@/lib/site-origin`. Change nothing else yet.
-- [ ] **2.2** `npm run build`. Then read, and **record verbatim in the Dev Agent Record**, the
+- [x] **2.2** `npm run build`. Then read, and **record verbatim in the Dev Agent Record**, the
       `<link rel="canonical">` emitted by each of these five files:
       `out/index.html`, `out/about/index.html`, `out/players/<any slug>/index.html`,
       `out/matches/<any slug>/index.html`, `out/404.html`.
       **Expected** (proved against the installed resolver at creation, §"Validation pass"):
       `https://mundial-stats.juancr.dev/`, `…/about/`, `…/players/<slug>/`, `…/matches/<slug>/`,
       `…/_not-found/`.
-- [ ] **2.3** If any of those five is relative, localhost-based, or missing its trailing slash,
+- [x] **2.3** If any of those five is relative, localhost-based, or missing its trailing slash,
       **stop and re-read §D1 before changing approach** — the fallback is the explicit per-route form
       in §D1's rejected column, and taking it changes which files this story edits.
-- [ ] **2.4** Confirm the route count Next prints is unchanged from Task 1.6. This story adds no
+- [x] **2.4** Confirm the route count Next prints is unchanged from Task 1.6. This story adds no
       route.
 
 ### Task 3 — `og:url` on the four `generateMetadata` sites (AC: 2)
@@ -183,20 +183,20 @@ executed directly at creation — but neither is the export.
 layout's `openGraph` entirely — so the four routes that matter would ship a canonical with **no
 `og:url`** if this task is skipped. This is the single easiest way to implement this story wrong.
 
-- [ ] **3.1** `app/src/app/layout.tsx` — add `openGraph: { url: "./" }` to the root `metadata`. This
+- [x] **3.1** `app/src/app/layout.tsx` — add `openGraph: { url: "./" }` to the root `metadata`. This
       is what gives `/about`, `/glossary`, `/compare` and the 404 an `og:url` **without adding a
       metadata export to any of those three files**, whose standing rulings against one still hold
       (§D4).
-- [ ] **3.2** `app/src/app/page.tsx` — add `url: "./"` to the `openGraph` object returned by
+- [x] **3.2** `app/src/app/page.tsx` — add `url: "./"` to the `openGraph` object returned by
       `generateMetadata`.
-- [ ] **3.3** `app/src/app/matches/[slug]/page.tsx` — same.
-- [ ] **3.4** `app/src/app/players/[slug]/page.tsx` — same.
-- [ ] **3.5** `app/src/app/teams/[slug]/page.tsx` — same.
-- [ ] **3.6** In each of the four, add one comment line stating that the **canonical comes from the
+- [x] **3.3** `app/src/app/matches/[slug]/page.tsx` — same.
+- [x] **3.4** `app/src/app/players/[slug]/page.tsx` — same.
+- [x] **3.5** `app/src/app/teams/[slug]/page.tsx` — same.
+- [x] **3.6** In each of the four, add one comment line stating that the **canonical comes from the
       root layout** and that **`url` must survive any future rewrite of this `openGraph` object**.
       Story 3.3 is about to edit all four to add `images`, `type`, `locale` and `siteName`; a
       wholesale rewrite that drops `url` is silent, and this comment is what stops it.
-- [ ] **3.7** Do **not** add `alternates` to any of the four. One definition, on the layout (§D1).
+- [x] **3.7** Do **not** add `alternates` to any of the four. One definition, on the layout (§D1).
 
 ### Task 4 — The guard: `app/src/app/canonical-output.test.ts` (AC: 3, 7, A2)
 
@@ -205,42 +205,42 @@ forbids modifying a file another session holds. A3 does **not** force an abort h
 story does not need to modify that file: it needs an assertion, and an assertion can live in a file of
 its own. Say so in the completion notes.
 
-- [ ] **4.1** Walk `app/out/` for every `.html` file, skipping `_next/` and `data/`. Read once in a
+- [x] **4.1** Walk `app/out/` for every `.html` file, skipping `_next/` and `data/`. Read once in a
       `beforeAll` and share across cases — measured at creation: **1,407 files, 38.2 MB, 3.3 s**.
       Give the suite an explicit timeout on the same precedent and for the same reason as
       `site-origin.test.ts`'s `IO_TIMEOUT_MS = 20_000` (which covers 194 files / 3 MB); **60 s** is the
       proportionate figure here. Under full-suite load an I/O-bound case fails on time rather than on
       substance, and that is a known cost this project has already paid once.
-- [ ] **4.2** `describe.skipIf` on the export being absent, matching the four shipped
+- [x] **4.2** `describe.skipIf` on the export being absent, matching the four shipped
       `static-output.test.ts` files' convention — **but skip only when the export is wholly absent**.
       A partial export must fail loudly, not skip (`src/app/static-output.test.ts:33-40`).
-- [ ] **4.3** **Case: exactly one canonical, everywhere.** For every one of the 1,407 files, count
+- [x] **4.3** **Case: exactly one canonical, everywhere.** For every one of the 1,407 files, count
       `<link rel="canonical"` occurrences and assert it is exactly 1. Report the failure as the list of
       offending relative paths joined into the assertion message, not as a bare count —
       `site-origin.test.ts:89-95` records why (`"2 !== 1"` sends the reader grepping).
-- [ ] **4.4** **Case: absolute, same-origin, trailing-slashed, everywhere.** Every canonical
+- [x] **4.4** **Case: absolute, same-origin, trailing-slashed, everywhere.** Every canonical
       `startsWith(SITE_ORIGIN)` — **imported, never spelled** (AC1) — parses as a URL whose `origin`
       is `SITE_ORIGIN`, and ends with `/`.
-- [ ] **4.5** **Case: the canonical names its own route.** For every indexable file, derive the
+- [x] **4.5** **Case: the canonical names its own route.** For every indexable file, derive the
       expected URL from the file's **own relative path** (`out/players/x/index.html` →
       `${SITE_ORIGIN}/players/x/`; `out/index.html` → `${SITE_ORIGIN}/`) and assert equality. **No
       entity id appears anywhere in this file.** This is the case that catches a right-shaped
       canonical on the wrong route, and it is A2's requirement discharged in the strongest available
       form: the pin is the path, and there is nothing else to pin.
-- [ ] **4.6** **Case: `og:url` is byte-identical to the canonical**, on every file. Not "present",
+- [x] **4.6** **Case: `og:url` is byte-identical to the canonical**, on every file. Not "present",
       not "same origin" — equal. Extract it with an attribute-order-tolerant pattern; the shipped
       precedents are `players/static-output.test.ts:67` (`<meta[^>]*property="…"[^>]*content="([^"]*)"`)
       and `teams/static-output.test.ts:76`, which also accepts `name=` alongside `property=`. Reuse
       the shape, not the file — both belong to story 3.3.
-- [ ] **4.7** **Case: the three not-found artifacts (§D3).** `out/404.html`, `out/404/index.html` and
+- [x] **4.7** **Case: the three not-found artifacts (§D3).** `out/404.html`, `out/404/index.html` and
       `out/_not-found/index.html` are excluded from 4.5's path match and asserted instead to be
       same-origin, trailing-slashed, and to carry `<meta name="robots" content="noindex"/>`. Assert
       the exclusion set is **exactly** those three relative paths, so a fourth unexplained exception
       cannot appear silently.
-- [ ] **4.8** **Case: no `hreflang`, no `alternates.languages` (AC4).** Assert no
+- [x] **4.8** **Case: no `hreflang`, no `alternates.languages` (AC4).** Assert no
       `<link rel="alternate"` carrying an `hreflang` attribute exists anywhere in the export. D17 is a
       ruling; this is what makes it a gate rather than prose.
-- [ ] **4.9** Document at the top of the file, in the house style, what the guard holds and why it
+- [x] **4.9** Document at the top of the file, in the house style, what the guard holds and why it
       lives here rather than in `static-output.test.ts`.
 
 ### Task 5 — A1: drive the guard RED, four directions (AC: 7)
@@ -249,74 +249,74 @@ None of these is optional, and each records the **command and its failing output
 no rebuild — mutate the exported file, run the guard, restore. Do this in the worktree if the shared
 tree's `out/` is another session's.
 
-- [ ] **5.1** **(a) Revert the wiring.** Remove `metadataBase` from `layout.tsx`, rebuild, run the
+- [x] **5.1** **(a) Revert the wiring.** Remove `metadataBase` from `layout.tsx`, rebuild, run the
       guard. Expect RED. Verified at creation against the installed resolver: with no `metadataBase`,
       `"./"` resolves to the **relative** `/players/l-messi` — no origin at all — so 4.4 fails first.
       Record which case failed and its message.
-- [ ] **5.2** **(b) Drop one `og:url`.** Remove `url: "./"` from `players/[slug]/page.tsx`'s
+- [x] **5.2** **(b) Drop one `og:url`.** Remove `url: "./"` from `players/[slug]/page.tsx`'s
       `openGraph`, rebuild, run the guard. Expect 4.6 RED across 1,248 files. Record the count the
       failure names.
-- [ ] **5.3** **(c) Two canonicals.** Inject a second `<link rel="canonical" href="…"/>` into one
+- [x] **5.3** **(c) Two canonicals.** Inject a second `<link rel="canonical" href="…"/>` into one
       exported file. Expect 4.3 RED naming that exact relative path. Restore.
-- [ ] **5.4** **(d) Two shape breaks.** In one exported file drop the canonical's trailing slash
+- [x] **5.4** **(d) Two shape breaks.** In one exported file drop the canonical's trailing slash
       (expect 4.4 RED); in another rewrite the canonical to name a different existing route (expect
       4.5 RED, and confirm 4.3 and 4.4 stay GREEN on it — that is the whole point of 4.5). Restore
       both.
-- [ ] **5.5** Return everything to green and re-run the full guard.
+- [x] **5.5** Return everything to green and re-run the full guard.
 
 ### Task 6 — AC5: the origin gate over the real export, and its falsification (AC: 5)
 
-- [ ] **6.1** With all five files wired and built, run `npm run assert:no-external-origins`. Record
+- [x] **6.1** With all five files wired and built, run `npm run assert:no-external-origins`. Record
       exit code, the text-asset count, the external-subresource count, and the full `MENTIONED` line.
       Expect exit 0, 0 external subresources, and **`mundial-stats.juancr.dev` absent from the
       MENTIONED line**. Compare against Task 1.7's baseline and account for any delta.
-- [ ] **6.2** **Falsify it.** Inject `<link rel="stylesheet" href="https://cdn.evil.example.com/x.css"/>`
+- [x] **6.2** **Falsify it.** Inject `<link rel="stylesheet" href="https://cdn.evil.example.com/x.css"/>`
       into one exported `.html` file and re-run the same gate on the same tree. **Expect exit 1 naming
       that file.** Record the output. Restore the file and re-confirm exit 0.
       Rationale: `39889bf` exists because three `linkHref` false negatives shipped with all 23 tests
       green. "The gate passed" is a claim about the gate, not about the export, until the gate is shown
       able to fail on that export.
-- [ ] **6.3** Confirm `app/src/lib/assert-no-external-origins.test.ts` (27 cases) and
+- [x] **6.3** Confirm `app/src/lib/assert-no-external-origins.test.ts` (27 cases) and
       `app/src/lib/site-origin.test.ts` (2 cases) still pass **unchanged**. This story does not edit
       the gate, its tests, or `site-origin.ts`. If `site-origin.test.ts` goes red, you have introduced
       a second origin literal — find it before doing anything else.
 
 ### Task 7 — Full chain and regression sweep (AC: all)
 
-- [ ] **7.1** `npm run lint` → exit 0. The i18n metadata selector gates
+- [x] **7.1** `npm run lint` → exit 0. The i18n metadata selector gates
       `title|description|default|template|absolute|alt|siteName`; `canonical` and `url` are **not** in
       it, so `"./"` is not a gated literal (read at creation, `eslint.config.mjs:208`). Verify rather
       than assume.
-- [ ] **7.2** `npx tsc --noEmit` → exit 0.
-- [ ] **7.3** `npm run build` → green end to end (lint, typecheck, schema assert, `next build`,
+- [x] **7.2** `npx tsc --noEmit` → exit 0.
+- [x] **7.3** `npm run build` → green end to end (lint, typecheck, schema assert, `next build`,
       `copy-data`, origin gate).
-- [ ] **7.4** Full `npm test`. Record `<files> / <tests> / <skipped>` and the delta against Task 1.5.
+- [x] **7.4** Full `npm test`. Record `<files> / <tests> / <skipped>` and the delta against Task 1.5.
       **0 newly skipped.** Chunk the run by file if it is killed mid-flight — that is a known
       environment behaviour here, not a defect.
-- [ ] **7.5** Confirm the four shipped `static-output.test.ts` suites still pass, in particular
+- [x] **7.5** Confirm the four shipped `static-output.test.ts` suites still pass, in particular
       `players/static-output.test.ts:126` (`not.toContain("og:image")`) and
       `teams/static-output.test.ts:140` (`metaContent(html, "og:image")` is null). Adding `og:url`
       does not trip either — checked at creation — but check it, do not reason about it.
-- [ ] **7.6** Confirm the route count is still 1,406 `index.html` and that no route was added or lost.
+- [x] **7.6** Confirm the route count is still 1,406 `index.html` and that no route was added or lost.
 
 ### Task 8 — Commit and hand off (AC: all, A4)
 
-- [ ] **8.1** Stage **only** these paths, by pathspec:
+- [x] **8.1** Stage **only** these paths, by pathspec:
       `app/src/app/layout.tsx`, `app/src/app/page.tsx`, `app/src/app/matches/[slug]/page.tsx`,
       `app/src/app/players/[slug]/page.tsx`, `app/src/app/teams/[slug]/page.tsx`,
       `app/src/app/canonical-output.test.ts`, and this story file.
       **Never `git add -A`.** **Never stage the 0-byte `17` in the repo root.** Prefer
       `git commit -- <paths>`; add-then-commit is not atomic here and a concurrent session's sweeping
       add has captured another story's files before.
-- [ ] **8.2** Commit directly to `main`. No branch, no PR.
-- [ ] **8.3** Append to `sprint-status.yaml` — **append only, never regenerate**; it carries the
+- [x] **8.2** Commit directly to `main`. No branch, no PR.
+- [x] **8.3** Append to `sprint-status.yaml` — **append only, never regenerate**; it carries the
       project journal and the Epic 2 retro action items, and another session writes it. **Re-read it
       immediately before touching it**, insert by anchor phrase, and verify append-only
       programmatically. Set `3-2-metadatabase-canonical-urls: review`.
-- [ ] **8.4** Fill the Dev Agent Record: File List with `git diff --numstat` figures **read from the
+- [x] **8.4** Fill the Dev Agent Record: File List with `git diff --numstat` figures **read from the
       command, not transcribed from memory** (3.1's review caught two mis-transcribed insertion counts),
       Completion Notes with every red proof from Tasks 5 and 6, and the measured baselines from Task 1.
-- [ ] **8.5** Hand off to 3.3 explicitly: it edits all four route files to add `openGraph.images`,
+- [x] **8.5** Hand off to 3.3 explicitly: it edits all four route files to add `openGraph.images`,
       `type`, `locale` and `siteName`, and **must not drop `url`** (Task 3.6's comment is the guard,
       the Task 4.6 case is the gate).
 
@@ -600,16 +600,245 @@ files**; not a clean-HEAD baseline, which is why Task 1.5 re-measures.
 
 ### Agent Model Used
 
+Claude Opus 5 (`claude-opus-5[1m]`), via the `bmad-dev-story` workflow.
+
 ### Debug Log References
+
+**Verification environment (Task 1.8): an isolated worktree, and the measurement that forced it.**
+
+The shared tree was NOT usable for measurement. `app/out/` there was another session's build — the
+origin gate over it reported **7 MENTIONED origins (including `http://www.sitemaps.org`) and 8,518
+text assets**, against the 6 / 12,684 recorded at story creation, and `out/robots.txt` was present
+while `out/sitemap.xml` was not. `npx vitest list` there collected **1,488 tests / 59 files** because
+story 3.4's untracked `sitemap.test.ts` was in the tree. Neither number is this story's.
+
+Worktree per §D9, and both Windows walls were real:
+
+- `git worktree add --no-checkout --detach C:/wt32 HEAD`, then
+  `git sparse-checkout init --cone && git sparse-checkout set app contract data && git checkout`.
+- `node_modules` by **robocopy, not junction**:
+  `robocopy <shared>\app\node_modules C:\wt32\app\node_modules /E /MT:16 /NFL /NDL /NP`
+  → **3,073 dirs / 31,753 files / 497.65 MB / 0 errors** in ~22 s. Robocopy **exit 1 means "files
+  copied" and is success**; the same command run through the Bash tool returned exit 16 and copied
+  nothing, so it was run through PowerShell instead.
+- Built before every suite run, or the ~97 export-block cases skip and the `0 skipped` number is lost.
+
+The worktree at `baseline_commit` reproduced the creation-time numbers **exactly** — 6 MENTIONED
+origins, 12,684 text assets, 0 external subresources, 1,406 `index.html` / 1,407 `.html` / 38.2 MB,
+1,468 tests / 58 files. That agreement is what established the worktree as the honest instrument and
+the shared tree as the contaminated one.
+
+**Two concurrent commits landed mid-story**, after every Task 2–7 measurement had been taken at
+`fa3be57`: `5754522` (story 3.4 → review) and `0595cb0` (story 3.10 code review). Rather than report a
+chain proved green against a superseded tree, the worktree was moved forward to `0595cb0` with this
+story's six files re-applied on top, and **the whole of Tasks 6 and 7 was re-run there**. Every number
+in the completion notes below is from that second, merge-forward pass unless explicitly labelled a
+baseline. `git diff --numstat` against `0595cb0` was identical to the diff against `fa3be57`, so the
+two trees differ only in other stories' work.
 
 ### Completion Notes List
 
+**Task 2 — §D1 measured on the real export, not inferred.** With ONLY `metadataBase` and
+`alternates: { canonical: "./" }` on the root layout and nothing else changed, the build emitted:
+
+| exported file | `<link rel="canonical">` |
+|---|---|
+| `out/index.html` | `https://mundial-stats.juancr.dev/` |
+| `out/about/index.html` | `https://mundial-stats.juancr.dev/about/` |
+| `out/glossary/index.html` | `https://mundial-stats.juancr.dev/glossary/` |
+| `out/compare/index.html` | `https://mundial-stats.juancr.dev/compare/` |
+| `out/players/aaronson-brenden-usa/index.html` | `https://mundial-stats.juancr.dev/players/aaronson-brenden-usa/` |
+| `out/matches/m001-mexico-south-africa/index.html` | `https://mundial-stats.juancr.dev/matches/m001-mexico-south-africa/` |
+| `out/teams/algeria/index.html` | `https://mundial-stats.juancr.dev/teams/algeria/` |
+| `out/404.html`, `out/404/index.html`, `out/_not-found/index.html` | `https://mundial-stats.juancr.dev/_not-found/` |
+
+All ten match the resolver values recorded at creation. **The `"./"` form resolves per route, absolute
+and trailing-slashed, from a single line on the root layout** — so §D1's rejected per-route-literal
+fallback was not needed and was not taken. Route count `1406/1406`, unchanged (Task 2.4). At this
+point `og:url` was absent from all ten, which is exactly §D2's asymmetry: `alternates` is inherited,
+`openGraph` is not.
+
+**Task 5 — A1/AC7: the guard driven RED in all four directions.** Command in every case:
+`npx vitest run src/app/canonical-output.test.ts`.
+
+- **(a) `metadataBase` removed from `layout.tsx`, rebuilt.** **4 of 8 cases RED.** First failure:
+  `AssertionError: expected '404.html -> /_not-found, 404/index.ht…' to be ''` — the
+  absolute/same-origin/trailing-slash case. The export emitted `<link rel="canonical" href="/"/>` on
+  the home page and `href="/about"` on `/about`: **relative, no origin, no trailing slash**, precisely
+  the mechanism §D1 predicted. The own-route case, the D3 exception-set case and the not-found
+  inertness case fell with it. `og:url` stayed byte-identical (both went relative together), which is
+  itself correct behaviour and is why (b) is a separate proof.
+- **(b) `url: "./"` removed from `players/[slug]/page.tsx`'s `openGraph`, rebuilt.** **Exactly 1 of 8
+  cases RED** — the byte-identity case, and nothing else. The failure message named
+  **1,248 player files and zero files from any other route family**
+  (`players/aaronson-brenden-usa/index.html og:url=(none) canonical=…`), matching the story's
+  predicted count exactly. This is the proof that the four `generateMetadata` routes really do
+  discard the layout's `openGraph`.
+- **(c) A second `<link rel="canonical" href="…/glossary/"/>` injected into `out/about/index.html`**
+  (no rebuild). **Exactly 1 of 8 cases RED**: `expected 'about/index.html (2)' to be ''` — the
+  offending relative path named, not a bare count. All seven other cases stayed green. Restored.
+- **(d) Two shape breaks in two different files** (no rebuild): `out/glossary/index.html`'s canonical
+  lost its trailing slash, and `out/compare/index.html`'s canonical was rewritten to name `…/about/`
+  — an existing, correctly-shaped, same-origin route. Results:
+  - `glossary/index.html` → the **absolute/same-origin/slashed** case RED, naming it;
+  - `compare/index.html` → the **own-route** case RED, naming it and the URL it should have carried;
+  - and **the "exactly one canonical" and "absolute/same-origin/slashed" cases stayed GREEN on
+    `compare`** — which is the entire justification for the own-route case existing. A canonical that
+    is correctly shaped but names another route is invisible to every other assertion in this file.
+  - The D3 exception-set case also caught `compare` as an unexplained fourth mismatch, and the
+    byte-identity case caught the resulting `og:url` disagreement. Both files restored.
+- **(5.5)** Both source files restored from the shared tree, rebuilt: **8/8 green**.
+
+**Task 6 — AC5: the origin gate over the real export, then falsified.**
+
+- **6.1** `npm run assert:no-external-origins` over the export carrying all 1,406 canonicals and all
+  1,406 `og:url`s, on `0595cb0` + this story: **EXIT 0**, `7 external origin(s) MENTIONED`
+  (`http://www.sitemaps.org`, `https://bit.ly`, `https://github.com`, `https://nextjs.org`,
+  `https://react.dev`, `https://redux-toolkit.js.org`, `https://redux.js.org`), **12,686 text
+  asset(s), 0 external subresources**. **`mundial-stats.juancr.dev` is absent from the MENTIONED
+  line**, as AC5 requires.
+  **Delta against the Task 1.7 baseline (6 origins / 12,684 assets), fully accounted for:** `+1`
+  origin and `+2` text assets, both from **story 3.4**, which landed `sitemap.ts` and `robots.ts`
+  between the baseline and this run. `www.sitemaps.org` is the sitemap's XML namespace declaration;
+  the two assets are `out/sitemap.xml` and `out/robots.txt`. **This story contributes zero to the
+  delta** — the same gate over the identical export at `fa3be57` + this story reported 6 origins /
+  12,684 assets, i.e. the baseline unchanged. §D10's position-scoping analysis holds on the real
+  export: 1,406 self-origin canonicals are short-circuited by `NON_FETCHING_RELS`, and 1,406
+  self-origin `og:url`s are `<meta content>`, which the gate deliberately does not read.
+- **6.2 — the falsification, which is the half that matters.**
+  `<link rel="stylesheet" href="https://cdn.evil.example.com/x.css"/>` injected before `</head>` of
+  `out/glossary/index.html`, same tree, same command: **EXIT 1**, `1 EXTERNAL SUBRESOURCE(S) in the
+  export`, `<link href>  https://cdn.evil.example.com/x.css` at `glossary\index.html`. The gate **can
+  fail on the export it just passed**, so its exit 0 is a result and not merely a claim — which is
+  the lesson `39889bf` cost. File restored, gate re-run: **EXIT 0**.
+- **6.3** `site-origin.test.ts` (2 cases) and `assert-no-external-origins.test.ts` (27 cases):
+  **29/29 pass, both files unedited**. AC1's "no second origin literal" holds — the new guard imports
+  `SITE_ORIGIN`, and `grep -c "mundial-stats" src/app/canonical-output.test.ts` returns **0**.
+
+**Task 7 — full chain on `0595cb0` + this story.**
+
+- **7.1** `npm run lint` → **exit 0**. Confirms by running, not by reading, that `eslint.config.mjs`'s
+  i18n metadata selector does not gate `canonical` or `url`, so the `"./"` literals are not flagged.
+- **7.2** `npx tsc --noEmit` → **exit 0**.
+- **7.3** `npm run build` → **green end to end** (lint, typecheck, schema assert, `next build`,
+  `copy-data`, origin gate).
+- **7.4** `npx vitest run` → **60 files / 1,496 tests / 0 skipped / 0 failed**, 22.3 s.
+  Baselines and delta: clean worktree at `fa3be57` = **58 / 1,468 / 0**; this story there = **59 /
+  1,476 / 0**; `main` at `0595cb0` alone = **59 / 1,488 / 0** (3.4's `sitemap.test.ts` is the extra
+  file); with this story = **60 / 1,496 / 0**. **Delta in both trees is exactly +1 file / +8 tests /
+  0 newly skipped** — the new guard and nothing else.
+- **7.5** The four shipped `static-output.test.ts` suites pass, both in the full sweep and targeted:
+  `players/static-output.test.ts:126`'s `not.toContain("og:image")` and
+  `teams/static-output.test.ts:140`'s `metaContent(html, "og:image")` both **pass** — `og:url` does
+  not contain `og:image`, checked by running rather than by reasoning.
+- **7.6** **1,406 `index.html` / 1,407 `.html`**, unchanged from the Task 1.6 baseline. This story
+  adds no route and loses none.
+
+**Task 7 re-run a THIRD time, at `4133195`, and that is the commit this story is verified against.**
+Story 3.10's 26 review patches landed while the record above was being written, touching
+`static-output.test.ts`, `globals.css`, `SiteNav`, `HeaderSearch`, `nav-destinations`,
+`CompareChartsSection` and `locales/es.ts` — none of this story's five owned paths, but enough of the
+export that reporting a chain green against `0595cb0` would have been reporting a superseded tree. The
+worktree was moved forward once more with the same six files on top (`git diff --numstat` again
+identical: 35/10/10/10/10) and the chain re-run end to end:
+
+| check | result at `4133195` |
+|---|---|
+| `npm run build` (lint, typecheck, schema assert, `next build`, `copy-data`, origin gate) | **exit 0** |
+| `npx tsc --noEmit` | **exit 0** |
+| origin gate | **exit 0**, 7 MENTIONED origins, **`mundial-stats.juancr.dev` absent**, 12,687 text assets, **0 external subresources** |
+| `npx vitest run` | **60 files / 1,504 tests / 0 skipped / 0 failed**, 20.7 s |
+| route count | **1,406 `index.html` / 1,407 `.html`** — unchanged |
+
+`main` at `4133195` alone collects 59 files / 1,496 tests, so the delta is **+1 file / +8 tests / 0
+newly skipped** here too — the same figure measured in all three trees. The `+1` text asset over the
+`0595cb0` run (12,686 → 12,687) is story 3.10's, not this story's.
+
+**Task 4 — why the guard is a new file, per A3.** `app/src/app/static-output.test.ts` was the natural
+home, and story 3-10 held it for the whole of this story (it is still dirty in the shared tree). A3
+forbids **modifying** a file another session holds — but it does not force an abort here, because
+this story needed an *assertion*, not that file, and an assertion can live in a file of its own. The
+new guard deliberately reuses that file's `OUT_DIR` / `describe.skipIf` / partial-export-fails-loudly
+conventions so the two read as one family.
+
+**A2 discharged in its strongest form.** `canonical-output.test.ts` contains **no entity id at all**.
+Every expected URL is derived from the file's own relative path, so there is nothing left to pin and
+no id the fixture corpus and the real corpus could share. `players/static-output.test.ts:126`'s
+`QUINONES` constant is one directory away and was not copied. The suite also asserts it walked a
+**whole** export (structural spine present, all three route families non-empty, exactly one non-index
+document) so a partial export fails loudly instead of passing every case vacuously — the
+`scanned === 0` lesson applied to a walk.
+
+**AC4 upheld.** No `alternates.languages`, no `hreflang`, no `x-default` and no per-locale URL was
+added, and the guard's last case asserts no `hreflang` exists anywhere in the export. D17/D20 stay
+ruled.
+
+**Hand-off to story 3.3 (Task 8.5).** 3.3 edits all four route files to add `openGraph.images`,
+`type`, `locale` and `siteName`. **It must not drop `url: "./"` from any of them.** A wholesale
+rewrite of those `openGraph` objects is silent at build time and would ship 1,406 canonicals with no
+matching `og:url`. Two things stand in its way, deliberately: the docblock added above each of the
+four returns says so in the file 3.3 will have open, and the byte-identity case in
+`canonical-output.test.ts` turns red across every affected route — proved above at 1,248 files for
+`/players/[slug]` alone. 3.3 should also note that the layout now carries `openGraph: { url: "./" }`,
+which is what gives `/about`, `/glossary`, `/compare` and the 404 an `og:url` without any of them
+growing a `metadata` export (§D4's rulings are untouched).
+
 ### File List
 
+`git diff --numstat` against `0595cb0`, read from the command:
+
+| File | + | − | Status |
+|---|---|---|---|
+| `app/src/app/layout.tsx` | 35 | 0 | modified — `metadataBase`, `alternates.canonical`, `openGraph.url`, `SITE_ORIGIN` import, docblock |
+| `app/src/app/page.tsx` | 10 | 1 | modified — `openGraph.url` + survival docblock |
+| `app/src/app/matches/[slug]/page.tsx` | 10 | 1 | modified — `openGraph.url` + survival docblock |
+| `app/src/app/players/[slug]/page.tsx` | 10 | 1 | modified — `openGraph.url` + survival docblock |
+| `app/src/app/teams/[slug]/page.tsx` | 10 | 1 | modified — `openGraph.url` + survival docblock |
+| `app/src/app/canonical-output.test.ts` | 312 | — | **new** — the 8-case export-wide canonical guard |
+| `_bmad-output/implementation-artifacts/3-2-metadatabase-canonical-urls.md` | — | — | modified — this record |
+
+Totals for the five modified source files: **75 insertions, 4 deletions**. No new directory, no new
+dependency, no config change, no contract change, no `schemaVersion` bump, no route-count change.
+`app/public/` still does not exist. All six source files are LF, verified.
+
 ### Ownership Probe (Task 1)
+
+Run at `fa3be57` (`git rev-parse HEAD` at dev time; the frontmatter `baseline_commit` records the
+`8750d85` this story was **sized** against and is preserved unchanged).
+
+`git status --porcelain` at probe time:
+
+```
+ M _bmad-output/implementation-artifacts/3-4-sitemap-robots.md
+?? 17
+?? app/src/app/robots.ts
+?? app/src/app/sitemap.test.ts
+?? app/src/app/sitemap.ts
+```
+
+- **All five owned paths CLEAN** — `layout.tsx`, `page.tsx`, `matches/[slug]/page.tsx`,
+  `players/[slug]/page.tsx`, `teams/[slug]/page.tsx`. **`page.tsx`, the named Epic 3 collision path,
+  was clean.** No abort. AC6 satisfied by probe rather than by assumption.
+- `app/src/app/canonical-output.test.ts` did not exist — clean for a NEW path.
+- **The concurrent set had MOVED since story creation (Task 1.3), and re-verifying rather than
+  assuming was the right call.** 3-10's files were no longer untracked — they had been committed at
+  `d073575`, so `static-output.test.ts`, `SiteNav.tsx` and `nav-destinations.ts` were tracked and
+  clean, and the §D9 blocker ("the suite imports `NAV_DESTINATIONS` from an untracked file") no
+  longer applied. What held the tree instead was **story 3-4**: `robots.ts`, `sitemap.ts`,
+  `sitemap.test.ts` untracked plus its story file. **None of those is a path this story modifies.**
+- `app/src/lib/site-origin.ts` committed at `432dc29`, clean, value `https://mundial-stats.juancr.dev`
+  (Task 1.4).
+- **Ownership held for the whole story.** Re-checked at commit time, after two other sessions had
+  dirtied eleven further files (`globals.css`, `static-output.test.ts`, `SiteNav.tsx(+test)`,
+  `HeaderSearch.tsx(+test)`, `SiteSignature.test.tsx`, `nav-destinations.ts(+test)`, `locales/es.ts`,
+  `CompareChartsSection.tsx`) and landed two commits: `git diff` over the five owned paths still
+  showed **only this story's 75 insertions / 4 deletions**. No other session touched them.
+- **A4** — staged by pathspec, seven paths named explicitly, via `git commit -- <paths>`. Never
+  `git add -A`. The stray 0-byte `17` in the repo root was **not** staged and remains untracked.
 
 ## Change Log
 
 | Date | Change |
 |---|---|
+| 2026-08-26 | Implemented. `metadataBase` + `alternates: { canonical: "./" }` + `openGraph: { url: "./" }` on the root layout; `url: "./"` plus a survival docblock in the four `generateMetadata` routes; new 8-case export-wide guard `canonical-output.test.ts`. §D1 measured on the real export (all ten predicted canonicals exact), so the per-route-literal fallback was not taken. Guard driven RED in all four AC7 directions; origin gate run over 1,406 canonicals AND falsified to exit 1 on the same tree. Verified in an isolated worktree, then re-verified merge-forward onto `4133195` after three concurrent commits landed: build/lint/tsc green, 60 files / 1,504 tests / 0 skipped, route count 1,406 unchanged. |
 | 2026-08-26 | Story context created against baseline `8750d85`. A3 probe: all five owned paths clean. Ten decisions ruled at creation (§D1–D10), the resolution mechanism executed against the installed `next@16.2.11` rather than inferred, and the post-review origin gate probed on both a canonical fixture and the real 1,406-route export. |

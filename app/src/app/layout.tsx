@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { bootstrapScript } from "@/lib/bootstrap";
 import { t } from "@/lib/i18n";
 import { LocaleProvider } from "@/lib/i18n-provider";
+import { SITE_ORIGIN } from "@/lib/site-origin";
 import { ThemeProvider } from "@/lib/theme-provider";
 
 import "./globals.css";
@@ -19,9 +20,43 @@ import "./globals.css";
 const archivo = Archivo({ subsets: ["latin"], variable: "--font-archivo" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
+/*
+ * `metadataBase` IS THE ORIGIN EVERY ABSOLUTE URL IN THE EXPORT IS RESOLVED
+ * AGAINST (Story 3.2, AC1), and it is imported — never spelled. A second copy
+ * of the domain turns `site-origin.test.ts` red; that suite exists precisely
+ * because the origin gate and the emitted canonicals drifting apart red-builds
+ * all ~1,406 pages with an error naming AR-11.
+ *
+ * THE CANONICAL IS AUTHORED ONCE, HERE, AS THE RELATIVE `"./"` (D1). Next
+ * resolves it PER ROUTE, not once for the tree: `accumulateMetadata` threads
+ * the leaf route's own pathname through every `mergeMetadata` call, so
+ * `resolveAbsoluteUrlWithPathname` turns `"./"` into that leaf's pathname and
+ * composes it with `metadataBase`. The trailing slash is appended by the
+ * `trailingSlash` branch of the same resolver, because `next.config.ts` sets
+ * `trailingSlash: true` and Netlify therefore SERVES the slashed URL — a
+ * canonical that disagrees with the served URL is worse than none (AC2).
+ *
+ * Writing it here rather than as four per-route literals is what reaches
+ * `/about`, `/glossary` and `/compare`, all three of which carry standing
+ * docblock rulings AGAINST a `metadata` export; and it is what covers the
+ * routes story 3.9 is about to add without 3.9 having to open this file.
+ *
+ * `openGraph: { url: "./" }` is here for the same three static routes and the
+ * 404 — but it does NOT reach `/`, `/matches/[slug]`, `/players/[slug]` or
+ * `/teams/[slug]`. `openGraph` is replaced WHOLESALE by a child that declares
+ * it, per top-level key, so those four author their own `url`. `alternates` is
+ * absent from all four, so they inherit the canonical above. The asymmetry is
+ * the trap; it is not symmetric and it is not intuitive (D2).
+ *
+ * NO `alternates.languages`, NO `hreflang`, NO `x-default`, NO per-locale URLs
+ * (D17, upheld by D20; AC4). `canonical-output.test.ts` makes that a gate.
+ */
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_ORIGIN),
   title: t("meta.title"),
   description: t("meta.description"),
+  alternates: { canonical: "./" },
+  openGraph: { url: "./" },
 };
 
 /*
