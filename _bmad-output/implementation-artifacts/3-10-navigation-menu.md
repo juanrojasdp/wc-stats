@@ -525,16 +525,19 @@ caption inventory. Do not chase a phantom global uniqueness rule.
 
 ### Task 1 — A3 ownership probe (BLOCKING — D0)
 
-- [ ] 1.1 `git status --porcelain` — record every path held by another session.
-- [ ] 1.2 `git status --porcelain -- app/src/app/page.tsx app/src/components/SiteHeader.tsx` — both
+- [x] 1.1 `git status --porcelain` — record every path held by another session.
+- [x] 1.2 `git status --porcelain -- app/src/app/page.tsx app/src/components/SiteHeader.tsx` — both
       Epic 3 collision files. Expect clean.
-- [ ] 1.3 `git show --stat 92eec27` and `git grep -c "chrome.signature" HEAD -- app/src/components/SiteHeader.tsx`
+- [x] 1.3 `git show --stat 92eec27` and `git grep -c "chrome.signature" HEAD -- app/src/components/SiteHeader.tsx`
       (expect `2`). Record that 3-6 shipped and its lock is released.
 - [ ] 1.4 **The D0 gate.** `git log --oneline -1 -- app/src/lib/bootstrap.ts`; `git status --porcelain
       -- app/src/components/HeaderSearch.test.tsx app/src/components/SiteSignature.test.tsx`.
       **If 3-5 has not landed, or either file is dirty → ABORT HERE.** Write the finding into the
       Dev Agent Record, append a note to `sprint-status.yaml`, stop.
-- [ ] 1.5 Record the owned-paths list (see the probe section) in the Dev Agent Record.
+      🔴 **RAN 2026-08-26 AT `2c8bb1a` — RED ON BOTH CLAUSES. STORY ABORTED HERE.** Left unchecked
+      on purpose: the gate did not pass, and the next session must re-run it rather than trust this
+      result. See Dev Agent Record → Debug Log References.
+- [x] 1.5 Record the owned-paths list (see the probe section) in the Dev Agent Record.
 
 ### Task 2 — `lib/nav-destinations.ts`, the ruled table (AC 1, D1)
 
@@ -951,8 +954,172 @@ keys, which AC 1's BINDING prohibits. Grep before deleting; record the decision 
 
 ### Agent Model Used
 
+`claude-opus-5[1m]` — bmad-dev-story, run 2026-08-26, tree at `2c8bb1a`.
+
 ### Debug Log References
+
+#### 🔴 ABORTED AT TASK 1 — D0's blocking dependency fired, on BOTH clauses
+
+The run reached Task 1.4, the D0 gate, and stopped there. **No source file was modified.** This is
+the story's own ruled abort (D0, Task 1.4, A3's second clause), not a failure and not a judgement
+call — both halves of the gate are red, and either one alone is sufficient.
+
+**Task 1.1 — every path held by another session** (`git status --porcelain`, HEAD `2c8bb1a`):
+
+```
+ M app/src/components/DefensiveActionsSection.tsx      3-8
+ M app/src/components/ExpertLayer.tsx                  3-8
+ M app/src/components/HeaderSearch.test.tsx            3-5  <-- THIS STORY MUST MODIFY IT
+ M app/src/components/MovementToReceiveSection.tsx     3-8
+ M app/src/components/OffersToReceiveSection.tsx       3-8
+ M app/src/components/PassNetworksSection.tsx          3-8
+ M app/src/components/PitchPanel.tsx                   3-8
+ M app/src/components/ShotMapsSection.tsx              3-8
+ M app/src/components/SiteSignature.test.tsx           3-5  <-- THIS STORY MUST MODIFY IT
+ M app/src/components/TacticalLayer.tsx                3-8
+ M app/src/components/TournamentHub.test.tsx           3-5
+ M app/src/components/TournamentHub.tsx                3-8
+ M app/src/lib/bootstrap.test.ts                       3-5
+ M app/src/lib/bootstrap.ts                            3-5
+ M app/src/lib/expert-logs.ts                          3-8
+ M app/src/lib/i18n-provider.tsx                       3-5
+ M app/src/lib/i18n.test.ts                            3-8
+?? app/src/components/MatchDeepLink.test.tsx           3-8 (new)
+?? app/src/lib/i18n-provider.test.tsx                  3-5 (new)
+?? app/src/lib/match-anchors.test.ts                   3-8 (new)
+?? app/src/lib/match-anchors.ts                        3-8 (new)
+?? app/src/lib/use-anchor-nonce.ts                     3-8 (new)
+?? 17                                                  (stray untracked file, no owner)
+```
+
+**Three live sessions confirmed, exactly as the creation probe predicted** — 3-1 has since
+committed (its five paths are no longer dirty; `3-1` reads `review`), and 3-5 and 3-8 are both
+still in flight. The creation probe's finding #2 ("a third concurrent session the task brief did
+not name") holds and is now the blocking one.
+
+**Task 1.2 — the two Epic 3 collision files.** Clean, as predicted.
+
+```
+$ git status --porcelain -- app/src/app/page.tsx app/src/components/SiteHeader.tsx
+(no output)
+```
+
+**Task 1.3 — 3-6's lock is released.** Confirmed; do not re-litigate.
+
+```
+$ git show --stat 92eec27
+92eec27 Sign the project: an authorship caption in the header and the footer
+$ git grep -c "chrome.signature" HEAD -- app/src/components/SiteHeader.tsx
+HEAD:app/src/components/SiteHeader.tsx:2      <-- expected 2 ✅
+```
+
+**Task 1.4 — THE D0 GATE. RED on both clauses.**
+
+*Clause 1 — has 3-5 landed? **No.***
+
+```
+$ git log --oneline -1 -- app/src/lib/bootstrap.ts
+d60827c Story 2.2: site chrome — header, language/theme toggles, footer, 404
+```
+
+The most recent commit touching `bootstrap.ts` is **Story 2.2's**, from Epic 2. Story 3-5 has
+produced no commit at all — `i18n-provider.tsx`'s history stops at `d60827c` / `0cfc1e6` for the
+same reason. Its sprint-status entry still reads `ready-for-dev`. **3-5 is uncommitted work in the
+working tree.**
+
+*Clause 2 — are the two gated files clean? **No. Both are dirty, and demonstrably 3-5's.***
+
+```
+$ git status --porcelain -- app/src/components/HeaderSearch.test.tsx \
+                            app/src/components/SiteSignature.test.tsx
+ M app/src/components/HeaderSearch.test.tsx
+ M app/src/components/SiteSignature.test.tsx
+
+$ git diff --stat -- (those two)
+ app/src/components/HeaderSearch.test.tsx  | 22 ++++++++++++++++++++++
+ app/src/components/SiteSignature.test.tsx | 18 ++++++++++++++++++
+ 2 files changed, 40 insertions(+)
+```
+
+The diffs **name themselves**, which removes any doubt about ownership — each added block opens
+with a `Story 3.5` attribution:
+
+```diff
++/**
++ * Story 3.5 — `LocaleProvider` now detects the locale from
++ * `navigator.language` when nothing is persisted, and jsdom's default is
++ * "en-US". This file's assertions read SPANISH strings, so it states the
++ * Spanish browser it assumes; the one English test re-pins in its own body.
++ */
++function pinLanguage(tag: string): void {
++  vi.spyOn(window.navigator, "language", "get").mockReturnValue(tag);
++}
+```
+
+This is 3-5's Task 7.2 (`3-5-first-visit-locale-detection.md:321`, *"18 failures. Same pin inside
+the existing…"*) in progress, in `HeaderSearch.test.tsx`, right now.
+
+**Why this is an abort and not a merge.** A3's second clause is exact: *if another session already
+holds a file this story must **modify** rather than append to, the story aborts at that task and
+says so.* This story does not append to `HeaderSearch.test.tsx` — D0 requires **rewriting ~10 of
+its 34 cases** (`:644`, `:706`, `:723-830`), every one keyed on `es.search.open`, because Task 4.2
+deletes the `<md` trigger and `Dialog` those cases exercise. Rewriting a file another session is
+concurrently editing, in the same region, destroys one side's work whichever way the tree settles.
+Story 2.18's precedent applies and was the correct call.
+
+**Why the "just skip the search absorption" escape hatch is closed.** D0 forbids it by name, with
+a reason that is not stylistic: a `<xl` header carrying *both* a nav trigger and a search trigger
+is a fifth element in a row DESIGN.md's Don'ts column forbids, it pushes the wrap threshold from
+354 px to ~406 px (the opposite of the width inversion that justified this shape), and it forfeits
+UX-DR24's whole premise — that the trigger **replaces** three controls rather than joining them.
+There is no smaller version of this story. It is blocked, not reducible.
+
+**Task 1.5 — owned-paths list.** Recorded unchanged from the probe section above; re-verified at
+`2c8bb1a`. Of the sixteen paths this story owns, **fourteen are clean and free**; the two that are
+not are precisely the two D0 named at creation. The creation probe predicted this exactly.
+
+#### What unblocks this story
+
+One thing: **story 3-5 commits.** When `git log -1 -- app/src/lib/bootstrap.ts` names a 3-5 commit
+and both `HeaderSearch.test.tsx` and `SiteSignature.test.tsx` are clean, re-run `/bmad-dev-story
+3.10` and it proceeds through Task 2 with no further ceremony. Nothing else about the story needs
+to change — the contract is ruled, the rulings D1–D15 are unaffected by the wait, and the A3 probe
+found every other owned path clean. Note that 3-8 is also live but is **zero-overlap** by D2's
+construction, so it does not gate this story in either direction.
+
+**Do not** re-run this story before then hoping the tree has settled by luck, and do not
+`git stash` another session's work to clear the gate.
 
 ### Completion Notes List
 
+- **Run outcome: ABORTED AT TASK 1.4 (D0). Story remains `ready-for-dev`.** Zero tasks completed,
+  zero acceptance criteria satisfied, zero source files touched. Tests were not run and no gate was
+  driven RED — A1's obligation belongs to the run that implements the story, not to this one.
+- Status was deliberately **left at `ready-for-dev` rather than flipped to `in-progress`**: no
+  implementation began, and marking it in-progress would misreport the board to the other two live
+  sessions. `baseline_commit` was likewise **not** written into the frontmatter — the real run will
+  start from a different commit (3-5's), and a baseline captured here would be wrong by
+  construction.
+- Task 1's probe subtasks 1.1, 1.2, 1.3 and 1.5 executed and are recorded above. **1.4 is left
+  unchecked deliberately**: the gate ran and came back red, so Task 1 is not passed and the next
+  session must re-run it rather than trust this result.
+- The creation-time A3 probe was **re-verified, not inherited**, and it held on every point. One
+  thing changed since creation: **story 3-1 has landed** (`review`), so its five paths are no
+  longer dirty. That does not affect this story.
+- A stray untracked file named `17` sits at the repo root with no owner. Not this story's, not
+  staged, not removed — flagged only so the next session does not mistake it for a deliverable.
+
 ### File List
+
+No source, test, style, locale or documentation file was created, modified or deleted by this run.
+
+The two files below carry the abort record required by D0 / Task 1.4, and nothing else:
+
+- `_bmad-output/implementation-artifacts/3-10-navigation-menu.md` (this Dev Agent Record)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (append-only note on `3-10`)
+
+### Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-26 | Dev run attempted at `2c8bb1a`. **Aborted at Task 1.4 per D0** — story 3-5 is uncommitted and holds `HeaderSearch.test.tsx` and `SiteSignature.test.tsx`, both of which this story must rewrite rather than append to (A3). No implementation performed. Status held at `ready-for-dev`. |

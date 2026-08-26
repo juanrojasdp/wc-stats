@@ -3447,6 +3447,27 @@ development_status:
   # story runs. Confirms L1553/L1886 (3-8) and L1465 (3-7) recorded closed; L2945 honoured.
   # DESIGN.md's token values (62/118/124) are PRE-NAV -- 3.6's four-element header. They
   # are re-measured here, not copied; the <xl row may stop wrapping at 320 entirely.
+  #
+  # DEV RUN ATTEMPTED 2026-08-26 at 2c8bb1a -- ABORTED AT TASK 1.4 (D0), BOTH CLAUSES RED.
+  # Status deliberately HELD at ready-for-dev: no implementation began, and in-progress would
+  # misreport the board to the two other live sessions. No baseline_commit was written -- the
+  # real run starts from a different commit and a baseline captured now would be wrong.
+  #   Clause 1: `git log -1 -- app/src/lib/bootstrap.ts` returns d60827c (Story 2.2). Story 3-5
+  #             has produced NO commit; it is uncommitted work in the tree.
+  #   Clause 2: HeaderSearch.test.tsx and SiteSignature.test.tsx are BOTH dirty, and the diffs
+  #             attribute themselves ("Story 3.5 -- `LocaleProvider` now detects the locale
+  #             from `navigator.language`..."). That is 3-5's Task 7.2 in flight.
+  # This story REWRITES ~10 of HeaderSearch.test.tsx's 34 cases (it does not append), so A3's
+  # second clause applies exactly. Story 2.18's precedent.
+  # DO NOT attempt a partial landing that skips the search absorption -- D0 forbids it by name:
+  # a <xl header with BOTH a nav trigger and a search trigger is the fifth row element DESIGN.md
+  # forbids, moves the wrap threshold 354 -> ~406 px, and forfeits UX-DR24's premise that the
+  # trigger REPLACES three controls. There is no smaller version of this story.
+  # UNBLOCKS ON: 3-5 committing. Then re-run /bmad-dev-story 3.10 and it proceeds from Task 2
+  # unchanged -- D1-D15 are unaffected by the wait, and all 14 other owned paths are clean.
+  # 3-8 is also live but is ZERO-OVERLAP by D2 and does not gate this story either way.
+  # Re-verified at 2c8bb1a: 3-1 has since LANDED (its 5 paths are clean now); 3-6's release and
+  # 3-7's `done` both still hold. Full record: 3-10-navigation-menu.md -> Dev Agent Record.
   3-10-navigation-menu: ready-for-dev
   # NOT `optional` — retro action item A6. Epic 1's sat at `optional`, was
   # skipped, and the cost was paid inside Epic 2.
