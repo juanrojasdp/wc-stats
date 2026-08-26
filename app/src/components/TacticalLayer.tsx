@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { DefensiveActionsSection } from "@/components/DefensiveActionsSection";
 /*
@@ -35,7 +35,12 @@ import type { MatchBundle } from "@/lib/contract/contract-types";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
 import { anchorNonce, useAnchorHit, type AnchorHit } from "@/lib/use-anchor-nonce";
-import { resolveMatchFragment } from "@/lib/match-anchors";
+import {
+  reportUnresolvedFragment,
+  resolveMatchFragment,
+  type MatchFragmentTarget,
+  type PanelAnchorId,
+} from "@/lib/match-anchors";
 import {
   buildSectionPlans,
   isCollapsibleId,
@@ -197,6 +202,38 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
   const [seenHit, setSeenHit] = useState<AnchorHit | null>(null);
 
   /*
+   * THE HIT THE DEEP LINK'S CLAIM IS STILL LIVE FOR (code review R2).
+   *
+   * `hit` itself is never cleared — an empty hash early-returns in the hook, so
+   * the last fragment a reader visited stays readable for the life of the page.
+   * That is correct for the hook and WRONG as a nonce source, because a
+   * `ViewDataDisclosure` re-inits `seenNonce` to 0 on every mount, and this layer
+   * remounts section subtrees twice over: `TacticalSection` renders
+   * `{open ? <div>{children}</div> : null}`, and the error boundary here is keyed
+   * `${plan.id}-${plan.open}`. So a reader who deep-linked a panel, CLOSED the
+   * table, collapsed the section and re-expanded it met a stale positive nonce
+   * and had their close silently discarded — every cycle, for the life of the
+   * page.
+   *
+   * So the claim is CONSUMED: it is live from the navigation that minted it until
+   * the reader takes manual control of a section (`toggle` below), and a nonce
+   * derived from it is 0 thereafter. Fixed HERE and not in `ViewDataDisclosure`,
+   * deliberately — that contract is shared with the Tournament Hub's 21 sections
+   * and 2.19's shipped behaviour is not this story's to change.
+   */
+  const [activeHit, setActiveHit] = useState<AnchorHit | null>(null);
+
+  /*
+   * The resolved target, kept in state rather than re-derived in render, so the
+   * empty-state anchor (R3) and the panel landing effect (R1) read one value that
+   * was computed exactly once per hit.
+   */
+  const [target, setTarget] = useState<MatchFragmentTarget | null>(null);
+
+  /** Bumped per addressed panel, so the landing effect re-fires on a re-click. */
+  const [landing, setLanding] = useState<{ panel: PanelAnchorId; nonce: number } | null>(null);
+
+  /*
    * ADJUSTED DURING RENDER, NOT IN AN EFFECT — and that is forced, not stylistic.
    *
    * The obvious shape is `useEffect(… , [hit])`, and it is what this code was
@@ -222,21 +259,122 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
    */
   if (hit !== seenHit) {
     setSeenHit(hit);
+    setActiveHit(hit);
+    /*
+     * PURE IN RENDER (code review P5). `resolveMatchFragment` no longer reports;
+     * the dev-visible report for an addressed-but-unresolvable fragment is issued
+     * from the effect below, where a side effect belongs. This render can be
+     * discarded by React without emitting anything or latching a dedupe key.
+     */
     const resolved = hit === null ? null : resolveMatchFragment(`#${hit.id}`);
+    setTarget(resolved);
     if (resolved !== null) {
       const id = resolved.section;
       setOverrides((previous) => ({ ...previous, [id]: true }));
-      setFocus((previous) => ({ id, nonce: (previous?.nonce ?? 0) + 1, scroll: true }));
+      if (resolved.panel === null) {
+        /*
+         * A SECTION fragment keeps its shipped UX-DR18 behaviour EXACTLY (D1,
+         * re-affirmed at code review R1): expand, scroll to the section, focus
+         * its heading, open no table.
+         */
+        setFocus((previous) => ({ id, nonce: (previous?.nonce ?? 0) + 1, scroll: true }));
+      } else {
+        /*
+         * A PANEL fragment lands on the PANEL (R1). The section's own scroll and
+         * heading focus are deliberately NOT requested: `TacticalSection` scrolls
+         * to `<section id={plan.id}>` and focuses its heading with
+         * `preventScroll`, which before this fix left the reader parked at the
+         * section top with the addressed table opening below the fold — and, when
+         * the section was already expanded, left DOM focus on the heading while
+         * the browser's own fragment scroll had moved the viewport to the panel.
+         */
+        const panel = resolved.panel;
+        setLanding((previous) => ({ panel, nonce: (previous?.nonce ?? 0) + 1 }));
+      }
     }
   }
 
+  /*
+   * THE REPORT, AND THE LANDING — both side effects, both after commit.
+   *
+   * The report is the D2 gate moved out of render. The landing is R1: the
+   * addressed panel's element cannot be looked up until it has mounted, and below
+   * `lg` it does not exist at all until the expansion above commits.
+   */
+  useEffect(() => {
+    if (hit !== null) {
+      reportUnresolvedFragment(`#${hit.id}`);
+    }
+  }, [hit]);
+
+  useEffect(() => {
+    if (landing === null) {
+      return;
+    }
+    const element = document.getElementById(landing.panel);
+    if (element === null) {
+      return;
+    }
+    element.scrollIntoView();
+    /*
+     * `preventScroll` because `scrollIntoView` has already positioned it — the
+     * same reasoning `TacticalSection` records for the section case. The target
+     * carries `tabIndex={-1}` so it can hold focus without joining the tab order.
+     */
+    element.focus({ preventScroll: true });
+  }, [landing]);
+
   function toggle(id: SectionId, willOpen: boolean) {
+    /*
+     * The reader took manual control, so the deep link's claim is SPENT (R2).
+     * Cleared for every section, not just this one: the fragment addressed one
+     * panel, and once the reader is driving the page it should not re-assert
+     * itself behind them on a later remount.
+     */
+    setActiveHit(null);
     setOverrides((previous) => ({ ...previous, [id]: willOpen }));
     if (willOpen) {
       // Focus moves into what was revealed only on a user toggle; closing
       // leaves focus on the trigger where the user put it.
       setFocus((previous) => ({ id, nonce: (previous?.nonce ?? 0) + 1, scroll: false }));
     }
+  }
+
+  /*
+   * TYPED, SO A TYPO IS A COMPILE ERROR (code review P6).
+   *
+   * `anchorNonce` takes a bare `string` and must keep doing so — D3 shares it with
+   * the Tournament Hub, whose section ids are not `PanelAnchorId`s. That left all
+   * six call sites below unguarded: `anchorNonce(hit, "pass-netwoks-matrix")`
+   * would compile, return 0 forever, and open nothing. This wrapper puts the
+   * story's own argument for typing `href` against `MatchFragmentId` (D8) where
+   * the nonces are read. Still numbers at the prop boundary, as D4 requires — the
+   * helper is internal and greppable, not a callback prop.
+   */
+  function panelNonce(anchorId: PanelAnchorId): number {
+    return anchorNonce(activeHit, anchorId);
+  }
+
+  /*
+   * WHICH PANEL ANCHOR AN EMPTY SECTION MUST STILL CARRY (code review R3).
+   *
+   * When `plan.isEmpty` the section component never mounts — the layer renders a
+   * section-level `EmptyStatePanel` instead — so the panel id vanished from the
+   * DOM entirely and the fragment landed NOWHERE. On the shipped corpus that is
+   * `#defensive-actions-table` on 104/104 matches. D10.2 rules the opposite: "a
+   * link that lands on a named absence is honest; a link that lands nowhere is
+   * not", which is why `ShotMapsSection` already wraps its absent arms in a
+   * `<div id=…>`.
+   *
+   * The id given is the one the READER IS CURRENTLY ADDRESSING, which is what
+   * makes a single element serve a section with two panel anchors (`shot-maps`):
+   * whichever of the two was followed is the one that must have a target.
+   */
+  function emptyStateAnchorId(sectionId: SectionId): string | undefined {
+    if (target === null || target.panel === null || target.section !== sectionId) {
+      return undefined;
+    }
+    return target.panel;
   }
 
   /*
@@ -257,8 +395,8 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "shot-maps":
         return (
           <ShotMapsSection
-            shotsNonce={anchorNonce(hit, "shot-maps-shots")}
-            crossesNonce={anchorNonce(hit, "shot-maps-crosses")}
+            shotsNonce={panelNonce("shot-maps-shots")}
+            crossesNonce={panelNonce("shot-maps-crosses")}
             shots={bundle.events.shots}
             crosses={bundle.events.crosses}
             home={{
@@ -280,7 +418,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "pass-networks":
         return (
           <PassNetworksSection
-            matrixNonce={anchorNonce(hit, "pass-networks-matrix")}
+            matrixNonce={panelNonce("pass-networks-matrix")}
             nodes={bundle.events.passNetworkNodes}
             edges={bundle.events.passNetworkEdges}
             home={{
@@ -333,7 +471,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "offers-to-receive":
         return (
           <OffersToReceiveSection
-            tableNonce={anchorNonce(hit, "offers-to-receive-table")}
+            tableNonce={panelNonce("offers-to-receive-table")}
             players={bundle.players}
             home={{
               teamId: bundle.metadata.homeTeam.teamId,
@@ -350,7 +488,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "movement-to-receive":
         return (
           <MovementToReceiveSection
-            tableNonce={anchorNonce(hit, "movement-to-receive-table")}
+            tableNonce={panelNonce("movement-to-receive-table")}
             players={bundle.players}
             home={{
               teamId: bundle.metadata.homeTeam.teamId,
@@ -367,7 +505,7 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
       case "defensive-actions":
         return (
           <DefensiveActionsSection
-            tableNonce={anchorNonce(hit, "defensive-actions-table")}
+            tableNonce={panelNonce("defensive-actions-table")}
             defensiveActions={bundle.events.defensiveActions}
             home={{
               teamId: bundle.metadata.homeTeam.teamId,
@@ -555,7 +693,9 @@ export function TacticalLayer({ bundle }: { bundle: MatchBundle }) {
               explanationKey="tactical.empty.sectionCrashedExplanation"
             >
               {plan.isEmpty ? (
-                <EmptyStatePanel headline={emptyCopy} explanation={emptyExplanation} />
+                <div id={emptyStateAnchorId(plan.id)} tabIndex={-1}>
+                  <EmptyStatePanel headline={emptyCopy} explanation={emptyExplanation} />
+                </div>
               ) : (
                 <SectionContent id={plan.id} build={sectionContent} />
               )}

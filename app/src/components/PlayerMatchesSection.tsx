@@ -159,8 +159,9 @@ export function PlayerMatchesSection({ rows }: { rows: readonly MatchRow[] }) {
        * exactly that slash, because nothing in the exported HTML can pin it —
        * this table is client-rendered, so the static-output suite never sees it.
        *
-       * `#expert` is deliberately NOT a `SectionId` —`TacticalLayer`'s
-       * `sectionIdFromHash` returns null for it BY DESIGN and `ExpertLayer` owns
+       * `#expert` is deliberately NOT a `SectionId` — `resolveMatchFragment`
+       * (`@/lib/match-anchors`, which replaced `sectionIdFromHash` in Story 3.8)
+       * returns null for it BY DESIGN and `ExpertLayer` owns
        * its own listener, which is WHOLE-STRING equality on
        * `window.location.hash === "#expert"`. Anything finer ("#expert-content")
        * is silently ignored.

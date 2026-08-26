@@ -1164,7 +1164,7 @@ export function PitchPanel({
   const visibleOpen = open !== null && visible.includes(open.sideIndex) ? open : null;
 
   return (
-    <section id={anchorId}>
+    <section id={anchorId} tabIndex={anchorId === undefined ? undefined : -1}>
       <h3 className="type-title text-ink-primary">{title}</h3>
       {/*
        * {components.pitch-panel}: the deep-green pitch surface IS the panel

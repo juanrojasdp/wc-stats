@@ -1,4 +1,4 @@
-import type { MatchFragmentId } from "@/lib/match-anchors";
+import type { PanelAnchorId } from "@/lib/match-anchors";
 import type { DictionaryKey } from "@/lib/i18n";
 
 /*
@@ -34,10 +34,19 @@ import type { DictionaryKey } from "@/lib/i18n";
  * loudly in dev.
  *
  * So each href below now names a PANEL, not just a section: following one
- * expands the section, scrolls to the panel and opens its "Ver los datos"
- * region — and following the SAME one again after closing it re-opens it. The
- * labels still state where the table is, which remains true and is what a reader
- * scanning the list needs.
+ * expands the section, scrolls to the panel, moves focus there, and opens its
+ * "Ver los datos" region — and following the SAME one again after closing it
+ * re-opens it.
+ *
+ * WITH ONE HONEST EXCEPTION, RULED AT D10 AND RESTATED HERE because the first
+ * draft of this ruling asserted the happy path unconditionally and was therefore
+ * false on every real match for two of the six links. `events.crosses` and
+ * `events.defensiveActions` are null on 104/104 shipped bundles, so the cross log
+ * and the defensive log land on a NAMED ABSENCE — the section's or the panel's
+ * empty state, which carries the anchor id precisely so the link lands on
+ * something — and there is no "Ver los datos" control there to open. That is
+ * ruled FR-22 behaviour, not a defect. The labels still state where the table
+ * lives, which is what a reader scanning the list needs.
  *
  * SIX ENTRIES, NOT FIVE (ruling 6). AC 1 enumerates five logs; four of them are
  * linked here (the receiving log has no existing home and is rendered in the
@@ -73,16 +82,20 @@ export interface ExpertLogLink {
    * is a COMPILE error instead — the same argument `RECEIVING_EVENT_ORDER` is
    * built on in `receiving-log-model.ts`.
    *
-   * WIDENED FROM `#${SectionId}` BY STORY 3.8, and the widening is the point:
-   * the union now also admits the six PANEL anchors, which is what lets the shot
-   * log and the cross log stop sharing `#shot-maps` (ledger L1886). It is still
-   * a closed union — never `string` — so the compile-time protection survives.
-   * `i18n.test.ts` keeps a runtime pin as a second line of defence, because the
-   * type cannot see a registry entry that is later removed; that pin now asserts
-   * the fragment RESOLVES and names a panel, which is strictly stronger than the
-   * `SECTION_IDS` membership check it replaces.
+   * NARROWED TO `PanelAnchorId` AT THE 3.8 CODE REVIEW, and the narrowing is the
+   * point. Story 3.8 first widened this to `MatchFragmentId`
+   * (`SectionId | PanelAnchorId`) and called that "STRENGTHENED" — it was not.
+   * That union still ADMITS every bare `#<section>`, so the type could not reject
+   * a regression straight back to `href: "#shot-maps"`, which is the exact shape
+   * ledger L1886 filed. Only the runtime pin in `i18n.test.ts` stood between the
+   * repo and that regression.
+   *
+   * Every one of the six links names a PANEL, so the field's type says so, and the
+   * L1886 guarantee now lives in the type where this docblock always claimed it
+   * did. `i18n.test.ts` keeps its runtime pin as the second line of defence,
+   * because the type cannot see a registry entry that is later removed.
    */
-  href: `#${MatchFragmentId}`;
+  href: `#${PanelAnchorId}`;
   /** The section the table lives in, composed into the link's description. */
   titleKey: DictionaryKey;
 }

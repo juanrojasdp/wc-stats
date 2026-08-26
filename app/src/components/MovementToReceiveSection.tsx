@@ -346,7 +346,7 @@ export function MovementToReceiveSection({
     (!split.away.isZero && !split.away.partitionMismatch);
 
   return (
-    <div className="flex flex-col gap-tile-gap" id="movement-to-receive-table">
+    <div className="flex flex-col gap-tile-gap" id="movement-to-receive-table" tabIndex={-1}>
       {anyBar ? (
         <p className="type-stat-label text-ink-secondary">{t("viz.movement.barNote")}</p>
       ) : null}

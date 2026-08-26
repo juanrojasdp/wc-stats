@@ -1,11 +1,16 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   PANEL_ANCHORS,
+  reportUnresolvedFragment,
+  resetFragmentReports,
   resolveMatchFragment,
   type PanelAnchorId,
 } from "@/lib/match-anchors";
 import { SECTION_IDS } from "@/lib/tactical-sections";
+
+/** Mirrors RESERVED_SECTION_SUFFIXES in match-anchors.ts (code review R4). */
+const RESERVED = ["heading", "content", "summary"] as const;
 
 /*
  * THE FRAGMENT GRAMMAR (Story 3.8, ruled D1/D2).
@@ -19,6 +24,12 @@ import { SECTION_IDS } from "@/lib/tactical-sections";
  *
  * Every unresolvable-fragment case below therefore spies on `console.error` and
  * asserts the CALL COUNT, not just the return value.
+ *
+ * THE REPORT MOVED OUT OF THE RESOLVER at the 3.8 code review. `resolveMatchFragment`
+ * is called from a RENDER body, and a render that writes to the console and mutates a
+ * module-level Set is not pure; `reportUnresolvedFragment` is the side-effecting half
+ * and `TacticalLayer` calls it from an effect. So these cases exercise the reporter
+ * directly, and the resolver is separately pinned as SILENT.
  */
 describe("resolveMatchFragment — the section half (unchanged behaviour)", () => {
   afterEach(() => {
@@ -100,9 +111,66 @@ describe("resolveMatchFragment — the panel half (AC 3, AC 4)", () => {
 });
 
 describe("resolveMatchFragment — addressed but unresolvable (AC 3, D2)", () => {
+  beforeEach(() => {
+    // The dedupe Set is module-level; without this the call-count assertions
+    // below are order-dependent on whatever resolved the same fragment first.
+    resetFragmentReports();
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
+  });
+
+  it("RESOLVES SILENTLY — the resolver itself never writes to the console", () => {
+    /*
+     * The purity pin (code review P5). `TacticalLayer` calls this during render,
+     * and React may discard such a render; emitting there both lies about how
+     * often a miss happened and latches the dedupe key for a render that never
+     * committed.
+     */
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(resolveMatchFragment("#shot-maps-log")).toBeNull();
+    expect(resolveMatchFragment("#shot-maps-shots")).not.toBeNull();
+    expect(consoleError, "resolution is pure").not.toHaveBeenCalled();
+  });
+
+  it("stays SILENT for the a11y ids TacticalSection mints for every section", () => {
+    /*
+     * CODE REVIEW R4. `TacticalSection.tsx:109-111` builds `${id}-heading`,
+     * `${id}-content` and `${id}-summary` for all ELEVEN sections — 33 real DOM
+     * ids that each match `<SectionId>-` and were each denounced as a broken
+     * href. A gate that reports 33 correct ids is a gate people stop reading.
+     */
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    for (const id of SECTION_IDS) {
+      for (const suffix of RESERVED) {
+        expect(resolveMatchFragment(`#${id}-${suffix}`)).toBeNull();
+        reportUnresolvedFragment(`#${id}-${suffix}`);
+      }
+    }
+    expect(consoleError, "the section's own a11y ids are not dead anchors").not.toHaveBeenCalled();
+  });
+
+  it("still reports a miss that merely LOOKS like a reserved suffix", () => {
+    // `-headings` is not `-heading`: the carve-out is exact, not a prefix.
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    reportUnresolvedFragment("#shot-maps-headings");
+    expect(consoleError).toHaveBeenCalledTimes(1);
+  });
+
+  it("resetFragmentReports() re-arms the gate for a new page", () => {
+    /*
+     * Without a seam the dedupe is once-per-SESSION, so a client-side route
+     * change to a second match carrying the same stale href is silent.
+     */
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    reportUnresolvedFragment("#shot-maps-log");
+    reportUnresolvedFragment("#shot-maps-log");
+    expect(consoleError).toHaveBeenCalledTimes(1);
+    resetFragmentReports();
+    reportUnresolvedFragment("#shot-maps-log");
+    expect(consoleError, "a new page re-arms it").toHaveBeenCalledTimes(2);
   });
 
   it("stays SILENT for the route's legitimate non-section fragments", () => {
@@ -115,6 +183,8 @@ describe("resolveMatchFragment — addressed but unresolvable (AC 3, D2)", () =>
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(resolveMatchFragment("#main-content")).toBeNull();
     expect(resolveMatchFragment("#expert")).toBeNull();
+    reportUnresolvedFragment("#main-content");
+    reportUnresolvedFragment("#expert");
     expect(consoleError).not.toHaveBeenCalled();
   });
 
@@ -129,17 +199,18 @@ describe("resolveMatchFragment — addressed but unresolvable (AC 3, D2)", () =>
      */
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(resolveMatchFragment("#shot-maps-log")).toBeNull();
+    reportUnresolvedFragment("#shot-maps-log");
     expect(consoleError).toHaveBeenCalledTimes(1);
     expect(String(consoleError.mock.calls[0][0])).toMatch(/shot-maps-log/);
 
-    resolveMatchFragment("#shot-maps-log");
+    reportUnresolvedFragment("#shot-maps-log");
     expect(consoleError, "the second identical miss is swallowed").toHaveBeenCalledTimes(1);
   });
 
   it("reports each DISTINCT miss on its own — a keyed Set, not a one-shot latch", () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-    expect(resolveMatchFragment("#pass-networks-nope")).toBeNull();
-    expect(resolveMatchFragment("#defensive-actions-nope")).toBeNull();
+    reportUnresolvedFragment("#pass-networks-nope");
+    reportUnresolvedFragment("#defensive-actions-nope");
     expect(consoleError).toHaveBeenCalledTimes(2);
   });
 
@@ -153,12 +224,14 @@ describe("resolveMatchFragment — addressed but unresolvable (AC 3, D2)", () =>
     vi.stubEnv("NODE_ENV", "production");
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(resolveMatchFragment("#shot-maps-production-only-miss")).toBeNull();
+    reportUnresolvedFragment("#shot-maps-production-only-miss");
     expect(consoleError).not.toHaveBeenCalled();
   });
 
   it("stays silent for a fragment that names no section at all", () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(resolveMatchFragment("#not-a-section-at-all")).toBeNull();
+    reportUnresolvedFragment("#not-a-section-at-all");
     expect(consoleError).not.toHaveBeenCalled();
   });
 });

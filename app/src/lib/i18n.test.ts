@@ -1551,8 +1551,9 @@ describe("the expert.* namespace (Story 2.11b, AD-7)", () => {
  * ------------------- STORY 2.11c — THE FULL EVENT LOGS BLOCK -------------------
  *
  * Tasks 4.4 / 4.4a / 4.4b. Three of these guard failure modes that NOTHING else
- * in the chain can see: a typo'd fragment (sectionIdFromHash is exact-match and
- * returns null SILENTLY), a link label that duplicates the section title it is
+ * in the chain can see: a typo'd fragment (resolveMatchFragment — which replaced
+ * sectionIdFromHash in Story 3.8 — returns null, and reports only when the
+ * fragment addresses a real section), a link label that duplicates the section title it is
  * composed against (the hint would print the same phrase twice on one line), and
  * a fourth table resolving the same caption string as three shipped ones.
  */

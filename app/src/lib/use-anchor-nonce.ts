@@ -55,6 +55,20 @@ import { useEffect, useState } from "react";
 /** Strips the leading `#` off `window.location.hash`. */
 export const HASH_PREFIX = "#";
 
+/**
+ * The ONE stripping rule, shared with `@/lib/match-anchors` (code review).
+ *
+ * This was `hash.replace(HASH_PREFIX, "")`, which removes the FIRST `#` anywhere
+ * in the string rather than a leading one, while the match route's grammar used
+ * `startsWith`/`slice`. Two modules parsing the same fragment with two different
+ * rules, in a story whose stated goal was that the route not be left with two
+ * grammars. Defined here because this is the generic module of the pair: the
+ * match-route grammar imports it, never the other way round.
+ */
+export function stripHashPrefix(hash: string): string {
+  return hash.startsWith(HASH_PREFIX) ? hash.slice(HASH_PREFIX.length) : hash;
+}
+
 /** The fragment the reader is currently on, plus a counter that rises per read. */
 export interface AnchorHit {
   id: string;
@@ -65,13 +79,28 @@ export function useAnchorHit(): AnchorHit | null {
   const [hit, setHit] = useState<AnchorHit | null>(null);
   useEffect(() => {
     function readHash() {
-      const id = window.location.hash.replace(HASH_PREFIX, "");
+      const id = stripHashPrefix(window.location.hash);
       if (id === "") {
         return;
       }
       setHit((previous) => ({ id, nonce: (previous?.nonce ?? 0) + 1 }));
     }
     function onClick(event: MouseEvent) {
+      /*
+       * A CLICK THAT IS NOT NAVIGATING THIS TAB MUST NOT BUMP THIS TAB'S NONCE
+       * (code review). Without these three guards a Ctrl/Cmd-click on an Expert
+       * log link opened a new tab AND re-opened, in the tab the reader was still
+       * looking at, a disclosure they had deliberately closed. `button !== 0`
+       * covers middle-click (the other open-in-new-tab gesture) and any
+       * non-primary press; `defaultPrevented` respects a handler that has already
+       * cancelled the navigation this listener exists to observe.
+       */
+      if (event.defaultPrevented || event.button !== 0) {
+        return;
+      }
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+        return;
+      }
       const anchor = (event.target as Element | null)?.closest?.("a[href]");
       if (!(anchor instanceof HTMLAnchorElement)) {
         return;
@@ -81,6 +110,13 @@ export function useAnchorHit(): AnchorHit | null {
         return;
       }
       if (anchor.pathname !== window.location.pathname) {
+        return;
+      }
+      /*
+       * Same ORIGIN too: `pathname` and `hash` can coincide on a cross-origin
+       * href, and a click leaving the site is not an in-page navigation.
+       */
+      if (anchor.origin !== window.location.origin) {
         return;
       }
       readHash();

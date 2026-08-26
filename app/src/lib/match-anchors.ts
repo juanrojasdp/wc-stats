@@ -1,4 +1,5 @@
 import { SECTION_IDS, type SectionId } from "@/lib/tactical-sections";
+import { stripHashPrefix } from "@/lib/use-anchor-nonce";
 
 /*
  * THE MATCH ROUTE'S FRAGMENT GRAMMAR (Story 3.8, ruled decisions D1 and D2).
@@ -36,9 +37,6 @@ import { SECTION_IDS, type SectionId } from "@/lib/tactical-sections";
  * for `#expert` is BY DESIGN. A blanket warn would fire on both on every page
  * load, which is how a loud gate teaches its readers to stop looking.
  */
-
-/** Strips the leading `#` off a `window.location.hash`-shaped string. */
-const HASH_PREFIX = "#";
 
 /** The separator between a section id and its panel suffix. */
 const ANCHOR_SEPARATOR = "-";
@@ -90,12 +88,80 @@ export interface MatchFragmentTarget {
  */
 const reportedFragments = new Set<string>();
 
+/*
+ * THE RESET SEAM (code review).
+ *
+ * Without it the dedupe Set is once-per-SESSION rather than once-per-page: a
+ * client-side route change to a second match carrying the same stale href stays
+ * silent, and any test asserting a call COUNT becomes order-dependent on whatever
+ * resolved the same fragment before it. Exported rather than inferred from a
+ * route change, because this module is pure and knows nothing about navigation —
+ * the caller that owns the page lifecycle is the one that can say when a page
+ * began.
+ */
+export function resetFragmentReports(): void {
+  reportedFragments.clear();
+}
+
+/*
+ * THE SUFFIXES `TacticalSection` MINTS FOR ITS OWN A11Y WIRING (code review R4).
+ *
+ * `TacticalSection.tsx:109-111` builds `${id}-heading`, `${id}-content` and
+ * `${id}-summary` for all ELEVEN sections — 33 real, valid DOM ids on every match
+ * page. Each one matches `<SectionId>-` and would otherwise be denounced by the
+ * guard below as a broken href, which is how a loud gate teaches its readers to
+ * stop looking. They are not panels and were never addressable by the grammar;
+ * they are the aria targets the disclosure control points at.
+ *
+ * D2's report SCOPE is otherwise unchanged and stays as ruled: only a fragment
+ * that addresses a section and resolves to nothing reports. Near-miss shapes a
+ * reader can hand-type (`#Shot-Maps-Shots`, `#shot-maps-shots?x=1`) remain silent
+ * BY DESIGN — widening detection to them was considered at this review and
+ * declined, because each would need a fuzzy match and a fuzzy match is how a gate
+ * starts reporting things that are not defects.
+ */
+const RESERVED_SECTION_SUFFIXES = ["heading", "content", "summary"] as const;
+
 /**
  * True when `raw` addresses a real section and then something unresolvable —
- * the "someone changed an href and nothing went red" shape.
+ * the "someone changed an href and nothing went red" shape. False for the
+ * section's own a11y ids, which address a section and resolve to no panel BY
+ * DESIGN.
  */
 function addressesASection(raw: string): boolean {
-  return SECTION_IDS.some((id) => raw.startsWith(`${id}${ANCHOR_SEPARATOR}`));
+  return SECTION_IDS.some((id) => {
+    const prefix = `${id}${ANCHOR_SEPARATOR}`;
+    if (!raw.startsWith(prefix)) {
+      return false;
+    }
+    const suffix = raw.slice(prefix.length);
+    return !RESERVED_SECTION_SUFFIXES.some((reserved) => reserved === suffix);
+  });
+}
+
+/**
+ * Report a fragment that addresses a section and resolves to no panel.
+ *
+ * SEPARATE FROM `resolveMatchFragment` AND THAT IS THE POINT (code review P5).
+ * The resolver is called from a RENDER body (`TacticalLayer` adjusts state during
+ * render, because `react-hooks/set-state-in-effect` rejects the effect shape), and
+ * a render that emits `console.error` and mutates a module-level Set is not pure —
+ * React may discard such a render, and StrictMode's double-invoke was being masked
+ * by the dedupe Set rather than tolerated by design. So resolution stays pure and
+ * the REPORT moved to the caller's effect, where a side effect belongs.
+ *
+ * Safe to call with any fragment: it is silent unless the fragment both addresses
+ * a real section and resolves to nothing.
+ */
+export function reportUnresolvedFragment(hash: string): void {
+  const raw = stripHashPrefix(hash);
+  if (raw === "" || resolveMatchFragment(raw) !== null) {
+    return;
+  }
+  if (!addressesASection(raw)) {
+    return;
+  }
+  reportUnresolvable(raw);
 }
 
 function reportUnresolvable(raw: string): void {
@@ -122,9 +188,13 @@ function reportUnresolvable(raw: string): void {
 /**
  * Resolve a URL fragment to the section it names and, for the finer form, the
  * panel whose disclosure it addresses. `null` for anything outside the grammar.
+ *
+ * PURE — safe to call during render. The dev-visible report for an
+ * addressed-but-unresolvable fragment lives in `reportUnresolvedFragment`, which
+ * the caller invokes from an effect.
  */
 export function resolveMatchFragment(hash: string): MatchFragmentTarget | null {
-  const raw = hash.startsWith(HASH_PREFIX) ? hash.slice(HASH_PREFIX.length) : hash;
+  const raw = stripHashPrefix(hash);
   if (raw === "") {
     return null;
   }
@@ -135,9 +205,6 @@ export function resolveMatchFragment(hash: string): MatchFragmentTarget | null {
   const anchor = PANEL_ANCHORS.find((entry) => entry.id === raw);
   if (anchor !== undefined) {
     return { section: anchor.section, panel: anchor.id };
-  }
-  if (addressesASection(raw)) {
-    reportUnresolvable(raw);
   }
   return null;
 }

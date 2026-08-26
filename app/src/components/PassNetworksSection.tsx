@@ -251,7 +251,7 @@ export function PassNetworksSection({
   if (nodes === null && edges !== null && edges.length > 0) {
     const matrixRows = passMatrixRows(edges, rosterMap, home, away);
     return (
-      <div className="flex flex-col gap-tile-gap" id="pass-networks-matrix">
+      <div className="flex flex-col gap-tile-gap" id="pass-networks-matrix" tabIndex={-1}>
         <p className="type-stat-label text-ink-secondary">{t("viz.passNetwork.matrixOnlyNote")}</p>
         <p className="type-caption tabular-nums text-ink-secondary">
           {countPhrase(
@@ -286,8 +286,19 @@ export function PassNetworksSection({
    * JSON, and rendering a crash instead of an absence is strictly worse.
    */
   if (nodes === null || edges === null) {
+    /*
+     * THE ANCHOR SURVIVES THE ABSENCE (code review R3). `ShotMapsSection` already
+     * wraps each of its absent arms in an id-carrying element so a followed link
+     * lands ON the named absence rather than nowhere — D10.2's ruling — and this
+     * branch was the one place in the story that dropped it.
+     */
     return (
-      <EmptyStatePanel headline={emptyHeadline(title)} explanation={t("tactical.empty.explanation")} />
+      <div id="pass-networks-matrix" tabIndex={-1}>
+        <EmptyStatePanel
+          headline={emptyHeadline(title)}
+          explanation={t("tactical.empty.explanation")}
+        />
+      </div>
     );
   }
 

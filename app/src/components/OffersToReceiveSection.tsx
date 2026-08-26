@@ -385,7 +385,7 @@ export function OffersToReceiveSection({
    * `null` branch and is rendered by TacticalLayer above this component.
    */
   return (
-    <div className="flex flex-col gap-tile-gap" id="offers-to-receive-table">
+    <div className="flex flex-col gap-tile-gap" id="offers-to-receive-table" tabIndex={-1}>
       {/* A subtitle, not a heading: TacticalSection owns the <h2>. */}
       <p className="type-stat-label text-ink-secondary">{t("viz.offers.note")}</p>
       {(

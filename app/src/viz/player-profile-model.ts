@@ -570,8 +570,9 @@ export const MATCHES_SECTION_ID = "matches";
  * can reach the composed string — Task 9.1 claimed one and the suite never had
  * it. The co-located test pins it instead.
  *
- * `#expert` is deliberately NOT a `SectionId`: `TacticalLayer`'s
- * `sectionIdFromHash` returns `null` for it BY DESIGN, and `ExpertLayer` owns
+ * `#expert` is deliberately NOT a `SectionId`: `resolveMatchFragment`
+ * (`@/lib/match-anchors`, which replaced `sectionIdFromHash` in Story 3.8)
+ * returns `null` for it BY DESIGN, and `ExpertLayer` owns
  * its own listener, which is WHOLE-STRING equality on `window.location.hash ===
  * "#expert"`. Anything finer ("#expert-content") is silently ignored, so this
  * fragment is not a place to add precision later.

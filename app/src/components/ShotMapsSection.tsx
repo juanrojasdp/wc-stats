@@ -442,7 +442,7 @@ export function ShotMapsSection({
        * the one way nothing in this suite catches.
        */}
       {shotState === "absent" ? (
-        <div id="shot-maps-shots">
+        <div id="shot-maps-shots" tabIndex={-1}>
           <EmptyStatePanel
             headline={emptyHeadline(shotTitle)}
             explanation={t("tactical.empty.explanation")}
@@ -461,7 +461,7 @@ export function ShotMapsSection({
       )}
       <div className="mt-section-gap">
         {crossState === "absent" ? (
-          <div id="shot-maps-crosses">
+          <div id="shot-maps-crosses" tabIndex={-1}>
             <EmptyStatePanel
               headline={emptyHeadline(crossTitle)}
               explanation={t("tactical.empty.explanation")}

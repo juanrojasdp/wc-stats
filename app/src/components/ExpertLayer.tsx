@@ -77,9 +77,10 @@ const LOGS_HEADING_ID = "expert-logs-heading";
  * The link table itself lives in `@/lib/expert-logs` — a pure module, so
  * `i18n.test.ts` can pin the six hrefs and labels without importing this
  * component (ruled at the 2.11c code review). Read that file's docblock for
- * rulings 1, 2 and 6: the slots are LINKS to the shipped viz disclosures, they
- * are honest anchors that open nothing, and there are six of them rather than
- * AC 1's five.
+ * rulings 1, 2 and 6: the slots are LINKS to the shipped viz disclosures, each
+ * href names a PANEL and following one opens that panel's table (ruling 2 was
+ * SUPERSEDED by Story 3.8 — it previously read "honest anchors that open
+ * nothing"), and there are six of them rather than AC 1's five.
  */
 
 /** The three column groups, in the order the `<md` tabs present them. */
@@ -224,9 +225,12 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   /*
-   * ITS OWN HASH LISTENER. `TacticalLayer`'s `sectionIdFromHash` returns null
-   * for "#expert" BY DESIGN — do not extend it; that function is keyed on the
-   * eleven-member registry this layer is deliberately not in.
+   * ITS OWN HASH LISTENER. `resolveMatchFragment` (`@/lib/match-anchors`, which
+   * REPLACED `TacticalLayer`'s `sectionIdFromHash` in Story 3.8) returns null for
+   * "#expert" BY DESIGN — do not extend it; that grammar is keyed on the
+   * eleven-member section registry this layer is deliberately not in, plus the
+   * six panel anchors. "#expert" names neither, and `match-anchors.ts` carves it
+   * out of the dev-visible report for exactly that reason.
    *
    * The MOUNT-TIME READ is load-bearing, not belt-and-braces: this layer is
    * client-only under AR-11 and mounts inside MatchBundleRegion's loaded
@@ -987,12 +991,22 @@ export function ExpertLayer({ bundle }: { bundle: MatchBundle }) {
                      *
                      * STILL A PLAIN <a> AFTER STORY 3.8, which is the point. The
                      * hrefs now name PANELS (`#shot-maps-shots`) rather than only
-                     * sections, and following one also OPENS that panel's table —
-                     * but none of that is done here. `useAnchorHit` in
-                     * TacticalLayer listens for the navigation this anchor causes,
-                     * including the same-fragment re-click that fires no
+                     * sections, and following one expands the section, lands the
+                     * viewport and focus ON that panel, and opens its table WHERE
+                     * ONE EXISTS — but none of that is done here. `useAnchorHit`
+                     * in TacticalLayer listens for the navigation this anchor
+                     * causes, including the same-fragment re-click that fires no
                      * `hashchange`. This file did not change for that, and it is
                      * meant not to: the link stays a link.
+                     *
+                     * "WHERE ONE EXISTS" IS LOAD-BEARING (D10). `events.crosses`
+                     * and `events.defensiveActions` are null on 104/104 shipped
+                     * bundles, so the cross log and the defensive log land on a
+                     * named absence that carries the anchor id and has no table to
+                     * open. The hint below still reads "… · Ver los datos" for
+                     * them: it names where the table LIVES, which is what a reader
+                     * scanning six links needs, and D10 rules the absence itself
+                     * honest rather than a defect.
                      */}
                     <a
                       id={linkId}

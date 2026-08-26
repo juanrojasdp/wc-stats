@@ -4,7 +4,7 @@ baseline_commit: f07116b
 
 # Story 3.8: Match-Route Deep-Link Plumbing
 
-Status: review
+Status: done
 
 <!-- Created 2026-08-26. THIS IS A PORT, NOT AN INVENTION. Story 2.19 built this exact
      mechanism for the Tournament Hub and it ships at f07116b. Every ruling below is
@@ -971,3 +971,129 @@ fire), any locale file (no new keys, so the i18n gate and the caption inventory 
 | 2026-08-26 | Browser verification in headless Chromium against the built export from an isolated worktree: **12/12** checks, including AC 1's same-fragment re-open with **no `hashchange` fired**. |
 | 2026-08-26 | Every new/modified gate driven RED once and restored (4 gates; commands and failure output in Completion Notes). |
 | 2026-08-26 | Concurrent-session incident: the 15 code files were swept into another story's commit `f6fee86` and then reset away; verified intact and committed here as `deae510`. |
+
+---
+
+## Review Findings
+
+<!-- Code review 2026-08-26 against `deae510`. Three adversarial layers (Blind Hunter,
+     Edge Case Hunter, Acceptance Auditor) run in parallel with no shared context; every
+     finding below was re-verified against the tree and the 104-match corpus before triage.
+     Corpus measurements confirmed: defensiveActions null 104/104, crosses null 104/104,
+     passNetworkNodes null 104/104, shots null 0/104. -->
+
+### Review Findings — decision needed
+
+- [x] [Review][Decision] **A deep link never scrolls to the panel it names, and focus lands away from the viewport** — The only scroll in the mechanism is `TacticalSection.tsx:101` (`sectionRef.current?.scrollIntoView()`), which targets `<section id={plan.id}>`, never `resolved.panel`. `PitchPanel.tsx:1167` gains `id={anchorId}` but nothing ever scrolls to it. When the section is already expanded the browser's own fragment scroll reaches the panel first, then the focus effect scrolls back up to the section heading with `preventScroll: true` — leaving focus on an element the reader cannot see (WCAG 2.4.7 / 2.4.3). Sharpest on `#shot-maps-crosses`, which sits below a full shot-map panel. `expert-logs.ts:31-33` now asserts following a link "scrolls to the panel"; it does not. Note `#offers-to-receive-table` / `#movement-to-receive-table` put their id on the component's outermost `<div>`, the first child of the section — so the `-table` anchors are positionally identical to their section anchors and the panel grammar buys nothing positional anywhere. Task 10.2 verified with **"Registro de tiros"**, the first panel in its section — the one case where section-top scroll is indistinguishable from panel scroll — so the browser pass could not have caught this. **Decision:** scroll to the panel and move focus there, scroll to the panel but keep focus at the section heading, or keep current behaviour and correct the docblocks. Touches ruled UX-DR18 focus behaviour.
+- [x] [Review][Decision] **A stale positive `openNonce` re-opens a reader-closed table on every remount** — `hit` is never cleared (`use-anchor-nonce.ts:68-71` early-returns on an empty hash, and `hit` is only ever replaced, never nulled), while `ViewDataDisclosure`'s `seenNonce` re-inits to `0` on each mount (`:99`). Two independent forces remount the subtree: `TacticalSection.tsx:212` renders `{open ? <div>{children}</div> : null}`, and `TacticalLayer.tsx:553` keys the boundary `` `${plan.id}-${plan.open}` `` so the key itself changes on collapse. Sequence: deep-link `#defensive-actions-table`, close the table, collapse the section, re-expand — `1 !== 0 && 1 > 0` fires `setOpen(true)` and the reader's explicit close is discarded. Repeats for the life of the page, and `plan.open` also flips on an `lg` breakpoint crossing, so a window resize triggers it. **Decision:** where to fix — consume/clear the hit in the layer, seed `seenNonce` from `openNonce` on mount, or change the nonce contract. The contract is shared with the Tournament Hub (2.19), so the choice has cross-route consequences.
+- [x] [Review][Decision] **`#defensive-actions-table` lands nowhere on 104/104 real matches, and the empty-branch id wiring is asymmetric** — `defensiveActions` is null on all 104 bundles, so `plan.isEmpty` holds and `TacticalLayer.tsx:557` renders the section-level `EmptyStatePanel`; `DefensiveActionsSection` never mounts and the id does not exist in the DOM. `ShotMapsSection.tsx:445`/`:464` deliberately wrap their absent arms in `<div id="…">` so the anchor lands on a named absence; `PassNetworksSection.tsx:288-292` and the section-level empty path do not. D10.2 rules that "a link that lands on a named absence is honest; a link that lands nowhere is not" — which is exactly what `#defensive-actions-table` does. Related: `ShotMapsSection`'s required `crossesNonce` and `DefensiveActionsSection`'s required `tableNonce` are computed and silently discarded on the arm that ships. **Decision:** whether the generic section-level empty state should carry a per-section panel anchor id.
+- [x] [Review][Decision] **The dev-visible guard both false-positives on real ids and misses the likeliest typos** — `addressesASection` (`match-anchors.ts:97`) denounces anything matching `` `${SectionId}-` ``. `TacticalSection.tsx:109-111` mints `${id}-heading`, `${id}-content` and `${id}-summary` for all eleven sections — 33 real, valid DOM ids the guard would call broken hrefs. Meanwhile `#shot-map-shots` (misspelt section half), `#Shot-Maps-Shots` (case), and `#shot-maps-shots?x=1` all return null silently with no report — the exact silent-dead-anchor class L1553 filed, and `match-anchors.test.ts:126-129` pins that hole in by asserting `#not-a-section-at-all` is silent. **Decision:** re-opens D2's ruled report scope ("warn only when the fragment starts with `<SectionId>-`").
+- [x] [Review][Decision] **The link hint promises a "Ver los datos" control that does not exist on 104/104 matches for two of six links** — `ExpertLayer` composes `hint = ${t(link.titleKey)}${CONTROL_SEPARATOR}${t("viz.viewData")}` and exposes it via `aria-labelledby`. For the cross log and the defensive log there is no such control on any real match. No locale copy changed in this commit, and the two rewritten docblocks now assert the opposite unconditionally (`ExpertLayer.tsx:1004-1010`, `expert-logs.ts` ruling 2). **Decision:** copy change needs a UX/i18n ruling and interacts with the caption inventory gate.
+
+### Review Findings — patch
+
+- [x] [Review][Patch] Three of six registry anchors have no end-to-end assertion, and the only `pass-networks` branch real readers meet is never rendered by any test [app/src/components/MatchDeepLink.test.tsx]
+- [x] [Review][Patch] Six stale docblocks that this commit's own changes made false [app/src/components/ExpertLayer.tsx:81,227; app/src/components/PlayerMatchesSection.tsx:163; app/src/lib/tactical-sections.ts:206; app/src/viz/player-profile-model.ts:574; app/src/lib/i18n.test.ts:1554]
+- [x] [Review][Patch] `Element.prototype.scrollIntoView` globally clobbered with no restore, which is why the suite cannot see the scroll defect [app/src/components/MatchDeepLink.test.tsx:64]
+- [x] [Review][Patch] `resolveMatchFragment` is called during render and can `console.error` and mutate a module-level Set [app/src/components/TacticalLayer.tsx:225]
+- [x] [Review][Patch] `use-anchor-nonce.ts` shipped with no test file, despite D3 citing testability as the reason to extract it [app/src/lib/use-anchor-nonce.ts]
+- [x] [Review][Patch] No gate binds a `PANEL_ANCHORS` entry to a rendered DOM id — a seventh entry would compile, resolve and pass both new pins while rendering no target [app/src/lib/match-anchors.ts:60-73]
+- [x] [Review][Patch] The AC 3 test asserts only that some heading exists; nothing checks that no table opened or no section spuriously expanded [app/src/components/MatchDeepLink.test.tsx:331-343]
+- [x] [Review][Patch] Bare `userEvent.setup()` with the file timeout raised 6× to 30 s instead of the known `{ delay: null }` fix already used at `HeaderSearch.test.tsx:99` [app/src/components/MatchDeepLink.test.tsx:224,283]
+- [x] [Review][Patch] The capture-phase click listener ignores `event.button`, `ctrlKey`/`metaKey`/`shiftKey` and `defaultPrevented`, so a Ctrl-click opens a new tab *and* re-opens a closed disclosure in the current one [app/src/lib/use-anchor-nonce.ts:74-87]
+- [x] [Review][Patch] `anchorNonce(hit, anchorId: string)` takes a bare string, leaving all six `TacticalLayer` call sites unprotected by the type system a one-character typo returns 0 forever [app/src/lib/use-anchor-nonce.ts:96; app/src/components/TacticalLayer.tsx:260-261,286,337,354,371]
+- [x] [Review][Patch] `href: #${MatchFragmentId}` is weaker than the docblock's "STRENGTHENED" claim it still admits every bare `#<section>`, so the type cannot reject an L1886 regression [app/src/lib/expert-logs.ts:85]
+- [x] [Review][Patch] `MatchDeepLink.test.tsx` mounts `LocaleProvider` without pinning `navigator.language`, against a standing ledger rule that names story 3-8 as owner [app/src/components/MatchDeepLink.test.tsx]
+- [x] [Review][Patch] The suite emits a genuine-looking `console.error` on every green run because this file installs no spy, unlike `match-anchors.test.ts` [app/src/components/MatchDeepLink.test.tsx:331-343]
+- [x] [Review][Patch] `reportedFragments` has no reset seam, making the gate once-per-session rather than once-per-page and the unit test order-dependent [app/src/lib/match-anchors.ts:91]
+- [x] [Review][Patch] Two `HASH_PREFIX` constants with divergent stripping semantics `.replace()` removes the first occurrence anywhere, `startsWith`/`slice` only a leading one; D3 said it "moves with the hook" [app/src/lib/use-anchor-nonce.ts:53; app/src/lib/match-anchors.ts:78]
+- [x] [Review][Patch] Dev Agent Record inaccuracies: the ledger append was 109 lines not 81 (`numstat` = `109 0`, the 0-deletion half holds); "1,367 tests / 55 files" appears in the commit message but nowhere in the record, which gives 1,341/54 isolated; Task 12.4 describes one commit but the docs landed separately in `d3c103c`; Task 7.3 is checked as "no change needed" while `ExpertLayer.tsx` was in fact edited [_bmad-output/implementation-artifacts/3-8-match-route-deep-link-plumbing.md:844-847,929-957,969-970]
+
+### Review Findings — deferred
+
+- [x] [Review][Defer] The Tournament Hub still mounts two `useAnchorNonce()` instances, contradicting the D4 rationale that the route needs exactly one listener pair [app/src/components/TournamentHub.tsx:523,686] — deferred, pre-existing (Story 2.19)
+
+### Review Findings — decisions resolved (2026-08-26, Juan)
+
+All five `decision-needed` findings were ruled by the user during the review. Each becomes a
+`patch`. The rulings below are binding on the follow-up work; do not re-open them without
+recording why.
+
+- **R1 — Panel scroll: SCROLL TO THE PANEL AND MOVE FOCUS THERE.** The resolved panel id is threaded
+  into the scroll/focus target, so a panel fragment lands the viewport *and* the reader's focus on the
+  panel rather than on the section heading. This is the story's own user statement ("a shared anchor
+  lands on data") taken literally. It touches `TacticalSection`'s ruled UX-DR18 focus effect: the
+  section-only fragment (`#shot-maps`) MUST keep its shipped behaviour exactly — expand, scroll,
+  focus the heading, open no table. Only the finer `#<section>-<panel>` form changes.
+- **R2 — Stale nonce: CONSUME THE HIT IN `TacticalLayer`.** Once the layer has applied a hit, it stops
+  passing that nonce downward, so a remounted `ViewDataDisclosure` no longer sees a stale positive
+  value and cannot discard the reader's explicit close. The fix stays on the match route;
+  `ViewDataDisclosure`'s contract and `TournamentHub`'s shipped 2.19 behaviour are NOT changed. Must
+  still fix the `lg` breakpoint-crossing path, not only explicit collapse.
+- **R3 — Absent anchor: ID THE SECTION-LEVEL EMPTY STATE.** When `plan.isEmpty`, the section-level
+  `EmptyStatePanel` (`TacticalLayer.tsx:557`) carries that section's panel anchor id, matching what
+  `ShotMapsSection.tsx:445/:464` already does for its absent arms. Satisfies D10.2 uniformly — the
+  anchor lands ON the named absence rather than nowhere. `PassNetworksSection.tsx:288-292` gets the
+  same treatment.
+- **R4 — Dev guard: EXCLUDE KNOWN SUFFIXES ONLY.** D2's report scope stands. `addressesASection` stops
+  denouncing `-heading`, `-content` and `-summary`, the 33 real ids `TacticalSection.tsx:109-111`
+  mints. Detection is NOT widened to case or query shapes — those stay silent, as ruled.
+- **R5 — Link hint: LEAVE THE COPY, FIX THE DOCBLOCKS.** No locale change, so the i18n caption
+  inventory is untouched. The hint is generic and correct for the four links that do open a table, and
+  D10 already rules the two absences acceptable. What is wrong is the documentation: correct
+  `ExpertLayer.tsx:1004-1010` and `expert-logs.ts` ruling 2, which now assert unconditionally that
+  following a link opens a table. Folds into the stale-docblock patch.
+
+
+### Review Findings — applied (2026-08-26)
+
+All 5 `decision-needed` findings were ruled by Juan and became patches; all 21 patches are
+applied. The 1 `defer` is recorded in `deferred-work.md` and deliberately untouched.
+
+**Gates after the fixes:** `tsc --noEmit` 0, `eslint . --max-warnings 0` 0,
+**1,467 / 1,468 tests green across 58 files.** The single failure is
+`static-output.test.ts > exported header search … ships the four AVAILABLE destinations`
+(*"Inicio is available but is not in the exported nav"*) — story **3-10**'s in-flight
+navigation work, in a file dirty under that session. It touches no path this story owns.
+
+**Every new gate driven RED once (A1), each reverting exactly one fix:**
+
+| Gate | Reverted | Observed failure |
+|---|---|---|
+| R1 panel landing | panel landing → section focus | `the viewport went to the PANEL: expected <section id="shot-maps"> to be <section>` — the shipped defect, reproduced |
+| R2 consume the hit | `setActiveHit(null)` in `toggle` | `the reader's close survives the remount: expected [<table>] to have a length of +0 but got 1` |
+| R3 absent anchor | id off the section-level empty state | `the anchor lands ON the absence, not nowhere: expected null not to be null` |
+| R4 guard scope | reserved-suffix carve-out | `expected "error" to not be called at all, but actually been called 33 times` — exactly the 33 ids `TacticalSection` mints |
+| D5 matrix wiring | `openNonce` off the matrix branch | `the matrix table opened: expected 0 to be greater than 0` |
+
+**Test count:** 1,432 → 1,468 (+36). `match-anchors.test.ts` 13 → 17; new
+`use-anchor-nonce.test.tsx` +20; `MatchDeepLink.test.tsx` 7 → 18.
+
+**One test defect found while verifying, worth recording.** The new R2 case passed in file
+order and FAILED in isolation. Cause: `window.location.hash = "#x"` QUEUES a `hashchange`
+that jsdom can deliver *after* the layer mounts, minting a second hit and a second nonce for
+one navigation — so whether a case passed depended on what the previous case left in the URL.
+A cold deep link fires no `hashchange` at all. Every fragment arrival in the file now goes
+through `arriveAt()` (`history.replaceState`), and the cases that want an in-page navigation
+dispatch it explicitly. This latent order-dependence predates the review and would have
+surfaced as an unreproducible CI flake.
+
+### Dev Agent Record — corrections (2026-08-26 code review)
+
+Recorded rather than edited in place, so the original claims stay legible next to what was
+measured. The load-bearing halves all hold; the figures did not.
+
+- **The ledger append was 109 lines, not 81.** Completion Notes and the File List both state
+  `git diff --numstat` reported `81  0`. Re-measured: `git show --numstat d3c103c` reports
+  **`109  0`** for `deferred-work.md`. **D12's actual requirement — 0 deletions — HOLDS.**
+- **"1,367 tests / 55 files green" has no provenance.** The commit message for `deae510`
+  states it; the Change Log states **1,341 / 54** in an isolated worktree, and the record's own
+  arithmetic (1,320 baseline + 21) closes against 1,341, not 1,367. The commit message also
+  calls the run green while the record documents one genuine failure on the shared tree.
+- **Task 12.4 describes a commit that does not exist as described.** It lists one staged slice
+  including `deferred-work.md`, the story file and `sprint-status.yaml`; `deae510` holds only
+  the 15 code files, and the three doc paths landed separately in `d3c103c`. A split, not a
+  loss — the work is whole.
+- **Task 7.3 is checked as a no-change verification, but `ExpertLayer.tsx` was edited** (11
+  insertions / 2 deletions in `deae510`). The change is comment-only and the variance is
+  declared honestly in the Completion Notes; the checkbox asserts the opposite of what happened.

@@ -203,8 +203,9 @@ export function sectionDataState(bundle: MatchBundle, id: SectionId): SectionDat
       return bundle.goalkeeping !== null ? "ready" : "empty";
     default: {
       // Unreachable through the app: TacticalLayer only ever iterates
-      // SECTION_IDS, and sectionIdFromHash filters a URL hash against that
-      // same array. Kept because a silent fall-through would render an absent
+      // SECTION_IDS, and resolveMatchFragment (@/lib/match-anchors, which
+      // replaced sectionIdFromHash in Story 3.8) resolves a URL hash against
+      // that same array. Kept because a silent fall-through would render an absent
       // section as present, and because this module is a public seam that
       // 2.6-2.10 call — a wrong id must name itself, not return "ready".
       const unexpected: never = id;
