@@ -4568,3 +4568,44 @@ next to what turned out to be true.
 - source_spec: `3-5-first-visit-locale-detection.md`
   summary: `app/src/app/static-output.test.ts:171` checks the exported inline bootstrap script for the markers `["wcstats.locale", "prefers-color-scheme", "locale-"]` and does NOT check for `"navigator"` — so an export that shipped WITHOUT first-visit locale detection would pass the export-layer guard silently.
   evidence: Story 3.5 shipped `navigator.language` detection into the checked-in ES5 literal, and the built export carries `window.navigator.language` (verified: 2 occurrences in `out/index.html`). Adding `"navigator"` to that marker list would make a detection-less export fail — it is the ONLY export-layer check that would catch detection being dropped from the shipped script, since every other guard on this behaviour is a unit or jsdom test that reads the source rather than the artifact. NOT TAKEN BY 3.5 on two grounds, both recorded rather than assumed: (1) the file is on story 3-6's owned-paths list, and (2) adding it would have put a ninth path into 3.5's Task 11.1 staging list, which is explicitly closed. The file was CLEAN at 3.5's probe, so this is a one-line change whenever its owner takes it. Note the guard sits behind `describe.skipIf(!anyBuilt)`, so it only bites after a prior `npm run build`. **Owner: Epic 3 story 3-6, or the Epic 3 retrospective.** Raised as 3.5's open question #2 for Juan; deferred, not silently dropped.
+
+## Deferred from: code review of 3-5-first-visit-locale-detection (2026-08-26)
+
+- **English visitors now get `<html lang="en">` over Spanish copy for the whole hydration window.**
+  `output: "export"` (`next.config.ts`) ships every route as pre-rendered Spanish HTML. The pre-paint
+  script corrects `<html lang>` and the locale class before first paint but cannot touch the rendered
+  strings, which swap only after hydration + the mount effect. So an English first-time visitor now
+  sees `lang="en"` over Spanish copy for the bundle-download-and-hydrate window — a WCAG 3.1.1
+  mismatch while it lasts, and the very failure mode `i18n-provider.test.tsx:11-14` names. **Not
+  introduced by 3.5 and not fixable inside it:** the identical transient already existed for anyone
+  with a stored `en` preference, all the way back to Story 2.2's toggle; 3.5 only widens the affected
+  population from "returning users who toggled" to "first-time English visitors". It is inherent to
+  AD-12's single post-hydration swap, so closing it is an architecture decision (server-side locale
+  variants, or an inline copy swap in the pre-paint script — the latter explicitly ruled out by
+  AC 6 / D17 / D20). Note the render test cannot observe it either: RTL's `render()` wraps the mount
+  effect in `act()`, so only the settled state is assertable.
+  **Owner: Epic 3 retrospective, or the D20-b re-open review on 2026-11-24.**
+
+- **`locale-es` / `locale-en` have no consumers anywhere in the product.**
+  Grepping every non-test `.ts`, `.tsx` and `.css`, the only references to these classes are the two
+  places that *write* them — `bootstrap.ts:127-128` and `i18n-provider.tsx:56-57,65-66` — plus
+  `localeClass()` itself. No CSS rule selects them; no component branches on them. They are written
+  by the pre-paint script, re-asserted by the provider on every mount, and this story added a fresh
+  set of assertions treating them as load-bearing (`i18n-provider.test.tsx:156-158,167`). Either a
+  `:root.locale-en` rule was intended and never landed, or this is dead state that four files now
+  maintain. Pre-existing since Story 2.2 — 3.5 only added assertions to it — but the question should
+  be settled rather than inherited again. **Owner: Epic 3 retrospective.**
+
+- **One fact, three pinning idioms, and `SiteSignature`'s per-`it` variant is the fragile one.**
+  Task 7 taught three files the same fact — "state the `navigator.language` you assume" — and each
+  came out a different shape: a file-wide `beforeEach` (`HeaderSearch.test.tsx:196-203`), an inline
+  `beforeEach` (`TournamentHub.test.tsx:55-65`), and a per-`it` helper called five times
+  (`SiteSignature.test.tsx:62-80,103,143,223`), with two incompatible signatures across the four
+  copies (`pinLanguage(tag: string)` vs `pinLanguage(locale: "es" | "en")`). The per-`it` form is the
+  one that can rot: **any new `it` added to `SiteSignature.test.tsx` silently inherits jsdom's
+  ambient `en-US`**, which is the exact dependency Task 7 existed to remove. It fails loudly rather
+  than passing vacuously (the case would assert Spanish against an English render), so this is
+  hygiene, not a bug. Task 7.3 *ruled* the per-locale shape because that file's cases are generated
+  from a `DICTIONARIES` loop, so the fix is a shared helper in test-utils rather than a reshape.
+  **Note: `SiteSignature.test.tsx` is dirty under another session as of this review — do not take
+  this without an A3 probe. Owner: Epic 3 retrospective, or whoever next touches the file.**

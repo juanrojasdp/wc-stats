@@ -29,9 +29,12 @@ export const metadata: Metadata = {
  * no theme class — dark is canonical via :root in globals.css, so no-JS
  * visitors still get dark. The ONE inline pre-paint script (first element in
  * <body>, ahead of any content paint) sets <html lang>, the locale class and
- * the theme class from persisted preferences; suppressHydrationWarning scopes
- * to <html>'s own attributes, which the script legitimately mutates before
- * React hydrates.
+ * the theme class from a persisted preference if there is one, otherwise from
+ * what the browser itself asks for — navigator.language for the locale
+ * (Story 3.5, FR-37), prefers-color-scheme for the theme — otherwise the
+ * canonical es/dark. A detected value is never persisted; only an explicit
+ * toggle writes. suppressHydrationWarning scopes to <html>'s own attributes,
+ * which the script legitimately mutates before React hydrates.
  */
 const htmlClassName = [archivo.variable, inter.variable].join(" ");
 

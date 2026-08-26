@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { localeClass } from "@/lib/bootstrap";
+import { type Locale } from "@/lib/i18n";
 import { LocaleProvider, useLocale } from "@/lib/i18n-provider";
 import { STORAGE_KEYS } from "@/lib/storage";
 import { en } from "@/locales/en";
@@ -71,9 +72,9 @@ function LocaleProbe() {
  * `render()` wraps in `act`, so the mount effect has already flushed by the
  * time this returns — these assertions need no `waitFor`.
  */
-function renderProbe() {
+function renderProbe(initialLocale?: Locale) {
   const { container } = render(
-    <LocaleProvider>
+    <LocaleProvider initialLocale={initialLocale}>
       <LocaleProbe />
     </LocaleProvider>
   );
@@ -184,9 +185,16 @@ describe("LocaleProvider — a stored choice beats a detected guess (AC 1)", () 
 });
 
 describe("LocaleProvider — a guess is not a choice (AC 4)", () => {
+  /*
+   * Bare `en` is here because Task 6.3's table has five detection rows and
+   * this list had four (code review 2026-08-26): `en` was asserted for locale
+   * in the AC-1 block above but never for the two things AC 4 is actually
+   * about — that nothing is persisted and nothing is announced.
+   */
   const DETECTION_CASES = [
     ["en-US", "en"],
     ["en-GB", "en"],
+    ["en", "en"],
     ["fr-FR", "es"],
     ["es-CO", "es"],
   ] as const;
@@ -236,5 +244,107 @@ describe("LocaleProvider — a guess is not a choice (AC 4)", () => {
     // Announced in the TARGET language (WCAG 4.1.3).
     expect(probe.liveRegion()?.textContent).toBe(en.a11y.localeAnnouncement);
     expect(probe.liveRegion()?.textContent).not.toBe(es.a11y.localeAnnouncement);
+  });
+});
+
+/*
+ * ═══════ THE THREE SEAMS THE CODE REVIEW OF 2026-08-26 FOUND UNPINNED ═══════
+ *
+ * All three are provider-side. The ES5 literal's equivalents were already
+ * covered in bootstrap.test.ts, and that asymmetry was the finding: the two
+ * implementations read the same two external sources, and only one of them
+ * had its failure modes asserted.
+ */
+describe("LocaleProvider — the external reads, when they misbehave", () => {
+  /*
+   * The provider does NOT read storage the way the script does. The script
+   * calls `localStorage.getItem` raw inside its own try/catch; the provider
+   * goes through `readStorage`, whose catch returns the in-memory fallback
+   * (storage.ts). So "storage throws" is a genuinely different input on this
+   * side, and detection must still happen underneath it.
+   */
+  it("still detects when localStorage.getItem throws", () => {
+    vi.spyOn(window.localStorage, "getItem").mockImplementation(() => {
+      throw new Error("storage disabled");
+    });
+    pinLanguage("en-GB");
+
+    const probe = renderProbe();
+
+    expect(probe.locale()).toBe("en");
+    expect(document.documentElement.lang).toBe("en");
+  });
+
+  /*
+   * Before the review the provider read `window.navigator.language` bare while
+   * the literal try/catch'd the identical read — and `readStorage` on the very
+   * same line was hardened too. `LocaleProvider` wraps the whole tree in
+   * layout.tsx, so an uncaught throw here is a blank site, in the one world
+   * the pre-paint script survives.
+   */
+  it("falls to the canonical when navigator.language throws, rather than taking down the tree", () => {
+    vi.spyOn(window.navigator, "language", "get").mockImplementation(() => {
+      throw new Error("navigator unavailable");
+    });
+
+    const probe = renderProbe();
+
+    expect(probe.locale()).toBe("es");
+    expect(document.documentElement.lang).toBe("es");
+    expect(storedLocale()).toBeNull();
+  });
+
+  it("falls to the canonical when navigator.language is a truthy non-string", () => {
+    vi.spyOn(window.navigator, "language", "get").mockReturnValue(
+      ["en-US"] as unknown as string
+    );
+
+    const probe = renderProbe();
+
+    expect(probe.locale()).toBe("es");
+  });
+});
+
+/*
+ * `initialLocale` is a REAL third tier as of the 2026-08-26 review. It was
+ * previously inert — the effect overwrote it unconditionally and resolveLocale
+ * hardcoded `es` — while the effect's own comment claimed this precedence.
+ * These cases are what stop it going inert again.
+ */
+describe("LocaleProvider — initialLocale is the fallback, not a suggestion", () => {
+  it("honours initialLocale when nothing is stored and nothing English is detected", () => {
+    pinLanguage("fr-FR");
+
+    const probe = renderProbe("en");
+
+    expect(probe.locale()).toBe("en");
+    expect(document.documentElement.lang).toBe("en");
+    // Still a guess, not a choice.
+    expect(storedLocale()).toBeNull();
+  });
+
+  it("lets a stored choice outrank initialLocale", () => {
+    window.localStorage.setItem(STORAGE_KEYS.locale, "es");
+    pinLanguage("fr-FR");
+
+    const probe = renderProbe("en");
+
+    expect(probe.locale()).toBe("es");
+  });
+
+  it("lets a detected English tag outrank a Spanish initialLocale", () => {
+    pinLanguage("en-US");
+
+    const probe = renderProbe("es");
+
+    expect(probe.locale()).toBe("en");
+  });
+
+  it("falls to the canonical es when no initialLocale is given", () => {
+    pinLanguage("fr-FR");
+
+    const probe = renderProbe();
+
+    expect(probe.locale()).toBe("es");
   });
 });

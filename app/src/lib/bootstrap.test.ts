@@ -24,9 +24,18 @@ interface BootstrapWorld {
   initialClasses?: string[];
   /**
    * The tag `window.navigator.language` reports. Leaving it `undefined` omits
-   * `navigator` from the window stub ENTIRELY — the third world, and the only
-   * one that would crash if the literal read a bare `navigator` instead of
-   * `window.navigator` (it would reach Node's real global instead).
+   * `navigator` from the window stub ENTIRELY — the third world.
+   *
+   * It does NOT, however, catch a bare-`navigator` read (corrected 2026-08-26;
+   * the note here used to claim it was "the only one that would crash", then
+   * contradict itself in its own parenthetical). Inside
+   * `new Function("window", "document", …)` the scope chain falls through to
+   * the global, and Node 24 exposes a real `navigator` carrying the host
+   * machine's locale — so a bare read returns e.g. `es-CO` and resolves `es`,
+   * which is exactly what this world expects. It stays green under the
+   * violation. What catches a bare read is the drift matrix's `languages`
+   * axis spanning both English and non-English tags; see the note above
+   * `bootstrapScript` in bootstrap.ts.
    */
   language?: string;
   /** `window.navigator` throws on access — proves `language()`'s catch. */
@@ -131,6 +140,40 @@ describe("resolveLocale (persisted → navigator.language primary subtag → es)
     expect(resolveLocale(null, "")).toBe("es");
     expect(resolveLocale(null, "garbage")).toBe("es");
     expect(resolveLocale(null, "-")).toBe("es");
+    /*
+     * `en_US` — the underscore form some Android WebView and Electron builds
+     * emit — is Spanish, BY RULING (D4: split on `-`, nothing else). Pinned
+     * here rather than left unstated (code review 2026-08-26) so the next
+     * reader sees a decision instead of an oversight: without this line the
+     * behaviour is indistinguishable from nobody having considered it. If the
+     * ruling is ever revisited, this is the assertion to change.
+     */
+    expect(resolveLocale(null, "en_US"), "underscore form is es by D4").toBe("es");
+  });
+
+  /*
+   * A truthy NON-STRING reaching the pure function. It cannot arrive through
+   * the type system — this is the untyped ES5 boundary's shape, asserted on
+   * the TS copy so both carry the same guard (D3, amended 2026-08-26).
+   */
+  it("treats a truthy non-string preference as no preference, rather than throwing", () => {
+    expect(resolveLocale(null, ["en-US"] as unknown as string)).toBe("es");
+    expect(resolveLocale(null, 42 as unknown as string)).toBe("es");
+    expect(resolveLocale("en", {} as unknown as string)).toBe("en");
+  });
+
+  /*
+   * The third tier. `fallback` defaults to DEFAULT_LOCALE, and the provider
+   * passes its `initialLocale` so a caller that names a locale is honoured
+   * when nothing is stored and nothing English is detected.
+   */
+  it("returns the caller's fallback when nothing is stored and nothing is detected", () => {
+    expect(resolveLocale(null, "fr-FR", "en")).toBe("en");
+    expect(resolveLocale(null, null, "en")).toBe("en");
+    expect(resolveLocale(null, "fr-FR")).toBe("es");
+    // A stored choice and a detected tag both still outrank it.
+    expect(resolveLocale("es", null, "en")).toBe("es");
+    expect(resolveLocale(null, "en-GB", "es")).toBe("en");
   });
 
   /*
@@ -217,15 +260,60 @@ describe("inline bootstrap script", () => {
     expect(classes.has(localeClass("en"))).toBe(true);
   });
 
-  it("navigator itself throwing still yields the es/dark canonical", () => {
+  /*
+   * THE THEME IS THE WITNESS, and it is the whole point of this case (code
+   * review 2026-08-26). This test used to set storageThrows AND
+   * matchMediaThrows too and assert es/dark — the canonical, which is equally
+   * what you get if the catch never runs, if `language()` returns garbage, or
+   * if `resolveLocale` ignores its second argument entirely. It could not
+   * distinguish "the catch works" from "everything collapsed to the default".
+   * Here storage and matchMedia both WORK and prefersDark is false, so `light`
+   * on <html> proves the script ran to completion — i.e. survived the throw —
+   * rather than never having applied anything.
+   */
+  it("navigator throwing costs the locale but not the rest of the script", () => {
     const { lang, classes } = runBootstrapScript({
-      storageThrows: true,
-      matchMediaThrows: true,
       navigatorThrows: true,
+      prefersDark: false,
     });
     expect(lang).toBe("es");
-    expect(classes.has("dark")).toBe(true);
     expect(classes.has(localeClass("es"))).toBe(true);
+    expect(classes.has("light"), "the theme still resolved, so the script survived").toBe(true);
+    expect(classes.has("dark")).toBe(false);
+  });
+
+  /*
+   * A truthy NON-STRING tag. Anti-fingerprinting extensions and shimmed
+   * navigators return arrays and proxies here; `language()`'s try/catch wraps
+   * only the READ, so before the code-review amendment to D3 this threw out of
+   * `.toLowerCase()` inside `resolveLocale` — which runs AFTER `language()`
+   * returns and BEFORE the theme is resolved, so the escape cost the visitor
+   * `<html lang>`, the locale class AND their theme. Same witness as above.
+   */
+  it("a non-string navigator.language costs neither the script nor the theme", () => {
+    const { lang, classes } = runBootstrapScript({
+      language: ["en-US"] as unknown as string,
+      prefersDark: false,
+    });
+    expect(lang).toBe("es");
+    expect(classes.has(localeClass("es"))).toBe(true);
+    expect(classes.has("light"), "the theme still resolved, so the script survived").toBe(true);
+  });
+
+  /*
+   * The navigator-throws world crossed against the pure function, which the
+   * matrix axis cannot express (its values are tags, not access behaviours).
+   * Without this the literal's `language()` catch is never cross-checked.
+   */
+  it("agrees with the pure function when navigator throws", () => {
+    for (const stored of [undefined, "es", "en", "garbage"]) {
+      const world = `stored=${stored}`;
+      const { lang } = runBootstrapScript({
+        stored: stored === undefined ? {} : { [STORAGE_KEYS.locale]: stored },
+        navigatorThrows: true,
+      });
+      expect(lang, world).toBe(resolveLocale(stored ?? null, null));
+    }
   });
 
   it("preserves the next/font variable classes on <html>", () => {
@@ -246,7 +334,18 @@ describe("inline bootstrap script", () => {
   it("agrees with the exported pure functions across the input matrix", () => {
     const storedThemes = [undefined, "dark", "light", "garbage"];
     const storedLocales = [undefined, "es", "en", "garbage"];
-    const languages = [undefined, "en-US", "es-CO", "fr-FR", ""];
+    /*
+     * `EN-US` and `enm` are load-bearing, not padding (code review
+     * 2026-08-26). The original axis was `[undefined, "en-US", "es-CO",
+     * "fr-FR", ""]`, in which EVERY uppercase character sat in a region
+     * subtag and no value distinguished prefix-matching from exact-matching.
+     * A literal that alone dropped `.toLowerCase()`, or alone switched to
+     * `indexOf("en") === 0`, produced identical output on all five values and
+     * the matrix stayed green — while the pure-function tests that DO pin
+     * those two behaviours never look at the literal. `EN-US` catches a lost
+     * `toLowerCase` (primary subtag `EN`); `enm` catches a prefix match.
+     */
+    const languages = [undefined, "en-US", "EN-US", "es-CO", "fr-FR", "enm", ""];
     const preferences: Array<{ prefersDark: boolean; matchMediaThrows: boolean }> = [
       { prefersDark: true, matchMediaThrows: false },
       { prefersDark: false, matchMediaThrows: false },
@@ -278,6 +377,6 @@ describe("inline bootstrap script", () => {
     }
     // The loop must actually have run the matrix it claims: a mis-typed axis
     // that silently collapsed to one value would otherwise pass.
-    expect(combinations).toBe(4 * 4 * 5 * 3);
+    expect(combinations).toBe(4 * 4 * 7 * 3);
   });
 });

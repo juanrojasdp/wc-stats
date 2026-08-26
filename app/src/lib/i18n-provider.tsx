@@ -31,10 +31,14 @@ export function LocaleProvider({
 
   useEffect(() => {
     // Precedence: a stored CHOICE, then the browser's own preference read
-    // from navigator.language, then initialLocale. This is the AD-12 single
-    // post-hydration swap: state cannot be initialized from storage during
-    // render (SSG hydration mismatch), so the one setState-in-effect is
-    // deliberate.
+    // from navigator.language, then `initialLocale`. All three tiers are real
+    // — `initialLocale` is passed as resolveLocale's `fallback`, so a caller
+    // that names a locale gets it when nothing is stored and nothing English
+    // is detected. (Code review 2026-08-26: this comment previously claimed
+    // that precedence while the code hardcoded `es` and dropped the prop on
+    // the floor.) This is the AD-12 single post-hydration swap: state cannot
+    // be initialized from storage during render (SSG hydration mismatch), so
+    // the one setState-in-effect is deliberate.
     //
     // Neither branch is a user action, so neither announces — and a DETECTED
     // locale is additionally never persisted (FR-37, Story 3.5). Persisting a
@@ -44,8 +48,20 @@ export function LocaleProvider({
     // There is deliberately NO early return: the effect must reach the
     // detection call for a first-time visitor, which is precisely the case an
     // empty `localStorage` used to skip.
+    //
+    // The navigator read is try/catch'd for the same reason the ES5 literal's
+    // `language()` is, and for the same reason `readStorage` is: an absent or
+    // throwing `navigator` must read as "no preference", not take down the
+    // mount effect. This provider wraps the whole tree (layout.tsx), so an
+    // uncaught throw here is a blank site.
     const stored = readStorage(STORAGE_KEYS.locale);
-    const next = resolveLocale(stored, window.navigator.language);
+    let preferred: string | null = null;
+    try {
+      preferred = window.navigator.language;
+    } catch {
+      preferred = null;
+    }
+    const next = resolveLocale(stored, preferred, initialLocale);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocaleState(next);
     // Normally a no-op re-assertion of the pre-paint script's verdict; it
@@ -55,7 +71,12 @@ export function LocaleProvider({
     root.lang = next;
     root.classList.remove(localeClass("es"), localeClass("en"));
     root.classList.add(localeClass(next));
-  }, []);
+    // `initialLocale` is now read inside the effect, so it belongs here. In
+    // practice it is constant for the life of a mount (layout.tsx passes
+    // none); if a caller ever does change it, re-resolving is the honest
+    // response — and a reader who has already TOGGLED is unaffected, because
+    // the re-run reads their choice back out of storage first.
+  }, [initialLocale]);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);

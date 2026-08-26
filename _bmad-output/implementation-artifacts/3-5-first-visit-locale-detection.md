@@ -4,7 +4,17 @@ baseline_commit: 9f76f40
 
 # Story 3.5: First-Visit Locale Detection
 
-Status: review
+Status: in-progress
+
+> Was `review`. The code review of 2026-08-26 applied 11 patches, three of them to PRODUCTION files
+> (`bootstrap.ts`, `i18n-provider.tsx`, `layout.tsx`), and the full chain has NOT been re-run since.
+> Story 3.10 landed `HeaderSearch.tsx`, `SiteHeader.tsx`, both dictionaries and new
+> `SiteNav`/`nav-destinations` files into the shared tree mid-review, and `HeaderSearch.test.tsx` is
+> failing 8 tests on ITS changes — reproduced with all five of this review's files reverted to HEAD,
+> so the failure is not this review's. The four suites this review owns (`bootstrap.test.ts`,
+> `i18n-provider.test.tsx`, `TournamentHub.test.tsx`, `SiteSignature.test.tsx`) are **60 passed, 0
+> failed**; `tsc --noEmit` and `eslint --max-warnings 0` are clean on every touched file.
+> **Flip to `done` once 3.10 settles and `npm test` + `npm run build` run green end to end.**
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -402,7 +412,7 @@ markup are correct as they are), `theme-provider.tsx` (theme already resolves th
       |---|---|
       | a browser reporting a tag | `navigator: { language: "en-US" }` |
       | a browser reporting nothing usable | `navigator: { language: "" }` |
-      | **no navigator at all** | omit the key — proves `language()`'s try/catch, and is the only case that would crash if D1 were violated |
+      | **no navigator at all** | omit the key — proves `language()`'s try/catch. **CORRECTED at code review 2026-08-26: this world does NOT catch a D1 violation.** A bare `navigator` read reaches Node's real global and returns the host locale, which on a Spanish machine resolves `es` — exactly what this world expects, so it stays green under the violation. What catches D1 is the matrix's `languages` axis spanning both English and non-English tags: the host's one fixed locale must disagree with at least one row whatever it is. |
 - [x] 4.2 Rewrite the `describe("resolveLocale (persisted → es)")` block (`:76-87`) to cover the
       function directly, two arguments everywhere:
       - `en`, `en-GB`, `en-US`, `EN-US`, `en-us` → `"en"`
@@ -549,7 +559,9 @@ restore, re-run green. A gate that has never been red is not a gate.
 - [x] 10.3 `npm test` — record files / tests / skipped against the Task 1.5 baseline. **0 newly
       skipped.** State the delta and where it came from.
 - [x] 10.4 `npm run build` — green end to end (already run at 9.1; re-run if anything changed since).
-- [x] 10.5 **Optional, and only if Task 1's probe found it clean:** `src/app/static-output.test.ts:171`
+- [x] 10.5 **NOT TAKEN — skipped and filed, which is what this task sanctions** (checkbox clarified
+      at code review 2026-08-26: it read as "done" while the completion notes said the opposite).
+      **Optional, and only if Task 1's probe found it clean:** `src/app/static-output.test.ts:171`
       asserts the exported inline script contains `["wcstats.locale", "prefers-color-scheme",
       "locale-"]`. Adding `"navigator"` would make a detection-less export fail. **That file is on
       story 3-6's owned-paths list** and the guard sits behind `describe.skipIf(!anyBuilt)`. If you
@@ -592,6 +604,76 @@ restore, re-run green. A gate that has never been red is not a gate.
       `wcstats.locale` is deliberately never written by detection; and that **any new jsdom render
       test that mounts `LocaleProvider` must now pin `navigator.language`** — story 3-8's planned
       `MatchDeepLink.test.tsx` is the next one that will need it.
+
+### Review Findings
+
+Code review 2026-08-26 (bmad-code-review, three layers: Blind Hunter, Edge Case Hunter,
+Acceptance Auditor). **All six ACs and all twelve ruled decisions were independently confirmed
+honoured** — the shipped behaviour is correct. Every finding below is about a guard, a test, or a
+comment, not about what a reader sees today.
+
+- [x] [Review][Decision] RESOLVED — **The pre-paint script's navigator guard does not cover normalization, and a throw takes the theme down with it** — `language()` (`bootstrap.ts:110-116`) try/catches only the *read*; `resolveLocale` runs outside it and calls `preferred.toLowerCase()`. A truthy non-string `navigator.language` (anti-fingerprinting extensions and shimmed navigators do return arrays/proxies) throws `TypeError` at `bootstrap.ts:123`, and the IIFE has no top-level catch — so `:124-128` never run and the visitor loses `root.lang`, the locale class **and the theme class**, because locale is resolved before theme. A persisted `light` reader gets the dark `:root` canonical: a full-brightness FOUC caused by an unrelated subsystem. **This is a regression introduced by this story** — before it, the locale path was only `===` comparisons on a `read()`-guarded value and could not throw. Needs a ruling because the two candidate fixes trade against D3/D4: (a) add `typeof preferred === "string" &&` to the truthy guard in **both** implementations — minimal, keeps them character-identical, but edits an explicitly ruled algorithm; (b) wrap the IIFE body in try/catch — leaves D3/D4 untouched, but swallows every other script error too.
+- [x] [Review][Decision] RESOLVED — **`initialLocale` is now inert, and the effect's comment states a precedence the code does not implement** — `i18n-provider.tsx:33-34` reads "a stored CHOICE, then the browser's own preference read from navigator.language, then initialLocale", but `resolveLocale`'s last resort is a hardcoded `return "es"` (`bootstrap.ts:61`). `initialLocale` only seeds the pre-effect `useState` (`:29`) and is then overwritten unconditionally, so `<LocaleProvider initialLocale="en">` on an `fr-FR` browser with empty storage renders **es**. The author hit this and recorded it in a different file rather than here — `HeaderSearch.test.tsx:573` says "`initialLocale` alone is no longer enough … the file-wide `es-CO` pin would put Spanish back" — and the same false three-tier precedence is now repeated in story 3-8's `MatchDeepLink.test.tsx:122`. Note the wording came from **Task 5.2's own instruction**, so the spec is what is wrong, not the dev's execution. Three options, and D6 forbids the first-looking one: (a) honour the prop by giving `resolveLocale` a canonical-fallback parameter; (b) delete the prop and fix the two test call sites; (c) keep it as a render-seed only and correct both comments to say so. The comment must change under all three, so its fate follows this ruling.
+- [x] [Review][Patch] The drift matrix is blind to the exact two mutations its sibling tests exist to pin [app/src/lib/bootstrap.test.ts:249]
+- [x] [Review][Patch] The provider reads `window.navigator.language` unguarded while every comparable read beside it is hardened [app/src/lib/i18n-provider.tsx:48]
+- [x] [Review][Patch] `navigatorThrows` is proved in the one world where three different failures are indistinguishable [app/src/lib/bootstrap.test.ts:219-231]
+- [x] [Review][Patch] The D1 rationale in the record, in Task 4.1 and in the test comment names a case that cannot catch a D1 violation [app/src/lib/bootstrap.test.ts:26-29]
+- [x] [Review][Patch] Bare `en` is the one row of Task 6.3's table with no AC-4 assertions [app/src/lib/i18n-provider.test.tsx:106]
+- [x] [Review][Patch] The provider's storage-throws path is unpinned, and it reads a different source than the script's [app/src/lib/i18n-provider.test.tsx]
+- [x] [Review][Patch] `layout.tsx`'s description of the script went stale in the change that updated `bootstrap.ts`'s [app/src/app/layout.tsx:29-32]
+- [x] [Review][Patch] `en_US` resolving to Spanish is ruled but unpinned, so it reads as an oversight [app/src/lib/bootstrap.test.ts:252]
+- [x] [Review][Patch] Task 10.5 is marked `[x]` while the completion notes state it was not taken [3-5-first-visit-locale-detection.md:552]
+- [x] [Review][Defer] English visitors now get `<html lang="en">` over Spanish copy for the whole hydration window [app/src/lib/i18n-provider.tsx:32-58] — deferred, pre-existing
+- [x] [Review][Defer] `locale-es` / `locale-en` have no consumers anywhere in the product [app/src/lib/bootstrap.ts:64-69] — deferred, pre-existing
+- [x] [Review][Defer] One fact, three pinning idioms, and `SiteSignature`'s per-`it` variant is the fragile one [app/src/components/SiteSignature.test.tsx:62-80] — deferred, pre-existing
+
+**Review outcome — applied 2026-08-26.** Both decisions were ruled by Juan and all 11 patches
+applied in the same pass. Two of them amend ruled decisions and are recorded here so the amendments
+are not mistaken for drift:
+
+- **D3 is AMENDED.** The guard is now `typeof preferred === "string" && preferred`, in **both**
+  implementations. D3's truthy fold of `null` / `undefined` / `""` is unchanged — it is narrowed, not
+  replaced — and because both copies carry the identical guard, D4's "same algorithm, same shape"
+  still holds. The reason is a defect this story introduced: `language()` try/catches only the READ,
+  so a truthy non-string tag threw out of `.toLowerCase()` inside `resolveLocale`, which runs after
+  `language()` returns and **before the theme is resolved** — so the escape cost the visitor
+  `<html lang>`, the locale class and their persisted theme. Before this story the locale path was
+  only `===` comparisons and could not throw.
+- **D2 is INTACT; `resolveLocale` gains a defaulted third parameter.** `resolveLocale(stored,
+  preferred, fallback = DEFAULT_LOCALE)`. `preferred` stays REQUIRED, so D2's typecheck gate is
+  untouched. The provider passes its `initialLocale` as `fallback`, which makes the effect's
+  three-tier precedence comment TRUE — it was false before: the prop only seeded the pre-effect
+  render and was then overwritten, so `<LocaleProvider initialLocale="en">` on an `fr-FR` browser
+  rendered `es`. Task 5.2's own wording is what instructed that false comment. The ES5 literal has no
+  `initialLocale` to pass and keeps its hardcoded `es`; the drift matrix calls the two-argument form,
+  whose default resolves to the same `es`, so the cross-check still holds exactly — and it gains a
+  catch, because a future move of `DEFAULT_LOCALE` to `en` would now turn the matrix red against the
+  literal.
+
+**The three A1 REDs this review owed, driven and restored:**
+
+| # | mutation | result |
+|---|---|---|
+| R-A | drop `.toLowerCase()` from the **ES5 literal only** | matrix RED — `theme=undefined locale=undefined language=EN-US: expected 'es' to be 'en'` |
+| R-B | switch the **ES5 literal only** to `indexOf("en") === 0` | matrix RED — `theme=undefined locale=undefined language=enm: expected 'en' to be 'es'` |
+| R-C | remove the provider's new `navigator` try/catch | `i18n-provider.test.tsx` RED on *"falls to the canonical when navigator.language throws"* |
+
+R-A and R-B each name **exactly one of the two axis entries this review added** (`EN-US`, `enm`) and
+nothing else — which is the proof that the pre-review axis was blind to both. Every uppercase
+character in the old axis sat in a *region* subtag, and no value distinguished prefix-matching from
+exact-matching, so a one-sided literal mutation produced identical output on all five values while
+the pure-function tests that DO pin those behaviours never look at the literal.
+
+**Numbers.** `bootstrap.test.ts` 17 -> 21, `i18n-provider.test.tsx` 19 -> 28, matrix 240 -> 336
+combinations. `tsc --noEmit` clean; `eslint --max-warnings 0` clean on all five touched files.
+
+**NOT verified, and why:** `npm test` full-suite and `npm run build` were NOT re-run. Story 3.10
+landed `HeaderSearch.tsx`, `SiteHeader.tsx`, both dictionaries and new `SiteNav`/`nav-destinations`
+files into the shared tree during this review, and `HeaderSearch.test.tsx` currently fails 8 tests.
+**That failure is NOT this review's:** it was reproduced with all five of this review's files
+reverted to HEAD, and it reproduces identically. `bootstrap.test.ts`, `i18n-provider.test.tsx`,
+`TournamentHub.test.tsx` and `SiteSignature.test.tsx` were re-run together and are **60 passed, 0
+failed**. A full-chain run should be repeated once 3.10 settles.
 
 ---
 
@@ -822,8 +904,17 @@ English before first paint and again after hydration; everyone else still gets t
   with the count asserted so a mis-typed axis that collapsed to one value cannot pass silently.
   The stub expresses three worlds — a tag, an empty tag, and **no `navigator` key at all** —
   plus a fourth where `window.navigator` throws on access. D1 upheld: the literal reads
-  `window.navigator`, never bare `navigator`, and the no-navigator world is the case that would
-  have exposed a violation.
+  `window.navigator`, never bare `navigator`. ~~and the no-navigator world is the case that would
+  have exposed a violation.~~ **CORRECTED at code review 2026-08-26 — that named the wrong bar.**
+  The no-navigator world stays GREEN under a D1 violation: a bare read falls through the
+  `new Function("window", "document", …)` scope chain to Node 24's real global, which reports this
+  machine's `es-CO` and resolves `es` — precisely what that world expects. The `navigatorThrows`
+  world is equally blind, because its throwing getter sits on `windowStub`, which a bare read never
+  touches. What actually catches D1 is the matrix's `languages` axis spanning BOTH English and
+  non-English tags: whatever single locale the host reports, it must disagree with at least one of
+  those rows, so a bare read goes red on every machine. The gate was always real; only its
+  explanation was wrong, and the risk of leaving it wrong is a later session pruning the "wrong"
+  case and silently removing the guard.
 - **AC 3 — the provider falls through.** Early return deleted; `resolveLocale(stored,
   window.navigator.language)`. Proved by the new jsdom render test from both sides: the strings
   AND `<html lang>` + the locale class, so "Spanish strings under `lang="en"`" cannot pass. D6
