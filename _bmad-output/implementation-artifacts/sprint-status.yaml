@@ -3391,7 +3391,50 @@ development_status:
   # that normally flips this field. Recording the true state.
   epic-3: in-progress
   3-1-build-gate-lint-gate-correction: done
-  3-2-metadatabase-canonical-urls: backlog
+  # Context created 2026-08-26 against baseline 8750d85, and sized against the 3.1 CODE
+  # REVIEW (39889bf), not 3.1's first cut: the self-origin allowance is now position-scoped
+  # to "<link href>" and three linkHref false negatives are closed. A3 probe at creation:
+  # all FIVE owned paths clean -- layout.tsx, page.tsx, matches/[slug]/page.tsx,
+  # players/[slug]/page.tsx, teams/[slug]/page.tsx.
+  # ONE COLLISION PLANNED AROUND RATHER THAN ABORTED ON: the "exactly one canonical per
+  # route" AC points at app/src/app/static-output.test.ts, which story 3-10 holds. A3 aborts
+  # only on a file this story must MODIFY, and an assertion can live in a file of its own --
+  # so the guard is a NEW file, app/src/app/canonical-output.test.ts.
+  # TEN THINGS RULED AT CREATION RATHER THAN LEFT TO DEV TIME. The load-bearing three:
+  #   (1) THE CANONICAL IS AUTHORED ONCE, ON THE ROOT LAYOUT, as alternates:{canonical:"./"}.
+  #       Executed against the installed next@16.2.11 rather than inferred: "./" resolves
+  #       per-route against the LEAF pathname (one pathname is threaded through every
+  #       mergeMetadata call), and trailingSlash appends the slash. Eight route classes
+  #       measured, all absolute + same-origin + trailing-slashed. This is what reaches
+  #       /about, /glossary and /compare, all three of which carry STANDING DOCBLOCK RULINGS
+  #       refusing `export const metadata` -- a canonical URL mints no i18n keys, so the
+  #       layout route satisfies the AC without touching those rulings. It also picks up
+  #       3.9's four UX-DR24 routes automatically, same reasoning 3-4 used for its sitemap.
+  #   (2) og:url MUST be authored in ALL FOUR generateMetadata sites ANYWAY. Metadata merges
+  #       per top-level key: `alternates` is absent from the four so they INHERIT it, but
+  #       `openGraph` is present so they REPLACE it wholesale, url included. The asymmetry is
+  #       the single easiest way to implement this story wrong, and 3.3 rewrites the same
+  #       four openGraph objects next.
+  #   (3) THE GUARD ASSERTS OVER THE WHOLE EXPORT AND PINS BY NO ENTITY ID AT ALL -- 1,407
+  #       .html / 38.2 MB / 3.3 s, measured, so sampling buys nothing. Each canonical is
+  #       checked against ITS OWN relative path, which is A2 in its strongest form and is the
+  #       only case that catches a right-shaped canonical copied onto the wrong route.
+  # RULED EXCEPTION, recorded not hidden: out/404.html, out/404/index.html and
+  # out/_not-found/index.html are byte-identical and all resolve to /_not-found/, a
+  # non-indexable URL. ACCEPTED -- Next already emits robots noindex there (verified on the
+  # shipped export). Not fixed via not-found.tsx; the guard pins the exception to exactly
+  # those three paths so a fourth cannot appear silently.
+  # AC5 IS A FALSIFICATION, NOT A REPORT. 39889bf exists because three linkHref false
+  # negatives shipped with 23 tests green, so "the origin gate passed" is a claim about the
+  # gate until the gate is shown able to FAIL on that same export. Probed at creation: the
+  # post-review gate returns exit 0 / 0 external subresources / no self-origin on the
+  # MENTIONED line over a canonical fixture, and exit 0 over the real 1,406-route export
+  # (12,684 text assets). The dev re-runs both and then breaks it on purpose.
+  # BASELINES ARE MEASURED, NOT INHERITED: 1,406 index.html (1,404 indexable + 404/ +
+  # _not-found/) and `vitest list` at 1,468 tests / 58 files -- the latter INCLUDES 3-10's
+  # untracked test files, so it is not a clean-HEAD number and Task 1.5 re-measures.
+  # LEDGER: no deferred-work entry names 3-2 as owner; nothing to close.
+  3-2-metadatabase-canonical-urls: ready-for-dev
   3-3-og-image-twitter-card: backlog
   # Context created 2026-08-26 against baseline 8f1c4fc. Owns THREE NEW FILES ONLY --
   # app/src/app/sitemap.ts, app/src/app/robots.ts, app/src/app/sitemap.test.ts -- the
