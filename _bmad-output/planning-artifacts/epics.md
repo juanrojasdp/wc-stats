@@ -1,5 +1,6 @@
 ---
 stepsCompleted: ['step-01-validate-prerequisites', 'step-02-design-epics', 'step-03-create-stories', 'step-04-final-validation']
+epic3StepsCompleted: ['step-01-validate-prerequisites', 'step-02-design-epics', 'step-03-create-stories', 'step-04-final-validation']
 inputDocuments:
   - _bmad-output/planning-artifacts/prds/prd-wc-stats-2026-07-21/prd.md
   - _bmad-output/planning-artifacts/prds/prd-wc-stats-2026-07-21/addendum.md
@@ -7,6 +8,11 @@ inputDocuments:
   - _bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/DESIGN.md
   - _bmad-output/planning-artifacts/ux-designs/ux-wc-stats-2026-07-21/EXPERIENCE.md
   - project-brief-wc2026-analytics.md
+  # Added 2026-08-26 for the Epic 3 pass:
+  - _bmad-output/planning-artifacts/sprint-change-proposal-2026-08-26.md
+  - _bmad-output/implementation-artifacts/epic-2-retro-2026-08-26.md
+  - _bmad-output/implementation-artifacts/deferred-work.md
+  - _bmad-output/implementation-artifacts/spec-sign-the-project.md
 ---
 
 # wc-stats - Epic Breakdown
@@ -62,6 +68,14 @@ FR-32: Tactical-terminology policy — every tactical term carries an explicit p
 FR-33: Full static export — every match/player/team route pre-rendered; no server functions, API routes, or runtime env dependencies; deployable on Netlify free tier as-is.
 FR-34: Client-side data loading within budget — each route loads only its needed artifacts; all filtering/sorting/comparison client-side within §5 performance budgets.
 
+**Epic 3 — Post-Launch Reach: Discoverability, Landing & Navigation** *(added 2026-08-26; scope named by Juan, SEO half shaped by the D20 ruling in `sprint-change-proposal-2026-08-26.md`)*
+
+FR-36: Discoverability metadata — every route emits an absolute canonical URL from a single configured `metadataBase`, a same-origin `og:image` card and a `summary_large_image` Twitter card; `sitemap.xml` and `robots.txt` are generated at build and the sitemap bijects with the route manifest (`data/index/tournament.json` `entities`), carrying the `trailingSlash: true` form the host actually serves. Metadata is emitted once per route in the canonical locale (D17, upheld by D20) — this FR does **not** introduce per-locale URLs.
+FR-37: First-visit locale detection — a visitor with no stored preference is served the locale matching `navigator.language`'s primary subtag (`en-GB`/`en-US`/`en` → en; anything else → canonical es). A detected locale is **never** persisted and never announced: only an explicit toggle writes `wcstats.locale`, so a guess stays distinguishable from a choice.
+FR-38: Authorship signature — one locale key rendered in exactly two shared-chrome sites (under the wordmark in `SiteHeader`, as a caption line in `AttributionFooter`); the personal name is byte-identical across both dictionaries and only the connective is translated.
+FR-39: Home page refactor — the Tournament Hub is restructured for a first-time arrival, within the SM-C2 disclosure grammar Story 2.19 established, without regressing its recorded performance baseline (NFR-11).
+FR-40: Navigation menu — a persistent way to reach the app's features from any route, overturning UX-DR4's "no primary nav"; it carries deep-linking into a *closed* disclosure on the match route (ledger L1553/L1886), including the hash re-entry defect that makes a repeat click on one link a silent no-op today.
+
 ### NonFunctional Requirements
 
 NFR-1: Performance budgets — Lighthouse mobile ≥ 90 on Match Dashboard and Tournament Hub; per-route JSON payload ≤ 500 KB compressed (gzip -9 over canonical bytes, measured by the Pipeline; Hub = tournament.json + leaderboards.json combined; architecture may tighten but not loosen without a logged decision).
@@ -74,6 +88,8 @@ NFR-7: Language discipline — code, comments, artifacts, docs in English; user-
 NFR-8: Cost — $0 infrastructure; Netlify free tier static only; no paid services in the delivery path (SM-4).
 NFR-9: Privacy — no accounts, no auth, no PII, no analytics/telemetry in MVP; language/theme preference client-side only.
 NFR-10: Attribution — visible data-source/attribution statement on every route and inside every pitch panel (wording per EXPERIENCE.md, OQ-3).
+NFR-11: Performance guard on reshaped surfaces *(added 2026-08-26)* — **a guard, not a goal.** SM-5 is ruled CLOSED (D19) and is not reopened: no Epic 3 story designs toward 90. But a route Epic 3 reshapes may not land below its own recorded baseline — **Tournament Hub / home = 68**, Match Dashboard = 83, Lighthouse mobile. Measurement is per **D4**: median of 3 runs, mobile preset, against a **host-realistic server** (gzip + keep-alive). `python -m http.server` is not a model of the host — it moved the Match Dashboard 53 → 79 with zero code change — and a single run is not a measurement: untouched routes moved 99→91 and 88→66 between two builds. A number reported without its validated harness is not reported.
+NFR-12: Gates must be provably fallible *(added 2026-08-26; Epic 2 retrospective A1)* — no budget, schema, invariant or guard test is accepted until it has been **driven RED once** and the demonstration recorded in the story. Generalizes Story 2.19's D1 guard-test pattern, against a class the retrospective logged four instances of, including a payload gate that shipped sitting at 3.4% of its cap and could not go red.
 
 ### Additional Requirements
 
@@ -104,7 +120,7 @@ From DESIGN.md + EXPERIENCE.md (first-class inputs; specifics binding):
 - UX-DR1: Design-token implementation — full DESIGN.md token set (canvas/ink dark-canonical + `-light` variants, brand accents, data-viz palette incl. shot outcomes, edge-weight ramp, heat ramp, result chips, pitch colors, focus-ring-on-pitch) mapped onto shadcn CSS variables per the mapping table; Tailwind 4-based spacing + named tokens (gutters, tile-gap 12px, section-gap 48px, layer-gap 64px); radii scale; tonal elevation (no shadows except true overlays).
 - UX-DR2: Typography system — Archivo (display/numeric: display-score 44px, display-stat, stat-value, headline) + Inter (title, body, table-numeric, stat-label, label-caps, caption), self-hosted via `next/font`; **tabular numerals mandatory** in every aligned numeric context; no type below 11px; ramp survives 200% zoom without horizontal scroll in the Hero.
 - UX-DR3: Theme system — dark canonical, light derived; system-aware default with persisted manual override (`wcstats.theme`); pre-paint head script sets theme class; pitch panels theme-invariant (deep green in both themes, hairline border on dark only).
-- UX-DR4: Site header — slim sticky bar: wordmark → `/`, header search, language toggle (`ES | EN` segmented pill), theme toggle; no primary nav; on `<md` search collapses to icon button opening a full-width sheet.
+- UX-DR4: Site header — slim sticky bar: wordmark → `/`, header search, language toggle (`ES | EN` segmented pill), theme toggle; no primary nav; on `<md` search collapses to icon button opening a full-width sheet. **AMENDED for Epic 3 (2026-08-26): the "no primary nav" clause is superseded by FR-40.** It was a considered decision, not an oversight — the header is a slim sticky bar and nav competes with search for the same row at 320 px, where Story 2.19's R2/D8 reflow guard already pins the header's class string. Epic 3 does not delete the clause by fiat: story 3-6 (`bmad-ux`) must re-rule it explicitly and state what the nav costs the header at 320 px, or leave the header alone and site the nav elsewhere. UX-DR24 is reserved for that ruling's output.
 - UX-DR5: Header search — client-side typeahead over the Tournament Index (players, teams, matches); shadcn Command combobox semantics (`role="combobox"`, arrow keys, Enter navigates, Esc closes); accent/case-insensitive matching via `Intl.Collator('es', {sensitivity:'base'})`; empty-result state with link to `/`. (Logged scope addition beyond PRD FRs.)
 - UX-DR6: Layer section shell — wraps every Tactical/Expert section; `≥lg` Tactical expanded, `<lg` header + one-line summary expanding in place (Accordion semantics, `aria-expanded`, focus moves to revealed heading); Expert shell collapsed by default at all widths, expands in place; anchor navigation auto-expands; expansion lazy-mounts the viz.
 - UX-DR7: Stat tile — value + uppercase label; head-to-head tiles accent the leading side **plus** ▲ leader glyph and «líder»/"leader" in the accessible name (never color-only); glossary triggers inside labels.
@@ -162,8 +178,13 @@ FR-31: Epic 2 — Spanish default + persistent English toggle
 FR-32: Epic 2 — Per-term tactical-terminology policy
 FR-33: Epic 2 — Full static export on Netlify free tier
 FR-34: Epic 2 — Per-route client-side data loading within budgets
+FR-36: Epic 3 — Discoverability metadata (canonical URLs, og:image, Twitter card, sitemap, robots)
+FR-37: Epic 3 — First-visit locale detection from `navigator.language`
+FR-38: Epic 3 — Authorship signature in the shared chrome
+FR-39: Epic 3 — Home page (Tournament Hub) refactor
+FR-40: Epic 3 — Navigation menu, with deep-linking into closed disclosures
 
-All 35 FRs are covered; no FR is unassigned.
+All 40 FRs are covered; no FR is unassigned. *(FR-36..FR-40 added 2026-08-26 with Epic 3. There is no FR gap: the numbering runs FR-1..FR-35 as originally issued — FR-35 was appended out of order to Epic 1 — and Epic 3 continues at FR-36.)*
 
 ## Epic List
 
@@ -184,6 +205,24 @@ Fans and analysts can use the full product: Mariana reads any match's story in ~
 **Sequencing:** i18n scaffolding (FR-30..32 structure) and the design-token/theme foundation land in the earliest UI story — never retrofitted; progressive disclosure (Hero → Tactical → Expert) built layer-out per the UX contract.
 
 **Dependency note:** Epic 2 depends only on the `/contract` schema + fixtures (available at Epic 1's first deliverable, AD-14), so the epics build in parallel after that bootstrap. Epic 2's v1 sign-off checklist gates Epic 1 proceeding past the sample set; thereafter contract changes flow Epic 2 → request, Epic 1 → implement.
+
+### Epic 3: Post-Launch Reach — Discoverability, Landing & Navigation
+
+A first-time visitor who receives a shared link sees a real preview card instead of a bare text row, lands in **their own language** rather than always Spanish, can tell who built the site, and can reach any of the app's features from the home page without editing a URL. Search engines can enumerate all 1,406 routes — which is simultaneously the **instrument that makes D20-b's re-open trigger measurable**, and therefore the thing that keeps "per-locale URLs are deferred" an evidence-based deferral rather than an indefinite one.
+
+**FRs covered:** FR-36, FR-37, FR-38, FR-39, FR-40
+**Key constraints:** NFR-4 (as extended by D20), NFR-11 (performance guard), NFR-12 (gates provably fallible), AR-11 (as clarified by D20), AR-12 (i18n gate), AR-13 / NFR-8 / NFR-9 (unchanged — 0 functions, 0 middleware, $0/month), D17 / D19 / D20, UX-DR4 (to be re-ruled by story 3.7), UX-DR18 (deep-link anchors)
+**Sequencing:** **Story 3.1 is a hard prerequisite** for the SEO track (3.2, 3.3, 3.4): the shipped `app/scripts/assert-no-external-origins.mjs` fails the build on the site's *own* absolute `<link href>`, so canonical URLs red-build the Netlify chain on all ~1,406 pages until it lands. Reproduced empirically 2026-08-26 (see `sprint-change-proposal-2026-08-26.md` F2). **Story 3.7 (`bmad-ux`) gates the home/nav track.** Story 3.5 is independent of everything and carries the highest user value in the epic — today *every* first-time visitor on Earth is served Spanish, including the English speaker who just clicked the shared link this epic exists to fix.
+
+**Track independence — qualified.** The change proposal calls the SEO and home/nav tracks independent. At the *story* level they are; at the *file* level there are two collisions, and they are named here rather than discovered mid-sprint:
+- **`app/src/app/page.tsx`** — the SEO track edits its `generateMetadata` (3.2, 3.3; `:74` also carries one of the four `og:image` comments D20 §4.6 orders corrected) while 3.9 rewrites the route.
+- **`app/src/components/SiteHeader.tsx`** — 3.6 (the signature) and 3.10 (the nav menu) both target it.
+
+The tracks may still run in parallel; they require the A3 concurrent-session protocol **at these two files specifically**, not a claim of independence.
+
+**Standalone check:** Epic 3 requires nothing from any future epic. Epics 1 and 2 are closed and unaffected — no contract change, no `schemaVersion` bump, no route-manifest or route-count change, and `/contract` stays shut. Ledger **L525** (heatmap) and **L4071** (`/compare` unpaired codes) name a reopened `/contract` or per-locale URLs as their triggers; D20 takes neither, so **both stay deferred, unchanged**.
+
+**Dependency note:** Epic 3 depends only on shipped Epic 2 surfaces and on the D20 ruling. It introduces no new runtime dependency, no serverless function, no middleware and no env-dependent behaviour; the deploy stays $0/month on Netlify Free with 0 functions, re-verified rather than assumed.
 
 ## Epic 1: Complete Tournament Dataset — Extraction & Precompute Pipeline
 
@@ -1024,3 +1063,355 @@ So that the product ships on the real dataset meeting every gate it promised (FR
 **Given** launch
 **When** the site deploys
 **Then** Netlify publishes `app/out` via the AD-13 chain at $0/month, the Netlify account bandwidth model is confirmed and logged (spine Deferred), and the repo + live URL are publishable as the portfolio piece (SM-4, SM-6).
+
+## Epic 3: Post-Launch Reach — Discoverability, Landing & Navigation
+
+A first-time visitor who receives a shared link sees a real preview card, lands in their own language, can tell who built the site, and can reach any of the app's features from the home page without editing a URL. Search engines can enumerate all 1,406 routes — the same instrument that makes D20-b's re-open trigger measurable. Story order encodes the two prerequisites: the build-gate correction (3.1) before anything that emits an absolute URL, and the UX contract (3.7) before anything that reshapes the home page or adds navigation. Post-launch reach work only: no contract change, no `schemaVersion` bump, no route-count change, `$0/month` preserved.
+
+### Standing acceptance criteria — every story in this epic
+
+Carried from the Epic 2 retrospective (2026-08-26) action items A1–A6. These are **not** boilerplate: each one names a failure this project actually paid for. They apply to every story below in addition to its own criteria.
+
+**A1 / NFR-12 — a gate that has never been red is not a gate.**
+**Given** a story adds or modifies any gate (build gate, lint rule, guard test, budget, invariant, bijection assertion)
+**When** the story is called done
+**Then** that gate has been **driven RED once** against a deliberately broken input, the command and its failing output are recorded in the story's completion notes, and only then was it returned to green.
+**And** deleting an assertion is never how a gate is satisfied — an assertion that is retired is **replaced** by one asserting the property that survives (see 3.3).
+
+**A2 — no coincidence-green tests.**
+**Given** a story adds a test that reads exported output, the route manifest, or fixture data
+**When** that test is written
+**Then** it is pinned by relative path rather than by an id that fixture and real corpus could share, and it has been shown to fail when the thing it guards is reverted.
+
+**A3 — the concurrent-session protocol, written down once instead of rediscovered per story.**
+**Given** a story begins
+**When** Task 1 runs
+**Then** it performs a **file-ownership probe** (`git status`, plus a check for the two known Epic 3 collision files — `app/src/app/page.tsx` and `app/src/components/SiteHeader.tsx`) and records which paths it will own.
+**And** if another session already holds a file this story must **modify** rather than append to, the story **aborts at that task** and says so, rather than proceeding (Story 2.18's precedent, which was the correct call).
+**And** where the shared tree is left non-compiling by another session, verification runs in an **isolated git worktree on a private port** (Story 2.11a's precedent).
+
+**A4 — a session commits its own paths and no others.**
+**Given** the story reaches a commit
+**When** it stages changes
+**Then** it stages **only the paths this story owns**, never `git add -A` or a sweeping directory add, and it commits its own slices early rather than accumulating them. Commit attribution leaked three times across Epics 1–2 (2.11a, 2.14→2.15, 1.14→2.6); D13 exists because of it.
+**And** the four uncommitted `spec-sign-the-project.md` files (`SiteHeader.tsx`, `AttributionFooter.tsx`, `es.ts`, `en.ts`) belong to story 3.6 and are not to be swept up by any other story.
+
+**A5 — create-light / validate-hard: the fresh-context validation pass is a required pre-dev stage.**
+**Given** a story asserts a mechanism, a design token, a library behaviour, or a line/file reference
+**When** the story is handed to dev
+**Then** a **fresh-context validation pass has already run and is recorded**, confirming every referenced mechanism exists as described. Validation is a stage, not a rescue: it closed 17 implementability gaps in Story 2.10 alone, four of them build-breaking.
+**And** this epic has already paid that back once — L1553's blocker list was found **stale at epic-design time** (see 3.8), which is the only reason 3.8 is sized as a port rather than an invention.
+
+**A6 —** an Epic 3 retrospective is run at epic close and is not left optional.
+
+### Story 3.1: Build-Gate & Lint-Gate Correction
+
+As the builder,
+I want the origin gate to stop failing on the site's own URLs and the i18n gate to stop ignoring metadata `alt`/`siteName`,
+So that every later discoverability story can build at all, and none of them can ship an untranslated string silently (FR-36, NFR-12).
+
+**Acceptance Criteria:**
+
+**Given** the shipped `app/scripts/assert-no-external-origins.mjs`, whose `ALLOWED` list holds only `w3.org` and `schema.org` (`:81`)
+**When** a `SITE_ORIGIN` allowance is added
+**Then** an export carrying ~1,406 absolute self-referencing `<link rel="canonical">` URLs passes the gate.
+**And** `SITE_ORIGIN` has **exactly one definition** in the repository, shared with the app's `metadataBase` — two copies drift, and the drift is silent in exactly the direction that matters.
+
+**Given** `<link href>` is currently treated as a fetching position and matched against `FETCH_HOST`
+**When** the non-fetching `rel` values are excluded
+**Then** `rel="canonical"` and `rel="alternate"` are treated as **navigation hints**, on the file's own established precedent for `<a href>` (`:113`: *"a link is a navigation the reader chooses, not a fetch the page performs"*), while `stylesheet`, `preload`, `prefetch`, `icon`, `manifest`, `preconnect`, `dns-prefetch` and `modulepreload` remain fetching positions.
+
+**Given** A1, and this file's own `scanned === 0` guard (`:266`) which exists for precisely this reason
+**When** the corrected gate is run against a fixture carrying an **off-origin `<link rel="stylesheet">`** and an **off-origin `og:image`**
+**Then** it still **exits 1** and names both, and that failing run is recorded in the completion notes. A gate that stopped failing has proved nothing.
+
+**Given** `app/eslint.config.mjs`'s metadata selector gates `title|description|default|template|absolute` but not `alt` or `siteName`
+**When** both keys are added to that selector
+**Then** a bare Spanish literal as an `openGraph.images.alt` or `openGraph.siteName` value is an ESLint error under `--max-warnings 0`, demonstrated red once before the rule is accepted.
+**And** the hole is closed **before** story 3.3 opens it, not after — this is the same "tests that passed for the wrong reason" class the retrospective logged four instances of.
+
+**Given** the full chain (`npm run build`: lint, typecheck, schema assert, `next build`, `copy-data`, origin gate)
+**When** it runs after this story
+**Then** it is green end to end and no test is newly skipped.
+
+### Story 3.2: `metadataBase`, Absolute Canonical URLs & `og:url`
+
+As someone who shares a link to a match, player or team,
+I want every route to declare its own canonical address,
+So that crawlers and link unfurlers resolve one unambiguous URL per page (FR-36, NFR-4).
+
+**Acceptance Criteria:**
+
+**Given** story 3.1 has landed (without it this story red-builds Netlify on all ~1,406 pages with an error naming AR-11)
+**When** `metadataBase: new URL(SITE_ORIGIN)` is set on the root layout from the single shared constant
+**Then** relative metadata URLs resolve absolutely and no second origin literal is introduced.
+
+**Given** `next.config.ts` sets `trailingSlash: true` (`:9`)
+**When** `alternates: { canonical: … }` is emitted per route
+**Then** every canonical URL **carries the trailing slash**, matching what Netlify actually serves — a canonical that disagrees with the served URL is worse than none.
+**And** `openGraph.url` agrees with the canonical on every route.
+
+**Given** the four `generateMetadata` sites (`/`, `/matches/[slug]`, `/players/[slug]`, `/teams/[slug]`) plus the static routes
+**When** the export is inspected
+**Then** each route emits exactly one `<link rel="canonical">`, absolute, same-origin, trailing-slashed.
+**And** metadata stays **once per route in canonical Spanish** — this story does not introduce per-locale URLs or `hreflang` (D17, upheld by D20).
+
+**Given** A3 and the collision on `app/src/app/page.tsx`
+**When** this story edits that file's `generateMetadata`
+**Then** the file-ownership probe has run and the story owns that path for the duration, or it aborts.
+
+### Story 3.3: Same-Origin `og:image` Card & Twitter Card
+
+As someone pasting a link into WhatsApp, Slack, LinkedIn or X,
+I want the preview to render as a card with an image,
+So that a shared link looks like a product rather than a bare text row (FR-36, NFR-4).
+
+**Acceptance Criteria:**
+
+**Given** D20-c retires the `og:image` ban as an over-read of AR-11 — a `<meta content>` URL is a hint a crawler may fetch off-page and off-session, and `FETCHING_POSITIONS` deliberately excludes it
+**When** one ~1200×630 PNG card is added under `app/public/` (**which does not exist today and is created by this story**)
+**Then** `openGraph.images`, `openGraph.type`, `openGraph.locale: "es"` (an explicit declaration of the D20 canonical) and `twitter: { card: "summary_large_image" }` are emitted, and the asset is same-origin.
+
+**Given** the two shipped assertions — `players/static-output.test.ts:125` (`expect(playerHtml(QUINONES)).not.toContain("og:image")`) and `teams/static-output.test.ts` (`expect(metaContent(html, "og:image")).toBeNull()`)
+**When** they are updated
+**Then** they are **REPLACED, never merely deleted**, by assertions that `og:image` is **present AND starts with `SITE_ORIGIN`**.
+**And** per A1, the replacement is proved capable of failing: an off-origin `og:image` in a fixture makes it go red. This test is the **only** thing holding the same-origin line — story 3.1's gate correctly does not catch `<meta content>`, because that is not a fetching position.
+
+**Given** the four source comments asserting the ban (`matches/[slug]/page.tsx:49`, `page.tsx:74`, `players/[slug]/page.tsx:53-55`, `teams/[slug]/page.tsx:64-66`)
+**When** the ban is retired
+**Then** all four are corrected to state the D20 scoping, so the next reader cannot re-derive the ban from prose.
+
+**Given** story 3.1 added `alt` and `siteName` to the i18n metadata selector
+**When** the card's alt text and `openGraph.siteName` are authored
+**Then** both come through `t()` and neither is a bare literal.
+
+**Given** the deploy
+**When** it completes
+**Then** a real `mundial-stats.juancr.dev` link pasted into WhatsApp and Slack renders a card with an image — verified by pasting, not by inspecting the tags.
+
+### Story 3.4: `sitemap.xml` & `robots.txt`
+
+As a search engine,
+I want an enumerable list of every route the site publishes,
+So that all 1,406 pages are discoverable — and so the D20-b re-open trigger becomes measurable rather than indefinite (FR-36, NFR-4).
+
+**Acceptance Criteria:**
+
+**Given** `app/src/app/sitemap.ts` and `app/src/app/robots.ts` as Next 16 static metadata routes under `output: 'export'`
+**When** the build runs
+**Then** both are emitted as static files, with no function, no middleware and no runtime env dependency (AD-13, NFR-8 preserved).
+
+**Given** the route manifest (`data/index/tournament.json` `entities`) — the same source `generateStaticParams` uses
+**When** the sitemap is generated
+**Then** it enumerates 104 matches + 1,248 players + 48 teams + `/`, `/about`, `/glossary`, `/compare`, every entry trailing-slashed.
+**And** a **bijection assertion** against the manifest ships with it, reusing the existing route-bijection pattern — a sitemap listing a URL that 404s is worse than no sitemap.
+**And** per A1 that assertion is driven red once (a manifest entry omitted from the sitemap, and a sitemap entry absent from the manifest — both directions).
+
+**Given** `/compare`'s content is selection-dependent and query-driven
+**When** the sitemap is composed
+**Then** only the **bare** route is listed; parameterized variants are excluded as near-duplicate noise.
+
+**Given** `.xml` is already in the gate's `SCANNED_EXTENSIONS` (added by the 2.19 code review with a sitemap named as the motivating case)
+**When** the origin gate runs over the export
+**Then** the sitemap's ~1,406 absolute `<loc>` entries pass, because story 3.1 taught the gate the site's own origin.
+
+**Given** the sitemap is live
+**When** it is submitted to Google Search Console
+**Then** the submission is recorded with its date, **starting the 90-day D20-b clock (re-open no earlier than 2026-11-24)**.
+
+### Story 3.5: First-Visit Locale Detection
+
+As an English-speaking visitor who just clicked a shared link,
+I want the site to open in English without my having to find a toggle,
+So that the page behind the preview is readable to me (FR-37).
+
+**Acceptance Criteria:**
+
+**Given** `app/src/lib/bootstrap.ts:37`, where `resolveLocale(stored)` returns `"es"` for anything not already persisted — so **every first-time visitor on Earth is served Spanish**
+**When** detection is added
+**Then** `resolveLocale(stored, preferred)` reads only the **primary subtag**: `en-GB`, `en-US` and `en` all resolve to `en`; anything else, including French, falls to the canonical `es` — this is a two-locale product, and a non-Spanish non-English reader gets the canonical, not a guess.
+
+**Given** the change must land in **both** call sites or they disagree
+**When** the pure function is updated
+**Then** the checked-in `bootstrapScript` ES5 literal (`:56`) is updated in the same edit, and `bootstrap.test.ts`'s existing cross-check of the literal against the functions (`:144`) gains a `navigator.language` dimension across the full input matrix. That test is what stops the two drifting.
+
+**Given** `src/lib/i18n-provider.tsx:39` currently does `if (stored === null) { return; }`
+**When** the provider's mount effect is updated
+**Then** it falls through to the same `resolveLocale(null, navigator.language)` — without this, React re-renders Spanish strings under an `<html lang="en">` the pre-paint script has already set.
+
+**Given** a detected locale is a guess, not a choice
+**When** detection resolves
+**Then** `wcstats.locale` is **NOT written**. Only an explicit toggle persists. Persisting a guess would make it indistinguishable from a choice and would silently outlive a change of browser language.
+**And** detection is **not an announcement**: the polite live region stays silent, extending the provider's existing rule that restoring a preference is not a user action.
+
+**Given** a browser with `navigator.language = "en-US"` and empty `localStorage`
+**When** it loads any route
+**Then** the page renders in **English**, and `wcstats.locale` is **still unset** afterwards.
+
+**Given** the accepted consequence recorded in D20 §3.3
+**When** Googlebot renders with `navigator.language = en-US`
+**Then** the mixed-language rendered document (English body, Spanish `<title>`/OG) is **accepted, not treated as a defect**: it is already the shipped behaviour under a manual toggle, the non-rendered fetch and the new `<link rel="canonical">` both declare `es`, and if it causes harm that harm **is** D20-b re-open trigger (b).
+
+### Story 3.6: Authorship Signature in the Shared Chrome
+
+As Juan,
+I want my name on the site I built,
+So that a visitor on any of 1,406 routes can tell who made it (FR-38).
+
+**Acceptance Criteria:**
+
+> **Status: IN FLIGHT at epic-creation time.** Implemented in the working tree against baseline `d28e56f` and driven by `_bmad-output/implementation-artifacts/spec-sign-the-project.md`; **not committed to `main`**. This story is the epic's record of the scope, not a second instruction to build it. Per A4, no other Epic 3 story stages `SiteHeader.tsx`, `AttributionFooter.tsx`, `es.ts` or `en.ts`.
+
+**Given** one new locale key `chrome.signature`
+**When** it is rendered
+**Then** it appears in exactly two shared-chrome sites — under the wordmark in `SiteHeader` and as a caption line in `AttributionFooter` — and in no third surface, not `/about`, not `<title>`/OG.
+
+**Given** the ES and EN dictionaries
+**When** `chrome.signature` is compared across them
+**Then** both contain `Juan Camilo Rojas` **byte-identically** and differ only in the connective (`Por` / `By`), pinned by a test that fails if a locale mutates the name.
+
+**Given** the caption must not join the home link
+**When** it is placed
+**Then** it is a **sibling** of the wordmark `<Link>`, never its child — the home link's accessible name stays `WC Stats`, since an `aria-label` narrowing it back would fail WCAG 2.5.3 (Label in Name).
+**And** the name carries **no `lang` mark**: WCAG 3.1.2 exempts proper names, and Story 2.19 Task 6.13's precedent is that a `lang` mark must assert a language change that actually occurs.
+
+**Given** Story 2.19's R2/D8 reflow guard
+**When** the header is changed
+**Then** the literal class string `flex min-h-14 max-w-6xl flex-wrap items-center` survives verbatim (`reflow-guards.test.ts` pins it), the wordmark keeps a ≥44 px hit box, and the footer's `/about` and `/glossary` links keep `underline underline-offset-2 hover:no-underline` exactly.
+
+**Given** 320 px and 390 px viewports, both locales, both themes
+**When** the header renders
+**Then** the document does not scroll horizontally and the wordmark is not truncated — measured, not assumed, since the identity block grows to roughly 61 px against `min-h-14`'s 56 px.
+
+### Story 3.7: UX Contract — Home Information Architecture & Navigation Menu
+
+As the builder,
+I want a ruled design contract for the home page and the navigation menu before either is built,
+So that the implementation stories inherit decisions instead of inventing them (FR-39, FR-40, UX-DR4, UX-DR24).
+
+**Acceptance Criteria:**
+
+> Produced by `bmad-ux`, extending the existing `ux-wc-stats-2026-07-21` spine (`DESIGN.md` + `EXPERIENCE.md`). This story emits a contract, not code.
+
+**Given** UX-DR4 states *"no primary nav"* as a shipped decision, contradicted by FR-40
+**When** the contract is written
+**Then** it **re-rules UX-DR4 explicitly** and states what a nav costs the header at 320 px — the header is a slim sticky bar where nav competes with search for the same row, and Story 2.19's R2/D8 guard pins that row's class string. The ruling either accepts that cost or sites the nav elsewhere. It is not deleted by fiat.
+**And** the output is recorded as **UX-DR24** in this document's UX Design Requirements.
+
+**Given** the home page **is** the Tournament Hub, whose density Story 2.19 moved behind SM-C2 disclosures to recover Lighthouse points
+**When** the home IA is designed
+**Then** it works **within** that disclosure grammar rather than reverting it, and it states which surfaces a first-time arrival sees before any disclosure is opened.
+**And** SM-5 is **closed** (D19) and is not reopened: this contract does not design toward 90.
+
+**Given** the app's features (match routes, player and team profiles, `/compare`, `/glossary`, `/about`, search)
+**When** the nav is specified
+**Then** every feature has a named reachable entry point, and the spec states the `<md` behaviour, the keyboard model (Esc closes topmost, reading-order tab, ≥44×44 px targets per UX-DR15), and the accessible names as locale keys per UX-DR16.
+
+**Given** ledger **L1465** and its own amendment
+**When** the Expert table's 390 px problem is addressed as part of the UX pass
+**Then** the contract rules the **short abbreviations** for `viz.table.shirt` and `viz.table.player` with the full term in `headTitle` — the lever `EXPERIENCE.md:139` already makes normative and that the ledger's amendment confirms is available today, not blocked on a ruling.
+**And** it addresses the amendment's **second half**, which was taken but never filed: below `md` the escape hatch filters the **row set** 34 → 17, not merely a column, contradicting Task 5.1's "rows are always all players, both teams".
+
+### Story 3.8: Match-Route Deep-Link Plumbing
+
+As someone who receives a link to a specific section of a match,
+I want that link to open the section it names,
+So that a shared anchor lands on data rather than on a closed control (FR-40, UX-DR18; adopts ledger L1553 / L1886).
+
+**Acceptance Criteria:**
+
+> **Sized against the verified tree at `d28e56f`, not against the ledger's 2026-08-05 blocker list, which is stale.** Story 2.19 already built this mechanism for the Hub — explicitly refusing to mint a new instance of this defect while the old one stayed deferred. `ViewDataDisclosure.openNonce` ships (`:30`), and `useAnchorNonce` + `useHashScroll` (`TournamentHub.tsx:158-198`, `:911`) are a working reference implementation over 21 sections. This story is a **port**, not an invention. The ledger entry is corrected as part of this story.
+
+**Given** the ledger called *"an unchanged hash never re-fires `hashchange`"* **fatal to a link list**
+**When** the Hub pattern is ported
+**Then** the same **capture-phase `click` listener** covers the same-fragment case, so following a link, closing the disclosure, and clicking the same link again re-opens it — verified by doing exactly that, since this is the defect that made the six Expert log links a silent no-op on the second click.
+
+**Given** `PitchPanel` forwards only `panelTitle` and `trailing` to `ViewDataDisclosure` (8 props total, none a nonce)
+**When** deep-linking is wired
+**Then** a per-panel nonce is threaded through `PitchPanel` to its disclosure.
+
+**Given** `sectionIdFromHash` (`TacticalLayer.tsx:59`) is whole-string equality against the eleven `SectionId`s, so `#shot-maps-log` returns `null` **silently**
+**When** the fragment grammar is widened
+**Then** a finer fragment resolves to its panel, and an **unresolvable fragment fails visibly in development rather than silently** — silence is what let this sit unnoticed.
+
+**Given** `#shot-maps` is ambiguous, holding two independent disclosures (the shot log and the cross log both point at it)
+**When** the grammar is ruled
+**Then** each disclosure has its own resolvable fragment, and the two links no longer collide.
+
+**Given** A2
+**When** the tests are written
+**Then** they prove the closed→open transition rather than asserting the anchor exists, and they fail when the nonce wiring is reverted.
+
+**Given** the ledger entries
+**When** this story completes
+**Then** **L1553 and L1886 are closed** in `deferred-work.md` with a note recording that Story 2.19 had already resolved two of their blockers — including the one called fatal — so the correction is not rediscovered.
+
+### Story 3.9: Home Page Refactor
+
+As a first-time visitor arriving at the site,
+I want a home page that orients me before it buries me in tables,
+So that I can tell what this is and reach what I want (FR-39, NFR-11).
+
+**Acceptance Criteria:**
+
+**Given** the UX contract from story 3.7
+**When** the home page is rebuilt
+**Then** it implements that contract's IA within the SM-C2 disclosure grammar, and Story 2.13's `LeaderboardsSection` mount and its `LEADERBOARDS_SECTION_ID` anchor are either preserved or deliberately re-sited — never duplicated, which would be a duplicate-id defect.
+
+**Given** NFR-11 — **a guard, not a goal**
+**When** the refactored home page is measured
+**Then** Lighthouse mobile is **≥ 68**, the recorded Hub baseline. The refactor is free to reshape and not free to regress. SM-5 stays closed; this story does not design toward 90.
+**And** measurement is per **D4**: **median of 3 runs**, mobile preset, against a **gzip + keep-alive host-realistic server**. Never `python -m http.server` — it moved the Match Dashboard 53 → 79 with no code change. Never a single run — untouched routes moved 99→91 and 88→66 between two builds. A number without its validated harness is not reported.
+**And** the pre- and post-refactor medians are both recorded, not just the post.
+
+**Given** A3 and the collision on `app/src/app/page.tsx` with stories 3.2 and 3.3
+**When** this story starts
+**Then** the file-ownership probe runs; if the SEO track holds that file mid-change, this story aborts at Task 1 rather than proceeding.
+**And** whichever lands second preserves the other's work — the canonical/`og:image` metadata and the refactored body must coexist.
+
+**Given** ledger **L1423** (`PendingSectionPanel` has zero consumers; deleting it means reasoning about three assertions at `tactical-sections.test.ts:108-125`)
+**When** this story's change-set touches `tactical-sections.ts`
+**Then** the trigger has fired and the dead component is deleted with its locale keys and those three assertions resolved.
+**And** if the refactor does **not** touch that file, L1423 stays deferred and the story says so explicitly rather than leaving it ambiguous.
+
+**Given** the full chain and the existing suite
+**When** the refactor lands
+**Then** the route count stays **1,406**, the build is green, and no test is newly skipped.
+
+### Story 3.10: Navigation Menu
+
+As any visitor on any route,
+I want a persistent way to reach the app's features,
+So that I do not have to return to the home page or edit the URL to get anywhere (FR-40).
+
+**Acceptance Criteria:**
+
+**Given** the UX contract from story 3.7, including its explicit re-ruling of UX-DR4
+**When** the nav is built
+**Then** it matches that contract, and every feature named there is reachable from every route.
+
+**Given** story 3.8's deep-link plumbing
+**When** a nav entry points into a match-route section
+**Then** it lands on the section **and opens it**, using the shipped nonce path rather than a second mechanism.
+
+**Given** Story 2.19's R2/D8 reflow guard and the 320 px floor
+**When** the nav is added to the chrome
+**Then** the guarded class string survives or its change is ruled and re-pinned, the document does not scroll horizontally at **320 px** in either locale or theme, and Spanish text expansion is handled per UX-DR17 rather than by truncation.
+
+**Given** story 3.6's measured outcome — **the header already wraps to two rows below 354 px**, going 57 → 118 px at 320 px, because flexbox breaks lines on each item's max-content and the signature caption widens the identity block 76 → 127 px (its spec records that `min-w-0` cannot buy this back: it reduces the shrunk size, not the hypothetical main size line-breaking uses)
+**When** the nav is sited
+**Then** it is designed against a header that is **already wrapping at the narrow end**, not against the single 57 px row that existed before 3.6. A fifth element in that row is a materially harder problem than a fourth was.
+**And** story 3.7's UX-DR4 re-ruling accounts for this — it is the concrete cost figure that ruling has to price, and hiding, truncating or wrapping the name is out of bounds (3.6's `Never` list).
+**And** the R2/D8 matrix (320 / 390 / 195 px × dark/light × es/en) is **re-run** after the nav lands, on the same basis 3.6 re-ran it, rather than reasoning from the pre-signature baseline.
+
+**Given** UX-DR15 and UX-DR16
+**When** the nav is operated by keyboard and screen reader
+**Then** targets are ≥44×44 px, Esc closes the topmost layer, focus is visible throughout with no trap, all accessible names come from locale keys in both dictionaries, and `prefers-reduced-motion` disables any transition.
+
+**Given** A3 and the collision on `app/src/components/SiteHeader.tsx` with story 3.6
+**When** this story edits the header
+**Then** the ownership probe runs first, and story 3.6's signature — whether committed by then or still in the working tree — is preserved rather than overwritten.
+
+**Given** the epic closes with this story
+**When** it is done
+**Then** an Epic 3 retrospective is run (A6), and the deferred-work ledger is walked so that L1553/L1886 and L1465 are recorded as **adopted and closed**, not silently left open against a phase that has now happened.

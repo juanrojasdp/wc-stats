@@ -25,7 +25,14 @@
 #
 # Retrospective Status:
 #   - optional: Can be completed but not required
+#   - required: Committed to and MUST be run before the epic is closed
 #   - done: Retrospective has been completed
+#
+#   `required` added 2026-08-26 for Epic 3. Epic 2's retrospective action item A6
+#   ("Run the retrospective at every epic close") exists because epic-1-retrospective
+#   sat at `optional`, was skipped, and its concurrent-session lesson had to be
+#   re-learned inside Epic 2 at real cost. Leaving Epic 3's at `optional` would
+#   re-create precisely that condition, so the value the commitment needs now exists.
 #
 # Action Item Status:
 #   - open: Committed during a retrospective, not yet addressed
@@ -3351,22 +3358,55 @@ development_status:
   # EPIC 3 — unblocked 2026-08-26 by the D20 ruling.
   # Proposal: _bmad-output/planning-artifacts/sprint-change-proposal-2026-08-26.md
   #
-  # Story keys are NOT listed yet: bmad-create-epics-and-stories owns the naming.
-  # The SEO track's shape and its ONE hard prerequisite are recorded here so the
-  # epic is written with them rather than into them:
+  # Story keys REGISTERED 2026-08-26 by bmad-create-epics-and-stories.
+  # Definition: _bmad-output/planning-artifacts/epics.md § "Epic 3".
   #
-  #   3-1  build-gate + lint-gate correction        PREREQUISITE for 3-2..3-4
-  #   3-2  metadataBase + absolute canonical URLs   needs 3-1
-  #   3-3  same-origin og:image + Twitter card      needs 3-1, 3-2
-  #   3-4  sitemap.xml + robots.txt                 needs 3-1, 3-2
-  #   3-5  first-visit navigator.language detection INDEPENDENT of 3-1
+  # TWO PREREQUISITES, both hard:
+  #   3-1 gates the SEO track (3-2, 3-3, 3-4). The shipped
+  #       app/scripts/assert-no-external-origins.mjs fails on the site's OWN
+  #       absolute <link href> (ALLOWED holds only w3.org + schema.org), so
+  #       canonical URLs red-build Netlify on all ~1,406 pages until 3-1 lands.
+  #       Reproduced empirically; see sprint-change-proposal-2026-08-26.md F2.
+  #   3-7 gates the home/nav track (3-9, 3-10). It is a bmad-ux deliverable and
+  #       must re-rule UX-DR4, which currently states "no primary nav".
   #
-  # The epic ALSO carries, per retro §6.1/§6.4 and independent of the SEO track:
-  # the "By Juan Camilo Rojas" signature, the home refactor and the navigation
-  # menu (adopting ledger L1553/L1886 and L1465 deliberately, not by tripping
-  # over them).
+  # 3-5, 3-6, 3-7 and 3-8 are independent and may start immediately.
+  # 3-5 is the highest user value in the epic: TODAY every first-time visitor is
+  # served Spanish, including the English speaker who clicked the shared link.
+  #
+  # TRACK INDEPENDENCE IS QUALIFIED. The proposal calls the SEO and home/nav
+  # tracks independent; at the FILE level there are two collisions, and Epic 3
+  # stories carry the A3 protocol at these two paths specifically:
+  #   app/src/app/page.tsx              -- 3-2, 3-3 (metadata) vs 3-9 (rewrite)
+  #   app/src/components/SiteHeader.tsx -- 3-6 (signature) vs 3-10 (nav menu)
+  #
+  # LEDGER: 3-8 adopts and closes L1553/L1886; 3-7 adopts L1465 (incl. its own
+  # amendment); 3-9 fires L1423 only if it touches tactical-sections.ts.
+  # L525 and L4071 do NOT fire (they need a reopened /contract or per-locale
+  # URLs; D20 takes neither) and stay deferred, unchanged.
   # ───────────────────────────────────────────────────────────────────────────
-  epic-3: backlog
+  # in-progress, not backlog: 3-6 is actively being implemented in the working
+  # tree via _bmad-output/implementation-artifacts/spec-sign-the-project.md
+  # (bmad-quick-dev route, retro §8.4), i.e. outside the create-story trigger
+  # that normally flips this field. Recording the true state.
+  epic-3: in-progress
+  3-1-build-gate-lint-gate-correction: backlog
+  3-2-metadatabase-canonical-urls: backlog
+  3-3-og-image-twitter-card: backlog
+  3-4-sitemap-robots: backlog
+  3-5-first-visit-locale-detection: backlog
+  # Implemented in the working tree at baseline d28e56f, NOT yet committed to
+  # main. Owns app/src/components/SiteHeader.tsx, AttributionFooter.tsx,
+  # src/locales/es.ts, en.ts, src/lib/i18n.test.ts and
+  # src/app/static-output.test.ts. Per retro A4 no other session stages these.
+  3-6-authorship-signature: in-progress
+  3-7-ux-contract-home-ia-navigation-menu: backlog
+  3-8-match-route-deep-link-plumbing: backlog
+  3-9-home-page-refactor: backlog
+  3-10-navigation-menu: backlog
+  # NOT `optional` — retro action item A6. Epic 1's sat at `optional`, was
+  # skipped, and the cost was paid inside Epic 2.
+  epic-3-retrospective: required
 
 # Epic 2 retrospective action items (2026-08-26).
 # Document: _bmad-output/implementation-artifacts/epic-2-retro-2026-08-26.md
