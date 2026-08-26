@@ -3393,7 +3393,39 @@ development_status:
   3-1-build-gate-lint-gate-correction: done
   3-2-metadatabase-canonical-urls: backlog
   3-3-og-image-twitter-card: backlog
-  3-4-sitemap-robots: backlog
+  # Context created 2026-08-26 against baseline 8f1c4fc. Owns THREE NEW FILES ONLY --
+  # app/src/app/sitemap.ts, app/src/app/robots.ts, app/src/app/sitemap.test.ts -- the
+  # cleanest file footprint in Epic 3: zero overlap with 3-2/3-3 (page.tsx, layout.tsx),
+  # 3-8, 3-9 or 3-10. A3 probe at creation: all three clean.
+  # THE 3-1 CAVEAT IS RESOLVED, NOT INHERITED. assert-no-external-origins.mjs was dirty
+  # under the live 3.1 review, and the patch narrows the self-origin allowance from one
+  # global ALLOWED list to SELF_ORIGIN_POSITIONS = {"<link href>"}. BOTH versions still
+  # pass the sitemap: a <loc> is not a fetching position at all, so it is reached only by
+  # the informational ANY_URL pass, which calls allowed(url, true) on both. Same for
+  # robots.txt's Sitemap: line under .txt. Ruled D2; the story re-confirms rather than
+  # assumes, and does NOT edit the gate.
+  # THREE THINGS RULED AT CREATION RATHER THAN LEFT TO DEV TIME:
+  #   (1) ENTRY COUNT IS 1,404, NOT 1,406. 104 + 1,248 + 48 = 1,400 entities + 4 static.
+  #       The 1,406 in the epic is the ROUTE count; the delta is out/404/ and
+  #       out/_not-found/, which are correctly absent from a sitemap. Measured against
+  #       the manifest and the 1,406-file export, not read off prose.
+  #   (2) trailingSlash: true does NOT make out/sitemap.xml a DIRECTORY. Traced to
+  #       next/dist/export/index.js:728-735: app route handlers are copyFile'd to
+  #       path.join(outDir, route) and `return` BEFORE the subFolders index.html naming.
+  #       This was the story's highest-risk assumption; Task 2.2 still verifies it on disk.
+  #   (3) The four UX-DR24 routes are picked up AUTOMATICALLY because the non-entity
+  #       routes are discovered by walking src/app for page.tsx, not listed. The epic says
+  #       do not hard-code them and do not wait for 3.9; a literal list would mean 3.9 has
+  #       to remember to edit a file it has no reason to open.
+  # LEDGER: deferred-work.md:4663-4677 names 3-4 as owner and its motivating case is MOOT
+  # as written -- it assumes a public/robots.txt, the epic rules a robots.ts metadata
+  # route, and app/public/ does not exist. Its OTHER gaps (netlify.toml outside the scan,
+  # bare-host/case-variant copies counting zero, dead SKIPPED_DIRECTORIES) live in
+  # site-origin.test.ts, which is 3-1's file while 3-1 is still at review -- so they stay
+  # open and get re-owned, not fixed here. Task 8.5.
+  # AC8 (Google Search Console submission, starts the 90-day D20-b clock, re-open no
+  # earlier than 2026-11-24) is MANUAL AND JUAN'S. The dev agent surfaces it and stops.
+  3-4-sitemap-robots: ready-for-dev
   # Context created 2026-08-26. Owns bootstrap.ts, bootstrap.test.ts,
   # i18n-provider.tsx, i18n-provider.test.tsx (NEW) and — as a measured
   # regression repair, not a feature — the navigator pin in TournamentHub.test.tsx,
@@ -3516,6 +3548,50 @@ action_items:
     owner: "Juan"
     status: open
 
+# 2026-08-26: story 3-4 context created and moved to ready-for-dev -- sitemap.xml & robots.txt,
+#   the instrument D20-b's 90-day clock is measured with. Baseline 8f1c4fc. THREE NEW FILES, no
+#   modified file anywhere in app/: the only Epic 3 story with zero collision surface.
+#   THE 3-1 CAVEAT WAS DISCHARGED AT CREATION RATHER THAN PASSED DOWN. The A3 probe found
+#   assert-no-external-origins.mjs and its test dirty under the live 3.1 code review, so the
+#   patch was read rather than waited on: it narrows the self-origin allowance from one global
+#   ALLOWED list to SELF_ORIGIN_POSITIONS = {"<link href>"}. Both the committed and the patched
+#   gate still pass a sitemap, because a <loc> is not a fetching position at all and is reached
+#   only by the informational ANY_URL pass, which calls allowed(url, true) on both versions.
+#   Same for robots.txt's `Sitemap:` line under .txt. So 3-4 is NOT blocked on 3-1 reaching done,
+#   and it does not edit the gate. 3-1 already ships the case by name: "PASSES a sitemap of
+#   self-origin <loc> entries ... story 3.4 depends on this".
+#   THE HIGHEST-RISK ASSUMPTION WAS TRACED TO SOURCE, NOT ASSUMED: under trailingSlash: true,
+#   does out/sitemap.xml become a DIRECTORY? No. next/dist/export/index.js:728-735 copyFile's app
+#   route handlers to path.join(outDir, route) and RETURNS before the subFolders index.html
+#   naming that every page route goes through. sitemap.ts and robots.ts compile to app route
+#   handlers, so they land flat at the export root. Task 2.2 still verifies it on disk before any
+#   sitemap body is written -- a sourced claim is a hypothesis until the build agrees.
+#   ONE NUMBER IN THE EPIC IS WRONG AND THE STORY CARRIES THE CORRECTION: the sitemap has 1,404
+#   <loc> entries, not ~1,406. Measured: 104 + 1,248 + 48 = 1,400 entities + 4 static routes. The
+#   1,406 is the ROUTE count and the delta is out/404/ and out/_not-found/, which must NOT be in a
+#   sitemap. Re-measured at creation against both the manifest (schemaVersion 4) and the export.
+#   THE STATIC ROUTES ARE DISCOVERED, NOT LISTED (D4), which is what makes the epic's "do not
+#   hard-code them and do not wait for 3.9" actually true: walking src/app for page.tsx yields
+#   four today and eight after UX-DR24 lands, with no edit to sitemap.ts. That in turn forced a
+#   THIRD test layer (D8): a guard that re-walks src/app the same way would grade itself against
+#   its own literal -- Story 1.17's precision-gate trap, where 41 tests stayed green while 553
+#   leaves shipped truncated. Layer 3's ground truth is the EMITTED EXPORT instead, which is also
+#   the only thing that can prove the AC's actual claim that no listed URL 404s.
+#   A1 IS WRITTEN INTO AC5 ITSELF, NOT APPENDED AS BOILERPLATE: six red demonstrations required,
+#   two of them named in the epic (a manifest entry missing from the sitemap, and a sitemap entry
+#   missing from the manifest). Four gates that could not fail is the retro's top systemic finding.
+#   AC7 RULES A DELIBERATE ABSENCE AND PINS IT: no `Disallow: /data/`. Googlebot renders with JS
+#   and every data-bearing route fetches /data/*.json, so blocking it would strip the rendered
+#   pages of the content this story exists to get indexed. A test pins the absence, because an
+#   unstated omission is not a property until something fails on its return.
+#   AC8 IS JUAN'S AND STAYS OPEN: the Search Console submission starts the 90-day D20-b clock
+#   (re-open no earlier than 2026-11-24). The dev agent surfaces it and does not attempt it.
+#   Regression surface checked and clear: static-output.test.ts's route collector is a literal
+#   list reading only <slug>/index.html, so the two new root files are invisible to it (and it is
+#   another session's file -- do not register them there); vitest's include already picks up
+#   src/app/sitemap.test.ts; site-origin.test.ts DOES scan both new files, which is the intended
+#   coverage. Test baseline deliberately NOT inherited -- it has moved 1,251 -> 1,306 -> 1,320 ->
+#   1,334 -> 1,367 this epic and Task 1.4 re-measures it.
 # 2026-08-25: story 2-19 code review — 3 layers over the 6,414-line code diff (78 files), 32
 #             findings kept / 3 dismissed, triaged to 5 decisions (all ruled by Juan), 20 patches
 #             (all applied) and 7 deferrals filed. Verified after patching: lint 0, tsc 0, app suite
