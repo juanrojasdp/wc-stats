@@ -3468,7 +3468,7 @@ development_status:
   # open and get re-owned, not fixed here. Task 8.5.
   # AC8 (Google Search Console submission, starts the 90-day D20-b clock, re-open no
   # earlier than 2026-11-24) is MANUAL AND JUAN'S. The dev agent surfaces it and stops.
-  3-4-sitemap-robots: in-progress
+  3-4-sitemap-robots: review
   # Context created 2026-08-26. Owns bootstrap.ts, bootstrap.test.ts,
   # i18n-provider.tsx, i18n-provider.test.tsx (NEW) and — as a measured
   # regression repair, not a feature — the navigator pin in TournamentHub.test.tsx,
@@ -4365,3 +4365,55 @@ action_items:
 #             6 must-still-pass cases still passing). Corrected the File List's transcription of
 #             --stat totals as insertions: the .mjs is +141/-7 and eslint.config is +46/-4.
 #             The two deferred-work entries story 3-1 owned are now CLOSED in the ledger.
+# 2026-08-26: story 3-4 IMPLEMENTED, in-progress -> review. sitemap.xml + robots.txt, the two Next 16
+#             metadata routes. Baseline 8750d85. Files: app/src/app/sitemap.ts, robots.ts,
+#             sitemap.test.ts -- all NEW, all owned solely by this story, nothing else in app/ touched.
+#             SHIPPED 1,404 <loc> entries: 104 matches + 1,248 players + 48 teams mapped 1:1 off the
+#             manifest, plus 4 static routes DISCOVERED by walking src/app for page.tsx. D7's
+#             arithmetic exactly; the 1,406-file export differs by out/404/ and out/_not-found/, which
+#             a sitemap must not carry. Story 3-9's four new routes will be picked up with NO EDIT to
+#             sitemap.ts -- that is the point of the walk.
+#             D1 HELD AND WAS VERIFIED ON DISK, not assumed: trailingSlash: true does NOT turn either
+#             into a directory route. App route handlers are copied flat before the subFolders naming.
+#             D5 WAS WRONG, AND THE STORY'S OWN TASK 2.4 CAUGHT IT. `export const dynamic =
+#             "force-static"` IS required on both files; without it the build dies with "Failed to
+#             collect page data for /sitemap.xml". D5 cited a real metadata-route exemption at
+#             export/routes/app-route.js:73 -- but that is on the EXPORT path and is never reached,
+#             because AppRouteRouteModule's constructor throws one phase earlier, at "Collecting page
+#             data", with no such exemption. Both docblocks record this so nobody deletes the line.
+#             The lesson generalises: a sourced claim can cite correct code and still be wrong about
+#             WHICH code runs first.
+#             SIX GATES DRIVEN RED, verbatim in the story. Both AC5 directions name the offending id
+#             (aaronson-brenden-usa dropped; phantom-player added), not "1404 !== 1403". Plus Layer 2
+#             (48 URLs lose the trailing slash), Layer 3 (out/teams/algeria deleted -> "listed in the
+#             sitemap but 404 on the host"), AC7 (Disallow: /data/ added), and the SKIP-GUARD case
+#             (out/sitemap.xml deleted while out/ remains -> three loud failures, zero green skips).
+#             D8 WAS VINDICATED BY AN UNPLANNED RED: after Task 3 the module was correct but out/ still
+#             held the two-entry probe, and Layers 1+2 went 18/18 GREEN while the export was wrong.
+#             Only the export-grounded layer caught it. That is the 1.17 self-grading trap, observed
+#             live rather than argued about.
+#             AC6 ACCOUNTED CAUSALLY, not asserted. Gate exit 0; the site's own origin appears ZERO
+#             times in the whole output; no EXTERNAL SUBRESOURCE block. Re-ran the gate with this
+#             story's two assets moved aside: 12,684 -> 12,686 scanned is EXACTLY these two files, and
+#             the MENTIONED list going 6 -> 7 proves http://www.sitemaps.org enters the export because
+#             of the sitemap and for no other reason. The gate was NOT edited. No test here asserts
+#             against the MENTIONED line at all (3-1's lexicographic-prefix trap), since
+#             assert-no-external-origins.test.ts:293 already ships the case.
+#             CHAIN: lint 0, typecheck 0, npm test 59 files / 1,488 tests / 0 skipped, build exit 0.
+#             Delta 58/1,468 -> 59/1,488 is +1 file and +20 tests, all sitemap.test.ts, 0 skipped at
+#             both ends. NOTE the Task 1.4 baseline was re-measured, not inherited: the story carried
+#             1,367 from 3-5's close and the real figure was 1,468, so +101 would have been
+#             misattributed to this story. Re-measure; the number moves every story this epic.
+#             NO WORKTREE NEEDED (D9): the shared tree compiled green at Task 1.4, and 3-10's session
+#             committed mid-story, leaving only this story's three files dirty by Task 8.
+#             LEDGER: the drift-gate entry naming 3-4 as owner was MOOT AS WRITTEN -- it assumed a
+#             public/robots.txt second origin copy, but the epic rules a robots.ts metadata route,
+#             app/public/ does not exist, and the origin reaches the reader only in out/robots.txt, a
+#             build artifact correctly outside a SOURCE-drift gate. Disposed in deferred-work.md with
+#             the verification (exactly one origin occurrence under app/, still site-origin.ts:32).
+#             Its three other gaps are NOT 3-4's, live in site-origin.test.ts, and are re-owned to
+#             whoever next revisits the drift gate -- recorded there that 3-1 is now done, so that
+#             file is no longer held.
+#             AC8 IS OPEN AND STAYS OPEN. No Search Console submission was attempted -- it is Juan's.
+#             Submitting <origin>/sitemap.xml starts the 90-day D20-b clock; re-open no earlier than
+#             2026-11-24. The date gets recorded only once Juan confirms. 7 of 8 ACs met.

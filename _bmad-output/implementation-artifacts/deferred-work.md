@@ -4675,7 +4675,28 @@ next to what turned out to be true.
   is case-insensitive, so a case variant drifts undetected on **both** sides. `SKIPPED_DIRECTORIES`
   at `:30` is also dead code: `walk` is only ever entered at `src`/`scripts`, neither of which
   contains `node_modules`, `.next` or `out`, so it reads as coverage that was never possible.
-  **Owner: Epic 3 story 3-4, which creates `public/robots.txt` and the sitemap.**
+
+  **DISPOSITION (story 3-4, 2026-08-26) — the motivating case is MOOT; the other three gaps stay
+  open and are re-owned.** This entry named 3-4 as owner on the premise that 3-4 creates
+  `public/robots.txt`, which would be a second origin copy in a directory the gate never walks.
+  **That premise is wrong and no such file was ever going to exist.** The epic rules a Next 16
+  `robots.ts` METADATA ROUTE, not a static asset: `app/public/` does not exist and 3-4 did not
+  create it, the `Sitemap:` line is composed from the imported `SITE_ORIGIN` at build time, and the
+  origin reaches the reader only in `out/robots.txt` — a build ARTIFACT, which is correctly outside
+  a source-drift gate's scan and is instead covered by `assert-no-external-origins.mjs` over the
+  export. Verified at close: exactly one occurrence of the origin string under `app/`, still
+  `site-origin.ts:32`, with both new files (`src/app/sitemap.ts`, `src/app/robots.ts`) inside the
+  gate's existing `src/**` scan and carrying no literal. **`app/public/**` being unwalked is
+  therefore not a live gap through this story; it remains a latent one if a static asset ever
+  lands.**
+
+  The entry's OTHER gaps are untouched and were never 3-4's: repo-root `netlify.toml` outside the
+  scan (AC1 forbade 3-4 from editing it at all), bare-host / concatenated / case-variant copies
+  counting zero, and `SKIPPED_DIRECTORIES` dead code. All three live in `site-origin.test.ts`,
+  which 3-4 does not own and did not touch. **Note the ownership blocker has since cleared:** story
+  3-1 was at `review` when 3-4 was contexted and is now `done`, so that file is no longer held by an
+  in-flight story. **Re-owner: whoever next revisits the drift gate** — it is a gate-hardening task
+  in its own right, not a rider on a story that only ever consumed the constant.
 
 - **The ESLint metadata selector is defeated by hoisting the object one line.**
   `app/eslint.config.mjs:202` — the ancestor anchor is
