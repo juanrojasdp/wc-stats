@@ -3333,7 +3333,35 @@ development_status:
   2-18-glossary-about-terminology-completion: done
   # Requires committed real /data from 1-19
   2-19-performance-accessibility-hardening-real-data-swap-launch: done
-  epic-2-retrospective: optional
+  epic-2-retrospective: done
+
+# Epic 2 retrospective action items (2026-08-26).
+# Document: _bmad-output/implementation-artifacts/epic-2-retro-2026-08-26.md
+action_items:
+  - epic: 2
+    action: "Prove every new gate can fail: no budget/schema/invariant/guard gate is accepted until driven RED once, with the demonstration recorded. Generalizes 2.19 D1."
+    owner: "Dev workflow"
+    status: open
+  - epic: 2
+    action: "Ban coincidence-green tests: where a fixture and the real corpus can share ids, pin by relative path and prove the test fails when the guarded thing is reverted."
+    owner: "Dev workflow"
+    status: open
+  - epic: 2
+    action: "Write the concurrent-session protocol into the story template - file-ownership probe at Task 1, the abort rule, isolated-worktree verification, and D13 commit-your-own-slices."
+    owner: "Story creation"
+    status: open
+  - epic: 2
+    action: "Fix commit attribution: no sweeping git add; each session commits only its own paths."
+    owner: "All sessions"
+    status: open
+  - epic: 2
+    action: "Keep create-light / validate-hard (ruled by Juan) and make the fresh-context validation pass a REQUIRED pre-dev step for any story asserting a mechanism, token or library behaviour."
+    owner: "Story creation"
+    status: open
+  - epic: 2
+    action: "Run the retrospective at every epic close - Epic 1's was skipped and its concurrent-session lesson had to be re-learned in Epic 2."
+    owner: "Juan"
+    status: open
 
 # 2026-08-25: story 2-19 code review — 3 layers over the 6,414-line code diff (78 files), 32
 #             findings kept / 3 dismissed, triaged to 5 decisions (all ruled by Juan), 20 patches
