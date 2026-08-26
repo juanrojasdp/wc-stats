@@ -4,7 +4,7 @@ baseline_commit: f07116b18a2ae811c5611500a3e08d3c0c38ebb0
 
 # Story 3.1: Build-Gate & Lint-Gate Correction
 
-Status: in-progress
+Status: review
 
 Epic: 3 — Post-Launch Reach (Discoverability, Landing & Navigation)
 Baseline: `main` @ `f07116b` — 1,251 tests / 1,406 routes / 0 skipped, live at `mundial-stats.juancr.dev`
@@ -303,8 +303,8 @@ For each: record **the exact command** and **its failing output** in the Complet
 
 ### Task 9 — Commit (A4)
 
-- [ ] 9.1 `git status --porcelain` — confirm the only dirty paths are this story's five owned files plus this story file and `sprint-status.yaml`.
-- [ ] 9.2 Stage **by explicit path only**. Never `git add -A`, never `git add app/`, never a directory add.
+- [x] 9.1 `git status --porcelain` — confirm the only dirty paths are this story's five owned files plus this story file and `sprint-status.yaml`.
+- [x] 9.2 Stage **by explicit path only**. Never `git add -A`, never `git add app/`, never a directory add.
 
   ```
   git add app/src/lib/site-origin.ts app/src/lib/site-origin.test.ts \
@@ -315,10 +315,10 @@ For each: record **the exact command** and **its failing output** in the Complet
           _bmad-output/implementation-artifacts/sprint-status.yaml
   ```
 
-- [ ] 9.3 Verify no `ux-designs/**` path and no `spec-sign-the-project.md` path (`SiteHeader.tsx`, `AttributionFooter.tsx`, `es.ts`, `en.ts`) is staged: `git diff --cached --name-only`.
-- [ ] 9.4 Commit directly to `main`. No branch, no PR.
-- [ ] 9.5 Push. If it 403s: `gh auth switch -u juanrojasdp` first.
-- [ ] 9.6 Append a one-paragraph journal entry to `sprint-status.yaml` (append only — that file carries the project journal and the Epic 2 retro action items; **never rewrite it**) and set `3-1-build-gate-lint-gate-correction: done` when code review closes, not before.
+- [x] 9.3 Verify no `ux-designs/**` path and no `spec-sign-the-project.md` path (`SiteHeader.tsx`, `AttributionFooter.tsx`, `es.ts`, `en.ts`) is staged: `git diff --cached --name-only`.
+- [x] 9.4 Commit directly to `main`. No branch, no PR.
+- [x] 9.5 Push. If it 403s: `gh auth switch -u juanrojasdp` first.
+- [x] 9.6 Append a one-paragraph journal entry to `sprint-status.yaml` (append only — that file carries the project journal and the Epic 2 retro action items; **never rewrite it**) and set `3-1-build-gate-lint-gate-correction: done` when code review closes, not before.
 
 ---
 
