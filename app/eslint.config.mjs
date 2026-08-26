@@ -176,18 +176,24 @@ export default defineConfig([
            * silently. Identical to the hole the 2.18 review closed for the
            * object-prop family; the metadata selector never got the same
            * treatment, and 3.3 authors nested object literals where the quoted
-           * spelling is entirely plausible. A computed key stays unreachable by
-           * any static selector, as recorded there.
+           * spelling is entirely plausible. A key computed from an IDENTIFIER
+           * (`{ [K]: "..." }`) stays unreachable by any static selector; a key
+           * computed from a STRING LITERAL (`{ ["alt"]: "..." }`) does not —
+           * `key.value` is `"alt"` there and the arm below matches it. The
+           * earlier claim here that computed keys were categorically
+           * unreachable was wrong (code review 2026-08-26).
            *
-           * MEASURED CONSEQUENCE OF THAT ARM, recorded so it is not read as a
-           * bug later: a quoted key is itself a Literal child of the Property,
-           * so `{ "siteName": t("app.siteName") }` reports at the KEY even
-           * though its value is a CallExpression. The effect is that the
-           * quoted spelling is simply not writable in a metadata object — the
-           * identifier spelling, which all four shipped sites already use, is.
-           * The 2.18 object-prop family above behaves identically on
-           * `{ "value": t("x") }`; this arm is deliberately the same shape
-           * rather than a second, subtly different one.
+           * THE ARM IS SPLIT OFF AS ITS OWN ENTRY, AND THAT IS THE FIX. As
+           * first shipped, `key.value` was OR-ed into one selector ending in
+           * `> :matches(Literal, ...)` — and a quoted key is ITSELF a Literal
+           * child of the Property, so `{ "siteName": t("app.siteName") }`
+           * reported AT THE KEY even though its value is a CallExpression:
+           * a build-breaking error under `--max-warnings 0` on the one
+           * CORRECT way to write the property. Story 3.3 is the consumer and
+           * the spec says it authors exactly this shape. So the quoted-key arm
+           * now constrains the VALUE's type instead of matching any Literal
+           * child, and reports once, on the Property. `{ "alt": "Texto" }`
+           * is still an error; `{ "alt": t("x") }` is not.
            *
            * THE DESCENDANT COMBINATOR IS DELIBERATE. A `siteName:` inside a
            * helper-call argument object within generateMetadata — which is
@@ -199,7 +205,18 @@ export default defineConfig([
            * breaks — verified with `npm run lint`, not assumed.
            */
           selector:
-            ':matches(VariableDeclarator[id.name="metadata"], FunctionDeclaration[id.name="generateMetadata"], VariableDeclarator[id.name="generateMetadata"]) Property:matches([key.name=/^(title|description|default|template|absolute|alt|siteName)$/], [key.value=/^(title|description|default|template|absolute|alt|siteName)$/]) > :matches(Literal, TemplateLiteral, BinaryExpression, LogicalExpression, ConditionalExpression)',
+            ':matches(VariableDeclarator[id.name="metadata"], FunctionDeclaration[id.name="generateMetadata"], VariableDeclarator[id.name="generateMetadata"]) Property[key.name=/^(title|description|default|template|absolute|alt|siteName)$/] > :matches(Literal, TemplateLiteral, BinaryExpression, LogicalExpression, ConditionalExpression)',
+          message: "Metadata strings must come from the locale layer.",
+        },
+        {
+          /*
+           * The quoted/computed-key arm. Separate entry, and it selects the
+           * PROPERTY constrained by `value.type` rather than any matching
+           * child — see "THE ARM IS SPLIT OFF" above for why the one-selector
+           * form made `{ "siteName": t("app.siteName") }` a build error.
+           */
+          selector:
+            ':matches(VariableDeclarator[id.name="metadata"], FunctionDeclaration[id.name="generateMetadata"], VariableDeclarator[id.name="generateMetadata"]) Property[key.value=/^(title|description|default|template|absolute|alt|siteName)$/]:matches([value.type="Literal"], [value.type="TemplateLiteral"], [value.type="BinaryExpression"], [value.type="LogicalExpression"], [value.type="ConditionalExpression"])',
           message: "Metadata strings must come from the locale layer.",
         },
       ],

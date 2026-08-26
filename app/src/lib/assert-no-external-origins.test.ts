@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,9 +25,9 @@ const SCRIPT = path.join(APP_DIR, "scripts", "assert-no-external-origins.mjs");
  * is the hardest to notice in review.
  */
 
-function run(dir: string): { status: number; output: string } {
+function run(dir: string, script: string = SCRIPT): { status: number; output: string } {
   try {
-    const stdout = execFileSync(process.execPath, [SCRIPT, dir], { encoding: "utf8" });
+    const stdout = execFileSync(process.execPath, [script, dir], { encoding: "utf8" });
     return { status: 0, output: stdout };
   } catch (error) {
     const failure = error as { status?: number; stdout?: string; stderr?: string };
@@ -417,6 +417,174 @@ describe("assert-no-external-origins gate (AR-11, NFR-9)", () => {
       const result = run(dir);
       expect(result.status).toBe(1);
       expect(result.output).toContain(mangled);
+    },
+    SPAWN_TIMEOUT_MS
+  );
+
+  /*
+   * ═══ PARITY WITH THE PRE-REWRITE POSITION (code review 2026-08-26) ═══
+   *
+   * Story 3.1 replaced the `<link href>` pattern — which matched
+   * `href="(FETCH_HOST` and captured a PREFIX — with a whole-tag match plus
+   * `linkHref`. Every case the story added fed that extractor a well-formed,
+   * single-`href`, quoted, space-free, no-`data-*` tag: exactly the shapes it
+   * happened to handle. Nothing asserted that the rewritten position still
+   * CAUGHT WHAT THE OLD ONE CAUGHT, so three regressions shipped with all 21
+   * cases green, and the review reproduced each as exit 0 here against exit 1
+   * on `f07116b`.
+   *
+   * That is the gap these cases close. A gate that stopped failing has proved
+   * nothing (A1), and "no test went red" is not the same claim as "no
+   * behaviour was lost" — Task 5.13 guarded only against WIDENING.
+   *
+   * The hrefs below are off-origin by construction, so no `SITE_ORIGIN`
+   * allowance can rescue them; each isolates one parsing defect.
+   */
+
+  it(
+    "REJECTS an external stylesheet whose href carries a LEADING SPACE — browsers strip it and fetch",
+    () => {
+      /*
+       * THE SHARP ONE. `FETCH_HOST`'s tail class excludes whitespace, so the
+       * shipped `^FETCH_HOST$` full-match dropped the whole tag to `null`.
+       * Every user agent trims leading/trailing whitespace in a URL attribute
+       * and fetches the stylesheet — so the export renders the third-party
+       * request while the gate prints "0 external subresources" and exits 0.
+       */
+      const dir = tree({ "index.html": '<link rel="stylesheet" href=" https://cdn.evil.example.com/x.css">' });
+      const result = run(dir);
+      expect(result.status).toBe(1);
+      const failureBlock = result.output.slice(result.output.indexOf("EXTERNAL SUBRESOURCE(S)"));
+      expect(failureBlock).toContain("<link href>");
+      expect(failureBlock).toContain("cdn.evil.example.com");
+    },
+    SPAWN_TIMEOUT_MS
+  );
+
+  it(
+    "REJECTS an external stylesheet whose href contains a space or a parenthesis — a PREFIX match, not a full one",
+    () => {
+      /*
+       * Same root cause as the case above, reached by the two characters most
+       * likely to appear in a real URL rather than by leading whitespace. The
+       * pre-3.1 position reported the prefix; the full match reported nothing.
+       */
+      const dir = tree({
+        "index.html":
+          '<link rel="stylesheet" href="https://cdn.evil.example.com/a b.css">' +
+          '<link rel="icon" href="https://cdn.evil2.example.com/a(1).png">',
+      });
+      const result = run(dir);
+      expect(result.status).toBe(1);
+      const failureBlock = result.output.slice(result.output.indexOf("EXTERNAL SUBRESOURCE(S)"));
+      expect(failureBlock).toContain("cdn.evil.example.com");
+      expect(failureBlock).toContain("cdn.evil2.example.com");
+    },
+    SPAWN_TIMEOUT_MS
+  );
+
+  it(
+    "REJECTS an external stylesheet hidden behind a data-href decoy — the reader must not match data-*href",
+    () => {
+      /*
+       * `\b` holds between `-` and `h`, and `.exec` takes the LEFTMOST match,
+       * so `\bhref` read `data-href`'s relative value and returned `null`.
+       * Next already emits `data-precedence` on stylesheet links, so this is
+       * the shape of a real future regression, not a contrivance.
+       */
+      const dir = tree({
+        "index.html":
+          '<link rel="stylesheet" data-href="/local.css" href="https://cdn.evil.example.com/z.css">',
+      });
+      const result = run(dir);
+      expect(result.status).toBe(1);
+      expect(result.output).toContain("cdn.evil.example.com/z.css");
+    },
+    SPAWN_TIMEOUT_MS
+  );
+
+  it(
+    "REJECTS an external stylesheet whose rel is spoofed by data-rel — deny-by-default must not be forgeable",
+    () => {
+      /*
+       * The escape hatch, and the worst of the three: `\brel` matched
+       * `data-rel`, so an attacker-shaped — or merely careless — attribute
+       * manufactured a non-fetching rel and waved a genuine third-party
+       * `rel="stylesheet"` straight through the policy at NON_FETCHING_RELS.
+       */
+      const dir = tree({
+        "index.html": '<link data-rel="canonical" rel="stylesheet" href="https://cdn.evil.example.com/y.css">',
+      });
+      const result = run(dir);
+      expect(result.status).toBe(1);
+      expect(result.output).toContain("cdn.evil.example.com/y.css");
+    },
+    SPAWN_TIMEOUT_MS
+  );
+
+  it(
+    "REJECTS a SELF-ORIGIN tracker script and a self-origin fetch() — the allowance is position-scoped (NFR-9)",
+    () => {
+      /*
+       * The self-origin allowance shipped as a third entry in the ONE global
+       * allow-list, so `allowed()` applied it at every fetching position and
+       * this tree scanned green — exit 0, with no MENTIONED line either.
+       * Under AD-13 the deploy is a static export with NO functions, so there
+       * is no self-origin endpoint to legitimately fetch: this is exactly the
+       * shape a proxied-analytics regression takes, and NFR-9 bans telemetry
+       * outright. The allowance now covers `<link href>` and the two
+       * informational lines only.
+       *
+       * The sibling cases above pin the other direction — a self-origin
+       * canonical, alternate, preload, og:image and sitemap all still pass —
+       * so this case cannot be satisfied by simply reverting the allowance.
+       */
+      const dir = tree({
+        "index.html": `<script src="${SITE_ORIGIN}/tracker.js"></script>`,
+        "analytics.js": `fetch("${SITE_ORIGIN}/collect", { method: "POST" });`,
+      });
+      const result = run(dir);
+      expect(result.status).toBe(1);
+      const failureBlock = result.output.slice(result.output.indexOf("EXTERNAL SUBRESOURCE(S)"));
+      expect(failureBlock).toContain("tracker.js");
+      expect(failureBlock).toContain("collect");
+    },
+    SPAWN_TIMEOUT_MS
+  );
+
+  it(
+    "REJECTS a SECOND `export const SITE_ORIGIN` declaration at exit 2 rather than silently reading the first",
+    () => {
+      /*
+       * `^` under `/m` requires only column 0, which an unindented line inside
+       * the constant's own doc comment satisfies, and `.exec` returns the
+       * LEFTMOST match — so a commented-out example silently won the read and
+       * the gate allow-listed an origin the export never emits. The drift gate
+       * in `site-origin.test.ts` cannot catch it either: it counts occurrences
+       * of the CURRENT value, so a second declaration carrying a DIFFERENT
+       * value adds zero.
+       *
+       * Driven through a COPY of the whole `app/` script + constant rather than
+       * by mutating the real file, so the case is safe under a dirty tree.
+       */
+      const sandbox = mkdtempSync(path.join(tmpdir(), "wcstats-origin-decl-"));
+      mkdirSync(path.join(sandbox, "scripts"), { recursive: true });
+      mkdirSync(path.join(sandbox, "src", "lib"), { recursive: true });
+      copyFileSync(SCRIPT, path.join(sandbox, "scripts", "assert-no-external-origins.mjs"));
+      writeFileSync(
+        path.join(sandbox, "src", "lib", "site-origin.ts"),
+        `/*\nexport const SITE_ORIGIN = "https://staging.example.dev";\n*/\n` +
+          `export const SITE_ORIGIN = "${SITE_ORIGIN}";\n`,
+        "utf8"
+      );
+      const out = tree({ "index.html": "<p>ok</p>" });
+
+      const result = run(out, path.join(sandbox, "scripts", "assert-no-external-origins.mjs"));
+      rmSync(sandbox, { recursive: true, force: true });
+
+      expect(result.status).toBe(2);
+      expect(result.output).toContain("declarations");
+      expect(result.output).toContain("exactly one");
     },
     SPAWN_TIMEOUT_MS
   );

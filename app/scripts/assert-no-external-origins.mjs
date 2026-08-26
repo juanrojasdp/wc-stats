@@ -86,22 +86,48 @@ const SKIPPED_DIRECTORIES = new Set(["data"]);
  */
 const SITE_ORIGIN_FILE = path.join(APP_DIR, "src", "lib", "site-origin.ts");
 
+/*
+ * `\s*$` rather than `$`, and EVERY match collected rather than the first
+ * (code review 2026-08-26). Two separate ways the original read went wrong:
+ *
+ *   - Under `/m`, `$` matches immediately before `\n`, so a CRLF checkout puts
+ *     a `\r` between the `;` and the newline and the read fails CLOSED: exit 2
+ *     on every build, reporting the declaration MISSING when it is present and
+ *     correct. There is no `.gitattributes` anywhere in this repo pinning the
+ *     line ending, and this project has a recorded history of scripted edits
+ *     emitting CRLF.
+ *   - `^` under `/m` requires only COLUMN 0, which an unindented line inside
+ *     the doc comment above the constant satisfies — and `.exec` returns the
+ *     LEFTMOST match. A commented-out example, or a genuine second declaration
+ *     added later, silently won the read. The drift gate cannot catch that
+ *     either: it counts occurrences of the CURRENT origin VALUE, so a second
+ *     declaration carrying a DIFFERENT value adds zero. Hence: exactly one, or
+ *     exit 2 and say how many were found.
+ */
+const SITE_ORIGIN_DECLARATION = /^export const SITE_ORIGIN = ["'`]([^"'`]+)["'`];\s*$/gm;
+
 async function readSiteOrigin() {
   const source = await readFile(SITE_ORIGIN_FILE, "utf8");
-  const match = /^export const SITE_ORIGIN = ["'`]([^"'`]+)["'`];$/m.exec(source);
-  if (match === null) {
+  const matches = [...source.matchAll(SITE_ORIGIN_DECLARATION)];
+  if (matches.length === 0) {
     throw new Error(
       `could not find \`export const SITE_ORIGIN = "<origin>";\` in ${SITE_ORIGIN_FILE}`
     );
   }
-  return match[1];
+  if (matches.length > 1) {
+    throw new Error(
+      `found ${matches.length} \`export const SITE_ORIGIN\` declarations in ${SITE_ORIGIN_FILE} — ` +
+        `there must be exactly one, and the gate must not have to guess which`
+    );
+  }
+  return matches[0][1];
 }
 
 /*
  * NO FALLBACK, EVER. A default here would mean a reformatted or renamed
  * constant silently reverts the gate to its pre-3.1 behaviour and red-builds
  * every page — or, worse, allow-lists a stale origin. Exit 2, not 1, on this
- * file's own recorded rule (`:254-265` below): nothing was found to be wrong
+ * file's own recorded rule (the two exit-2 sites below): nothing was found to be wrong
  * with the export, the check could not be performed.
  *
  * Top-level `await` is already in use in this module (`for await`); ESM allows it.
@@ -140,15 +166,43 @@ const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
  * - THE ORIGIN BOUNDARY `(?:[/?#]|$)` IS THE SECURITY-RELEVANT HALF. A plain
  *   prefix match allow-lists `<origin>.evil.com/track.js`. `[/?#]` rather than
  *   `(/|$)` so a bare-origin query or fragment form is not falsely reported.
- * - SCHEME-EXACT BY DESIGN. An `http://` self-URL is NOT allow-listed. A
- *   canonical emitted over `http` is a real defect and must surface. Do not
- *   "fix" this later by loosening the scheme.
+ * - SCHEME-EXACT WHEREVER THE ALLOWANCE IS CONSULTED AT ALL. An `http://`
+ *   self-URL is not allow-listed, so an `http` preload or stylesheet surfaces.
+ *   NOTE THE LIMIT OF THAT CLAIM (code review 2026-08-26): a `rel="canonical"`
+ *   or `rel="alternate"` short-circuits in `linkHref` BEFORE the allow-list is
+ *   reached, so an `http` canonical passes on its REL, not on its scheme. That
+ *   is deliberate — the rel exclusion is origin- and scheme-independent by
+ *   design — but do not read this bullet as covering it, because it does not.
  */
-const ALLOWED = [
+const NAMESPACE_ALLOWED = [
   /^https?:\/\/(www\.)?w3\.org\//i,
   /^https?:\/\/(www\.)?schema\.org\//i,
-  new RegExp(`^${escapeRegExp(SITE_ORIGIN)}(?:[/?#]|$)`, "i"),
 ];
+
+/*
+ * ═══ THE SELF-ORIGIN ALLOWANCE IS POSITION-SCOPED ═══
+ *
+ * Code review 2026-08-26. It shipped as a third entry in the ONE global
+ * allow-list, which meant `allowed()` applied it at EVERY fetching position.
+ * Measured consequence: a tree carrying `<script src="<origin>/tracker.js">`
+ * and a self-origin `fetch("<origin>/collect", {method:"POST"})` scanned GREEN
+ * — exit 0, and not even an informational MENTIONED line — where the pre-3.1
+ * gate exited 1 naming both. Under AD-13 this deploy is a static export with
+ * NO functions, so there is no self-origin endpoint to legitimately fetch: a
+ * self-origin ABSOLUTE `fetch`/`src` is precisely the shape a proxied-analytics
+ * regression takes, and NFR-9 is the clause this file's header calls the one
+ * that matters most.
+ *
+ * So the allowance is granted only where AC1 actually argues for it: the
+ * `<link href>` position (canonical, hreflang alternate, preload) and the two
+ * INFORMATIONAL lines — `mentions` and `anchors` — which would otherwise report
+ * this site's own host as external over story 3.4's sitemap. `src`, `srcset`,
+ * `poster`, CSS `url()`, `@import`, `fetch()`, `import()`, `importScripts()`,
+ * `new Worker()`, `XMLHttpRequest`, `EventSource` and `WebSocket` stay gated on
+ * origin exactly as they were before story 3.1.
+ */
+const SELF_ORIGIN = new RegExp(`^${escapeRegExp(SITE_ORIGIN)}(?:[/?#]|$)`, "i");
+const SELF_ORIGIN_POSITIONS = new Set(["<link href>"]);
 
 /*
  * ═══ TWO HOST PATTERNS, AND THE DIFFERENCE IS THE WHOLE 2.19-REVIEW FIX ═══
@@ -209,9 +263,38 @@ const NON_FETCHING_RELS = new Set(["canonical", "alternate"]);
  * fall through to deny-by-default and RED-BUILD ON A CORRECT CANONICAL — a
  * build-breaking false positive, the failure mode this story exists to remove.
  */
-const LINK_HREF = new RegExp(String.raw`\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))`, "i");
-const LINK_REL = new RegExp(String.raw`\brel\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))`, "i");
-const FETCH_HOST_ONLY = new RegExp(`^${FETCH_HOST}$`, "i");
+/*
+ * `(?<![-\w:])` RATHER THAN `\b`, AND IT IS NOT COSMETIC (code review
+ * 2026-08-26). `\b` holds between `-` and `h`, so `\bhref` matched `data-href`
+ * and `xlink:href`, and `.exec` returns the LEFTMOST match. Both readers were
+ * therefore spoofable by an attribute nobody looks at:
+ *
+ *   - `<link rel="stylesheet" data-href="/local.css" href="<external>">` read
+ *     the relative decoy and returned `null` — the tag vanished from the gate.
+ *     Next already emits `data-precedence` on stylesheet links, so a future
+ *     `data-*href` would have switched this position off wholesale.
+ *   - `<link data-rel="canonical" rel="stylesheet" href="<external>">`
+ *     manufactured a non-fetching rel and waved a real third-party stylesheet
+ *     straight through the deny-by-default policy below.
+ *
+ * Both were verified exit 0 here and exit 1 against the pre-story gate.
+ */
+const LINK_HREF = new RegExp(String.raw`(?<![-\w:])href\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))`, "i");
+const LINK_REL = new RegExp(String.raw`(?<![-\w:])rel\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))`, "i");
+
+/*
+ * A PREFIX MATCH, NOT A FULL ONE, AND THAT IS THE WHOLE BUG (code review
+ * 2026-08-26). This shipped as `^${FETCH_HOST}$`, testing the ENTIRE attribute
+ * value, where the pre-3.1 position captured a PREFIX from the opening quote.
+ * `FETCH_HOST`'s tail class excludes space, quote, apostrophe, backtick, `)`,
+ * `<`, `>` and backslash — so any href containing ONE of them failed the
+ * anchored test and the whole tag was dropped to `null`. Verified leaking, all
+ * exit 0 here and exit 1 on the pre-story gate: `.../a b.css`, `.../a(1).css`,
+ * a backslash path separator (browsers normalise it to `/` and fetch), and —
+ * the sharp one — `href=" <external>"`, a single LEADING SPACE, which every
+ * browser strips before fetching. Hence `.trim()` then prefix-match.
+ */
+const FETCH_HOST_PREFIX = new RegExp(`^(${FETCH_HOST})`, "i");
 
 const attributeValue = (match) => (match === null ? undefined : (match[1] ?? match[2] ?? match[3]));
 
@@ -225,13 +308,15 @@ const attributeValue = (match) => (match === null ? undefined : (match[1] ?? mat
 function linkHref(match) {
   const tag = match[0];
   const href = attributeValue(LINK_HREF.exec(tag));
-  if (href === undefined || !FETCH_HOST_ONLY.test(href)) return null;
+  if (href === undefined) return null;
+  const fetched = FETCH_HOST_PREFIX.exec(href.trim());
+  if (fetched === null) return null;
 
   const rel = attributeValue(LINK_REL.exec(tag)) ?? "";
   const tokens = rel.trim().toLowerCase().split(/\s+/).filter(Boolean);
   if (tokens.length > 0 && tokens.every((token) => NON_FETCHING_RELS.has(token))) return null;
 
-  return href;
+  return fetched[1];
 }
 
 /**
@@ -303,9 +388,10 @@ const FETCHING_POSITIONS = [
 const ANY_URL = new RegExp(HOST, "gi");
 const ANCHOR_HREF = new RegExp(String.raw`<a\b[^>]*\bhref\s*=\s*["'](${HOST})`, "gi");
 
-const allowed = (url) => {
+const allowed = (url, permitSelfOrigin = false) => {
   const normalized = url.startsWith("//") ? `https:${url}` : url;
-  return ALLOWED.some((pattern) => pattern.test(normalized));
+  if (NAMESPACE_ALLOWED.some((pattern) => pattern.test(normalized))) return true;
+  return permitSelfOrigin && SELF_ORIGIN.test(normalized);
 };
 
 async function* walk(dir) {
@@ -364,7 +450,11 @@ try {
       for (const match of text.matchAll(pattern)) {
         // No extractor means group 1 is the URL — every position but <link>.
         const url = extract === undefined ? match[1] : extract(match);
-        if (url === null || allowed(url)) continue;
+        // `== null`, not `=== null`: an extractor returning `undefined` would reach
+        // `allowed(undefined)`, whose `.startsWith` throws inside this walk's `try`
+        // and kills the build at exit 2 blaming a missing export — exactly the
+        // misattribution `originOf` below records as a bug already fixed once.
+        if (url == null || allowed(url, SELF_ORIGIN_POSITIONS.has(position))) continue;
         const key = `${position}  ${url}`;
         const files = fetching.get(key) ?? new Set();
         files.add(relative);
@@ -372,10 +462,10 @@ try {
       }
     }
     for (const match of text.matchAll(ANCHOR_HREF)) {
-      if (!allowed(match[1])) anchors.add(match[1]);
+      if (!allowed(match[1], true)) anchors.add(match[1]);
     }
     for (const match of text.matchAll(ANY_URL)) {
-      if (allowed(match[0])) continue;
+      if (allowed(match[0], true)) continue;
       mentions.add(originOf(match[0]) ?? `${match[0]} (unparseable)`);
     }
   }

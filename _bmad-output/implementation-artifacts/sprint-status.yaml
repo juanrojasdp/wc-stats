@@ -3390,7 +3390,7 @@ development_status:
   # (bmad-quick-dev route, retro §8.4), i.e. outside the create-story trigger
   # that normally flips this field. Recording the true state.
   epic-3: in-progress
-  3-1-build-gate-lint-gate-correction: review
+  3-1-build-gate-lint-gate-correction: done
   3-2-metadatabase-canonical-urls: backlog
   3-3-og-image-twitter-card: backlog
   3-4-sitemap-robots: backlog
@@ -3436,7 +3436,7 @@ development_status:
   # (two of four blockers already resolved by 2.19, including the one it called
   # fatal). Owns match-anchors.ts, use-anchor-nonce.ts, TacticalLayer, PitchPanel,
   # TournamentHub, the five section components, expert-logs.ts and i18n.test.ts.
-  3-8-match-route-deep-link-plumbing: review
+  3-8-match-route-deep-link-plumbing: done
   3-9-home-page-refactor: backlog
   # Context created 2026-08-26. Implements UX-DR24's nav; does NOT re-rule it. Owns
   # SiteNav.tsx + SiteNav.test.tsx + nav-destinations.ts/.test.ts (NEW), SiteHeader.tsx,
@@ -4185,3 +4185,36 @@ action_items:
 #             robocopy <shared>/app/node_modules <wt>/app/node_modules /E /MT:16 -- 0.49 GB, ~27 s,
 #             and far cheaper than npm ci, which dies on Windows ENOTEMPTY. Note robocopy exit code 1
 #             means "files copied" and is SUCCESS; only >= 8 is an error.
+
+# 2026-08-26 CODE REVIEW, story 3-1 (build-gate & lint-gate correction) -> done.
+#             Three adversarial layers, and every finding re-verified in-session by running the
+#             shipped gate and the pre-story gate (f07116b) over identical fixtures rather than by
+#             reading the diff. That mattered: it promoted one finding the other two layers missed,
+#             demoted three, and CORRECTED TWO AGENT CLAIMS THAT WERE WRONG (the pre-story gate does
+#             NOT catch the `>`-in-attribute case; the two REJECT tests are redundant, not hollow,
+#             because status===1 can only come from the fetching block).
+#             THE STORY FIXED ITS FALSE POSITIVE AND OPENED FOUR FALSE NEGATIVES. All four verified
+#             as exit 0 on the shipped gate against exit 1 on f07116b, with all 23 tests green over
+#             them: (1) `^FETCH_HOST$` full-value matching dropped any href containing a space, `(`,
+#             `)` or a backslash -- including `href=" <url>"`, one LEADING SPACE, which every browser
+#             strips before fetching; (2) `\bhref` matched `data-href` and .exec takes the leftmost,
+#             so a relative decoy cleared the tag; (3) `\brel` matched `data-rel`, forging a
+#             non-fetching rel over a real third-party stylesheet; (4) the self-origin allowance was
+#             a third entry in the ONE global allow-list, so a self-origin tracker `<script src>`
+#             plus `fetch("<origin>/collect")` scanned green with no MENTIONED line -- under AD-13
+#             there are no functions, so that is exactly the proxied-analytics shape NFR-9 bans.
+#             ROOT CAUSE OF (1)-(3) IS ONE CODE BLOCK, and the spec shares the blame: Task 4.3
+#             PRESCRIBES `^${FETCH_HOST}$`, and Task 5.13 guarded only against WIDENING, so nothing
+#             was positioned to catch a narrowing. Six parity cases now pin it (21 -> 27).
+#             12 patches applied, 3 decisions ruled the restrictive way by Juan: allowance scoped to
+#             <link href> + the informational lines; the quoted-key eslint arm constrained on
+#             value.type so `{ "siteName": t(...) }` stops being a build error on CORRECT code; and
+#             eslint-gate.test.ts extended under a review-granted A3/A4 exception (40 -> 46) because
+#             AC4 had shipped with NO durable test at all -- its only proof was a deleted probe.
+#             5 defers ledgered (imagesrcset uncovered, `>`-in-attribute tag truncation, drift-gate
+#             scope vs AC1's "in the repository", the hoisted-metadata-object eslint escape, and
+#             three stated invariants no test pins). 6 dismissed. Verified after patching: lint 0,
+#             tsc 0, 27/27 + 46/46 + 2/2, and a 14-case behavioural probe (8 defects now caught,
+#             6 must-still-pass cases still passing). Corrected the File List's transcription of
+#             --stat totals as insertions: the .mjs is +141/-7 and eslint.config is +46/-4.
+#             The two deferred-work entries story 3-1 owned are now CLOSED in the ledger.

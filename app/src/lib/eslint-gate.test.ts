@@ -103,6 +103,68 @@ describe("i18n gate catches hardcoded user-facing strings", () => {
     );
     expect(errors).toContain("no-restricted-syntax");
   });
+
+  /*
+   * ═══ AC4's KEYS, PINNED (Story 3.1 code review 2026-08-26) ═══
+   *
+   * Story 3.1 added `alt`, `siteName` and the quoted-key arm to the metadata
+   * selector and shipped ZERO cases here — its only proof was a throwaway lint
+   * probe, deleted at the end of the story. AC1's drift gate and AC2's rel
+   * policy both got durable tests; AC4 got none, so deleting `|alt|siteName`
+   * from the config was caught by nothing in `npm run test`.
+   *
+   * This file was not in story 3.1's Ownership table, so extending it is an
+   * A3/A4 exception granted at code review rather than an oversight corrected.
+   *
+   * Both DIRECTIONS matter here. The bare-literal cases stop the keys being
+   * dropped; the `t()` cases stop the rule being re-widened into erroring on
+   * correct code, which is how a `--max-warnings 0` gate gets switched off.
+   */
+
+  it("metadata openGraph alt — a bare literal (Story 3.1 AC4)", async () => {
+    const errors = await gateErrorsFor(
+      `export const metadata = { openGraph: { images: [{ alt: "Texto en espanol" }] } };`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("metadata openGraph siteName — a bare literal (Story 3.1 AC4)", async () => {
+    const errors = await gateErrorsFor(
+      `export const metadata = { openGraph: { siteName: "Mundial Stats" } };`
+    );
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("metadata alt under the QUOTED key spelling (Story 3.1 AC4, key.value arm)", async () => {
+    const errors = await gateErrorsFor(`export const metadata = { openGraph: { "alt": "Texto" } };`);
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("metadata alt under a STRING-LITERAL COMPUTED key (Story 3.1 AC4, key.value arm)", async () => {
+    const errors = await gateErrorsFor(`export const metadata = { openGraph: { ["alt"]: "Texto" } };`);
+    expect(errors).toContain("no-restricted-syntax");
+  });
+
+  it("does NOT fire on a quoted key whose value is a correct t() call (3.1 review fix)", async () => {
+    /*
+     * THE REGRESSION THIS CASE EXISTS FOR. As first shipped, the quoted-key
+     * arm was OR-ed into a selector ending `> :matches(Literal, ...)`, and a
+     * quoted key is ITSELF a Literal child of the Property — so this snippet,
+     * the one CORRECT way to write the property, was a build error under
+     * `--max-warnings 0`. Story 3.3 authors exactly this shape.
+     */
+    const errors = await gateErrorsFor(
+      `export const metadata = { openGraph: { "siteName": t("app.siteName") } };`
+    );
+    expect(errors).not.toContain("no-restricted-syntax");
+  });
+
+  it("does NOT fire on the identifier key spelling with a t() call", async () => {
+    const errors = await gateErrorsFor(
+      `export const metadata = { openGraph: { siteName: t("app.siteName"), images: [{ alt: t("og.alt") }] } };`
+    );
+    expect(errors).not.toContain("no-restricted-syntax");
+  });
 });
 
 /*

@@ -4410,6 +4410,16 @@ creation, and nothing downstream noticed.
   and an off-origin `og:image` must still fail — a gate that stopped failing has proved nothing, the
   argument this file's own header makes twice), and `SITE_ORIGIN` defined in exactly ONE place shared
   with `metadataBase`, because two copies drift silently in the direction that matters.
+  **CLOSED 2026-08-26 by story 3-1 (`432dc29`), with both conditions met and one correction applied
+  at code review.** The gate now reads `SITE_ORIGIN` from its single definition
+  (`app/src/lib/site-origin.ts`) and treats `rel="canonical"`/`rel="alternate"` as navigation hints
+  under a deny-by-default rel policy; the negative test exists and holds (an off-origin stylesheet
+  still fails while an off-origin `og:image` is only reported). Code review then found the rewrite
+  had opened THREE false negatives of its own — a full-value `^FETCH_HOST$` match that dropped any
+  href containing a space, `(`, `)` or backslash, and `\b`-anchored attribute readers that
+  `data-href`/`data-rel` could spoof — plus a self-origin allowance wide enough to pass a
+  self-origin tracker script and `fetch()`. All four are fixed and pinned by six parity cases; see
+  the story's Review Findings section.
 
 - **A SILENT i18n GATE HOLE, to be closed BEFORE the story that would fall into it.**
   `app/eslint.config.mjs:160`'s metadata selector gates
@@ -4419,6 +4429,10 @@ creation, and nothing downstream noticed.
   wrong reason" class the Epic 2 retrospective logged four instances of (§3.3). Add both keys to the
   metadata-object selector. Note `alt` already appears in the JSX-attribute regexes; this is a
   different AST path. **Owner: Epic 3 story 3-1.**
+  **CLOSED 2026-08-26 by story 3-1 (`432dc29`).** Both keys are in the metadata selector, along with
+  a quoted/computed-key arm. Code review corrected that arm — as first shipped it reported at the
+  KEY, making `{ "siteName": t("app.siteName") }` a build error on correct code — and added six
+  permanent cases to `app/src/lib/eslint-gate.test.ts`, which story 3-1 had left with none.
 
 - **`bootstrap.ts` has no `navigator.language`, and every first-time visitor on Earth is served
   Spanish.** `resolveLocale(stored)` (`app/src/lib/bootstrap.ts:36-41`) is persisted-value-or-`es`,
@@ -4609,3 +4623,80 @@ next to what turned out to be true.
   from a `DICTIONARIES` loop, so the fix is a shared helper in test-utils rather than a reshape.
   **Note: `SiteSignature.test.tsx` is dirty under another session as of this review — do not take
   this without an A3 probe. Owner: Epic 3 retrospective, or whoever next touches the file.**
+
+## Deferred from: code review of 3-8-match-route-deep-link-plumbing (2026-08-26)
+
+- **The Tournament Hub still mounts two `useAnchorNonce()` instances.** `TournamentHub.tsx:523`
+  (`StandingsSurface`) and `TournamentHub.tsx:686` (`ResultsSurface`) each call the hook, so the Hub
+  route carries two `hashchange` listeners and two capture-phase `document` click listeners. Story
+  3.8's D4 argues at length that more than one instance is unacceptable — "that would mint five
+  `hashchange` + five capture-phase `click` listener pairs on a route that needs exactly one pair" —
+  and `TacticalLayer` honours that with a single `useAnchorHit()`. The Hub does not, so the D4
+  rationale currently reads as post-hoc.
+  **Pre-existing from Story 2.19; not caused by 3.8.** The 3.8 extraction was the cheapest moment to
+  collapse it (the hook moved into `lib/` regardless), but doing so means lifting the hook above both
+  surfaces and threading the hit down — a Hub-side refactor with its own regression surface, outside
+  this story's ruled scope (D9). Consequence today is duplicated listeners, not incorrect behaviour.
+  **Owner: whoever next touches `TournamentHub`'s anchor plumbing.**
+
+## Deferred from: code review of 3-1-build-gate-lint-gate-correction (2026-08-26)
+
+- **`imagesrcset` on `<link rel="preload" as="image">` is a fetching position nothing covers.**
+  `app/scripts/assert-no-external-origins.mjs:249` — the `srcset` reader is word-boundary-anchored
+  and there is no boundary inside `imagesrcset` (`e` and `s` are both word chars), while `linkHref`
+  reads only `href`. A tree containing
+  `<link rel="preload" as="image" imagesrcset="https://cdn.evil.example.com/hero.jpg 2x">` exits 0.
+  **Verified EXIT=0 on both the post-3.1 gate and the `f07116b` gate, so pre-existing, not a 3.1
+  regression.** Recorded because 3.1's own comment lists `preload` among the rels that "stay gated",
+  and for the preload form that actually drives LCP it is not gated at all. `imagesizes` is
+  unhandled for the same reason. **Owner: whoever next touches `FETCHING_POSITIONS`.**
+
+- **A `>` inside a `<link>` attribute value truncates the tag and drops both `href` and `rel`.**
+  `app/scripts/assert-no-external-origins.mjs:253` — the tag pattern cannot cross a `>`, so the
+  match ends mid-tag and neither attribute is found. Reaches it: a hand-authored (non-React-escaped)
+  `.svg`/`.xml`/`.html` asset carrying `<link rel="stylesheet" title="a > b" href="https://...">`.
+  **EXIT=0 on both gates, so pre-existing.** Recorded because 3.1 made the tag boundary load-bearing
+  for the **rel** read as well, doubling the blast radius of the same parse weakness — a tag that
+  fails to parse now also loses its deny-by-default rel. Fixing it means allowing quoted spans in
+  the tag pattern. **Owner: whoever next touches the `<link href>` position.**
+
+- **The `SITE_ORIGIN` drift gate does not scan where the second copy will actually land.**
+  `app/src/lib/site-origin.test.ts:48-56, 82` — `scannedFiles()` walks only `app/src` and
+  `app/scripts` plus top-level `app/*.{ts,mjs,json,toml}`. This matches Task 2.3 as prescribed, but
+  AC1's wording is "exactly one definition in the repository" and enforcement is "under `app/`, in
+  three places". Three concrete gaps: `app/public/**` is never walked — **story 3.4's
+  `public/robots.txt` carrying a `Sitemap:` line is the single most likely second copy and would be
+  invisible**; repo-root `netlify.toml` is outside the scan entirely (confirmed present, carries no
+  domain today, and is the natural home for a domain, a redirect or a `NEXT_PUBLIC_SITE_URL`); and
+  the check is a substring count of the *verbatim full-origin string*, so a bare-host copy (the form
+  an `images.domains` list, a CSP `connect-src`, a robots.txt or a Netlify redirect would use), a
+  concatenated `"https://" + HOST`, or a case variant each count zero — and the origin gate's regex
+  is case-insensitive, so a case variant drifts undetected on **both** sides. `SKIPPED_DIRECTORIES`
+  at `:30` is also dead code: `walk` is only ever entered at `src`/`scripts`, neither of which
+  contains `node_modules`, `.next` or `out`, so it reads as coverage that was never possible.
+  **Owner: Epic 3 story 3-4, which creates `public/robots.txt` and the sitemap.**
+
+- **The ESLint metadata selector is defeated by hoisting the object one line.**
+  `app/eslint.config.mjs:202` — the ancestor anchor is
+  `:matches(VariableDeclarator[id.name="metadata"], FunctionDeclaration[id.name="generateMetadata"],
+  VariableDeclarator[id.name="generateMetadata"])`. Verified with `npx eslint`:
+  `const OG = { alt: "Texto", siteName: "Mundial Stats" }; export const metadata = { openGraph: OG };`
+  reports **0 errors**, while the same properties written inline report. A sibling const, or a
+  `buildMetadata()` helper in another module, ships bare Spanish literals with the build green —
+  the exact outcome 3.1's comment says `alt`/`siteName` were added to prevent.
+  **Pre-existing for the whole selector: it predates `alt`/`siteName` and applies equally to
+  `title` and `description`.** Closing it means either a value-flow rule or a naming convention the
+  selector can anchor on, both beyond a key-list extension.
+  **Owner: whoever next revisits the i18n metadata rule.**
+
+- **Stated invariants in the 3.1 gate that no test pins.** Three, all low but all of the
+  "claims more than it enforces" shape this repo tracks. (1) The `NON_FETCHING_RELS` comment
+  (`assert-no-external-origins.mjs:189-199`) and Task 4.5 both claim three consequences "each pinned
+  by a test"; the **unknown-`rel`** one has no fixture — the behaviour is correct (an invented rel
+  gives EXIT=1) but the deny-by-default property D3-1-b calls load-bearing is asserted in prose only.
+  (2) Neither exit-2 branch in `readSiteOrigin` (`:109-118`) has a test — not the "could not find the
+  declaration" throw, nor the "must be a bare origin" throw — and the `catch` additionally collapses
+  any `readFile` failure (permissions, a packaged invocation with no `src/`) into the same "could not
+  find `export const SITE_ORIGIN`" message, pointing the operator at the constant rather than the
+  real cause. (3) The ESLint value matcher misses `String.raw`-tagged templates.
+  **Owner: whoever next extends the gate suite.**
