@@ -3390,7 +3390,7 @@ development_status:
   # (bmad-quick-dev route, retro §8.4), i.e. outside the create-story trigger
   # that normally flips this field. Recording the true state.
   epic-3: in-progress
-  3-1-build-gate-lint-gate-correction: backlog
+  3-1-build-gate-lint-gate-correction: in-progress
   3-2-metadatabase-canonical-urls: backlog
   3-3-og-image-twitter-card: backlog
   3-4-sitemap-robots: backlog
@@ -3401,7 +3401,12 @@ development_status:
   # src/app/static-output.test.ts. Per retro A4 no other session stages these.
   3-6-authorship-signature: in-progress
   3-7-ux-contract-home-ia-navigation-menu: backlog
-  3-8-match-route-deep-link-plumbing: backlog
+  # Context created 2026-08-26. Sized as a PORT of Story 2.19's Hub mechanism, not
+  # an invention: L1553's 2026-08-05 blocker list was found STALE against f07116b
+  # (two of four blockers already resolved by 2.19, including the one it called
+  # fatal). Owns match-anchors.ts, use-anchor-nonce.ts, TacticalLayer, PitchPanel,
+  # TournamentHub, the five section components, expert-logs.ts and i18n.test.ts.
+  3-8-match-route-deep-link-plumbing: ready-for-dev
   3-9-home-page-refactor: backlog
   3-10-navigation-menu: backlog
   # NOT `optional` — retro action item A6. Epic 1's sat at `optional`, was
@@ -3833,3 +3838,26 @@ action_items:
 #   /contract or per-locale URLs as their trigger. D20 takes neither. Both stay deferred.
 #   Artifacts amended: epics.md (AR-11, NFR-4), ARCHITECTURE-SPINE.md (AD-11), deferred-work.md
 #   (7 new entries), this file. No shipped story rolled back or reopened; MVP unaffected.
+# 2026-08-26: story 3-1 CONTEXTED, backlog -> ready-for-dev. Epic 3's hard prerequisite; nothing in
+#   the SEO track (3-2, 3-3, 3-4) may start before it lands.
+#   File: _bmad-output/implementation-artifacts/3-1-build-gate-lint-gate-correction.md
+#   OWNS five paths and no others: app/src/lib/site-origin.ts (NEW), site-origin.test.ts (NEW),
+#   scripts/assert-no-external-origins.mjs, src/lib/assert-no-external-origins.test.ts,
+#   eslint.config.mjs. Touches NEITHER Epic 3 collision file (page.tsx, SiteHeader.tsx); the A3
+#   probe was run at story-creation time and both were clean at f07116b, as was all of app/.
+#   RULED D3-1-a: SITE_ORIGIN is ONE definition in app/src/lib/site-origin.ts (TypeScript), read by
+#   the dependency-free .mjs gate via regex — assert-schema-version.mjs:28-37's shipped precedent,
+#   every link already in production. The .mjs-module alternative was PROBED (node import OK,
+#   tsc --noEmit OK under strict) and rejected on its one unproved link: Turbopack resolution, which
+#   3-1 would not exercise, so the failure would land inside 3-2. Recorded so it is not re-derived.
+#   RULED D3-1-e, and it is the likeliest way to build this story wrong: AC3's "names BOTH" is TWO
+#   CHANNELS, not two failures. The off-origin stylesheet FAILS (exit 1); the off-origin og:image is
+#   REPORTED in the informational MENTIONED line and must NOT fail. <meta content> stays out of
+#   FETCHING_POSITIONS per D20-b — making it fail would break 3-3 before it starts, and 3-3's
+#   replaced assertions are then the only thing holding the same-origin line.
+#   A1 IS THE LOAD-BEARING CRITERION HERE: this story is almost entirely gates, so SEVEN separate
+#   red demonstrations are required (Task 8), including reverting each of the two new mechanisms
+#   independently to prove the positive tests are not coincidence-green (A2).
+#   Two deferred-work entries owned by this story (both filed by the SEO ruling, deferred-work.md
+#   L4364+): the assert-no-external-origins blocker and the eslint alt/siteName hole. They close when
+#   3-1 closes; no other ledger entry fires.
