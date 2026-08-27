@@ -912,8 +912,24 @@ Commit staged **by pathspec** (`git commit -- <paths>`), never `git add -A`: a c
 sweeping add can capture files between an add and a commit, which are not atomic here. The stray root
 `17` was not staged. `gh auth switch -u juanrojasdp` before pushing, or the push 403s.
 
-The deploy result and the live-asset check are recorded below; **the paste test itself is Juan's** and
-is the one thing this story cannot close on its own.
+Commit `a944c9d`, 15 files, pushed to `main` (`b8c2fd9..a944c9d`). Netlify built from `app/` per
+`netlify.toml` and went live on the fifth poll (~80 s). The live asset:
+
+```
+$ curl -sI https://mundial-stats.juancr.dev/og-card.png
+HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Length: 38976
+```
+
+Downloaded and hashed rather than trusted on its `Content-Length`: sha256 `54c6e3c852de8af5...`,
+**byte-identical** to `app/public/og-card.png`. The live HTML was checked too — a real player route
+served from the CDN carries `og:image`, `og:type`, `og:site_name`,
+`twitter:card="summary_large_image"` and `twitter:image`.
+
+**AC8 IS NOT CLOSED BY ANY OF THAT, and deliberately so.** The AC says *"verified by pasting, not by
+inspecting the tags"*, because inspecting the tags is exactly what the other eight ACs do. It needs
+Juan. See the hand-off in the Completion Notes.
 
 ### Completion Notes List
 
@@ -936,7 +952,22 @@ is the one thing this story cannot close on its own.
 - **AC6 — met, five comments not four.** All located by content. The fifth is `layout.tsx`'s
   `app/public/` claim, which this story falsified.
 - **AC7 — met.** A3 probe run at Task 1: both collision files clean, `page.tsx` owned, no abort.
-- **AC8 — NOT CLOSED. It requires Juan and a live deploy.** See the hand-off below.
+- **AC8 — DEPLOYED, NOT CLOSED.** The deploy is live and the asset is byte-identical over the wire
+  (`200`, `image/png`, sha256 match). The AC itself is the paste test and it needs a human.
+
+  **HAND-OFF TO JUAN — paste this URL, which has never been pasted anywhere:**
+
+  ```
+  https://mundial-stats.juancr.dev/players/aaronson-brenden-usa/
+  ```
+
+  Paste it into **WhatsApp** and into **Slack**, and report for each whether a card with an **image**
+  renders. A URL used before would measure a cached unfurl, not this deploy: both services cache per
+  URL, and every route here has been pasteable with no card for months, so a cached miss would report
+  failure against a correct implementation. Record both results verbatim, a failure included. If
+  either renders no image, do **not** close the AC — check the two known culprits first: the file
+  size against WhatsApp's limit (38 KB here, against a ~300 KB ceiling, so unlikely) and an unfurl
+  cached from before the deploy (§D13).
 - **AC9 — met.** Build green end to end, origin gate exit 0, route count unchanged at 1,406, suite
   green at 1,509 with **0 skipped**.
 
