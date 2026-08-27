@@ -3485,7 +3485,7 @@ development_status:
   # tree via _bmad-output/implementation-artifacts/spec-sign-the-project.md
   # (bmad-quick-dev route, retro §8.4), i.e. outside the create-story trigger
   # that normally flips this field. Recording the true state.
-  epic-3: done
+  epic-3: in-progress
   3-1-build-gate-lint-gate-correction: done
   # Context created 2026-08-26 against baseline 8750d85, and sized against the 3.1 CODE
   # REVIEW (39889bf), not 3.1's first cut: the self-origin allowance is now position-scoped
@@ -3764,8 +3764,14 @@ development_status:
   #   NOTHING IN app/ ASSERTS A ROUTE COUNT -- verified by grep: every 1,406 is a comment,
   #   a test title or a failure message. The whole-export gates derive their floors from
   #   readTournament() and urls.length, so there is no number to bump for the suite to pass.
-  3-9-home-page-refactor: done
-  # Story 3.9 DONE 2026-08-27. THE LAST STORY OF EPIC 3 AND OF THE ROADMAP.
+  3-9-home-page-refactor: review
+  # Story 3.9 -> review 2026-08-27. THE LAST STORY OF EPIC 3 AND OF THE ROADMAP.
+  #   IMPLEMENTATION COMPLETE, AWAITING CODE REVIEW. This repo closes a story in two
+  #   steps -- review, then done after the code-review run (77d4d53 -> 24906d4 is the
+  #   most recent pair) -- so `epic-3` stays `in-progress` and the Epic 3 RETROSPECTIVE
+  #   TRIGGER (A6/D15) fires when THIS key reaches `done`, not now. D15 is otherwise
+  #   satisfied: 3.9 is the last non-done story, so whoever flips it to `done` owes the
+  #   epic flip at :3488 and the `bmad-retrospective` run.
   #   `/` was the Tournament Hub with the leaderboards beneath it; UX-DR24 split that
   #   surface across two addresses and gave `/` a job it never had. Route count
   #   1,406 -> 1,410 (1,411 documents, 1,408 sitemap <loc>). Suite 1,512 -> 1,546 tests,
@@ -4871,8 +4877,8 @@ action_items:
 #   and closes with it. L525 and L4071 do not fire.
 
 # ============================================================================
-# 2026-08-27: STORY 3-9 (HOME PAGE REFACTOR) -> done. EPIC 3 -> done.
-#             THE LAST STORY OF THE CURRENT ROADMAP.
+# 2026-08-27: STORY 3-9 (HOME PAGE REFACTOR) -> review. THE LAST STORY OF THE ROADMAP.
+#             IMPLEMENTATION COMPLETE; EPIC 3 CLOSES WHEN 3-9 REACHES `done`.
 # ============================================================================
 #
 # WHAT SHIPPED. `/` stopped being the Tournament Hub. UX-DR24's IA is now real:
@@ -4966,14 +4972,18 @@ action_items:
 # assertion, the same way static-output.test.ts once did. Now skips `__next.*`, which
 # cannot be a route segment at any depth.
 #
-# A6 -- THE EPIC 3 RETROSPECTIVE IS NOW DUE, AND THIS IS THE TRIGGER.
+# A6 -- THE EPIC 3 RETROSPECTIVE COMES DUE THE MOMENT THIS STORY REACHES `done`.
 # epics.md:1416-1418 hung it on story 3.10's AC 7. 3.10 correctly DECLINED, because at
 # d073575 stories 3-2/3-3/3-9 were backlog and 3-4 was in-progress, so the epic did not
-# close with it. That premise is now true here: every other Epic 3 story reads `done`, this
-# story is the last, and `epic-3` is flipped to `done` above. `epic-3-retrospective` reads
-# `required` at :3886 -- required and not optional, because Epic 1's sat at `optional`, was
+# close with it. That premise is TRUE FOR THIS STORY: every other Epic 3 story reads `done`
+# and this one is the last. It is not discharged yet, because this repo closes a story in
+# two steps -- `review`, then `done` after the code-review run (77d4d53 -> 24906d4 is the
+# most recent pair). So `epic-3` deliberately stays `in-progress` here, and WHOEVER FLIPS
+# 3-9 TO `done` OWES BOTH the epic flip at :3488 and the retrospective run.
+# `epic-3-retrospective` reads `required` at :3892 -- required and not optional, because
+# Epic 1's sat at `optional`, was
 # skipped, and its concurrent-session lesson had to be re-learned inside Epic 2 at real
 # cost. IT IS A SEPARATE `bmad-retrospective` RUN. This story did not improvise one.
 #
-# STATE OF THE BOARD: every epic and every story reads `done`. The only outstanding item
-# in this file is the Epic 3 retrospective.
+# STATE OF THE BOARD: every story except this one reads `done`; this one reads `review`.
+# Flipping it to `done` after code review is what closes epic-3 and fires the retrospective.

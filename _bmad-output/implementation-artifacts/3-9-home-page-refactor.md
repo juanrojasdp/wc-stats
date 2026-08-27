@@ -1485,11 +1485,21 @@ would not go red on a 20-point regression of the Hub — the "gate that cannot g
 exists to prevent. The story's own gate is satisfied; the standing number is the open question.
 Filed in `deferred-work.md` with all six medians.
 
-**A6 — the Epic 3 retrospective is now DUE, and this story is the trigger.** `epics.md:1416-1418`
-hung it on story 3.10's AC 7; 3.10 correctly declined, because at `d073575` stories 3-2/3-3/3-9 were
-`backlog` and 3-4 was `in-progress`. That premise is now true here. `epic-3` is flipped to `done` and
-`epic-3-retrospective` reads `required` at `sprint-status.yaml:3886` — required rather than optional
-because Epic 1's sat at `optional`, was skipped, and its concurrent-session lesson had to be
+**A6 / D15 — the epic close is SET UP but deliberately not discharged here.** `epics.md:1416-1418`
+hung the retrospective on story 3.10's AC 7; 3.10 correctly declined, because at `d073575` stories
+3-2/3-3/3-9 were `backlog` and 3-4 was `in-progress`. **That premise is true for this story** — every
+other Epic 3 story reads `done` and this is the last one.
+
+It is not discharged yet, and that is a correction to D15's assumption rather than a shortfall
+against it. This repo closes a story in TWO steps: `review`, then `done` after a separate
+code-review run — `77d4d53` (3.3 code review) → `24906d4` (3.3 → done) is the most recent pair, and
+it is the pair this story's own baseline sits on. A dev-story run ends at `review`. Flipping
+`epic-3` to `done` now would close an epic on a story that has not been reviewed.
+
+So: `3-9-home-page-refactor: review`, `epic-3: in-progress`, and **`sprint-status.yaml` states in
+two places that whoever flips 3.9 to `done` owes both the `epic-3` flip at `:3488` and the
+retrospective run.** `epic-3-retrospective` still reads `required` at `:3892` — required rather than
+optional because Epic 1's sat at `optional`, was skipped, and its concurrent-session lesson had to be
 re-learned inside Epic 2 at real cost. **It is a separate `bmad-retrospective` run and was not
 improvised here.**
 
@@ -1569,4 +1579,4 @@ _bmad-output/implementation-artifacts/3-9-home-page-refactor.md (this file)
 | 2026-08-27 | Post-refactor medians recorded; D10's escalation condition not triggered. D12 discharged by measurement — token unmoved. |
 | 2026-08-27 | A1: eight gates driven RED with verbatim output, reverted, re-verified green. |
 | 2026-08-27 | Ledger `:4826`, `:4799`, `:4794` CLOSED; `:4789` half closed; L1423 confirmed not fired with its stale citation corrected. |
-| 2026-08-27 | Epic 3 closed (`epic-3: done`); Epic 3 retrospective recorded as DUE (A6) rather than improvised. |
+| 2026-08-27 | Story -> `review`; `epic-3` left `in-progress` with the close and the A6 retrospective recorded as owed by whoever flips 3.9 to `done`. |
