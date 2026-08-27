@@ -3485,7 +3485,7 @@ development_status:
   # tree via _bmad-output/implementation-artifacts/spec-sign-the-project.md
   # (bmad-quick-dev route, retro §8.4), i.e. outside the create-story trigger
   # that normally flips this field. Recording the true state.
-  epic-3: in-progress
+  epic-3: done
   3-1-build-gate-lint-gate-correction: done
   # Context created 2026-08-26 against baseline 8750d85, and sized against the 3.1 CODE
   # REVIEW (39889bf), not 3.1's first cut: the self-origin allowance is now position-scoped
@@ -3764,7 +3764,49 @@ development_status:
   #   NOTHING IN app/ ASSERTS A ROUTE COUNT -- verified by grep: every 1,406 is a comment,
   #   a test title or a failure message. The whole-export gates derive their floors from
   #   readTournament() and urls.length, so there is no number to bump for the suite to pass.
-  3-9-home-page-refactor: ready-for-dev
+  3-9-home-page-refactor: done
+  # Story 3.9 DONE 2026-08-27. THE LAST STORY OF EPIC 3 AND OF THE ROADMAP.
+  #   `/` was the Tournament Hub with the leaderboards beneath it; UX-DR24 split that
+  #   surface across two addresses and gave `/` a job it never had. Route count
+  #   1,406 -> 1,410 (1,411 documents, 1,408 sitemap <loc>). Suite 1,512 -> 1,546 tests,
+  #   60 -> 63 files, 0 skipped throughout.
+  #   NEW ROUTES: /tournament (the Hub, moved whole -- "an address change, not a
+  #   redesign"), /tops (2.13's leaderboards mount RE-SITED, `#leaders` moved with it and
+  #   is still defined once and rendered once), /players (48 disclosures, ~26 players
+  #   each, name filter), /teams (flat 48). `/` is now lede + eight badges + the global
+  #   footer, and reads NO artifact on either AD-11 path.
+  #   IT WAS FIVE BOOLEANS, NOT FOUR, AND THIS FILE SAID FOUR AT :3723 AND :3767.
+  #   `matches` and `tournament` share the route /tournament/ and differ only by the
+  #   #results fragment, so nine destinations over EIGHT routes needed FOUR page files and
+  #   FIVE flag flips. es.ts:86 was the one artifact that had it right. Task 11.3 drove
+  #   the `matches` failure red ON PURPOSE so the off-by-one became evidence:
+  #   "matches is marked available:false but app/tournament/page.tsx EXISTS."
+  #   A1: EIGHT gates driven RED and reverted, command + verbatim output in the story's
+  #   Dev Agent Record -- availability directions 1 and 2, the `matches` trap, the
+  #   re-pointed #leaders assertions, sitemap bijection both ways, the card gate on a new
+  #   route, the / -> [] artifact gate, the players-index model, and the two new L4826
+  #   route-shape gates.
+  #   NFR-11 (AC 2), median of 3 on a REBUILT and header-asserted gzip harness -- the D4
+  #   server was never committed and had to be rebuilt from its recorded properties:
+  #   / pre 92 (92-94) -> post 94 (89-94); /tournament post 92 (92-92); /tops 86 (75-93);
+  #   /players 70 (69-71); /teams 71 (71-72); /compare control 92 -> 94.
+  #   `/tournament` clears the contract's >=68 AND equals `/`'s pre-median exactly, so
+  #   D10's "stop and ask Juan" condition was NOT triggered. But the 68 itself cannot go
+  #   red on any surface this project ships -- filed for Juan in deferred-work.md.
+  #   D12 DISCHARGED BY MEASUREMENT, not prediction: at 1280 px with all nine links live,
+  #   es nav 628 px / search input 158 px, en 610 px / 181 px, --header-h 3.875rem (62 px
+  #   measured), no wrap, no overflow. Reproduces 3.10's Task 9.5 table exactly, so
+  #   globals.css and reflow-guards.test.ts needed NO edit.
+  #   LEDGER: :4826 CLOSED (it named 3.9 as owner -- a new three-case gate now rejects
+  #   page.jsx and route groups, both driven red). :4799 CLOSED (36 dangling aria-controls
+  #   -> 0, measured in headless Chrome). :4794 CLOSED (195 px skeleton overflow). :4789
+  #   HALF closed (the two files in the blast radius). L1423 does NOT fire and the story
+  #   says so explicitly, with L1423's own stale :108-125 citation corrected to :124/:125/
+  #   :141. L525, L4071, :4821 do not fire. L1553/L1886/L1465 were already closed.
+  #   FOUND WHILE CLOSING SOMETHING ELSE: `everyRouteHtml()`'s static-route list was a
+  #   literal of four and had silently stopped covering /compare since story 2.17. Replaced
+  #   with a readdirSync sweep + non-vacuity floor, which immediately red-flagged an
+  #   assertion that counted every combobox on a document while meaning the header's.
   # Context created 2026-08-26. Implements UX-DR24's nav; does NOT re-rule it. Owns
   # SiteNav.tsx + SiteNav.test.tsx + nav-destinations.ts/.test.ts (NEW), SiteHeader.tsx,
   # HeaderSearch.tsx, globals.css (the header-height token), CompareChartsSection.tsx,
@@ -4827,3 +4869,111 @@ action_items:
 #   have to remember to edit a file it has no reason to open.
 #   LEDGER: deferred-work.md:4382+ (D20-b, the og:image ban retired) is owned by this story
 #   and closes with it. L525 and L4071 do not fire.
+
+# ============================================================================
+# 2026-08-27: STORY 3-9 (HOME PAGE REFACTOR) -> done. EPIC 3 -> done.
+#             THE LAST STORY OF THE CURRENT ROADMAP.
+# ============================================================================
+#
+# WHAT SHIPPED. `/` stopped being the Tournament Hub. UX-DR24's IA is now real:
+#   /            lede + eight badges + the global attribution footer. NO table, no
+#                disclosure, no loading state, no empty state -- and no artifact on
+#                EITHER AD-11 path, which static-output.test.ts asserts as `[]`.
+#   /tournament  the Hub, moved whole. "An address change, not a redesign": the nine
+#                results sections, twelve standings groups, their disclosures, their
+#                counts, their sort behaviour and their anchors all arrived unedited.
+#   /tops        story 2.13's leaderboards mount, RE-SITED. `#leaders` moved with it and
+#                is still defined once (LeaderboardsSection.tsx:73) and rendered once.
+#                Verified in the export: 1 on /tops, 0 on /.
+#   /players     48 ViewDataDisclosures in artifact order, counts OUTSIDE each control,
+#                rows position + name, ARQ/DEF/MED/DEL expanded AT THE CELL, a name
+#                filter over the whole set with a polite count and a zero-result state
+#                that keeps all 48 headings rendered.
+#   /teams       flat 48, no disclosure. Knowingly redundant with /tournament#standings
+#                and its docblock says so rather than dressing it up.
+#
+# THE COUNT. 1,406 -> 1,410 routes, 1,407 -> 1,411 documents, 1,404 -> 1,408 sitemap
+# <loc>. Suite 1,512 -> 1,546 tests over 60 -> 63 files, 0 skipped at every point.
+# Nothing in app/ asserts a route-count literal, verified by grep, so no number had to
+# be bumped for the suite to pass.
+#
+# THE OFF-BY-ONE, NOW EVIDENCE RATHER THAN FOLKLORE. Six artifacts in this repo --
+# 3-10's story file, its completion notes, THIS FILE at :3723 and :3767, the d073575
+# commit message, and nav-destinations.ts's own header -- said "3.9 flips four
+# booleans". They were off by one. `matches` and `tournament` share the route
+# /tournament/ and differ only by the #results fragment, so nine destinations over
+# EIGHT distinct routes needed FOUR new page files and FIVE flag flips. es.ts:86 was
+# the single artifact that had it right. Task 11.3 flipped only four ON PURPOSE and
+# recorded what the gate said:
+#     "matches is marked available:false but app/tournament/page.tsx EXISTS."
+#
+# A1 -- EIGHT GATES DRIVEN RED, reverted, re-verified green. Command and verbatim
+# output are in the story's Dev Agent Record. Availability directions 1 and 2; the
+# `matches` trap; the re-pointed #leaders assertions (which is what proves the mount
+# MOVED rather than was COPIED); sitemap bijection in both directions; the whole-export
+# card gate on a brand-new route; the `/` -> [] artifact gate; the players-index model's
+# artifact-order and structural-promise rules; and the two new L4826 route-shape gates.
+#
+# NFR-11 / AC 2. The D4 measurement server WAS NEVER COMMITTED -- `git log --all -S`
+# finds only prose about it -- so it was rebuilt from its recorded properties (gzip with
+# a real compressed content-length, keep-alive, Netlify cache-control, clean URLs, a real
+# 404.html, and the RSC dot-path -> directory mapping without which every <Link> prefetch
+# 404s). Its headers were asserted with curl BEFORE any score was trusted: / served at
+# 4,890 B against 26,663 B raw. Median of 3, mobile preset, same harness for pre and post:
+#     /            pre 92 (92-94)   post 94 (89-94)
+#     /tournament  --               post 92 (92-92)
+#     /tops        --               post 86 (75-93)
+#     /players     --               post 70 (69-71)
+#     /teams       --               post 71 (71-72)
+#     /compare     pre 92 (91-93)   post 94 (93-94)   [untouched control]
+# `/tournament` clears the contract's >=68 and EQUALS `/`'s pre-median, so D10's "stop and
+# put it to Juan" condition was not triggered. The control moved +2 over the same interval,
+# which is the machine drift the benchmarkIndex spread (1,536-2,597) predicts.
+#
+# RAISED FOR JUAN, NOT RESOLVED HERE. NFR-11's 68 is story 2.19's START-of-story figure,
+# taken over a 6,025-node Hub that 2.19's own Task 5.7 then rebuilt to 2,780 nodes. Every
+# surface this project ships now clears it by 2 to 26 points, so it would not go red on a
+# 20-point regression. The story did not re-rule it (D10 forbids that). Filed in
+# deferred-work.md with all six medians.
+#
+# D12 DISCHARGED BY MEASUREMENT. At 1280 px with all nine links live, measured with
+# getBoundingClientRect and never a screenshot: es nav 628 px / search input 158 px, en
+# 610 px / 181 px, --header-h 3.875rem = 62 px, no wrap, no overflow (1265 < 1280). That
+# reproduces 3.10's Task 9.5 table exactly -- so globals.css and reflow-guards.test.ts
+# needed NO edit. Predictions about this token had been wrong twice; this one was not, and
+# it was still measured rather than assumed.
+#
+# LEDGER. :4826 CLOSED -- it named 3.9 as its owner, and a new three-case gate now rejects
+# page.jsx and route groups outright (both driven red). :4799 CLOSED -- 36 dangling
+# aria-controls IDREFs to 0, measured in headless Chrome, taken because the component
+# re-sited to /tops and would have carried the defect there unnoticed. :4794 CLOSED -- the
+# 195 px skeleton overflow, same reason. :4789 HALF closed (the two files in the blast
+# radius; the other two are outside this story's paths). L1423 does NOT fire and the story
+# says so explicitly, correcting L1423's own stale :108-125 citation to :124/:125/:141 --
+# :141 sits outside the cited window, so an agent following the citation literally would
+# have missed a third of the work. L525, L4071 and :4821 do not fire. L1553/L1886/L1465
+# were already closed and are re-verified, not re-filed.
+#
+# FOUND WHILE CLOSING SOMETHING ELSE. `everyRouteHtml()`'s static-route list was a
+# hardcoded literal of four documents and had silently stopped covering /compare from the
+# day story 2.17 shipped it -- seven cases titled "on EVERY exported route" that did not.
+# Replaced with a readdirSync sweep plus a non-vacuity floor, which immediately went red:
+# /compare ships THREE role="combobox" elements against an assertion of exactly one. The
+# assertion had been stating a property of the DOCUMENT while meaning a property of the
+# HEADER; it now counts the header search's own rendered <label>. Narrowed, not weakened.
+# A second walk in sitemap.test.ts was descending into ~2,800 RSC payload directories and
+# had begun timing out at vitest's 5 s default -- failing on a TIMEOUT rather than an
+# assertion, the same way static-output.test.ts once did. Now skips `__next.*`, which
+# cannot be a route segment at any depth.
+#
+# A6 -- THE EPIC 3 RETROSPECTIVE IS NOW DUE, AND THIS IS THE TRIGGER.
+# epics.md:1416-1418 hung it on story 3.10's AC 7. 3.10 correctly DECLINED, because at
+# d073575 stories 3-2/3-3/3-9 were backlog and 3-4 was in-progress, so the epic did not
+# close with it. That premise is now true here: every other Epic 3 story reads `done`, this
+# story is the last, and `epic-3` is flipped to `done` above. `epic-3-retrospective` reads
+# `required` at :3886 -- required and not optional, because Epic 1's sat at `optional`, was
+# skipped, and its concurrent-session lesson had to be re-learned inside Epic 2 at real
+# cost. IT IS A SEPARATE `bmad-retrospective` RUN. This story did not improvise one.
+#
+# STATE OF THE BOARD: every epic and every story reads `done`. The only outstanding item
+# in this file is the Epic 3 retrospective.

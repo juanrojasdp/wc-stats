@@ -4937,3 +4937,68 @@ off the story record. The first EXTENDS an existing open entry rather than dupli
   status: OPEN — pre-existing helper divergence, newly given two byte-identical test names.
   summary: The two per-route `metaContent` helpers are not equivalent, and 3.3 gave both routes the same `it` title while they assert measurably different things.
   evidence: `players/static-output.test.ts:67-70` builds `` new RegExp(`<meta[^>]*${attribute}="${name}"[^>]*content="([^"]*)"`) `` — three arguments, `property` passed explicitly, case-sensitive, no flags. `teams/static-output.test.ts:75-82` builds `` new RegExp(`<meta[^>]+(?:property|name)="${property}"[^>]*content="([^"]*)"`, "i") `` — two arguments, either attribute, case-insensitive. The divergence predates this story and neither shape is wrong for `og:image` today (both were re-run green, 43 passed / 0 skipped). What 3.3 introduced is the collision of names: both files now carry `it("emits a SAME-ORIGIN og:image — the card, not a third-party asset")`, so a reader grepping the suite finds one title covering two different matchers. The story documents this deliberately in two cross-referencing comments — `players/…:704-706` ("Note this file's `metaContent` takes THREE arguments; the teams twin takes two…") and `teams/…:154-155` ("This file's `metaContent` takes TWO arguments… The helpers differ on purpose") — which converts a silent divergence into a maintained coupling that rots the first time either helper is touched. Not patched in this review because unifying the helpers rewrites assertions story 3.3 does not own. **Owner: whoever next edits either `static-output.test.ts`.** Fix: lift one `metaContent` into a shared test helper with a single signature, delete both cross-reference comments, and let the two `it` titles mean the same thing.
+
+
+## Deferred from: 3-9-home-page-refactor (2026-08-27)
+
+Appended, never regenerated: every line above this heading is unchanged. This story is Epic 3's
+last, so this block also DISPOSES of every entry the story's D13/D14 named rather than leaving the
+reader to infer which fired. Verified against the working tree and the emitted `out/` tree
+(**1,410 routes / 1,411 documents / 1,408 sitemap `<loc>`**) rather than read off the story record.
+
+### Closed by this story
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: **CLOSED.** Ledger `:4826` — the route-group / `page.jsx` blind spot in the availability gate. That entry named story 3.9 as its owner, and this story owned it.
+  evidence: `nav-destinations.test.ts` gains `describe("route files are the plain shape the availability gate can see (L4826)")` — three cases. `pageFor()` resolves a declared route to `src/app{route}/page.tsx` LITERALLY, so a route inside `src/app/(landing)/tops/` or written as `page.jsx` was invisible to direction 2: the flag would never be forced true and the nav would ship narrower than the site beside a live, unreachable page, GREEN. The new gate walks `src/app` for every `page.*` and asserts (a) all are `.tsx` and (b) none sits under a `(`, `@` or `_` segment, plus a `scanned === 0` non-vacuity case. **Both directions were driven RED** (`tops/page.jsx`, and a copy at `(landing)/tops/page.tsx`) and reverted — verbatim output in the story's Dev Agent Record.
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: **CLOSED.** Ledger `:4799` — 36 dangling `aria-controls` IDREFs (axe `aria-valid-attr-value`).
+  evidence: `LeaderboardsRegion.tsx:584` was a static `aria-controls={panelId}` on a disclosure whose panel only exists while open. Taken by this story because the component RE-SITES to `/tops`, and an unfixed defect would have migrated there unnoticed. Now `aria-controls={open ? panelId : undefined}` — the same one-line conditional `ViewDataDisclosure`, `KeyStatisticsSection` and story 3.10's sheet trigger already use. **MEASURED in headless Chrome on the built export: 36 dangling IDREFs to 0, on the surface that inherited them** (`/tops`, 1280 px).
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: **CLOSED.** Ledger `:4794` — `LeaderboardsRegion`'s loading skeleton overflowed the document at a 195 px layout viewport (4 of the 96 R2/D8 cells).
+  evidence: `w-48` is a FIXED 192 px; with 16 px of gutter its right edge landed at 208 against a 195 px viewport. Now `w-full max-w-48` at both sites (`:191`, `:193`), which keeps the 192 px look where there is room and clamps to the container where there is not. Taken for the same re-siting reason as `:4799`. **Re-measured at 195 px on `/tops`, `/teams` and `/`: `document.scrollWidth` 180 against a 195 px viewport, zero page overflow.**
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: **PARTIALLY CLOSED.** Ledger `:4789` — four files citing the deleted `scroll-padding-top: 4.5rem` constant.
+  evidence: **Two of the four are closed** — `LeaderboardsSection.tsx:85` and `TournamentHub.tsx:847`, both in this story's blast radius. Each now cites `calc(var(--header-h) + var(--spacing-scroll-clearance))` and states that its CONCLUSION was always right while the value it quoted was not. **`ExpertLayer.tsx:984` and `HubTable.tsx:43` remain OPEN** — outside this story's declared paths (A4: stage only this story's paths). **Owner: whoever next edits either file.** One-line correction each.
+
+### Confirmed NOT fired, so still deferred
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: OPEN — unchanged. **L1423 does NOT fire, and this is the explicit statement AC 4 requires.**
+  summary: `PendingSectionPanel` and its locale copy stay pending, because this change-set does not touch `tactical-sections.ts`.
+  evidence: The trigger is *"any change-set that touches `app/src/lib/tactical-sections.ts`"*. This story did not. Its whole surface is `/`, `/tournament`, `/tops`, `/players` and `/teams`, none of which reads a `SectionId`, a key-stat registry or `sectionDataState`. The only path from `/` into that module was ever a TYPE-ONLY import two hops away (`page.tsx` to `LeaderboardsSection` to `glossary-marking.tsx:16` to `import type { SectionId }`) — and after this refactor `/` does not even reach `LeaderboardsSection`, because that mount is on `/tops` now. Story 3.8 set the precedent for this language. **The citation in L1423 and in `epics.md:1373` is STALE and is corrected here: the three assertions are at `tactical-sections.test.ts:124`, `:125` and `:141` — NOT the cited `108-125`, and `:141` is OUTSIDE that window, so an agent following the citation literally would miss a third of the work.** `PendingSectionPanel` still has ZERO importers (`EmptyStatePanel.tsx:71-76`), re-verified by grep at this story.
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: OPEN — unchanged. **L525 and L4071 do not fire.** Both need a reopened `/contract` surface or a truncated emission; this story takes neither.
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: **NOT AN OPEN ITEM — bookkeeping note only.** L1553, L1886 and L1465 were already CLOSED (by story 3.8, 3.8, and 3.10's code review respectively). Re-verified, not re-filed. 2.19's Partition C rows at `:4179-4180` still show the OLD successor text for all three; that is deliberate append-only bookkeeping rather than an open item, and it is recorded here so the next reader does not "fix" it.
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: OPEN — unchanged. Ledger `:4821` — `epics.md:143`'s UX-DR24 token list still names the deleted `header-h-zoom`.
+  evidence: Does not fire — this story does not edit `epics.md`. **Owner unchanged.**
+
+### Newly filed by this story
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: OPEN — prose only, no behaviour.
+  summary: Route-count prose still reads 1,406 in ten files this story may not touch.
+  evidence: The export is now **1,410 routes / 1,411 documents / 1,408 sitemap `<loc>`**. This story refreshed the counts in the files it owns — `nav-destinations.ts`, `nav-destinations.test.ts`, `static-output.test.ts`, `SiteNav.test.tsx`. Still stale: `SiteNav.tsx` (5), `layout.tsx` (3), `canonical-output.test.ts` (3, prose only — its `REQUIRED_DOCUMENTS` spine WAS updated), `assert-no-external-origins.test.ts` (2), `site-origin.ts` (1), `site-origin.test.ts` (1), `SiteSignature.test.tsx` (1), `SiteHeader.tsx` (1), `HeaderSearch.tsx` (1), `sitemap.ts` (1). All are comments. **None is an assertion value** — this story re-verified by grep that no assertion anywhere in `app/` compares against a route-count literal, so nothing here can go red. Left rather than edited because D17 explicitly fences `SiteNav.tsx`, `SiteHeader.tsx`, `HeaderSearch.tsx`, `layout.tsx` and `sitemap.ts` off (A4: stage only this story's paths). **Owner: whoever next edits any of them.**
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: OPEN — a real gap this story found by closing a different one.
+  summary: `everyRouteHtml()`'s seven "on EVERY exported route" cases had silently stopped covering `/compare` since story 2.17, and the assertion that revealed it had been asserting a property of the DOCUMENT while meaning a property of the HEADER.
+  evidence: `static-output.test.ts`'s static-route list was a hardcoded literal of four documents. Story 3.9 replaced it with a `readdirSync` sweep plus a non-vacuity floor, which immediately failed: `/compare` ships THREE `role="combobox"` elements — the header search plus its own two entity pickers — against an assertion of exactly one. The assertion was narrowed to count the header search's own rendered `<label>`, which is the property it always meant, rather than every combobox on the page. **What stays open is the class, not this instance:** other suites still enumerate documents or routes as literals, and the same silent shrinkage is available to them. **Owner: whoever next adds a route.** Fix: prefer discovery plus a non-vacuity floor over a literal, everywhere a suite claims "every route".
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: OPEN — **a decision for Juan, raised by measurement rather than resolved by this story.**
+  summary: NFR-11's stated floor of **>= 68** cannot go red on any surface this project currently ships, and it has now been measured against on all of them.
+  evidence: The 68 is story 2.19's START-of-story figure for `/`, taken over a 6,025-node Hub that 2.19's own Task 5.7 then rebuilt to 2,780 nodes. Story 3.9 measured, median of 3, mobile preset, on a rebuilt and header-asserted gzip + keep-alive harness: `/` pre **92** (92-94); `/tournament` post **92** (92-92); `/tops` **86** (75-93); `/players` **70** (69-71); `/teams` **71** (71-72); `/compare` control 92 pre, 94 post. **Every surface clears 68 by between 2 and 26 points**, so the stated gate would not go red on a 20-point regression of the Hub. This story did NOT re-rule the number — its D10 forbids that — and its own gate (post `/tournament` >= 68 AND not materially below `/`'s pre-median) is SATISFIED at 92 against 92. **Owner: Juan.** The open question is whether NFR-11 should become a per-surface floor recorded from each route's own first median — which is what this story did in practice for the four new routes — rather than one number that predates the surfaces it guards.
+
+- source_spec: `3-9-home-page-refactor.md`
+  status: OPEN — verification gap, disclosed rather than papered over.
+  summary: `/players`' filter, its polite count and the 48 disclosures are asserted at the MODEL layer and in the export, but no test drives the control.
+  evidence: `players-index.test.ts` covers grouping, ordering, filtering, the accent-insensitive match and the structural promise that a zero-result filter keeps every group rendered (11 cases, driven red). The export gates cover the shell. What nothing covers is the RENDERED interaction: typing into the filter, the live region's announced count, and a disclosure opening its team's table. That is jsdom work of the kind `SiteNav.test.tsx` does, and this story did not write it. The risk is bounded — the model is pure and tested, and `ViewDataDisclosure` is the shipped control with its own coverage — but the wiring between them is asserted only by inspection. **Owner: whoever next edits `PlayersIndexRegion.tsx`**, or a `bmad:tea:automate` pass.

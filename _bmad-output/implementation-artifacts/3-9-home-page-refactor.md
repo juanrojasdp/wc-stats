@@ -4,7 +4,7 @@ baseline_commit: 24906d4
 
 # Story 3.9: Home Page Refactor
 
-Status: ready-for-dev
+Status: review
 
 Epic: 3 — Post-Launch Reach — Discoverability, Landing & Navigation
 Definition: `_bmad-output/planning-artifacts/epics.md:1350-1380`
@@ -887,26 +887,26 @@ distinctness property.
 
 ## Tasks / Subtasks
 
-### Task 1 — A3 ownership probe and baseline (BLOCKING; AC 3)
+### [x] Task 1 — A3 ownership probe and baseline (BLOCKING; AC 3)
 
 1.1 `git status --porcelain` and `git status --porcelain -- app/src/app/page.tsx app/src/components/SiteHeader.tsx`. **If either collision file is modified on disk by another session, ABORT here and say so.** Recorded clean at story creation (`24906d4`).
 1.2 Confirm the stray `17` is still the only untracked entry and record that it is not yours.
 1.3 **Re-measure the baseline yourself — do not inherit a number.** `cd app && npm run build && npm test`. Record tests / files / skipped and the exported route count (`find out -name index.html | wc -l`, plus `404.html`). Story creation measured **1,512 / 60 / 0** and **1,406 routes** (1,407 documents).
 1.4 Confirm `npx -y lighthouse@13.4.1` resolves from the registry (D5 pins the version).
 
-### Task 2 — The D4 harness, built and PROVEN (AC 2; D11)
+### [x] Task 2 — The D4 harness, built and PROVEN (AC 2; D11)
 
 2.1 Write `serve.mjs` in the scratchpad: gzip/brotli with a real `content-length`, keep-alive, Netlify cache-control, clean URLs, real `404.html`, correct `Content-Type`, **and the RSC dot-path → directory mapping**.
 2.2 Start it on a private port; `netstat -ano | grep :<port>` to confirm exactly one listener.
 2.3 **`curl -sI` the header assertion and paste the output into the Dev Agent Record.** No score is measured before this passes. Compare a compressed `content-length` against the raw file size to prove compression is real, not announced.
 
-### Task 3 — PRE-refactor medians (AC 2; D10) — before any code changes
+### [x] Task 3 — PRE-refactor medians (AC 2; D10) — before any code changes
 
 3.1 Lighthouse mobile × 3 on **`/`** (today's Hub). Record min / median / max and `benchmarkIndex`.
 3.2 Optionally × 3 on `/compare` as an untouched control, so a machine-wide drift is distinguishable from a change-caused one.
 3.3 Record the medians in the table in Dev Notes. **These are the honest inherited floors** (D10).
 
-### Task 4 — `/tournament`: move the Hub (AC 1, AC 5; D2, D8, D9)
+### [x] Task 4 — `/tournament`: move the Hub (AC 1, AC 5; D2, D8, D9)
 
 4.1 Create `app/src/app/tournament/page.tsx` — **plain path, `.tsx`, no route group** (D7).
 4.2 Move `generateMetadata` from `page.tsx` verbatim, including `composeHubTitle` and every load-bearing `openGraph` key and its comment (D8).
@@ -914,7 +914,7 @@ distinctness property.
 4.4 **Verify `#results` and `#standings` arrive on `/tournament`** — `nav-destinations.ts`'s `matches` entry depends on `/tournament/#results` and no gate catches a dead fragment (D2).
 4.5 Correct `TournamentHub.tsx:847`'s stale `4.5rem` comment if you touch the file (`deferred-work.md:4789`).
 
-### Task 5 — `/tops`: re-site the leaderboards (AC 1, AC 5; D3, D9)
+### [x] Task 5 — `/tops`: re-site the leaderboards (AC 1, AC 5; D3, D9)
 
 5.1 Create `app/src/app/tops/page.tsx`; move `leaderboardTeasers(readLeaderboards().boards)` and the `<LeaderboardsSection teasers={…} />` mount, inside its **own** `SortAnnouncerProvider`.
 5.2 **Do not touch `LEADERBOARDS_SECTION_ID` and do not mint a second `id="leaders"`.**
@@ -922,21 +922,21 @@ distinctness property.
 5.4 Correct `LeaderboardsSection.tsx:85`'s stale `4.5rem` comment.
 5.5 Decide on the 36 dangling `aria-controls` IDREFs and the `w-48` skeleton overflow (`deferred-work.md:4799`, `:4794`) — take or decline, and say which (D14).
 
-### Task 6 — `/` becomes the Landing surface (AC 1; D1)
+### [x] Task 6 — `/` becomes the Landing surface (AC 1; D1)
 
 6.1 Rewrite `page.tsx`'s body: zones 1–3 (zone 4 is the global footer). Keep a `generateMetadata` — `/` already has one, so no new position is taken — with a landing title composed by a **pure helper**, not a template (D8).
 6.2 `FeatureBadge.tsx` — one component, an `emphasised` variant differing by **size, position and a 2px top border**, never fill or hue. Whole card is one `<a href>`, one tab stop, accessible name = visible label.
 6.3 `LandingContent.tsx` — the lede and the grid: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`. **Every `grid` className must carry a `grid-cols-*`** — `reflow-guards.test.ts:209-270` sweeps the repo for implicit grids.
 6.4 No table, no disclosure, no loading state, no empty state on `/`.
 
-### Task 7 — `/players` and `/teams` (AC 1, AC 5; D4, D5, D5b)
+### [x] Task 7 — `/players` and `/teams` (AC 1, AC 5; D4, D5, D5b)
 
 7.1 `src/lib/players-index.ts` — pure grouping (by team, artifact order), ordering (gk→df→mf→fw, then name), and filtering (`Intl.Collator('es', {sensitivity:'base'})`). Its own `node`-environment test.
 7.2 `PlayersIndexRegion.tsx` — **client fetch of `/index/tournament.json` following `TournamentHubRegion`'s four-state machine (D5b), never a build-time read of the 1,248**. Then: 48 `ViewDataDisclosure`s, counts **outside** each control, per-team accessible names on **both** the trigger and the table, position abbreviations expanded **at the cell**, the filter with its polite live-region count and its zero-result copy that keeps the 48 headings rendered. Skeletons + `aria-busy` + "Datos cargados." + the shipped inline retry panel.
 7.3 `TeamsIndexRegion.tsx` — same fetch shape; flat 48: name, group, record, each row linking to its Team Profile. **No disclosure** — 48 rows is not dense. Docblock records the deliberate redundancy with `/tournament#standings` (D5).
 7.4 Route files at `src/app/players/page.tsx` and `src/app/teams/page.tsx` — plain paths beside the existing `[slug]/` (no collision, verified), metadata per D8.
 
-### Task 8 — Flip FIVE booleans and complete the nav (AC 5; D6)
+### [x] Task 8 — Flip FIVE booleans and complete the nav (AC 5; D6)
 
 8.1 `nav-destinations.ts:147, 154, 161, 175, 183` → `available: true`. **Five, including `matches`.**
 8.2 Rewrite `nav-destinations.test.ts:101-105` to the post-3.9 truth and rename the case.
@@ -944,7 +944,7 @@ distinctness property.
 8.4 **Address the vacuous-green hole** (D6) — add a non-vacuity assertion or state in the comment what direction 2 still guards.
 8.5 Retitle the stale case names in `SiteNav.test.tsx:304, :316, :333`. **Do not re-shape those assertions.**
 
-### Task 9 — Re-point the moved gates (AC 1, AC 5; A1's no-deletion clause)
+### [x] Task 9 — Re-point the moved gates (AC 1, AC 5; A1's no-deletion clause)
 
 9.1 `static-output.test.ts:377-583` (the seven leaderboards cases, including the five id assertions at `:390`, `:392`, `:549-551`) → `out/tops/index.html`.
 9.2 `static-output.test.ts:233-285` (the five Hub cases) → `out/tournament/index.html`. The `<title>` case at `:267-276` needs the Hub title's new home.
@@ -953,7 +953,7 @@ distinctness property.
 9.5 `static-output.test.ts:79-85` — the authorship-caption `DOCUMENTS` array hardcodes four documents; add the new routes.
 9.6 `i18n.test.ts:1727-2117` — add any new route's table captions to the composed inventory (D16).
 
-### Task 10 — POST-refactor medians (AC 2; D10, D11)
+### [x] Task 10 — POST-refactor medians (AC 2; D10, D11)
 
 10.1 Rebuild, restart the **same** harness, re-assert its headers.
 10.2 Lighthouse mobile × 3 on `/`, `/tournament`, `/tops`, `/players`. Record min / median / max + `benchmarkIndex` for each.
@@ -961,7 +961,7 @@ distinctness property.
 10.4 Record `/`, `/tops`, `/players` as their own first floors.
 10.5 Re-verify the `≥xl` header measurement per D12 — `getBoundingClientRect().width` on the search input, both locales, at 1280 px. Only touch `globals.css` if the numbers moved.
 
-### Task 11 — A1: drive every gate RED once (AC 5; A1/NFR-12)
+### [x] Task 11 — A1: drive every gate RED once (AC 5; A1/NFR-12)
 
 Record the command and the verbatim failing output for each, then revert and **re-verify green
 before proceeding**. `npx vitest run src/lib/nav-destinations.test.ts` needs no build; the
@@ -981,14 +981,14 @@ export-reading gates do.
 **A1 is not satisfied by asserting that a gate could fail** (`3-10-...md:725`). Paste command +
 output.
 
-### Task 12 — Gates, and the full chain (AC 5)
+### [x] Task 12 — Gates, and the full chain (AC 5)
 
 12.1 `cd app && npm run build` — the six-step chain: `lint` → `typecheck` → `assert:schema-version` → `next build` → `copy-data.mjs` → `assert:no-external-origins`.
 12.2 `npm test`. **`npm run build` MUST precede `npm test`** or `describe.skipIf(!anyBuilt)` silently skips ~20 export-reading assertions across four suites and the run reports green having asserted nothing. AC 5 says **no test is newly skipped** — verify the skipped count is still 0 and the file/test counts moved only upward.
 12.3 Confirm the export: **1,410 routes / 1,411 documents**, sitemap **1,408** `<loc>` entries.
 12.4 Refresh the stale prose route counts (list in Dev Notes) — cosmetic, but the numbers are now wrong in ~25 places.
 
-### Task 13 — Ledger, sprint status, and the epic close (D13, D14, D15; A4, A6)
+### [x] Task 13 — Ledger, sprint status, and the epic close (D13, D14, D15; A4, A6)
 
 13.1 **`deferred-work.md` — APPEND ONLY.** Record: L1423 **stays deferred** with D13's reasoning and the corrected `:124/:125/:141` line numbers; the disposition of the five entries in D14; and whether `:4826` (owned by 3.9) was closed.
 13.2 **`sprint-status.yaml` — surgical, append-only.**
@@ -1246,10 +1246,327 @@ implements the corrected version:**
 
 ### Agent Model Used
 
+Claude Opus 5 (1M context) — `claude-opus-5[1m]`, via the `bmad-dev-story` workflow, 2026-08-27.
+
 ### Debug Log References
+
+**Baseline re-measured rather than inherited (Task 1.3), at `f613dce`:**
+
+```
+$ git status --porcelain
+?? 17                       <- the stray 0-byte file. Not this story's. NOT staged (A4).
+$ git status --porcelain -- app/src/app/page.tsx app/src/components/SiteHeader.tsx
+(no output — both collision files unheld; AC 3's abort condition NOT met)
+
+$ npm run build && npm test
+Test Files  60 passed (60)
+Tests       1512 passed (1512)          <- 0 skipped
+html docs: 1407   index.html: 1406   sitemap locs: 1404
+```
+
+Matches the story-creation figures exactly.
+
+---
+
+**Task 2 — the D4 harness, rebuilt and PROVEN before any score was trusted.**
+
+`git log --all --diff-filter=A -- "*serve.mjs"` is empty: the server was a scratchpad file and was
+never committed. Rebuilt from its recorded properties, zero dependencies (Node 24 ships `zlib`).
+
+```
+$ netstat -ano | grep :8788 | grep LISTENING
+  TCP    127.0.0.1:8788    0.0.0.0:0    LISTENING    29076        <- exactly one
+
+$ curl -sI -H 'Accept-Encoding: gzip, br' http://127.0.0.1:8788/
+HTTP/1.1 200 OK
+content-type: text/html; charset=utf-8
+content-length: 10098
+connection: keep-alive
+cache-control: public, max-age=0, must-revalidate
+vary: Accept-Encoding
+content-encoding: br
+raw size of out/index.html: 110658 B      <- 110,658 -> 10,098. COMPRESSION IS REAL, NOT ANNOUNCED.
+
+$ curl -sI ... /_next/static/chunks/05-c3ty_6dwfk.js
+content-length: 1368       (raw 3377)
+cache-control: public, max-age=31536000, immutable
+
+$ curl -sI ... '/about/__next.about.__PAGE__.txt'   # RSC dot-path -> directory
+HTTP/1.1 200 OK                                      # unmapped, every <Link> prefetch 404s
+$ curl -sI ... '/definitely-not-a-route/'
+HTTP/1.1 404 Not Found ; content-type: text/html
+```
+
+Re-asserted on the post-refactor build before the post medians (Task 10.1); `/` then served at
+4,890 B against 26,663 B raw.
+
+---
+
+**Task 11 — A1: EIGHT gates driven RED, reverted, re-verified green.**
+
+| # | gate | broken input | verbatim failure |
+|---|---|---|---|
+| 11.1 | availability, direction 2 | `tops.available` back to `false` | `tops is marked available:false but app/tops/page.tsx EXISTS.` |
+| 11.2 | availability, direction 1 | `mv src/app/tops/page.tsx …bak` | `tops is marked available:true but app/tops/page.tsx does not exist, so the nav ships a link to a 404 on every one of 1,410 routes.` |
+| 11.3 | **the `matches` trap** | flip only four, leave `matches: false` | `matches is marked available:false but app/tournament/page.tsx EXISTS.` |
+| 11.4 | the RE-POINTED `#leaders` assertions | remove `id={LEADERBOARDS_SECTION_ID}`, rebuild | `expected '<!DOCTYPE html><html lang="es" class=…' to contain 'id="leaders"'` and `expected [] to have a length of 1 but got +0` |
+| 11.5 | sitemap bijection, export→sitemap | `.filter(r => r !== "/tops/")`, rebuild | `emitted by the build but missing from the sitemap: /tops/` |
+| 11.6 | sitemap bijection, sitemap→export | `routes.push("/nope/")`, rebuild | `listed in the sitemap but 404 on the host: /nope/` |
+| 11.7 | whole-export card gate on a NEW route | drop `url: "./"` from `/tops`, rebuild | `expected 'tops/index.html og:url=(none) canonic…' to be ''` |
+| 11.8a | players-index: ARTIFACT ORDER | sort teams alphabetically | `expected [ 'arg', 'bra' ] to deeply equal [ 'bra', 'arg' ]` |
+| 11.8b | players-index: the STRUCTURAL PROMISE | drop empty groups from the filter | `expected [] to have a length of 2 but got +0` |
+| 11.8c | the `/` → `[]` artifact gate (D5b) | add a region fetch to `src/app/page.tsx` | `app/page.tsx reaches [/index/tournament.json] but D5b's table allows []` |
+| 11.8d | the new `REQUIRED_DOCUMENTS` spine | `mv out/tops/index.html …bak` | `expected 'tops/index.html' to be ''` |
+| 11.8e | **L4826**: `page.jsx` | rename `tops/page.tsx` → `.jsx` | `these route files are not .tsx: tops/page.jsx.` |
+| 11.8f | **L4826**: route group | copy to `(landing)/tops/page.tsx` | `these route files sit inside a route group, parallel route or private folder: (landing)/tops/page.tsx` |
+
+11.3 is the one worth keeping: it converts "3.9 flips four booleans" — asserted by six artifacts in
+this repo — into evidence that it is five.
+
+---
+
+**Browser verification (headless Chrome over CDP; no Playwright in this repo, and the extension was
+not driven). Measured, never screenshotted.**
+
+*Task 4.4 — `#results` is NOT in the static HTML, and the nav points straight at it.*
+`grep 'id="results"' out/tournament/index.html` → **0**. That is correct and is AD-11's
+build-time/runtime split, so the fragment had to be verified after hydration:
+
+```
+/tournament/  results_anchor_present: true   results_tag: "H2"   results_text: "Resultados"
+              standings_anchor_present: true  leaf_group_a: true  leaf_results_r32: true
+              leaders_count: 0                tables_rendered: 0   <- SM-C2, all 21 start closed
+```
+
+*`/tops` — re-sited, not duplicated, and ledger `:4799` verified closed:*
+
+```
+leaders_ids: 1   leaders_title_ids: 1   labelledby: 1   h2: "Líderes del torneo"
+dangling_aria_controls: 0        <- was 36
+```
+
+*`/` at 390 px — UJ-0's acceptance:*
+
+```
+h1: "Mundial 2026"   doc_scrollWidth: 375 (viewport 390)   horizontal_overflow: false
+tables: 0   aria_busy: 0   badge_count: 8   all_have_href: true   any_aria_label: false
+badge_hrefs: /compare/ /tournament/ /tournament/#results /tops/ /players/ /teams/ /glossary/ /about/
+```
+
+Eight badges, ruled order, every href trailing-slashed, the slash BEFORE the `#`.
+
+*Task 10.5 / D12 — the header token, `getBoundingClientRect()` at 1280 px with all nine links live:*
+
+| locale | inline links | nav width | search input | `--header-h` | overflow |
+|---|---|---|---|---|---|
+| es | 9 | 628 px | **158 px** | 3.875rem (62 px measured) | none (1265 < 1280) |
+| en | 9 | 610 px | **181 px** | 3.875rem | none |
+
+Reproduces story 3.10's Task 9.5 table exactly. Below `xl` the token behaves as documented — 62 px
+at 390/320 px, 118 px at 195 px, with `scroll-padding-top` tracking it at 78/134 px — and no page
+overflows at 195 px on `/`, `/tops` or `/teams`. **So `globals.css` and `reflow-guards.test.ts`
+needed NO edit.** Predicted, then measured, because D12 exists precisely because predictions about
+this token have been wrong twice.
 
 ### Completion Notes List
 
+**AC 1 — the contract's IA, within SM-C2, leaderboards anchor re-sited not duplicated. ✅**
+`/tournament` took the Hub whole (D2's "address change, not a redesign"): the `SortAnnouncerProvider`
++ `TournamentHubHeading` + `TournamentHubRegion` body and the entire `generateMetadata` moved
+verbatim. `/tops` took story 2.13's mount. `LEADERBOARDS_SECTION_ID` was **not touched** — still
+defined once at `LeaderboardsSection.tsx:73` and rendered once at `:81` — and the export confirms
+one `id="leaders"` on `/tops` and zero on `/`. `leaderboardTeasers(...)` moved with it, still
+projected and never passed whole.
+
+**AC 2 — NFR-11 as a guard, measured per D4 on a proven harness, pre and post both recorded. ✅**
+
+| route | pre median (min–max) | post median (min–max) | benchmarkIndex (median) | floor |
+|---|---|---|---|---|
+| `/` (Hub → Landing) | **92** (92–94) | **94** (89–94) | 2467 → 2346 | new surface: own first median **94** |
+| `/tournament` | inherits `/`'s pre = **92** | **92** (92–92) | 2073 | **≥68 ✅** and equal to its inherited floor ✅ |
+| `/tops` | — | **86** (75–93) | 2003 | own floor **86** |
+| `/players` | — | **70** (69–71) | 2353 | own floor **70** |
+| `/teams` | — | **71** (71–72) | 2473 | own floor **71** |
+| `/compare` (untouched control) | 92 (91–93) | 94 (93–94) | 2183 | — |
+
+Median of 3, mobile preset (Lighthouse's default — `--preset=desktop` never passed), against the
+rebuilt gzip + keep-alive server whose header assertion is pasted above.
+**D10's escalation condition was NOT triggered**: `/tournament` clears the contract's ≥68 and does
+not fall below `/`'s pre-median at all — it equals it. The control drifted +2 over the same interval,
+so if anything `/tournament` is ~2 points soft in relative terms, which is inside both the printed
+min–max and the benchmarkIndex spread (1,536–2,597) that D19 says this machine produces.
+**NFR-11 itself is raised for Juan, not re-ruled** — see below.
+
+**AC 3 — the A3 probe. ✅** Run at Task 1: tree clean, both collision files unheld, the SEO track
+finished with `page.tsx`. The abort condition was not met. The canonical/`og:image` metadata and the
+refactored body coexist: `/` keeps a full seven-key `openGraph` with `url: "./"`, no `alternates`
+key and no `twitter` key, and `canonical-output.test.ts` passes over all 1,411 documents.
+
+**AC 4 — ledger L1423. ✅ It does NOT fire, stated explicitly rather than left ambiguous.**
+`tactical-sections.ts` is untouched. After this refactor `/` does not even reach
+`LeaderboardsSection`, so the old type-only path into that module is gone too. Recorded in
+`deferred-work.md` **with L1423's own stale `:108-125` citation corrected to `:124`/`:125`/`:141`** —
+`:141` sits outside the cited window, so an agent following the citation literally would have missed
+a third of the work.
+
+**AC 5 — the chain and the suite. ✅**
+
+```
+routes (index.html):   1410   [AC 5: 1,410]
+documents (*.html):    1411
+sitemap <loc>:         1408
+Test Files  63 passed (63)      <- was 60
+Tests       1546 passed (1546)  <- was 1512, 0 skipped throughout
+```
+
+Full six-step chain green: `lint` → `typecheck` → `assert:schema-version` → `next build` →
+`copy-data.mjs` → `assert:no-external-origins`. `npm run build` was run before `npm test` every time,
+so no export-reading assertion was silently skipped.
+
+---
+
+**Decisions taken where the story asked for one, and which way I went:**
+
+- **Route metadata namespacing (D16).** `/tops`' description folded into `leaderboards.meta.*`
+  rather than a `topsPage.*` namespace — the whole `leaderboards.*` namespace moves to `/tops` with
+  the surface, so a second namespace naming the same surface by its slug would be redundant.
+  `/`, `/players`, `/teams` likewise use `landing.meta.*`, `players.meta.*`, `teams.meta.*`.
+  `/tournament` keeps `meta.description`, moved verbatim.
+- **The eight badge labels are NOT minted.** They are `nav.destinations.*`, reused verbatim, because
+  that block's own docblock states its nine entries ARE the ruled badge set. One list, two
+  presentations — the same relationship the nav's sheet and inline row already have.
+- **Ledger `:4799` and `:4794`: TAKEN**, both one-liners in a component that re-sites to `/tops`,
+  where they would have travelled unnoticed. Verified by measurement (36 → 0 dangling IDREFs; zero
+  overflow at 195 px).
+- **Ledger `:4826`: CLOSED**, not merely noted. It named story 3.9 as its owner, so leaving it
+  deliberately would still have left the blind spot. Three new cases in `nav-destinations.test.ts`
+  reject `page.jsx` and route groups; both were driven red.
+- **D8's optional `REQUIRED_DOCUMENTS` hardening: TAKEN.** The whole-export gates are pure
+  auto-discovery, so they already covered the four new routes — what the spine adds is a
+  **build-free** guard that turns "one fewer document discovered" into a named failure. Driven red.
+- **`sitemap.test.ts`'s named-route loop: not extended.** The bijection it already asserts is
+  derived from `discoverStaticRoutes()` and `urls.length`, so the four routes are covered without an
+  edit, and `sitemap.ts` itself is fenced off by D17.
+- **A new pure module, `src/lib/route-title.ts`, was added** beyond the story's file list.
+  `composeHubTitle`'s docblock states its argument is "a proper noun, not a translated label
+  (AD-7)"; `/tops`, `/players` and `/teams` compose from translated surface labels, so routing them
+  through it would have falsified a docblock that is currently true. One helper per claim.
+
+**Two real defects found while closing something else, both fixed:**
+
+1. **`everyRouteHtml()` had silently stopped covering `/compare` since story 2.17.** Its static-route
+   list was a hardcoded literal of four documents, so seven cases titled *"on EVERY exported route"*
+   did not. Replaced with a `readdirSync` sweep plus a non-vacuity floor — which immediately went
+   red, because `/compare` ships **three** `role="combobox"` elements (the header search plus its own
+   two entity pickers) against an assertion of exactly one. **That assertion had been stating a
+   property of the DOCUMENT while meaning a property of the HEADER.** It now counts the header
+   search's own rendered `<label>`: narrowed to its real subject, not weakened.
+2. **`sitemap.test.ts`'s export walk had begun timing out** at vitest's 5 s default under ten-worker
+   contention — failing on a TIMEOUT rather than an assertion, exactly as `static-output.test.ts`
+   once did. It was descending into ~2,800 `__next.*` RSC payload directories that can never hold a
+   route. Now skipped (4,215 → 1,408 directories walked, same 1,408 routes found).
+
+Also worth recording: while narrowing the combobox assertion I wrote `\b` inside a **template
+literal**, which JavaScript reads as the BACKSPACE escape (U+0008) — the regex then matched nothing
+and the case failed pointing at the wrong thing. That is precisely the 2.19 harness failure D11
+warns about, reproduced in a test file rather than a server. Caught by `od -c`.
+
+**Two bijection tests needed a real fix, not a loosening.** `/players` and `/teams` each enumerate
+their directory and compare it to the manifest. Minting an index route beside the dynamic segment
+put `index.html`, `index.txt` and `__next.*` payload directories into those same directories for the
+first time. Both now filter to directories not prefixed `__next.` — Next's reserved prefix, which
+cannot collide with a slug, since AD-3 makes every slug an entity id containing no `.`. The
+bijection over real slugs is asserted exactly as strictly as before.
+
+**Raised for Juan, NOT resolved here (D10 forbids re-ruling it).** NFR-11's ≥68 is story 2.19's
+*start-of-story* figure, taken over a 6,025-node Hub that 2.19's own Task 5.7 then rebuilt to 2,780
+nodes. Every surface this project now ships clears 68 by between 2 and 26 points, so the stated gate
+would not go red on a 20-point regression of the Hub — the "gate that cannot go red" A1/NFR-12
+exists to prevent. The story's own gate is satisfied; the standing number is the open question.
+Filed in `deferred-work.md` with all six medians.
+
+**A6 — the Epic 3 retrospective is now DUE, and this story is the trigger.** `epics.md:1416-1418`
+hung it on story 3.10's AC 7; 3.10 correctly declined, because at `d073575` stories 3-2/3-3/3-9 were
+`backlog` and 3-4 was `in-progress`. That premise is now true here. `epic-3` is flipped to `done` and
+`epic-3-retrospective` reads `required` at `sprint-status.yaml:3886` — required rather than optional
+because Epic 1's sat at `optional`, was skipped, and its concurrent-session lesson had to be
+re-learned inside Epic 2 at real cost. **It is a separate `bmad-retrospective` run and was not
+improvised here.**
+
+**Not done, deliberately:** no jsdom test drives `/players`' filter, its live-region count or a
+disclosure opening. The model is pure and covered (11 cases, driven red) and `ViewDataDisclosure` is
+the shipped control with its own coverage, but the wiring between them is asserted only by
+inspection and in the export. Filed in `deferred-work.md` rather than left unsaid.
+
 ### File List
 
+**New — routes (all plain `src/app/<name>/page.tsx`, D7):**
+```
+app/src/app/tournament/page.tsx
+app/src/app/tops/page.tsx
+app/src/app/players/page.tsx
+app/src/app/teams/page.tsx
+```
+
+**New — components:**
+```
+app/src/components/LandingContent.tsx
+app/src/components/FeatureBadge.tsx
+app/src/components/PlayersIndexRegion.tsx
+app/src/components/TeamsIndexRegion.tsx
+```
+
+**New — pure models and their tests:**
+```
+app/src/lib/players-index.ts
+app/src/lib/players-index.test.ts
+app/src/lib/teams-index.ts
+app/src/lib/teams-index.test.ts
+app/src/lib/route-title.ts
+app/src/lib/route-title.test.ts
+```
+
+**Modified:**
+```
+app/src/app/page.tsx                          (the Hub body -> the Landing surface)
+app/src/lib/nav-destinations.ts               (FIVE flags + the prose that described a world that ended)
+app/src/lib/nav-destinations.test.ts          (post-3.9 truth, vacuity stated, + the L4826 gate)
+app/src/components/LeaderboardsSection.tsx    (stale 4.5rem comment — ledger :4789)
+app/src/components/LeaderboardsRegion.tsx     (ledger :4799 aria-controls, :4794 skeleton width)
+app/src/components/TournamentHub.tsx          (stale 4.5rem comment — ledger :4789)
+app/src/components/SiteNav.test.tsx           (stale case TITLES only; assertions unchanged)
+app/src/app/static-output.test.ts             (re-pointed Hub + leaderboards cases, per-route artifacts, route sweep)
+app/src/app/canonical-output.test.ts          (REQUIRED_DOCUMENTS spine — D8 optional hardening)
+app/src/app/sitemap.test.ts                   (walk skips __next.* payload dirs)
+app/src/app/players/static-output.test.ts     (bijection excludes the index route's own artifacts)
+app/src/app/teams/static-output.test.ts       (same)
+app/src/lib/i18n.test.ts                      (caption inventory + the two index surfaces)
+app/src/locales/es.ts                         (landing.*, players.*, teams.*, leaderboards.meta.*; hub.title + nav docblocks corrected)
+app/src/locales/en.ts                         (the type-mirrored twin)
+_bmad-output/implementation-artifacts/deferred-work.md      (APPEND ONLY)
+_bmad-output/implementation-artifacts/sprint-status.yaml    (status flips + annotation + journal)
+_bmad-output/implementation-artifacts/3-9-home-page-refactor.md (this file)
+```
+
+**NOT touched, as ruled:** `SiteNav.tsx`, `SiteHeader.tsx`, `HeaderSearch.tsx`, `ui/dialog.tsx`,
+`tactical-sections.ts` (D13), `sitemap.ts`, `robots.ts`, `layout.tsx`, `og-card.ts`,
+`site-origin.ts`, `globals.css` (D12's measurement did not move the token), `reflow-guards.test.ts`
+(no pinned class string moved), and the stray `17`.
+
 ### Change Log
+
+| date | change |
+|---|---|
+| 2026-08-27 | Baseline re-measured at `f613dce` — 1,512 tests / 60 files / 0 skipped / 1,406 routes. A3 probe clean; AC 3's abort condition not met. |
+| 2026-08-27 | D4 measurement harness rebuilt from its recorded properties (it was never committed) and PROVEN by header assertion before any score was taken. |
+| 2026-08-27 | Pre-refactor medians recorded: `/` 92 (92–94), `/compare` control 92 (91–93). |
+| 2026-08-27 | `/tournament` minted; the Hub moved whole with its metadata, its provider and its anchors. `#results` verified present after hydration. |
+| 2026-08-27 | `/tops` minted; story 2.13's leaderboards mount re-sited, `#leaders` still defined once and rendered once. |
+| 2026-08-27 | `/` rebuilt as the Landing surface — lede + eight badges, no table, no disclosure, no artifact on either AD-11 path. |
+| 2026-08-27 | `/players` and `/teams` minted over pure models, both fetching at runtime through `TournamentHubRegion`'s four-state machine. |
+| 2026-08-27 | FIVE `available` booleans flipped (not four); nav completes itself with no component change. |
+| 2026-08-27 | Moved gates re-pointed, never deleted; artifact allow-list split per route; the "every exported route" sweep made real. |
+| 2026-08-27 | Post-refactor medians recorded; D10's escalation condition not triggered. D12 discharged by measurement — token unmoved. |
+| 2026-08-27 | A1: eight gates driven RED with verbatim output, reverted, re-verified green. |
+| 2026-08-27 | Ledger `:4826`, `:4799`, `:4794` CLOSED; `:4789` half closed; L1423 confirmed not fired with its stale citation corrected. |
+| 2026-08-27 | Epic 3 closed (`epic-3: done`); Epic 3 retrospective recorded as DUE (A6) rather than improvised. |

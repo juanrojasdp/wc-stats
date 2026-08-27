@@ -10,11 +10,14 @@ import type { DictionaryKey } from "@/lib/i18n";
  *
  * ═══════ WHY `available` IS A DECLARED FLAG AND NOT A FILESYSTEM PROBE ══════
  *
- * Four of the nine routes do not exist yet. `/tournament`, `/tops`, `/players`
- * and `/teams` are story 3.9's, and they take the route count 1,406 → 1,410.
- * Until 3.9 mints them, linking to them would ship a 404 into the site chrome of
- * every one of 1,406 pre-rendered routes — and a nav that 404s is worse than a
- * nav that is honest about its size.
+ * ✅ ALL NINE ROUTES NOW EXIST. Story 3.9 minted `/tournament`, `/tops`,
+ * `/players` and `/teams` — FOUR page files — and took the route count
+ * 1,406 → 1,410. Every flag below reads `true`, and this block is kept rather
+ * than deleted because it explains a mechanism that is still load-bearing.
+ *
+ * Before 3.9, linking to an unbuilt route would have shipped a 404 into the site
+ * chrome of every one of 1,406 pre-rendered routes — a nav that 404s is worse
+ * than a nav that is honest about its size.
  *
  * A runtime check is not available to us: `SiteNav` is a client component
  * pre-rendered into every HTML file, so it has no filesystem to ask. The flag is
@@ -22,22 +25,33 @@ import type { DictionaryKey } from "@/lib/i18n";
  * REALITY. That gate asserts a bijection in both directions: every `true` has a
  * `page.tsx`, and every `false` has none.
  *
- * 🔴 SO THE FLAG IS NOT A HACK, AND THE COUPLING IS THE POINT. When story 3.9
- * mints the four routes, direction 2 of that gate goes RED and stays red until
- * these four booleans are flipped. At that moment the nav completes itself:
- * nine entries render, in both presentations, WITH NO CHANGE TO ANY COMPONENT.
- * 3.9 edits this file and nothing else in the nav.
+ * 🔴 THE COUPLING WAS THE POINT, AND IT WORKED. When story 3.9 minted the four
+ * routes, direction 2 of that gate went RED and stayed red until the booleans
+ * were flipped — driven deliberately, with the failing output recorded in that
+ * story's Dev Agent Record (A1). The nav then completed itself: nine entries
+ * render, in both presentations, WITH NO CHANGE TO ANY COMPONENT. 3.9 edited
+ * this file and nothing else in the nav.
  *
- * ⚠️ BUT NOT WITH NO CHANGE TO THE HEADER TOKEN (2026-08-26 code review).
- * `DESIGN.md` rules that ANY change to the header's composition changes
- * `--header-h`, and flipping these four flags adds five inline links to the
- * `≥xl` row. Story 3.10's own 9.5 table already shows the search input squeezed
- * from 511 px to 158 px in `es` at 1280 px, so the row is at its limit before
- * the five arrive. The bijection gate binds the flag to the filesystem; NOTHING
- * binds it to a re-measurement of the token. Story 3.9 must re-run the R2/D8
- * matrix and re-derive `--spacing-header-h-*` after flipping these, or the row
- * wraps to 118 px while the token still reports 62 and every anchor and the
- * skip link go back behind the bar.
+ * ⚠️ IT IS FIVE BOOLEANS, NOT FOUR, AND EVERY OTHER ARTIFACT IN THIS REPO SAID
+ * FOUR. Story 3.10's file, its completion notes, two `sprint-status.yaml` lines,
+ * the `d073575` commit message and an earlier version of THIS comment all said
+ * "3.9 flips four booleans". They were off by one: `matches` and `tournament`
+ * share the route `/tournament/` and differ only by the `#results` fragment, so
+ * nine destinations over EIGHT DISTINCT ROUTES needed FOUR new page files and
+ * FIVE flag flips. `es.ts:86` was the one artifact that had it right. Story 3.9
+ * drove the resulting failure red on purpose (its Task 11.3) so the off-by-one
+ * became evidence rather than folklore. Three different correct numbers —
+ * 9 destinations, 8 routes, 4 files, 5 flags — are routinely quoted as if
+ * interchangeable.
+ *
+ * ⚠️ THE HEADER TOKEN WAS RE-MEASURED, NOT ASSUMED (2026-08-26 code review,
+ * discharged by story 3.9 Task 10.5). `DESIGN.md` rules that ANY change to the
+ * header's composition changes `--header-h`, and flipping these flags added five
+ * inline links to the `≥xl` row. The bijection gate binds the flag to the
+ * filesystem; NOTHING binds it to a re-measurement of the token, so 3.9 re-ran
+ * the R2/D8 matrix rather than predicting the outcome — predictions about this
+ * token have been wrong twice. The measured values are in that story's Dev Agent
+ * Record.
  *
  * ═══════ WHY `route` IS DECLARED RATHER THAN DERIVED ════════════════════════
  *
@@ -120,7 +134,12 @@ export interface NavDestination {
    * a pathname to. Exact match only — a profile is not its index (D12).
    */
   route: string;
-  /** False ⇒ the route does not exist yet, so the entry does not render at all. */
+  /**
+   * False ⇒ the route has no `page.tsx`, so the entry does not render at all.
+   * ALL NINE READ TRUE since story 3.9; the flag is kept because it is what the
+   * bijection gate binds, in both directions, and because a route DELETED in
+   * future must be able to turn one of these back to `false`.
+   */
   available: boolean;
 }
 
@@ -144,43 +163,51 @@ export const NAV_DESTINATIONS: readonly NavDestination[] = [
     labelKey: "nav.destinations.tournament",
     href: "/tournament/",
     route: "/tournament/",
-    available: false,
+    available: true,
   },
   {
     key: "matches",
     labelKey: "nav.destinations.matches",
     href: "/tournament/#results",
     route: "/tournament/",
-    available: false,
+    available: true,
   },
   {
     key: "tops",
     labelKey: "nav.destinations.tops",
     href: "/tops/",
     route: "/tops/",
-    available: false,
+    available: true,
   },
   {
     /*
-     * ⚠️ `/players` IS THE INDEX, AND IT DOES NOT EXIST. Only
-     * `src/app/players/[slug]/page.tsx` does. A directory-level availability
-     * check would find `players/` present and mark this entry available, which
-     * is precisely how a nav entry comes to point at a 404 — so the gate rejects
-     * any route carrying a dynamic segment rather than resolving it.
+     * ⚠️ `/players` IS THE INDEX, AND IT IS NOT THE PROFILE ROUTE.
+     * `src/app/players/page.tsx` (story 3.9) and
+     * `src/app/players/[slug]/page.tsx` are two different routes; Next resolves
+     * them independently.
+     *
+     * THE RULING THE INDEX'S ARRIVAL DOES NOT RETIRE: a DIRECTORY-LEVEL
+     * availability check would have found `players/` present and marked this
+     * entry available for the whole of the 1,248 profiles' existence, before any
+     * index page was written — which is precisely how a nav entry comes to point
+     * at a 404. So the gate still rejects any route carrying a dynamic segment
+     * rather than resolving it, and still resolves this one to a LITERAL
+     * `src/app/players/page.tsx`. The claim that has changed is only "it does not
+     * exist"; the mechanism is untouched.
      */
     key: "players",
     labelKey: "nav.destinations.players",
     href: "/players/",
     route: "/players/",
-    available: false,
+    available: true,
   },
   {
-    /** Same index-vs-profile shape as `players` above. */
+    /** Same index-vs-profile shape as `players` above, minted by the same story. */
     key: "teams",
     labelKey: "nav.destinations.teams",
     href: "/teams/",
     route: "/teams/",
-    available: false,
+    available: true,
   },
   {
     key: "glossary",
@@ -198,7 +225,7 @@ export const NAV_DESTINATIONS: readonly NavDestination[] = [
   },
 ];
 
-/** The entries that render. Four today; nine once story 3.9 lands. */
+/** The entries that render. All NINE, since story 3.9 minted the last four routes. */
 export function availableDestinations(): readonly NavDestination[] {
   return NAV_DESTINATIONS.filter((destination) => destination.available);
 }

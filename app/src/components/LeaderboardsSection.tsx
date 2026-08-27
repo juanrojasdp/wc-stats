@@ -81,10 +81,18 @@ export function LeaderboardsSection({ teasers }: { teasers: readonly Leaderboard
       id={LEADERBOARDS_SECTION_ID}
       aria-labelledby={HEADING_ID}
       /*
-       * No scroll-margin here: globals.css already sets
-       * `scroll-padding-top: 4.5rem` on the scroll container, which is what
-       * clears the sticky chrome for every in-page anchor. A second offset
-       * would double it.
+       * No scroll-margin here: globals.css already sets `scroll-padding-top`
+       * on the scroll container, which is what clears the sticky chrome for
+       * every in-page anchor. A second offset would double it.
+       *
+       * THE VALUE IS DERIVED, NOT THE CONSTANT THIS COMMENT USED TO NAME
+       * (ledger `deferred-work.md:4789`, taken by story 3.9). It said
+       * "4.5rem"; story 3.10 D9 replaced that literal with
+       * `calc(var(--header-h) + var(--spacing-scroll-clearance))`, because the
+       * bar stopped being 3.5rem when the authorship caption landed and at any
+       * wrapped width the old constant left the heading 46 px UNDER the bar.
+       * The conclusion this comment draws is unchanged and is now true at every
+       * width; only the number it cited was wrong.
        */
       className="mt-section-gap"
     >

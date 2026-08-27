@@ -100,8 +100,22 @@ describe.skipIf(!anyBuilt)("exported /players/[slug] routes", () => {
     const manifest = readTournament()
       .entities.players.map((player) => player.playerId)
       .sort();
+    /*
+     * ⚠️ THE INDEX ROUTE'S OWN ARTIFACTS ARE EXCLUDED, AND THAT IS NOT A
+     * LOOSENING OF THE BIJECTION (story 3.9). `/players` — the INDEX — now
+     * exists beside `/players/[slug]`, so `out/players/` holds this route's
+     * 1,248 slug directories PLUS the index's `index.html`, `index.txt` and its
+     * `__next.*` RSC payload directories. Those are not player routes and never
+     * were; before 3.9 there was simply nothing in this directory but slugs.
+     *
+     * `__next.` is Next's own reserved prefix for RSC payloads and cannot
+     * collide with a player slug, which AD-3 defines as
+     * `{surname}-{givenName}-{teamCode}`. Filtering on it excludes exactly the
+     * index's artifacts and nothing else — the bijection over real slugs is
+     * asserted as strictly as before, in both directions.
+     */
     const built = readdirSync(PLAYERS_DIR, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith("__next."))
       .map((entry) => entry.name)
       .sort();
     expect(built).toEqual(manifest);

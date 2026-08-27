@@ -844,8 +844,15 @@ export function TournamentHubHeading() {
  * `openNonce`. The two are deliberately separate hooks — one moves the viewport,
  * the other opens the control — and a deep link needs both.
  *
- * `scroll-padding-top: 4.5rem` on <html> (globals.css) keeps the target clear of
- * the sticky site header.
+ * `scroll-padding-top` on <html> (globals.css) keeps the target clear of the
+ * sticky site header.
+ *
+ * IT IS DERIVED, NOT THE `4.5rem` CONSTANT THIS COMMENT USED TO NAME (ledger
+ * `deferred-work.md:4789`, taken by story 3.9). Story 3.10 D9 replaced the
+ * literal with `calc(var(--header-h) + var(--spacing-scroll-clearance))`: the
+ * bar stopped being 3.5rem when the authorship caption landed, so at any
+ * wrapped width the old constant left an anchored heading 46 px UNDER the bar.
+ * The conclusion is unchanged and now holds at every width.
  */
 function useHashScroll(): void {
   useEffect(() => {

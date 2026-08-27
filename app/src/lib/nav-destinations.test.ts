@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -10,33 +10,49 @@ import { es } from "@/locales/es";
 /*
  * ═══════ THE AVAILABILITY GATE — Story 3.10, D8 (AC 1, A1, A2) ═══════════════
  *
- * `nav-destinations.ts` declares nine destinations, four of which are reachable
- * on `main` today. The other five are story 3.9's, and until 3.9 mints their
- * routes they must not render — a nav that 404s is worse than a nav that is
- * honest about its size, and a dead link in the site chrome appears on every one
- * of 1,406 routes.
+ * `nav-destinations.ts` declares nine destinations. ALL NINE ARE REACHABLE
+ * SINCE STORY 3.9, which minted `/tournament`, `/tops`, `/players` and `/teams`
+ * — four page files — and flipped FIVE flags (`matches` shares `/tournament/`
+ * with `tournament` and differs only by the `#results` fragment; every other
+ * artifact in the repo said "four booleans" and was off by one).
+ *
+ * Before that, linking to an unbuilt route would have shipped a dead link into
+ * the site chrome of every one of 1,406 pre-rendered routes.
  *
  * 🔴 THIS FILE IS WHAT BINDS THE `available` FLAG TO REALITY, and without it the
  * flag would be a comment that lies. `SiteHeader` is a client component
- * pre-rendered into 1,406 HTML files: it has no filesystem and cannot probe the
+ * pre-rendered into 1,410 HTML files: it has no filesystem and cannot probe the
  * route tree at runtime. So the flag is static data, and the gate is a
  * BIJECTION checked in BOTH directions at test time:
  *
  *   1. every `available: true` destination HAS a page.tsx, and
  *   2. every `available: false` destination has NONE.
  *
- * Direction 2 is the half that earns its keep. Without it, 3.9 could mint
- * `/tournament` and the nav would silently stay four entries wide — a route that
- * exists but is unlinked, failing open and invisibly. With it, 3.9's first
- * route makes this file RED, and the only way back to green is flipping the
- * four booleans. That coupling is the point.
+ * DIRECTION 2 EARNED ITS KEEP AND IS NOW VACUOUS — both facts, in that order.
+ * Without it, 3.9 could have minted `/tournament` and left the nav silently four
+ * entries wide: a route that exists but is unlinked, failing open and invisibly.
+ * With it, 3.9's first route made this file RED and the only way back to green
+ * was flipping the five booleans. That coupling did its job. With every flag now
+ * `true` the loop body no longer executes, which the case itself states and
+ * asserts rather than leaving to be discovered — see its comment.
  *
  * INDEX IS NOT PROFILE, AND THAT CONFLATION IS THE TRAP. `/players` resolves to
- * `src/app/players/page.tsx`, which does NOT exist — only
- * `src/app/players/[slug]/page.tsx` does. A directory-level check would report
- * `players/` present and mark *Jugadores* available, shipping a link to a 404 on
- * every route. So a `route` carrying a dynamic segment is rejected outright
- * rather than resolved.
+ * `src/app/players/page.tsx` — a DIFFERENT file from
+ * `src/app/players/[slug]/page.tsx`, and one that did not exist until story 3.9.
+ * A directory-level check would have reported `players/` present and marked
+ * *Jugadores* available throughout the 1,248 profiles' existence, shipping a
+ * link to a 404 on every route. So a `route` carrying a dynamic segment is still
+ * rejected outright rather than resolved — the index's arrival retires the
+ * example, not the rule.
+ *
+ * 🔴 AND `pageFor()` BUILDS ONE LITERAL PATH, WHICH IS WHY THE FOUR NEW ROUTE
+ * FILES HAD TO BE PLAIN `src/app/<name>/page.tsx` (`deferred-work.md:4826`,
+ * owner: story 3.9). A route minted inside a group — `src/app/(landing)/tops/`
+ * — or written as `page.jsx` resolves to nothing here, so direction 2 would NOT
+ * have gone red, the booleans would never have been flipped, and the nav would
+ * have shipped four entries wide beside four live, unreachable pages. Green.
+ * The `assertPlainSegment` throw in `sitemap.ts` is the second, independent
+ * guard on the same shape; this comment is the first.
  *
  * RELATIVE PATHS ONLY (A2), on `reflow-guards.test.ts`'s footing: node built-ins
  * and `process.cwd()/src`, so the suite gains no dependency to read a directory.
@@ -98,10 +114,22 @@ describe("the destination table is the ruled one (D1)", () => {
     expect(NAV_DESTINATIONS.map((destination) => destination.key)).toEqual([...RULED_ORDER]);
   });
 
-  it("renders FOUR today — the pre-3.9 truth, stated rather than implied", () => {
+  it("renders ALL NINE — the post-3.9 truth, stated rather than implied", () => {
+    /*
+     * THIS CASE USED TO PIN THE PRE-3.9 TRUTH — `["home", "compare", "glossary",
+     * "about"]`, as a hardcoded literal — and it went RED on the boolean flip
+     * regardless of the filesystem, exactly as intended. Story 3.9 is what ended
+     * that world, so 3.9 is what rewrites the case rather than deleting it (A1:
+     * deleting an assertion is never how a gate is satisfied).
+     *
+     * Still a LITERAL and still not derived from `NAV_DESTINATIONS`: deriving it
+     * would make the assertion "the available ones are the available ones". The
+     * literal is what makes a flag flipped by accident — in either direction —
+     * a failure with a name on it.
+     */
     expect(
       NAV_DESTINATIONS.filter((destination) => destination.available).map((d) => d.key)
-    ).toEqual(["home", "compare", "glossary", "about"]);
+    ).toEqual([...RULED_ORDER]);
   });
 
   it("gives every destination a route its href actually lands on", () => {
@@ -196,24 +224,135 @@ describe("D8 — the availability gate, a bijection in BOTH directions", () => {
       expect(
         existsSync(path.join(SRC, page)),
         `${destination.key} is marked available:true but ${page} does not exist, so the ` +
-          "nav ships a link to a 404 on every one of 1,406 routes.\n\n" +
+          "nav ships a link to a 404 on every one of 1,410 routes.\n\n" +
           "Either the route was deleted, or a flag was flipped ahead of the route it names."
       ).toBe(true);
     }
   });
 
   it("direction 2 — every UNAVAILABLE destination has NO page.tsx", () => {
-    for (const destination of NAV_DESTINATIONS.filter((d) => !d.available)) {
+    /*
+     * ⚠️ VACUOUS SINCE STORY 3.9, DELIBERATELY, AND SAID OUT LOUD RATHER THAN
+     * LEFT TO BE DISCOVERED (A1/A2).
+     *
+     * All nine flags now read `true`, so this filter is EMPTY and the loop body
+     * never executes. This repo has a named lesson for exactly that shape — the
+     * `scanned === 0` rule at `canonical-output.test.ts:116-121` — and three
+     * cases in this change-set became no-ops at the same moment (this one,
+     * `SiteNav.test.tsx`'s unavailable half, and `static-output.test.ts:905-928`).
+     *
+     * IT IS KEPT, NOT DELETED, because it is a STANDING GUARD in the other
+     * direction: it is what turns red if a future story DELETES a route's
+     * `page.tsx` and sets its flag to `false` while some other surface still
+     * links to it — or, more likely, sets the flag to `false` and leaves the page
+     * shipped and unreachable. The bijection is only a bijection while both
+     * halves exist.
+     *
+     * The non-vacuity assertion below is what keeps the CASE honest: it asserts
+     * the reason the loop is empty, so this can never silently become "the gate
+     * stopped seeing anything" instead of "there is nothing left to see".
+     */
+    const unavailable = NAV_DESTINATIONS.filter((d) => !d.available);
+
+    /*
+     * THE LOOP RUNS FIRST, AND THAT ORDERING IS DELIBERATE. The non-vacuity
+     * assertion below would otherwise fire first on exactly the input this gate
+     * exists to catch — a flag turned back to `false` beside a shipped page —
+     * and would report "expected 1 to be 0" instead of the message naming the
+     * destination and the file. The guard is about the CASE; the loop is about
+     * the CODE, and the code's failure must be the one a reader sees.
+     */
+    for (const destination of unavailable) {
       const page = pageFor(destination.route);
       expect(
         existsSync(path.join(SRC, page)),
         `${destination.key} is marked available:false but ${page} EXISTS.\n\n` +
-          "This is the half of the gate that catches story 3.9: the route has been " +
-          "minted and the nav is silently still four entries wide, so a shipped page " +
+          "This is the half of the gate that CAUGHT story 3.9: a route has been " +
+          "minted while the nav stayed narrower than the site, so a shipped page " +
           "is unreachable from the site chrome. Flip `available` to true in " +
           "nav-destinations.ts — no component changes, the nav completes itself."
       ).toBe(false);
     }
+
+    expect(
+      unavailable.length,
+      "This case is vacuous BY DESIGN since story 3.9 flipped the last five flags — " +
+        "but only while every destination really is available. A non-zero count here " +
+        "means the loop above is live again and this guard should go with it; a " +
+        "shrunken TABLE means the bijection has lost a half."
+    ).toBe(0);
+    expect(NAV_DESTINATIONS.filter((d) => d.available)).toHaveLength(RULED_ORDER.length);
+  });
+});
+
+/*
+ * ═══ THE ROUTE-SHAPE GUARD — ledger `deferred-work.md:4826`, CLOSED BY 3.9 ═══
+ *
+ * That entry names story 3.9 as its owner, and this is the gate that closes it.
+ *
+ * 🔴 THE BLIND SPOT. `pageFor()` above resolves a declared route to
+ * `src/app{route}/page.tsx` LITERALLY. So a route minted inside a ROUTE GROUP
+ * (`src/app/(landing)/tops/page.tsx`) or written as `page.jsx` resolves to
+ * nothing here — direction 2 does NOT go red, the `available` boolean is never
+ * flipped, and the nav ships narrower than the site beside a live, unreachable
+ * page. Green. That is the precise failure direction 2 exists to catch, defeated
+ * by a filename.
+ *
+ * `sitemap.ts`'s `assertPlainSegment` throws on a parenthesised segment, so a
+ * route GROUP would at least fail the build — but it fails it in "Collecting
+ * page data" with a message about the sitemap, nowhere near the nav. And it says
+ * nothing at all about `page.jsx`, which builds fine.
+ *
+ * So this asserts the SHAPE of the route tree directly, which is the only place
+ * the assumption `pageFor()` rests on can be stated.
+ */
+describe("route files are the plain shape the availability gate can see (L4826)", () => {
+  /** Every `page.*` file under `src/app`, as a `src/app`-relative path. */
+  function pageFiles(directory: string, prefix: string): string[] {
+    const found: string[] = [];
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const next = `${prefix}${entry.name}`;
+      if (entry.isDirectory()) {
+        found.push(...pageFiles(path.join(directory, entry.name), `${next}/`));
+      } else if (/^page\.[a-z]+$/.test(entry.name)) {
+        found.push(next);
+      }
+    }
+    return found;
+  }
+
+  const APP_DIR = path.join(SRC, "app");
+
+  it("finds the route files at all — this gate must not run over nothing", () => {
+    // The `scanned === 0` rule (`canonical-output.test.ts:116-121`): a walk that
+    // finds nothing satisfies every "none of them is bad" assertion below.
+    expect(pageFiles(APP_DIR, "").length).toBeGreaterThanOrEqual(
+      NAV_DESTINATIONS.filter((destination) => destination.available).length - 1
+    );
+  });
+
+  it("writes every route file as page.tsx — never page.jsx (L4826)", () => {
+    const wrong = pageFiles(APP_DIR, "").filter((file) => !file.endsWith("/page.tsx") && file !== "page.tsx");
+    expect(
+      wrong,
+      `these route files are not .tsx: ${wrong.join(", ")}. ` +
+        "`pageFor()` in this file builds one literal `page.tsx` path, so a `.jsx` " +
+        "route is INVISIBLE to the availability gate — the flag is never forced " +
+        "true and the nav ships narrower than the site, green."
+    ).toEqual([]);
+  });
+
+  it("puts no route file inside a ROUTE GROUP or a private folder (L4826)", () => {
+    const grouped = pageFiles(APP_DIR, "").filter((file) =>
+      file.split("/").some((segment) => segment.startsWith("(") || segment.startsWith("@") || segment.startsWith("_"))
+    );
+    expect(
+      grouped,
+      `these route files sit inside a route group, parallel route or private folder: ` +
+        `${grouped.join(", ")}. The availability gate resolves a declared route to ` +
+        "`src/app{route}/page.tsx` LITERALLY, so a grouped route defeats it SILENTLY; " +
+        "and `sitemap.ts`'s assertPlainSegment throws on `(` during `next build`."
+    ).toEqual([]);
   });
 });
 

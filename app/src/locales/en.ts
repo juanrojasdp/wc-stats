@@ -53,6 +53,34 @@ export const en: Dictionary = {
       about: "About",
     },
   },
+  /*
+   * Story 3.9 — `/`, the landing surface. Mirrors es.ts key for key; see that
+   * file for the zone grammar, for why the eight BADGE LABELS are not minted
+   * here (they are `nav.destinations.*`, reused verbatim), and for why `title`
+   * is a locale string rather than the artifact's `tournamentName`.
+   */
+  landing: {
+    title: "World Cup 2026",
+    lede:
+      "All 104 matches of the tournament, read from the official performance reports: " +
+      "results, standings, shot maps, pass networks and the per-player detail. " +
+      "Free, independent and ad-free.",
+    badge: {
+      compare: { support: "Two players, two teams or two matches, side by side." },
+      tournament: { support: "Results and standings, by stage and by group." },
+      matches: { support: "All 104 of them." },
+      tops: { support: "36 boards, for teams and for players." },
+      players: { support: "All 1,248 of them." },
+      teams: { support: "All 48 national sides." },
+      glossary: { support: "What every tactical term means." },
+      about: { support: "Where the data comes from and who made this." },
+    },
+    meta: {
+      description:
+        "The 104 matches of World Cup 2026, read from the official reports: " +
+        "results, standings, leaders, players and teams. Free and ad-free.",
+    },
+  },
   about: {
     title: "About this site",
     dataTitle: "The data",
@@ -1306,6 +1334,73 @@ export const en: Dictionary = {
     higherIsBetter: {
       true: "Higher is better",
       false: "Lower is better",
+    },
+    meta: {
+      description:
+        "36 World Cup 2026 leaderboards, for teams and for players: " +
+        "goals, assists, duels, distance and top speed.",
+    },
+  },
+  /*
+   * Story 3.9 — `/players`, the player index. Mirrors es.ts key for key; see
+   * that file for why the filter keys are minted rather than borrowed from
+   * `leaderboards.*`, and for why the position abbreviations expand at the CELL
+   * and not only at the column head.
+   *
+   * The English abbreviations are the source report's own — GK / DF / MF / FW,
+   * which is also how `contract-types.d.ts` spells the `Position` union.
+   */
+  players: {
+    title: "Players",
+    count: "players",
+    countOne: "player",
+    teamCount: "players",
+    teamCountOne: "player",
+    filterLabel: "Filter by name",
+    filterPlaceholder: "Type a name",
+    filterResults: "players found",
+    filterResultsOne: "player found",
+    filterNoResults: "No name matches the filter.",
+    filterNoResultsExplanation: "Delete letters to see more players.",
+    position: {
+      short: {
+        gk: "GK",
+        df: "DF",
+        mf: "MF",
+        fw: "FW",
+      },
+    },
+    columns: {
+      position: "Position",
+      name: "Player",
+    },
+    teamTrigger: "View the players of",
+    tableCaption: "Players of",
+    meta: {
+      description:
+        "The 1,248 players of World Cup 2026, grouped by national side: " +
+        "position, name and a link to each player's profile.",
+    },
+  },
+  /*
+   * Story 3.9 — `/teams`, the team index. Mirrors es.ts key for key; see that
+   * file for the recorded redundancy with `/tournament#standings`.
+   */
+  teams: {
+    title: "Teams",
+    count: "national sides",
+    countOne: "national side",
+    columns: {
+      name: "Team",
+      group: "Group",
+      record: "P-W-D-L",
+    },
+    recordExpansion: "Played, won, drawn and lost",
+    tableCaption: "The 48 national sides of the tournament, by group",
+    meta: {
+      description:
+        "The 48 national sides of World Cup 2026: group, matches played and " +
+        "results, with a link to each team's profile.",
     },
   },
   /*

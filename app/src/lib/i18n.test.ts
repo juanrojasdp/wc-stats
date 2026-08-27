@@ -1929,6 +1929,22 @@ describe("Story 2.11c's receiving log and log links", () => {
     const SIDE_A_NAME = "Julian QUINONES";
     const SIDE_B_NAME = "Carlos ACEVEDO";
 
+    /*
+     * Story 3.9's `/players` composes one caption PER TEAM, so distinctness is
+     * carried entirely by the team name. STAND-IN NAMES on `compareCaptions`'
+     * precedent rather than the fixture's own list: the fixture corpus carries a
+     * single team ("Mexico"), which cannot exercise the property at all, and
+     * reading the REAL 48 would make a locale test depend on the built corpus.
+     *
+     * Team names are artifact data and translate nowhere (FR-30 / AD-7), so two
+     * of them is enough to pin what this inventory can actually assert — that the
+     * prefix composes distinctly and collides with nothing else on the site.
+     */
+    const INDEX_TEAM_NAMES = ["Argentina", "Brazil"];
+    /* `PlayersIndexRegion`'s own `NAME_SEPARATOR` — a plain space, not the em
+       dash the section-prefixed captions above use. */
+    const NAME_SEPARATOR = " ";
+
     function compareCaptions(locale: Locale): string[] {
       const title = (key: Parameters<typeof t>[0]) => t(key, locale);
       const stems = [
@@ -2086,6 +2102,50 @@ describe("Story 2.11c's receiving log and log links", () => {
         new Set([...shipped, receiving, ...hub, ...profile, ...compare, ...team]).size,
         locale
       ).toBe(29 + hub.length + 4 + 6 + 8);
+
+      /*
+       * ═══ STORY 3.9 ADDS THE TWO INDEX SURFACES (Task 9.6, D16) ═══
+       *
+       * `/players` renders 48 tables — one per team disclosure — and `/teams`
+       * renders one. They are not `DataTable`s, but they ARE rendered
+       * `<table><caption>` strings, which is what this inventory is about: a
+       * caption that is rendered but not listed here is invisible to the
+       * distinctness property, and that is the `metreTableCaption` off-by-one
+       * this file documents against itself.
+       *
+       * DISTINCTNESS IS CARRIED BY THE TEAM NAME, which is a proper noun from
+       * the artifact (AD-7) and unique across the 48. So the players captions are
+       * derived from the manifest rather than pinned to a literal count — the
+       * corpus decides how many there are, exactly as the Hub block above
+       * refuses a literal for the same reason.
+       *
+       * 🔴 THE ONE REAL RISK THIS CATCHES is `players.tableCaption` and
+       * `teams.tableCaption` drifting toward each other, or either colliding with
+       * a `team.*` profile caption — all three name teams, in the same language,
+       * on three different surfaces.
+       */
+      const playersIndex = INDEX_TEAM_NAMES.map(
+        (name) => `${t("players.tableCaption", locale)}${NAME_SEPARATOR}${name}`
+      );
+      const teamsIndex = [t("teams.tableCaption", locale)];
+      expect(
+        new Set(playersIndex).size,
+        `the /players captions in ${locale} are not all distinct`
+      ).toBe(playersIndex.length);
+      expect(playersIndex.length, `no /players captions in ${locale}`).toBeGreaterThan(0);
+      expect(
+        new Set([
+          ...shipped,
+          receiving,
+          ...hub,
+          ...profile,
+          ...compare,
+          ...team,
+          ...playersIndex,
+          ...teamsIndex,
+        ]).size,
+        locale
+      ).toBe(29 + hub.length + 4 + 6 + 8 + playersIndex.length + 1);
     }
   });
 

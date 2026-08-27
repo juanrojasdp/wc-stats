@@ -45,6 +45,18 @@ const NOT_FOUND_HTML = OUT_DIR + "404.html";
 // trailingSlash: true → out/<route>/index.html.
 const ABOUT_HTML = OUT_DIR + "about/index.html";
 const GLOSSARY_HTML = OUT_DIR + "glossary/index.html";
+const COMPARE_HTML = OUT_DIR + "compare/index.html";
+/*
+ * STORY 3.9's FOUR NEW ROUTES. `/` used to BE the Hub with the leaderboards
+ * beneath it; UX-DR24 split that surface across `/tournament` and `/tops` and
+ * made `/` the Landing. The assertions below that read the Hub or the
+ * leaderboards are RE-POINTED at these, never deleted (A1: deleting an assertion
+ * is never how a gate is satisfied).
+ */
+const TOURNAMENT_HTML = OUT_DIR + "tournament/index.html";
+const TOPS_HTML = OUT_DIR + "tops/index.html";
+const PLAYERS_INDEX_HTML = OUT_DIR + "players/index.html";
+const TEAMS_INDEX_HTML = OUT_DIR + "teams/index.html";
 const anyBuilt = existsSync(INDEX_HTML) || existsSync(NOT_FOUND_HTML);
 
 describe.skipIf(!anyBuilt)("exported 404.html (AC 4)", () => {
@@ -77,11 +89,22 @@ describe.skipIf(!anyBuilt)("exported 404.html (AC 4)", () => {
  * and is pinned in `i18n.test.ts`, not here.
  */
 describe.skipIf(!anyBuilt)("the authorship caption ships in the header AND the footer", () => {
+  /*
+   * ALL NINE NON-ENTITY DOCUMENTS (story 3.9 Task 9.5). This listed four; it now
+   * lists the four routes 3.9 minted AND `/compare`, which had been missing since
+   * story 2.17 shipped it — the same silent-shrinkage failure the `everyRouteHtml`
+   * comment below records having already been paid for once.
+   */
   const DOCUMENTS: [string, string][] = [
     ["index.html", INDEX_HTML],
     ["404.html", NOT_FOUND_HTML],
     ["about/index.html", ABOUT_HTML],
     ["glossary/index.html", GLOSSARY_HTML],
+    ["compare/index.html", COMPARE_HTML],
+    ["tournament/index.html", TOURNAMENT_HTML],
+    ["tops/index.html", TOPS_HTML],
+    ["players/index.html", PLAYERS_INDEX_HTML],
+    ["teams/index.html", TEAMS_INDEX_HTML],
   ];
 
   /**
@@ -136,7 +159,7 @@ describe.skipIf(!anyBuilt)("the authorship caption ships in the header AND the f
        * The adjacency regex IS the WCAG 2.5.3 ruling in assertion form: the
        * caption is the anchor's NEXT SIBLING, never its child. Moving the
        * `<span>` inside the `<Link>` renames the banner's first focusable
-       * element on all 1,406 routes — the skip link precedes it and sits
+       * element on all 1,410 routes — the skip link precedes it and sits
        * OUTSIDE the <header> (SiteHeader.tsx) — and that is the single most
        * load-bearing decision here.
        */
@@ -217,7 +240,14 @@ describe.skipIf(!anyBuilt)("exported index.html canonical markup (AC 2)", () => 
 });
 
 /*
- * STORY 2.12 Task 8.4 — the exported `/` HTML.
+ * STORY 2.12 Task 8.4 — the exported Tournament Hub HTML.
+ *
+ * ⚠️ RE-POINTED FROM `/` TO `/tournament` BY STORY 3.9 (Task 9.2). UX-DR24 moved
+ * the Hub to its own address — "an address change, not a redesign" — so these
+ * five cases now read `out/tournament/index.html`. Not one of them is deleted or
+ * weakened: A1 rules that deleting an assertion is never how a gate is satisfied,
+ * and a moved surface takes its gates with it. `/` is asserted separately, as the
+ * Landing, below.
  *
  * WHAT THIS FILE CAN AND CANNOT SEE, stated plainly so a reader does not
  * mistake a thin suite for a thin surface. Ruled D1 puts the Hub's tables on
@@ -228,20 +258,20 @@ describe.skipIf(!anyBuilt)("exported index.html canonical markup (AC 2)", () => 
  * "optimises" the index into the markup.
  *
  * The rendered tables are covered where they are decidable — `hub-model.test.ts`
- * over the grouping, ordering, keying and hrefs — and in the browser at Task 9.
+ * over the grouping, ordering, keying and hrefs — and in the browser.
  */
-describe.skipIf(!anyBuilt)("exported / — the Tournament Hub (Story 2.12)", () => {
+describe.skipIf(!anyBuilt)("exported /tournament — the Tournament Hub (Story 2.12, re-sited 3.9)", () => {
   it("carries the route heading in the pre-rendered body, not only after hydration", () => {
     /*
      * The <h1> sits OUTSIDE the fetch region on purpose: a document whose only
      * heading appears after a network round trip has no outline while the
      * request is in flight, and none at all if it fails.
      */
-    expect(readFileSync(INDEX_HTML, "utf8")).toContain(es.hub.title);
+    expect(readFileSync(TOURNAMENT_HTML, "utf8")).toContain(es.hub.title);
   });
 
   it("paints a layout-shaped, aria-busy loading region with an accessible name", () => {
-    const html = readFileSync(INDEX_HTML, "utf8");
+    const html = readFileSync(TOURNAMENT_HTML, "utf8");
     expect(html).toContain('aria-busy="true"');
     // Hub-scoped copy: `match.bundle.loading` says "del partido", which would
     // be a false statement on a tournament-wide route.
@@ -259,7 +289,7 @@ describe.skipIf(!anyBuilt)("exported / — the Tournament Hub (Story 2.12)", () 
      * rather than at some threshold: `knockoutResults` and `goalDifference` are
      * Tournament-only field names that appear nowhere else in the app.
      */
-    const html = readFileSync(INDEX_HTML, "utf8");
+    const html = readFileSync(TOURNAMENT_HTML, "utf8");
     expect(html).not.toContain("knockoutResults");
     expect(html).not.toContain("goalDifference");
   });
@@ -267,7 +297,7 @@ describe.skipIf(!anyBuilt)("exported / — the Tournament Hub (Story 2.12)", () 
   it("composes the <title> from the artifact's own tournament name (UX-DR22)", () => {
     // `tournamentName` is a proper noun the artifact owns (AD-7) — read at
     // build time, passed through, never keyed and never translated.
-    const html = readFileSync(INDEX_HTML, "utf8");
+    const html = readFileSync(TOURNAMENT_HTML, "utf8");
     const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
     expect(title).toContain(es.app.siteName);
     expect(title).toContain(readTournament().tournamentName);
@@ -278,7 +308,7 @@ describe.skipIf(!anyBuilt)("exported / — the Tournament Hub (Story 2.12)", () 
   it("retired the Story 2.1 scaffold body along with its keys", () => {
     // The placeholder's four keys were this route's only call site; the copy
     // and the keys had to go together or one of them becomes dead.
-    const html = readFileSync(INDEX_HTML, "utf8");
+    const html = readFileSync(TOURNAMENT_HTML, "utf8");
     expect(html).not.toContain("Andamiaje del sistema de diseño");
     expect(html).not.toContain("Design system scaffold");
   });
@@ -366,16 +396,27 @@ describe.skipIf(!anyBuilt)("exported /about (AC 3)", () => {
 });
 
 /*
- * ========== STORY 2.13 — LÍDERES DEL TORNEO ON THE HUB (Task 8.4) ==========
+ * ========== STORY 2.13 — LÍDERES DEL TORNEO, NOW ON `/tops` (Task 8.4) =======
+ *
+ * ⚠️ RE-POINTED FROM `/` TO `/tops` BY STORY 3.9 (Task 9.1). AC 1 offered
+ * "preserved or deliberately re-sited" and EXPERIENCE.md:66 chose re-sited:
+ * "Story 2.13's leaderboards mount moves to `/tops` with its `#leaders` anchor —
+ * re-sited, never duplicated, since two elements carrying that id would be a
+ * duplicate-id defect."
+ *
+ * ALL SEVEN CASES MOVE, NONE IS DELETED — including the 36-board loop and the
+ * AD-11 anti-inlining probes. A1's second clause is explicit that deleting an
+ * assertion is never how a gate is satisfied; the three "occurs exactly once"
+ * assertions below are precisely what proves the mount was MOVED rather than
+ * COPIED, so they are more load-bearing after this story than before it.
  *
  * The harness has no jsdom, no testing-library and no E2E, so the EXPORTED HTML
  * is where a rendered decision becomes assertable at all. Everything below is
- * read off the same `out/index.html` the suites above use, and every expected
- * string comes from the DICTIONARY OBJECT or the fixture rather than from the
- * components under test.
+ * read off `out/tops/index.html`, and every expected string comes from the
+ * DICTIONARY OBJECT or the fixture rather than from the components under test.
  */
-describe.skipIf(!anyBuilt)("exported / — the leaderboards section (Story 2.13)", () => {
-  const html = () => readFileSync(INDEX_HTML, "utf8");
+describe.skipIf(!anyBuilt)("exported /tops — the leaderboards section (Story 2.13, re-sited 3.9)", () => {
+  const html = () => readFileSync(TOPS_HTML, "utf8");
 
   it("carries the ruled anchor and the ruled heading", () => {
     /*
@@ -616,7 +657,28 @@ describe.skipIf(!anyBuilt)("the footer reaches both /about and /glossary on ever
  * the Pipeline, the App never re-measures"), and the combined-budget gate is
  * Story 1.17's D3/D5.
  */
-const ARTIFACT_ALLOW_LIST = ["/index/leaderboards.json", "/index/tournament.json"];
+/*
+ * ═══ THE PER-ROUTE ARTIFACT ALLOW-LIST (story 3.9 Task 9.3, D5b's table) ═══
+ *
+ * ONE ENTRY PER ROUTE, and asserted by SET EQUALITY in both directions: an
+ * EXTRA fetch is a defect (a surface reaching for data it has no business
+ * loading) and a MISSING one is equally a defect (a surface that stopped loading
+ * its own data). `/` used to reach both artifacts because it WAS the Hub with
+ * the leaderboards beneath it; UX-DR24 split that surface, and each half now
+ * reaches exactly the one artifact it renders.
+ *
+ * 🔴 `/` → `[]` IS THE LOAD-BEARING ROW. It is what catches a build-time read of
+ * the 409 KB tournament index sneaking back onto the landing page — the AD-11
+ * violation D5b names explicitly, and the one that would put that weight straight
+ * onto the Lighthouse floor this story recorded for `/`.
+ */
+const ROUTE_ARTIFACTS: [string, string[]][] = [
+  ["app/page.tsx", []],
+  ["app/tournament/page.tsx", ["/index/tournament.json"]],
+  ["app/tops/page.tsx", ["/index/leaderboards.json"]],
+  ["app/players/page.tsx", ["/index/tournament.json"]],
+  ["app/teams/page.tsx", ["/index/tournament.json"]],
+];
 const SRC_DIR = fileURLToPath(new URL("../", import.meta.url));
 const ALIAS_IMPORT = /from\s+"@\/([^"]+)"/g;
 /*
@@ -668,29 +730,54 @@ function artifactPathsReachableFrom(entry: string): string[] {
   return [...found].sort();
 }
 
-describe("/ artifact fetches (AC 5, Task 9.3)", () => {
-  it("reaches EXACTLY the two allow-listed artifacts and no others", () => {
-    const reachable = artifactPathsReachableFrom(SRC_DIR + "app/page.tsx");
-    // Set equality, deliberately: a MISSING fetch is as much a defect as an
-    // extra one — it would mean a surface stopped loading its own data.
-    expect(reachable).toEqual(ARTIFACT_ALLOW_LIST);
-  });
+describe("per-route artifact fetches (AC 5, Task 9.3; re-split by story 3.9)", () => {
+  for (const [page, expected] of ROUTE_ARTIFACTS) {
+    it(`${page} reaches EXACTLY its allow-listed artifacts and no others`, () => {
+      const reachable = artifactPathsReachableFrom(SRC_DIR + page);
+      expect(
+        reachable,
+        `${page} reaches [${reachable.join(", ")}] but D5b's table allows ` +
+          `[${expected.join(", ")}]. An EXTRA path is a surface loading data it does ` +
+          "not render; a MISSING one is a surface that stopped loading its own."
+      ).toEqual(expected);
+    });
+  }
 
   it("walks far enough to see a fetch that is several modules deep", () => {
     /*
      * Guards the guard. If `resolveAlias` ever stops resolving — a changed
      * path alias, a moved file — the walk would visit page.tsx alone, find
-     * nothing, and the assertion above would fail loudly rather than pass
-     * vacuously. `page.tsx` itself contains no `fetchArtifact` call at all:
-     * both live two hops away, in the client regions.
+     * nothing, and every assertion above would pass VACUOUSLY, `/` most of all:
+     * its expectation is the empty array, so a broken walk agrees with it.
+     *
+     * So the non-vacuity probe is anchored to a route that DOES fetch.
+     * `tournament/page.tsx` contains no `fetchArtifact` call itself — the fetch
+     * lives two hops away in `TournamentHubRegion` — so a non-zero result here
+     * proves the walk really traverses imports.
      */
-    expect(readFileSync(SRC_DIR + "app/page.tsx", "utf8")).not.toContain("fetchArtifact");
-    expect(artifactPathsReachableFrom(SRC_DIR + "app/page.tsx").length).toBe(2);
+    const hubPage = SRC_DIR + "app/tournament/page.tsx";
+    expect(readFileSync(hubPage, "utf8")).not.toContain("fetchArtifact");
+    expect(artifactPathsReachableFrom(hubPage).length).toBe(1);
   });
 
-  it("does NOT reach the match bundle — that path belongs to /matches/{id} (FR-34)", () => {
-    const reachable = artifactPathsReachableFrom(SRC_DIR + "app/page.tsx");
-    expect(reachable.some((artifactPath) => artifactPath.includes("matches"))).toBe(false);
+  it("reaches NOTHING from the landing page — the AD-11 gate on `/` (story 3.9 D5b)", () => {
+    /*
+     * Stated as its own case because it is the one row a reader is most likely
+     * to "fix" by adding a convenient `readTournament()` for a count or a name.
+     * `/` renders a lede and eight badges; it needs no artifact, and the 409 KB
+     * index must never become part of its document.
+     */
+    expect(artifactPathsReachableFrom(SRC_DIR + "app/page.tsx")).toEqual([]);
+  });
+
+  it("does NOT reach the match bundle from any of them — that path is /matches/{id}'s (FR-34)", () => {
+    for (const [page] of ROUTE_ARTIFACTS) {
+      const reachable = artifactPathsReachableFrom(SRC_DIR + page);
+      expect(
+        reachable.some((artifactPath) => artifactPath.includes("matches")),
+        `${page} reaches a match bundle`
+      ).toBe(false);
+    }
   });
 });
 
@@ -718,7 +805,7 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
    * tidy-up.
    *
    * Seven cases in this block call `everyRouteHtml()`, and on fixtures that was
-   * 7 x 13 documents — free. At real data it is 7 x 1,406 documents, ~35 MB of
+   * 7 x 13 documents — free. At real data it is 7 x 1,410 documents, ~35 MB of
    * `readFileSync` per call and ~245 MB across the block, which pushed the first
    * case past vitest's 5 s default under ten-worker contention and failed the
    * suite on a TIMEOUT, not on an assertion. The export is immutable for the
@@ -732,12 +819,58 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
     if (routeHtmlCache !== null) {
       return routeHtmlCache;
     }
-    const documents = [
-      { route: "/", file: INDEX_HTML },
-      { route: "/404", file: NOT_FOUND_HTML },
-      { route: "/about", file: ABOUT_HTML },
-      { route: "/glossary", file: GLOSSARY_HTML },
-    ].filter((entry) => existsSync(entry.file));
+    /*
+     * ⚠️ THIS LIST WAS A LITERAL OF FOUR AND IT HAD ALREADY GONE STALE TWICE
+     * (story 3.9 Task 9.4). `/compare` shipped in story 2.17 and was never added,
+     * so seven cases titled "on EVERY exported route" had stopped covering it —
+     * the exact silent shrinkage the dynamic-family comment below records having
+     * been paid for once already. Story 3.9 then minted four more.
+     *
+     * SO THE STATIC ROUTES ARE NOW DISCOVERED, NOT ENUMERATED. Any directory in
+     * `out/` holding an `index.html` is a route, and a route added by a future
+     * story is swept the day it lands rather than the day someone remembers this
+     * array. The dynamic families below were already discovered this way; this
+     * closes the other half.
+     *
+     * `404.html` is added explicitly because it is the one document that is not
+     * `<dir>/index.html` — Next emits both `404.html` and `404/index.html` for
+     * one route, which is also why the export's document count is one higher
+     * than its route count.
+     */
+    const documents = [{ route: "/", file: INDEX_HTML }, { route: "/404", file: NOT_FOUND_HTML }]
+      .filter((entry) => existsSync(entry.file));
+
+    for (const name of readdirSync(OUT_DIR, { withFileTypes: true })) {
+      if (!name.isDirectory()) {
+        continue;
+      }
+      /*
+       * The dynamic families are walked BELOW, one document per slug; walking
+       * them here too would double-count 1,400 routes. `data/` and `_next/` are
+       * assets, not routes, and carry no index.html anyway.
+       */
+      if (["matches", "players", "teams", "data", "_next"].includes(name.name)) {
+        continue;
+      }
+      const file = `${OUT_DIR}${name.name}/index.html`;
+      if (existsSync(file)) {
+        documents.push({ route: `/${name.name}`, file });
+      }
+    }
+
+    /*
+     * NON-VACUITY, on `canonical-output.test.ts:116-121`'s `scanned === 0` rule.
+     * A discovered list can silently become empty — a changed OUT_DIR, an export
+     * that did not run — and seven "on EVERY exported route" cases would then
+     * pass having asserted nothing at all. Nine is the static-route floor at
+     * story 3.9: /, /404, /about, /glossary, /compare, /tournament, /tops,
+     * /players, /teams. It is a FLOOR, so a future route only ever raises it.
+     */
+    expect(
+      documents.length,
+      "the static-route sweep found fewer documents than the nine that shipped at " +
+        "story 3.9 — either the export did not run, or a route was deleted"
+    ).toBeGreaterThanOrEqual(9);
     /*
      * EVERY DYNAMIC ROUTE FAMILY, not just `/matches` (code review 2026-08-07).
      * This walked `matches/` alone, so from the moment Story 2.15 shipped
@@ -767,7 +900,7 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
 
   /*
    * WARMED HERE, with its own budget, on `assert-schema-version.test.ts`'s
-   * precedent. Memoising alone was not enough: the FIRST call still reads 1,406
+   * precedent. Memoising alone was not enough: the FIRST call still reads 1,410
    * documents off disk, and at ~35 MB under ten-worker contention that one call
    * exceeds vitest's 5 s default on its own — so whichever case happened to run
    * first failed on a timeout rather than on anything it asserted. Paying the
@@ -812,11 +945,32 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
     for (const { route, html } of everyRouteHtml()) {
       expect(html, `no combobox on ${route}`).toContain('role="combobox"');
       /*
-       * EXACTLY ONE. The sheet's input mounts only on open, so a second one in
-       * the STATIC markup would mean two comboboxes exposed at some width —
-       * which is the duplicate-roles failure ruling 4's CSS collapse avoids.
+       * EXACTLY ONE **HEADER SEARCH**. The sheet's input mounts only on open, so
+       * a second HEADER combobox in the STATIC markup would mean two exposed at
+       * some width — the duplicate-roles failure ruling 4's CSS collapse avoids.
+       *
+       * ⚠️ COUNTED VIA THE LABEL, NOT VIA `role="combobox"` (story 3.9 Task 9.4).
+       * This case counted every combobox on the document and asserted 1. It was
+       * TRUE only because `everyRouteHtml()` had never covered `/compare`, which
+       * ships THREE — the header's plus its own two entity pickers, which are a
+       * different control that legitimately carries the same role. The moment
+       * 3.9 replaced the stale four-document literal with a real sweep, the
+       * assertion failed on `/compare` and revealed that it had been asserting a
+       * property of the DOCUMENT when it meant a property of the HEADER.
+       *
+       * `es.search.label` is the header search's own accessible name and nothing
+       * else uses it, so counting its rendered `<label>` counts the header search
+       * exactly. The property under test is unchanged and is now stated on the
+       * right subject; the case is narrowed, not weakened.
        */
-      expect((html.match(/role="combobox"/g) ?? []).length, route).toBe(1);
+      const headerSearchLabels = html.match(
+        new RegExp(`<label\\b[^>]*>${escapeForRegExp(es.search.label)}</label>`, "g")
+      );
+      expect(
+        headerSearchLabels?.length ?? 0,
+        `${route}: the header search must ship exactly once — two would expose two ` +
+          "comboboxes with the same accessible name at some width"
+      ).toBe(1);
       /*
        * 🔴 SCOPED TO A REAL `<label class="sr-only">`, NOT A BARE `toContain`
        * (code review 2026-08-07). Task 10.4 says "Use `class="…"`-scoped
@@ -860,14 +1014,20 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
     }
   });
 
-  it("ships the four AVAILABLE destinations, and none of the five that are not", () => {
+  it("ships EVERY available destination, and none that is not (all nine since 3.9)", () => {
     /*
-     * 🔴 THE ONLY PLACE THE PRE-3.9 RULING IS VISIBLE IN SHIPPED HTML (D1).
-     * `/tournament`, `/tops`, `/players` and `/teams` do not exist yet, so
-     * linking them would put a 404 in the site chrome of all 1,406 routes.
+     * 🔴 THE ONLY PLACE THE AVAILABILITY RULING IS VISIBLE IN SHIPPED HTML (D1).
      * `nav-destinations.test.ts` binds the FLAG to the filesystem and
      * `SiteNav.test.tsx` binds the RENDER to the flag; this binds the EXPORT to
      * both, which is the artefact a reader actually receives.
+     *
+     * ⚠️ THE UNAVAILABLE HALF IS VACUOUS SINCE STORY 3.9 — the third of the three
+     * cases that went quiet when the last five flags flipped, and stated here for
+     * the same reason as the other two (A1/A2, and the `scanned === 0` rule at
+     * `canonical-output.test.ts:116-121`). The AVAILABLE half is not vacuous and
+     * grew: it now proves nine destinations reach the export on all 1,410 routes,
+     * where before it proved four on 1,406. The non-vacuity assertion below pins
+     * that the loop really has nine destinations to walk.
      *
      * COUNTED, NOT MERELY FOUND — but the counts are asymmetric, and the reason
      * is D4. The sheet PORTALS to `document.body` and mounts only while OPEN, so
@@ -888,7 +1048,7 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
      * code review).
      *
      * It read `everyRouteHtml()[0]` — ONE route — while its own failure message
-     * claimed "every one of 1,406 routes". A per-route divergence in the nav
+     * claimed "every one of 1,410 routes". A per-route divergence in the nav
      * passed. The sibling case above already iterates all of them.
      *
      * And it matched on bare anchor TEXT (`>Equipos</a>`), which the dictionary
@@ -902,6 +1062,12 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
      * but the UNAVAILABLE half is what matters here, and no other component
      * links a route that does not exist.
      */
+    expect(
+      NAV_DESTINATIONS.filter((destination) => destination.available).length,
+      "the available half of this case must have something to assert — if this is " +
+        "zero the loop below proves nothing while passing"
+    ).toBe(9);
+
     for (const { route, html } of everyRouteHtml()) {
       for (const destination of NAV_DESTINATIONS) {
         const label = es.nav.destinations[destination.key];
@@ -916,8 +1082,8 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
           expect(
             count,
             `${label} shipped on ${route}, but ${destination.route} does not exist — ` +
-              "that is a link to a 404 in the chrome of every route. Story 3.9 mints " +
-              "the route and flips the flag; until then it must not render."
+              "that is a link to a 404 in the chrome of every route. Mint the route " +
+              "and flip the flag together, or render neither."
           ).toBe(0);
         }
       }

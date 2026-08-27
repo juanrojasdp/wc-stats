@@ -327,6 +327,32 @@ function emittedRoutePaths(): string[] {
       if (routePath === "/" && ["_next", "data", "404", "_not-found"].includes(entry.name)) {
         continue;
       }
+      /*
+       * `__next.*` RSC PAYLOAD DIRECTORIES, SKIPPED AT EVERY DEPTH (story 3.9).
+       *
+       * These hold `.txt` flight payloads and never an `index.html`, so they
+       * contribute no route — but there are ~2,800 of them against 1,408 real
+       * routes, and descending into all of them made this the walk that timed
+       * out at vitest's 5 s default under ten-worker contention. It failed on a
+       * TIMEOUT rather than on an assertion, which is the same way the memoised
+       * `everyRouteHtml()` in `static-output.test.ts` once failed.
+       *
+       * ⚠️ THIS IS A DEPTH-BLIND NAME FILTER, WHICH THE COMMENT ABOVE WARNS
+       * AGAINST — and the distinction is the whole reason both exist. That
+       * warning is about `_next`, `data`, `404` and `_not-found`: ordinary names
+       * that a future ROUTE could legitimately carry, since the contract's slug
+       * pattern admits them. `__next.` cannot be a route segment at any depth: it
+       * is Next's own reserved emission prefix, and every dynamic segment on this
+       * site is an entity slug (AD-3 — `{surname}-{givenName}-{teamCode}`, a
+       * teamId, or a matchId), none of which contains a `.` at all.
+       *
+       * The bijection is unweakened and is asserted, not assumed: the `unlisted`
+       * check below still walks every real route, and the `>= urls.length` floor
+       * still fails if this filter ever starts eating routes.
+       */
+      if (entry.name.startsWith("__next.")) {
+        continue;
+      }
       walk(path.join(directory, entry.name), `${routePath}${entry.name}/`);
     }
   }

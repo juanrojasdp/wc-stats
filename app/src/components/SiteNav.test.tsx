@@ -29,7 +29,7 @@ import { es } from "@/locales/es";
  *
  * 🔴 BOTH PRESENTATIONS ARE IN THE DOM AT ONCE, AND THAT IS RULING 4, NOT A BUG
  * (D3). Which one a reader gets is decided by `hidden` / `xl:` — CSS, never a JS
- * media query — because `SiteHeader` is pre-rendered into 1,406 HTML files and a
+ * media query — because `SiteHeader` is pre-rendered into 1,410 HTML files and a
  * JS breakpoint would emit the narrow form on the server and hydrate wide.
  * jsdom applies no stylesheet, so BOTH are queryable here and `hidden`'s real
  * effect (removing a subtree from the accessibility tree, so exactly one nav is
@@ -49,7 +49,7 @@ const SRC = path.join(process.cwd(), "src");
 /*
  * Scoped by `data-slot`, the house identity attribute (`ui/dialog.tsx`,
  * `header-search-slot`) — NOT `data-testid`, which would ship a test-only
- * affordance into the chrome of 1,406 pre-rendered routes.
+ * affordance into the chrome of 1,410 pre-rendered routes.
  */
 function slot(name: string): HTMLElement {
   const found = document.querySelector(`[data-slot="${name}"]`);
@@ -211,7 +211,7 @@ describe("D6 — the trigger's ARIA, and why `aria-controls` is conditional", ()
      * 🔴 THE CONDITIONAL FORM IS THE POINT. `DialogContent` portals to
      * `document.body` and is ABSENT while closed, so an unconditional
      * `aria-controls` would be a dangling IDREF — an axe `aria-valid-attr-value`
-     * failure on the site header of every one of 1,406 routes. Four of the seven
+     * failure on the site header of every one of 1,410 routes. Four of the seven
      * `aria-controls` sites in this tree already take this form for this reason.
      */
     expect(trigger()).not.toHaveAttribute("aria-controls");
@@ -301,7 +301,7 @@ describe("D1 — only available destinations render, in the ruled order", () => 
   const UNAVAILABLE = NAV_DESTINATIONS.filter((destination) => !destination.available);
 
   for (const [locale, dictionary] of DICTIONARIES) {
-    it(`renders the four available destinations inline, in order — ${locale}`, () => {
+    it(`renders every available destination inline, in the ruled order — ${locale}`, () => {
       renderNav(locale);
 
       const links = within(inlineNav()).getAllByRole("link");
@@ -314,7 +314,7 @@ describe("D1 — only available destinations render, in the ruled order", () => 
     });
   }
 
-  it("renders the same four in the sheet, in the same order", async () => {
+  it("renders the same set in the sheet, in the same order", async () => {
     const user = userEvent.setup({ delay: null });
     renderNav();
 
@@ -330,17 +330,27 @@ describe("D1 — only available destinations render, in the ruled order", () => 
     );
   });
 
-  it("renders NO link to a route story 3.9 has not minted, in EITHER presentation", async () => {
+  it("renders NO link to an UNAVAILABLE route, in EITHER presentation", async () => {
     const user = userEvent.setup({ delay: null });
     renderNav();
     await user.click(trigger());
 
     /*
-     * The pre-3.9 ruling, asserted where a reader would actually meet it. Five
-     * of the nine destinations have no route on `main`; linking them would ship
-     * a 404 into the site chrome of all 1,406 pages. `nav-destinations.test.ts`
-     * binds the FLAG to the filesystem; this binds the RENDER to the flag.
+     * ⚠️ VACUOUS SINCE STORY 3.9 — stated rather than left to be discovered
+     * (A1/A2). All nine flags now read `true`, so `UNAVAILABLE` is empty and
+     * this loop runs over nothing. It is KEPT, not deleted: it binds the RENDER
+     * to the flag, where `nav-destinations.test.ts` binds the FLAG to the
+     * filesystem, and that second half must survive for a future story that
+     * retires a route to be caught rendering a link to it.
+     *
+     * The non-vacuity assertion below asserts the REASON the loop is empty, so
+     * "there is nothing left to check" can never be mistaken for "the check
+     * stopped seeing anything".
      */
+    expect(
+      UNAVAILABLE.length + AVAILABLE.length,
+      "the table itself has changed size — this case checks a partition of it"
+    ).toBe(NAV_DESTINATIONS.length);
     for (const destination of UNAVAILABLE) {
       const key = destination.key as keyof typeof es.nav.destinations;
       expect(
@@ -350,13 +360,13 @@ describe("D1 — only available destinations render, in the ruled order", () => 
     }
   });
 
-  it("puts no id on any nav link — 1,406 routes carry both presentations (D3)", () => {
+  it("puts no id on any nav link — 1,410 routes carry both presentations (D3)", () => {
     renderNav();
     for (const link of within(inlineNav()).getAllByRole("link")) {
       expect(
         link.getAttribute("id"),
         "Both presentations are in every route's DOM, so an id here would be a " +
-          "duplicate-id defect on 1,406 pages. `aria-current` duplicating is harmless; " +
+          "duplicate-id defect on 1,410 pages. `aria-current` duplicating is harmless; " +
           "an id is not."
       ).toBeNull();
     }
@@ -626,7 +636,7 @@ describe("code review 2026-08-26 — the three defects Task 9 could not see", ()
    * The inline `<nav>` is `hidden xl:flex` — `display:none` at every width this
    * branch renders at — and the sheet's `<nav>` exists only while the sheet is
    * OPEN. So a screen-reader reader rotoring by landmark on a phone found a
-   * `banner` and a `main` and NO `navigation`, on all 1,406 routes. Ruled at
+   * `banner` and a `main` and NO `navigation`, on all 1,410 routes. Ruled at
    * review: below `xl` the trigger IS the navigation, so it lives inside one.
    *
    * jsdom applies no stylesheet, so `hidden` cannot be observed here — this

@@ -123,6 +123,27 @@ const REQUIRED_DOCUMENTS = [
   "about/index.html",
   "glossary/index.html",
   "compare/index.html",
+  /*
+   * STORY 3.9's FOUR ROUTES, ADDED HERE DELIBERATELY (its D8 named this as
+   * optional hardening and asked the implementer to say which way they went —
+   * this way).
+   *
+   * The whole-export gates in this file are 100% AUTO-DISCOVERY (`walkHtml()`),
+   * so they already covered these four the moment the build emitted them, and
+   * nothing here was REQUIRED by an acceptance criterion. What the spine adds is
+   * a BUILD-FREE guard: if a future change stops emitting `/tops` — a renamed
+   * directory, a route group, a deleted file — auto-discovery simply finds one
+   * fewer document and every case still passes over what remains. The spine is
+   * what turns that silence into a named failure.
+   *
+   * That is the same `scanned === 0` reasoning this block already states, applied
+   * one level up: a gate that runs over a SMALLER set is a quieter version of a
+   * gate that runs over nothing.
+   */
+  "tournament/index.html",
+  "tops/index.html",
+  "players/index.html",
+  "teams/index.html",
   ...NOT_FOUND_ARTIFACTS,
 ];
 

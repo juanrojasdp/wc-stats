@@ -187,10 +187,24 @@ export function LeaderboardsRegion() {
           aria-label={t("leaderboards.loading")}
           className="grid grid-cols-1 gap-tile-gap"
         >
-          {/* Layout-shaped: a board heading over a block of table rows, twice. */}
-          <div className="skeleton h-6 w-48" />
+          {/*
+           * Layout-shaped: a board heading over a block of table rows, twice.
+           *
+           * `max-w-48` AND NOT `w-48` (ledger `deferred-work.md:4794`, taken by
+           * story 3.9 because this component re-sites to `/tops` and the defect
+           * would have travelled with it). `w-48` is a FIXED 192 px: at a 195 px
+           * layout viewport, 16 px of gutter put its right edge at 208 and the
+           * document overflowed — 4 of the 96 R2/D8 matrix cells, in both
+           * locales and themes. Story 2.19's matrix missed it because that run
+           * measured the SETTLED state, where 0 of 48 cells overflow. WCAG 1.4.10
+           * is a property of the page as presented, loading states included, so
+           * a transient overflow is still a failure. The pair below keeps the
+           * 192 px look wherever there is room and clamps to the container where
+           * there is not.
+           */}
+          <div className="skeleton h-6 w-full max-w-48" />
           <div className="skeleton h-40 w-full" />
-          <div className="skeleton mt-6 h-6 w-48" />
+          <div className="skeleton mt-6 h-6 w-full max-w-48" />
           <div className="skeleton h-40 w-full" />
         </div>
       ) : null}
@@ -581,7 +595,20 @@ function LeaderboardBoard({ board, initiallyOpen }: { board: Leaderboard; initia
       <button
         type="button"
         aria-expanded={open}
-        aria-controls={panelId}
+        /*
+         * CONDITIONAL, NOT STATIC (ledger `deferred-work.md:4799`, taken by
+         * story 3.9 for the same re-siting reason as the skeleton above).
+         *
+         * The panel below only EXISTS while open, so a static `aria-controls`
+         * dangles in the collapsed default state — an axe
+         * `aria-valid-attr-value` failure, MEASURED at 36 occurrences on `/` in
+         * headless Chromium at 390 px and 1280 px. It is the same defect
+         * `ViewDataDisclosure` and `KeyStatisticsSection` were each patched for,
+         * and that story 3.10's own sheet trigger avoids
+         * (`aria-controls={sheetOpen ? sheetId : undefined}`). Left unfixed it
+         * would have migrated to `/tops` unnoticed.
+         */
+        aria-controls={open ? panelId : undefined}
         onClick={() => setOpen((wasOpen) => !wasOpen)}
         className="mt-tile-gap min-h-11 rounded-md border border-hairline px-3 type-stat-label text-ink-secondary"
       >

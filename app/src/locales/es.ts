@@ -83,13 +83,23 @@ export const es = {
    * Page) PLUS `Inicio`, and the values below are that set verbatim. Spanish is
    * the source of truth; `en` is the variant.
    *
-   * ⚠️ FIVE OF THE NINE DO NOT RENDER YET. `nav-destinations.ts` carries an
-   * `available` flag per destination and only available ones are rendered —
-   * four today (Inicio, Comparar, Glosario, Acerca de). The keys are all minted
-   * here anyway, because story 3.9 mints the routes and flips the booleans, and
-   * a key minted in the same change as its route is a key nobody has to
-   * remember. They are NOT dead keys: `nav-destinations.test.ts` resolves every
-   * one of them in both dictionaries, so all nine are reached today.
+   * ✅ ALL NINE RENDER, SINCE STORY 3.9. This block used to warn that five of
+   * the nine did not — "four today (Inicio, Comparar, Glosario, Acerca de)" —
+   * and it was the ONE artifact in the repo that got that five right while
+   * story 3.10's file, two `sprint-status.yaml` lines, the `d073575` commit
+   * message and `nav-destinations.ts`'s own header all said four. (Five flags
+   * over four new page files, because `matches` and `tournament` share
+   * `/tournament/` and differ only by the `#results` fragment.)
+   *
+   * Minting all nine keys before the routes existed was the right call and is
+   * recorded as such: a key minted in the same change as its route is a key
+   * nobody has to remember. They were never dead keys either —
+   * `nav-destinations.test.ts` resolved every one of them in both dictionaries
+   * from the day they landed.
+   *
+   * THE SAME NINE ARE THE LANDING PAGE'S BADGE SET. `LandingContent` reads its
+   * eight labels from `NAV_DESTINATIONS` rather than re-declaring them under
+   * `landing.*`, so there is one list with two presentations.
    */
   nav: {
     /*
@@ -123,6 +133,84 @@ export const es = {
       teams: "Equipos",
       glossary: "Glosario",
       about: "Acerca de",
+    },
+  },
+  /*
+   * ═════════════ `/` — THE LANDING SURFACE (Story 3.9, UX-DR24) ═════════════
+   *
+   * EXPERIENCE.md → The Landing Page rules four zones: identity + lede, the
+   * emphasised *Comparar* badge, the seven-badge grid, and the global
+   * attribution footer. Zone 4 is already global via `layout.tsx`, so only
+   * zones 1–3 mint copy, and only the LEDE and the eight SUPPORTING LINES are
+   * new.
+   *
+   * 🔴 THE EIGHT BADGE LABELS ARE NOT MINTED HERE. They are
+   * `nav.destinations.*`, reused verbatim — that block's own docblock states
+   * "THE DESTINATION SET IS THE RULED BADGE SET (EXPERIENCE.md → The Landing
+   * Page) PLUS `Inicio`, and the values below are that set verbatim". A second
+   * copy of "Comparar" under `landing.*` would be two Spanish names for one
+   * destination, which is the exact objection that settled "Líderes" over
+   * "Tops". The badge grid renders eight of those nine; `home` is the one it
+   * does not (a badge to the page you are on).
+   *
+   * `title` IS A LOCALE STRING, NOT THE ARTIFACT'S `tournamentName`, on
+   * `hub.title`'s established precedent and for its stated reason: AD-11
+   * reserves the build-time `readTournament()` read to `<title>`/OG metadata,
+   * and `/` performs NO build-time read at all (story 3.9 D5b — its reachable
+   * artifact list is the empty set). The proper noun "FIFA World Cup 2026" is
+   * therefore not available to this pre-rendered body, and would not be the
+   * right hero string if it were: the lede below is what orients a first
+   * arrival, and the <h1> only has to say which tournament.
+   */
+  landing: {
+    /** The route <h1>. Zone 1, above the lede. */
+    title: "Mundial 2026",
+    /*
+     * The lede: two to four sentences saying WHAT THIS IS, WHERE THE DATA COMES
+     * FROM, and THAT IT IS FREE AND INDEPENDENT — the three facts UJ-0 (Tomás,
+     * the first arrival) needs before anything else on the page is useful.
+     *
+     * PROSE, NOT TILES, and the wording is the mock's
+     * (`key-landing-mobile.html`). Numbers carry the drama per Voice and Tone —
+     * "los 104 partidos", not "¡todos los partidos!". It does NOT replace
+     * `/about`, which still exists and is still linked from the footer and from
+     * badge 8.
+     */
+    lede:
+      "Los 104 partidos del torneo, leídos de los informes oficiales de rendimiento: " +
+      "resultados, posiciones, mapas de tiros, redes de pases y el detalle por jugador. " +
+      "Gratis, independiente y sin publicidad.",
+    /*
+     * ONE SUPPORTING LINE PER BADGE, under the reused label. Keyed by
+     * `NavDestinationKey` so the grid can look each one up from the destination
+     * it is rendering rather than carrying a parallel list that could drift.
+     *
+     * NUMBERS CARRY THE DRAMA (Voice and Tone): "Los 104 del torneo", never
+     * "¡Todos los partidos!". The counts are the corpus's real figures — 104
+     * matches, 36 boards, 1.248 players, 48 teams — written with the es-CO
+     * thousands separator the rest of the site formats to.
+     */
+    badge: {
+      compare: { support: "Dos jugadores, dos equipos o dos partidos, lado a lado." },
+      tournament: { support: "Resultados y posiciones, por fase y por grupo." },
+      matches: { support: "Los 104 del torneo." },
+      tops: { support: "36 tablas, de equipos y de jugadores." },
+      players: { support: "Los 1.248 del torneo." },
+      teams: { support: "Las 48 selecciones." },
+      glossary: { support: "Qué significa cada término táctico." },
+      about: { support: "De dónde salen los datos y quién hizo esto." },
+    },
+    meta: {
+      /*
+       * `/`'s own OG/`<title>` description. It is DELIBERATELY NOT the
+       * site-wide `meta.description`: that string ("Análisis táctico y
+       * estadístico de los 104 partidos…") moved to `/tournament` with the Hub
+       * it describes, and the landing page is now the orientation surface
+       * rather than the analysis surface.
+       */
+      description:
+        "Los 104 partidos del Mundial 2026, leídos de los informes oficiales: " +
+        "resultados, posiciones, líderes, jugadores y equipos. Gratis y sin publicidad.",
     },
   },
   about: {
@@ -686,9 +774,17 @@ export const es = {
      * The page `<h1>`. It is a locale string rather than `tournamentName`
      * because AD-11 (ruled D1) reserves the build-time `readTournament()` read
      * to `<title>`/OG metadata, and the artifact's proper noun is not available
-     * to the pre-rendered body. It must cover the whole route — leaderboards
-     * (2.13) as well as standings and results — so it names the tournament
-     * rather than either surface.
+     * to the pre-rendered body.
+     *
+     * ⚠️ ITS SCOPE NARROWED AT STORY 3.9 AND THIS COMMENT SAID OTHERWISE.
+     * It used to read "It must cover the whole route — leaderboards (2.13) as
+     * well as standings and results". That was true while the Hub and the
+     * leaderboards shared `/`. UX-DR24 re-sited the leaderboards to `/tops`, so
+     * this <h1> now covers standings and results ONLY, on `/tournament`.
+     *
+     * THE STRING STILL HOLDS and is deliberately not re-worded: "El torneo" is
+     * exactly right for a route that carries the tournament's results and
+     * standings, and `/tops` leads with its own "Líderes del torneo".
      */
     title: "El torneo",
     // Composition glyph, registered so no component hardcodes it.
@@ -2425,6 +2521,138 @@ export const es = {
     higherIsBetter: {
       true: "Más es mejor",
       false: "Menos es mejor",
+    },
+    meta: {
+      /*
+       * `/tops`' OG/`<title>` description (Story 3.9). FOLDED INTO
+       * `leaderboards.*` RATHER THAN A `topsPage.*` NAMESPACE — story 3.9 D16
+       * offered both and asked the implementer to state which. This one, because
+       * the whole `leaderboards.*` namespace moves to `/tops` with the surface
+       * it describes, so its route metadata belongs beside it rather than in a
+       * second namespace naming the same surface by its slug.
+       *
+       * The route's `<title>` is composed from `leaderboards.title` by
+       * `composeRouteTitle`, so only the description is minted.
+       */
+      description:
+        "36 tablas de líderes del Mundial 2026, de equipos y de jugadores: " +
+        "goles, asistencias, duelos, distancia y velocidad máxima.",
+    },
+  },
+  /*
+   * ════════════ `/players` — EL ÍNDICE DE JUGADORES (Story 3.9) ═════════════
+   *
+   * PLURAL, and it does not collide with the singular `player` namespace below,
+   * which belongs to the Player PROFILE route (`/players/{slug}`). Two
+   * surfaces, two namespaces — the index names 1.248 players and the profile
+   * names one.
+   *
+   * 🔴 WHAT THE DATA ALLOWS, AND NOTHING MORE. `entities.players[]` carries
+   * exactly four fields: `name`, `playerId`, `position` and `team {id, name}`.
+   * No shirt number, no club, no minutes. No copy here may imply a column the
+   * artifact cannot fill.
+   */
+  players: {
+    /** The route <h1>. */
+    title: "Jugadores",
+    /*
+     * The count line under the <h1>, composed at the call site from a formatted
+     * number and one of these two (t() has no interpolation). Singular is
+     * carried because a filter can narrow the set to one.
+     */
+    count: "jugadores",
+    countOne: "jugador",
+    /** The 48 group headings' count suffix, rendered OUTSIDE each disclosure. */
+    teamCount: "jugadores",
+    teamCountOne: "jugador",
+    /*
+     * ═══ THE FILTER'S KEYS ARE MINTED, NOT BORROWED FROM `leaderboards.*` ═══
+     *
+     * The CONTROL SHAPE is reused wholesale — visible label, live count on a
+     * settled value, zero-result copy. The KEYS are not, and that is story 2.14's
+     * objection applied in the other direction: it declined to reuse
+     * `leaderboards.filterLabel` for the header search because that string is
+     * BOARD-scoped, and borrowing board vocabulary onto a squad index repeats the
+     * same mistake. `i18n.test.ts` records that there is no global
+     * duplicate-value ban, so identical Spanish here is allowed and is not drift.
+     */
+    filterLabel: "Filtrar por nombre",
+    filterPlaceholder: "Escribe un nombre",
+    filterResults: "jugadores encontrados",
+    filterResultsOne: "jugador encontrado",
+    /*
+     * ZERO-RESULT COPY (EXPERIENCE.md → State Patterns). It tells the reader
+     * what to DO — "borra letras" — rather than only what happened. The 48 group
+     * headings and their counts STAY RENDERED behind it: the filter narrows what
+     * is inside the groups, it never collapses the page's structure.
+     */
+    filterNoResults: "Ningún nombre coincide con el filtro.",
+    filterNoResultsExplanation: "Borra letras para ver más jugadores.",
+    /*
+     * ═══ THE POSITION ABBREVIATIONS, AND WHY THEY ARE NOT `POR` ═══
+     *
+     * `es.enums.position.gk` ships "Arquero", so `POR` — which abbreviates
+     * *portero* — would have no full term in this spine to expand to. The
+     * expansion attaches to the CELL VALUE and not only to the column head,
+     * because Spanish TTS otherwise reads `DEL` and `DEF` as the function words
+     * *del* and *def*.
+     */
+    position: {
+      short: {
+        gk: "ARQ",
+        df: "DEF",
+        mf: "MED",
+        fw: "DEL",
+      },
+    },
+    columns: {
+      position: "Posición",
+      name: "Jugador",
+    },
+    /*
+     * Composed at the call site with the team's name, for the two things
+     * EXPERIENCE.md requires each of the 48 groups to carry its own: the
+     * disclosure TRIGGER's accessible name and the TABLE's caption. Forty-eight
+     * controls sharing one name is a screen-reader control list with no
+     * information in it.
+     */
+    teamTrigger: "Ver los jugadores de",
+    tableCaption: "Jugadores de",
+    meta: {
+      description:
+        "Los 1.248 jugadores del Mundial 2026, agrupados por selección: " +
+        "posición, nombre y enlace al perfil de cada uno.",
+    },
+  },
+  /*
+   * ═════════════ `/teams` — EL ÍNDICE DE SELECCIONES (Story 3.9) ════════════
+   *
+   * ⚠️ THIS SURFACE IS KNOWINGLY REDUNDANT with `/tournament#standings`, which
+   * carries the same 48 teams with more competitive context. It exists so that
+   * no member of the ruled badge grid resolves to a FRAGMENT while its
+   * neighbours resolve to pages. Recorded as a cost, not dressed up as a
+   * benefit (story 3.9 D5).
+   */
+  teams: {
+    title: "Equipos",
+    count: "selecciones",
+    countOne: "selección",
+    columns: {
+      name: "Selección",
+      group: "Grupo",
+      record: "PJ-G-E-P",
+    },
+    /*
+     * The record column's header is an abbreviation, so it carries its expansion
+     * the same way the position cells do — "Partidos jugados, ganados, empatados
+     * y perdidos" is what a screen reader should read, not the four letters.
+     */
+    recordExpansion: "Partidos jugados, ganados, empatados y perdidos",
+    tableCaption: "Las 48 selecciones del torneo, por grupo",
+    meta: {
+      description:
+        "Las 48 selecciones del Mundial 2026: grupo, partidos jugados y " +
+        "resultados, con enlace al perfil de cada equipo.",
     },
   },
   /*

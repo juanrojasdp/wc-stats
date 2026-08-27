@@ -1,107 +1,110 @@
 import type { Metadata } from "next";
 
-import { LeaderboardsSection } from "@/components/LeaderboardsSection";
-import { SortAnnouncerProvider } from "@/components/SortAnnouncer";
-import { TournamentHubHeading } from "@/components/TournamentHub";
-import { TournamentHubRegion } from "@/components/TournamentHubRegion";
-import { readLeaderboards, readTournament } from "@/lib/build-data";
-import { composeHubTitle } from "@/lib/hub-model";
+import { LandingContent } from "@/components/LandingContent";
 import { t } from "@/lib/i18n";
 import { OG_CARD_PATH } from "@/lib/og-card";
-import { leaderboardTeasers } from "@/viz/leaderboard-model";
+import { composeRouteTitle } from "@/lib/route-title";
 
 /*
- * `/` — THE TOURNAMENT HUB (Story 2.12, Task 1.1). Replaces the Story 2.1
- * placeholder body that proved the token/font/locale stack; its four
- * `app.scaffold.*` / `a11y.scaffold.*` keys were retired from both dictionaries
- * in the same change, because this was their only call site.
+ * `/` — THE LANDING SURFACE (Story 3.9, UX-DR24, FR-39 / NFR-11).
  *
- * A SERVER COMPONENT over client bodies — the shipped house pattern (`/about`,
- * `/glossary`, `/404`). The client boundary is what makes the language toggle
- * work at all: a server `t()` renders canonical Spanish into the static export
- * and never changes again.
+ * ═══════════ WHAT USED TO BE HERE, AND WHERE IT WENT ═══════════
+ *
+ * This file was the TOURNAMENT HUB (Story 2.12) with Story 2.13's leaderboards
+ * section beneath it. UX-DR24 split that surface across two addresses and gave
+ * `/` a job it never had:
+ *
+ *   · results + standings  → `src/app/tournament/page.tsx`, with this file's
+ *     entire `generateMetadata` (`composeHubTitle`, `meta.description`) moved
+ *     VERBATIM and the one-provider rule intact.
+ *   · the leaderboards mount → `src/app/tops/page.tsx`, RE-SITED and not
+ *     duplicated: `LEADERBOARDS_SECTION_ID` is still defined once and rendered
+ *     once, so there is no second `id="leaders"` anywhere in the export.
+ *
+ * `/` now orients a first arrival instead of burying them in tables — a lede,
+ * eight badges, and the global attribution footer. That is FR-39's whole ask,
+ * and NFR-11 is why it is not a third table surface.
+ *
+ * ═══════════ THIS ROUTE READS NO ARTIFACT — NEITHER PATH ═══════════
+ *
+ * AD-11 allows exactly two data paths and `/` takes neither (story 3.9 D5b):
+ * NO build-time `readTournament()`/`readLeaderboards()`, NO runtime fetch. Its
+ * reachable-artifact list is the EMPTY SET, and `static-output.test.ts` asserts
+ * that literally — it is the gate that catches a build-time read of the 409 KB
+ * index sneaking back onto the landing page, which would put that weight
+ * straight onto this route's own Lighthouse floor.
+ *
+ * Consequently there is NO loading state and NO empty state here
+ * (EXPERIENCE.md → State Patterns): a surface with no data has no data states.
  *
  * `output: "export"` with no dynamic segment, so this route needs no
  * `generateStaticParams`.
  *
- * ------------------------------- COORDINATION -------------------------------
- *
- * STORY 2.13 REACHED THIS FILE FIRST. Its session wrote a minimal Hub here to
- * host `LeaderboardsSection`, with a docblock stating that 2.12's body "takes
- * over this file and appends results and standings ABOVE the section below —
- * keeping the import, the `readLeaderboards()` call and the one
- * <LeaderboardsSection> element, which is the whole of 2.13's mount". That is
- * exactly what this file now does: 2.13's mount is untouched and its chosen
- * page position is honoured rather than re-litigated.
- *
- * Consequently there is NO separate `<div id="leaders">` slot: 2.13 already
- * renders that anchor itself (`LEADERBOARDS_SECTION_ID`), and a second element
- * carrying the same id would be a duplicate-id defect. Task 1.4's slot is
- * discharged BY the real section.
+ * A SERVER COMPONENT over a client body — the shipped house pattern, stated at
+ * `players/[slug]/page.tsx:14-22` and followed by `/about`, `/glossary` and
+ * `/compare`. The client boundary is what makes the language toggle work at
+ * all: a server `t()` renders canonical Spanish into the static export and
+ * never changes again. The body lives in `src/components/`, NOT colocated under
+ * `src/app/`, because colocating escapes the ESLint client-import seam.
  */
 
 /*
- * BUILD-TIME READ, METADATA ONLY (ruled D1). AD-11 allows exactly two data
- * paths: an fs read at build time and the client fetch at runtime. The title
- * takes the first — `tournamentName` is a proper noun the artifact owns (AD-7)
- * and it must exist before any JavaScript runs, for link previews and search
- * results. The TABLES take the second: Story 1.17 measured the real index at
- * 409,512 B raw, and AD-11 bans inlining a bundle that size into HTML.
+ * NO BUILD-TIME READ HERE, NOT EVEN FOR THE TITLE — and that is the one way
+ * this export differs from the four other routes with metadata. `/tournament`,
+ * `/tops`, `/players` and `/teams` each read an artifact or compose from a
+ * surface label; `/`'s title is a locale string, because D5b puts this route's
+ * reachable-artifact list at `[]` and a `readTournament()` call for a `<title>`
+ * would be a third data path on the one route that has none.
  *
- * The string is composed in the PURE helper, never inline, because the i18n
- * gate flags any template or concatenation that is the direct value of a
- * `title:`/`description:` property — even when every fragment is a t() call
- * (`composeMatchTitle`'s precedent, Story 2.4 decision 8).
+ * The string is composed in a PURE HELPER, never inline: the i18n gate flags any
+ * template or concatenation that is the direct value of a `title:`/`description:`
+ * property, even when every fragment is a t() call, and `--max-warnings 0` makes
+ * that a build error.
  *
- * DECLARED TENSION, recorded rather than resolved here: 2.13's draft of this
- * file refused a metadata export on the grounds that the "<title>/OG stays
- * Spanish after an EN toggle" decision is UNRULED, following /about and
- * /glossary (Story 2.18). This story's Task 1.1 requires the export, UX-DR22
- * requires a meaningful <title>/OG per route, and the closest precedent is the
- * DATA-BEARING one — `/matches/[slug]` has shipped `generateMetadata` since
- * Story 2.4. `/` also already carries a title today, from the layout's default
- * `metadata`, so the stays-Spanish consequence is not introduced here. That
- * open ledger entry (owner: Juan) is listed in this story's Dev Notes as
- * affecting `/`; it stays open and this export inherits it.
+ * THE "<title> STAYS SPANISH" QUESTION IS CLOSED, NOT OPEN (D8).
+ * `deferred-work.md:4163` records D17, ruled by Juan 2026-08-25: ACCEPT ES
+ * CANONICAL. `/` already carried a title before this story, so no new position
+ * is taken here either way.
  */
 export function generateMetadata(): Metadata {
-  const { tournamentName } = readTournament();
-  const title = composeHubTitle({
-    tournamentName,
+  const title = composeRouteTitle({
+    surfaceLabel: t("landing.title"),
     siteName: t("app.siteName"),
     separator: t("hub.separator"),
   });
-  const description = t("meta.description");
+  const description = t("landing.meta.description");
   /*
-   * `og:image` IS A SAME-ORIGIN CARD, AND THE BAN THAT USED TO SIT ON THIS LINE
-   * WAS AN OVER-READ (D20, 2026-08-26; Story 3.3). AR-11's "zero external
-   * requests" clause scopes to THIRD-PARTY ORIGINS, not to assets as such: a URL
-   * in a `<meta>` tag is not a request this page makes at all — it is a hint a
-   * crawler may fetch, off-page and off-session, and it cannot touch LCP, TBT,
-   * the payload budget or the NFR-9 telemetry surface. `FETCHING_POSITIONS` in
-   * `scripts/assert-no-external-origins.mjs` is the operative definition of "a
-   * request", and `<meta content>` is deliberately not in it.
+   * `og:image` IS A SAME-ORIGIN CARD, AND THE ORIGIN GATE DOES NOT HOLD THIS
+   * LINE (D20, Story 3.3). AR-11's "zero external requests" scopes to
+   * THIRD-PARTY ORIGINS: a URL in a `<meta>` tag is not a request this page
+   * makes at all — it is a hint a crawler may fetch, off-page and off-session,
+   * and it cannot touch LCP, TBT, the payload budget or the NFR-9 telemetry
+   * surface. `FETCHING_POSITIONS` in `scripts/assert-no-external-origins.mjs` is
+   * the operative definition of "a request" and `<meta content>` is deliberately
+   * not in it — so that script REPORTS an off-origin card and PASSES. What holds
+   * this line is `canonical-output.test.ts` over the whole export, and nothing
+   * else.
    *
-   * WHICH MEANS THE ORIGIN GATE DOES NOT HOLD THIS LINE. It reports an
-   * off-origin `og:image` and passes. What holds it is
-   * `canonical-output.test.ts` over the whole export, plus the per-route
-   * assertions in `players/static-output.test.ts` and
-   * `teams/static-output.test.ts` — and nothing else.
-   */
-  /*
-   * `url: "./"` IS LOAD-BEARING AND MUST SURVIVE ANY FUTURE REWRITE OF THIS
-   * `openGraph` OBJECT (Story 3.2, AC2). The CANONICAL comes from the root
-   * layout and is inherited here because this file declares no `alternates`;
-   * `openGraph`, by contrast, is REPLACED WHOLESALE by the key a child
-   * declares, so the layout's `url` never reaches this route. Drop the line
-   * below and this page ships a canonical with no matching `og:url` —
-   * silently. `canonical-output.test.ts` is the gate that catches it.
+   * `url: "./"` IS LOAD-BEARING (Story 3.2, AC2). The canonical comes from the
+   * root layout and is inherited here because this file declares NO
+   * `alternates`; `openGraph` is REPLACED WHOLESALE by the key a child
+   * declares, so the layout's `url` never reaches this route. Drop the line and
+   * this page ships a canonical with no matching `og:url` — silently.
    *
-   * `locale: "es_ES"` rides the same trap and is load-bearing for the same
-   * reason: this object REPLACES the layout's `openGraph` wholesale, so the
-   * layout's locale never arrives here. Drop it and this Spanish page
-   * advertises the Open Graph default, `en_US`, to every unfurler (review
-   * 2026-08-26). One locale per route is a constant, not a variable (D17/D20).
+   * `locale: "es_ES"` rides the same trap. Drop it and this Spanish page
+   * advertises the Open Graph default, `en_US`, to every unfurler. One locale
+   * per route is a constant (D17/D20). `type`, `siteName` and `images` ride it
+   * too (Story 3.3, AC2).
+   *
+   * THE OBJECT IS NOT LIFTED INTO A SHARED HELPER — that would move `alt:` out
+   * of the eslint metadata selector's reach and silently disable the rule that
+   * makes a bare Spanish literal a build error. THE URL ALONE IS LIFTED, to
+   * `@/lib/og-card`: the whole-export gate asserts the URL's exact VALUE only
+   * because all sites import that one constant. An inline literal here re-opens
+   * the drift hole that shipped 1,405 documents pointing at a 404, green.
+   *
+   * NO `alternates` KEY, for any reason — `mergeMetadata` branches on key
+   * PRESENCE. NO `twitter` KEY — declared once on the layout and inherited.
    */
   return {
     title,
@@ -111,28 +114,6 @@ export function generateMetadata(): Metadata {
       description,
       url: "./",
       locale: "es_ES",
-      /*
-       * `type`, `siteName` and `images` ride the SAME wholesale-replacement
-       * trap as `url` and `locale` above (Story 3.3, AC2): this object replaces
-       * the layout's, so the layout's card never reaches this route. All three
-       * are therefore authored at all five `openGraph` sites, and the OBJECT is
-       * NOT lifted into a shared helper — that would move `alt:` out of the
-       * eslint metadata selector's reach and silently disable the rule that
-       * makes a bare Spanish literal a build error. The full reasoning lives
-       * once, at `src/app/layout.tsx`.
-       *
-       * THE URL ALONE IS LIFTED, to `@/lib/og-card` (code review 2026-08-27).
-       * This comment used to say the whole-export gate "stops the five copies
-       * drifting"; it did not — it asserted the URL's ORIGIN and never its
-       * VALUE, so renaming the asset in one of five files shipped 1,405
-       * documents pointing at a 404, green. One constant, written by the
-       * generator, is what stops it now. `url` is not in the eslint selector's
-       * key list, so only it moves; `alt:` stays inline here.
-       *
-       * The path is ROOT-RELATIVE — `metadataBase` resolves it. An absolute
-       * literal would be a second copy of the origin and turns
-       * `site-origin.test.ts` red.
-       */
       type: "website",
       siteName: t("app.siteName"),
       images: [
@@ -143,57 +124,19 @@ export function generateMetadata(): Metadata {
 }
 
 export default function Home() {
-  /*
-   * PROJECTED, NOT PASSED WHOLE (Story 2.13 code review). `LeaderboardsSection`
-   * is a client component, so its prop is serialized into this document's flight
-   * payload — handing it the full artifact inlined every row to render three per
-   * board, and duplicated the bytes the runtime region already fetches. That is
-   * the very rule the metadata docblock above cites for `tournament.json`.
-   * `leaderboardTeasers` is the pure projection: <=3 rows per board.
-   */
-  const teasers = leaderboardTeasers(readLeaderboards().boards);
-
   return (
     /*
-     * max-w-6xl is DESIGN's dashboard width, matching the match route: the
-     * standings table's eleven columns and the results table's six do not fit
-     * a narrower measure at >=md.
+     * `py-`, not `pb-`: this route leads with an <h1> under the sticky site
+     * header, and dropping the top half leaves it flush against the bar.
      *
-     * `py-`, not `pb-`: the shipped route shell (`/about`, `/glossary`) pads
-     * both ends, and dropping the top half left the <h1> flush against the
-     * sticky site header.
+     * NO `SortAnnouncerProvider`. 2.11a decision 9 scopes one polite
+     * sort-announcement region to a page that HAS a sortable `DataTable`, and
+     * this one renders none by construction (D1: no table on `/`). Mounting a
+     * provider with nothing to announce would be an empty live region on the
+     * site's entry route.
      */
     <div className="mx-auto max-w-6xl px-gutter-mobile py-layer-gap md:px-gutter-desktop">
-      {/*
-       * ONE SortAnnouncerProvider FOR THE WHOLE ROUTE (Task 1.3), wrapping BOTH
-       * this story's tables and 2.13's. 2.11a ruled decision 9 allows exactly
-       * one polite live region for sort announcements.
-       *
-       * THIS IS THE LIFT 2.13 ASKED FOR, IN ITS OWN WORDS: it mounted a
-       * provider inside `LeaderboardsSection` because 2.12 had not landed, and
-       * left the instruction "WHEN 2.12'S PAGE LANDS, LIFT THIS PROVIDER TO THE
-       * PAGE and let both regions consume it — do NOT add a second one". The
-       * nested one is removed in the same change; leaving both would mint two
-       * live regions, and its own comment records that getting this wrong fails
-       * SILENTLY.
-       *
-       * Mounted OUTSIDE every fetch/status gate: a live region that mounts
-       * already-populated does not announce reliably, and mounting it with the
-       * data would unmount it on the error-path retry. It renders nothing but
-       * an empty sr-only span until a table announces through it.
-       */}
-      <SortAnnouncerProvider>
-        <TournamentHubHeading />
-        {/* Results and standings from tournament.json (fetched at runtime). */}
-        <TournamentHubRegion />
-        {/*
-         * STORY 2.13's SECTION, and its own `#leaders` anchor (renamed from
-         * `#lideres` by 2.19 Task 7.4, ledger A18). Its position is
-         * 2.13's choice, stated in the draft of this file it wrote; this story
-         * appends above it rather than restructuring around it.
-         */}
-        <LeaderboardsSection teasers={teasers} />
-      </SortAnnouncerProvider>
+      <LandingContent />
     </div>
   );
 }

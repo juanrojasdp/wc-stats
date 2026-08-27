@@ -101,7 +101,24 @@ describe.skipIf(!anyBuilt)("the /teams route exists and covers the manifest (AC 
    * real-data flip, where it covers 48 routes.
    */
   it("generates exactly one route per manifest-listed team, and no others", () => {
-    const emitted = readdirSync(TEAMS_DIR).sort();
+    /*
+     * ⚠️ THE INDEX ROUTE'S OWN ARTIFACTS ARE EXCLUDED, AND THAT IS NOT A
+     * LOOSENING OF THE BIJECTION (story 3.9). `/teams` — the INDEX — now exists
+     * beside `/teams/[slug]`, so `out/teams/` holds the 48 team directories PLUS
+     * the index's `index.html`, `index.txt` and `__next.*` RSC payloads. Before
+     * 3.9 this directory held nothing but slugs, which is why a bare
+     * `readdirSync` was sufficient and is no longer.
+     *
+     * DIRECTORIES ONLY (which drops `index.html` and `index.txt`) and no
+     * `__next.` prefix (which drops the RSC payload directories). `__next.` is
+     * Next's reserved prefix and cannot collide with a team slug — AD-3 makes
+     * that the team id. The bijection over real slugs is asserted exactly as
+     * strictly as before, in both directions.
+     */
+    const emitted = readdirSync(TEAMS_DIR, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith("__next."))
+      .map((entry) => entry.name)
+      .sort();
     const listed = readTournament()
       .entities.teams.map((team) => team.teamId)
       .sort();
