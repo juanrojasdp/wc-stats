@@ -297,10 +297,17 @@ and the suite is green with **0 skipped**.
         **404**, so no stale asset can be served alongside it. The paste-test route itself was read
         over the wire and carries `og:image`, `og:image:alt`, `twitter:card="summary_large_image"`,
         `twitter:image` and `twitter:image:alt`, all naming the hashed card.
-  - [ ] 9.4 **HAND OFF TO JUAN — this cannot be done by inspecting tags.** Ask him to paste **one URL
+  - [~] 9.4 **HAND OFF TO JUAN — this cannot be done by inspecting tags.** Ask him to paste **one URL
         never pasted before** into **WhatsApp** and into **Slack**, and to report whether a card with
         an **image** renders in each. Give him the exact URL to use. Record both results verbatim,
         including a failure.
+        - URL handed over, never pasted anywhere before:
+          `https://mundial-stats.juancr.dev/players/aaronson-brenden-usa/`
+        - **WhatsApp — PASS (Juan, 2026-08-27), verbatim: "It works. It shows an image".**
+        - **Slack — NOT YET TESTED.** Not recorded as a pass and not inferred from the WhatsApp
+          result: the two services run different unfurlers, and AC8 names both. Whoever runs it must
+          use a URL never pasted before — the one above is now consumed on WhatsApp's cache but is
+          still virgin on Slack's, so it remains valid there.
   - [ ] 9.5 If either service renders no image, do not close the AC — record what rendered, and check
         the two known culprits first: the file size against WhatsApp's limit (§D12), and an unfurl
         cached from before the deploy (§D13).
@@ -959,8 +966,13 @@ Juan. See the hand-off in the Completion Notes.
 - **AC6 — met, five comments not four.** All located by content. The fifth is `layout.tsx`'s
   `app/public/` claim, which this story falsified.
 - **AC7 — met.** A3 probe run at Task 1: both collision files clean, `page.tsx` owned, no abort.
-- **AC8 — DEPLOYED, NOT CLOSED.** The deploy is live and the asset is byte-identical over the wire
-  (`200`, `image/png`, sha256 match). The AC itself is the paste test and it needs a human.
+- **AC8 — HALF CLOSED, and the open half is Slack.** Re-deployed after the code review (`77d4d53`,
+  `aeeacf6`); the hashed asset is byte-identical over the wire (`200`, `image/png`, sha256 match) and
+  the superseded unhashed URL is a `404`. **WhatsApp renders the card with an image — confirmed by
+  Juan on 2026-08-27, verbatim: "It works. It shows an image".** That is the first real evidence any
+  gate in this story could not have produced. **Slack is untested and the AC is therefore not closed**;
+  it is not inferred from WhatsApp, because the two services run different unfurlers and AC8 names
+  both by name.
 
   **HAND-OFF TO JUAN — paste this URL, which has never been pasted anywhere:**
 
