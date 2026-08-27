@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { readTeamProfile, readTournament } from "@/lib/build-data";
+import { OG_CARD_PATH } from "@/lib/og-card";
 import { SITE_ORIGIN } from "@/lib/site-origin";
 import { es } from "@/locales/es";
 
@@ -148,16 +149,27 @@ describe.skipIf(!anyBuilt)("<title> and OG metadata (AC 3, NFR-4)", () => {
    * passed. This assertion, its twin in `players/static-output.test.ts`, and
    * the whole-export one in `canonical-output.test.ts` are the whole guard.
    *
-   * `SITE_ORIGIN` is IMPORTED, never spelled — `site-origin.test.ts` allows one
-   * occurrence of the literal under `app/` and counts this file.
+   * `SITE_ORIGIN` and the card's path are both IMPORTED, never spelled:
+   * `site-origin.test.ts` allows exactly one occurrence of the origin literal
+   * under `app/` and counts this file, and the filename carries a content hash
+   * that changes whenever the card is redesigned.
+     *
+   * EXACT EQUALITY, NOT `startsWith` (code review 2026-08-27). This asserted
+   * `ogImage?.startsWith(SITE_ORIGIN)` until then — which the whole-export twin
+   * in `canonical-output.test.ts` explicitly argues against in its own comment,
+   * because a prefix match accepts a host that merely BEGINS with the origin.
+   * The recorded red proof used an `evil-cdn.example.com` URL, which never
+   * exercises that case. It also dropped the
+   * `expect(ogImage).toEqual(expect.any(String))` pair: `expect.any(String)`
+   * passes on `""`, and the `?.` that followed it made a missing tag report
+   * `expected undefined to be true` instead of naming the tag.
    *
    * This file's `metaContent` takes TWO arguments and matches `property|name`;
    * the players twin takes three. The helpers differ on purpose.
    */
-  it("emits a SAME-ORIGIN og:image — the card, not a third-party asset", () => {
+  it("emits og:image as EXACTLY the card's absolute URL", () => {
     const ogImage = metaContent(html, "og:image");
-    expect(ogImage).toEqual(expect.any(String));
-    expect(ogImage?.startsWith(SITE_ORIGIN)).toBe(true);
+    expect(ogImage).toBe(`${SITE_ORIGIN}${OG_CARD_PATH}`);
   });
 });
 

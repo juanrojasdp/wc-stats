@@ -5,6 +5,7 @@ import { TeamProfileRegion } from "@/components/TeamProfileRegion";
 import { readTeamProfile, readTournament } from "@/lib/build-data";
 import { stageLabelKey } from "@/lib/hub-model";
 import { t } from "@/lib/i18n";
+import { OG_CARD_PATH } from "@/lib/og-card";
 import { composeTeamDescription, composeTeamTitle, toTeamHeroData } from "@/lib/team-profile";
 
 /*
@@ -140,21 +141,28 @@ export async function generateMetadata({
        * `type`, `siteName` and `images` ride the SAME wholesale-replacement
        * trap as `url` and `locale` above (Story 3.3, AC2): this object replaces
        * the layout's, so the layout's card never reaches this route. All three
-       * are therefore authored at all five `openGraph` sites, and the object is
+       * are therefore authored at all five `openGraph` sites, and the OBJECT is
        * NOT lifted into a shared helper — that would move `alt:` out of the
        * eslint metadata selector's reach and silently disable the rule that
        * makes a bare Spanish literal a build error. The full reasoning lives
-       * once, at `src/app/layout.tsx`; the whole-export gate in
-       * `canonical-output.test.ts` is what stops the five copies drifting.
+       * once, at `src/app/layout.tsx`.
        *
-       * The image URL is RELATIVE — `metadataBase` resolves it. An absolute
+       * THE URL ALONE IS LIFTED, to `@/lib/og-card` (code review 2026-08-27).
+       * This comment used to say the whole-export gate "stops the five copies
+       * drifting"; it did not — it asserted the URL's ORIGIN and never its
+       * VALUE, so renaming the asset in one of five files shipped 1,405
+       * documents pointing at a 404, green. One constant, written by the
+       * generator, is what stops it now. `url` is not in the eslint selector's
+       * key list, so only it moves; `alt:` stays inline here.
+       *
+       * The path is ROOT-RELATIVE — `metadataBase` resolves it. An absolute
        * literal would be a second copy of the origin and turns
        * `site-origin.test.ts` red.
        */
       type: "website",
       siteName: t("app.siteName"),
       images: [
-        { url: "/og-card.png", width: 1200, height: 630, alt: t("meta.ogImageAlt") },
+        { url: OG_CARD_PATH, width: 1200, height: 630, alt: t("meta.ogImageAlt") },
       ],
     },
   };

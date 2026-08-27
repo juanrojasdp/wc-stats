@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { bootstrapScript } from "@/lib/bootstrap";
 import { t } from "@/lib/i18n";
 import { LocaleProvider } from "@/lib/i18n-provider";
+import { OG_CARD_PATH } from "@/lib/og-card";
 import { SITE_ORIGIN } from "@/lib/site-origin";
 import { ThemeProvider } from "@/lib/theme-provider";
 
@@ -133,17 +134,41 @@ export const metadata: Metadata = {
      * the key, so a copy only here would card `/about`, `/glossary`, `/compare`
      * and the 404 and leave 1,402 documents bare.
      *
-     * IT IS NOT LIFTED INTO A HELPER MODULE, AND THAT IS DELIBERATE. Story
-     * 3.1's eslint selector reaches only `metadata` declarators and
+     * THERE IS AN `og:image` AT ALL BECAUSE THE BAN ON ONE WAS AN OVER-READ
+     * (D20, 2026-08-26). AR-11's "zero external requests" clause scopes to
+     * THIRD-PARTY ORIGINS, not to assets as such: a URL in a `<meta>` tag is not
+     * a request this page makes — it is a hint a crawler may fetch, off-page and
+     * off-session, and it cannot touch LCP, TBT, the payload budget or the NFR-9
+     * telemetry surface. `FETCHING_POSITIONS` in
+     * `scripts/assert-no-external-origins.mjs` is the operative definition of "a
+     * request", and `<meta content>` is deliberately not in it — WHICH MEANS THE
+     * ORIGIN GATE DOES NOT HOLD THIS LINE. It reports an off-origin `og:image`
+     * and passes. What holds it is `canonical-output.test.ts` over the whole
+     * export, plus the two per-route assertions in `players/` and
+     * `teams/static-output.test.ts`. The four route files each carry this same
+     * scoping; it was missing here until the code review of 2026-08-27, which is
+     * how a reader of THIS file could re-derive the retired ban from the one
+     * `openGraph` site that never mentioned it.
+     *
+     * THE OBJECT IS NOT LIFTED INTO A HELPER MODULE, AND THAT IS DELIBERATE.
+     * Story 3.1's eslint selector reaches only `metadata` declarators and
      * `generateMetadata` functions; moving this object into `src/lib/` would
      * put `alt:` outside the selector's reach and let a bare Spanish literal
      * ship with the build green — the exact failure AC4 exists to prevent,
-     * arrived at by tidying. What stops the five copies drifting is
-     * `canonical-output.test.ts`, which measures the emitted export rather
-     * than the source.
+     * arrived at by tidying.
      *
-     * The URL is RELATIVE and is resolved absolutely by `metadataBase` above.
-     * An absolute literal would be a second copy of the origin and turns
+     * THE URL ALONE IS LIFTED, AND THAT DISTINCTION IS THE WHOLE POINT (code
+     * review 2026-08-27). This comment used to claim `canonical-output.test.ts`
+     * was "what stops the five copies drifting". It was not: that gate asserted
+     * the URL's ORIGIN and never its VALUE, so renaming the asset in one of the
+     * five files shipped 1,405 documents pointing at a 404, green. The URL now
+     * comes from `@/lib/og-card`, written by the generator — one copy, no drift
+     * left to gate. `url` is NOT in the eslint selector's key list
+     * (`title|description|default|template|absolute|alt|siteName`), so moving it
+     * costs nothing, while `alt:` stays inline here where the rule can reach it.
+     *
+     * The path is ROOT-RELATIVE and is resolved absolutely by `metadataBase`
+     * above. An absolute literal would be a second copy of the origin and turns
      * `site-origin.test.ts` red.
      *
      * `width`/`height` are emitted because unfurlers that read them skip a
@@ -152,7 +177,7 @@ export const metadata: Metadata = {
      * `scripts/generate-og-card.py` asserts the same two numbers.
      */
     images: [
-      { url: "/og-card.png", width: 1200, height: 630, alt: t("meta.ogImageAlt") },
+      { url: OG_CARD_PATH, width: 1200, height: 630, alt: t("meta.ogImageAlt") },
     ],
   },
   /*

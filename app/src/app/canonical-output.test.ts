@@ -1,10 +1,11 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { readTournament } from "@/lib/build-data";
+import { OG_CARD_FILENAME, OG_CARD_PATH } from "@/lib/og-card";
 import { SITE_ORIGIN } from "@/lib/site-origin";
 
 /*
@@ -36,17 +37,26 @@ import { SITE_ORIGIN } from "@/lib/site-origin";
  *     after a future rewrite of their `openGraph` object;
  *   - no `hreflang` anywhere (D17, upheld by D20). A ruling is prose until
  *     something fails on it;
- *   - `og:image` is PRESENT and SAME-ORIGIN (Story 3.3, AC5 — added here on
- *     2026-08-27, and this file's scope is wider than its original title
- *     suggested for exactly this reason: do not delete the case as
- *     out-of-scope). The card is the one metadata property with no other
- *     mechanical guard — story 3.1's origin gate correctly does NOT treat
- *     `<meta content>` as a fetching position, so it REPORTS an off-origin
- *     `og:image` and passes. The two per-route assertions in
+ *   - THE CARD, in four cases (Story 3.3, AC1/AC3/AC4/AC5 — added here on
+ *     2026-08-27 and widened by that day's code review; this file's scope is
+ *     wider than its original title suggests for exactly this reason: do not
+ *     delete these as out-of-scope). `og:image` is exactly the URL
+ *     `@/lib/og-card` names, the named ASSET exists in `out/` as a non-empty
+ *     file, `og:image:alt` is present and non-empty, and the twitter trio reads
+ *     `summary_large_image` + image + alt. The card is the one metadata property
+ *     with no other mechanical guard — story 3.1's origin gate correctly does
+ *     NOT treat `<meta content>` as a fetching position, so it REPORTS an
+ *     off-origin `og:image` and passes. The two per-route assertions in
  *     `players/` and `teams/static-output.test.ts` cover 2 documents of 1,407;
- *     this case covers the other 1,405, including every route class those two
+ *     these cases cover the other 1,405, including every route class those two
  *     never touch — `/`, `/matches/[slug]`, `/about`, `/glossary`, `/compare`
  *     and the three not-found artifacts.
+ *
+ *     EXACT EQUALITY, NOT PRESENCE-AND-ORIGIN. The first version of the
+ *     `og:image` case asserted only count and origin, while five source comments
+ *     credited it with stopping the five URL copies drifting. Two DIFFERENT
+ *     same-origin URLs both passed it. The URL is now one imported constant and
+ *     this file asserts its exact resolved value.
  *
  * WHY THIS FILE AND NOT `static-output.test.ts`, the natural home: story 3-10
  * held that file while this story ran, and standing AC A3 forbids modifying a
@@ -185,8 +195,16 @@ interface ExportedDocument {
   readonly canonicals: readonly string[];
   /** Every `og:url` value; tolerant of `name=` alongside `property=` and of attribute order. */
   readonly ogUrls: readonly string[];
-  /** Every `og:image` value (Story 3.3, AC5). Must be exactly one, and same-origin. */
+  /** Every `og:image` value (Story 3.3, AC5). Must be exactly one, and the card. */
   readonly ogImages: readonly string[];
+  /** Every `og:image:alt`. AC4's deliverable, and unguarded until 2026-08-27. */
+  readonly ogImageAlts: readonly string[];
+  /** Every `twitter:card`. AC3 is a FLIP to `summary_large_image`, not an addition. */
+  readonly twitterCards: readonly string[];
+  /** Every `twitter:image`. Back-filled by Next from `openGraph.images`, never authored. */
+  readonly twitterImages: readonly string[];
+  /** Every `twitter:image:alt`. Back-filled the same way. */
+  readonly twitterImageAlts: readonly string[];
   /** Every `hreflang` value carried by any `<link>`. Must be empty everywhere. */
   readonly hreflangs: readonly string[];
   /*
@@ -224,6 +242,10 @@ function readDocument(absolutePath: string): ExportedDocument {
   const ogLocaleAlternates: string[] = [];
   const ogUrls: string[] = [];
   const ogImages: string[] = [];
+  const ogImageAlts: string[] = [];
+  const twitterCards: string[] = [];
+  const twitterImages: string[] = [];
+  const twitterImageAlts: string[] = [];
   let noindex = false;
 
   for (const tag of html.match(LINK_TAG) ?? []) {
@@ -246,6 +268,21 @@ function readDocument(absolutePath: string): ExportedDocument {
      * is what keeps the three suffixed tags out of this list.
      */
     if (key === "og:image") ogImages.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    if (key === "og:image:alt") ogImageAlts.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    /*
+     * THE TWITTER TAGS ARE DERIVED, WHICH IS EXACTLY WHY THEY ARE READ HERE
+     * (added 2026-08-27 by code review). Only `twitter.card` is authored, once,
+     * on the layout; `twitter:image` and `twitter:image:alt` are back-filled by
+     * Next's `postProcessMetadata` from each route's own `openGraph.images`.
+     * Derived tags can change with a FRAMEWORK UPGRADE and no source diff at
+     * all, so AC3 is the one criterion whose deliverable no source file can
+     * evidence. It is measured on the export or it is not measured.
+     */
+    if (key === "twitter:card") twitterCards.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    if (key === "twitter:image") twitterImages.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    if (key === "twitter:image:alt") {
+      twitterImageAlts.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    }
     if (key === "og:locale:alternate") {
       ogLocaleAlternates.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
     }
@@ -259,6 +296,10 @@ function readDocument(absolutePath: string): ExportedDocument {
     canonicals,
     ogUrls,
     ogImages,
+    ogImageAlts,
+    twitterCards,
+    twitterImages,
+    twitterImageAlts,
     hreflangs,
     alternateLinks,
     ogLocaleAlternates,
@@ -403,33 +444,103 @@ describe.skipIf(!anyBuilt)("exported canonical URLs (AC 2, AC 3, AC 4)", () => {
   });
 
   /*
-   * STORY 3.3, AC5 — THE SAME-ORIGIN CARD, OVER 1,407 DOCUMENTS.
+   * STORY 3.3, AC5 — THE CARD, OVER 1,407 DOCUMENTS.
    *
-   * Present AND same-origin in one case, because the two failures are the same
-   * defect from a reader's point of view: a document with no card, and a
-   * document advertising somebody else's asset, both mean the card is not what
-   * ships. The message names the file and the offending value either way.
+   * ORIGINALLY THIS ASSERTED ONLY THAT `og:image` WAS PRESENT AND SAME-ORIGIN,
+   * and five source comments claimed it was "what stops the five copies
+   * drifting". It was not (code review 2026-08-27): count-and-origin passes any
+   * two DIFFERENT same-origin URLs, so renaming the asset in one of the five
+   * metadata files shipped 1,405 documents pointing at a 404 with every gate
+   * green. It also passed a same-origin URL that is not an image at all —
+   * `images: [{ url: "./" }]` resolves through `metadataBase` to the route
+   * directory.
    *
-   * `startsWith(SITE_ORIGIN)` plus a parsed-origin check, the same pair the
-   * canonical case uses: `startsWith` alone would accept an origin that merely
-   * shares a prefix, and `new URL()` alone would accept a relative value that
-   * `metadataBase` failed to resolve.
+   * The URL now comes from `@/lib/og-card`, the single constant the generator
+   * writes and all five sites import, and this case asserts the EXACT resolved
+   * value. Exact equality subsumes both the presence check and the same-origin
+   * check, and needs no prefix reasoning to be correct.
    */
-  it("emits ONE same-origin og:image on every exported document (3.3 AC 5)", () => {
+  it("emits ONE og:image on every document, and it is THE card (3.3 AC 5)", () => {
+    const expected = `${SITE_ORIGIN}${OG_CARD_PATH}`;
     const offenders = documents
-      .filter((document) => {
-        if (document.ogImages.length !== 1) return true;
-        const [ogImage] = document.ogImages;
-        if (ogImage === undefined || !ogImage.startsWith(SITE_ORIGIN)) return true;
-        try {
-          return new URL(ogImage).origin !== SITE_ORIGIN;
-        } catch {
-          return true;
-        }
-      })
+      .filter((document) => document.ogImages.length !== 1 || document.ogImages[0] !== expected)
       .map(
         (document) =>
           `${document.relativePath} -> ${document.ogImages.join("|") || "(none)"}`
+      );
+    expect(report(offenders)).toBe("");
+  });
+
+  /*
+   * AND THE ASSET ITSELF EXISTS. Every assertion above validates a STRING in a
+   * `<meta content>`; none of them opens the file it names. Deleting
+   * `public/og-card-*.png`, or shipping a build that dropped `public/`, left the
+   * whole suite green while every unfurl on the site 404'd (code review
+   * 2026-08-27). `sitemap.test.ts:343`'s `statSync(...).isFile()` is the shipped
+   * precedent: under `trailingSlash: true` "it is a file, not a directory" is
+   * asserted rather than assumed.
+   */
+  it("ships the card asset the tags point at, as a non-empty file (3.3 AC 1)", () => {
+    const asset = path.join(OUT_DIR, OG_CARD_FILENAME);
+    expect(existsSync(asset), `${OG_CARD_FILENAME} is missing from out/`).toBe(true);
+    expect(statSync(asset).isFile()).toBe(true);
+    expect(statSync(asset).size).toBeGreaterThan(0);
+  });
+
+  /*
+   * AC4's DELIVERABLE, WHICH HAD NO PRESENCE CHECK ANYWHERE (added 2026-08-27).
+   * The eslint metadata selector makes a BARE LITERAL `alt` a build error; it
+   * cannot see an `alt` that is simply absent. Dropping `alt: t("meta.ogImageAlt")`
+   * from all five sites shipped green, with no alt text on the one
+   * accessibility-facing string in the story. The value is not pinned to a
+   * locale literal here — that is `i18n`'s job — only its presence and
+   * uniqueness, which is what the reader loses when it goes.
+   */
+  it("emits ONE non-empty og:image:alt on every document (3.3 AC 4)", () => {
+    const offenders = documents
+      .filter(
+        (document) =>
+          document.ogImageAlts.length !== 1 || (document.ogImageAlts[0] ?? "").trim() === ""
+      )
+      .map(
+        (document) =>
+          `${document.relativePath} -> ${document.ogImageAlts.join("|") || "(none)"}`
+      );
+    expect(report(offenders)).toBe("");
+  });
+
+  /*
+   * STORY 3.3, AC3 — THE TWITTER FLIP, WHICH HAD NO GUARD AT ALL.
+   *
+   * `og:image` got three layers of gating and AC3's entire deliverable got none
+   * (code review 2026-08-27): no test under `app/src` referenced `twitter`, and
+   * `layout.tsx` is the only source file that mentions it. The claim "verified
+   * on the export" was a one-time manual read.
+   *
+   * It matters more than an authored tag would, not less. `twitter:image` and
+   * `twitter:image:alt` are DERIVED by Next from `openGraph.images`, so they can
+   * regress on a framework upgrade with no source diff to review. And the flip
+   * is the specific failure the layout comment predicts: every document carried
+   * `twitter:card="summary"` before this story, and a future story dropping
+   * `images` from one site is what would send it back.
+   */
+  it("emits summary_large_image with an image and alt, everywhere (3.3 AC 3)", () => {
+    const expectedImage = `${SITE_ORIGIN}${OG_CARD_PATH}`;
+    const offenders = documents
+      .filter(
+        (document) =>
+          document.twitterCards.length !== 1 ||
+          document.twitterCards[0] !== "summary_large_image" ||
+          document.twitterImages.length !== 1 ||
+          document.twitterImages[0] !== expectedImage ||
+          document.twitterImageAlts.length !== 1 ||
+          (document.twitterImageAlts[0] ?? "").trim() === ""
+      )
+      .map(
+        (document) =>
+          `${document.relativePath} -> card=${document.twitterCards.join("|") || "(none)"} ` +
+          `image=${document.twitterImages.join("|") || "(none)"} ` +
+          `alt=${document.twitterImageAlts.join("|") || "(none)"}`
       );
     expect(report(offenders)).toBe("");
   });

@@ -4,7 +4,7 @@ baseline_commit: b8c2fd919a00cfcdfc026ec7877120ce0b7a521a
 
 # Story 3.3: Same-Origin `og:image` Card & Twitter Card
 
-Status: review
+Status: in-progress
 
 **Baseline commit sized against:** `b8c2fd9` (`Story 3.4 -> done: AC8 closed, and the failure message
 that was not one`). Tree clean at creation apart from the stray 0-byte `17` in the repo root, which
@@ -282,14 +282,16 @@ and the suite is green with **0 skipped**.
   - [x] 8.5 Confirm **0** `og:locale:alternate` and **0** `hreflang` across the export (3.2 AC4 —
         this story introduces no per-locale anything, D17/D20).
 
-- [x] **Task 9 — deploy and the paste test (AC 8) — REQUIRES JUAN**
+- [ ] **Task 9 — deploy and the paste test (AC 8) — REQUIRES JUAN — OPEN: 9.4/9.5 unreported**
   - [x] 9.1 Commit by pathspec (`git commit -- <paths>`), staging only §Files. Never `git add -A`.
         Add-then-commit is not atomic here and a concurrent session's sweeping add can capture your
         files between the two.
   - [x] 9.2 `gh auth switch -u juanrojasdp` **before** pushing, or the push 403s.
   - [x] 9.3 Push to `main`. Netlify builds from `app/` (`netlify.toml`: base `app`, command
         `npm run build`, publish `out`). Wait for the deploy to go live and confirm
-        `https://mundial-stats.juancr.dev/og-card.png` returns the PNG with `Content-Type: image/png`.
+        the card asset returns the PNG with `Content-Type: image/png`. **Re-deploy required after
+        the code review of 2026-08-27:** the card was redrawn (wordmark in Inter 600) and its filename
+        now carries a content hash, so the URL verified on the first deploy no longer exists.
   - [ ] 9.4 **HAND OFF TO JUAN — this cannot be done by inspecting tags.** Ask him to paste **one URL
         never pasted before** into **WhatsApp** and into **Slack**, and to report whether a card with
         an **image** renders in each. Give him the exact URL to use. Record both results verbatim,
@@ -1009,6 +1011,277 @@ silently:**
 6. **Do not lift the five `images` objects into a shared helper while tidying.** It is the single
    likeliest way to undo this story: it would move `alt:` outside the eslint selector's reach and let
    a bare Spanish literal ship with the build green.
+
+### Review Findings (Code Review 2026-08-27)
+
+Three adversarial layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor), all three run to
+completion and cross-verified against the live repo and the emitted `out/` tree. 31 raw findings → 19
+unique after dedup → **2 decision-needed, 13 patch, 2 defer, 3 dismissed.** Both decision-needed items
+were resolved by Juan on 2026-08-27 (options 1b and 2b) and became patches, so the working total is
+**15 patches**.
+
+**Every AC the dev agent claimed closed does hold, and the reviewer re-measured them independently
+rather than reading the record.** Over all 1,407 exported documents: `og:image` 1,407/1,407 absolute
+and same-origin; `og:image:width=1200`, `:height`, `:alt` 1,407/1,407; `og:type=website` and
+`og:site_name` 1,407/1,407; `twitter:card="summary_large_image"` 1,407/1,407 with **0** bare
+`summary`; `twitter:image` and `twitter:image:alt` 1,407/1,407. `out/og-card.png` is byte-identical to
+`app/public/og-card.png` (sha256 `54c6e3c8…aedfd0`, 38,976 B, 1200×630, rendered and read). The origin
+literal still occurs exactly once under `app/` (`src/lib/site-origin.ts:32`). The four touched test
+files run **43 passed / 0 skipped**. AC8 is correctly recorded as open and Juan's. **Nothing below
+overturns an AC.**
+
+**The headline: this story built three layers of gating for `og:image`'s ORIGIN and none at all for
+the two things a reader actually sees — that the file ships, and that the five copies of its URL still
+agree.** Five source comments state that `canonical-output.test.ts` "is what stops the five copies
+drifting". It does not: it asserts count and origin, never value. Rename `/og-card.png` to
+`/og-card-v2.png` in one of the five files, or delete `app/public/og-card.png` outright, and the build
+is green, all three new assertions are green, and up to 1,407 documents advertise a 404. Both holes
+close with one exact-equality assertion.
+
+#### Decision needed — BOTH RESOLVED 2026-08-27 BY JUAN
+
+**Decision 1 → option (b): switch the card wordmark to Inter 600, matching the header literally.**
+Feasibility verified before the call was recorded, not after: exactly one Inter subset in
+`.next/static/media/` covers `"WC Stats"` (`83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2`, cmap 230) and it
+carries an `fvar` `wght` axis of 100–900 with default **400** — so drawing it at the header's weight is
+not a face swap but a variable-font instantiation, `instantiateVariableFont(font, {"wght": 600})`,
+before the woff2→TTF conversion. The current `sized()` helper draws every face at its default instance,
+which is why Archivo (default 600) looked right and Inter would not. `python` on this machine has
+Pillow 12.2.0, fontTools 4.62.1 and brotli 1.2.0, so the card can actually be regenerated. **This
+changes the card's bytes, so it must land BEFORE decision 2's hash is computed.** Re-verify the
+wordmark's drawn width against the pitch motif at x=700 after the swap — Inter and Archivo do not set
+`"WC Stats"` to the same width at 132 px.
+
+**Decision 2 → option (b): move to a content-hashed card filename.** Chosen over "accept it", so the
+card becomes redesignable without stranding every link already unfurled. The filename becomes
+`og-card-<sha256[:8]>.png`. **The hash must not become a sixth hand-copied literal**: it goes in one
+new module, `src/lib/og-card.ts`, exporting the path, and the five `openGraph` sites import it. This is
+safe against the §D8 helper-module trap and was checked against the actual rule rather than the prose —
+`eslint.config.mjs:207/219` keys on `title|description|default|template|absolute|alt|siteName`, and
+**`url` is not among them**, so only the URL moves out of the metadata objects while `alt:
+t("meta.ogImageAlt")` stays inline at all five sites, inside the selector's reach exactly as AC4
+requires. It also subsumes the two highest-severity patches below: with one exported constant there is
+no five-copy drift left to gate, and the asset-existence assertion can name the file the code actually
+references instead of a literal of its own.
+
+- [x] [Review][Decision] **RESOLVED — option (b).** The card's wordmark is set in Archivo; the site's
+      own wordmark renders in Inter. `scripts/generate-og-card.py:238,256` draws `"WC Stats"` in `Archivo SemiBold`. The
+      shipped wordmark is `SiteHeader.tsx:159` under `type-title`, and `globals.css:415-419` defines
+      `type-title` as `font-family: var(--font-sans)` → `--font-inter` (`:227`) at weight 600. Archivo
+      is `--font-display` (`:228`), the face used for every large heading in the ramp
+      (`type-display-score`, `type-headline`, `type-stat-value`). So both readings are defensible — at
+      132 px the card's wordmark is a display element and Archivo is the display face — but the
+      script's docblock premise ("the card has to be in the site's own typefaces") is stated as if the
+      question does not exist. **Not a defect; a design call only Juan can make.** Options: (a) keep
+      Archivo and say why in the docblock, (b) switch to Inter 600 to match the header literally.
+
+- [x] [Review][Decision] **RESOLVED — option (b).** `/og-card.png` is an unhashed URL, and unfurlers
+      cache OG images by URL effectively forever. `netlify.toml`'s immutable block is scoped to `/_next/static/*` only
+      (verified), so the card itself ships `must-revalidate` — correct for browsers, irrelevant to
+      WhatsApp/Slack/Facebook/X, which cache the fetched image per URL for long, non-controllable
+      periods. AC8 depends on this fact in the other direction (it demands a never-pasted URL). The
+      consequence is one-way: once the card is redesigned, every already-unfurled link keeps the old
+      image, and the only remedies are each platform's own debugger. Options: (a) accept it — the card
+      is generic and unlikely to be redesigned, (b) move to a content-hashed or versioned filename
+      (`/og-card-<hash>.png`) so a redesign is a new URL, (c) accept now and file it for the redesign.
+
+#### Patch — ALL 15 APPLIED 2026-08-27
+
+**Verified after applying, not asserted.** `npm run build` green end to end with the origin gate at
+exit 0; route count unchanged at **1,406** `index.html` / 1,407 `.html`; full suite **1,512 tests, 0
+skipped** (1,509 before — the `og:image` case became four). The card `out/og-card-7ac312ef.png` is
+byte-identical to `public/` (sha256 `7ac312ef…eed0`, and the filename's hash is its own first 8 bytes),
+the superseded `og-card.png` is swept from both trees, and **0** exported documents still reference the
+unhashed name. Over all 1,407 documents: `og:image` and `twitter:image` both exactly
+`<origin>/og-card-7ac312ef.png`, `og:image:alt`, `twitter:image:alt` and
+`twitter:card="summary_large_image"` all 1,407/1,407.
+
+**All four new gates driven RED independently, and the mutations are ORTHOGONAL** — each fails exactly
+one case and leaves the other three green, so none of them passes by coincidence:
+
+| Mutation | Fails | Others |
+|---|---|---|
+| `mv out/og-card-7ac312ef.png` away | AC1 asset case | 3 green |
+| one doc's `og:image` → `og-card-v2.png` | AC5 exact-value case | 3 green |
+| one doc's `og:image:alt` deleted | AC4 alt case | 3 green |
+| one doc's `twitter:card` → `summary` | AC3 twitter case | 3 green |
+
+The second is the exact failure this review was filed on: under the previous count-and-origin gate that
+mutation **passed**.
+
+One unrelated flake surfaced and was chased to ground rather than absorbed:
+`assert-schema-version.test.ts > passes on the current data tree` timed out at 20,000 ms in the full
+run and passes in **1.98 s** in isolation. It walks the whole data tree and is load-dependent; it is
+not touched by any file in this review. Not filed against this story.
+
+**Ordering is load-bearing for the first three.** D1 changes the card's pixels; D2 derives a filename
+from those pixels; the asset-existence and exact-value gates then assert the name D2 produced. Applied
+out of order they either hash a stale card or gate a filename that no longer exists.
+
+- [x] [Review][Patch] **(from Decision 1) Draw the wordmark in Inter 600, not Archivo.** Instantiate
+      the variable face at `wght=600` before the woff2→TTF conversion rather than drawing at the
+      default 400, and re-measure the drawn width against the pitch motif's left edge at x=700 before
+      accepting the output. The docblock's typeface rationale (`:32-44`) is rewritten to say which face
+      carries which role and why, so the next reader does not re-open a settled question.
+      [`app/scripts/generate-og-card.py:238`]
+
+- [x] [Review][Patch] **(from Decision 2) Content-hash the card filename and give it one source of
+      truth.** `app/public/og-card-<sha256[:8]>.png`, a new `src/lib/og-card.ts` exporting the path,
+      and the five `openGraph` sites importing it — `alt: t("meta.ogImageAlt")` stays inline at all
+      five so AC4's eslint gate keeps its reach. The generator computes the hash, writes the hashed
+      file, removes the previous card, and rewrites the constant. Delete the old `og-card.png` from
+      `app/public/` in the same pass so a stale asset cannot ship alongside the live one.
+      [`app/scripts/generate-og-card.py:100`, `app/src/lib/og-card.ts`]
+
+- [x] [Review][Patch] **Nothing asserts the card asset actually ships** — no test checks that
+      `out/og-card.png` exists, is a file, or is non-empty. The story's own AC1 "verified on disk" was
+      a one-time human step and left no successor; `sitemap.test.ts:343`'s `statSync(...).isFile()` is
+      the shipped precedent the story itself cites. Confirmed: `grep -rn "og-card" src/ --include=*.test.ts`
+      returns only `assert-no-external-origins.test.ts:283`, a synthetic fixture string proving the
+      origin gate *passes* an og:image — not an existence check. [`app/src/app/canonical-output.test.ts`]
+
+- [x] [Review][Patch] **The whole-export gate checks the card's origin, never its value, so the five
+      copies can drift freely** — `canonical-output.test.ts:418-435` filters only on
+      `ogImages.length !== 1`, `startsWith(SITE_ORIGIN)` and `new URL(...).origin`. Two *different*
+      same-origin URLs across route classes both pass. Fix with exact equality against
+      `` `${SITE_ORIGIN}/og-card.png` ``, which also closes the "same-origin URL that is not an image"
+      hole (`images: [{ url: "./" }]` resolves to the route directory and passes today).
+      [`app/src/app/canonical-output.test.ts:418`]
+
+- [x] [Review][Patch] **`og:image:alt` — the one accessibility-facing string in the story, and the
+      AC4 deliverable — has no presence assertion anywhere.** `canonical-output.test.ts:240` collects
+      the key `og:image` exactly and its comment at `:332-336` records that it deliberately excludes
+      `:alt`/`:width`/`:height`; the two per-route cases read only `og:image`. The eslint selector
+      (`eslint.config.mjs:207-208`) forbids `alt` being a *bare literal*, and cannot detect `alt` being
+      *absent*. Drop `alt: t("meta.ogImageAlt")` from all five sites and it ships green.
+      [`app/src/app/canonical-output.test.ts:240`]
+
+- [x] [Review][Patch] **The two per-route assertions use bare `startsWith` — the exact weakness their
+      own twin file argues against, in writing.** `canonical-output.test.ts:413-414` reasons
+      "`startsWith` alone would accept an origin that merely shares a prefix" and pairs both checks at
+      `:423-428`; `players/static-output.test.ts:150` and `teams/static-output.test.ts:160` do not.
+      `https://mundial-stats.juancr.dev.evil.example/og-card.png` passes both. The recorded red proof
+      used `https://evil-cdn.example.com/...`, which never exercises the prefix case. Same fix folds in
+      the self-contradictory `expect(ogImage).toEqual(expect.any(String))` + `ogImage?.startsWith(...)`
+      pair (if line 1 excludes `null`, the `?.` is dead; if it does not, the failure message reads
+      `expected undefined to be true` instead of naming the missing tag — and `expect.any(String)`
+      passes on `""`). A single `expect(ogImage).toBe(\`${SITE_ORIGIN}/og-card.png\`)` is shorter,
+      strictly stronger, and self-explaining. [`app/src/app/players/static-output.test.ts:149`,
+      `app/src/app/teams/static-output.test.ts:159`]
+
+- [x] [Review][Patch] **AC3's entire deliverable — `twitter:card` / `twitter:image` /
+      `twitter:image:alt` — has zero regression guard.** Confirmed:
+      `grep -rln "twitter" src/ --include=*.test.ts` returns nothing, and `layout.tsx:177` is the only
+      occurrence of `twitter` in all of `app/src/`. The tags are real in the export (re-measured
+      1,407/1,407) but nothing re-checks them, and they are *derived* by Next's `postProcessMetadata`
+      — so a Next upgrade can silently change them with no source diff at all. The layout comment at
+      `:162` says "Verified on the export, not reasoned about"; that verification was a one-time manual
+      read. `og:image` got three layers; the property the same diff calls a silent-revert risk got
+      none. [`app/src/app/canonical-output.test.ts`]
+
+- [x] [Review][Patch] **The generator hard-codes copies of `es.meta.description`, `app.siteName` and
+      six palette hexes, and its docblock asserts the equality as standing fact.**
+      `generate-og-card.py:87-99` — `DESCRIPTION` is a byte copy of `src/locales/es.ts:540`, `WORDMARK`
+      of `es.ts:21`, and the six colours of `globals.css:27-40`. All match today (verified). Nothing
+      detects it when they stop: `site-origin.test.ts` counts only the origin literal, and eslint's
+      globs do not match `.py`. This is the one drift surface the story left undefended while paying
+      five copies of a 15-line comment to defend another. Fix: have the generator read
+      `src/locales/es.ts` and `src/app/globals.css` and fail loudly when its literals are no longer
+      found there — it already reads the build output for fonts, so reading the repo is in character.
+      Correct in the same pass the docblock's byte-identical-reproducibility overclaim (`:20-22`):
+      `optimize=True` output varies with the Pillow/zlib version and the input faces change with
+      Next/next-font, so it delivers reproducible *design*, not reproducible *bytes*.
+      [`app/scripts/generate-og-card.py:87`]
+
+- [x] [Review][Patch] **The generator's three Python dependencies are recorded nowhere.** It imports
+      `fontTools.ttLib` and `PIL` (`:76-77`) and needs `brotli` for woff2 (`:35`). Verified: no
+      `requirements.txt`, `pyproject.toml` or `setup.cfg` under `app/` or the repo root, and
+      `pipeline/requirements.txt` names none of the three. The file's whole justification is that the
+      card can be regenerated; unpinned, unrecorded deps fail on the first fresh machine, and the
+      docblock's "nothing is added to `package.json`" reads as "no new dependencies" when three were
+      added outside any manifest. **Record them in the docblock, or in a file Netlify will not
+      auto-detect — do NOT add `app/requirements.txt`:** `netlify.toml:7` sets `base = "app"`, and a
+      `requirements.txt` in the base directory can trigger Netlify's Python dependency install on a
+      deploy that must stay Node-only (AD-13, NFR-8). [`app/scripts/generate-og-card.py:76`]
+
+- [x] [Review][Patch] **The "stable across builds" font-selection claim is false on ties.**
+      `generate-og-card.py:136` uses strict `>` (`len(cmap) > best[0]`), so two covering subsets with
+      equal cmap size resolve to whichever sorts first in `sorted(FONT_DIR.glob("*.woff2"))` — i.e. by
+      the content hash in the filename, which changes every build. That is precisely the dependency the
+      docblock at `:39-42` says the scheme exists to avoid, and the function's own docstring at
+      `:112-115` claims the opposite. Fix: tie-break on something stable (e.g. `sorted(cmap)`), not on
+      directory order. [`app/scripts/generate-og-card.py:136`]
+
+- [x] [Review][Patch] **The card is written to disk before it is validated, so a rejected run destroys
+      the previous good artifact.** `:255` saves to `OUTPUT`; the dimension check (`:260-261`) and the
+      300 KB check (`:262-263`) run afterward and only `raise SystemExit`. There is no
+      temp-file-then-rename and no restore path, and `public/og-card.png` is the file the five metadata
+      sites point at and the file git will commit. [`app/scripts/generate-og-card.py:255`]
+
+- [x] [Review][Patch] **No overflow guard on the drawn composition — it can silently render off-canvas
+      and still exit 0.** `wrap()` (`:170-186`) never breaks a word wider than `max_width` (the split is
+      gated on `if current and …`, so an over-long token is appended unconditionally with no
+      character-level fallback), and `main()` (`:249-252`) draws an unbounded line count at 46 px steps
+      from `y = 404` against `HEIGHT = 630` — line 5 starts at y=588 and clips, line 6 falls off
+      entirely. Measured headroom today: 4 lines, widest 546 px against `max_width=560` — 14 px. The
+      only post-write assertions check dimensions and byte size, two values that stay correct no matter
+      what the copy does. Fix: assert measured max line width ≤ `max_width` and final `y` ≤ `HEIGHT`.
+      [`app/scripts/generate-og-card.py:170`]
+
+- [x] [Review][Patch] **`TTFont(path)` is unguarded in the scan loop, so the designed loud failure
+      never fires.** `:118` sits inside `for path in sorted(FONT_DIR.glob("*.woff2"))` with no `try`,
+      and `brotli` availability is never checked up front. A missing `brotli` or one truncated
+      `.woff2` left by an interrupted build aborts the whole run with a raw traceback at the first
+      offending file, never reaching the other nine valid subsets or the carefully written
+      "no covering subset" message at `:129-134`. [`app/scripts/generate-og-card.py:118`]
+
+- [x] [Review][Patch] **Task 9 is checked `[x]` while its subtasks 9.4/9.5 are `[ ]` and AC8 is
+      explicitly open.** The Completion Notes (`:955`) and Change Log (`:1041`) are honest — "AC8 —
+      DEPLOYED, NOT CLOSED", "remains open and is Juan's" — but the parent checkbox contradicts them,
+      and Status is `review` with a hand-off that has no recorded answer. The checkbox should read
+      `[ ]` until the paste test reports. [`_bmad-output/implementation-artifacts/3-3-og-image-twitter-card.md:285`]
+
+- [x] [Review][Patch] **The fifth corrected comment does not state the D20 scoping Task 6.6 requires.**
+      `layout.tsx:97-108` corrects the falsified `app/public/` claim (which is all AC6 itself demands,
+      so this is a task-level deviation and not an AC failure), but neither it nor the card docblock at
+      `:128-152` says anything about AR-11, `FETCHING_POSITIONS`, or what actually holds the same-origin
+      line. `layout.tsx` is therefore the only one of the five `openGraph` sites whose reader gets no
+      D20 statement. [`app/src/app/layout.tsx:97`]
+
+#### Deferred
+
+- [x] [Review][Defer] **All three card guards sit inside `describe.skipIf(!anyBuilt)` and report green
+      when they run over nothing** [`app/src/app/canonical-output.test.ts:295`,
+      `app/src/app/players/static-output.test.ts:86`, `app/src/app/teams/static-output.test.ts:116`] —
+      deferred, pre-existing. **This is already an OPEN ledger entry filed by 3.2's code review**
+      naming `canonical-output.test.ts` by path; this story adds a fourth assertion behind the same
+      skip rather than introducing the hole. The new AC5 case inherits it: on a fresh clone, a cleaned
+      worktree, or any `npm test` that precedes `npm run build`, the entire same-origin card guard
+      passes having asserted nothing — while three source comments call it "the only thing holding the
+      same-origin line" without noting it is conditionally inert. The ledger entry is extended rather
+      than duplicated.
+
+- [x] [Review][Defer] **The two per-route `metaContent` helpers are not equivalent, and now carry
+      byte-identical `it` titles** [`app/src/app/players/static-output.test.ts:67`,
+      `app/src/app/teams/static-output.test.ts:75`] — deferred, pre-existing. `players` takes three
+      arguments and matches `property` case-sensitively; `teams` takes two, matches
+      `(?:property|name)`, and carries the `i` flag. The divergence predates this story; what is new is
+      that both files now name their case "emits a SAME-ORIGIN og:image — the card, not a third-party
+      asset" while asserting measurably different things. The story documents the divergence in two
+      cross-referencing comments (`players:704-706`, `teams:154-155`) rather than removing it, which
+      creates a coupling that rots the first time either helper is touched. Not patched here because
+      unifying the helpers touches assertions this story does not own.
+
+#### Dismissed (3)
+
+- "Same-origin check accepts a URL that is not an image" — real, but wholly subsumed by the
+  exact-equality patch above; not a separate item.
+- "`sys.exit(main())` where `main()` returns `None`; mixed quote styles; `TTFont` handles never
+  closed" — cosmetic. `sys.exit(None)` exits 0, which is correct.
+- "267 lines of ungated Python entered a Node project" — by design and argued explicitly in the
+  docblock and §D2 (AD-13: Netlify has no Python interpreter, so the script must stay out of the build
+  chain). Its only mechanical contact with CI — `site-origin.test.ts` reading it as UTF-8 — is
+  deliberate and was verified.
 
 ### File List
 
