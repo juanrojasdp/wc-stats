@@ -3590,7 +3590,7 @@ development_status:
   # before or it measures a cache. gh auth switch -u juanrojasdp before pushing or it 403s.
   # LEDGER: deferred-work.md:4382+ (D20-b, the og:image ban retired) is owned by this
   # story and closes with it. No other entry fires.
-  3-3-og-image-twitter-card: in-progress
+  3-3-og-image-twitter-card: done
   # DEV 2026-08-27 (claude-opus-5[1m]). EIGHT OF NINE ACs CLOSED; AC8 IS JUAN'S AND IS OPEN.
   # A3 probe at Task 1: tree clean but for the stray root `17`; BOTH Epic 3 collision files
   # (page.tsx, SiteHeader.tsx) clean, so the story owned page.tsx and did not abort.

@@ -4423,6 +4423,30 @@ creation, and nothing downstream noticed.
   ("PASSES a self-origin og:image and does not even MENTION it — story 3.3 depends on this"), was
   confirmed against the real export and not only against its fixture.
 
+  **AMENDED BY THE CODE REVIEW OF 2026-08-27 — three of the sentences above are now stale, and the
+  entry stays CLOSED.** Recorded here rather than edited into the note, because what the note says is
+  what the dev pass actually did.
+  - *"present AND starts with `SITE_ORIGIN`"* — all three assertions now test the **exact resolved
+    URL**. `startsWith` accepts a host that merely BEGINS with the origin, and the whole-export case
+    argued against exactly that in its own comment while its two per-route twins used it. More to the
+    point, count-and-origin could never have caught the failure this entry cares about: five hand-kept
+    copies of the URL, of which renaming ONE shipped 1,405 documents at a 404 with every gate green.
+  - *"the line is now held in three places"* — it is held in **six**, and one of them finally opens the
+    file. The asset's EXISTENCE in `out/` is asserted (`statSync().isFile()`, non-empty),
+    `og:image:alt` is asserted present, and AC3's twitter trio is gated for the first time. Every
+    string-level assertion in the world still passes on a card that was never deployed.
+  - *"one ~39 KB PNG at `app/public/og-card.png`, drawn in the site's own Archivo/Inter subsets"* — the
+    card is now `app/public/og-card-<sha256[:8]>.png`, a content-hashed name, because unfurlers cache
+    per URL and a stable name means a redesign never reaches an already-shared link. Its URL lives in
+    ONE place, `src/lib/og-card.ts`, imported by all five metadata sites — only the `url` moves, since
+    `url` is not in the eslint metadata selector's key list, so `alt:` stays inline where AC4's rule
+    reaches it. And it is set entirely in **Inter**: the shipped wordmark renders under `type-title`,
+    which is `--font-sans`, not the `--font-display` Archivo the first draft used.
+
+  **The line this entry exists to protect is now confirmed at the far end, not just at the gate.**
+  AC8 closed 2026-08-27: the card renders with an image in **WhatsApp** and in **Slack**, both pasted
+  by Juan against a URL never pasted before. That is the one fact none of the six gates could produce.
+
 - **BLOCKER FOUND, and it contradicts the retrospective: `assert-no-external-origins.mjs` FAILS the
   build on the site's OWN absolute URLs.** Retro §6.3 lists `metadataBase`, absolute canonical URLs,
   `sitemap.xml`, `robots.txt`, the Twitter card and `og:image` as "available without any ruling".

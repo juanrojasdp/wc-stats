@@ -4,7 +4,7 @@ baseline_commit: b8c2fd919a00cfcdfc026ec7877120ce0b7a521a
 
 # Story 3.3: Same-Origin `og:image` Card & Twitter Card
 
-Status: in-progress
+Status: done
 
 **Baseline commit sized against:** `b8c2fd9` (`Story 3.4 -> done: AC8 closed, and the failure message
 that was not one`). Tree clean at creation apart from the stray 0-byte `17` in the repo root, which
@@ -282,7 +282,7 @@ and the suite is green with **0 skipped**.
   - [x] 8.5 Confirm **0** `og:locale:alternate` and **0** `hreflang` across the export (3.2 AC4 —
         this story introduces no per-locale anything, D17/D20).
 
-- [ ] **Task 9 — deploy and the paste test (AC 8) — REQUIRES JUAN — OPEN: 9.4/9.5 unreported**
+- [x] **Task 9 — deploy and the paste test (AC 8) — REQUIRES JUAN — CLOSED 2026-08-27**
   - [x] 9.1 Commit by pathspec (`git commit -- <paths>`), staging only §Files. Never `git add -A`.
         Add-then-commit is not atomic here and a concurrent session's sweeping add can capture your
         files between the two.
@@ -297,18 +297,17 @@ and the suite is green with **0 skipped**.
         **404**, so no stale asset can be served alongside it. The paste-test route itself was read
         over the wire and carries `og:image`, `og:image:alt`, `twitter:card="summary_large_image"`,
         `twitter:image` and `twitter:image:alt`, all naming the hashed card.
-  - [~] 9.4 **HAND OFF TO JUAN — this cannot be done by inspecting tags.** Ask him to paste **one URL
+  - [x] 9.4 **HAND OFF TO JUAN — this cannot be done by inspecting tags.** Ask him to paste **one URL
         never pasted before** into **WhatsApp** and into **Slack**, and to report whether a card with
         an **image** renders in each. Give him the exact URL to use. Record both results verbatim,
         including a failure.
         - URL handed over, never pasted anywhere before:
           `https://mundial-stats.juancr.dev/players/aaronson-brenden-usa/`
         - **WhatsApp — PASS (Juan, 2026-08-27), verbatim: "It works. It shows an image".**
-        - **Slack — NOT YET TESTED.** Not recorded as a pass and not inferred from the WhatsApp
-          result: the two services run different unfurlers, and AC8 names both. Whoever runs it must
-          use a URL never pasted before — the one above is now consumed on WhatsApp's cache but is
-          still virgin on Slack's, so it remains valid there.
-  - [ ] 9.5 If either service renders no image, do not close the AC — record what rendered, and check
+        - **Slack — PASS (Juan, 2026-08-27), verbatim: "Slack is also working".** Tested
+          separately rather than inferred from the WhatsApp result; the two services run different
+          unfurlers and AC8 names both.
+  - [x] 9.5 (Nothing to diagnose — both services rendered an image on the first paste.) If either service renders no image, do not close the AC — record what rendered, and check
         the two known culprits first: the file size against WhatsApp's limit (§D12), and an unfurl
         cached from before the deploy (§D13).
 
@@ -966,13 +965,18 @@ Juan. See the hand-off in the Completion Notes.
 - **AC6 — met, five comments not four.** All located by content. The fifth is `layout.tsx`'s
   `app/public/` claim, which this story falsified.
 - **AC7 — met.** A3 probe run at Task 1: both collision files clean, `page.tsx` owned, no abort.
-- **AC8 — HALF CLOSED, and the open half is Slack.** Re-deployed after the code review (`77d4d53`,
-  `aeeacf6`); the hashed asset is byte-identical over the wire (`200`, `image/png`, sha256 match) and
-  the superseded unhashed URL is a `404`. **WhatsApp renders the card with an image — confirmed by
-  Juan on 2026-08-27, verbatim: "It works. It shows an image".** That is the first real evidence any
-  gate in this story could not have produced. **Slack is untested and the AC is therefore not closed**;
-  it is not inferred from WhatsApp, because the two services run different unfurlers and AC8 names
-  both by name.
+- **AC8 — MET, and it is the only criterion here that a gate could not have produced.**
+  Re-deployed after the code review (`77d4d53`, `aeeacf6`); the hashed asset is byte-identical over
+  the wire (`200`, `image/png`, sha256 match) and the superseded unhashed URL is a `404`, so no stale
+  asset can be served beside it. Juan pasted
+  `https://mundial-stats.juancr.dev/players/aaronson-brenden-usa/` — never pasted anywhere before, so
+  no unfurl cache could report a false miss — into both services:
+  - **WhatsApp — PASS**, verbatim: *"It works. It shows an image"*.
+  - **Slack — PASS**, verbatim: *"Slack is also working"*.
+
+  Tested separately rather than one inferred from the other: the two services run different unfurlers
+  and AC8 names both. Six automated gates can prove the tags, the asset and the bytes are right and
+  still say nothing about whether an unfurler draws a card.
 
   **HAND-OFF TO JUAN — paste this URL, which has never been pasted anywhere:**
 
@@ -1328,4 +1332,6 @@ out of order they either hash a stale card or gate a filename that no longer exi
 
 | Date | Change |
 |---|---|
+| 2026-08-27 | **Story 3.3 CLOSED.** AC8 met by paste test: the card renders with an image in **WhatsApp** and in **Slack** (Juan), against a URL never pasted before. Card re-deployed as `og-card-7ac312ef.png` after the code review; hashed asset byte-identical over the wire, superseded URL now `404`. All nine ACs met. |
+| 2026-08-27 | **Code review: 15 patches applied, 2 deferred, 3 dismissed.** Two decisions ruled by Juan — the wordmark moved to Inter 600 to match `type-title`, and the card filename became content-hashed so a redesign is a new URL. The URL moved to one constant (`src/lib/og-card.ts`) imported by all five metadata sites; `alt:` stays inline so AC4's eslint gate keeps its reach. Gates 3 → 6: `og:image` by exact value rather than presence-and-origin, the **asset's existence** in `out/`, `og:image:alt` presence, and AC3's twitter trio — which had no guard at all. Both per-route assertions moved to exact equality, dropping the `startsWith` prefix hole. Generator hardened: verifies its palette and copy against `globals.css`/`es.ts` on every run, deterministic font tie-break, guarded parsing, staging-file publish. All four new gates driven red with orthogonal mutations. Suite 1,509 → 1,512, 0 skipped; routes unchanged at 1,406. |
 | 2026-08-27 | Story 3.3 implemented. One same-origin 1200x630 card at `app/public/og-card.png` (a new directory), drawn offline in the site's own Archivo/Inter faces by a committed, non-build-chain Python generator. `images`/`type`/`siteName` at all five `openGraph` sites; `twitter: { card: "summary_large_image" }` once on the layout. `meta.ogImageAlt` minted in both dictionaries. The two shipped `og:image` ban assertions **replaced** and a third added over all 1,407 documents; five red proofs and one A2 coincidence-green check recorded. Five source comments corrected. Ledger entry D20-b closed. Suite 1,508 -> 1,509, 0 skipped; routes unchanged at 1,406. **AC8 (the paste test) remains open and is Juan's.** |
