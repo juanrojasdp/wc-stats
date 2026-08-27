@@ -4,10 +4,17 @@ import { fileURLToPath } from "node:url";
 
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { readTournament } from "@/lib/build-data";
 import { SITE_ORIGIN } from "@/lib/site-origin";
 
 /*
- * THE CANONICAL-URL GATE OVER THE WHOLE EXPORT (Story 3.2, AC3/AC4/AC7).
+ * THE CANONICAL-URL GATE OVER THE WHOLE EXPORT (Story 3.2, AC2/AC3/AC4).
+ *
+ * AC2 (trailing slash, `og:url` byte-identity), AC3 (exactly one canonical,
+ * absolute, same-origin, own route) and AC4 (no per-locale metadata). NOT AC7:
+ * that criterion is about this file being PROVABLY RED, which a file cannot
+ * assert about itself — it is discharged by Task 5's four mutations, not here.
+ * The `describe` title below is the one to trust (review 2026-08-26).
  *
  * What it holds, on EVERY ONE of the ~1,407 exported `.html` files rather than
  * on a sample:
@@ -46,7 +53,15 @@ import { SITE_ORIGIN } from "@/lib/site-origin";
 
 const OUT_DIR = fileURLToPath(new URL("../../out/", import.meta.url));
 
-/** Build chunks and copied JSON are not documents and are not walked. */
+/*
+ * Build chunks and copied JSON are not documents and are not walked. Both are
+ * ROOT-LEVEL artifacts, and the skip is anchored to the root accordingly
+ * (review 2026-08-26): matching the bare NAME at every depth would drop a
+ * route whose slug happens to be `data` — `TeamId` is `^[a-z0-9]+(-[a-z0-9]+)*$`,
+ * which `data` satisfies — out of all eight cases, silently and with nothing
+ * reporting it. The skip is a walk-time optimisation; it must never be able to
+ * hide a document.
+ */
 const SKIPPED_DIRECTORIES = new Set(["_next", "data"]);
 
 /*
@@ -90,8 +105,39 @@ const REQUIRED_DOCUMENTS = [
   ...NOT_FOUND_ARTIFACTS,
 ];
 
-/** Route families that must each contribute at least one exported document. */
+/*
+ * Route families that must each contribute at least one exported document.
+ * Retained as the guard against an EMPTY manifest, which would make the
+ * entity-coverage case below pass vacuously; the coverage case is what holds
+ * the line on a truncated export.
+ */
 const REQUIRED_FAMILIES = ["matches", "players", "teams"];
+
+/*
+ * THE COMPLETENESS FLOOR, DERIVED (review 2026-08-26). Task 4.2 asks that a
+ * PARTIAL export fail loudly rather than pass vacuously. The spine check plus
+ * `REQUIRED_FAMILIES` did not deliver that: each family needed only ONE
+ * document, so an export carrying 3 of 1,400 entity routes passed all eight
+ * cases — reproduced at review against a hand-built 10-document tree.
+ *
+ * The floor is read from the ROUTE MANIFEST, the same source
+ * `generateStaticParams` enumerates, so it tracks the corpus instead of
+ * hardcoding a number that 3.9 would have to remember to bump. This is the
+ * shipped precedent from `sitemap.test.ts:401-402`, which derives its floor
+ * from `readTournament()` for the same reason.
+ *
+ * A2 IS NOT BREACHED. A2 forbids PINNING an entity id in the test source (the
+ * `QUINONES` constant one directory away); every id here is read from the
+ * manifest at run time and none is written down.
+ */
+function expectedEntityDocuments(): string[] {
+  const { entities } = readTournament();
+  return [
+    ...entities.matches.map((match) => `matches/${match.matchId}/index.html`),
+    ...entities.players.map((player) => `players/${player.playerId}/index.html`),
+    ...entities.teams.map((team) => `teams/${team.teamId}/index.html`),
+  ];
+}
 
 /*
  * I/O-bound, not logic-bound: 1,407 files / 38.2 MB, measured at ~3.3 s
@@ -130,14 +176,26 @@ interface ExportedDocument {
   readonly ogUrls: readonly string[];
   /** Every `hreflang` value carried by any `<link>`. Must be empty everywhere. */
   readonly hreflangs: readonly string[];
+  /*
+   * Every `<link rel="alternate">` href, whatever carried it. AC4 has FOUR
+   * clauses — no per-locale URLs, no `alternates.languages`, no `hreflang`, no
+   * `x-default` — and only the third routes through an `hreflang=` attribute.
+   * `alternates: { media }` and `alternates: { types }` emit a `rel="alternate"`
+   * link with NO `hreflang`, so an hreflang-only check passes green while a
+   * per-locale alternate ships (review 2026-08-26).
+   */
+  readonly alternateLinks: readonly string[];
+  /** Every `og:locale:alternate`. A second locale is D17/D20's whole subject. */
+  readonly ogLocaleAlternates: readonly string[];
   /** True when a `robots` meta names `noindex`. */
   readonly noindex: boolean;
 }
 
 function* walkHtml(dir: string): Generator<string> {
+  const atExportRoot = path.relative(OUT_DIR, dir) === "";
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.isDirectory()) {
-      if (SKIPPED_DIRECTORIES.has(entry.name)) continue;
+      if (atExportRoot && SKIPPED_DIRECTORIES.has(entry.name)) continue;
       yield* walkHtml(path.join(dir, entry.name));
     } else if (entry.name.endsWith(".html")) {
       yield path.join(dir, entry.name);
@@ -149,12 +207,17 @@ function readDocument(absolutePath: string): ExportedDocument {
   const html = readFileSync(absolutePath, "utf8");
   const canonicals: string[] = [];
   const hreflangs: string[] = [];
+  const alternateLinks: string[] = [];
+  const ogLocaleAlternates: string[] = [];
   const ogUrls: string[] = [];
   let noindex = false;
 
   for (const tag of html.match(LINK_TAG) ?? []) {
     if (REL_ATTRIBUTE.exec(tag)?.[1] === "canonical") {
       canonicals.push(HREF_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    }
+    if (REL_ATTRIBUTE.exec(tag)?.[1] === "alternate") {
+      alternateLinks.push(HREF_ATTRIBUTE.exec(tag)?.[1] ?? "");
     }
     const hreflang = HREFLANG_ATTRIBUTE.exec(tag)?.[1];
     if (hreflang !== undefined) hreflangs.push(hreflang);
@@ -163,6 +226,9 @@ function readDocument(absolutePath: string): ExportedDocument {
   for (const tag of html.match(META_TAG) ?? []) {
     const key = NAME_OR_PROPERTY.exec(tag)?.[1];
     if (key === "og:url") ogUrls.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    if (key === "og:locale:alternate") {
+      ogLocaleAlternates.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    }
     if (key === "robots" && (CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "").includes("noindex")) {
       noindex = true;
     }
@@ -173,6 +239,8 @@ function readDocument(absolutePath: string): ExportedDocument {
     canonicals,
     ogUrls,
     hreflangs,
+    alternateLinks,
+    ogLocaleAlternates,
     noindex,
   };
 }
@@ -219,6 +287,16 @@ describe.skipIf(!anyBuilt)("exported canonical URLs (AC 2, AC 3, AC 4)", () => {
       (family) => !documents.some((document) => document.relativePath.startsWith(`${family}/`))
     );
     expect(report(familiesWithoutRoutes)).toBe("");
+
+    /*
+     * EVERY entity in the manifest has its document, not merely one per family.
+     * This is the case that makes a truncated export fail loudly (Task 4.2).
+     */
+    const missing = expectedEntityDocuments().filter(
+      (relativePath) => !byPath.has(relativePath)
+    );
+    expect(missing.length, `${missing.length} manifest route(s) absent from the export`).toBe(0);
+    expect(report(missing.slice(0, 20))).toBe("");
 
     /*
      * Every `.html` that is not `<dir>/index.html` is pinned by name, so a
@@ -303,10 +381,20 @@ describe.skipIf(!anyBuilt)("exported canonical URLs (AC 2, AC 3, AC 4)", () => {
     expect(report(offenders)).toBe("");
   });
 
-  it("emits NO hreflang and NO per-locale alternate anywhere (AC 4, D17/D20)", () => {
+  it("emits NO hreflang, NO rel=alternate and NO og:locale:alternate (AC 4, D17/D20)", () => {
     const offenders = documents
-      .filter((document) => document.hreflangs.length > 0)
-      .map((document) => `${document.relativePath} (${document.hreflangs.join(", ")})`);
+      .filter(
+        (document) =>
+          document.hreflangs.length > 0 ||
+          document.alternateLinks.length > 0 ||
+          document.ogLocaleAlternates.length > 0
+      )
+      .map(
+        (document) =>
+          `${document.relativePath} (hreflang: ${document.hreflangs.join(", ") || "none"};` +
+          ` rel=alternate: ${document.alternateLinks.join(", ") || "none"};` +
+          ` og:locale:alternate: ${document.ogLocaleAlternates.join(", ") || "none"})`
+      );
     expect(report(offenders)).toBe("");
   });
 });

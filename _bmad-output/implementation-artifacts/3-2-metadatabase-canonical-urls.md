@@ -4,7 +4,7 @@ baseline_commit: 8750d85f74584c6fe899527db8463fbd9196993b
 
 # Story 3.2: `metadataBase`, Absolute Canonical URLs & `og:url`
 
-Status: review
+Status: done
 
 **Baseline commit sized against:** `8750d85` (`Story 3.4 context: the sitemap is 1,404 entries…`).
 
@@ -317,8 +317,95 @@ tree's `out/` is another session's.
       command, not transcribed from memory** (3.1's review caught two mis-transcribed insertion counts),
       Completion Notes with every red proof from Tasks 5 and 6, and the measured baselines from Task 1.
 - [x] **8.5** Hand off to 3.3 explicitly: it edits all four route files to add `openGraph.images`,
-      `type`, `locale` and `siteName`, and **must not drop `url`** (Task 3.6's comment is the guard,
-      the Task 4.6 case is the gate).
+      `type` and `siteName`, and **must not drop `url` or `locale`** (Task 3.6's comment is the
+      guard, the Task 4.6 case is the gate).
+      **CORRECTED AT CODE REVIEW 2026-08-26 — the original hand-off was briefed on the false §D8.**
+      Two changes 3.3 must not be surprised by: (1) `locale` is struck from 3.3's list because this
+      story now sets `og:locale: "es_ES"` at all five declaration sites; (2) `/about`, `/glossary`,
+      `/compare` and the three not-found artifacts **already carry a full OG and Twitter card** —
+      title, description, url, `twitter:card`/`title`/`description` — back-filled by
+      `postProcessMetadata` the moment the layout declared `openGraph`. 3.3 was told those routes
+      were bare. They are not. `/compare` in particular carries a standing docblock ruling against a
+      `metadata` export, and now has a generic Spanish card that arrived from the layout rather than
+      through that ruling; 3.3 should read `compare/page.tsx:16` before adding anything there.
+
+### Review Findings
+
+Code review 2026-08-26, three adversarial layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor)
+over `8d064e1..30905dc`. 24 raw findings → 16 unique after dedup → 4 dismissed as noise. **All seven
+ACs were independently re-verified and hold** (AC1 origin-literal count 1/1 and `site-origin.test.ts`
+2/2; AC2/AC3 by an independent script over all 1,407 exported documents — `noSlash 0`, `notAbs 0`,
+`ogMismatch 0`, `multi 0`, `wrongRoute 0`; AC4 `hreflang 0`; AC5 origin gate exit 0 and falsified to
+exit 1; AC6 the ownership probe matches `git diff --numstat`; AC7 all four red directions re-driven in
+an isolated tree with the guard unmodified). Nothing below overturns an AC.
+
+- [x] [Review][Decision] **RESOLVED 2026-08-26 by Juan — option 1: keep the card, set `og:locale`,
+      correct §D8 and re-brief 3.3.** Reverting `openGraph: { url: "./" }` was never on the table: it
+      would strip `og:url` from those routes and break AC2 and the byte-identity gate. The card is the
+      price of AC2 and is accepted. The not-found card is accepted as shipped (D3's `noindex` reasoning
+      stands; opening `not-found.tsx` costs more than the defect). Converted to two patches, below:
+      `[Review][Patch] og:locale` and `[Review][Patch] §D8 + Task 8.5 + layout docblock`. Original
+      finding retained verbatim for the record:
+      **The layout's new `openGraph` key minted a full Spanish OG *and Twitter* card
+      on `/about`, `/glossary`, `/compare` and all three not-found artifacts — §D8 ruled the opposite**
+      — §D8 states "`openGraph: { url: "./" }` alone on the layout emits `og:url` and nothing else …
+      no `og:title` is invented for `/about` etc. … Story 3.3 owns the card." That is false on the real
+      export. §D8 cites `resolve-opengraph.js:150`, which is not the last word: `resolve-metadata.js`
+      `postProcessMetadata` back-fills `autoFillProps.title`/`description` from the page metadata
+      whenever `openGraph` is non-null, then runs `resolveTwitter` over them. Before this story those
+      routes resolved `openGraph === null` and emitted **no** og/twitter tag at all; this diff is the
+      sole cause of six new meta tags per static route. Verified: `out/compare/index.html` now carries
+      `og:title`, `og:description`, `og:url` plus `twitter:card`/`title`/`description`; same on
+      `/about`, `/glossary`, `404.html`, `404/index.html`, `_not-found/index.html`. Three consequences
+      needing a ruling: (a) `/compare` carries a standing docblock ruling that `export const metadata`
+      "IS NOT TAKEN, AND THAT IS A RULING" — no i18n keys were minted so the dead-key reason is not
+      breached, but a generic Spanish card now ships there from the side without the ruling being
+      cited; (b) the not-found route now unfurls in Slack/Twitter as a legitimate-looking site card
+      pointing at `https://mundial-stats.juancr.dev/_not-found/` — the D3 exception justifies that URL
+      on `noindex` grounds, but link unfurlers do not read `robots`, and `og:url` there is new in this
+      diff; (c) no `og:locale` is set, so every Spanish document defaults to `en_US` for OG consumers,
+      and this layout object is the first place it could have been set. Story 3.3 was handed off as
+      owning a card that already exists on four routes.
+
+- [x] [Review][Patch] `og:locale: "es_ES"` at all five `openGraph` declaration sites — the layout alone
+      reaches only the four static routes, for the same wholesale-replacement reason `og:url` needed
+      four copies; without the route files, 1,402 Spanish pages keep advertising the OG default `en_US`
+      [app/src/app/layout.tsx:59; page.tsx:84; matches/[slug]/page.tsx:59; players/[slug]/page.tsx:90; teams/[slug]/page.tsx:115]
+- [x] [Review][Patch] Correct §D8 to state what the export does, re-brief Task 8.5's hand-off (3.3 no
+      longer adds `locale`, and four routes already carry a card), and record the back-fill in the
+      layout docblock [spec:422-426, spec:8.5; app/src/app/layout.tsx:44-49]
+- [x] [Review][Patch] Task 4.2's "a partial export must fail loudly" is not met — a 10-document export
+      passes all 8 cases (reproduced) [app/src/app/canonical-output.test.ts:215-232]
+- [x] [Review][Patch] `SKIPPED_DIRECTORIES` is matched by bare name at every depth, so a route segment
+      named `data` or `_next` drops out of all 8 cases silently [app/src/app/canonical-output.test.ts:137-146]
+- [x] [Review][Patch] The hreflang case asserts only the `hreflang=` attribute while its name and AC4
+      claim four clauses — `<link rel="alternate">` is never inspected [app/src/app/canonical-output.test.ts:306-311]
+- [x] [Review][Patch] The file's docblock cites AC3/AC4/AC7; its `describe` cites AC 2/AC 3/AC 4 —
+      neither is right, and AC7 is not assertable here [app/src/app/canonical-output.test.ts:10 vs :206]
+- [x] [Review][Patch] The layout docblock documents the `openGraph` wholesale-replacement trap but not
+      the identical `alternates` one: any future route declaring `alternates` for *any* reason (a
+      `types` feed, `media`, even `{}`) loses the inherited canonical, because `mergeMetadata`
+      branches on key presence, not on `canonical` [app/src/app/layout.tsx:36-58]
+- [x] [Review][Patch] Task 5(d)'s red-proof record under-reports: the trailing-slash break turns **4**
+      cases red, not the 1 recorded ("`glossary/index.html` → the absolute/same-origin/slashed case
+      RED"). The `compare` mutation's record reproduced exactly [spec:661-690]
+
+- [x] [Review][Defer] The guard never runs on any automated path, and a stale `out/` scores the same
+      green as a fresh one [app/src/app/canonical-output.test.ts:203-213] — deferred, pre-existing
+- [x] [Review][Defer] `servedUrl` builds expected URLs from raw filesystem bytes with no
+      percent-encoding [app/src/app/canonical-output.test.ts:186-192] — deferred, pre-existing
+- [x] [Review][Defer] 11,235 crawlable `.txt` RSC payloads carry no canonical and the walk cannot see
+      them [app/src/app/canonical-output.test.ts:142; app/src/app/robots.ts:41-49] — deferred, pre-existing
+- [x] [Review][Defer] A shipped test one directory away asserts `hreflang` is "the other tag 3.2
+      emits"; 3.2 emits none [app/src/lib/assert-no-external-origins.test.ts:228-231] — deferred, pre-existing
+
+**Dismissed as noise (4):** the own-route case being mathematically subsumed by the D3 case (redundant
+but it carries the better failure message, and both went red independently under AC7 (d)); the four
+overlapping not-found constants needing lockstep edits (fails in the loud direction); the absence of a
+shared `og({title, description})` helper for future `openGraph` declarations (the four comments plus
+the gate are the chosen enforcement; a helper is beyond scope); Task 4.7's `PATH_MISMATCHED_DOCUMENTS`
+shape differing from the spec text (verified functionally equivalent — a fourth exception, a dropped
+one, and a drifted `_not-found/` canonical are all still caught).
 
 ## Dev Notes
 
@@ -419,10 +506,40 @@ build expectations from it. Same for `layout.tsx`.
 by D20. Task 4.8 turns the ruling into a gate. The re-open trigger is Google Search Console data no
 earlier than 2026-11-24, and 3.4's sitemap is the instrument.
 
-**D8 — `openGraph: { url: "./" }` alone on the layout emits `og:url` and nothing else.**
-`resolveOpenGraph` resolves `title` only from `openGraph.title` (`resolve-opengraph.js:150`), so no
-`og:title` is invented for `/about` etc. That is correct and intended: AC2 asks that `og:url` agree
-with the canonical on every route, not that every route grow a full card. Story 3.3 owns the card.
+**D8 — ~~`openGraph: { url: "./" }` alone on the layout emits `og:url` and nothing else.~~**
+**OVERTURNED BY THE CODE REVIEW, 2026-08-26 — measured on the real export, not reasoned.**
+
+The ruling as written: "`resolveOpenGraph` resolves `title` only from `openGraph.title`
+(`resolve-opengraph.js:150`), so no `og:title` is invented for `/about` etc. That is correct and
+intended: AC2 asks that `og:url` agree with the canonical on every route, not that every route grow
+a full card. Story 3.3 owns the card."
+
+**That is false, and `resolve-opengraph.js:150` is not the last word.** `postProcessMetadata`
+(`resolve-metadata.js`) back-fills `autoFillProps.title`/`description` from the page metadata
+whenever `openGraph` is non-null, then runs `resolveTwitter` over the same props. Declaring the key
+AT ALL is what triggers it. Before this story those routes resolved `openGraph === null` and carried
+no og/twitter tag whatsoever; measured after it, `/about`, `/glossary`, `/compare`, `404.html`,
+`404/index.html` and `_not-found/index.html` each carry SIX new tags:
+
+```
+out/compare/index.html
+  <meta property="og:title"       content="WC Stats — Analítica del Mundial 2026"
+  <meta property="og:description" content="Análisis táctico y estadístico de los 104 partidos…"
+  <meta property="og:url"         content="https://mundial-stats.juancr.dev/compare/"
+  <meta name="twitter:card">  <meta name="twitter:title">  <meta name="twitter:description">
+```
+
+**RULED AT REVIEW (Juan, 2026-08-26): the card stays.** Reverting the key is not available — it
+would strip `og:url` from those routes and break AC2 and the byte-identity case. The card is the
+price of AC2 and is accepted, including on the not-found artifacts (D3's `noindex` reasoning stands;
+opening `not-found.tsx` costs more than the defect). Two consequences follow:
+
+- `og:locale: "es_ES"` is now set at ALL FIVE `openGraph` declaration sites. The layout alone would
+  have reached only the four static routes — the same wholesale-replacement asymmetry that made
+  `url: "./"` need four copies — leaving 1,402 Spanish documents advertising the Open Graph
+  default, `en_US`. One locale per route is a constant, not a variable (D17, upheld by D20).
+- **Story 3.3 does NOT own the card on those four routes; it inherits one already there**, and it no
+  longer adds `locale`. See the corrected Task 8.5 hand-off.
 
 **D9 — verification environment.** The shared tree is dirty and `app/src/app/static-output.test.ts`
 currently imports `NAV_DESTINATIONS` from an **untracked** file, so the shared tree's suite depends on
@@ -681,6 +798,14 @@ point `og:url` was absent from all ten, which is exactly §D2's asymmetry: `alte
   lost its trailing slash, and `out/compare/index.html`'s canonical was rewritten to name `…/about/`
   — an existing, correctly-shaped, same-origin route. Results:
   - `glossary/index.html` → the **absolute/same-origin/slashed** case RED, naming it;
+  - **CORRECTED AT CODE REVIEW 2026-08-26 — the attribution above is too narrow.** Re-driving the
+    `glossary` trailing-slash break ON ITS OWN turns **four** cases red, not one: absolute/slashed,
+    own-route, the D3 exception set, and byte-identity all fail on that single file, because a
+    canonical missing its slash no longer equals `servedUrl()` and no longer equals its `og:url`.
+    The count in the record (`4 failed | 4 passed`) is right; the per-file attribution split those
+    four across the two mutations as though `compare` caused three of them. It did not — and the
+    `compare` bullet below is still the load-bearing one, because it is the only mutation that
+    leaves the shape cases GREEN. Nothing about the guard changes; only the record does.
   - `compare/index.html` → the **own-route** case RED, naming it and the URL it should have carried;
   - and **the "exactly one canonical" and "absolute/same-origin/slashed" cases stayed GREEN on
     `compare`** — which is the entire justification for the own-route case existing. A canonical that

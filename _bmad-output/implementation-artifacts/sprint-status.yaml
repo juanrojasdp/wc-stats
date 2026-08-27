@@ -79,6 +79,57 @@
 
 generated: 2026-07-22
 last_updated: 2026-08-26
+# 2026-08-26: story 3-2 CODE REVIEW complete, status review -> done. THE CANONICAL URLS.
+#             Three adversarial layers over 8d064e1..30905dc, run blind; 24 raw findings -> 16
+#             unique -> 8 patches applied, 4 deferred, 4 dismissed. NO AC FAILED. All seven were
+#             re-verified independently rather than read from the record: AC2/AC3 by a script
+#             over all 1,407 exported documents (noSlash 0, notAbs 0, ogMismatch 0, multi 0,
+#             wrongRoute 0), AC5's origin gate run AND falsified to exit 1, AC7's four red
+#             directions re-driven in an isolated tree. The implementation held.
+#             THE ONE DECISION: §D8 was FALSE and the export proved it. The ruling said
+#             `openGraph: { url: "./" }` on the layout emits "og:url and nothing else", reading
+#             `resolve-opengraph.js:150` as the last word. It is not -- `postProcessMetadata`
+#             back-fills og:title/og:description whenever `openGraph` is non-null, then runs
+#             `resolveTwitter` over them. Declaring the key AT ALL is the trigger. So /about,
+#             /glossary, /compare and the three not-found artifacts each grew SIX tags, not one:
+#             a full Spanish OG and Twitter card where `openGraph` had resolved null before.
+#             Juan ruled the card STAYS -- reverting the key would strip og:url from those
+#             routes and break AC2 and the byte-identity gate, so the card is the price of AC2.
+#             CONSEQUENCE: og:locale="es_ES" now set at ALL FIVE declaration sites, not just the
+#             layout. The layout alone reaches only the four static routes -- the same wholesale-
+#             replacement asymmetry that made url:"./" need four copies -- which would have left
+#             1,402 Spanish documents advertising the Open Graph default en_US. Verified after a
+#             rebuild: 1,407/1,407 documents carry it, 0 og:locale:alternate.
+#             STORY 3.3 IS RE-BRIEFED (Task 8.5 corrected): it no longer adds `locale`, and four
+#             routes it was told were bare already carry a card. /compare in particular holds a
+#             standing ruling against a metadata export and now has a generic Spanish card that
+#             arrived from the layout rather than through that ruling.
+#             THE GATE ITSELF WAS THE OTHER HALF. Task 4.2 asked that a partial export fail
+#             loudly; it did not -- a 10-document export passed all eight cases (reproduced).
+#             The floor is now DERIVED from the route manifest, the `sitemap.test.ts:401-402`
+#             precedent, and proven red on that same 10-document tree: "1397 manifest route(s)
+#             absent from the export". A2 is not breached: every id is read at run time, none is
+#             written down. Also widened AC4's case from `hreflang=` alone to rel=alternate and
+#             og:locale:alternate (alternates.media/.types emit a per-locale URL with NO
+#             hreflang, so the old check passed green while one shipped), anchored
+#             SKIPPED_DIRECTORIES to the export root (a slug of `data` satisfies TeamId and
+#             would have vanished from all eight cases silently), and corrected two records:
+#             the docblock's AC citation, and Task 5(d)'s attribution -- the glossary
+#             trailing-slash break turns four cases red ON ITS OWN, not the one recorded.
+#             DEFERRED, all four with owners: (1) the guard never runs on any automated path and
+#             a stale out/ scores the same green as a fresh one -- EXTENDS the identical entry
+#             3.4's review filed the same day, now covering three files; there is no .github/,
+#             `build` runs no vitest, and `npx vitest run` with no build at all reports 8 passed.
+#             (2) servedUrl does no percent-encoding (fails LOUD, hence deferred); (3) 11,235
+#             crawlable .txt RSC payloads carry no canonical, which robots.ts:41-49 already
+#             defers; (4) assert-no-external-origins.test.ts:228 still names hreflang "the other
+#             tag 3.2 emits" -- 3.2 emits none, so AC4 is contradicted in prose by a green test.
+#             COORDINATION: the 3.4 session held five app/ files uncommitted for this entire
+#             review and committed them at 8e07471 mid-verification. Its commit touched none of
+#             this story's files and this one touches none of its five. Committed by pathspec.
+#             VERIFICATION NOTE, not a finding: static-output.test.ts's TEMPLATE-literal case
+#             times out at 5000ms under full-suite load (60 files, 1,508 tests) and passes
+#             50/50 standalone in 2.6s. Pre-existing, load-induced, and NOT logged anywhere.
 # 2026-08-26: story 3-10 CODE REVIEW complete, status review -> done. THE NAVIGATION MENU.
 #             Three adversarial layers over d073575, run blind; 26 patches applied (4133195), 4
 #             deferred, 3 dismissed. FOUR HIGH, THREE OF THEM REGRESSIONS rather than gaps.
@@ -3479,7 +3530,7 @@ development_status:
   # _not-found/) and `vitest list` at 1,468 tests / 58 files -- the latter INCLUDES 3-10's
   # untracked test files, so it is not a clean-HEAD number and Task 1.5 re-measures.
   # LEDGER: no deferred-work entry names 3-2 as owner; nothing to close.
-  3-2-metadatabase-canonical-urls: review
+  3-2-metadatabase-canonical-urls: done
   3-3-og-image-twitter-card: backlog
   # Context created 2026-08-26 against baseline 8f1c4fc. Owns THREE NEW FILES ONLY --
   # app/src/app/sitemap.ts, app/src/app/robots.ts, app/src/app/sitemap.test.ts -- the

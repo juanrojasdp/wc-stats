@@ -41,12 +41,39 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
  * docblock rulings AGAINST a `metadata` export; and it is what covers the
  * routes story 3.9 is about to add without 3.9 having to open this file.
  *
- * `openGraph: { url: "./" }` is here for the same three static routes and the
- * 404 — but it does NOT reach `/`, `/matches/[slug]`, `/players/[slug]` or
- * `/teams/[slug]`. `openGraph` is replaced WHOLESALE by a child that declares
- * it, per top-level key, so those four author their own `url`. `alternates` is
- * absent from all four, so they inherit the canonical above. The asymmetry is
- * the trap; it is not symmetric and it is not intuitive (D2).
+ * `openGraph` is here for the same three static routes and the 404 — but it
+ * does NOT reach `/`, `/matches/[slug]`, `/players/[slug]` or `/teams/[slug]`.
+ * `openGraph` is replaced WHOLESALE by a child that declares it, per top-level
+ * key, so those four author their own `url` AND their own `locale`.
+ * `alternates` is absent from all four, so they inherit the canonical above.
+ * The asymmetry is the trap; it is not symmetric and it is not intuitive (D2).
+ *
+ * ── `alternates` CARRIES THE SAME TRAP, AND IT IS SHARPER ──────────────────
+ * `mergeMetadata` branches on KEY PRESENCE, not on `canonical`. A future route
+ * that declares `alternates` for ANY reason — an `application/rss+xml` feed
+ * under `types`, a `media` entry, even a bare `{}` — replaces this object
+ * wholesale and ships with NO `<link rel="canonical">` at all. The canonical it
+ * loses is the one authored above, so nothing in that route's own file will
+ * look wrong. Story 3.9's routes inherit from here; if any of them needs
+ * `alternates`, it must re-declare `canonical: "./"` alongside whatever it adds.
+ * `canonical-output.test.ts` is the gate, but only over a FRESH export.
+ *
+ * ── THE CARD IS NOT FREE, AND THAT IS ACCEPTED (review 2026-08-26) ─────────
+ * Declaring `openGraph` AT ALL makes `postProcessMetadata` back-fill
+ * `og:title`/`og:description` from this object's `title`/`description` and then
+ * run `resolveTwitter` over them. So `/about`, `/glossary`, `/compare` and the
+ * three not-found artifacts each grew SIX tags here, not one: a full Spanish OG
+ * and Twitter card where previously `openGraph` resolved null and they carried
+ * none. §D8 predicted `og:url` "and nothing else" and was WRONG — it read
+ * `resolve-opengraph.js:150` as the last word; the post-process step is. The
+ * card is the price of AC2 (`og:url` must agree with the canonical on EVERY
+ * route) and is accepted: reverting this key would break AC2 and the
+ * byte-identity gate. Story 3.3 therefore inherits four routes that already
+ * carry a card, and adds `images`, `type` and `siteName` — not `locale`.
+ *
+ * `locale: "es_ES"` is set because the Open Graph default for a missing
+ * `og:locale` is `en_US`, and every document in this export is Spanish (D17,
+ * upheld by D20 — ONE locale per route, so this is a constant, not a variable).
  *
  * NO `alternates.languages`, NO `hreflang`, NO `x-default`, NO per-locale URLs
  * (D17, upheld by D20; AC4). `canonical-output.test.ts` makes that a gate.
@@ -56,7 +83,7 @@ export const metadata: Metadata = {
   title: t("meta.title"),
   description: t("meta.description"),
   alternates: { canonical: "./" },
-  openGraph: { url: "./" },
+  openGraph: { url: "./", locale: "es_ES" },
 };
 
 /*

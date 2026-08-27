@@ -86,8 +86,14 @@ export async function generateMetadata({
    * declares, so the layout's `url` never reaches this route. Drop the line
    * below and this page ships a canonical with no matching `og:url` —
    * silently. `canonical-output.test.ts` is the gate that catches it.
+   *
+   * `locale: "es_ES"` rides the same trap and is load-bearing for the same
+   * reason: this object REPLACES the layout's `openGraph` wholesale, so the
+   * layout's locale never arrives here. Drop it and this Spanish page
+   * advertises the Open Graph default, `en_US`, to every unfurler (review
+   * 2026-08-26). One locale per route is a constant, not a variable (D17/D20).
    */
-  return { title, description, openGraph: { title, description, url: "./" } };
+  return { title, description, openGraph: { title, description, url: "./", locale: "es_ES" } };
 }
 
 export default async function PlayerPage({
