@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { NAV_DESTINATIONS } from "@/lib/nav-destinations";
+import { NAV_DESTINATIONS, currentDestinationKey } from "@/lib/nav-destinations";
 import { en } from "@/locales/en";
 import { es } from "@/locales/es";
 
@@ -413,5 +413,37 @@ describe("D14 — every label is a locale key, in BOTH dictionaries", () => {
     for (const destination of NAV_DESTINATIONS) {
       expect(destination.labelKey.startsWith("nav.destinations.")).toBe(true);
     }
+  });
+
+  /*
+   * THE SHADOWED ROUTE, PINNED (code review 2026-08-27).
+   *
+   * `tournament` and `matches` share `/tournament/` and differ only by the
+   * `#results` fragment. `currentDestinationKey` exact-matches with `.find()`,
+   * so the first wins and *Partidos* is never the current destination. Ruled
+   * correct — one URL, one current entry, and D1 rules *Partidos* contained by
+   * *Torneo* — but it only became REACHABLE when story 3.9 flipped both flags,
+   * and nothing covered it.
+   *
+   * Pinned so the tempting "fix" is a red test rather than a silent regression:
+   * hoisting `matches` above `tournament`, or matching on the fragment, would
+   * mark TWO entries `aria-current="page"` for one pathname.
+   */
+  it("marks exactly ONE destination current for the shared /tournament/ route", () => {
+    const sharing = NAV_DESTINATIONS.filter((d) => d.route === "/tournament/").map((d) => d.key);
+    expect(
+      sharing,
+      "the two entries that share /tournament/ are the subject of this case"
+    ).toEqual(["tournament", "matches"]);
+
+    expect(
+      currentDestinationKey("/tournament/"),
+      "`tournament` precedes `matches` in the ruled order, so it shadows it. If this " +
+        "returns `matches`, the ruled order moved; if a change makes BOTH current, " +
+        "that is the defect this case exists to catch."
+    ).toBe("tournament");
+
+    // And the fragment is not a pathname, so it matches nothing at all.
+    expect(currentDestinationKey("/tournament/#results")).toBeNull();
   });
 });

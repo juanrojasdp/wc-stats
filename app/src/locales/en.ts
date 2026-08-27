@@ -1362,6 +1362,11 @@ export const en: Dictionary = {
     filterResultsOne: "player found",
     filterNoResults: "No name matches the filter.",
     filterNoResultsExplanation: "Delete letters to see more players.",
+    empty: "There are no players to show.",
+    emptyExplanation: "The tournament index arrived with no players.",
+    crashed: "We could not show the player index.",
+    crashedExplanation:
+      "The tournament index arrived with a value we could not read. We know about it.",
     position: {
       short: {
         gk: "GK",
@@ -1374,7 +1379,6 @@ export const en: Dictionary = {
       position: "Position",
       name: "Player",
     },
-    teamTrigger: "View the players of",
     tableCaption: "Players of",
     meta: {
       description:
@@ -1396,7 +1400,12 @@ export const en: Dictionary = {
       record: "P-W-D-L",
     },
     recordExpansion: "Played, won, drawn and lost",
-    tableCaption: "The 48 national sides of the tournament, by group",
+    tableCaption: "The national sides of the tournament, by group",
+    empty: "There are no national sides to show.",
+    emptyExplanation: "The tournament index arrived with no teams.",
+    crashed: "We could not show the team index.",
+    crashedExplanation:
+      "The tournament index arrived with a value we could not read. We know about it.",
     meta: {
       description:
         "The 48 national sides of World Cup 2026: group, matches played and " +

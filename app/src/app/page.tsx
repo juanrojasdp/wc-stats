@@ -30,9 +30,15 @@ import { composeRouteTitle } from "@/lib/route-title";
  * AD-11 allows exactly two data paths and `/` takes neither (story 3.9 D5b):
  * NO build-time `readTournament()`/`readLeaderboards()`, NO runtime fetch. Its
  * reachable-artifact list is the EMPTY SET, and `static-output.test.ts` asserts
- * that literally — it is the gate that catches a build-time read of the 409 KB
- * index sneaking back onto the landing page, which would put that weight
- * straight onto this route's own Lighthouse floor.
+ * that literally — the gate that catches a build-time read of the 409 KB index
+ * sneaking back onto the landing page, which would put that weight straight
+ * onto this route's own Lighthouse floor.
+ *
+ * IT TAKES TWO ASSERTIONS TO HOLD THAT LINE, NOT ONE (code review 2026-08-27).
+ * The `reachable` walk matches `fetchArtifact<T>(…)` and is therefore blind to
+ * a build-time `readTournament()`; for a while this docblock credited it with
+ * catching something it could not see. The build-time half is now asserted
+ * separately, by `buildDataReadsReachableFrom` in the same file.
  *
  * Consequently there is NO loading state and NO empty state here
  * (EXPERIENCE.md → State Patterns): a surface with no data has no data states.

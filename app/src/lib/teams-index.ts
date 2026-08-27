@@ -45,7 +45,29 @@ export interface TeamIndexRow {
  * fact about the tournament; an em dash would claim the data is missing.
  */
 export function composeTeamRecord(record: TeamRecord, separator: string): string {
-  return [record.played, record.won, record.drawn, record.lost].join(separator);
+  const parts = [record.played, record.won, record.drawn, record.lost];
+  /*
+   * LOUD ON A NON-FINITE VALUE (code review 2026-08-27), on `format.ts`'s
+   * `assertFinite` reasoning — which every other numeric rendering path on this
+   * site goes through and which this one bypassed.
+   *
+   * `[undefined, 1, 1, 2].join("-")` is `"-1-1-2"` and `[null,null,null,null]`
+   * is `"---"`: a plausible-looking, entirely wrong record, shipped silently to
+   * the reader with no throw, no boundary and no empty state. The payload is
+   * `as`-cast, so "the type says number" is not a guarantee about the artifact.
+   *
+   * Throwing here reaches `TacticalErrorBoundary` on `/teams` and produces the
+   * route's own crash panel — a visible failure instead of a quiet lie.
+   */
+  for (const part of parts) {
+    if (!Number.isFinite(part)) {
+      throw new Error(
+        `teams-index: non-finite value ${part} in a team record — ` +
+          "handle null/absent fields before composing"
+      );
+    }
+  }
+  return parts.join(separator);
 }
 
 /**

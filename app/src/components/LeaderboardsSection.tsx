@@ -96,9 +96,31 @@ export function LeaderboardsSection({ teasers }: { teasers: readonly Leaderboard
        */
       className="mt-section-gap"
     >
-      <h2 id={HEADING_ID} className="type-headline text-ink-primary">
+      {/*
+       * <h1>, NOT <h2> (code review 2026-08-27). While this section sat under
+       * the Hub on `/`, an <h2> was correct: `TournamentHubHeading` owned the
+       * page's <h1> and this was a section within it. Story 3.9 re-sited the
+       * mount to `/tops`, where it is the whole page body — and the tag did not
+       * move with it, leaving `/tops` the ONLY route in the export with no <h1>
+       * at all (measured: 0 here, exactly 1 on each of the other eight).
+       *
+       * This repo has already paid for this exact defect once:
+       * `ComparePicker.tsx:177-188` records it being found and fixed at code
+       * review 2026-08-07, when `/compare` was left the only route with no <h1>.
+       *
+       * THE VISUAL WEIGHT IS DELIBERATELY UNCHANGED — `type-headline`, not the
+       * `type-display` the other routes' <h1> carries. D3 re-sites this mount
+       * and D2 rules the move "an address change, not a redesign", so the
+       * semantics are corrected and the rendering is not. The id and the
+       * `aria-labelledby` pairing are untouched, so the three uniqueness
+       * assertions in `static-output.test.ts` bind exactly as before.
+       *
+       * It is a CLIENT heading (`useT()` above), so unlike `/players` and
+       * `/teams` it followed the language toggle correctly from the start.
+       */}
+      <h1 id={HEADING_ID} className="type-headline text-ink-primary">
         {t("leaderboards.title")}
-      </h2>
+      </h1>
 
       {/*
        * THE TEASERS ARE PRE-RENDERED FROM THE BUILD-TIME PROP (AD-11): hero

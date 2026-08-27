@@ -51,6 +51,17 @@ const COUNT_SEPARATOR = " ";
 
 type Status = "loading" | "loaded" | "error" | "invalid";
 
+/**
+ * The route's `<h1>`. A CLIENT component for the reason
+ * `PlayersIndexHeading` records: a server `t()` freezes canonical Spanish into
+ * the export, so the heading would ignore the language toggle the body obeys.
+ * Corrected at code review 2026-08-27.
+ */
+export function TeamsIndexHeading() {
+  const t = useT();
+  return <h1 className="type-display text-ink-primary">{t("teams.title")}</h1>;
+}
+
 export function TeamsIndexRegion() {
   const t = useT();
   const [status, setStatus] = useState<Status>("loading");
@@ -81,6 +92,17 @@ export function TeamsIndexRegion() {
         }
         // Validate before declaring success: a stale CDN copy parses fine.
         if (payload.schemaVersion !== SCHEMA_VERSION) {
+          setStatus("invalid");
+          return;
+        }
+        /*
+         * Shape-checked before dereference, and a failure is `invalid` rather
+         * than `error` — see `PlayersIndexRegion` for the full reasoning. In
+         * short: a throw inside this `.then` lands in the RETRYABLE state, but
+         * `loadTournamentIndex` caches a FULFILLED promise, so the retry button
+         * would re-await the same bad payload forever without ever fetching.
+         */
+        if (!Array.isArray(payload.entities?.teams)) {
           setStatus("invalid");
           return;
         }
@@ -150,8 +172,8 @@ export function TeamsIndexRegion() {
 
         {status === "loaded" ? (
           <TacticalErrorBoundary
-            headlineKey="hub.region.crashed"
-            explanationKey="hub.region.crashedExplanation"
+            headlineKey="teams.crashed"
+            explanationKey="teams.crashedExplanation"
             logLabel={TEAMS_LOG_LABEL}
           >
             <TeamsIndex teams={teams} />
@@ -173,6 +195,24 @@ function TeamsIndex({ teams }: { teams: readonly TeamEntity[] }) {
     rows.length === 1 ? t("teams.countOne") : t("teams.count")
   }`;
   const recordExpansion = t("teams.recordExpansion");
+
+  /*
+   * AN EMPTY STATE, BECAUSE THERE WAS NONE (code review 2026-08-27). With an
+   * empty `teams` array this rendered a header-only table with zero rows, a
+   * "0 selecciones" count, and an `sr-only` caption announcing "Las 48
+   * selecciones del torneo" over nothing at all — a screen-reader user was told
+   * the table held 48 rows while it held none.
+   */
+  if (rows.length === 0) {
+    return (
+      <div className="mt-tile-gap">
+        <EmptyStatePanel
+          headline={t("teams.empty")}
+          explanation={t("teams.emptyExplanation")}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>

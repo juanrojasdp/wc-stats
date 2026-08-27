@@ -42,6 +42,26 @@ const LEADERBOARDS_SHIPPED: Leaderboards = JSON.parse(
 const OUT_DIR = fileURLToPath(new URL("../../out/", import.meta.url));
 const INDEX_HTML = OUT_DIR + "index.html";
 const NOT_FOUND_HTML = OUT_DIR + "404.html";
+
+/*
+ * THE STATIC ROUTES THE EVERY-ROUTE SWEEP MUST FIND, NAMED RATHER THAN COUNTED
+ * (code review 2026-08-27 — see the non-vacuity block in `everyRouteHtml()`).
+ *
+ * Eight routes plus `/404`. `/players` and `/teams` are the INDEX documents
+ * story 3.9 minted beside the existing `[slug]/` families — they are the two
+ * the sweep silently lost, so they are the two most worth naming here.
+ */
+const STATIC_ROUTES = [
+  "/",
+  "/404",
+  "/about",
+  "/compare",
+  "/glossary",
+  "/players",
+  "/teams",
+  "/tops",
+  "/tournament",
+] as const;
 // trailingSlash: true → out/<route>/index.html.
 const ABOUT_HTML = OUT_DIR + "about/index.html";
 const GLOSSARY_HTML = OUT_DIR + "glossary/index.html";
@@ -247,7 +267,7 @@ describe.skipIf(!anyBuilt)("exported index.html canonical markup (AC 2)", () => 
  * five cases now read `out/tournament/index.html`. Not one of them is deleted or
  * weakened: A1 rules that deleting an assertion is never how a gate is satisfied,
  * and a moved surface takes its gates with it. `/` is asserted separately, as the
- * Landing, below.
+ * Landing, in "exported / — the Landing surface" below.
  *
  * WHAT THIS FILE CAN AND CANNOT SEE, stated plainly so a reader does not
  * mistake a thin suite for a thin surface. Ruled D1 puts the Hub's tables on
@@ -623,6 +643,95 @@ describe.skipIf(!anyBuilt)("exported /tops — the leaderboards section (Story 2
   });
 });
 
+/*
+ * ═══════════ `/` — THE LANDING SURFACE (Story 3.9 D1) ═══════════
+ *
+ * ADDED AT CODE REVIEW 2026-08-27. The re-point comment above promised "`/` is
+ * asserted separately, as the Landing, below" and no such block existed: the
+ * only `/`-as-Landing assertion anywhere was the source-level "reaches no
+ * artifact" case. D1's ruled content — the badge set, its order, its hrefs, the
+ * single emphasised badge, the absence of a table — was held by nothing but a
+ * one-off browser run recorded in the Dev Agent Record.
+ *
+ * These read the EXPORT, so they need no jsdom and cost nothing: the landing
+ * page is fully static by construction (it reads no artifact on either AD-11
+ * path), which means everything D1 rules is present in the HTML.
+ */
+describe.skipIf(!anyBuilt)("exported / — the Landing surface (Story 3.9, D1)", () => {
+  const html = () => readFileSync(INDEX_HTML, "utf8");
+
+  /*
+   * The badge anchors, in DOM order. Matched on `FeatureBadge`'s own class
+   * string rather than a test-only attribute — `reflow-guards.test.ts` pins
+   * class strings the same way, and production markup should not carry hooks
+   * that exist only for a test. DOM order IS visual order here: D1 forbids
+   * `order-*` and `grid-flow-dense`, so reading the source order is legitimate.
+   */
+  function badgeHrefs(): string[] {
+    const anchors = html().match(/<a\b[^>]*min-h-11 rounded-md[^>]*>/g) ?? [];
+    return anchors.map((tag) => tag.match(/href="([^"]*)"/)?.[1] ?? "");
+  }
+
+  it("renders D1's eight badges, in the ruled order, with no ninth", () => {
+    /*
+     * The order is RULED (D1's table) and the containment is deliberate:
+     * *Partidos* resolves inside *Torneo*'s route and that was considered and
+     * kept, not overlooked. Do not "fix" it into a flat set.
+     */
+    expect(badgeHrefs()).toEqual([
+      "/compare/",
+      "/tournament/",
+      "/tournament/#results",
+      "/tops/",
+      "/players/",
+      "/teams/",
+      "/glossary/",
+      "/about/",
+    ]);
+  });
+
+  it("gives every badge a trailing slash — before the `#`, where there is one", () => {
+    /*
+     * `next.config.ts` sets `trailingSlash: true`, so a slash-less href is a
+     * 301 hop on the static host. `/tournament/#results` is the one that has to
+     * be written carefully: the slash goes BEFORE the fragment.
+     */
+    for (const href of badgeHrefs()) {
+      const path = href.split("#")[0];
+      expect(path, `${href} does not end in a trailing slash before its fragment`).toMatch(/\/$/);
+    }
+  });
+
+  it("carries exactly one emphasised badge, and it is Comparar", () => {
+    // Emphasis is size, position and a top border — never colour alone (1.4.1).
+    const emphasised = html().match(/<a\b[^>]*border-t-2 border-t-ink-primary[^>]*>/g) ?? [];
+    expect(emphasised).toHaveLength(1);
+    expect(emphasised[0]).toContain('href="/compare/"');
+  });
+
+  it("names each badge by its visible label alone — no aria-label narrows or extends it", () => {
+    /*
+     * 2.5.3: the accessible name IS the visible label, so the whole card is one
+     * tab stop with one name. An `aria-label` here would silently replace the
+     * label a speech-input user reads off the screen.
+     */
+    const anchors = html().match(/<a\b[^>]*min-h-11 rounded-md[^>]*>/g) ?? [];
+    for (const tag of anchors) {
+      expect(tag).not.toContain("aria-label");
+    }
+  });
+
+  it("puts NO table on the landing page (D1)", () => {
+    // Zero tables is the point of the refactor: `/` orients, it does not bury.
+    expect(html()).not.toContain("<table");
+  });
+
+  it("leads with an <h1>", () => {
+    // Every route carries exactly one. `/tops` did not until this same review.
+    expect(html().match(/<h1\b/g) ?? []).toHaveLength(1);
+  });
+});
+
 describe.skipIf(!anyBuilt)("the footer reaches both /about and /glossary on every route (AC 3)", () => {
   it("links both from the site chrome, on an unrelated route", () => {
     // EXPERIENCE.md's IA route table names the footer as /glossary's reach
@@ -730,6 +839,80 @@ function artifactPathsReachableFrom(entry: string): string[] {
   return [...found].sort();
 }
 
+/*
+ * THE OTHER AD-11 PATH, WHICH THE WALK ABOVE CANNOT SEE (code review
+ * 2026-08-27).
+ *
+ * `artifactPathsReachableFrom` matches `fetchArtifact<T>(…)` and nothing else,
+ * so it sees the RUNTIME half of AD-11 only. A BUILD-TIME read —
+ * `readTournament()` / `readLeaderboards()` from `@/lib/build-data` — is
+ * completely invisible to it. That matters because three separate docblocks
+ * (`app/page.tsx`, `LandingContent.tsx`, and the `/` → [] case below) claimed
+ * the `reachable` assertion was what held the landing page's "no artifact on
+ * EITHER path" line. It was not: adding `readTournament()` to `app/page.tsx`
+ * would have inlined 409 KB into the landing document with `reachable` still
+ * `[]` and every case green.
+ *
+ * Proof the blindness is real and not theoretical is already in the table
+ * above: `app/tops/page.tsx` calls `readLeaderboards()` at build time, and its
+ * allow-list lists only the runtime path.
+ *
+ * Story 3.9's Task 11.8c drove the `/` → [] case red by adding a REGION FETCH,
+ * i.e. the runtime direction — so the build-time direction had never once been
+ * exercised. This walk closes it.
+ */
+const BUILD_DATA_READ = /\b(readTournament|readLeaderboards)\s*\(/g;
+
+/*
+ * COMMENTS ARE STRIPPED BEFORE MATCHING, and this is not a nicety — the first
+ * version of this walk went red on its own documentation.
+ *
+ * `app/page.tsx`'s docblock says, in prose, that the route makes "NO build-time
+ * `readTournament()`/`readLeaderboards()`" call, and `es.ts` mentions
+ * `readTournament()` in a comment too. A walk that reads a file as text cannot
+ * tell a call from a sentence ABOUT a call, so it reported the landing page as
+ * violating AD-11 on the strength of a comment promising the opposite.
+ *
+ * The `[^:]` guard keeps `https://` in a string literal from swallowing the rest
+ * of its line as a line comment.
+ */
+function stripComments(source: string): string {
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
+}
+
+function buildDataReadsReachableFrom(entry: string): string[] {
+  const seen = new Set<string>();
+  const found = new Set<string>();
+  const queue = [entry];
+  while (queue.length > 0) {
+    const file = queue.pop() as string;
+    if (seen.has(file)) {
+      continue;
+    }
+    seen.add(file);
+    const source = stripComments(readFileSync(file, "utf8"));
+    /*
+     * THE DEFINITION SITE IS REACHED BUT NOT COUNTED. `build-data.ts` is where
+     * `readTournament` and `readLeaderboards` are DECLARED, so every route that
+     * imports either one drags both declarations into its graph. Counting them
+     * would report `/tops` as reading the tournament index it never touches —
+     * importing a module is not calling a function in it.
+     */
+    if (!/build-data\.tsx?$/.test(file.replace(/\\/g, "/"))) {
+      for (const match of source.matchAll(BUILD_DATA_READ)) {
+        found.add(match[1]);
+      }
+    }
+    for (const match of source.matchAll(ALIAS_IMPORT)) {
+      const resolved = resolveAlias(match[1]);
+      if (resolved !== null) {
+        queue.push(resolved);
+      }
+    }
+  }
+  return [...found].sort();
+}
+
 describe("per-route artifact fetches (AC 5, Task 9.3; re-split by story 3.9)", () => {
   for (const [page, expected] of ROUTE_ARTIFACTS) {
     it(`${page} reaches EXACTLY its allow-listed artifacts and no others`, () => {
@@ -766,8 +949,39 @@ describe("per-route artifact fetches (AC 5, Task 9.3; re-split by story 3.9)", (
      * to "fix" by adding a convenient `readTournament()` for a count or a name.
      * `/` renders a lede and eight badges; it needs no artifact, and the 409 KB
      * index must never become part of its document.
+     *
+     * ⚠️ THE RUNTIME HALF ONLY. See the case below for the build-time half —
+     * this assertion alone does NOT hold the "no artifact on either path" line
+     * that this file, `app/page.tsx` and `LandingContent.tsx` all claim for it.
      */
     expect(artifactPathsReachableFrom(SRC_DIR + "app/page.tsx")).toEqual([]);
+  });
+
+  it("reads NOTHING at build time from the landing page either — AD-11's other path", () => {
+    /*
+     * The half the `fetchArtifact` walk cannot see (code review 2026-08-27).
+     * A `readTournament()` added to `app/page.tsx` for "just a count" inlines
+     * the 409 KB index into the landing document — the precise inlining AD-11
+     * bans — and would leave every runtime assertion above green.
+     *
+     * This is also the assertion that keeps `/`'s Lighthouse floor honest: the
+     * weight would land on the site's entry route, which is the surface story
+     * 3.9 rebuilt specifically so it would carry none.
+     */
+    expect(buildDataReadsReachableFrom(SRC_DIR + "app/page.tsx")).toEqual([]);
+  });
+
+  it("sees a build-time read where one legitimately exists — the walk is not vacuous", () => {
+    /*
+     * Guards the guard, on the same reasoning as the `resolveAlias` probe above:
+     * `/`'s expectation is the empty array, so a walk that found nothing at all
+     * would agree with it. `/tops` DOES read at build time — `leaderboardTeasers
+     * (readLeaderboards().boards)`, the projection D5b allows — so a non-empty
+     * result here proves the detector actually fires.
+     */
+    expect(buildDataReadsReachableFrom(SRC_DIR + "app/tops/page.tsx")).toEqual([
+      "readLeaderboards",
+    ]);
   });
 
   it("does NOT reach the match bundle from any of them — that path is /matches/{id}'s (FR-34)", () => {
@@ -845,11 +1059,29 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
         continue;
       }
       /*
-       * The dynamic families are walked BELOW, one document per slug; walking
-       * them here too would double-count 1,400 routes. `data/` and `_next/` are
-       * assets, not routes, and carry no index.html anyway.
+       * `data/` and `_next/` are assets, not routes, and carry no index.html.
+       *
+       * ⚠️ `matches`, `players` and `teams` ARE NOT SKIPPED HERE, though they
+       * were until code review 2026-08-27 (reason given: "the dynamic families
+       * are walked BELOW"). They are walked below — but that walk only opens
+       * `<family>/<slug>/index.html`, so it finds the 1,248 profile documents
+       * and never the INDEX document at the family root, which is a file rather
+       * than a slug directory. Skipping the family here therefore dropped
+       * `/players` and `/teams` from the sweep entirely. There is no
+       * double-count risk: this loop reads exactly one document per family
+       * root, and the walk below reads none.
        */
-      if (["matches", "players", "teams", "data", "_next"].includes(name.name)) {
+      if (["data", "_next"].includes(name.name)) {
+        continue;
+      }
+      /*
+       * `404/index.html` is the SECOND document of a route already added above
+       * as `404.html`. Sweeping both double-counts one route — and until code
+       * review 2026-08-27 that duplicate, plus Next's internal `_not-found`,
+       * silently made up the difference in the floor below while two real
+       * routes were missing from it.
+       */
+      if (name.name === "404" || name.name === "_not-found") {
         continue;
       }
       const file = `${OUT_DIR}${name.name}/index.html`;
@@ -862,15 +1094,37 @@ describe.skipIf(!anyBuilt)("exported header search — every route (Story 2.14)"
      * NON-VACUITY, on `canonical-output.test.ts:116-121`'s `scanned === 0` rule.
      * A discovered list can silently become empty — a changed OUT_DIR, an export
      * that did not run — and seven "on EVERY exported route" cases would then
-     * pass having asserted nothing at all. Nine is the static-route floor at
-     * story 3.9: /, /404, /about, /glossary, /compare, /tournament, /tops,
-     * /players, /teams. It is a FLOOR, so a future route only ever raises it.
+     * pass having asserted nothing at all.
+     *
+     * ⚠️ A BARE COUNT IS NOT ENOUGH, AND THIS IS WHY (code review 2026-08-27).
+     * This shipped as `>= 9` with a comment naming the nine as "/, /404, /about,
+     * /glossary, /compare, /tournament, /tops, /players, /teams". Two of those
+     * were NOT in the set — `/players` and `/teams`, the two routes story 3.9
+     * had just minted, because the loop skipped their family directories and the
+     * family walk below only opens `<family>/<slug>/index.html`, never the index
+     * document at the family root. Their two slots were filled by `/404` counted
+     * twice and Next's internal `/_not-found`, so the floor passed at exactly 9
+     * while being wrong about which nine, and six "on EVERY exported route"
+     * cases quietly did not cover the newest routes on the site.
+     *
+     * So the routes are now NAMED, not counted. The count stays as a FLOOR so a
+     * future route only ever raises it; the membership check is what makes a
+     * missing route fail, which is the failure that actually happened.
      */
+    const swept = new Set(documents.map((entry) => entry.route));
+    for (const route of STATIC_ROUTES) {
+      expect(
+        swept.has(route),
+        `the static-route sweep did not find ${route}. Six cases titled "on EVERY ` +
+          `exported route" silently stop covering it — either the export did not run, ` +
+          `the route was deleted, or the discovery loop skips the directory it lives in.`
+      ).toBe(true);
+    }
     expect(
       documents.length,
       "the static-route sweep found fewer documents than the nine that shipped at " +
         "story 3.9 — either the export did not run, or a route was deleted"
-    ).toBeGreaterThanOrEqual(9);
+    ).toBeGreaterThanOrEqual(STATIC_ROUTES.length);
     /*
      * EVERY DYNAMIC ROUTE FAMILY, not just `/matches` (code review 2026-08-07).
      * This walked `matches/` alone, so from the moment Story 2.15 shipped

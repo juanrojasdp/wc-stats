@@ -3,7 +3,7 @@
 import { FeatureBadge } from "@/components/FeatureBadge";
 import type { DictionaryKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n-provider";
-import { NAV_DESTINATIONS, type NavDestinationKey } from "@/lib/nav-destinations";
+import { type NavDestinationKey, availableDestinations } from "@/lib/nav-destinations";
 
 /*
  * ═══════════ `/` — THE LANDING SURFACE (Story 3.9, D1; UX-DR24) ═════════════
@@ -24,8 +24,10 @@ import { NAV_DESTINATIONS, type NavDestinationKey } from "@/lib/nav-destinations
  *
  * `/` reads NO bundle — not at build time, not at runtime. Its reachable
  * artifact list is the empty set (D5b), and `static-output.test.ts` asserts
- * exactly that, which is the gate that catches a build-time read of the 409 KB
- * index sneaking back onto the landing page. Lede, badges and footer are all
+ * BOTH halves of that separately: a `fetchArtifact` walk for the runtime path
+ * and a `readTournament`/`readLeaderboards` walk for the build-time one. The
+ * second was added at code review 2026-08-27 — until then the runtime walk was
+ * credited with catching a build-time read it structurally could not see. Lede, badges and footer are all
  * pre-rendered static content, so there is no state to be in and therefore no
  * loading or empty copy to mint (EXPERIENCE.md → State Patterns).
  *
@@ -52,8 +54,9 @@ import { NAV_DESTINATIONS, type NavDestinationKey } from "@/lib/nav-destinations
  * and inline row are.
  *
  * `home` is the one destination with no badge — a badge to the page you are
- * already on. That is why this is an explicit key list and not
- * `availableDestinations()`.
+ * already on. That is why the SET is an explicit key list rather than simply
+ * every available destination; the ORDER is ruled here too. Availability is a
+ * separate question and is applied on top of this list, not instead of it.
  *
  * ⚠️ BADGE 3 IS CONTAINED BY BADGE 2, AND THAT IS RULED, NOT ACCIDENTAL (D1).
  * *Torneo* addresses the page; *Partidos* addresses the results half of it, at
@@ -86,7 +89,24 @@ function supportKey(key: NavDestinationKey): DictionaryKey {
 export function LandingContent() {
   const t = useT();
 
-  const byKey = new Map(NAV_DESTINATIONS.map((destination) => [destination.key, destination]));
+  /*
+   * KEYED OFF `availableDestinations()`, NOT `NAV_DESTINATIONS` (code review
+   * 2026-08-27).
+   *
+   * This built its map from the full table and never read `available`, so the
+   * whole availability apparatus — the bijection gate, `SiteNav.test.tsx`'s
+   * render-to-flag binding, the export-level "no unavailable destination is
+   * linked" case — protected the NAV ONLY. `nav-destinations.ts`'s own docblock
+   * requires the flag to stay usable ("a route DELETED in future must be able
+   * to turn one of these back to `false`"); the moment a future story does that,
+   * `SiteNav` would correctly drop the entry, every gate would stay green, and
+   * this grid would go on shipping a full-card link to a deleted route — a 404
+   * on the site's entry page.
+   *
+   * `home` is still excluded by GRID_KEYS rather than by this filter: it is
+   * available and deliberately badge-less, which is a different fact.
+   */
+  const byKey = new Map(availableDestinations().map((destination) => [destination.key, destination]));
   const emphasised = byKey.get(EMPHASISED_KEY);
 
   return (

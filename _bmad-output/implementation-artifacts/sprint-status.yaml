@@ -3485,7 +3485,7 @@ development_status:
   # tree via _bmad-output/implementation-artifacts/spec-sign-the-project.md
   # (bmad-quick-dev route, retro §8.4), i.e. outside the create-story trigger
   # that normally flips this field. Recording the true state.
-  epic-3: in-progress
+  epic-3: done
   3-1-build-gate-lint-gate-correction: done
   # Context created 2026-08-26 against baseline 8750d85, and sized against the 3.1 CODE
   # REVIEW (39889bf), not 3.1's first cut: the self-origin allowance is now position-scoped
@@ -3764,7 +3764,7 @@ development_status:
   #   NOTHING IN app/ ASSERTS A ROUTE COUNT -- verified by grep: every 1,406 is a comment,
   #   a test title or a failure message. The whole-export gates derive their floors from
   #   readTournament() and urls.length, so there is no number to bump for the suite to pass.
-  3-9-home-page-refactor: review
+  3-9-home-page-refactor: done
   # Story 3.9 -> review 2026-08-27. THE LAST STORY OF EPIC 3 AND OF THE ROADMAP.
   #   IMPLEMENTATION COMPLETE, AWAITING CODE REVIEW. This repo closes a story in two
   #   steps -- review, then done after the code-review run (77d4d53 -> 24906d4 is the
@@ -4987,3 +4987,76 @@ action_items:
 #
 # STATE OF THE BOARD: every story except this one reads `done`; this one reads `review`.
 # Flipping it to `done` after code review is what closes epic-3 and fires the retrospective.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2026-08-27 — STORY 3.9 CODE REVIEW -> `done`. EPIC 3 CLOSES. THE ROADMAP ENDS.
+#
+# Three parallel review layers (adversarial no-spec, edge-case no-spec, acceptance
+# auditor with the spec). 24 raw findings -> 20 after dedup, 2 dismissed, 0 deferred.
+# ALL 20 APPLIED. Two decisions were put to Juan and both were ruled at review.
+#
+# THREE FINDINGS WERE RAISED INDEPENDENTLY BY ALL THREE LAYERS, which is the
+# signal worth keeping from this run:
+#   1. `/tops` shipped with NO <h1> -- the only route in the export without one.
+#      The leaderboards <h2> was correct UNDER the Hub's <h1> on `/` and became the
+#      document root when 3.9 re-sited it. `ComparePicker.tsx:177-188` records the
+#      identical defect being fixed at code review 2026-08-07 for `/compare`.
+#      A RE-SITE MOVES A HEADING'S CONTEXT, NOT JUST ITS ADDRESS.
+#   2. The every-route sweep Task 9.4 rebuilt EXCLUDED `/players` and `/teams` --
+#      the two routes this very story minted -- and its `>= 9` non-vacuity floor
+#      passed anyway, because `/404` was counted twice and Next's `/_not-found`
+#      made up the difference. A COUNT IS NOT A MEMBERSHIP CHECK. It is now a named
+#      STATIC_ROUTES check: a missing route fails by name.
+#   3. The landing badge grid rendered from NAV_DESTINATIONS without reading
+#      `available`, so the whole availability apparatus protected the nav only.
+#
+# THE LESSON THIS RUN ADDS, and it is the same one three times over: A GATE'S
+# COMMENT IS NOT THE GATE. Three separate docblocks credited the `/` -> [] artifact
+# assertion with catching a build-time read it structurally could not see; the
+# `SiteNav` vacuity assertion said it "asserts the REASON the loop is empty" and was
+# a tautology that could not fail; `tops/page.tsx` asserted `leaderboards.title`
+# ships "as this page's own <h1>" while the file rendered an <h2>. Each read as
+# though the work had been done. A1 says drive it red -- and the reason is that a
+# gate nobody has seen fail is indistinguishable from a comment.
+#
+# The review's own new gate reproduced the failure class before it was caught: the
+# build-time detector went RED ON ITS OWN DOCUMENTATION, matching `readTournament()`
+# inside a docblock promising the route makes no such call, and then matched the
+# function DECLARATIONS in `build-data.ts`. Fixed twice (comments stripped;
+# definition site reached but not counted) and recorded in the code.
+#
+# ONE FINDING WAS MISSED IN THE FIRST TRIAGE and is recorded rather than folded in:
+# both index routes shipped `hub.region.crashed` ("No pudimos mostrar los resultados
+# y las posiciones") on pages that show neither. Both no-spec layers reported it; it
+# was dropped in the dedup and applied during the patch pass as a 20th item.
+#
+# RULED BY JUAN AT REVIEW (2026-08-27):
+#   · D5b's "section headings render with the shell" clause is RE-RULED, not
+#     accepted-with-a-deviation. It could not hold on `/players` and `/teams`: their
+#     headings ARE the artifact, so honouring it required the build-time read of the
+#     409 KB index that the same table bans. `EXPERIENCE.md:417` now scopes the
+#     clause to headings that are NOT artifact-derived and names the two routes.
+#     THIS IS A CONTRACT EDIT, which D17 fences stories off from -- permitted only
+#     because the ruling authority made it, the same route 3.10's review decisions
+#     took.
+#   · The two-step close (`review`, then `done` after code review) is CORRECT. D15
+#     asked 3.9 to flip epic-3 directly; 3.10 had declined the same obligation on a
+#     false premise. This review is the gate D15's premise needed, so epic-3 flips
+#     HERE, on the `done` transition, not on the dev-story run.
+#
+# CHAIN AFTER ALL 20 PATCHES: lint -> typecheck -> assert:schema-version ->
+# next build -> copy-data -> assert:no-external-origins, all green.
+#   1,410 routes / 1,411 documents / 1,408 sitemap <loc>  (unchanged -- AC 5 holds)
+#   63 files / 1,555 tests / 0 skipped  (was 60/1,512 at baseline, 63/1,546 at review)
+#   id="leaders" occurs exactly once site-wide  (AC 1 holds)
+#   all EIGHT static routes now carry exactly one <h1>  (was seven of eight)
+#
+# TWO NEW GATES DRIVEN RED, reverted, re-verified green (A1):
+#   · build-time AD-11 gate: "expected [ 'readTournament' ] to deeply equal []"
+#   · named-route membership: "the static-route sweep did not find /players."
+#
+# ⚠️ WHAT IS NOW OWED, AND IT IS THE LAST THING EPIC 3 OWES:
+#   `epic-3-retrospective: required` at :3892 -- REQUIRED, NOT OPTIONAL, because
+#   Epic 1's sat at `optional`, was skipped, and its concurrent-session lesson had
+#   to be re-learned inside Epic 2 at real cost. It is a SEPARATE `bmad-retrospective`
+#   run and was NOT improvised here (D15). Nothing else in the roadmap is open.

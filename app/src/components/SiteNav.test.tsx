@@ -347,10 +347,24 @@ describe("D1 — only available destinations render, in the ruled order", () => 
      * "there is nothing left to check" can never be mistaken for "the check
      * stopped seeing anything".
      */
+    /*
+     * ⚠️ THIS ASSERTION USED TO BE A TAUTOLOGY (code review 2026-08-27). It read
+     * `UNAVAILABLE.length + AVAILABLE.length === NAV_DESTINATIONS.length` —
+     * but the two are defined above as complementary filters of that same array,
+     * so the sum is unconditionally equal and the assertion could not fail. The
+     * comment above claimed it "asserts the REASON the loop is empty"; it
+     * asserted nothing.
+     *
+     * The reason the loop is empty is that story 3.9 flipped the last flag, so
+     * THAT is what is stated: nothing is unavailable today. It goes red the day
+     * a destination is retired — at which point the loop below starts doing work
+     * again and this line is what tells a reader why it had stopped.
+     */
     expect(
-      UNAVAILABLE.length + AVAILABLE.length,
-      "the table itself has changed size — this case checks a partition of it"
-    ).toBe(NAV_DESTINATIONS.length);
+      UNAVAILABLE.map((destination) => destination.key),
+      "a destination is marked unavailable — the loop below is no longer vacuous, " +
+        "and the cases that assert 'no link is rendered to it' now have a subject"
+    ).toEqual([]);
     for (const destination of UNAVAILABLE) {
       const key = destination.key as keyof typeof es.nav.destinations;
       expect(

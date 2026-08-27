@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { TeamsIndexRegion } from "@/components/TeamsIndexRegion";
+import { TeamsIndexHeading, TeamsIndexRegion } from "@/components/TeamsIndexRegion";
 import { t } from "@/lib/i18n";
 import { OG_CARD_PATH } from "@/lib/og-card";
 import { composeRouteTitle } from "@/lib/route-title";
@@ -92,11 +92,17 @@ export function generateMetadata(): Metadata {
 
 export default function TeamsIndexPage() {
   return (
-    /* `py-`, not `pb-`: the route leads with an <h1> under the sticky header,
-       and that <h1> renders with the SHELL so the surface's shape is readable
-       before the artifact lands. */
+    /* `py-`, not `pb-`: the route leads with an <h1> under the sticky header.
+       The <h1> renders with the SHELL; the table's column heads and count do
+       not, and EXPERIENCE.md:417 was amended at code review 2026-08-27 to scope
+       its "headings render with the shell" clause to routes whose headings are
+       not artifact-derived — see `players/page.tsx` for the full reasoning.
+
+       THE <h1> IS A CLIENT COMPONENT (`TeamsIndexHeading`) and must stay one: a
+       server `t()` freezes canonical Spanish into the export and ignores the
+       language toggle. */
     <div className="mx-auto max-w-6xl px-gutter-mobile py-layer-gap md:px-gutter-desktop">
-      <h1 className="type-display text-ink-primary">{t("teams.title")}</h1>
+      <TeamsIndexHeading />
       <TeamsIndexRegion />
     </div>
   );

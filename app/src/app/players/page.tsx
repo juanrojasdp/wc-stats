@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { PlayersIndexRegion } from "@/components/PlayersIndexRegion";
+import { PlayersIndexHeading, PlayersIndexRegion } from "@/components/PlayersIndexRegion";
 import { t } from "@/lib/i18n";
 import { OG_CARD_PATH } from "@/lib/og-card";
 import { composeRouteTitle } from "@/lib/route-title";
@@ -114,15 +114,25 @@ export default function PlayersIndexPage() {
     /*
      * `py-`, not `pb-`: this route leads with an <h1> under the sticky header.
      *
-     * THE <h1> AND THE SECTION HEADINGS RENDER WITH THE SHELL, not with the
-     * data (EXPERIENCE.md → State Patterns, cold route load): the surface's
-     * shape must be readable before any artifact lands. The <h1> is here, in the
-     * pre-rendered server component; the 48 group headings arrive with the fetch
-     * because their names come from the artifact, and the skeleton is shaped
-     * like them in the meantime.
+     * THE <h1> RENDERS WITH THE SHELL; THE 48 SECTION HEADINGS DO NOT, AND THE
+     * CONTRACT NOW SAYS SO (EXPERIENCE.md:417, amended at code review
+     * 2026-08-27). The State Patterns "cold route load" row used to require
+     * section headings and their counts to render with the shell on this route.
+     * It cannot: the 48 group names ARE the artifact, and D5b's own table bans
+     * the build-time read that would supply them — the clause and AD-11 could
+     * not both hold here, and the ban is the one with teeth. Ruled by Juan at
+     * review: the clause is scoped to routes whose headings are not
+     * artifact-derived, and `/players` and `/teams` are the named exception.
+     *
+     * So: the <h1> is pre-rendered, the group headings arrive with the fetch,
+     * and the skeleton is shaped like them in the meantime.
+     *
+     * THE <h1> IS A CLIENT COMPONENT (`PlayersIndexHeading`) and must stay one
+     * — a server `t()` here freezes canonical Spanish into the export and
+     * ignores the language toggle, which is what shipped until that same review.
      */
     <div className="mx-auto max-w-6xl px-gutter-mobile py-layer-gap md:px-gutter-desktop">
-      <h1 className="type-display text-ink-primary">{t("players.title")}</h1>
+      <PlayersIndexHeading />
       <PlayersIndexRegion />
     </div>
   );

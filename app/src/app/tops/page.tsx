@@ -125,9 +125,15 @@ export default function TopsPage() {
 
   return (
     /*
-     * `py-`, not `pb-`: `LeaderboardsSection` leads with its own <h2>
+     * `py-`, not `pb-`: `LeaderboardsSection` leads with its own <h1>
      * ("Líderes del torneo") directly under the sticky site header, so this
-     * route needs the top rhythm for the same reason `/tournament` does.
+     * route needs the top rhythm for the same reason `/tournament` does — D2
+     * conditions `py-` on leading with an <h1>, which this route now does.
+     *
+     * It led with an <h2> until code review 2026-08-27, which left this the
+     * only route in the export with no <h1>; the tag was promoted in
+     * `LeaderboardsSection` rather than a second heading added here, so the
+     * `#leaders` / `leaders-title` pairing stays defined and rendered once.
      */
     <div className="mx-auto max-w-6xl px-gutter-mobile py-layer-gap md:px-gutter-desktop">
       {/*

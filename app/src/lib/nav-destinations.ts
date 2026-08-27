@@ -237,6 +237,20 @@ export function availableDestinations(): readonly NavDestination[] {
  * *Jugadores* as the current page, and once 3.9 mints `/players` it must not
  * either — a profile is not its index, and marking it would tell a screen
  * reader the reader is somewhere they are not.
+ *
+ * ⚠️ `tournament` SHADOWS `matches`, DELIBERATELY (documented at code review
+ * 2026-08-27). Two entries declare `route: "/tournament/"` — *Torneo* and
+ * *Partidos*, which differ only by the `#results` fragment D1 rules — and
+ * `.find()` returns the first, so *Partidos* NEVER receives `aria-current`
+ * on any pathname on this site.
+ *
+ * That is correct and is not a bug to fix: one URL has one current destination,
+ * and D1 rules that *Partidos* is contained by *Torneo* rather than a sibling of
+ * it. It is written down because the shadowing became REACHABLE only when story
+ * 3.9 flipped both flags — before that both were unavailable and `.find()` saw
+ * neither — and because the obvious "fix" (matching the fragment, or hoisting
+ * `matches` above `tournament`) would put `aria-current="page"` on two entries
+ * at once, which is the actual defect.
  */
 export function currentDestinationKey(pathname: string): NavDestinationKey | null {
   const match = availableDestinations().find(

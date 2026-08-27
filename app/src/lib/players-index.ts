@@ -54,11 +54,20 @@ export interface FilteredPlayerGroups {
 /*
  * THE RENDER ORDER OF POSITIONS, goalkeeper outward. It is the order every
  * lineup block in the source reports prints, and the order `es.enums.position`
- * declares. Declared as a const tuple so a `Position` added to the contract
- * without a line here is a TYPE error rather than a silent sort-to-the-end.
+ * declares.
+ *
+ * 🔴 `Record<Position, number>` IS THE GUARD, and it is the only one (corrected
+ * at code review 2026-08-27). A `Position` added to the contract without a line
+ * here is a TYPE error because this is an exhaustive `Record` over the union —
+ * an object literal missing a key does not satisfy it.
+ *
+ * The docblock previously credited a `readonly Position[]` array literal with
+ * that property. An array is not a tuple and carries no per-member obligation,
+ * so widening the union produced no error there at all; the real guard was the
+ * line below it and was undocumented. A dead `positionOrder()` export sat
+ * alongside, described as feeding "the column-head expansion and tests" and
+ * imported by neither.
  */
-const POSITION_ORDER: readonly Position[] = ["gk", "df", "mf", "fw"];
-
 const POSITION_RANK: Record<Position, number> = {
   gk: 0,
   df: 1,
@@ -66,9 +75,23 @@ const POSITION_RANK: Record<Position, number> = {
   fw: 3,
 };
 
-/** Exported for the column-head expansion and for tests that assert the order. */
-export function positionOrder(): readonly Position[] {
-  return POSITION_ORDER;
+/**
+ * The sort rank for a position, with a defined answer for a value outside the
+ * union.
+ *
+ * ⚠️ THE UNION IS A COMPILE-TIME PROMISE AND THE PAYLOAD IS NOT CHECKED AGAINST
+ * IT. `fetchArtifact` `as`-casts unvalidated JSON, so a contract that widens
+ * `Position` before the App rebuilds delivers a string this module has never
+ * heard of. A bare `POSITION_RANK[unknown]` is `undefined`, and
+ * `undefined - number` is `NaN` — a comparator returning `NaN` leaves the array
+ * in an implementation-defined order, SILENTLY, with nothing thrown for an
+ * error boundary to catch.
+ *
+ * Unknown positions sort to the end, together, in name order. That is a visible,
+ * explainable result rather than an arbitrary one.
+ */
+function positionRank(position: Position): number {
+  return POSITION_RANK[position] ?? Number.MAX_SAFE_INTEGER;
 }
 
 /**
@@ -111,7 +134,7 @@ export function groupPlayersByTeam(
      * a `readonly` array whose order is the artifact's.
      */
     const ordered = [...group.players].sort((a, b) => {
-      const byPosition = POSITION_RANK[a.position] - POSITION_RANK[b.position];
+      const byPosition = positionRank(a.position) - positionRank(b.position);
       return byPosition !== 0 ? byPosition : compareText(a.name, b.name);
     });
     return {

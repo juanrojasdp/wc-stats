@@ -2589,6 +2589,28 @@ export const es = {
     filterNoResults: "Ningún nombre coincide con el filtro.",
     filterNoResultsExplanation: "Borra letras para ver más jugadores.",
     /*
+     * THE EMPTY-CORPUS PAIR, WHICH IS NOT THE ZERO-RESULT PAIR (code review
+     * 2026-08-27). `LeaderboardsRegion` already carries this ruling — "THREE
+     * STATES, NOT TWO" — after a review found it telling a reader with an empty
+     * filter box to "borrar letras para ver más filas". This surface shipped the
+     * same two-state branch, so a corpus that arrived empty produced advice to
+     * delete letters the reader had never typed.
+     */
+    empty: "No hay jugadores para mostrar.",
+    emptyExplanation: "El índice del torneo llegó sin jugadores.",
+    /*
+     * ROUTE-SCOPED, for the third time in this dictionary and for the same
+     * reason each time (code review 2026-08-27). The boundary's default names
+     * "el análisis táctico de este partido"; `hub.region.crashed` was minted to
+     * replace it because that is a false statement on a tournament-wide route
+     * (ruled D8). This surface then borrowed `hub.region.crashed`, which reads
+     * "los resultados y las posiciones" — a page that shows neither. The
+     * objection is the same one, one level out.
+     */
+    crashed: "No pudimos mostrar el índice de jugadores.",
+    crashedExplanation:
+      "El índice del torneo llegó con un valor que no pudimos leer. Estamos al tanto.",
+    /*
      * ═══ THE POSITION ABBREVIATIONS, AND WHY THEY ARE NOT `POR` ═══
      *
      * `es.enums.position.gk` ships "Arquero", so `POR` — which abbreviates
@@ -2610,13 +2632,17 @@ export const es = {
       name: "Jugador",
     },
     /*
-     * Composed at the call site with the team's name, for the two things
-     * EXPERIENCE.md requires each of the 48 groups to carry its own: the
-     * disclosure TRIGGER's accessible name and the TABLE's caption. Forty-eight
-     * controls sharing one name is a screen-reader control list with no
-     * information in it.
+     * Composed at the call site with the team's name, so each of the 48 TABLES
+     * carries its own caption. Forty-eight tables sharing one name is a
+     * screen-reader list with no information in it.
+     *
+     * THE TRIGGER HAS NO KEY OF ITS OWN, deliberately (code review
+     * 2026-08-27). A `teamTrigger: "Ver los jugadores de"` lived here and was
+     * passed to `ViewDataDisclosure`'s `panelTitle`, which composes
+     * "Ver los datos: <panel>" — producing "Ver los datos: Ver los jugadores de
+     * Argentina". The disclosure already supplies the verb; the call site
+     * supplies the team name alone.
      */
-    teamTrigger: "Ver los jugadores de",
     tableCaption: "Jugadores de",
     meta: {
       description:
@@ -2648,7 +2674,20 @@ export const es = {
      * y perdidos" is what a screen reader should read, not the four letters.
      */
     recordExpansion: "Partidos jugados, ganados, empatados y perdidos",
-    tableCaption: "Las 48 selecciones del torneo, por grupo",
+    /*
+     * NO COUNT IN THE CAPTION (code review 2026-08-27). It read "Las 48
+     * selecciones del torneo, por grupo" — a number the markup cannot keep
+     * honest, announced to a screen reader over whatever the table actually
+     * holds. The count is already rendered, and correctly, in the line above
+     * the table.
+     */
+    tableCaption: "Las selecciones del torneo, por grupo",
+    empty: "No hay selecciones para mostrar.",
+    emptyExplanation: "El índice del torneo llegó sin selecciones.",
+    /* Route-scoped — see `players.crashed` for the reasoning. */
+    crashed: "No pudimos mostrar el índice de selecciones.",
+    crashedExplanation:
+      "El índice del torneo llegó con un valor que no pudimos leer. Estamos al tanto.",
     meta: {
       description:
         "Las 48 selecciones del Mundial 2026: grupo, partidos jugados y " +
