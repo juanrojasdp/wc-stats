@@ -289,9 +289,14 @@ and the suite is green with **0 skipped**.
   - [x] 9.2 `gh auth switch -u juanrojasdp` **before** pushing, or the push 403s.
   - [x] 9.3 Push to `main`. Netlify builds from `app/` (`netlify.toml`: base `app`, command
         `npm run build`, publish `out`). Wait for the deploy to go live and confirm
-        the card asset returns the PNG with `Content-Type: image/png`. **Re-deploy required after
-        the code review of 2026-08-27:** the card was redrawn (wordmark in Inter 600) and its filename
-        now carries a content hash, so the URL verified on the first deploy no longer exists.
+        the card asset returns the PNG with `Content-Type: image/png`. **Re-deployed after the code
+        review of 2026-08-27** (`77d4d53`): the card was redrawn (wordmark in Inter 600) and its
+        filename now carries a content hash, so the URL verified on the first deploy no longer exists.
+        RE-VERIFIED LIVE 80 s after the push — the hashed asset returns `200 image/png`, 39,691 bytes,
+        sha256 **byte-identical** to `app/public/`, and the superseded unhashed URL now returns
+        **404**, so no stale asset can be served alongside it. The paste-test route itself was read
+        over the wire and carries `og:image`, `og:image:alt`, `twitter:card="summary_large_image"`,
+        `twitter:image` and `twitter:image:alt`, all naming the hashed card.
   - [ ] 9.4 **HAND OFF TO JUAN — this cannot be done by inspecting tags.** Ask him to paste **one URL
         never pasted before** into **WhatsApp** and into **Slack**, and to report whether a card with
         an **image** renders in each. Give him the exact URL to use. Record both results verbatim,
