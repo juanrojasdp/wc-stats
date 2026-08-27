@@ -3564,7 +3564,7 @@ development_status:
   # open and get re-owned, not fixed here. Task 8.5.
   # AC8 (Google Search Console submission, starts the 90-day D20-b clock, re-open no
   # earlier than 2026-11-24) is MANUAL AND JUAN'S. The dev agent surfaces it and stops.
-  3-4-sitemap-robots: review
+  3-4-sitemap-robots: done
   # Context created 2026-08-26. Owns bootstrap.ts, bootstrap.test.ts,
   # i18n-provider.tsx, i18n-provider.test.tsx (NEW) and — as a measured
   # regression repair, not a feature — the navigator pin in TournamentHub.test.tsx,
@@ -4557,3 +4557,29 @@ action_items:
 #             (pre-existing, shared with static-output.test.ts); A1 unrun against 7 shipped
 #             assertions; Layer 4 taken down by a manifest failure it does not read; Task 6.6 ticked
 #             against a different demonstration than it specifies.
+
+# 2026-08-27: story 3-4 review -> DONE. AC8 CLOSED: Juan verified the Search Console property
+#             (google-site-verification meta tag, shipped 6007cda -- URL-prefix form, because no
+#             app/public/ and no analytics ruled out the file-upload and GA/GTM methods) and
+#             submitted the sitemap. ALL 8 ACs now met.
+#             D20-b RE-OPEN NO EARLIER THAN 2026-11-25, NOT the 2026-11-24 carried by the story
+#             and by every earlier line in this file. That figure was computed at story creation
+#             against an ASSUMED 2026-08-26 submission; the real one was 2026-08-27, so the true
+#             90-day mark is one day later. Corrected rather than inherited -- AC8 exists to make
+#             D20-b measurable, and a trigger measured from a date nobody acted on is exactly the
+#             kind of unearned number this story's code review spent its effort removing.
+#             DO NOT REMOVE THE VERIFICATION TAG. Google re-checks the token and silently
+#             un-verifies the property if it vanishes, which would stop the sitemap being read
+#             and end the measurement with nothing failing. layout.tsx says so at the tag.
+#             GOOGLEBOT FETCHED IT. The Sitemaps table read "No se ha podido leer el sitemap"
+#             ("Couldn't fetch"), which reads like a failure and is not one: URL Inspection's
+#             TEST LIVE URL on the sitemap SUCCEEDED -- an on-demand Googlebot fetch, the only
+#             check that speaks for Google's crawler rather than for a browser. That row is the
+#             INITIAL AND STICKY state of a new submission; it reflects the last queued attempt,
+#             not live truth, and flips to Correcto on Google's own schedule. Corroborated by
+#             "Abrir sitemap" resolving to the real document (ruling out the doubled-URL
+#             submission mistake, the one plausible real fault) and by an external fetch: 200,
+#             application/xml, 118,470 bytes, no redirect chain, 1,404 <loc>, robots.txt 200 with
+#             Allow: /. DO NOT "FIX" A SITEMAP THREE CHECKS SAY IS SERVED CORRECTLY.
+#             NOT CLAIMED: the processed URL count. It should settle at 1,404; nobody has read it
+#             yet. AC8's bar is the submission and its date, and the live fetch exceeds it.

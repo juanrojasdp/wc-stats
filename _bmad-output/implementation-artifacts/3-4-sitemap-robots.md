@@ -4,13 +4,12 @@ baseline_commit: 8750d85f74584c6fe899527db8463fbd9196993b
 
 # Story 3.4: `sitemap.xml` & `robots.txt`
 
-Status: review
+Status: done
 
-**Code review 2026-08-26: PASSED with 14 patches applied.** All review findings are resolved and the
-chain is green (lint 0, typecheck 0, build exit 0, 60 files / 1,508 tests / 0 skipped). **The ONLY
-thing between this story and `done` is AC8** — the Search Console submission, which is Juan's and
-which no code review can close. Held at `review` deliberately rather than marked done with an unmet
-AC. Five findings are deferred with named owners in `deferred-work.md`.
+**Closed 2026-08-27.** All 8 ACs met. Code review 2026-08-26 applied 14 patches and deferred
+5 findings with named owners; AC8 closed 2026-08-27 when Juan verified the property and
+submitted the sitemap. **D20-b re-open no earlier than 2026-11-25** — measured from the real
+submission date, not the 2026-11-24 this story pre-computed against an assumed one.
 
 **Baseline commit sized against:** `8f1c4fc` (`Story 3.5 -> done: full chain verified in a worktree…`).
 Story 3.1's code is committed at `432dc29` + `117311c`; **3.1 itself is at `review`, not `done`, and a
@@ -104,6 +103,11 @@ out" is not a property until something fails on its return.
 earlier than **2026-11-24**).
 **The dev agent does NOT attempt this.** It surfaces it to Juan as a manual task and records the date
 only once Juan confirms it. Leave the AC open until then and say so.
+
+> **MET 2026-08-27, and the date above is off by one.** The `2026-11-24` in this AC was computed at
+> story creation against an ASSUMED 2026-08-26 submission. The real submission was **2026-08-27**, so
+> the operative re-open trigger is **2026-11-25**. The AC text is left as written — it is the spec as
+> ruled — and this note is the correction. See the AC8 completion note for the full record.
 
 ### Standing Epic 3 acceptance criteria — they apply here in addition to the above
 
@@ -528,7 +532,7 @@ REQUIRED before this story may be called done:
 -->
 
 **Baseline commit: `8750d85`.** Shipped: 1,404 `<loc>` entries, exactly D7's arithmetic
-(104 + 1,248 + 48 entities + 4 tree-walked static routes). Seven of eight ACs met; **AC8 is open by
+(104 + 1,248 + 48 entities + 4 tree-walked static routes). ALL EIGHT ACs met as of 2026-08-27; **AC8 was open by
 design and is Juan's to close** (see the last note).
 
 #### Task 1 — the probe, and what had moved since story creation
@@ -738,13 +742,46 @@ they live in `site-origin.test.ts`. The ledger note also records that **the owne
 cleared — 3-1 is now `done`, not `review`** — and re-owns them to whoever next revisits the drift
 gate.
 
-#### AC8 — OPEN. It is Juan's to close, and the dev agent did not attempt it.
+#### AC8 — CLOSED 2026-08-27. Juan submitted it; the D20-b clock is running.
 
-No Search Console submission was attempted. **AC8 remains open and this story does not claim it.**
-What Juan needs: the sitemap is live at `https://mundial-stats.juancr.dev/sitemap.xml` once this
-deploys; submitting it in Google Search Console starts the 90-day D20-b clock, making the re-open
-trigger measurable rather than indefinite. **Re-open no earlier than 2026-11-24.** The date gets
-recorded here only once Juan confirms he has submitted it.
+**Submitted:** 2026-08-27. Property verified by the `google-site-verification` meta tag shipped at
+`6007cda` (URL-prefix form; the file-upload and GA/GTM methods were both unavailable — no
+`app/public/`, no analytics). Sitemap submitted in Search Console and accepted.
+
+**D20-b re-open: no earlier than 2026-11-25.**
+
+THAT DATE IS NOT THE ONE THIS STORY CARRIED, and the difference is deliberate rather than a typo.
+Every earlier line here says **2026-11-24**, computed at story-creation time against an assumed
+2026-08-26 submission. The actual submission was 2026-08-27, so the true 90-day mark is
+**2026-11-25**. One day, and worth correcting rather than inheriting: the whole point of AC8 is that
+D20-b becomes MEASURABLE instead of indefinite, and a re-open trigger measured from a date nobody
+actually acted on is the same class of unearned number this story's code review spent its effort
+removing. The date recorded here is the one the submission happened on.
+
+**Do not remove the verification tag.** Google re-checks the token periodically and silently
+un-verifies the property when it disappears, which would stop the sitemap being read and end this
+measurement without anything failing. `layout.tsx`'s docblock says so at the tag itself.
+
+**GOOGLEBOT FETCHED IT, AND THAT IS THE EVIDENCE THIS ENTRY RESTS ON.** The Sitemaps table read
+*"No se ha podido leer el sitemap"* ("Couldn't fetch") at the time of writing, which reads like a
+failure and is not one. Three independent checks say the opposite:
+
+  - **URL Inspection → Test Live URL on `<origin>/sitemap.xml` succeeded** — an on-demand Googlebot
+    fetch, which is the only check that speaks for Google's crawler rather than for a browser;
+  - Search Console's own "Abrir sitemap" link resolves to the real document, so the path it stored
+    is correct — this rules out the doubled-URL submission mistake, the one plausible real fault;
+  - fetched from outside the network: **HTTP 200**, `Content-Type: application/xml`, 118,470 bytes,
+    no redirect chain, **1,404 `<loc>`**, well-formed prologue, and `robots.txt` 200 with `Allow: /`.
+
+That status line is the initial state of a newly-added row and is **sticky** — it reflects the last
+queued fetch attempt, not live truth, and flips to *Correcto* on Google's own schedule. Do not read
+it as a verdict, and do not "fix" a sitemap that three checks say is being served correctly.
+
+**What is NOT claimed here.** Search Console has not yet reported a processed URL count.
+"Discovered URLs" should settle at **1,404**; nobody has read that number yet. AC8's bar is the
+submission and its date, which is met, and Googlebot's successful live fetch is more than that bar
+asks for. If the count later comes back materially below 1,404, that is evidence about the export or
+about Google's crawl — not about this AC — and belongs in a new entry rather than retroactively here.
 
 ### File List
 
@@ -917,6 +954,7 @@ claiming coverage it does not have.
 
 | Date | Note |
 |---|---|
+| 2026-08-27 | **AC8 CLOSED — story `review` -> `done`, all 8 ACs met.** Juan verified the Search Console property and submitted the sitemap. Verification is the `google-site-verification` meta tag (`6007cda`), the URL-prefix form rather than a DNS Domain property because this repo ships no `app/public/` and no analytics, ruling out the file-upload and GA/GTM methods; the token is committed rather than env-injected because `output: "export"` with no `process.env` read is AD-13/NFR-8, and a build-time value in a static export is not a secret regardless. The first draft of that docblock spelled the origin out and **story 3.1's drift gate went red on the comment** — it counts the string anywhere under `app/`, prose included, and allows exactly one; the gate was right and the prose now names `SITE_ORIGIN` instead. **D20-b re-opens no earlier than 2026-11-25, NOT the 2026-11-24 this story carried** — that figure assumed a 2026-08-26 submission and the real one was a day later. Corrected rather than inherited: AC8 exists to make D20-b measurable, and a trigger measured from a date nobody acted on is the same unearned number this story's code review spent its effort removing. **Googlebot fetched it:** URL Inspection’s Test Live URL on the sitemap SUCCEEDED, while the Sitemaps table still read *“No se ha podido leer el sitemap”* — that row is the initial, STICKY state of a new submission, not a verdict, and the string reads like a failure it is not. Corroborated two further ways: Search Console’s own “Abrir sitemap” link resolves to the real document (ruling out the doubled-URL submission mistake, the one plausible real fault), and an external fetch returns 200, `application/xml`, 118,470 bytes, no redirect chain, 1,404 `<loc>`, with `robots.txt` 200 and `Allow: /`. **Not claimed:** the processed URL count, which should settle at 1,404 and which nobody has read yet. **Do not remove the verification tag** — Google re-checks it and silently un-verifies on its disappearance, ending the measurement with nothing failing. |
 | 2026-08-26 | **Code reviewed — 3 adversarial layers, 14 patches applied, 5 deferred, 3 dismissed.** Three shipped gates could not fail on the input they existed to reject: the entity-count case was the algebraic identity `x === y + (x - y)`, **proven inert by this story's own 6.1/6.2 output** (green through both directions of the defect it names); the AC7 allow-check was unanchored and is **satisfied by `Disallow: /`**, so it passed on a robots.txt blocking the whole site; and every `robots.ts` assertion sat behind `skipIf(!anyBuilt)`, so AC7's pin fired only after a manual rebuild that nothing in the repo enforces (`npm test` never builds, Netlify never tests). A fourth: story 3.9's `/players/` and `/teams/` index routes collide with the entity prefixes and broke the Layer 1 bijection on a **correct** sitemap — breaking AC2's "no edit here" promise from the guard side, with an empty offender name. All four repaired and **driven RED first** (R1–R4, verbatim), the discipline the A1 gap had missed. Juan ruled two decisions: `sitemaps.org` allow-listed in the origin gate (MENTIONED 7 → 6, causally proven), and D6 narrowed from "no `Disallow` ever" to "none that blocks `/data/`", freeing the 11,235 crawlable RSC `.txt` payloads for a future story on its own evidence. Fallout in `assert-no-external-origins.test.ts` fixed rather than suppressed. **AC8 still open; status held at `review` rather than marked done with an unmet AC.** |
 | 2026-08-26 | **Implemented.** 1,404 `<loc>` entries (D7's arithmetic, measured). D1 verified on disk — both metadata routes emit as flat files under `trailingSlash: true`. **D5 falsified**: `force-static` IS required, because the route module's constructor bails during "Collecting page data", one phase before the export-path exemption D5 cited; both files record why. Six gates driven RED including both AC5 directions and the skip-guard case, all verbatim. Origin-gate `scanned` delta accounted causally (12,684 → 12,686) by re-running with the two assets removed, which also proves `www.sitemaps.org` enters only via the sitemap. Chain green: lint 0, typecheck 0, **59 files / 1,488 tests / 0 skipped** (+20, all this story's), build exit 0. Ledger entry found moot as written and disposed; its other gaps re-owned. **AC8 left OPEN — Juan's manual Search Console submission.** |
 | 2026-08-26 | Story contexted from `epics.md:1193` against baseline `8f1c4fc`. A3 probe run: all three owned paths clean; `assert-no-external-origins.mjs` dirty under the live 3.1 review and ruled non-blocking with proof (D2). Next's flat-file emission for app route handlers under `trailingSlash: true` traced to source (D1). Entry count corrected 1,406 → **1,404** against the measured manifest and the 1,406-file export (D7). The ledger entry naming this story as owner found **moot as written** — it assumes a `public/robots.txt` the epic does not rule (Task 8.5). |
