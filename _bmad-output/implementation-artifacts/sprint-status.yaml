@@ -3711,7 +3711,60 @@ development_status:
   # fatal). Owns match-anchors.ts, use-anchor-nonce.ts, TacticalLayer, PitchPanel,
   # TournamentHub, the five section components, expert-logs.ts and i18n.test.ts.
   3-8-match-route-deep-link-plumbing: done
-  3-9-home-page-refactor: backlog
+  # Context created 2026-08-27 against baseline 24906d4. Implements UX-DR24; does NOT
+  # re-rule it. LAST STORY OF THE EPIC AND OF THE ROADMAP, so it is the TRUE EPIC CLOSE:
+  # 3-10 declined AC 7's retrospective because its premise was false at d073575, and that
+  # premise is now true here. 3-9 flips epic-3 -> done and records that A6 is due.
+  # BASELINE RE-MEASURED, NOT INHERITED: 1,512 tests / 60 files / 0 skipped / 1,406 routes
+  #   (1,407 documents). 3-10 recorded 1,251 tests; the number has moved repeatedly.
+  # A3 PROBE AT CREATION: tree clean, page.tsx and SiteHeader.tsx both unheld, no session
+  #   live. The 3-2/3-3 vs 3-9 collision on page.tsx resolves by SEQUENCE -- 3-9 lands
+  #   second, as its own AC anticipates, and preserves the canonical/og metadata intact.
+  # OWNS: page.tsx (rewrite), four NEW routes (tournament/tops/players/teams), the landing
+  #   + badge + index components, players-index.ts, nav-destinations.ts/.test.ts (flags),
+  #   static-output.test.ts (re-point moved gates), es.ts/en.ts, i18n.test.ts (captions).
+  #   NOT SiteNav/SiteHeader/HeaderSearch (3-10's -- the nav completes itself from flags),
+  #   NOT sitemap.ts/robots.ts/canonical-output.test.ts (all auto-adapt), NOT the stray `17`.
+  # THREE CORRECTIONS MADE AT VALIDATION, each contradicting a shipped artifact:
+  #   1. IT IS FIVE BOOLEANS, NOT FOUR. nav-destinations.ts has FIVE `available: false`
+  #      entries (:147 :154 :161 :175 :183) because `matches` and `tournament` SHARE the
+  #      route /tournament/ and differ only by the #results fragment. Every artifact in the
+  #      repo says four -- 3-10's file, this file at :3723/:3767, d073575's message, and
+  #      nav-destinations.ts:14 itself. es.ts:86 is the only one that got it right.
+  #      Flip four and the gate stays red on `matches`. Story task 11.3 drives that
+  #      failure red deliberately so the off-by-one becomes evidence, not folklore.
+  #   2. L1423's `tactical-sections.test.ts:108-125` citation is STALE, and epics.md:1373
+  #      repeats it. The three assertions are at :124, :125 and :141 -- and :141 is OUTSIDE
+  #      the cited window, so an agent following the citation literally misses one.
+  #   3. THE <title>-STAYS-SPANISH DECISION IS RULED, NOT OPEN. /about:9-12 and
+  #      /glossary:9-19 both still say it "needs a human ruling"; deferred-work.md:4163
+  #      records D17 closing it (ACCEPT ES CANONICAL) on 2026-08-25. The four new routes
+  #      therefore take NO new position by carrying a title. Correcting those two stale
+  #      docblocks is out of 3-9's scope and is noted, not taken.
+  # L1423 DOES NOT FIRE, and the story says so explicitly as its AC requires: the trigger
+  #   is touching tactical-sections.ts, which is match-route-only. The sole path from / into
+  #   it is a TYPE-ONLY import two hops away (page.tsx -> LeaderboardsSection ->
+  #   glossary-marking.tsx:16). A tripwire is recorded for the dev agent in case that
+  #   changes. L1553/L1886/L1465 are ALREADY CLOSED (3-8 and 3-10's review); nothing owed.
+  #   L525 and L4071 do not fire. deferred-work.md:4826 (route-group blind spot) NAMES 3-9
+  #   as its owner, plus four more entries in the blast radius (:4789 :4794 :4799 :4821).
+  # RAISED FOR JUAN, NOT RESOLVED -- NFR-11's 68 PREDATES THE HUB IT GUARDS. The 68 and the
+  #   6,025 DOM nodes are story 2.19's START-of-story figures; its own Task 5.7 then took
+  #   the Hub to 2,780 nodes / 3 tables / 1,050 cells and the median 68 -> 86 local, 92 on
+  #   the host. So /tournament inherits a 2,780-node Hub measuring 86, and ">= 68" is a gate
+  #   that CANNOT GO RED -- which is the exact argument UX-DR24 used to refuse holding / to
+  #   >= 68. The story does NOT re-rule the number. It measures the PRE-refactor median
+  #   first, asserts both, and STOPS for a ruling if post lands between them.
+  # THE D4 HARNESS WAS NEVER COMMITTED and cannot be recovered from git -- every recorded
+  #   Lighthouse number came from a scratchpad server that no longer exists. The story
+  #   rebuilds it and asserts its response headers BEFORE trusting any score, because 2.19
+  #   invalidated two full rounds of numbers to a server that printed "gzip/brotli" while
+  #   serving everything uncompressed. Pre- and post-medians must come from the SAME harness.
+  # ROUTE COUNT 1,406 -> 1,410; documents 1,407 -> 1,411; sitemap <loc> 1,404 -> 1,408.
+  #   NOTHING IN app/ ASSERTS A ROUTE COUNT -- verified by grep: every 1,406 is a comment,
+  #   a test title or a failure message. The whole-export gates derive their floors from
+  #   readTournament() and urls.length, so there is no number to bump for the suite to pass.
+  3-9-home-page-refactor: ready-for-dev
   # Context created 2026-08-26. Implements UX-DR24's nav; does NOT re-rule it. Owns
   # SiteNav.tsx + SiteNav.test.tsx + nav-destinations.ts/.test.ts (NEW), SiteHeader.tsx,
   # HeaderSearch.tsx, globals.css (the header-height token), CompareChartsSection.tsx,
