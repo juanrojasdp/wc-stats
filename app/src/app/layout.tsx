@@ -78,12 +78,42 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
  * NO `alternates.languages`, NO `hreflang`, NO `x-default`, NO per-locale URLs
  * (D17, upheld by D20; AC4). `canonical-output.test.ts` makes that a gate.
  */
+/*
+ * `verification.google` IS SEARCH CONSOLE'S OWNERSHIP PROOF, AND IT IS NOT
+ * A SECRET (Story 3.4, AC8, 2026-08-27).
+ *
+ * Next emits it as `<meta name="google-site-verification">` on all ~1,406
+ * routes. That is how the tag works — it is a public claim of ownership, is
+ * inert to every crawler except Google's verifier, and grants nothing to
+ * anyone who reads it. It is committed rather than injected from an env var
+ * ON PURPOSE: `output: "export"` with NO `process.env` read is AD-13/NFR-8, a
+ * shipped property this story is not permitted to break, and a build-time
+ * secret in a static export is not a secret anyway — it lands in the HTML
+ * either way.
+ *
+ * DO NOT REMOVE IT once verification succeeds. Search Console re-checks the
+ * token periodically and silently un-verifies the property when it disappears,
+ * which would stop the sitemap being read and end the D20-b measurement this
+ * story exists to start.
+ *
+ * The property is the URL-prefix form rooted at `SITE_ORIGIN`, chosen over a
+ * DNS-verified Domain property because this repo ships no `app/public/` and no
+ * analytics, so the meta tag was the one method available without touching DNS.
+ *
+ * THE ORIGIN IS NOT SPELLED OUT ABOVE, AND THAT IS NOT PEDANTRY. The first
+ * draft of this comment wrote the domain literally, and `site-origin.test.ts`
+ * went red inside a minute: story 3.1's drift gate counts occurrences of the
+ * string ANYWHERE under `app/`, comments included, and allows exactly one —
+ * `site-origin.ts`. That is the gate doing its job, not a false positive, so
+ * the prose refers to the constant rather than restating its value.
+ */
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: t("meta.title"),
   description: t("meta.description"),
   alternates: { canonical: "./" },
   openGraph: { url: "./", locale: "es_ES" },
+  verification: { google: "TgrS4P6p1SXEE0iEzkKOBjsny6S04eEPzPP56tjtLzs" },
 };
 
 /*
