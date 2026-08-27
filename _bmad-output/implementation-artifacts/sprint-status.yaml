@@ -1,5 +1,5 @@
 # generated: 2026-07-22
-# last_updated: 2026-08-26
+# last_updated: 2026-08-27
 # project: wc-stats
 # project_key: NOKEY
 # tracking_system: file-system
@@ -78,7 +78,7 @@
 #   per D4 — median of 3, mobile, host-realistic server).
 
 generated: 2026-07-22
-last_updated: 2026-08-26
+last_updated: 2026-08-27
 # 2026-08-26: story 3-2 CODE REVIEW complete, status review -> done. THE CANONICAL URLS.
 #             Three adversarial layers over 8d064e1..30905dc, run blind; 24 raw findings -> 16
 #             unique -> 8 patches applied, 4 deferred, 4 dismissed. NO AC FAILED. All seven were
@@ -3531,7 +3531,66 @@ development_status:
   # untracked test files, so it is not a clean-HEAD number and Task 1.5 re-measures.
   # LEDGER: no deferred-work entry names 3-2 as owner; nothing to close.
   3-2-metadatabase-canonical-urls: done
-  3-3-og-image-twitter-card: backlog
+  # Context created 2026-08-27 against baseline b8c2fd9, and sized against the 3.2 CODE
+  # REVIEW (18e9022), not the epic text -- three of the four things the epic AC asks for
+  # are partly or wholly shipped, and the epic is stale on all three. MEASURED on the
+  # export at b8c2fd9, one document per route class:
+  #   og:locale="es_ES"  -- already on all 1,407. DO NOT RE-ADD (the re-brief at :103).
+  #   twitter:card       -- already "summary" on all 1,407, auto-derived by Next's
+  #                         postProcessMetadata because openGraph is declared with no
+  #                         images. This story FLIPS it, it does not add it.
+  #   og:type / og:site_name / og:image* -- absent everywhere; genuinely new.
+  # FIVE THINGS RULED AT CREATION RATHER THAN LEFT TO DEV TIME:
+  #   (1) FIVE COPIES OF openGraph, ONE OF twitter -- the same asymmetry 3.2 paid for,
+  #       read in both directions. `openGraph` is declared at all five sites so each
+  #       REPLACES the layout's wholesale (images/type/siteName need five copies, exactly
+  #       as url and locale did); `twitter` is declared at NO site, so one copy on the
+  #       layout is INHERITED by all 1,407. The second half is verified on the export,
+  #       not reasoned about -- 3.2's D8 was a correct-sounding read of Next's source
+  #       that the export flatly contradicted.
+  #   (2) twitter.images IS NOT AUTHORED. postProcessMetadata back-fills it from
+  #       openGraph.images whenever the twitter object has no own `images` key
+  #       (resolve-metadata.js:627,636). A second copy is a second thing that can drift.
+  #   (3) NO SHARED HELPER MODULE FOR THE CARD, and this is the likeliest way to build
+  #       the story wrong. Story 3.1's ESLint selector is scoped to
+  #       VariableDeclarator[id.name="metadata"] / generateMetadata and reaches NOTHING
+  #       else, so lifting the image object into src/lib/og-card.ts would move `alt:`
+  #       out of the selector's reach and SILENTLY DISABLE the enforcement the epic AC
+  #       names. Authored inline at all five sites; the whole-export gate is what stops
+  #       them drifting, not DRY.
+  #   (4) THE SAME-ORIGIN LINE IS HELD IN THREE PLACES, not two. The ledger names two
+  #       replacements (players/ and teams/ static-output) and they are mandatory -- but
+  #       they cover 2 documents of 1,407, both fixture-scale, for a property story 3.1's
+  #       gate correctly does NOT catch. canonical-output.test.ts already walks the whole
+  #       export and already extracts meta tags by key, so it takes the third assertion
+  #       for ~15 lines. Each of the three is driven red independently (A1).
+  #   (5) FIVE COMMENT CORRECTIONS, NOT FOUR. layout.tsx's verification.google docblock
+  #       says "this repo ships no app/public/" -- true when 3.4 wrote it, false the
+  #       moment this story lands, and load-bearing prose (it is the stated reason the
+  #       meta-tag verification method was chosen). The four the ledger names are located
+  #       BY CONTENT: their recorded line numbers predate 3.2's edits to the same files.
+  # THE CARD IS DRAWN OFFLINE IN THE SITE'S OWN TYPEFACES. app/.next/static/media carries
+  # the next/font woff2 subsets; fontTools 4.62.1 + brotli + Pillow 12.2.0 are on the
+  # system python, all measured at creation. Faces are selected by name ID 4 (3 x "Archivo
+  # SemiBold Regular", 7 x "Inter Regular"), never by filename -- the hashes change every
+  # build. Generator committed at app/scripts/generate-og-card.py with a docblock saying
+  # it is NOT in the build chain: Netlify has app/'s Node install and no Python (AD-13).
+  # app/public/ DOES NOT EXIST at b8c2fd9 and is created here. site-origin.test.ts walks
+  # src/** and scripts/** with no extension filter, so the .py generator IS scanned as
+  # UTF-8 and must not carry the domain; public/ is not walked, so the first binary
+  # committed under app/ is never read as text.
+  # A3 probe at creation: tree clean; both Epic 3 collision files (page.tsx,
+  # SiteHeader.tsx) clean. Re-run at Task 1 -- the story MODIFIES page.tsx and aborts
+  # there if 3.9 has taken it.
+  # BASELINES MEASURED, NOT INHERITED: 1,508 tests / 60 files and 1,406 index.html /
+  # 1,407 .html at b8c2fd9. Task 1 re-measures both; they have moved repeatedly this epic.
+  # AC8 NEEDS A DEPLOY AND JUAN. The paste test is the AC ("verified by pasting, not by
+  # inspecting the tags") and both WhatsApp and Slack cache unfurls per URL -- every route
+  # here has been pasteable with no card for months, so the test uses a URL never pasted
+  # before or it measures a cache. gh auth switch -u juanrojasdp before pushing or it 403s.
+  # LEDGER: deferred-work.md:4382+ (D20-b, the og:image ban retired) is owned by this
+  # story and closes with it. No other entry fires.
+  3-3-og-image-twitter-card: ready-for-dev
   # Context created 2026-08-26 against baseline 8f1c4fc. Owns THREE NEW FILES ONLY --
   # app/src/app/sitemap.ts, app/src/app/robots.ts, app/src/app/sitemap.test.ts -- the
   # cleanest file footprint in Epic 3: zero overlap with 3-2/3-3 (page.tsx, layout.tsx),
@@ -4583,3 +4642,91 @@ action_items:
 #             Allow: /. DO NOT "FIX" A SITEMAP THREE CHECKS SAY IS SERVED CORRECTLY.
 #             NOT CLAIMED: the processed URL count. It should settle at 1,404; nobody has read it
 #             yet. AC8's bar is the submission and its date, and the live fetch exceeds it.
+
+# 2026-08-27: story 3-3 CONTEXTED, backlog -> ready-for-dev. THE OG:IMAGE CARD. Nine of ten
+#   Epic 3 stories will be spoken for; only 3-9 (home refactor) remains after this one.
+#   File: _bmad-output/implementation-artifacts/3-3-og-image-twitter-card.md
+#   Baseline b8c2fd9. A3 probe at creation: tree clean apart from the stray 0-byte `17` in the
+#   repo root (nobody's, not staged, A4); both collision files clean.
+#   OWNS 15 paths: app/public/og-card.png (NEW), app/scripts/generate-og-card.py (NEW),
+#   layout.tsx, page.tsx, matches/[slug]/page.tsx, players/[slug]/page.tsx,
+#   teams/[slug]/page.tsx, es.ts, en.ts, players/static-output.test.ts,
+#   teams/static-output.test.ts, canonical-output.test.ts, this file, deferred-work.md and
+#   the story file. page.tsx is the 3-9 collision file; the story ABORTS at Task 1 if 3-9
+#   has taken it, since it modifies rather than appends.
+#   THE EPIC TEXT IS STALE AND THE STORY SAYS SO IN ITS OWN D0. Measured on the export at
+#   b8c2fd9: og:locale="es_ES" already on all 1,407 (do not re-add -- the re-brief at :103),
+#   and twitter:card ALREADY SHIPS as "summary" on all 1,407, auto-derived by
+#   postProcessMetadata because openGraph is declared with no images. This story FLIPS that
+#   to summary_large_image; it does not add a Twitter card to a bare export. Genuinely new:
+#   og:type, og:site_name, og:image*.
+#   THE FIVE-VS-ONE ASYMMETRY, READ IN BOTH DIRECTIONS. `openGraph` is declared at all five
+#   sites so each REPLACES the layout's wholesale -- images/type/siteName need five copies,
+#   exactly as 3.2's url and locale did. `twitter` is declared at NO site, so ONE copy on the
+#   layout is inherited by all 1,407, the same mechanism that let 3.2's canonical live on the
+#   layout alone. The second half is VERIFIED ON THE EXPORT, not reasoned about: 3.2's D8 was
+#   a careful read of Next's source that the export flatly contradicted, and this is the same
+#   shape of claim. twitter.images is deliberately NOT authored -- postProcessMetadata
+#   back-fills it from openGraph.images (resolve-metadata.js:627,636).
+#   THE LIKELIEST WAY TO BUILD IT WRONG IS A TIDY REFACTOR. Story 3.1's ESLint selector is
+#   scoped to VariableDeclarator[id.name="metadata"] / generateMetadata and reaches nothing
+#   else, so lifting the image object into a shared src/lib/og-card.ts would move `alt:` out
+#   of the selector's reach and SILENTLY DISABLE the enforcement the epic AC names. Ruled:
+#   the card object is authored INLINE at all five sites; the whole-export gate is what stops
+#   the five drifting, not DRY. Both t()-bearing properties are also driven red once against
+#   a bare Spanish literal -- 3.1 added `alt`/`siteName` to the selector ahead of this story,
+#   and this is the demonstration that the hole is closed on the real shape.
+#   THE SAME-ORIGIN LINE IS HELD IN THREE PLACES, NOT TWO. The ledger's two replacements
+#   (players/, teams/ static-output) are mandatory and are REPLACEMENTS, never deletions --
+#   but they cover 2 documents of 1,407, both fixture-scale, for the one property story 3.1's
+#   gate correctly does not catch (<meta content> is not a fetching position, D20-b, pinned
+#   by assert-no-external-origins.test.ts:339). canonical-output.test.ts already walks the
+#   whole export and extracts meta tags by key, so the third assertion costs ~15 lines and
+#   raises the line from 2 documents to 1,407. All three driven red independently (A1), plus
+#   an A2 coincidence-green check that reverts ONE of the five `images` keys.
+#   FIVE COMMENT CORRECTIONS, NOT FOUR. layout.tsx's verification.google docblock states
+#   "this repo ships no app/public/" -- true when 3.4 wrote it three commits ago, false the
+#   moment this story lands, and load-bearing: it is the stated reason the URL-prefix
+#   verification method was chosen over a file drop. The four the ledger names are located BY
+#   CONTENT; their recorded line numbers predate 3.2's edits to the same four files. The
+#   replacement prose is NOT invented -- ARCHITECTURE-SPINE.md:110 (AD-11, amended 2026-08-26)
+#   already carries the ruling verbatim, and the architecture needs no edit.
+#   THE CARD IS DRAWN OFFLINE IN THE SITE'S OWN TYPEFACES, which is the one part of this story
+#   that could have gone to a stock font or a network fetch. app/.next/static/media carries the
+#   next/font woff2 subsets; fontTools 4.62.1 + brotli + Pillow 12.2.0 are on the system
+#   python -- all four measured at creation, none added to package.json. Faces are selected by
+#   name ID 4 (3 x "Archivo SemiBold Regular", 7 x "Inter Regular"), NEVER by filename: the
+#   hashes change on every build and a hard-coded one makes the generator unreproducible a
+#   build later. Palette from globals.css's canonical dark :root. Generator committed at
+#   app/scripts/generate-og-card.py with a loud docblock: it is NOT in the build chain --
+#   Netlify runs `npm run build` with app/'s Node install and has no Python (AD-13, NFR-8).
+#   download_pmsr_corpus.py is the shipped precedent for a Python authoring tool no build step
+#   invokes.
+#   FIRST BINARY UNDER app/, AND THE DRIFT GATE WAS CHECKED AGAINST IT. site-origin.test.ts
+#   walks src/** and scripts/** with NO extension filter and reads every file as UTF-8, so the
+#   .py generator IS scanned and must not carry the domain in code or comment; app/public/ is
+#   not walked (only src, scripts and top-level *.{ts,mjs,json,toml}), so the PNG is never read
+#   as text. The story verifies that rather than asserting it. .png is also absent from the
+#   origin gate's SCANNED_EXTENSIONS, so the binary adds nothing to that surface either.
+#   BASELINES MEASURED, NOT INHERITED: 1,508 tests / 60 files, and 1,406 index.html / 1,407
+#   .html at b8c2fd9. Task 1 re-measures both. Route count is unchanged by this story and is a
+#   PRE-3.9 number -- 3.9 mints four UX-DR24 routes and takes it to 1,410.
+#   KNOWN FLAKE CARRIED FORWARD, not this story's: static-output.test.ts's TEMPLATE-literal
+#   case times out at 5000ms under full-suite load and passes 50/50 standalone. Recorded in
+#   the 3.2 review as a verification note.
+#   AC8 NEEDS A DEPLOY AND A HUMAN, AND IT IS A REAL TASK. "A real link pasted into WhatsApp
+#   and Slack renders a card with an image -- verified by pasting, not by inspecting the
+#   tags." Both services cache unfurls PER URL and every route here has been pasteable with no
+#   card for months, so the test uses a URL never pasted before or it measures a cache rather
+#   than the deploy. Task 9.4 hands Juan the exact URL. gh auth switch -u juanrojasdp before
+#   pushing or it 403s; Netlify builds from app/ per netlify.toml.
+#   WRITTEN FOR 3-9, WHICH GOES SECOND (story §D14): page.tsx's generateMetadata survives the
+#   rewrite intact -- the canonical/og:image metadata and the refactored body must COEXIST,
+#   which is 3.9's own AC. url:"./" and locale:"es_ES" are load-bearing and silent when
+#   dropped. The four new routes need this pattern only if they declare openGraph themselves;
+#   if they declare `alternates` for any reason they must re-declare canonical:"./" too. All
+#   three whole-export gates (canonical, og:image, sitemap) pick the new routes up
+#   AUTOMATICALLY and go red on one that ships without a card -- by design, so 3.9 does not
+#   have to remember to edit a file it has no reason to open.
+#   LEDGER: deferred-work.md:4382+ (D20-b, the og:image ban retired) is owned by this story
+#   and closes with it. L525 and L4071 do not fire.

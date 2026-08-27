@@ -1,0 +1,672 @@
+---
+baseline_commit: b8c2fd919a00cfcdfc026ec7877120ce0b7a521a
+---
+
+# Story 3.3: Same-Origin `og:image` Card & Twitter Card
+
+Status: ready-for-dev
+
+**Baseline commit sized against:** `b8c2fd9` (`Story 3.4 -> done: AC8 closed, and the failure message
+that was not one`). Tree clean at creation apart from the stray 0-byte `17` in the repo root, which
+belongs to nobody and is **not** staged by this story (A4).
+
+**This story is sized against story 3.2's CODE REVIEW (`18e9022`), not against the epic text.** The
+review overturned §D8 of 3.2's own ruling by rebuilding and reading the export, and three of the
+things this story was briefed to add **already ship**. Every claim below about what the export
+carries today was re-measured against `app/out/` at `b8c2fd9`, not read off prose. §D0 is the list of
+what changed under this story's feet; read it before Task 2.
+
+---
+
+## Story
+
+As someone pasting a link into WhatsApp, Slack, LinkedIn or X,
+I want the preview to render as a card with an image,
+so that a shared link looks like a product rather than a bare text row (FR-36, NFR-4).
+
+---
+
+## Acceptance Criteria
+
+**AC1 — one same-origin card asset, created by this story.**
+**Given** D20-c retires the `og:image` ban as an **over-read of AR-11** — a `<meta content>` URL is a
+hint a crawler may fetch off-page and off-session, and `FETCHING_POSITIONS` in
+`app/scripts/assert-no-external-origins.mjs` deliberately excludes it (the ban was self-imposed, not
+architectural)
+**When** one ~1200×630 PNG card is added at `app/public/og-card.png` — **`app/public/` does not exist
+today and is created by this story**
+**Then** `next build` copies it verbatim to `out/og-card.png`, **verified on disk**, and the emitted
+`og:image` URL is absolute and same-origin.
+**And** no second copy of the origin literal is introduced anywhere — not in a page file, not in a
+test, not in the generator. `site-origin.test.ts` counts occurrences under `app/` and allows exactly
+one (`src/lib/site-origin.ts`); it must still be green at the end of this story.
+
+**AC2 — `images`, `type` and `siteName` at ALL FIVE `openGraph` declaration sites.**
+**Given** 3.2's measured asymmetry — `openGraph` is **replaced wholesale** by any child that declares
+the key, which is what already forced five copies of `url` and five of `locale`
+**When** the card is authored
+**Then** `openGraph.images` (with `width`, `height` and `alt`), `openGraph.type` and
+`openGraph.siteName` appear at **all five** sites: `src/app/layout.tsx` plus the four
+`generateMetadata` routes (`/`, `/matches/[slug]`, `/players/[slug]`, `/teams/[slug]`).
+**And** `openGraph.locale` is **NOT touched** — `es_ES` already ships at all five sites, put there by
+3.2's code review. Re-adding it is a no-op at best and a drift risk at worst (§D0).
+
+**AC3 — `twitter: { card: "summary_large_image" }`, and it is a FLIP, not an addition.**
+**Given** the measured baseline: **all 1,407 exported documents already carry
+`<meta name="twitter:card" content="summary">`**, auto-derived by Next's `postProcessMetadata` because
+`openGraph` is declared and has no images
+**When** the card ships
+**Then** every exported document carries `twitter:card = "summary_large_image"`, plus `twitter:image`
+and `twitter:image:alt`.
+**And** `twitter.images` is **not authored** — `postProcessMetadata` back-fills it from
+`openGraph.images`, and a second copy is a second thing that can drift (§D5).
+
+**AC4 — the alt text and `openGraph.siteName` both come through `t()`, inside the gated scope.**
+**Given** story 3.1 added `alt` and `siteName` to `eslint.config.mjs`'s metadata selector
+**When** the card's alt text and site name are authored
+**Then** both are `t()` calls and neither is a bare literal — a bare Spanish literal is an **error**
+under `--max-warnings 0`, so this is enforced, not advisory.
+**And** both properties are authored **inside** a `metadata` declarator or a `generateMetadata`
+function, because that is the only AST scope the 3.1 selector reaches. Lifting the image object into
+a shared helper module would move `alt:` out of the selector's reach and **silently disable the
+enforcement this AC names** (§D8). The rule is demonstrated red once, on this story's own shape,
+before it is trusted.
+
+**AC5 — the two shipped assertions are REPLACED, never merely deleted, and each is proved able to fail.**
+**Given** `app/src/app/players/static-output.test.ts:125-126`
+(`expect(playerHtml(QUINONES)).not.toContain("og:image")`) and
+`app/src/app/teams/static-output.test.ts:139-140` (`expect(metaContent(html, "og:image")).toBeNull()`)
+**When** they are updated
+**Then** each is **replaced** by an assertion that `og:image` is **present AND starts with
+`SITE_ORIGIN`** (imported, never spelled).
+**And** per A1 each replacement is driven **RED**: an off-origin `og:image` written into that route's
+exported HTML makes it fail, and the command plus its failing output are recorded. Deleting an
+assertion is never how a gate is satisfied.
+**And** because **this test is the only thing holding the same-origin line** — story 3.1's gate
+correctly does not catch `<meta content>`, since that is not a fetching position — the line is *also*
+held over the **whole export**, not only over two fixture routes: `canonical-output.test.ts`, which
+already parses every meta tag of all 1,407 documents, gains an `og:image` present-and-same-origin
+assertion driven red the same way (§D9). Two of 1,407 is a thin line for a property with no other
+guard.
+
+**AC6 — the source comments asserting the ban are corrected, so the ban cannot be re-derived from prose.**
+**Given** the four comments the ledger names — `matches/[slug]/page.tsx`, `page.tsx`,
+`players/[slug]/page.tsx`, `teams/[slug]/page.tsx` (**locate them by content, not by the recorded line
+numbers, which predate 3.2's edits to all four files**)
+**When** the ban is retired
+**Then** each states the **D20 scoping**: AR-11 bars external and third-party requests; a same-origin
+`og:image` is not one, and `<meta content>` is deliberately outside `FETCHING_POSITIONS`.
+**And** a **fifth** stale claim is corrected in the same pass: `layout.tsx`'s `verification.google`
+docblock states *"this repo ships no `app/public/`"*, which this story makes false. A reader who
+re-derives the premise from a different paragraph is exactly the failure this AC exists to stop.
+
+**AC7 — A3 file ownership, or abort.**
+**Given** A3 and the known Epic 3 collision on `app/src/app/page.tsx` (3.2/3.3 metadata vs 3.9 rewrite)
+**When** this story edits that file
+**Then** the file-ownership probe has run at Task 1 and this story owns that path for the duration,
+**or it aborts at that task and says so**. The tree was clean at creation; another session can start
+at any time, so the probe is re-run at dev time rather than inherited.
+
+**AC8 — the deploy, and a human pasting a real link.**
+**Given** the deploy
+**When** it completes
+**Then** a real `mundial-stats.juancr.dev` link pasted into **WhatsApp** and **Slack** renders a card
+with an image — **verified by pasting, not by inspecting the tags**.
+**And** the URL used is one **never pasted before** (a specific player or match route), because both
+services cache unfurls per URL and every route on this site has been pasteable with no card for
+months — a cached miss would report failure on a correct implementation, and a cached hit is not
+possible here. The URL used and the result on each service are recorded.
+
+**AC9 — the full chain is green and nothing is newly skipped.**
+**Given** `npm run build` (lint → typecheck → schema assert → `next build` → `copy-data` → origin gate)
+**When** it runs after this story
+**Then** it is green end to end, the origin gate exits 0, the route count is unchanged at **1,406**,
+and the suite is green with **0 skipped**.
+
+---
+
+## Tasks / Subtasks
+
+- [ ] **Task 1 — A3 probe and the measured baseline (AC 7, AC 9)**
+  - [ ] 1.1 `git status --porcelain` and `git status --porcelain -- app/src/app/page.tsx
+        app/src/components/SiteHeader.tsx`. Record the result. If another session holds `page.tsx`,
+        **abort here and say so** — the story modifies that file, it does not append to it.
+  - [ ] 1.2 Record the paths this story owns (§Files). Do not stage the stray root file `17`.
+  - [ ] 1.3 Re-measure the test baseline yourself: `npx vitest list | grep -c " > "` and
+        `npx vitest list --filesOnly | grep -c "\.test\."`. Creation-time figure at `b8c2fd9`:
+        **1,508 tests / 60 files**. It has moved repeatedly this epic — do not inherit it, and if it
+        differs, find out why before proceeding.
+  - [ ] 1.4 Re-measure the route baseline: `find out -name "index.html" | wc -l` → **1,406**, and
+        `find out -name "*.html" | wc -l` → **1,407** (the extra is `out/404.html`). Note that any
+        `out/` in the shared tree may be another session's build; if the figures disagree, rebuild
+        before believing them.
+  - [ ] 1.5 Confirm the pre-change tag baseline on one document per route class, so the diff is read
+        against fact rather than against the epic text:
+        `grep -o '<meta [^>]*"\(og\|twitter\):[a-z_:]*"[^>]*>' out/index.html`. Expect **og:title,
+        og:description, og:url, og:locale, twitter:card=summary, twitter:title, twitter:description**
+        — and **no og:type, no og:site_name, no og:image, no twitter:image**.
+
+- [ ] **Task 2 — the card asset (AC 1)**
+  - [ ] 2.1 Author `app/scripts/generate-og-card.py` (§D2). Deterministic, offline, no network. It
+        reads the site's own typefaces out of `app/.next/static/media/*.woff2`, converts them with
+        `fontTools`, and draws with Pillow. Its docblock must state loudly that it is an **authoring
+        tool and NOT part of the build chain** — Netlify runs `npm run build` with `app/`'s Node
+        install alone and has no Python (AD-13, NFR-8).
+  - [ ] 2.2 Identify the faces by name rather than by filename hash — the hashes change on every
+        `next build`. Measured at `b8c2fd9`: `fontTools.ttLib.TTFont(f)['name'].getDebugName(4)`
+        returns `Archivo SemiBold Regular` for three files and `Inter Regular` for seven. Select by
+        that string; fail loudly if neither is found rather than falling back to a system font.
+  - [ ] 2.3 Draw the card at **1200×630** on the canonical **dark** palette, from `globals.css`'s
+        `:root` block: `--surface-base #0e1114`, `--ink-primary #f2f5f7`, `--accent-lime #c3f53c`,
+        `--accent-cyan #3ddbe8`. Dark is canonical (`globals.css:12`), so the card matches what a
+        no-JS visitor lands on. Content is the wordmark plus canonical-Spanish supporting copy (§D11).
+  - [ ] 2.4 Write `app/public/og-card.png`. Record its byte size and keep it **well under 300 KB**
+        (§D12). Verify the pixel dimensions from the written file, not from the draw call.
+  - [ ] 2.5 `npm run build`, then verify **on disk** that `out/og-card.png` exists, is a **file** not a
+        directory, and is byte-identical to `app/public/og-card.png`. `sitemap.test.ts:343`'s
+        `statSync(...).isFile()` is the shipped precedent for why "it is a file" is asserted rather
+        than assumed under `trailingSlash: true`.
+  - [ ] 2.6 Confirm nothing under `app/` newly fails because a Python file now lives in `app/scripts/`:
+        `npm run lint` (eslint's globs do not match `.py`) and `npm test -- site-origin`.
+        **`site-origin.test.ts` walks `app/src/**` and `app/scripts/**` with NO extension filter and
+        reads every file it finds as UTF-8** (`:37-56`), so the generator **is** scanned — it must not
+        contain the domain, in code or in a comment. `app/public/` is **not** walked (only `src`,
+        `scripts`, and top-level `app/*.{ts,mjs,json,toml}`), so the binary PNG is never read as text;
+        confirm that rather than assuming it, since this is the first binary committed under `app/`.
+
+- [ ] **Task 3 — the locale key (AC 4)**
+  - [ ] 3.1 Mint `meta.ogImageAlt` in `src/locales/es.ts` under the existing `meta` namespace. **Not
+        under `app.*`**: `i18n.test.ts:2309` pins `Object.keys(es.app)` **exactly** to `["siteName"]`
+        and a key parked there goes instantly red.
+  - [ ] 3.2 Add the `en` counterpart. Parity is enforced by the **type system**, not by a test — `en`
+        is typed as `Dictionary`, derived from the `es` shape (`src/lib/i18n.ts:1-8`), so `tsc` fails
+        until both carry it. Confirm that by adding the `es` key alone first and seeing typecheck go
+        red; that is the cheapest available red proof of the parity mechanism.
+  - [ ] 3.3 The alt describes the **card image**, not the site. It is the text a screen-reader user
+        hears in place of an unfurled preview. The `en` value is authored and correct but is **never
+        emitted** (§D11) — that is the existing, shipped behaviour of `meta.title` and
+        `meta.description`, not a new defect.
+
+- [ ] **Task 4 — the five `openGraph` sites (AC 2, AC 4)**
+  - [ ] 4.1 `src/app/layout.tsx` — extend the `metadata` export's `openGraph` with `type`, `siteName`
+        and `images`. This is the object that reaches `/about`, `/glossary`, `/compare` and the three
+        not-found artifacts; none of those three static routes is edited, and their standing docblock
+        rulings against a `metadata` export are **not** reopened (§D3).
+  - [ ] 4.2 The same three keys in `src/app/page.tsx`'s `generateMetadata`.
+  - [ ] 4.3 The same three keys in `src/app/matches/[slug]/page.tsx`'s `generateMetadata`.
+  - [ ] 4.4 The same three keys in `src/app/players/[slug]/page.tsx`'s `generateMetadata`.
+  - [ ] 4.5 The same three keys in `src/app/teams/[slug]/page.tsx`'s `generateMetadata`.
+  - [ ] 4.6 **Do not touch `locale`.** It already reads `es_ES` at all five sites. **Do not touch
+        `url: "./"`.** Both are load-bearing and both carry a docblock saying so; this story's edit
+        must leave them byte-identical.
+  - [ ] 4.7 The image `url` is the **relative** `"/og-card.png"`, resolved absolutely by
+        `metadataBase`. An absolute literal would be a second copy of the origin and turns
+        `site-origin.test.ts` red.
+  - [ ] 4.8 Author `alt: t("meta.ogImageAlt")` and `siteName: t("app.siteName")` **inline at each
+        site**, not through a shared helper — see §D8. Five copies is the deliberate cost; §D9's
+        whole-export gate is what stops them drifting, not DRY.
+
+- [ ] **Task 5 — the Twitter card, authored once (AC 3)**
+  - [ ] 5.1 Add `twitter: { card: "summary_large_image" }` to `src/app/layout.tsx`'s `metadata`
+        export, **and nowhere else** (§D4).
+  - [ ] 5.2 **Verify the inheritance rather than reasoning about it.** After the build, confirm every
+        one of the 1,407 documents carries `twitter:card="summary_large_image"` — including a match,
+        a player and a team route, which declare `openGraph` but not `twitter`. If **any** document
+        still reads `summary`, the inheritance reading is wrong and the key goes to all five sites
+        instead. 3.2's §D8 was a correct-sounding reading of Next's source that the export overturned;
+        this is the same shape of claim.
+  - [ ] 5.3 Confirm `twitter:image` and `twitter:image:alt` are present on all 1,407 documents
+        **without** authoring `twitter.images` (§D5).
+
+- [ ] **Task 6 — the four (five) comment corrections (AC 6)**
+  - [ ] 6.1 `src/app/matches/[slug]/page.tsx` — the line `// No og:image — zero external/asset
+        requests (AR-11).` immediately above the `url: "./"` docblock.
+  - [ ] 6.2 `src/app/page.tsx` — the identical line, same position.
+  - [ ] 6.3 `src/app/players/[slug]/page.tsx` — the `generateMetadata` docblock sentence *"NO
+        `og:image`: AR-11 permits zero external or asset requests."* Keep its `AC 5` citation honest
+        while rewriting around it.
+  - [ ] 6.4 `src/app/teams/[slug]/page.tsx` — the same sentence, citing `AC 3`.
+  - [ ] 6.5 `src/app/layout.tsx` — *"this repo ships no `app/public/`"* in the `verification.google`
+        docblock. It is now false and it is load-bearing prose: it is the stated reason the meta-tag
+        verification method was chosen over a file drop.
+  - [ ] 6.6 Each replacement states the D20 scoping in its own words rather than pointing at a
+        document: AR-11 bars external and third-party requests; `<meta content>` is deliberately
+        outside `FETCHING_POSITIONS`; the same-origin property is held by the tests §D9 names, and by
+        nothing else.
+  - [ ] 6.7 **Leave `scripts/assert-no-external-origins.mjs:78` alone.** Its *"while passing
+        `og:image`, the one tag that genuinely makes a third party fetch an asset"* is the gate's own
+        rationale for an **off-origin** `og:image` and stays true. Confirm rather than assume.
+
+- [ ] **Task 7 — the same-origin line, in three places, each driven RED (AC 5, A1)**
+  - [ ] 7.1 `players/static-output.test.ts` — replace `not.toContain("og:image")` with an assertion
+        that `metaContent(html, "property", "og:image")` is a string starting with `SITE_ORIGIN`.
+        Note this file's `metaContent` takes **three** arguments (`html, attribute, name`).
+  - [ ] 7.2 `teams/static-output.test.ts` — replace `toBeNull()` likewise. Note this file's
+        `metaContent` takes **two** arguments (`html, property`) and matches `property|name`. The two
+        helpers differ; do not copy one call shape into the other file.
+  - [ ] 7.3 Rename both `it(...)` titles. A test titled *"emits NO og:image"* that asserts the
+        opposite is the next reader's trap.
+  - [ ] 7.4 Extend `src/app/canonical-output.test.ts` with a whole-export assertion (§D9): every
+        exported `.html` carries at least one `og:image`, and every `og:image` value starts with
+        `SITE_ORIGIN`. That file already walks all 1,407 documents and already extracts meta tags by
+        key (`:228`); reuse the existing collector rather than adding a second walk. Its header
+        docblock (`:13`, `:32-35`) currently scopes the file to 3.2's AC2/AC3/AC4 — widen it to say
+        this story's property lives here too, or the next reader deletes the assertion as
+        out-of-scope.
+  - [ ] 7.5 **RED PROOF ×3 (A1).** Write an off-origin `og:image` into the relevant exported
+        document(s) and re-run each of the three assertions. Record the command and the failing
+        output for each. Then restore the export (rebuild) and confirm green.
+  - [ ] 7.6 **RED PROOF for the ESLint rule (AC 4).** Replace one `alt: t("meta.ogImageAlt")` with a
+        bare Spanish literal and run `npm run lint`; record the error under `--max-warnings 0`. Then
+        do the same for `siteName`. Story 3.1 added both keys to the selector *ahead* of this story;
+        this is the demonstration that the hole is actually closed on this story's real shape.
+  - [ ] 7.7 **Coincidence-green check (A2).** Revert the `images` key at one of the five sites and
+        confirm §D9's whole-export assertion goes red naming that route class. If it stays green, the
+        gate is measuring something other than what it claims.
+
+- [ ] **Task 8 — the full chain and the export audit (AC 9)**
+  - [ ] 8.1 `npm run build` — green end to end, origin gate exit 0, **0 external subresources**, and
+        the site's own origin **absent from the informational `MENTIONED in text` line**. The gate's
+        own `assert-no-external-origins.test.ts:272` already pins *"PASSES a self-origin og:image and
+        does not even MENTION it — story 3.3 depends on this"*; confirm that holds on the real export,
+        not only on its fixture.
+  - [ ] 8.2 `npm test` — green, **0 skipped**, and the delta against Task 1.3's figure is exactly what
+        this story adds. State the number and the delta.
+  - [ ] 8.3 Route count unchanged: **1,406** `index.html`, **1,407** `.html`.
+  - [ ] 8.4 Audit the emitted tags across every route class — layout-only (`/about`, `/glossary`,
+        `/compare`, `404`) and all four `generateMetadata` classes. Every document must carry
+        `og:image`, `og:image:width`, `og:image:height`, `og:image:alt`, `og:type`, `og:site_name`,
+        `twitter:card="summary_large_image"`, `twitter:image`, `twitter:image:alt` — **and still**
+        `og:url`, `og:locale="es_ES"` and exactly one `<link rel="canonical">`. 3.2's four ACs are
+        this story's regression surface; do not assume they survived.
+  - [ ] 8.5 Confirm **0** `og:locale:alternate` and **0** `hreflang` across the export (3.2 AC4 —
+        this story introduces no per-locale anything, D17/D20).
+
+- [ ] **Task 9 — deploy and the paste test (AC 8) — REQUIRES JUAN**
+  - [ ] 9.1 Commit by pathspec (`git commit -- <paths>`), staging only §Files. Never `git add -A`.
+        Add-then-commit is not atomic here and a concurrent session's sweeping add can capture your
+        files between the two.
+  - [ ] 9.2 `gh auth switch -u juanrojasdp` **before** pushing, or the push 403s.
+  - [ ] 9.3 Push to `main`. Netlify builds from `app/` (`netlify.toml`: base `app`, command
+        `npm run build`, publish `out`). Wait for the deploy to go live and confirm
+        `https://mundial-stats.juancr.dev/og-card.png` returns the PNG with `Content-Type: image/png`.
+  - [ ] 9.4 **HAND OFF TO JUAN — this cannot be done by inspecting tags.** Ask him to paste **one URL
+        never pasted before** into **WhatsApp** and into **Slack**, and to report whether a card with
+        an **image** renders in each. Give him the exact URL to use. Record both results verbatim,
+        including a failure.
+  - [ ] 9.5 If either service renders no image, do not close the AC — record what rendered, and check
+        the two known culprits first: the file size against WhatsApp's limit (§D12), and an unfurl
+        cached from before the deploy (§D13).
+
+- [ ] **Task 10 — the record (A4, and the 3.9 hand-off)**
+  - [ ] 10.1 Fill the Dev Agent Record: every red proof with its command and output, the measured
+        baselines and deltas, the PNG's byte size and dimensions, the paste-test results.
+  - [ ] 10.2 Append to `sprint-status.yaml` — **append only, never regenerate**. It carries the
+        project journal and the Epic 2 retro action items.
+  - [ ] 10.3 Restate for story 3.9, in the completion notes, what it must preserve (§D14). 3.9 is the
+        only story left in this epic and it rewrites `app/src/app/page.tsx`.
+
+---
+
+## Dev Notes
+
+### §D0 — WHAT CHANGED UNDER THIS STORY'S FEET, AND WHY THE EPIC TEXT IS STALE
+
+Story 3.2's code review (`18e9022`) rebuilt the export and overturned its own §D8 ruling. The
+consequence for this story is recorded in `sprint-status.yaml:103`: *"STORY 3.3 IS RE-BRIEFED (Task
+8.5 corrected): it no longer adds `locale`, and four routes it was told were bare already carry a
+card."* Three of the four things the epic AC asks for are partly or wholly shipped. **Measured
+against `app/out/` at `b8c2fd9`, one document per route class:**
+
+| Tag | Today | This story |
+|---|---|---|
+| `og:title`, `og:description`, `og:url` | present on all 1,407 | untouched |
+| `og:locale` | `es_ES` on all 1,407 | **untouched — do NOT re-add** |
+| `og:type` | **absent everywhere** | added at 5 sites |
+| `og:site_name` | **absent everywhere** | added at 5 sites |
+| `og:image*` | **absent everywhere** | added at 5 sites |
+| `twitter:card` | **`summary` on all 1,407** | **flipped** to `summary_large_image` |
+| `twitter:title`, `twitter:description` | present on all 1,407 | untouched (auto-derived) |
+| `twitter:image*` | absent | arrives **automatically** from `openGraph.images` |
+
+The mechanism behind the last three rows is `postProcessMetadata`
+(`node_modules/next/dist/lib/metadata/resolve-metadata.js:619-655`): declaring `openGraph` **at all**
+makes Next back-fill a Twitter object from it, and `resolveTwitter`
+(`resolve-opengraph.js:175`) computes `card = card || (images?.length ? 'summary_large_image' :
+'summary')`. That is why a `summary` card already ships, and it is why `summary_large_image` would
+arrive even without AC3's explicit declaration. **Declare it anyway** — the AC asks for it, and an
+explicit value stops the card silently reverting to `summary` if a future story drops `images` from
+one site.
+
+### §D1 — the asset: one PNG, `app/public/og-card.png`, and `app/public/` is new
+
+`app/public/` genuinely does not exist at `b8c2fd9` (`ls app/public` → no such file). Next copies
+`public/` verbatim into the export under `output: "export"`, so the file lands at `out/og-card.png`
+and is served same-origin. `app/.gitignore` ignores `.next/` and `out/` only, so the PNG commits
+normally. The origin gate's `SCANNED_EXTENSIONS` (`assert-no-external-origins.mjs:58-68`) covers
+`.html .js .mjs .css .txt .json .webmanifest .svg .xml` — **`.png` is not scanned**, so the binary
+adds nothing to the gate's surface. `robots.ts` emits `Allow: /`, so the asset is crawlable.
+
+**The URL is relative.** `metadataBase: new URL(SITE_ORIGIN)` on the layout resolves `/og-card.png`
+absolutely at every site. Writing the origin out instead adds a second literal and turns
+`site-origin.test.ts` red — that suite counts the string across `app/src/**`, `app/scripts/**` and the
+top-level `app/*.{ts,mjs,json,toml}`, **comments included**, which is the trap the
+`verification.google` docblock already records hitting once.
+
+**`next/image` is not involved and must not be reached for.** `next.config.ts` pins
+`images: { unoptimized: true }` and AD-11 states *"all imagery is static assets; no runtime image
+optimization exists under export"*. A metadata image is a URL string in a `<meta>` tag; nothing
+renders it, nothing optimizes it, and no component imports it.
+
+### §D2 — the card is drawn in the site's OWN typefaces, offline, from the repo's own build output
+
+`next/font` ships only `.woff2`, which Pillow cannot read. The toolchain that closes the gap is
+already installed on this machine and needs no network — **measured at creation**:
+
+- `fontTools` **4.62.1** with `brotli`, on the system `python`
+- `Pillow` **12.2.0**, same interpreter
+- `app/.next/static/media/` carries **10** subset `.woff2` files; `TTFont(f)['name'].getDebugName(4)`
+  identifies **3 × `Archivo SemiBold Regular`** and **7 × `Inter Regular`**
+
+So: convert woff2 → TTF with `fontTools`, draw with Pillow, write the PNG. The card ends up in
+Archivo and Inter — the site's real faces — with no network call and no new dependency in
+`package.json`.
+
+**Select by face name, never by filename.** The hashes in `.next/static/media/` change on every
+`next build`; a hard-coded filename makes the generator unreproducible one build later. Fail loudly
+if neither face is found rather than substituting a system font — a card in Arial is a card that
+looks like someone else's site.
+
+The generator lives at `app/scripts/generate-og-card.py`. `app/scripts/` currently holds three `.mjs`
+files that are **all** in the `npm run build` chain, so the new file's docblock must say plainly that
+it is not: Netlify runs `npm run build` with `app/`'s Node install alone and has no Python interpreter
+(AD-13, NFR-8). It is committed because an uncommitted generator means the card can never be
+regenerated identically — `download_pmsr_corpus.py` at the repo root is the shipped precedent for a
+Python authoring tool that no build step invokes.
+
+### §D3 — five copies of `openGraph`, and the asymmetry that forces them
+
+3.2 established this by measurement and paid for getting it wrong once. Next's `mergeMetadata`
+branches on **key presence** per top-level key. `openGraph` is declared at all five sites, so each
+child **replaces** the layout's object wholesale — which is why `url: "./"` and `locale: "es_ES"` each
+exist five times, with a docblock at every site explaining why. `images`, `type` and `siteName` ride
+exactly the same trap: put them only on the layout and they reach `/about`, `/glossary`, `/compare`
+and the 404, and **1,402 documents get no card at all**.
+
+The three static routes are **not edited**. Each carries a standing docblock ruling against an
+`export const metadata`, and the layout's `openGraph` is what reaches them — the same reasoning that
+let 3.2 satisfy its canonical AC without reopening those rulings.
+
+### §D4 — one copy of `twitter`, and it is the mirror image of §D3
+
+`twitter` is declared at **no** site today. A key absent from a child is **inherited**, which is
+precisely why 3.2's `alternates: { canonical: "./" }` on the layout alone reaches all 1,406 routes.
+So `twitter: { card: "summary_large_image" }` on the layout should reach every document.
+
+**Verify it; do not reason about it (Task 5.2).** 3.2's §D8 was a careful reading of Next's source
+that the export flatly contradicted. The same class of claim is being made here, and the cost of
+being wrong is 1,402 documents advertising a small card. The measured baseline makes the check easy:
+today every document reads `twitter:card = summary`, so a single grep across route classes after the
+build settles it.
+
+### §D5 — `twitter.images` is NOT authored
+
+`postProcessMetadata:627` computes `hasTwImages = Boolean(twitter?.hasOwnProperty('images') &&
+twitter.images)`, and `:636` back-fills `autoFillProps.images = openGraph.images` when it is false.
+The layout's `twitter` object has no `images` key, so the merged metadata picks up **each route's
+own** `openGraph.images`. Authoring `twitter.images` would create a second copy of the card URL at
+five more sites, each able to drift from its `openGraph` twin, in exchange for nothing. Confirm
+`twitter:image` and `twitter:image:alt` land on the export (Task 5.3) rather than trusting this note.
+
+### §D6 — the alt key is `meta.ogImageAlt`
+
+`es.meta` already holds `title` and `description` and is **not** inventory-pinned. `es.app` **is** —
+`i18n.test.ts:2309` asserts `Object.keys(es.app)` equals exactly `["siteName"]`, so a key parked
+there goes red instantly. That pin is the same one the 2.14 search namespace docblock records
+tripping over (`es.ts:2447`).
+
+Locale parity is enforced by the **type system**, not by a test: `en` is typed `Dictionary`, derived
+from the canonical `es` shape (`i18n.ts:1-8`), so `tsc --noEmit` fails until both dictionaries carry
+the key. Task 3.2 turns that into an actual red demonstration rather than an assertion about a
+mechanism.
+
+Duplicate values across the two dictionaries are **allowed** — the only inventory enforcement in this
+repo is the composed caption inventory, not a global uniqueness rule.
+
+### §D7 — `siteName` reuses `app.siteName`
+
+`t("app.siteName")` is `"WC Stats"` in both dictionaries and is already the site segment of all four
+composed titles. Minting a second key for the same string would be a dead key by 2.18's binding rule.
+
+### §D8 — THE HELPER-MODULE TRAP, AND IT WOULD DISABLE THE AC THAT NAMES IT
+
+The 3.1 selector (`eslint.config.mjs:207` and `:219`) is scoped to
+`:matches(VariableDeclarator[id.name="metadata"], FunctionDeclaration[id.name="generateMetadata"],
+VariableDeclarator[id.name="generateMetadata"]) Property[key.name=/^(…|alt|siteName)$/]`. It reaches
+**only** those two AST scopes.
+
+So a tidy-looking `src/lib/og-card.ts` exporting the image object would put `alt:` **outside the
+selector's reach**, and a bare Spanish literal there would ship with the build green — the exact
+failure mode AC4 exists to prevent, arrived at by refactoring rather than by carelessness. The
+epic's own words are *"Story 3.1's ESLint selector will error on a bare Spanish literal … so this is
+enforced, not advisory"*; a helper makes that sentence false.
+
+**Author the image object inline at all five sites.** Five copies is the cost, and it is paid
+deliberately. What stops them drifting is §D9's whole-export gate, which measures the emitted
+artifact rather than the source — the stronger instrument in every case this project has measured.
+
+The eslint config's own docblock (`:196-206`) records that the `key.value` arm was split off
+precisely so `{ "siteName": t("app.siteName") }` is **not** an error while `{ "siteName": "WC Stats" }`
+is. Both spellings are safe for the value; only a literal value is gated.
+
+### §D9 — the same-origin line, and why two documents is not a line
+
+The epic and the ledger both say this test is *"the only thing holding the same-origin line"*, because
+story 3.1's gate correctly does **not** treat `<meta content>` as a fetching position (D20-b, and
+`assert-no-external-origins.test.ts:339` pins that an off-origin `og:image` is **reported and never
+failed**). That is right, and it makes the replacement assertions load-bearing in a way ordinary
+tests are not.
+
+The two the epic names cover **one player route and one team route** — 2 documents out of 1,407, both
+fixture-scale. `canonical-output.test.ts` already walks the entire export and already extracts meta
+tags by key (`:228`), for exactly this class of property. Extending it is ~15 lines against the same
+collector and raises the line from 2 documents to 1,407, including every route class the two named
+tests do not touch: `/`, `/matches/[slug]`, `/about`, `/glossary`, `/compare` and the three not-found
+artifacts.
+
+All three are required, and each is driven red independently (Task 7.5). The two named replacements
+are **not** superseded by the third — the ledger names them specifically, and a per-route test that
+fails names the route.
+
+### §D10 — five comments, not four, and the ruled wording already exists
+
+**Do not invent the replacement prose.** `ARCHITECTURE-SPINE.md:110` (AD-11) was amended on
+2026-08-26 and already carries the ruling in its authoritative form:
+
+> The "zero external requests" clause scopes to **THIRD-PARTY ORIGINS, not to assets as such**
+> (clarified by D20, 2026-08-26): same-origin static assets under the export are in bounds, and a URL
+> in a `<meta>` tag (`og:image`, `twitter:image`) **is not a request the page makes at all** — it is a
+> hint a crawler may fetch, off-page and off-session, and it cannot touch LCP, TBT, the payload budget
+> or the NFR-9 telemetry surface. The mechanical enforcement is
+> `app/scripts/assert-no-external-origins.mjs`, whose `FETCHING_POSITIONS` list is the operative
+> definition of "a request"; `<meta content>` is deliberately not in it.
+
+Each of the five corrected comments should compress that to its own site's register and add the one
+thing the spine does not say: **what now holds the same-origin property instead** (§D9). The
+architecture needs no edit — AR-11 and AD-11 were both amended when D20 was ruled, ahead of this
+story.
+
+
+
+The ledger names four (`deferred-work.md:4382+`). A fifth is now false and matters as much: the
+`verification.google` docblock in `layout.tsx` states the URL-prefix verification method was chosen
+*"because this repo ships no `app/public/`"*. After this story it does. Left uncorrected, the next
+reader re-derives the ban's premise from a paragraph about Search Console.
+
+The recorded line numbers (`matches/[slug]/page.tsx:49`, `page.tsx:74`, `players/[slug]/page.tsx:53-55`,
+`teams/[slug]/page.tsx:64-66`) **predate 3.2's edits to all four files**. Locate them by content. As
+of `b8c2fd9`, `page.tsx:74` and `matches/[slug]/page.tsx:49` still happen to be correct; the two
+docblock sentences have moved.
+
+### §D11 — the card's baked text is canonical Spanish, and the `en` alt is not dead
+
+A PNG cannot be translated per reader, and this site has one canonical locale per route (D17, upheld
+by D20). Every metadata string it emits today is already canonical Spanish regardless of the reader's
+toggle — `og:title`, `og:description`, `twitter:title`, `twitter:description` — under the standing
+unruled `<title>`-language question (owner: Juan, filed once under 2.12). Spanish copy on the card is
+consistent with that, not a new departure, and it should be recorded as such rather than left to look
+like an oversight.
+
+The `en` value of `meta.ogImageAlt` is therefore authored, correct, and **never emitted** — exactly
+like `en.meta.title` today. It exists because the `Dictionary` type requires it and because the
+`<title>`-language question could be ruled the other way later. It is not a dead key.
+
+### §D12 — weight, and which consumer is strictest
+
+WhatsApp is the binding constraint, not X. Keep `og-card.png` **well under 300 KB**; a flat-colour
+1200×630 card with a limited palette lands in the tens of KB, so this is a check rather than a
+negotiation. `og:image:width`/`height` are emitted because unfurlers that read them skip a fetch to
+discover the dimensions. 1200×630 is 1.91:1, which is what `summary_large_image` expects.
+
+There is **no export-size gate** in this repo to trip (checked: nothing asserts over `out/` bytes),
+so the number has to be recorded deliberately or it is not recorded at all.
+
+### §D13 — the paste test is the AC, and unfurl caches will lie to you
+
+AC8 says *"verified by pasting, not by inspecting the tags"* because inspecting the tags is what the
+other eight ACs already do. It needs a live deploy and a human.
+
+Both WhatsApp and Slack cache unfurls **per URL**. Every route on this site has been pasteable with
+no card for months, so a previously-pasted URL can return a cached image-less preview against a
+perfectly correct deploy. Use a URL that has never been pasted — one specific player or match route —
+and say which one was used. If a card still fails to render, check the file size (§D12) and the
+`Content-Type` on the live asset before touching the metadata.
+
+Deploy path: push to `main` → Netlify builds `app/` per `netlify.toml`. `gh auth switch -u
+juanrojasdp` first or the push 403s.
+
+### §D14 — WHAT STORY 3.9 MUST PRESERVE
+
+3.9 (Home Page Refactor) is the only story left in Epic 3 and it **rewrites
+`app/src/app/page.tsx`** — the one file this story and 3.9 both own. 3.9's own AC rules that whichever
+lands second preserves the other's work. **This story lands first.** So, stated plainly for 3.9:
+
+1. **`generateMetadata` in `page.tsx` survives the rewrite intact.** After this story it carries
+   `title`, `description`, and an `openGraph` object holding `title`, `description`, `url: "./"`,
+   `locale: "es_ES"`, `type`, `siteName` and `images`. The canonical/`og:image` metadata and the
+   refactored body must **coexist**; a body rewrite that drops or regenerates the metadata export
+   silently breaks 3.2's AC2/AC3 and this story's AC2.
+2. **`url: "./"` and `locale: "es_ES"` are not decorative.** Both carry docblocks saying they are
+   load-bearing because `openGraph` is replaced wholesale. Dropping either is silent.
+3. **The four new UX-DR24 routes — `/tournament`, `/tops`, `/players`, `/teams` — need this story's
+   metadata pattern applied to them**, in whichever form 3.9 gives them:
+   - if a route declares **no** `openGraph`, it inherits the layout's — card included — and needs
+     nothing;
+   - if it declares `openGraph` for any reason, it **replaces the layout's wholesale** and must carry
+     all seven keys: `title`, `description`, `url: "./"`, `locale: "es_ES"`, `type`, `siteName`,
+     `images`;
+   - if it declares `alternates` for any reason, it must re-declare `canonical: "./"` alongside
+     (3.2's sharper trap, recorded in `layout.tsx`'s docblock).
+4. **The whole-export gates pick the four routes up automatically.** `canonical-output.test.ts` and
+   §D9's `og:image` assertion walk every `.html` in the export; they do not need editing, and they
+   will go red on a new route that ships without a card. `sitemap.ts` picks them up too, by walking
+   `src/app` for `page.tsx`. That is by design in all three cases — 3.9 should not have to remember to
+   edit a file it has no reason to open.
+5. Route count after 3.9 is **1,410**, not 1,406 (3.9's own AC supersedes the earlier "stays 1,406").
+   Any count this story records is a pre-3.9 number.
+
+### Files this story owns
+
+**NEW**
+- `app/public/og-card.png`
+- `app/scripts/generate-og-card.py`
+
+**MODIFIED**
+- `app/src/app/layout.tsx` (openGraph +3 keys; `twitter`; the `app/public/` comment correction)
+- `app/src/app/page.tsx` **← the A3 collision file (3.9)**
+- `app/src/app/matches/[slug]/page.tsx`
+- `app/src/app/players/[slug]/page.tsx`
+- `app/src/app/teams/[slug]/page.tsx`
+- `app/src/locales/es.ts`
+- `app/src/locales/en.ts`
+- `app/src/app/players/static-output.test.ts`
+- `app/src/app/teams/static-output.test.ts`
+- `app/src/app/canonical-output.test.ts`
+- `_bmad-output/implementation-artifacts/3-3-og-image-twitter-card.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (append only)
+- `_bmad-output/implementation-artifacts/deferred-work.md` (close the D20-b entry at `:4382+`)
+
+**NOT owned, do not stage:** the stray 0-byte `17` in the repo root (A4); anything under
+`app/src/components/`; `app/scripts/assert-no-external-origins.mjs` (§Task 6.7);
+`app/eslint.config.mjs` (3.1's, and already correct).
+
+### Measured baseline at `b8c2fd9`
+
+| Thing | Figure | How |
+|---|---|---|
+| Tests | **1,508** / **60** files | `npx vitest list` |
+| Routes | **1,406** `index.html`, **1,407** `.html` | `find out -name …` |
+| `app/public/` | **does not exist** | `ls app/public` |
+| Origin literal | **1** occurrence under `app/` | `site-origin.test.ts` |
+| `og:image` in export | **0** documents | grep across route classes |
+| `twitter:card` in export | **`summary`**, all 1,407 | grep across route classes |
+| Next | `16.2.11` | `package.json` |
+| Pillow / fontTools | `12.2.0` / `4.62.1` + brotli | system `python` |
+| Archivo / Inter woff2 | 3 / 7 files | `.next/static/media/`, by face name |
+
+**Known load-induced flake, pre-existing and not this story's:** `static-output.test.ts`'s
+TEMPLATE-literal case times out at 5000 ms under full-suite load (60 files, 1,508 tests) and passes
+50/50 standalone in 2.6 s. Recorded in the 3.2 review as a verification note, not a finding. If it
+fires, re-run that file alone before investigating.
+
+### Standing Epic 3 criteria in force
+
+- **A1** — every gate driven red once, command and output recorded (Tasks 7.5, 7.6, 7.7). An assertion
+  that is retired is **replaced**, never deleted.
+- **A2** — no coincidence-green: Task 7.7 reverts one of the five `images` keys and requires the
+  whole-export gate to go red naming that route class.
+- **A3** — file-ownership probe at Task 1; abort on a held `page.tsx`.
+- **A4** — stage only §Files, by pathspec. Never `git add -A`.
+- **A5** — this story is the create-light half; every mechanism it names above was checked against the
+  installed `next@16.2.11`, the shipped export at `b8c2fd9`, or the running toolchain, and the source
+  of each figure is stated.
+- **A6** — the Epic 3 retrospective triggers at **epic close**, not here. `epic-3` is `in-progress`
+  and story 3.9 remains.
+
+### References
+
+- [Source: `_bmad-output/planning-artifacts/epics.md` § Epic 3, Story 3.3 — the eight-clause AC set]
+- [Source: `_bmad-output/planning-artifacts/epics.md` § Epic 3 — standing criteria A1–A6]
+- [Source: `_bmad-output/implementation-artifacts/deferred-work.md:4382-4396` — D20-b, the ban retired,
+  and "the two pinning assertions must be REPLACED, never merely deleted"]
+- [Source: `_bmad-output/implementation-artifacts/sprint-status.yaml:103-108` — story 3.3 re-briefed by
+  the 3.2 code review: no `locale`, four routes already carry a card]
+- [Source: commit `18e9022` — Story 3.2 code review, the ruling the export overturned]
+- [Source: commit `39889bf` — Story 3.1 code review; `<meta content>` stays out of `FETCHING_POSITIONS`]
+- [Source: `app/src/app/layout.tsx` — the wholesale-replacement docblock, and the `app/public/` claim
+  this story falsifies]
+- [Source: `node_modules/next/dist/lib/metadata/resolve-metadata.js:619-655` — `postProcessMetadata`]
+- [Source: `node_modules/next/dist/lib/metadata/resolvers/resolve-opengraph.js:163-176` —
+  `resolveTwitter`, and the `summary` / `summary_large_image` derivation]
+- [Source: `_bmad-output/planning-artifacts/architecture/architecture-wc-stats-2026-07-21/ARCHITECTURE-SPINE.md:106-110`
+  — AD-11, amended 2026-08-26: the ruled wording for the five comment corrections, and
+  `images: { unoptimized: true }`]
+- [Source: `app/eslint.config.mjs:196-221` — the metadata selector's two arms and its scope]
+- [Source: `app/src/lib/site-origin.test.ts:37-56` — the drift gate's scanned scope: `src/**`,
+  `scripts/**`, top-level `*.{ts,mjs,json,toml}`; `public/` is not walked]
+- [Source: `app/src/lib/assert-no-external-origins.test.ts:272-283, 339-351` — the two cases story 3.1
+  wrote *for* this story]
+- [Source: `app/src/app/canonical-output.test.ts` — the whole-export collector §D9 extends]
+- [Source: `netlify.toml` — base `app`, command `npm run build`, publish `out`]
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+
+### Debug Log References
+
+### Completion Notes List
+
+### File List
