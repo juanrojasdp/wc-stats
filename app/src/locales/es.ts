@@ -538,6 +538,21 @@ export const es = {
   meta: {
     title: "WC Stats — Analítica del Mundial 2026",
     description: "Análisis táctico y estadístico de los 104 partidos de la Copa Mundial 2026.",
+    /*
+     * The alt text of the Open Graph / Twitter card image (Story 3.3, AC4). It
+     * describes the CARD, not the site: it is what a screen-reader user hears
+     * in place of an unfurled preview, so it names what the picture shows
+     * rather than restating `description` above.
+     *
+     * It lives under `meta`, NOT under `app`: `i18n.test.ts` pins
+     * `Object.keys(es.app)` to exactly `["siteName"]`, so a key parked there
+     * goes red instantly. `meta` is not inventory-pinned.
+     *
+     * Authored as a t() call at all five metadata sites and never as a literal:
+     * `alt` is in the eslint metadata selector (Story 3.1), so a bare Spanish
+     * literal is a build ERROR under `--max-warnings 0`, not a warning.
+     */
+    ogImageAlt: "Tarjeta de WC Stats: analítica del Mundial 2026 sobre un campo de fútbol.",
   },
   match: {
     hero: {

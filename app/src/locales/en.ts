@@ -358,6 +358,20 @@ export const en: Dictionary = {
   meta: {
     title: "WC Stats — 2026 World Cup Analytics",
     description: "Tactical and statistical analysis of all 104 matches of the 2026 World Cup.",
+    /*
+     * AUTHORED, CORRECT, AND NEVER EMITTED — exactly like `title` and
+     * `description` above it, and for the same reason (Story 3.3, §D11).
+     *
+     * The card is a PNG: it cannot be translated per reader, and every
+     * metadata string this export emits is canonical Spanish whatever the
+     * reader's toggle says, under the standing unruled <title>-language
+     * question (owner: Juan). So the Spanish alt is what ships.
+     *
+     * This value is not a dead key: the `Dictionary` type derives from the `es`
+     * shape and requires it, and the <title>-language question could be ruled
+     * the other way later.
+     */
+    ogImageAlt: "WC Stats card: 2026 World Cup analytics over a football pitch.",
   },
   match: {
     hero: {

@@ -62,8 +62,18 @@ export function generateStaticParams(): { slug: string }[] {
  * `title:`/`description:` property, even when every fragment is a t() call.
  *
  * `openGraph` carries BOTH, because a `description` alone emits no OG tags at
- * all and AC 3 asks for OG. NO `og:image`: AR-11 permits zero external or asset
- * requests.
+ * all and AC 3 asks for OG. IT ALSO CARRIES A SAME-ORIGIN `og:image` NOW: the
+ * flat "AR-11 permits zero external or asset requests" that stood here was an
+ * over-read, corrected by D20 (2026-08-26) and acted on by Story 3.3. AR-11
+ * bars THIRD-PARTY origins; a URL in a `<meta>` tag is not a request this page
+ * makes at all, but a hint a crawler may follow off-page and off-session, and
+ * `FETCHING_POSITIONS` in `scripts/assert-no-external-origins.mjs` — the
+ * operative definition of "a request" — deliberately excludes `<meta content>`.
+ * AC 3's own citation stands unchanged; only the og:image clause moved.
+ *
+ * So the origin gate does NOT hold the same-origin line here: it reports an
+ * off-origin `og:image` and passes. `static-output.test.ts` in this folder
+ * does, together with the whole-export assertion in `canonical-output.test.ts`.
  *
  * THE CONTENT IS NAME + TOURNAMENT RECORD (`EXPERIENCE.md:42`). `record` carries
  * nine fields, so D7 rules the composition rather than leaving it open:
@@ -118,7 +128,36 @@ export async function generateMetadata({
    * advertises the Open Graph default, `en_US`, to every unfurler (review
    * 2026-08-26). One locale per route is a constant, not a variable (D17/D20).
    */
-  return { title, description, openGraph: { title, description, url: "./", locale: "es_ES" } };
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: "./",
+      locale: "es_ES",
+      /*
+       * `type`, `siteName` and `images` ride the SAME wholesale-replacement
+       * trap as `url` and `locale` above (Story 3.3, AC2): this object replaces
+       * the layout's, so the layout's card never reaches this route. All three
+       * are therefore authored at all five `openGraph` sites, and the object is
+       * NOT lifted into a shared helper — that would move `alt:` out of the
+       * eslint metadata selector's reach and silently disable the rule that
+       * makes a bare Spanish literal a build error. The full reasoning lives
+       * once, at `src/app/layout.tsx`; the whole-export gate in
+       * `canonical-output.test.ts` is what stops the five copies drifting.
+       *
+       * The image URL is RELATIVE — `metadataBase` resolves it. An absolute
+       * literal would be a second copy of the origin and turns
+       * `site-origin.test.ts` red.
+       */
+      type: "website",
+      siteName: t("app.siteName"),
+      images: [
+        { url: "/og-card.png", width: 1200, height: 630, alt: t("meta.ogImageAlt") },
+      ],
+    },
+  };
 }
 
 export default async function TeamPage({ params }: { params: Promise<{ slug: string }> }) {

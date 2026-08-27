@@ -97,8 +97,17 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
  * story exists to start.
  *
  * The property is the URL-prefix form rooted at `SITE_ORIGIN`, chosen over a
- * DNS-verified Domain property because this repo ships no `app/public/` and no
- * analytics, so the meta tag was the one method available without touching DNS.
+ * DNS-verified Domain property because at the time (Story 3.4) this repo shipped
+ * no `app/public/` and no analytics, so the meta tag was the one method
+ * available without touching DNS.
+ *
+ * THAT PREMISE EXPIRED ON 2026-08-27 AND THE CHOICE STANDS ANYWAY. Story 3.3
+ * created `app/public/` for the Open Graph card, so the file-drop method is now
+ * available — but the meta tag is already verified, and Search Console silently
+ * un-verifies a property whose token disappears. Do not migrate methods to
+ * chase the tidier one. The sentence is corrected rather than deleted because a
+ * reader who finds "this repo ships no app/public/" here re-derives a premise
+ * that is no longer true, in a paragraph that has nothing to do with the card.
  *
  * THE ORIGIN IS NOT SPELLED OUT ABOVE, AND THAT IS NOT PEDANTRY. The first
  * draft of this comment wrote the domain literally, and `site-origin.test.ts`
@@ -112,7 +121,60 @@ export const metadata: Metadata = {
   title: t("meta.title"),
   description: t("meta.description"),
   alternates: { canonical: "./" },
-  openGraph: { url: "./", locale: "es_ES" },
+  openGraph: {
+    url: "./",
+    locale: "es_ES",
+    type: "website",
+    siteName: t("app.siteName"),
+    /*
+     * THE CARD (Story 3.3, AC1/AC2). This object exists FIVE TIMES — here and
+     * in the four `generateMetadata` routes — for the same reason `url` and
+     * `locale` do: `openGraph` is replaced WHOLESALE by any child that declares
+     * the key, so a copy only here would card `/about`, `/glossary`, `/compare`
+     * and the 404 and leave 1,402 documents bare.
+     *
+     * IT IS NOT LIFTED INTO A HELPER MODULE, AND THAT IS DELIBERATE. Story
+     * 3.1's eslint selector reaches only `metadata` declarators and
+     * `generateMetadata` functions; moving this object into `src/lib/` would
+     * put `alt:` outside the selector's reach and let a bare Spanish literal
+     * ship with the build green — the exact failure AC4 exists to prevent,
+     * arrived at by tidying. What stops the five copies drifting is
+     * `canonical-output.test.ts`, which measures the emitted export rather
+     * than the source.
+     *
+     * The URL is RELATIVE and is resolved absolutely by `metadataBase` above.
+     * An absolute literal would be a second copy of the origin and turns
+     * `site-origin.test.ts` red.
+     *
+     * `width`/`height` are emitted because unfurlers that read them skip a
+     * fetch to discover the dimensions; 1200x630 is the 1.91:1 that
+     * `summary_large_image` expects. They must agree with the PNG on disk —
+     * `scripts/generate-og-card.py` asserts the same two numbers.
+     */
+    images: [
+      { url: "/og-card.png", width: 1200, height: 630, alt: t("meta.ogImageAlt") },
+    ],
+  },
+  /*
+   * `twitter` IS DECLARED ONCE, HERE, AND NOWHERE ELSE — the mirror image of
+   * the `openGraph` trap above (Story 3.3, AC3, §D4). A key ABSENT from a child
+   * is inherited, exactly as `alternates.canonical` is, so this one object
+   * reaches all 1,407 documents. Verified on the export, not reasoned about.
+   *
+   * IT IS A FLIP, NOT AN ADDITION. Every document already carried
+   * `twitter:card="summary"` before this story: declaring `openGraph` at all
+   * makes `postProcessMetadata` derive a Twitter object from it, and
+   * `resolveTwitter` computes `card = card || (images?.length ? ... : 'summary')`.
+   * So `summary_large_image` would now arrive even without this line. It is
+   * declared ANYWAY: an explicit value stops the card silently reverting to
+   * `summary` if a future story drops `images` from one site.
+   *
+   * NO `twitter.images` KEY. `postProcessMetadata` back-fills it from EACH
+   * ROUTE'S OWN `openGraph.images` whenever the twitter object has no `images`
+   * of its own. Authoring it here would add a second copy of the card URL that
+   * can drift from its openGraph twin, in exchange for nothing.
+   */
+  twitter: { card: "summary_large_image" },
   verification: { google: "TgrS4P6p1SXEE0iEzkKOBjsny6S04eEPzPP56tjtLzs" },
 };
 

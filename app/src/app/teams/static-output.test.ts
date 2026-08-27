@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { readTeamProfile, readTournament } from "@/lib/build-data";
+import { SITE_ORIGIN } from "@/lib/site-origin";
 import { es } from "@/locales/es";
 
 /*
@@ -136,8 +137,27 @@ describe.skipIf(!anyBuilt)("<title> and OG metadata (AC 3, NFR-4)", () => {
     expect(metaContent(html, "og:description")).toBe(EXPECTED_DESCRIPTION);
   });
 
-  it("emits NO og:image — AR-11 permits zero external or asset requests", () => {
-    expect(metaContent(html, "og:image")).toBeNull();
+  /*
+   * REPLACED, NOT DELETED (Story 3.3, AC5). This read `toBeNull()` until
+   * 2026-08-27, pinning a ban that D20 retired as an over-read of AR-11. The
+   * `it` title moved with the assertion — a test called "emits NO og:image"
+   * that asserts the opposite is the next reader's trap.
+   *
+   * The origin gate does NOT hold this line: `<meta content>` is deliberately
+   * outside `FETCHING_POSITIONS`, so an off-origin `og:image` is reported and
+   * passed. This assertion, its twin in `players/static-output.test.ts`, and
+   * the whole-export one in `canonical-output.test.ts` are the whole guard.
+   *
+   * `SITE_ORIGIN` is IMPORTED, never spelled — `site-origin.test.ts` allows one
+   * occurrence of the literal under `app/` and counts this file.
+   *
+   * This file's `metaContent` takes TWO arguments and matches `property|name`;
+   * the players twin takes three. The helpers differ on purpose.
+   */
+  it("emits a SAME-ORIGIN og:image — the card, not a third-party asset", () => {
+    const ogImage = metaContent(html, "og:image");
+    expect(ogImage).toEqual(expect.any(String));
+    expect(ogImage?.startsWith(SITE_ORIGIN)).toBe(true);
   });
 });
 

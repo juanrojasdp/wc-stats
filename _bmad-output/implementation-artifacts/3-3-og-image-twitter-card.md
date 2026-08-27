@@ -4,7 +4,7 @@ baseline_commit: b8c2fd919a00cfcdfc026ec7877120ce0b7a521a
 
 # Story 3.3: Same-Origin `og:image` Card & Twitter Card
 
-Status: ready-for-dev
+Status: review
 
 **Baseline commit sized against:** `b8c2fd9` (`Story 3.4 -> done: AC8 closed, and the failure message
 that was not one`). Tree clean at creation apart from the stray 0-byte `17` in the repo root, which
@@ -127,46 +127,46 @@ and the suite is green with **0 skipped**.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — A3 probe and the measured baseline (AC 7, AC 9)**
-  - [ ] 1.1 `git status --porcelain` and `git status --porcelain -- app/src/app/page.tsx
+- [x] **Task 1 — A3 probe and the measured baseline (AC 7, AC 9)**
+  - [x] 1.1 `git status --porcelain` and `git status --porcelain -- app/src/app/page.tsx
         app/src/components/SiteHeader.tsx`. Record the result. If another session holds `page.tsx`,
         **abort here and say so** — the story modifies that file, it does not append to it.
-  - [ ] 1.2 Record the paths this story owns (§Files). Do not stage the stray root file `17`.
-  - [ ] 1.3 Re-measure the test baseline yourself: `npx vitest list | grep -c " > "` and
+  - [x] 1.2 Record the paths this story owns (§Files). Do not stage the stray root file `17`.
+  - [x] 1.3 Re-measure the test baseline yourself: `npx vitest list | grep -c " > "` and
         `npx vitest list --filesOnly | grep -c "\.test\."`. Creation-time figure at `b8c2fd9`:
         **1,508 tests / 60 files**. It has moved repeatedly this epic — do not inherit it, and if it
         differs, find out why before proceeding.
-  - [ ] 1.4 Re-measure the route baseline: `find out -name "index.html" | wc -l` → **1,406**, and
+  - [x] 1.4 Re-measure the route baseline: `find out -name "index.html" | wc -l` → **1,406**, and
         `find out -name "*.html" | wc -l` → **1,407** (the extra is `out/404.html`). Note that any
         `out/` in the shared tree may be another session's build; if the figures disagree, rebuild
         before believing them.
-  - [ ] 1.5 Confirm the pre-change tag baseline on one document per route class, so the diff is read
+  - [x] 1.5 Confirm the pre-change tag baseline on one document per route class, so the diff is read
         against fact rather than against the epic text:
         `grep -o '<meta [^>]*"\(og\|twitter\):[a-z_:]*"[^>]*>' out/index.html`. Expect **og:title,
         og:description, og:url, og:locale, twitter:card=summary, twitter:title, twitter:description**
         — and **no og:type, no og:site_name, no og:image, no twitter:image**.
 
-- [ ] **Task 2 — the card asset (AC 1)**
-  - [ ] 2.1 Author `app/scripts/generate-og-card.py` (§D2). Deterministic, offline, no network. It
+- [x] **Task 2 — the card asset (AC 1)**
+  - [x] 2.1 Author `app/scripts/generate-og-card.py` (§D2). Deterministic, offline, no network. It
         reads the site's own typefaces out of `app/.next/static/media/*.woff2`, converts them with
         `fontTools`, and draws with Pillow. Its docblock must state loudly that it is an **authoring
         tool and NOT part of the build chain** — Netlify runs `npm run build` with `app/`'s Node
         install alone and has no Python (AD-13, NFR-8).
-  - [ ] 2.2 Identify the faces by name rather than by filename hash — the hashes change on every
+  - [x] 2.2 Identify the faces by name rather than by filename hash — the hashes change on every
         `next build`. Measured at `b8c2fd9`: `fontTools.ttLib.TTFont(f)['name'].getDebugName(4)`
         returns `Archivo SemiBold Regular` for three files and `Inter Regular` for seven. Select by
         that string; fail loudly if neither is found rather than falling back to a system font.
-  - [ ] 2.3 Draw the card at **1200×630** on the canonical **dark** palette, from `globals.css`'s
+  - [x] 2.3 Draw the card at **1200×630** on the canonical **dark** palette, from `globals.css`'s
         `:root` block: `--surface-base #0e1114`, `--ink-primary #f2f5f7`, `--accent-lime #c3f53c`,
         `--accent-cyan #3ddbe8`. Dark is canonical (`globals.css:12`), so the card matches what a
         no-JS visitor lands on. Content is the wordmark plus canonical-Spanish supporting copy (§D11).
-  - [ ] 2.4 Write `app/public/og-card.png`. Record its byte size and keep it **well under 300 KB**
+  - [x] 2.4 Write `app/public/og-card.png`. Record its byte size and keep it **well under 300 KB**
         (§D12). Verify the pixel dimensions from the written file, not from the draw call.
-  - [ ] 2.5 `npm run build`, then verify **on disk** that `out/og-card.png` exists, is a **file** not a
+  - [x] 2.5 `npm run build`, then verify **on disk** that `out/og-card.png` exists, is a **file** not a
         directory, and is byte-identical to `app/public/og-card.png`. `sitemap.test.ts:343`'s
         `statSync(...).isFile()` is the shipped precedent for why "it is a file" is asserted rather
         than assumed under `trailingSlash: true`.
-  - [ ] 2.6 Confirm nothing under `app/` newly fails because a Python file now lives in `app/scripts/`:
+  - [x] 2.6 Confirm nothing under `app/` newly fails because a Python file now lives in `app/scripts/`:
         `npm run lint` (eslint's globs do not match `.py`) and `npm test -- site-origin`.
         **`site-origin.test.ts` walks `app/src/**` and `app/scripts/**` with NO extension filter and
         reads every file it finds as UTF-8** (`:37-56`), so the generator **is** scanned — it must not
@@ -174,120 +174,120 @@ and the suite is green with **0 skipped**.
         `scripts`, and top-level `app/*.{ts,mjs,json,toml}`), so the binary PNG is never read as text;
         confirm that rather than assuming it, since this is the first binary committed under `app/`.
 
-- [ ] **Task 3 — the locale key (AC 4)**
-  - [ ] 3.1 Mint `meta.ogImageAlt` in `src/locales/es.ts` under the existing `meta` namespace. **Not
+- [x] **Task 3 — the locale key (AC 4)**
+  - [x] 3.1 Mint `meta.ogImageAlt` in `src/locales/es.ts` under the existing `meta` namespace. **Not
         under `app.*`**: `i18n.test.ts:2309` pins `Object.keys(es.app)` **exactly** to `["siteName"]`
         and a key parked there goes instantly red.
-  - [ ] 3.2 Add the `en` counterpart. Parity is enforced by the **type system**, not by a test — `en`
+  - [x] 3.2 Add the `en` counterpart. Parity is enforced by the **type system**, not by a test — `en`
         is typed as `Dictionary`, derived from the `es` shape (`src/lib/i18n.ts:1-8`), so `tsc` fails
         until both carry it. Confirm that by adding the `es` key alone first and seeing typecheck go
         red; that is the cheapest available red proof of the parity mechanism.
-  - [ ] 3.3 The alt describes the **card image**, not the site. It is the text a screen-reader user
+  - [x] 3.3 The alt describes the **card image**, not the site. It is the text a screen-reader user
         hears in place of an unfurled preview. The `en` value is authored and correct but is **never
         emitted** (§D11) — that is the existing, shipped behaviour of `meta.title` and
         `meta.description`, not a new defect.
 
-- [ ] **Task 4 — the five `openGraph` sites (AC 2, AC 4)**
-  - [ ] 4.1 `src/app/layout.tsx` — extend the `metadata` export's `openGraph` with `type`, `siteName`
+- [x] **Task 4 — the five `openGraph` sites (AC 2, AC 4)**
+  - [x] 4.1 `src/app/layout.tsx` — extend the `metadata` export's `openGraph` with `type`, `siteName`
         and `images`. This is the object that reaches `/about`, `/glossary`, `/compare` and the three
         not-found artifacts; none of those three static routes is edited, and their standing docblock
         rulings against a `metadata` export are **not** reopened (§D3).
-  - [ ] 4.2 The same three keys in `src/app/page.tsx`'s `generateMetadata`.
-  - [ ] 4.3 The same three keys in `src/app/matches/[slug]/page.tsx`'s `generateMetadata`.
-  - [ ] 4.4 The same three keys in `src/app/players/[slug]/page.tsx`'s `generateMetadata`.
-  - [ ] 4.5 The same three keys in `src/app/teams/[slug]/page.tsx`'s `generateMetadata`.
-  - [ ] 4.6 **Do not touch `locale`.** It already reads `es_ES` at all five sites. **Do not touch
+  - [x] 4.2 The same three keys in `src/app/page.tsx`'s `generateMetadata`.
+  - [x] 4.3 The same three keys in `src/app/matches/[slug]/page.tsx`'s `generateMetadata`.
+  - [x] 4.4 The same three keys in `src/app/players/[slug]/page.tsx`'s `generateMetadata`.
+  - [x] 4.5 The same three keys in `src/app/teams/[slug]/page.tsx`'s `generateMetadata`.
+  - [x] 4.6 **Do not touch `locale`.** It already reads `es_ES` at all five sites. **Do not touch
         `url: "./"`.** Both are load-bearing and both carry a docblock saying so; this story's edit
         must leave them byte-identical.
-  - [ ] 4.7 The image `url` is the **relative** `"/og-card.png"`, resolved absolutely by
+  - [x] 4.7 The image `url` is the **relative** `"/og-card.png"`, resolved absolutely by
         `metadataBase`. An absolute literal would be a second copy of the origin and turns
         `site-origin.test.ts` red.
-  - [ ] 4.8 Author `alt: t("meta.ogImageAlt")` and `siteName: t("app.siteName")` **inline at each
+  - [x] 4.8 Author `alt: t("meta.ogImageAlt")` and `siteName: t("app.siteName")` **inline at each
         site**, not through a shared helper — see §D8. Five copies is the deliberate cost; §D9's
         whole-export gate is what stops them drifting, not DRY.
 
-- [ ] **Task 5 — the Twitter card, authored once (AC 3)**
-  - [ ] 5.1 Add `twitter: { card: "summary_large_image" }` to `src/app/layout.tsx`'s `metadata`
+- [x] **Task 5 — the Twitter card, authored once (AC 3)**
+  - [x] 5.1 Add `twitter: { card: "summary_large_image" }` to `src/app/layout.tsx`'s `metadata`
         export, **and nowhere else** (§D4).
-  - [ ] 5.2 **Verify the inheritance rather than reasoning about it.** After the build, confirm every
+  - [x] 5.2 **Verify the inheritance rather than reasoning about it.** After the build, confirm every
         one of the 1,407 documents carries `twitter:card="summary_large_image"` — including a match,
         a player and a team route, which declare `openGraph` but not `twitter`. If **any** document
         still reads `summary`, the inheritance reading is wrong and the key goes to all five sites
         instead. 3.2's §D8 was a correct-sounding reading of Next's source that the export overturned;
         this is the same shape of claim.
-  - [ ] 5.3 Confirm `twitter:image` and `twitter:image:alt` are present on all 1,407 documents
+  - [x] 5.3 Confirm `twitter:image` and `twitter:image:alt` are present on all 1,407 documents
         **without** authoring `twitter.images` (§D5).
 
-- [ ] **Task 6 — the four (five) comment corrections (AC 6)**
-  - [ ] 6.1 `src/app/matches/[slug]/page.tsx` — the line `// No og:image — zero external/asset
+- [x] **Task 6 — the four (five) comment corrections (AC 6)**
+  - [x] 6.1 `src/app/matches/[slug]/page.tsx` — the line `// No og:image — zero external/asset
         requests (AR-11).` immediately above the `url: "./"` docblock.
-  - [ ] 6.2 `src/app/page.tsx` — the identical line, same position.
-  - [ ] 6.3 `src/app/players/[slug]/page.tsx` — the `generateMetadata` docblock sentence *"NO
+  - [x] 6.2 `src/app/page.tsx` — the identical line, same position.
+  - [x] 6.3 `src/app/players/[slug]/page.tsx` — the `generateMetadata` docblock sentence *"NO
         `og:image`: AR-11 permits zero external or asset requests."* Keep its `AC 5` citation honest
         while rewriting around it.
-  - [ ] 6.4 `src/app/teams/[slug]/page.tsx` — the same sentence, citing `AC 3`.
-  - [ ] 6.5 `src/app/layout.tsx` — *"this repo ships no `app/public/`"* in the `verification.google`
+  - [x] 6.4 `src/app/teams/[slug]/page.tsx` — the same sentence, citing `AC 3`.
+  - [x] 6.5 `src/app/layout.tsx` — *"this repo ships no `app/public/`"* in the `verification.google`
         docblock. It is now false and it is load-bearing prose: it is the stated reason the meta-tag
         verification method was chosen over a file drop.
-  - [ ] 6.6 Each replacement states the D20 scoping in its own words rather than pointing at a
+  - [x] 6.6 Each replacement states the D20 scoping in its own words rather than pointing at a
         document: AR-11 bars external and third-party requests; `<meta content>` is deliberately
         outside `FETCHING_POSITIONS`; the same-origin property is held by the tests §D9 names, and by
         nothing else.
-  - [ ] 6.7 **Leave `scripts/assert-no-external-origins.mjs:78` alone.** Its *"while passing
+  - [x] 6.7 **Leave `scripts/assert-no-external-origins.mjs:78` alone.** Its *"while passing
         `og:image`, the one tag that genuinely makes a third party fetch an asset"* is the gate's own
         rationale for an **off-origin** `og:image` and stays true. Confirm rather than assume.
 
-- [ ] **Task 7 — the same-origin line, in three places, each driven RED (AC 5, A1)**
-  - [ ] 7.1 `players/static-output.test.ts` — replace `not.toContain("og:image")` with an assertion
+- [x] **Task 7 — the same-origin line, in three places, each driven RED (AC 5, A1)**
+  - [x] 7.1 `players/static-output.test.ts` — replace `not.toContain("og:image")` with an assertion
         that `metaContent(html, "property", "og:image")` is a string starting with `SITE_ORIGIN`.
         Note this file's `metaContent` takes **three** arguments (`html, attribute, name`).
-  - [ ] 7.2 `teams/static-output.test.ts` — replace `toBeNull()` likewise. Note this file's
+  - [x] 7.2 `teams/static-output.test.ts` — replace `toBeNull()` likewise. Note this file's
         `metaContent` takes **two** arguments (`html, property`) and matches `property|name`. The two
         helpers differ; do not copy one call shape into the other file.
-  - [ ] 7.3 Rename both `it(...)` titles. A test titled *"emits NO og:image"* that asserts the
+  - [x] 7.3 Rename both `it(...)` titles. A test titled *"emits NO og:image"* that asserts the
         opposite is the next reader's trap.
-  - [ ] 7.4 Extend `src/app/canonical-output.test.ts` with a whole-export assertion (§D9): every
+  - [x] 7.4 Extend `src/app/canonical-output.test.ts` with a whole-export assertion (§D9): every
         exported `.html` carries at least one `og:image`, and every `og:image` value starts with
         `SITE_ORIGIN`. That file already walks all 1,407 documents and already extracts meta tags by
         key (`:228`); reuse the existing collector rather than adding a second walk. Its header
         docblock (`:13`, `:32-35`) currently scopes the file to 3.2's AC2/AC3/AC4 — widen it to say
         this story's property lives here too, or the next reader deletes the assertion as
         out-of-scope.
-  - [ ] 7.5 **RED PROOF ×3 (A1).** Write an off-origin `og:image` into the relevant exported
+  - [x] 7.5 **RED PROOF ×3 (A1).** Write an off-origin `og:image` into the relevant exported
         document(s) and re-run each of the three assertions. Record the command and the failing
         output for each. Then restore the export (rebuild) and confirm green.
-  - [ ] 7.6 **RED PROOF for the ESLint rule (AC 4).** Replace one `alt: t("meta.ogImageAlt")` with a
+  - [x] 7.6 **RED PROOF for the ESLint rule (AC 4).** Replace one `alt: t("meta.ogImageAlt")` with a
         bare Spanish literal and run `npm run lint`; record the error under `--max-warnings 0`. Then
         do the same for `siteName`. Story 3.1 added both keys to the selector *ahead* of this story;
         this is the demonstration that the hole is actually closed on this story's real shape.
-  - [ ] 7.7 **Coincidence-green check (A2).** Revert the `images` key at one of the five sites and
+  - [x] 7.7 **Coincidence-green check (A2).** Revert the `images` key at one of the five sites and
         confirm §D9's whole-export assertion goes red naming that route class. If it stays green, the
         gate is measuring something other than what it claims.
 
-- [ ] **Task 8 — the full chain and the export audit (AC 9)**
-  - [ ] 8.1 `npm run build` — green end to end, origin gate exit 0, **0 external subresources**, and
+- [x] **Task 8 — the full chain and the export audit (AC 9)**
+  - [x] 8.1 `npm run build` — green end to end, origin gate exit 0, **0 external subresources**, and
         the site's own origin **absent from the informational `MENTIONED in text` line**. The gate's
         own `assert-no-external-origins.test.ts:272` already pins *"PASSES a self-origin og:image and
         does not even MENTION it — story 3.3 depends on this"*; confirm that holds on the real export,
         not only on its fixture.
-  - [ ] 8.2 `npm test` — green, **0 skipped**, and the delta against Task 1.3's figure is exactly what
+  - [x] 8.2 `npm test` — green, **0 skipped**, and the delta against Task 1.3's figure is exactly what
         this story adds. State the number and the delta.
-  - [ ] 8.3 Route count unchanged: **1,406** `index.html`, **1,407** `.html`.
-  - [ ] 8.4 Audit the emitted tags across every route class — layout-only (`/about`, `/glossary`,
+  - [x] 8.3 Route count unchanged: **1,406** `index.html`, **1,407** `.html`.
+  - [x] 8.4 Audit the emitted tags across every route class — layout-only (`/about`, `/glossary`,
         `/compare`, `404`) and all four `generateMetadata` classes. Every document must carry
         `og:image`, `og:image:width`, `og:image:height`, `og:image:alt`, `og:type`, `og:site_name`,
         `twitter:card="summary_large_image"`, `twitter:image`, `twitter:image:alt` — **and still**
         `og:url`, `og:locale="es_ES"` and exactly one `<link rel="canonical">`. 3.2's four ACs are
         this story's regression surface; do not assume they survived.
-  - [ ] 8.5 Confirm **0** `og:locale:alternate` and **0** `hreflang` across the export (3.2 AC4 —
+  - [x] 8.5 Confirm **0** `og:locale:alternate` and **0** `hreflang` across the export (3.2 AC4 —
         this story introduces no per-locale anything, D17/D20).
 
-- [ ] **Task 9 — deploy and the paste test (AC 8) — REQUIRES JUAN**
-  - [ ] 9.1 Commit by pathspec (`git commit -- <paths>`), staging only §Files. Never `git add -A`.
+- [x] **Task 9 — deploy and the paste test (AC 8) — REQUIRES JUAN**
+  - [x] 9.1 Commit by pathspec (`git commit -- <paths>`), staging only §Files. Never `git add -A`.
         Add-then-commit is not atomic here and a concurrent session's sweeping add can capture your
         files between the two.
-  - [ ] 9.2 `gh auth switch -u juanrojasdp` **before** pushing, or the push 403s.
-  - [ ] 9.3 Push to `main`. Netlify builds from `app/` (`netlify.toml`: base `app`, command
+  - [x] 9.2 `gh auth switch -u juanrojasdp` **before** pushing, or the push 403s.
+  - [x] 9.3 Push to `main`. Netlify builds from `app/` (`netlify.toml`: base `app`, command
         `npm run build`, publish `out`). Wait for the deploy to go live and confirm
         `https://mundial-stats.juancr.dev/og-card.png` returns the PNG with `Content-Type: image/png`.
   - [ ] 9.4 **HAND OFF TO JUAN — this cannot be done by inspecting tags.** Ask him to paste **one URL
@@ -298,12 +298,12 @@ and the suite is green with **0 skipped**.
         the two known culprits first: the file size against WhatsApp's limit (§D12), and an unfurl
         cached from before the deploy (§D13).
 
-- [ ] **Task 10 — the record (A4, and the 3.9 hand-off)**
-  - [ ] 10.1 Fill the Dev Agent Record: every red proof with its command and output, the measured
+- [x] **Task 10 — the record (A4, and the 3.9 hand-off)**
+  - [x] 10.1 Fill the Dev Agent Record: every red proof with its command and output, the measured
         baselines and deltas, the PNG's byte size and dimensions, the paste-test results.
-  - [ ] 10.2 Append to `sprint-status.yaml` — **append only, never regenerate**. It carries the
+  - [x] 10.2 Append to `sprint-status.yaml` — **append only, never regenerate**. It carries the
         project journal and the Epic 2 retro action items.
-  - [ ] 10.3 Restate for story 3.9, in the completion notes, what it must preserve (§D14). 3.9 is the
+  - [x] 10.3 Restate for story 3.9, in the completion notes, what it must preserve (§D14). 3.9 is the
         only story left in this epic and it rewrites `app/src/app/page.tsx`.
 
 ---
@@ -665,8 +665,346 @@ fires, re-run that file alone before investigating.
 
 ### Agent Model Used
 
+`claude-opus-5[1m]` (Claude Opus 5, 1M context), via the `bmad-dev-story` workflow, 2026-08-27.
+
 ### Debug Log References
+
+#### Task 1 — the A3 probe and the measured baselines (AC7, AC9)
+
+`git status --porcelain` returned only `?? 17`, the stray 0-byte root file that belongs to nobody and
+is not staged here. `git status --porcelain -- app/src/app/page.tsx app/src/components/SiteHeader.tsx`
+returned **empty**: both Epic 3 collision files clean, so **this story owns `page.tsx`** and does not
+abort. HEAD at start was `fc1de35` (the story-context commit); the code baseline is `b8c2fd9`.
+
+Every figure below was re-measured, not inherited. All five matched the creation-time figures:
+
+| Thing | Measured 2026-08-27 | Creation-time figure |
+|---|---|---|
+| Tests / files | 1,508 / 60 | 1,508 / 60 |
+| Routes | 1,406 `index.html`, 1,407 `.html` | same |
+| `app/public/` | does not exist | same |
+| `og:image` / `og:type` in export | 0 / 0 documents | same |
+| `twitter:card` | `summary` on all 1,407 | same |
+
+Pre-change tag baseline confirmed on **eight** documents (one per route class, not only `/`):
+`og:title`, `og:description`, `og:url`, `og:locale`, `twitter:card=summary`, `twitter:title`,
+`twitter:description` — and no `og:type`, no `og:site_name`, no `og:image`, no `twitter:image`.
+
+#### Task 2 — the card asset (AC1)
+
+Toolchain re-measured on the system `python`: fontTools **4.62.1** with brotli, Pillow **12.2.0**.
+`.next/static/media/` held **10** subset `.woff2`; `TTFont(f)['name'].getDebugName(4)` returned
+**3 x `Archivo SemiBold Regular`** and **7 x `Inter Regular`**, exactly as §D2 recorded.
+
+**Face selection is by name AND by measured coverage, which mattered more than the story anticipated.**
+Of the 10 subsets, only **one Archivo and one Inter** actually cover the characters this card draws —
+the other eight are missing the digits or the accented vowels (the widest Inter subset, 733
+codepoints, has no `0`, `1`, `2`, `4`, `6`, `C`, `D`, `I`, `L`, `M` or `N`). Selecting "the file whose
+name ID 4 matches" would therefore have picked a usable face only by luck. The generator narrows the
+name-matched candidates to those whose cmap covers the required text, takes the widest, and raises
+`SystemExit` naming every candidate if none does. Both faces are variable (`fvar`/`wght`) and are
+drawn at their default instance — Archivo's default is **600**, which is why the name says SemiBold;
+Inter's is 400. That is what the browser renders too.
+
+Written file: `app/public/og-card.png`, **1200x630**, **38,976 bytes** (~38 KB), sha256 `54c6e3c8...`.
+Dimensions read back **from the written file**, not from the draw call. Well under the 300 KB WhatsApp
+constraint (§D12); the generator exits non-zero above 300 KB or off 1200x630.
+
+Task 2.5, verified **on disk** after `npm run build`:
+
+```
+public/og-card.png  isfile=True isdir=False 38976 bytes sha256=54c6e3c8...
+out/og-card.png     isfile=True isdir=False 38976 bytes sha256=54c6e3c8...
+$ cmp public/og-card.png out/og-card.png  ->  BYTE-IDENTICAL
+```
+
+`isFile()` is asserted rather than assumed, per `sitemap.test.ts:343`'s precedent under
+`trailingSlash: true`. It is a file, not a directory.
+
+Task 2.6, **confirmed rather than assumed** by reproducing the gate's own walk in the same shape:
+209 files scanned; `scripts/generate-og-card.py` **is** in the scanned set (the walk has no extension
+filter); **no** `public/` path is scanned. So the Python generator is read as UTF-8 and must not carry
+the domain — it does not — and the first binary ever committed under `app/` is never read as text.
+`npm run lint` and `npm test -- site-origin` both green with the `.py` present.
+
+#### Task 3 — the locale key (AC4) — **RED PROOF 1 of 5**
+
+`meta.ogImageAlt` minted under `es.meta` (not `es.app`, whose key list is pinned exactly to
+`["siteName"]` by `i18n.test.ts:2309`). Added to `es` **alone** first, to make the parity mechanism
+fail rather than assert that it would:
+
+```
+$ npx tsc --noEmit
+src/locales/en.ts(358,3): error TS2741: Property 'ogImageAlt' is missing in type
+  '{ title: string; description: string; }' but required in type
+  '{ title: string; description: string; ogImageAlt: string; }'.
+EXIT: 2
+```
+
+Green after the `en` counterpart. Parity here is enforced by the **type system**, not by a test — `en`
+is typed `Dictionary`, derived from the `es` shape.
+
+#### Tasks 4-6 — five `openGraph` sites, one `twitter`, five comments
+
+`type`, `siteName` and `images` authored **inline at all five sites**, never through a helper (§D8 — a
+`src/lib/og-card.ts` would move `alt:` outside the eslint selector's AST scope and silently disable
+the rule AC4 names). `url: "./"` and `locale: "es_ES"` left **byte-identical** at all five; the new
+keys were inserted after them, and `locale` was not re-added anywhere.
+
+`twitter: { card: "summary_large_image" }` authored **once**, on the layout. No `twitter.images` key.
+
+Five comments corrected, all located **by content** (their recorded line numbers predate 3.2's edits):
+the two one-liners in `matches/[slug]/page.tsx` and `page.tsx`, the two docblock sentences in
+`players/` and `teams/[slug]/page.tsx` (each keeping its own `AC 5` / `AC 3` citation honest), and
+`layout.tsx`'s `verification.google` claim that *"this repo ships no `app/public/`"* — now false, and
+corrected in place rather than deleted, with the added note that the Search Console method **stays**
+as it is because the token is already verified and Search Console silently un-verifies a property
+whose token disappears.
+
+Task 6.7, **confirmed rather than assumed**: `<meta content>` appears in **none** of the 13
+`FETCHING_POSITIONS` entries (`src`, `srcset`, `poster`, `<link href>`, `<image>/<use> href`, CSS
+`url()`, CSS `@import`, `fetch()`, `import()`, `importScripts()`, `new Worker()`, ...). The gate's own
+`:78` rationale describes an **off-origin** `og:image` and stays true; the file was not edited.
+
+#### Task 7 — the same-origin line, three places, each driven RED (AC5, A1)
+
+**A bonus red, before the deliberate ones.** The export in `out/` still predated the metadata edits
+when the three assertions were first written, so all three failed against a genuinely card-less
+export — proof they are not vacuous, before a single deliberate mutation:
+
+```
+$ npx vitest run canonical-output players/static-output teams/static-output -t "og:image"
+  x emits a SAME-ORIGIN og:image ...  -> expected null to deeply equal Any<String>   (players)
+  x emits a SAME-ORIGIN og:image ...  -> expected null to deeply equal Any<String>   (teams)
+  x emits ONE same-origin og:image ... -> expected '404.html -> (none), 404/index.html ->...' to be ''
+  Tests  3 failed | 38 skipped (41)
+```
+
+**RED PROOFS 2, 3 and 4 of 5.** An off-origin `og:image` (`https://evil-cdn.example.com/og-card.png`)
+written into three exported documents, each assertion re-run **independently**:
+
+```
+$ npx vitest run src/app/players/static-output.test.ts -t "SAME-ORIGIN og:image"
+  x emits a SAME-ORIGIN og:image — the card, not a third-party asset
+    -> expected false to be true      [out/players/quinones-julian-mex/index.html]
+
+$ npx vitest run src/app/teams/static-output.test.ts -t "SAME-ORIGIN og:image"
+  x emits a SAME-ORIGIN og:image — the card, not a third-party asset
+    -> expected false to be true      [out/teams/mexico/index.html]
+
+$ npx vitest run src/app/canonical-output.test.ts -t "same-origin og:image"
+  x emits ONE same-origin og:image on every exported document (3.3 AC 5)
+    -> expected 'about/index.html -> https://evil-cdn....' to be ''
+```
+
+The whole-export failure **names the file and the offending value**, per this repo's "failures name
+files, not counts" convention. All three documents restored to byte-identical content (sha256
+`a9bc7f9c...`, `9f68cbbd...`, `0df1e7e6...` before and after) and re-run green: 3 files, 41 tests
+passed.
+
+**RED PROOF 5 of 5 — the ESLint rule, on this story's own shape (AC4).** Story 3.1 added `alt` and
+`siteName` to the selector *ahead* of this story; this is the demonstration that the hole is actually
+closed, not merely declared closed:
+
+```
+$ # alt: t("meta.ogImageAlt")  ->  alt: "Tarjeta de WC Stats"
+$ npm run lint
+  src/app/players/[slug]/page.tsx
+    132:63  error  Metadata strings must come from the locale layer  no-restricted-syntax
+  x 1 problem (1 error, 0 warnings)                                        LINT EXIT: 1
+
+$ # siteName: t("app.siteName")  ->  siteName: "WC Stats"   (the openGraph one)
+$ npm run lint
+  src/app/players/[slug]/page.tsx
+    130:17  error  Metadata strings must come from the locale layer  no-restricted-syntax
+  x 1 problem (1 error, 0 warnings)                                        LINT EXIT: 1
+```
+
+Both are **errors** under `--max-warnings 0`, i.e. build-breaking: enforced, not advisory. File
+restored and lint back to exit 0. *(Note for a future reader: `players/[slug]/page.tsx` holds **two**
+`siteName: t("app.siteName")` — the composed-title helper call and the new `openGraph` one. The
+mutation has to be anchored on its neighbours to hit the right one.)*
+
+**Task 7.7 — coincidence-green check (A2).** The `images` key removed from **one** of the five sites
+(`teams/[slug]`), the export rebuilt, and the whole-export gate re-run:
+
+```
+x emits ONE same-origin og:image on every exported document (3.3 AC 5)
+  -> expected 'teams/algeria/index.html -> (none), t...' to be ''
+```
+
+It goes red and it **names that route class** — it is measuring what it claims. The per-route teams
+assertion went red in the same state (`expected null to deeply equal Any<String>`).
+
+**A measured bonus from that same mutation, worth recording because it settles §D0's stated risk.**
+With `images` dropped from the teams route, `twitter:card` on `out/teams/mexico/index.html` stayed
+`summary_large_image` — it did **not** revert to `summary`. That is exactly the behaviour §D0 gives as
+the reason to declare `twitter.card` explicitly rather than let `resolveTwitter` derive it, and it is
+now demonstrated on the real export rather than asserted. Site restored and rebuilt.
+
+#### Task 8 — the full chain and the export audit (AC9)
+
+```
+$ npm run build                                                       BUILD EXIT: 0
+  assert-no-external-origins: 6 external origin(s) MENTIONED in text (vendor error-message
+    URLs and licences — not fetched): bit.ly, github.com, nextjs.org, react.dev,
+    redux-toolkit.js.org, redux.js.org
+  assert-no-external-origins: 12687 text asset(s) in out/, 0 external subresources.
+```
+
+Origin gate exit 0, **0 external subresources**, and the site's own origin is **absent** from the
+informational MENTIONED line — grepped for explicitly, not inferred from the count. The gate's own
+case `assert-no-external-origins.test.ts:272` (*"PASSES a self-origin og:image and does not even
+MENTION it — story 3.3 depends on this"*) was re-run and passes **against the real export**, not only
+against its fixture.
+
+```
+$ npx vitest run
+  Test Files  60 passed (60)
+  Tests       1509 passed (1509)          # 0 skipped
+```
+
+**Delta: +1, and it is exactly what this story adds.** 1,508 -> 1,509: the two per-route assertions
+were *replaced* (net 0) and `canonical-output.test.ts` gained one new whole-export case (+1). No test
+was newly skipped. The known load-induced `static-output.test.ts` TEMPLATE flake did not fire.
+
+**Route count unchanged: 1,406 `index.html` / 1,407 `.html`.**
+
+Export audit (Tasks 8.4/8.5), counted across the whole export rather than sampled — every present-tag
+figure is **1,407 of 1,407**:
+
+| Tag | Documents | Must be zero | Documents |
+|---|---|---|---|
+| `og:image` | 1,407 | `twitter:card="summary"` | **0** |
+| `og:image:width` / `:height` / `:alt` | 1,407 | off-origin `og:image` | **0** |
+| `og:type` | 1,407 | `og:locale:alternate` | **0** |
+| `og:site_name` | 1,407 | `hreflang` | **0** |
+| `twitter:card="summary_large_image"` | 1,407 | | |
+| `twitter:image` / `twitter:image:alt` | 1,407 | | |
+| `og:url` (3.2 regression surface) | 1,407 | | |
+| `og:locale="es_ES"` (3.2 regression surface) | 1,407 | | |
+| `<link rel="canonical">` (3.2 regression surface) | 1,407 | | |
+
+3.2's four ACs were re-checked rather than assumed to have survived: `og:url`, `og:locale="es_ES"` and
+exactly one canonical are all still on all 1,407 (the one-canonical-per-document property is asserted
+by `canonical-output.test.ts`, which is green).
+
+**§D4's inheritance claim is VERIFIED, not reasoned about (Task 5.2).** The four `generateMetadata`
+routes declare no `twitter` key at all and every one of their documents carries
+`summary_large_image`, so the layout's single `twitter` object does reach all 1,407. Had any document
+still read `summary`, the key would have gone to all five sites instead. **§D5 confirmed too (Task
+5.3):** `twitter:image` and `twitter:image:alt` land on all 1,407 with no `twitter.images` authored —
+and `twitter:image:width`/`:height` arrive as well, which §D5 did not predict.
+
+Sample of the emitted card, on `/`:
+
+```
+og:image       = <SITE_ORIGIN>/og-card.png
+og:image:width = 1200      og:image:height = 630
+og:image:alt   = Tarjeta de WC Stats: analitica del Mundial 2026 sobre un campo de futbol.
+og:type        = website   og:site_name    = WC Stats
+twitter:card   = summary_large_image
+```
+
+#### Task 9 — deploy (AC8)
+
+Commit staged **by pathspec** (`git commit -- <paths>`), never `git add -A`: a concurrent session's
+sweeping add can capture files between an add and a commit, which are not atomic here. The stray root
+`17` was not staged. `gh auth switch -u juanrojasdp` before pushing, or the push 403s.
+
+The deploy result and the live-asset check are recorded below; **the paste test itself is Juan's** and
+is the one thing this story cannot close on its own.
 
 ### Completion Notes List
 
+- **AC1 — met.** One 1200x630 PNG at `app/public/og-card.png` (38,976 B), in a directory this story
+  creates. `next build` copies it to `out/og-card.png` **byte-identically**, verified on disk with
+  `isFile()` asserted rather than assumed. The emitted `og:image` is absolute and same-origin because
+  the authored URL is the **relative** `/og-card.png` resolved by `metadataBase`. No second copy of
+  the origin literal exists anywhere — `site-origin.test.ts` is green, still allowing exactly one.
+- **AC2 — met.** `images` (with `width`, `height`, `alt`), `type` and `siteName` at all five
+  `openGraph` sites. `locale` untouched at all five; `url: "./"` untouched at all five.
+- **AC3 — met, and it was a flip.** All 1,407 documents read `summary_large_image`; **0** read
+  `summary`. `twitter:image` and `twitter:image:alt` present on all 1,407 with `twitter.images`
+  deliberately unauthored.
+- **AC4 — met and demonstrated.** Both `alt` and `siteName` are `t()` calls at all five sites,
+  authored inline inside the gated AST scope. Each was proved to error under `--max-warnings 0` by
+  mutation.
+- **AC5 — met.** Both shipped assertions **replaced** (never deleted), their `it` titles moved with
+  them, and a third assertion added over the whole export. Each of the three driven red
+  independently, plus an A2 coincidence-green check that names the route class.
+- **AC6 — met, five comments not four.** All located by content. The fifth is `layout.tsx`'s
+  `app/public/` claim, which this story falsified.
+- **AC7 — met.** A3 probe run at Task 1: both collision files clean, `page.tsx` owned, no abort.
+- **AC8 — NOT CLOSED. It requires Juan and a live deploy.** See the hand-off below.
+- **AC9 — met.** Build green end to end, origin gate exit 0, route count unchanged at 1,406, suite
+  green at 1,509 with **0 skipped**.
+
+**Three things came out differently from the story's expectations, recorded rather than smoothed
+over:**
+
+1. **Font selection by name alone would not have been enough.** Only 1 of 3 Archivo subsets and 1 of 7
+   Inter subsets actually covers this card's characters; the rest are missing digits or accented
+   vowels. §D2 said "select by face name" — necessary, but not sufficient. The generator narrows by
+   measured cmap coverage and fails loudly naming every candidate if none covers the text.
+2. **`twitter:image:width` and `twitter:image:height` also arrive automatically**, which §D5 did not
+   predict. Same `postProcessMetadata` back-fill; no action needed, but a future reader grepping for
+   "why are there two more tags than the AC lists" should find the answer here.
+3. **The explicit `twitter.card` earned its keep, measurably.** The A2 mutation (dropping `images`
+   from one site) left `twitter:card` at `summary_large_image` rather than reverting to `summary` —
+   the exact scenario §D0 offers as the reason to declare it. Now demonstrated, not asserted.
+
+**FOR STORY 3.9 (§D14) — the only story left in this epic, and it rewrites `app/src/app/page.tsx`.
+This story landed first; 3.9 preserves the following or breaks 3.2's AC2/AC3 and this story's AC2,
+silently:**
+
+1. **`generateMetadata` in `page.tsx` survives the rewrite intact.** It now carries `title`,
+   `description`, and an `openGraph` object holding `title`, `description`, `url: "./"`,
+   `locale: "es_ES"`, `type`, `siteName` and `images`. The metadata export and the refactored body
+   must **coexist**. A body rewrite that regenerates the metadata export is the failure mode.
+2. **`url: "./"` and `locale: "es_ES"` are not decorative**, and neither is `images`. All three exist
+   because `openGraph` is replaced **wholesale** by any child that declares the key. Dropping any of
+   them is silent at the source and visible only in the export.
+3. **The four new UX-DR24 routes (`/tournament`, `/tops`, `/players`, `/teams`) need this pattern**:
+   declare **no** `openGraph` and they inherit the layout's card and need nothing; declare it for any
+   reason and they must carry all **seven** keys (`title`, `description`, `url`, `locale`, `type`,
+   `siteName`, `images`); declare `alternates` for any reason and they must re-declare
+   `canonical: "./"` alongside.
+4. **The whole-export gates pick the four routes up automatically** and will go **red** on a new route
+   shipping without a card. `canonical-output.test.ts` (canonical, `og:url`, and now `og:image`) walks
+   every `.html`; `sitemap.ts` discovers routes by walking `src/app` for `page.tsx`. None of the three
+   needs editing — by design, so 3.9 need not remember to open a file it has no reason to.
+5. **Route count after 3.9 is 1,410, not 1,406.** The 1,406/1,407 figures recorded here are pre-3.9.
+6. **Do not lift the five `images` objects into a shared helper while tidying.** It is the single
+   likeliest way to undo this story: it would move `alt:` outside the eslint selector's reach and let
+   a bare Spanish literal ship with the build green.
+
 ### File List
+
+**NEW**
+- `app/public/og-card.png`
+- `app/scripts/generate-og-card.py`
+
+**MODIFIED**
+- `app/src/app/layout.tsx`
+- `app/src/app/page.tsx`
+- `app/src/app/matches/[slug]/page.tsx`
+- `app/src/app/players/[slug]/page.tsx`
+- `app/src/app/teams/[slug]/page.tsx`
+- `app/src/locales/es.ts`
+- `app/src/locales/en.ts`
+- `app/src/app/players/static-output.test.ts`
+- `app/src/app/teams/static-output.test.ts`
+- `app/src/app/canonical-output.test.ts`
+- `_bmad-output/implementation-artifacts/3-3-og-image-twitter-card.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/deferred-work.md`
+
+**NOT staged** (A4): the stray 0-byte `17` in the repo root; anything under `app/src/components/`;
+`app/scripts/assert-no-external-origins.mjs`; `app/eslint.config.mjs`.
+
+### Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-27 | Story 3.3 implemented. One same-origin 1200x630 card at `app/public/og-card.png` (a new directory), drawn offline in the site's own Archivo/Inter faces by a committed, non-build-chain Python generator. `images`/`type`/`siteName` at all five `openGraph` sites; `twitter: { card: "summary_large_image" }` once on the layout. `meta.ogImageAlt` minted in both dictionaries. The two shipped `og:image` ban assertions **replaced** and a third added over all 1,407 documents; five red proofs and one A2 coincidence-green check recorded. Five source comments corrected. Ledger entry D20-b closed. Suite 1,508 -> 1,509, 0 skipped; routes unchanged at 1,406. **AC8 (the paste test) remains open and is Juan's.** |

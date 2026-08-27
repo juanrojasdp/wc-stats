@@ -4379,6 +4379,7 @@ creation, and nothing downstream noticed.
   the instrument that makes this trigger measurable; without it the deferral would be indefinite by
   construction.** L147, L2697 and L3227 stay CLOSED-ACCEPTED per D17 and are not re-filed.
 
+- **D20-b — CLOSED by Story 3.3, 2026-08-27.** *(Closure note at the end of this entry.)*
 - **D20-b RULED: the AR-11 `og:image` ban is RETIRED as an over-read.** AR-11 (`epics.md:92`,
   `ARCHITECTURE-SPINE.md:110`) scopes "zero external requests" to fonts and third-party origins; a
   **same-origin** `og:image` is not a request the page makes at all. Confirmed mechanically rather
@@ -4393,6 +4394,34 @@ creation, and nothing downstream noticed.
   position. **That test is the only thing holding the line.** Four source comments corrected
   (`matches/[slug]/page.tsx:49`, `page.tsx:74`, `players/[slug]/page.tsx:53-55`,
   `teams/[slug]/page.tsx:64-66`). *(The Epic 2 retrospective said three tests; the count is two.)*
+
+  **CLOSURE (Story 3.3, 2026-08-27).** Everything this entry asked for shipped, and three details
+  came out differently from how the entry states them:
+  - **The two assertions were REPLACED, not deleted**, as instructed. Each now asserts `og:image` is
+    present AND starts with `SITE_ORIGIN` (imported, never spelled), and each was driven RED against
+    an off-origin value written into its own exported document before being trusted. The `it` titles
+    moved with them — a test called "emits NO og:image" that asserts the opposite is a trap.
+  - **THE LINE IS NOW HELD IN THREE PLACES, NOT ONE.** This entry's "that test is the only thing
+    holding the line" was accurate and was also the problem: the two named tests cover **2 documents
+    of 1,407**, both fixture-scale. `canonical-output.test.ts` already walked the whole export and
+    already extracted meta tags by key, so it gained the same present-and-same-origin assertion for
+    ~15 lines, raising the line to all 1,407 — including `/`, `/matches/[slug]`, `/about`,
+    `/glossary`, `/compare` and the three not-found artifacts, which the two named tests never touch.
+    Driven red independently, and A2-checked: dropping the `images` key from ONE of the five
+    `openGraph` sites makes it fail naming that route class.
+  - **FIVE COMMENTS WERE CORRECTED, NOT FOUR.** The four this entry names were located BY CONTENT —
+    their recorded line numbers predate Story 3.2's edits to all four files. The fifth is
+    `layout.tsx`'s `verification.google` docblock, which stated *"this repo ships no `app/public/`"*
+    as the reason the meta-tag Search Console method was chosen over a file drop. Story 3.3 creates
+    `app/public/` for the card, so that sentence became false and load-bearing at the same moment. It
+    is corrected in place rather than deleted: a reader who finds it re-derives the retired ban's
+    premise from a paragraph about Search Console.
+
+  The card itself: one ~39 KB 1200x630 PNG at `app/public/og-card.png`, drawn offline in the site's
+  own Archivo/Inter subsets by `app/scripts/generate-og-card.py` (an authoring tool, deliberately NOT
+  in the build chain — Netlify has no Python). The origin gate's own case, `assert-no-external-origins.test.ts:272`
+  ("PASSES a self-origin og:image and does not even MENTION it — story 3.3 depends on this"), was
+  confirmed against the real export and not only against its fixture.
 
 - **BLOCKER FOUND, and it contradicts the retrospective: `assert-no-external-origins.mjs` FAILS the
   build on the site's OWN absolute URLs.** Retro §6.3 lists `metadataBase`, absolute canonical URLs,

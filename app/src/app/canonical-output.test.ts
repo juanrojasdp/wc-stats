@@ -8,7 +8,7 @@ import { readTournament } from "@/lib/build-data";
 import { SITE_ORIGIN } from "@/lib/site-origin";
 
 /*
- * THE CANONICAL-URL GATE OVER THE WHOLE EXPORT (Story 3.2, AC2/AC3/AC4).
+ * THE WHOLE-EXPORT METADATA GATE (Story 3.2, AC2/AC3/AC4; Story 3.3, AC5).
  *
  * AC2 (trailing slash, `og:url` byte-identity), AC3 (exactly one canonical,
  * absolute, same-origin, own route) and AC4 (no per-locale metadata). NOT AC7:
@@ -35,7 +35,18 @@ import { SITE_ORIGIN } from "@/lib/site-origin";
  *     `generateMetadata` routes ship a canonical with no matching `og:url`
  *     after a future rewrite of their `openGraph` object;
  *   - no `hreflang` anywhere (D17, upheld by D20). A ruling is prose until
- *     something fails on it.
+ *     something fails on it;
+ *   - `og:image` is PRESENT and SAME-ORIGIN (Story 3.3, AC5 — added here on
+ *     2026-08-27, and this file's scope is wider than its original title
+ *     suggested for exactly this reason: do not delete the case as
+ *     out-of-scope). The card is the one metadata property with no other
+ *     mechanical guard — story 3.1's origin gate correctly does NOT treat
+ *     `<meta content>` as a fetching position, so it REPORTS an off-origin
+ *     `og:image` and passes. The two per-route assertions in
+ *     `players/` and `teams/static-output.test.ts` cover 2 documents of 1,407;
+ *     this case covers the other 1,405, including every route class those two
+ *     never touch — `/`, `/matches/[slug]`, `/about`, `/glossary`, `/compare`
+ *     and the three not-found artifacts.
  *
  * WHY THIS FILE AND NOT `static-output.test.ts`, the natural home: story 3-10
  * held that file while this story ran, and standing AC A3 forbids modifying a
@@ -174,6 +185,8 @@ interface ExportedDocument {
   readonly canonicals: readonly string[];
   /** Every `og:url` value; tolerant of `name=` alongside `property=` and of attribute order. */
   readonly ogUrls: readonly string[];
+  /** Every `og:image` value (Story 3.3, AC5). Must be exactly one, and same-origin. */
+  readonly ogImages: readonly string[];
   /** Every `hreflang` value carried by any `<link>`. Must be empty everywhere. */
   readonly hreflangs: readonly string[];
   /*
@@ -210,6 +223,7 @@ function readDocument(absolutePath: string): ExportedDocument {
   const alternateLinks: string[] = [];
   const ogLocaleAlternates: string[] = [];
   const ogUrls: string[] = [];
+  const ogImages: string[] = [];
   let noindex = false;
 
   for (const tag of html.match(LINK_TAG) ?? []) {
@@ -226,6 +240,12 @@ function readDocument(absolutePath: string): ExportedDocument {
   for (const tag of html.match(META_TAG) ?? []) {
     const key = NAME_OR_PROPERTY.exec(tag)?.[1];
     if (key === "og:url") ogUrls.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
+    /*
+     * `og:image` EXACTLY — not `og:image:width` / `:height` / `:alt`, which
+     * `NAME_OR_PROPERTY` returns as their own distinct keys. The equality test
+     * is what keeps the three suffixed tags out of this list.
+     */
+    if (key === "og:image") ogImages.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
     if (key === "og:locale:alternate") {
       ogLocaleAlternates.push(CONTENT_ATTRIBUTE.exec(tag)?.[1] ?? "");
     }
@@ -238,6 +258,7 @@ function readDocument(absolutePath: string): ExportedDocument {
     relativePath: path.relative(OUT_DIR, absolutePath).split(path.sep).join("/"),
     canonicals,
     ogUrls,
+    ogImages,
     hreflangs,
     alternateLinks,
     ogLocaleAlternates,
@@ -377,6 +398,38 @@ describe.skipIf(!anyBuilt)("exported canonical URLs (AC 2, AC 3, AC 4)", () => {
           `${document.relativePath} og:url=${document.ogUrls.join("|") || "(none)"} canonical=${
             document.canonicals[0] ?? "(none)"
           }`
+      );
+    expect(report(offenders)).toBe("");
+  });
+
+  /*
+   * STORY 3.3, AC5 — THE SAME-ORIGIN CARD, OVER 1,407 DOCUMENTS.
+   *
+   * Present AND same-origin in one case, because the two failures are the same
+   * defect from a reader's point of view: a document with no card, and a
+   * document advertising somebody else's asset, both mean the card is not what
+   * ships. The message names the file and the offending value either way.
+   *
+   * `startsWith(SITE_ORIGIN)` plus a parsed-origin check, the same pair the
+   * canonical case uses: `startsWith` alone would accept an origin that merely
+   * shares a prefix, and `new URL()` alone would accept a relative value that
+   * `metadataBase` failed to resolve.
+   */
+  it("emits ONE same-origin og:image on every exported document (3.3 AC 5)", () => {
+    const offenders = documents
+      .filter((document) => {
+        if (document.ogImages.length !== 1) return true;
+        const [ogImage] = document.ogImages;
+        if (ogImage === undefined || !ogImage.startsWith(SITE_ORIGIN)) return true;
+        try {
+          return new URL(ogImage).origin !== SITE_ORIGIN;
+        } catch {
+          return true;
+        }
+      })
+      .map(
+        (document) =>
+          `${document.relativePath} -> ${document.ogImages.join("|") || "(none)"}`
       );
     expect(report(offenders)).toBe("");
   });

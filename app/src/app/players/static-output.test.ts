@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { readTournament } from "@/lib/build-data";
+import { SITE_ORIGIN } from "@/lib/site-origin";
 import { es } from "@/locales/es";
 
 /*
@@ -122,8 +123,31 @@ describe.skipIf(!anyBuilt)("exported /players/[slug] routes", () => {
       );
     });
 
-    it("emits NO og:image (AR-11 permits zero external or asset requests)", () => {
-      expect(playerHtml(QUINONES)).not.toContain("og:image");
+    /*
+     * REPLACED, NOT DELETED (Story 3.3, AC5). This assertion read
+     * `not.toContain("og:image")` until 2026-08-27, pinning a ban that D20
+     * retired as an over-read of AR-11. The `it` title moved with it: a test
+     * called "emits NO og:image" that asserts the opposite is the next reader's
+     * trap, and the ledger's instruction was to REPLACE, never merely delete.
+     *
+     * IT IS LOAD-BEARING IN A WAY ORDINARY TESTS ARE NOT. `<meta content>` is
+     * deliberately outside `FETCHING_POSITIONS`, so the origin gate REPORTS an
+     * off-origin `og:image` and passes — correctly. This assertion, its twin in
+     * `teams/static-output.test.ts`, and the whole-export one in
+     * `canonical-output.test.ts` are the only things holding the same-origin
+     * line on the card.
+     *
+     * `SITE_ORIGIN` is IMPORTED, never spelled: `site-origin.test.ts` allows
+     * exactly one occurrence of the literal under `app/` and counts this file.
+     *
+     * Note this file's `metaContent` takes THREE arguments; the teams twin
+     * takes two and matches `property|name`. Do not copy one call shape into
+     * the other file.
+     */
+    it("emits a SAME-ORIGIN og:image — the card, not a third-party asset", () => {
+      const ogImage = metaContent(playerHtml(QUINONES), "property", "og:image");
+      expect(ogImage).toEqual(expect.any(String));
+      expect(ogImage?.startsWith(SITE_ORIGIN)).toBe(true);
     });
 
     it("titles the zero-appearance goalkeeper identically — no shape branch", () => {

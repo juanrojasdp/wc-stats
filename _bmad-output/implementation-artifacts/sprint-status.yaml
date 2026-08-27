@@ -3590,7 +3590,51 @@ development_status:
   # before or it measures a cache. gh auth switch -u juanrojasdp before pushing or it 403s.
   # LEDGER: deferred-work.md:4382+ (D20-b, the og:image ban retired) is owned by this
   # story and closes with it. No other entry fires.
-  3-3-og-image-twitter-card: ready-for-dev
+  3-3-og-image-twitter-card: review
+  # DEV 2026-08-27 (claude-opus-5[1m]). EIGHT OF NINE ACs CLOSED; AC8 IS JUAN'S AND IS OPEN.
+  # A3 probe at Task 1: tree clean but for the stray root `17`; BOTH Epic 3 collision files
+  # (page.tsx, SiteHeader.tsx) clean, so the story owned page.tsx and did not abort.
+  # Baselines re-measured, not inherited, and all five matched creation: 1,508 tests / 60
+  # files, 1,406 index.html / 1,407 .html, no app/public/, 0 og:image, twitter:card=summary
+  # on all 1,407.
+  # SHIPPED: 1200x630 / 38,976 B PNG at app/public/og-card.png (new directory), drawn offline
+  # in the site's own Archivo(600)/Inter(400) subsets by app/scripts/generate-og-card.py — an
+  # authoring tool with a docblock saying loudly it is NOT in the build chain (Netlify has no
+  # Python, AD-13). images/type/siteName at all five openGraph sites, inline, never a helper.
+  # twitter:{card} once on the layout. meta.ogImageAlt in both dictionaries.
+  # RESULT ON THE EXPORT, counted not sampled: og:image, og:image:width/height/alt, og:type,
+  # og:site_name, twitter:card=summary_large_image, twitter:image, twitter:image:alt all on
+  # 1,407 of 1,407. Zero twitter:card=summary, zero off-origin og:image, zero
+  # og:locale:alternate, zero hreflang. 3.2's og:url / og:locale / one-canonical all still
+  # 1,407 — re-checked, not assumed. Routes unchanged at 1,406. Suite 1,508 -> 1,509, the
+  # delta is exactly the one new whole-export case; 0 skipped; origin gate exit 0.
+  # FIVE RED PROOFS + ONE A2 CHECK, all recorded with command and output in the story:
+  # tsc parity (es key alone), the two replaced per-route assertions under an off-origin
+  # og:image, the new whole-export assertion likewise, and the eslint selector on BOTH
+  # alt and siteName (errors under --max-warnings 0, i.e. build-breaking). A2: dropping
+  # `images` from ONE of the five sites turns the whole-export gate red NAMING that route
+  # class.
+  # THREE THINGS THE STORY DID NOT PREDICT, and the first is the one to carry forward:
+  #   (1) SELECTING THE FONT BY NAME IS NECESSARY BUT NOT SUFFICIENT. Only 1 of 3 Archivo
+  #       subsets and 1 of 7 Inter subsets covers this card's characters; the widest Inter
+  #       subset (733 codepoints) has no digits and no M/N/D/I/L/C. The generator narrows
+  #       name-matched candidates by measured cmap coverage and fails loudly if none covers.
+  #   (2) twitter:image:width/height arrive automatically too — §D5 predicted only
+  #       twitter:image and twitter:image:alt. Same postProcessMetadata back-fill.
+  #   (3) The explicit twitter.card EARNED ITS KEEP, measurably: under the A2 mutation the
+  #       card stayed summary_large_image instead of reverting to summary. That is exactly
+  #       §D0's stated reason for declaring it, now demonstrated rather than asserted.
+  # SIX comment corrections' worth of prose in five places (the fifth being layout.tsx's
+  # "this repo ships no app/public/", which this story falsified and which was load-bearing).
+  # assert-no-external-origins.mjs:78 confirmed still true and NOT edited.
+  # LEDGER: deferred-work.md D20-b CLOSED by this story, with a closure note recording that
+  # the line is now held in THREE places (not the one the entry names), and that five
+  # comments were corrected rather than four.
+  # AC8 IS OPEN AND IS JUAN'S: paste a NEVER-PASTED-BEFORE URL into WhatsApp and Slack and
+  # confirm a card with an IMAGE renders. Both services cache unfurls per URL and every route
+  # here has been pasteable with no card for months, so a previously-pasted URL measures a
+  # cache, not this deploy. Do not close the AC by inspecting tags — the other eight ACs
+  # already do that.
   # Context created 2026-08-26 against baseline 8f1c4fc. Owns THREE NEW FILES ONLY --
   # app/src/app/sitemap.ts, app/src/app/robots.ts, app/src/app/sitemap.test.ts -- the
   # cleanest file footprint in Epic 3: zero overlap with 3-2/3-3 (page.tsx, layout.tsx),
